@@ -1,0 +1,137 @@
+\begin{tikzpicture}[remember picture,overlay]
+    \fill[tyellow] (current page.south west) rectangle (current page.north east);
+    \coordinate (start) at ($(current page.east)!0.5!(current page.north east)+(1,-1)$);
+    \coordinate (end)   at (current page.north west);
+    \foreach \i in {0,0.01,...,1}
+        {
+            \coordinate (point) at ($(start)!\i!(end)$);
+            \draw[tyellowlight]
+            ($(point)+(310*\i:6)$)--
+            ($(point)+(310*\i+120:6)$)--
+            ($(point)+(310*\i+240:6)$)--
+            ($(point)+(310*\i:6)$);
+        }
+    \coordinate (start) at (current page.south west);
+    \coordinate (end)   at (current page.east);
+    \foreach \i in {0,0.02,...,1}
+        {
+            \coordinate (point) at ($(start)!\i!(end)$);
+            \draw[tyellowlight]
+            ($(point)+(310*\i:10)$)--
+            ($(point)+(310*\i+120:10)$)--
+            ($(point)+(310*\i+240:10)$)--
+            ($(point)+(310*\i:10)$);
+        }
+    \node (title)
+    [shape=rectangle,
+        fill=tbluedark,
+        outer sep=2em,
+        inner sep=2em,
+        minimum height=12em,
+        minimum width=\paperwidth,
+        align=flush right,
+        text=white,
+        text width=0.8\paperwidth,
+        anchor=north
+    ]
+    at ($(current page.center)!0.6!(current page.north)$)
+    {
+        \fontsize{5em}{4em}
+        \fontfamily{lmss}
+        \selectfont
+        大标题\par
+    };
+
+    \node (author)
+    [
+        fill=tblue,
+        inner sep=0.75em,
+        align=flush right,
+        text=white,
+        anchor=east
+    ]
+    at ($(title.north east)-(0.125\paperwidth,0)$)
+    {
+        \fontsize{3em}{2.5em}
+        \fontfamily{lmss}
+        \selectfont
+        小标题\par
+    };
+    \node
+    [
+        fill=tblue,
+        inner sep=0.75em,
+        align=flush left,
+        text=tblue,
+        anchor=west,
+        xshift=-2mm
+    ]
+    at (author.east)
+    {
+        \fontsize{3em}{2.5em}
+        \fontfamily{lmss}
+        \selectfont
+        \phantom{作者名字}\par
+    };
+
+    \node (subtitle)
+    [
+        text=black,
+        align=flush right,
+        anchor=north east
+    ]
+    at ($(title.south east)+(-0.14\paperwidth,0.5)$)
+    {
+        \fontsize{1.5em}{1em}
+        \fontfamily{lmss}
+        \selectfont
+        第x版本\par
+    };
+
+    \node (coverinfo)
+    [text=black]
+    at ($(current page.center)!0.825!(current page.south)$)
+    {
+        \fontsize{1.5em}{1em}
+        \fontfamily{lmss}
+        \selectfont
+        Revised and modernized edition by \par
+    };
+    \node
+    [text=black]
+    at ($(current page.center)!0.9!(current page.south)$)
+    {
+        \includegraphics[height=3em]{cr.png}            % 这里使用了图片
+        \raisebox{1.1em}{
+            \fontsize{1.5em}{1em}\selectfont\TeX{}romancers\par
+        }
+    };
+    \node (coverpic)
+    at ($(title.south)!0.5!(coverinfo.north)$)
+    {
+        \includegraphics[height=21em]{./ci.png}                   % 这里使用了图片（最下面的图标）
+    };
+\end{tikzpicture}
+
+\newpage
+\thispagestyle{empty}
+\begin{center}
+    \Huge\textbf{前言}
+\end{center}
+
+前言………………………言……………
+\begin{flushright}
+    \begin{tabular}{c}
+        \today \\ 签名
+    \end{tabular}
+\end{flushright}
+
+\newpage
+\pagestyle{plain}
+\setcounter{page}{1}
+\pagenumbering{Roman}
+\tableofcontents
+\newpage
+\pagestyle{plain}
+\setcounter{page}{1}
+\pagenumbering{arabic}
