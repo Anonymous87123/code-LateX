@@ -1,0 +1,71 @@
+% ========== 基本包加载 ==========
+\usepackage{amsmath, amsthm, amssymb}
+\usepackage{graphicx}
+\usepackage{geometry}
+\usepackage[colorlinks, linkcolor=black]{hyperref}
+\usepackage{bookmark}
+\usepackage{tikz}
+\usepackage[most]{tcolorbox}
+\tcbuselibrary{theorems}
+\usepackage{fontspec} % 添加字体支持
+
+% 设置英文字体
+\setmainfont{Times New Roman} % 英文主字体：Times New Roman
+\setsansfont{Arial} % 英文无衬线字体：Arial
+\setmonofont{Consolas} % 等宽字体：Consolas
+
+% 设置中文字体
+\setCJKmainfont{SimSun} % 中文主字体：宋体（正文）
+\setCJKsansfont{SimHei} % 中文无衬线字体：黑体（标题）
+\setCJKmonofont{KaiTi} % 中文等宽字体：楷体（特殊强调）
+
+% ========== 页面设置 ==========
+\geometry{
+  top=25.4mm,
+  bottom=25.4mm,
+  left=20mm,
+  right=20mm,
+  headheight=2.17cm,
+  headsep=4mm,
+  footskip=12mm
+}
+\linespread{1.5} % 行间距
+
+% ========== 数学字体优化 ==========
+\usepackage{unicode-math} % 数学字体支持
+\setmathfont{Latin Modern Math} % 数学字体：Latin Modern Math（简洁清晰）
+
+% ========== 定理环境设置 ==========
+% 使用楷体显示定理内容
+\newtheoremstyle{chinese}% 名称
+  {3pt}% 上方空白
+  {3pt}% 下方空白
+  {\kaishu}% 正文字体（楷体）
+  {}% 缩进
+  {\heiti\bfseries}% 标题字体（黑体加粗）
+  {.}% 标题后标点
+  { }% 标题后空白
+  {}% 标题说明
+
+% 应用定理样式
+\theoremstyle{chinese}
+\newtheorem{definition}{定义}[section]
+\newtheorem{solution}{解}[section]
+\newtheorem{axiom}{公理}[section]
+\newtheorem{property}{性质}[section]
+\newtheorem{proposition}{命题}[section]
+\newtheorem{theorem}{定理}[section]
+\newtheorem{lemma}{引理}[section]
+\newtheorem{corollary}{推论}[section]
+\newtheorem{example}{例}[section]
+\newtheorem{remark}{注}[section]
+
+% ========== 自定义命令 ==========
+\newcommand{\R}{\mathbb{R}} % 实数集
+\newcommand{\C}{\mathbb{C}} % 复数集
+\newcommand{\Z}{\mathbb{Z}} % 整数集
+\newcommand{\N}{\mathbb{N}} % 自然数集
+\newcommand{\dif}{\mathrm{d}} % 微分符号
+
+% ========== 图形路径设置 ==========
+\graphicspath{{./flg/}} % 图片路径
