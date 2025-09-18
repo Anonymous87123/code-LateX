@@ -1,23 +1,21 @@
-\documentclass[12pt, a4paper, oneside,UTF8]{ctexbook}
-
-% ========== 导入配置 ==========
-\input{config}
-
+% !TEX root = main.tex
+\documentclass[12pt,fontset=windows, a4paper, oneside,UTF8]{ctexbook}
+\include{config}
 \begin{document}
-
-% ========== 封面 ==========
-\input{cover}
-
-% ========== 前言 ==========
+\include{cover}
+% 前言部分
 \frontmatter
-\include{chapters/preface}
-
-% ========== 目录 ==========
+\pagestyle{frontmatter} % 应用前言样式
+% 前言内容
+\chapter*{前言}
+\addcontentsline{toc}{chapter}{前言} % 添加到目录
+前言内容...
+% 目录部分
+\pagestyle{tocmatter} % 应用目录样式
 \tableofcontents
-
-% ========== 正文 ==========
+% 正文部分
+\mainmatter
+\pagestyle{mainmatter} % 应用正文样式
 \include{chapters/chap1}
 \include{chapters/chap2}
-
-% ========== 结束文档 ==========
 \end{document}

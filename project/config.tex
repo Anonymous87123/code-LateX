@@ -1,71 +1,201 @@
 % ========== 基本包加载 ==========
-\usepackage{amsmath, amsthm, amssymb}
-\usepackage{graphicx}
+% 1. 基础宏包
 \usepackage{geometry}
-\usepackage[colorlinks, linkcolor=black]{hyperref}
-\usepackage{bookmark}
+\usepackage{fontspec}
+\usepackage{amsmath, amsthm, amssymb}
+\usepackage{mathrsfs}
+\usepackage{enumitem}
+\usepackage{graphicx}
+\usepackage{array}
+\usepackage{caption}
+% 2. 图形和颜色宏包
+\usepackage[dvipsnames]{xcolor}
 \usepackage{tikz}
+\usetikzlibrary{shapes.geometric}
 \usepackage[most]{tcolorbox}
 \tcbuselibrary{theorems}
-\usepackage{fontspec} % 添加字体支持
-
-% 设置英文字体
-\setmainfont{Times New Roman} % 英文主字体：Times New Roman
-\setsansfont{Arial} % 英文无衬线字体：Arial
-\setmonofont{Consolas} % 等宽字体：Consolas
-
-% 设置中文字体
-\setCJKmainfont{SimSun} % 中文主字体：宋体（正文）
-\setCJKsansfont{SimHei} % 中文无衬线字体：黑体（标题）
-\setCJKmonofont{KaiTi} % 中文等宽字体：楷体（特殊强调）
-
-% ========== 页面设置 ==========
+% 3. 页眉页脚宏包
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+% 4. 超链接和书签
+\usepackage[colorlinks, linkcolor=black]{hyperref}
+\usepackage{bookmark}
+% 5. 智能引用
+\usepackage{cleveref}
+% ========================
+% 1. 页面布局设置（窄边距）
 \geometry{
-  top=25.4mm,
-  bottom=25.4mm,
-  left=20mm,
-  right=20mm,
-  headheight=2.17cm,
-  headsep=4mm,
-  footskip=12mm
+  a4paper,
+  top=25mm,
+  bottom=15mm,
+  left=15mm,
+  right=15mm,
+  headheight=25pt,
+  headsep=8mm,
+  footskip=15mm,
+  includehead,
+  includefoot
 }
-\linespread{1.5} % 行间距
+% ========================
+% 2. 字体设置（修改部分）
+% ========================
+% 设置全局英文字体
+\setmainfont{Times New Roman}
+\setsansfont{Arial}
+\setmonofont{Consolas}
 
-% ========== 数学字体优化 ==========
-\usepackage{unicode-math} % 数学字体支持
-\setmathfont{Latin Modern Math} % 数学字体：Latin Modern Math（简洁清晰）
+% 移除全局中文字体设置，依赖ctexbook自动配置
+% 定义字体命令（保持不变）
+\newcommand{\kt}{\kaishu} % 楷体
+\newcommand{\st}{\songti} % 宋体
+\newcommand{\htbf}{\heiti\bfseries} % 黑体加粗
 
-% ========== 定理环境设置 ==========
-% 使用楷体显示定理内容
-\newtheoremstyle{chinese}% 名称
-  {3pt}% 上方空白
-  {3pt}% 下方空白
-  {\kaishu}% 正文字体（楷体）
+% ========================
+% 3. 定理环境定义（保持不变）
+% ========================
+% 共享计数器（定理、引理共享）
+\newcounter{theoremcounter}[section]
+% 定理环境
+\newtcbtheorem[use counter=theoremcounter]{theorem}{定理}{
+  enhanced,  
+  colback=SeaGreen!10!CornflowerBlue!10,
+  colframe=RoyalPurple!55!Aquamarine!100!,
+  before upper={\parindent 2em}, % 首行缩进
+  arc=3pt, % 圆角
+  boxrule=1pt, % 边框粗细
+}{thm}
+
+% 引理环境
+\newtcbtheorem[use counter=theoremcounter]{lemma}{引理}{
+  enhanced,
+  colback=Salmon!20,
+  colframe=Salmon!90!Black,
+  before upper={\parindent 2em},
+  arc=3pt,
+  boxrule=1pt,
+}{lem}
+
+% 定义环境
+\newtcbtheorem[number within=section]{definition}{定义}{
+  enhanced,
+  colback=OliveGreen!10,
+  colframe=Green!70,
+  before upper={\parindent 2em},
+  arc=3pt,
+  boxrule=1pt,
+}{def}
+
+% 例题和解共享计数器
+\newcounter{examplecounter}[section]
+% 例题环境
+\newtcbtheorem[use counter=examplecounter]{example}{例题}{
+  enhanced,
+  colback=green!5,
+  colframe=green!35!black,
+  before upper={\parindent 2em},
+  arc=3pt,
+  boxrule=1pt,
+}{ex}
+% 结论环境（宋体）
+\newtcbtheorem[number within=section]{conclusion}{结论}{
+  enhanced,
+  colback=Emerald!10,
+  colframe=cyan!40!black,
+  before upper={\parindent 2em},
+  arc=3pt,
+  boxrule=1pt,
+}{con}
+% 传统样式环境（无背景色）
+\newtheoremstyle{plain-chinese}% 名称
+  {6pt}% 上方空白
+  {6pt}% 下方空白
+  {\st}% 正文字体（宋体）
   {}% 缩进
-  {\heiti\bfseries}% 标题字体（黑体加粗）
+  {\htbf}% 标题字体（黑体加粗）
   {.}% 标题后标点
   { }% 标题后空白
   {}% 标题说明
 
-% 应用定理样式
-\theoremstyle{chinese}
-\newtheorem{definition}{定义}[section]
-\newtheorem{solution}{解}[section]
-\newtheorem{axiom}{公理}[section]
-\newtheorem{property}{性质}[section]
-\newtheorem{proposition}{命题}[section]
-\newtheorem{theorem}{定理}[section]
-\newtheorem{lemma}{引理}[section]
-\newtheorem{corollary}{推论}[section]
-\newtheorem{example}{例}[section]
+\theoremstyle{plain-chinese}
+\newtheorem{solution}{解}[section] % 使用与例题相同的计数器
 \newtheorem{remark}{注}[section]
+% ========================
+% 4. 智能引用设置（保持不变）
+% ========================
+\crefname{theorem}{定理}{定理}
+\crefname{lemma}{引理}{引理}
+\crefname{definition}{定义}{定义}
+\crefname{example}{例题}{例题}
+\crefname{conclusion}{结论}{结论}
+\crefname{solution}{解}{解}
+\crefname{remark}{注}{注}
 
-% ========== 自定义命令 ==========
+% ========================
+% 5. 数学字体设置（修改）
+% ========================
+\usepackage{unicode-math} % 更好的数学字体支持
+\setmathfont{Latin Modern Math} % 使用默认数学字体
+
+% ========== 自定义命令（保持不变） ==========
 \newcommand{\R}{\mathbb{R}} % 实数集
 \newcommand{\C}{\mathbb{C}} % 复数集
 \newcommand{\Z}{\mathbb{Z}} % 整数集
 \newcommand{\N}{\mathbb{N}} % 自然数集
 \newcommand{\dif}{\mathrm{d}} % 微分符号
 
-% ========== 图形路径设置 ==========
+% ========== 图形路径设置（保持不变） ==========
 \graphicspath{{./flg/}} % 图片路径
+
+% 6. 页眉页脚设置
+% ========================
+\usepackage{fancyhdr}
+\usepackage{lastpage} % 获取总页数
+\pagestyle{fancy}
+\fancyhf{} % 清除所有页眉页脚设置
+
+% 通用设置
+\fancyhead[L]{\small\kt 高中数学解析几何} % 左边：书名（楷体）
+\fancyhead[C]{\small\st 版权所有，盗版必究} % 中间：声明（宋体）
+\fancyfoot[C]{\thepage} % 居中页码（自定义样式）
+
+% 正文部分设置
+\fancyhead[R]{\small\st\rightmark} % 右边：章节名称（宋体）
+
+% 前言部分设置（使用罗马数字页码）
+\fancypagestyle{frontmatter}{
+    \fancyhf{}
+    \fancyhead[L]{\small\kt 高中数学解析几何}
+    \fancyhead[C]{\small\st 前言}
+    \fancyhead[R]{} % 前言部分无章节名称
+    \fancyfoot[C]{\thepage}
+    \renewcommand{\headrulewidth}{0.4pt} % 页眉线
+    \renewcommand{\footrulewidth}{0pt} % 无页脚线
+    \pagenumbering{Roman} % 罗马数字页码
+}
+
+% 目录部分设置（使用罗马数字页码，延续前言页码）
+\fancypagestyle{tocmatter}{
+    \fancyhf{}
+    \fancyhead[L]{\small\kt 高中数学·解析几何}
+    \fancyhead[C]{\small\st 目录} % 居中显示"目录"
+    \fancyhead[R]{} % 目录部分无章节名称
+    \fancyfoot[C]{\thepage}
+    \renewcommand{\headrulewidth}{0.4pt}
+    \renewcommand{\footrulewidth}{0pt}
+    % 注意：这里不重置页码，延续前面的罗马数字
+}
+
+% 正文部分设置（使用阿拉伯数字页码）
+\fancypagestyle{mainmatter}{
+    \fancyhf{}
+    \fancyhead[L]{\small\kt 高中数学~~解析几何}
+    \fancyhead[C]{\small\st 居敬持志~~守正出奇}
+    \fancyhead[R]{\small\st\rightmark}
+    \fancyfoot[C]{\thepage}
+    \renewcommand{\headrulewidth}{0.4pt} % 页眉线
+    \renewcommand{\footrulewidth}{0pt} % 无页脚线
+    \pagenumbering{arabic} % 阿拉伯数字页码
+}
+% 设置章节标记格式
+\renewcommand{\chaptermark}[1]{\markboth{#1}{}}
+\renewcommand{\sectionmark}[1]{\markright{\thesection.\ #1}}
