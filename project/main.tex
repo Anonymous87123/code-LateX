@@ -8,14 +8,32 @@
 \pagestyle{frontmatter} % 应用前言样式
 % 前言内容
 \chapter*{前言}
-\addcontentsline{toc}{chapter}{前言} % 添加到目录
-前言内容...
-% 目录部分
-\pagestyle{tocmatter} % 应用目录样式
+本书内容全部使用\LaTeX{}进行排版，作者"还在尬黑"是一位准大一学生，高中毕业于广东深圳中学，高三数学各次大考平均排名位于前5\%，高考应该也不例外。"还在尬黑"拥有知乎（同名），微信公众号（同名），小红书号（同名）等账号，头像是一个右手三叶结。以及不同名不同头像的GitHub账号，发表原创优质内容百余篇，在此十分感谢读者的支持和赞助！
+
+"还在尬黑"对圆锥曲线的解题研究有着浓厚兴趣，并在书中将其总结成了一套完整的解析几何教程。本书适合高中解析几何解题体系未成熟的高二高三学生，以及前来自学的高一学生以及初中生，也可作为高中数学教材。笔者衷心希望本书能够帮助读者提高圆锥曲线解题速度和解题能力，并能够准确地识别班内的"大佬"是用什么东西来装逼的。
+\begin{flushright}
+    \vspace{2\baselineskip} % 在署名前留出两行空白
+    \kt 还在尬黑 \\ % 楷体斜体
+    \today
+\end{flushright}
+\begin{figure*}[htbp]
+	\centering
+    \includegraphics[width=0.25\textwidth]{flg/logo.png}%
+	\caption{我的头像}
+	\label{fig0-1}
+\end{figure*}
+
+% 目录部分（关键修改）
+\newpage
+\CTEXoptions[tocdepth=2] % 设置目录深度为章和节
 \tableofcontents
+\thispagestyle{tocmatter} 
 % 正文部分
 \mainmatter
 \pagestyle{mainmatter} % 应用正文样式
+
+% 章节内容
 \include{chapters/chap1}
 \include{chapters/chap2}
+
 \end{document}

@@ -8,6 +8,7 @@
 \usepackage{graphicx}
 \usepackage{array}
 \usepackage{caption}
+\usepackage{tocloft}
 % 2. 图形和颜色宏包
 \usepackage[dvipsnames]{xcolor}
 \usepackage{tikz}
@@ -18,7 +19,7 @@
 \usepackage{fancyhdr}
 \usepackage{lastpage}
 % 4. 超链接和书签
-\usepackage[colorlinks, linkcolor=black]{hyperref}
+\usepackage{hyperref}
 \usepackage{bookmark}
 % 5. 智能引用
 \usepackage{cleveref}
@@ -36,27 +37,19 @@
   includehead,
   includefoot
 }
-% ========================
 % 2. 字体设置（修改部分）
-% ========================
 % 设置全局英文字体
 \setmainfont{Times New Roman}
 \setsansfont{Arial}
 \setmonofont{Consolas}
-
-% 移除全局中文字体设置，依赖ctexbook自动配置
 % 定义字体命令（保持不变）
 \newcommand{\kt}{\kaishu} % 楷体
 \newcommand{\st}{\songti} % 宋体
 \newcommand{\htbf}{\heiti\bfseries} % 黑体加粗
 
-% ========================
-% 3. 定理环境定义（保持不变）
-% ========================
-% 共享计数器（定理、引理共享）
 \newcounter{theoremcounter}[section]
 % 定理环境
-\newtcbtheorem[use counter=theoremcounter]{theorem}{定理}{
+\newtcbtheorem[use counter=theoremcounter,number within=section]{theorem}{定理}{
   enhanced,  
   colback=SeaGreen!10!CornflowerBlue!10,
   colframe=RoyalPurple!55!Aquamarine!100!,
@@ -66,7 +59,7 @@
 }{thm}
 
 % 引理环境
-\newtcbtheorem[use counter=theoremcounter]{lemma}{引理}{
+\newtcbtheorem[use counter=theoremcounter,number within=section]{lemma}{引理}{
   enhanced,
   colback=Salmon!20,
   colframe=Salmon!90!Black,
@@ -76,7 +69,7 @@
 }{lem}
 
 % 定义环境
-\newtcbtheorem[number within=section]{definition}{定义}{
+\newtcbtheorem[number within=section,number within=section]{definition}{定义}{
   enhanced,
   colback=OliveGreen!10,
   colframe=Green!70,
@@ -88,7 +81,7 @@
 % 例题和解共享计数器
 \newcounter{examplecounter}[section]
 % 例题环境
-\newtcbtheorem[use counter=examplecounter]{example}{例题}{
+\newtcbtheorem[use counter=examplecounter,number within=section]{example}{例题}{
   enhanced,
   colback=green!5,
   colframe=green!35!black,
@@ -115,11 +108,9 @@
   {.}% 标题后标点
   { }% 标题后空白
   {}% 标题说明
-
 \theoremstyle{plain-chinese}
 \newtheorem{solution}{解}[section] % 使用与例题相同的计数器
 \newtheorem{remark}{注}[section]
-% ========================
 % 4. 智能引用设置（保持不变）
 % ========================
 \crefname{theorem}{定理}{定理}
@@ -173,7 +164,7 @@
     \pagenumbering{Roman} % 罗马数字页码
 }
 
-% 目录部分设置（使用罗马数字页码，延续前言页码）
+% 目录部分设置（使用罗马数字页码，延续前言页码）          % 去掉标题下方的横线
 \fancypagestyle{tocmatter}{
     \fancyhf{}
     \fancyhead[L]{\small\kt 高中数学·解析几何}
@@ -199,3 +190,36 @@
 % 设置章节标记格式
 \renewcommand{\chaptermark}[1]{\markboth{#1}{}}
 \renewcommand{\sectionmark}[1]{\markright{\thesection.\ #1}}
+
+% ========================
+% 8. 章节标题字体设置
+% ========================
+% 设置章节标题字体
+\ctexset{
+    chapter = {
+        format = \centering, % 整体居中
+        nameformat = \kaishu\bfseries\LARGE, % 编号部分黑体加粗
+        titleformat = \songti\LARGE, % 标题部分宋体
+        aftername = \quad, % 编号和标题之间的间距
+        beforeskip = 30pt, % 标题前的垂直间距
+        afterskip = 20pt, % 标题后的垂直间距
+        name = {第,章}, % 中文章节编号格式
+        number = \chinese{chapter}, % 使用中文数字
+    },
+    section = {
+        format = \raggedright, % 左对齐
+        nameformat = \heiti\bfseries\large, % 编号部分黑体加粗
+        titleformat = \songti\large, % 标题部分宋体
+        aftername = \quad, % 编号和标题之间的间距
+        beforeskip = 15pt, % 标题前的垂直间距
+        afterskip = 6pt, % 标题后的垂直间距
+    },
+    subsection = {
+        format = \raggedright, % 左对齐
+        nameformat = \heiti\bfseries\normalsize, % 编号部分黑体加粗
+        titleformat = \songti\normalsize, % 标题部分宋体
+        aftername = \quad, % 编号和标题之间的间距
+        beforeskip = 6pt, % 标题前的垂直间距
+        afterskip = 3pt, % 标题后的垂直间距
+    }
+}
