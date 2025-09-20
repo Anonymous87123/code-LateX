@@ -1,4 +1,3 @@
-\documentclass[UTF8]{ctexbook}
 % ========== 基本包加载 ==========
 % 1. 基础宏包
 \usepackage{geometry}
@@ -8,6 +7,7 @@
 \usepackage{enumitem}
 \usepackage{graphicx}
 \usepackage{array}
+\usepackage{ulem}
 \usepackage{caption}
 \usepackage{tocloft}
 % 2. 图形和颜色宏包
@@ -28,8 +28,8 @@
 % 1. 页面布局设置（窄边距）
 \geometry{
   a4paper,
-  top=25mm,
-  bottom=15mm,
+  top=15mm,
+  bottom=10mm,
   left=15mm,
   right=15mm,
   headheight=25pt,
@@ -99,6 +99,30 @@
   arc=3pt,
   boxrule=1pt,
 }{con}
+\newtcbtheorem[number within=section]{property}{性质}{
+  enhanced,
+  colback=Peach!15,              % 浅橙色背景（比纯Orange更柔和）
+  colframe=Orange!80!black,  % 深橙色边框带黑色加深
+  before upper={\parindent 2em},
+  arc=3pt,
+  boxrule=1pt,        % 标题加粗与其他环境统一
+}{prop}
+\newtcbtheorem[number within=section]{criterion}{准则}{
+  enhanced,
+  colback=Thistle!15,            % 浅紫色背景（柔和）
+  colframe=MediumPurple!80!black, % 深紫色边框带黑色加深
+  before upper={\parindent 2em},
+  arc=3pt,
+  boxrule=1pt,
+}{crit}
+\newtcbtheorem[use counter=theoremcounter,number within=section]{corollary}{推论}{
+  enhanced,
+  colback=Gold!10,               % 浅金色背景
+  colframe=Goldenrod!80!black,   % 深金色边框带黑色加深
+  before upper={\parindent 2em},
+  arc=3pt,
+  boxrule=1pt,        % 标题加粗与其他环境统一
+}{cor}
 % 传统样式环境（无背景色）
 \newtheoremstyle{plain-chinese}% 名称
   {6pt}% 上方空白
@@ -121,13 +145,12 @@
 \crefname{conclusion}{结论}{结论}
 \crefname{solution}{解}{解}
 \crefname{remark}{注}{注}
+\crefname{property}{性质}{性质}
+\crefname{criterion}{准则}{准则}
 
-% ========================
 % 5. 数学字体设置（修改）
-% ========================
 \usepackage{unicode-math} % 更好的数学字体支持
 \setmathfont{Latin Modern Math} % 使用默认数学字体
-
 % ========== 自定义命令（保持不变） ==========
 \newcommand{\R}{\mathbb{R}} % 实数集
 \newcommand{\C}{\mathbb{C}} % 复数集
@@ -146,7 +169,7 @@
 \fancyhf{} % 清除所有页眉页脚设置
 
 % 通用设置
-\fancyhead[L]{\small\kt 华南理工大学} % 左边：书名（楷体）
+\fancyhead[L]{\small\kt 高中数学解析几何} % 左边：书名（楷体）
 \fancyhead[C]{\small\st 版权所有，盗版必究} % 中间：声明（宋体）
 \fancyfoot[C]{\thepage} % 居中页码（自定义样式）
 
@@ -176,7 +199,6 @@
     \renewcommand{\footrulewidth}{0pt}
     % 注意：这里不重置页码，延续前面的罗马数字
 }
-
 % 正文部分设置（使用阿拉伯数字页码）
 \fancypagestyle{mainmatter}{
     \fancyhf{}
@@ -192,10 +214,7 @@
 \renewcommand{\chaptermark}[1]{\markboth{#1}{}}
 \renewcommand{\sectionmark}[1]{\markright{\thesection.\ #1}}
 
-% ========================
 % 8. 章节标题字体设置
-% ========================
-% 设置章节标题字体
 \ctexset{
     chapter = {
         format = \centering, % 整体居中
@@ -224,11 +243,3 @@
         afterskip = 3pt, % 标题后的垂直间距
     }
 }
-\begin{document}
-
-\maketitle
-
-\tableofcontents
-
-
-\end{document}

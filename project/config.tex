@@ -107,6 +107,22 @@
   arc=3pt,
   boxrule=1pt,        % 标题加粗与其他环境统一
 }{prop}
+\newtcbtheorem[number within=section]{criterion}{准则}{
+  enhanced,
+  colback=Thistle!15,            % 浅紫色背景（柔和）
+  colframe=MediumPurple!80!black, % 深紫色边框带黑色加深
+  before upper={\parindent 2em},
+  arc=3pt,
+  boxrule=1pt,
+}{crit}
+\newtcbtheorem[use counter=theoremcounter,number within=section]{corollary}{推论}{
+  enhanced,
+  colback=Gold!10,               % 浅金色背景
+  colframe=Goldenrod!80!black,   % 深金色边框带黑色加深
+  before upper={\parindent 2em},
+  arc=3pt,
+  boxrule=1pt,        % 标题加粗与其他环境统一
+}{cor}
 % 传统样式环境（无背景色）
 \newtheoremstyle{plain-chinese}% 名称
   {6pt}% 上方空白
@@ -129,13 +145,12 @@
 \crefname{conclusion}{结论}{结论}
 \crefname{solution}{解}{解}
 \crefname{remark}{注}{注}
+\crefname{property}{性质}{性质}
+\crefname{criterion}{准则}{准则}
 
-% ========================
 % 5. 数学字体设置（修改）
-% ========================
 \usepackage{unicode-math} % 更好的数学字体支持
 \setmathfont{Latin Modern Math} % 使用默认数学字体
-
 % ========== 自定义命令（保持不变） ==========
 \newcommand{\R}{\mathbb{R}} % 实数集
 \newcommand{\C}{\mathbb{C}} % 复数集
@@ -184,7 +199,6 @@
     \renewcommand{\footrulewidth}{0pt}
     % 注意：这里不重置页码，延续前面的罗马数字
 }
-
 % 正文部分设置（使用阿拉伯数字页码）
 \fancypagestyle{mainmatter}{
     \fancyhf{}
@@ -200,10 +214,7 @@
 \renewcommand{\chaptermark}[1]{\markboth{#1}{}}
 \renewcommand{\sectionmark}[1]{\markright{\thesection.\ #1}}
 
-% ========================
 % 8. 章节标题字体设置
-% ========================
-% 设置章节标题字体
 \ctexset{
     chapter = {
         format = \centering, % 整体居中
