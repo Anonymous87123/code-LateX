@@ -43,11 +43,11 @@ $\begin{vmatrix}
         &=x^3+y^3+y^3-xy^2-xy^2-xy^2\\
         &=x^3+2y^3-3xy^2.\square
     \end{align*}
-    实际上这个结果可以推广的。
+    实际上这个结果可以推广的，下面定理的证明运用了​​行列式的线性性质​​和​​递归分解​​的思想。
 \end{solution}
 \begin{theorem}{}{}
-    将$n$阶行列式$D$中每个元$a_{ij},(i,j=1,2,...,n)$都加上参数$t$，得到的行列式记为$D(t)$，则：
-    \[D(t)=D+\sum_{i=1}^n\sum_{j=1}^nA_{ij}.\]
+    将$n$阶行列式$D$中每个元$a_{ij},(i,j=1,2,...,n)$都加上参数$t$，得到新行列式$D(t)$，则：
+    \[D(t)=D+\sum_{i=1}^n\sum_{j=1}^nA_{ij}\leftrightarrow D=D(t)-t\sum_{i=1}^n\sum_{j=1}^nA_{ij}.\]
     其中$A_{ij}$是$a_{ij}$的代数余子式.
 \end{theorem}
 \begin{proof}{}{}
@@ -57,18 +57,102 @@ $\begin{vmatrix}
         \vdots&\vdots&&\vdots\\
         a_{n1}&a_{n2}+t&\cdots&a_{nn}+t\end{vmatrix}\]
     \begin{align*}
-        D(t)&=D_1(t)+\begin{vmatrix}t&a_{12}+t&\cdots&a_{1n}+t\
+        D(t)&=D_1(t)+\begin{vmatrix}t&a_{12}+t&\cdots&a_{1n}+t\\
         t&a_{22}+t&\cdots&a_{2n}+t\\\vdots&\vdots&&\vdots\\
-        t&a_{n2}+t&\cdots&a_{nn}+t\end{vmatrix}\\
-        &=D_1(t)+
+        t&a_{n2}+t&\cdots&a_{nn}+t\end{vmatrix}
+        =D_1(t)+
         \begin{vmatrix}t&a_{12}&\cdots&a_{1n}\\
             t&a_{22}&\cdots&a_{2n}\\
             \vdots&\vdots&&\vdots\\
             t&a_{n2}&\cdots&a_{nn}\end{vmatrix}\\
-        &=t\sum_{i=1}^nA_{i1}+D_1(t).\\
-        &=t\sum_{i=1}^nA_{i1}+t\sum_{i=1}^nA_{i2}+D_2(t).\\
-        &=t\sum_{i=1}^nA_{i1}+t\sum_{i=1}^nA_{i2}+t\sum_{i=1}^nA_{i3}+D_3(t).\\
-        &=\dots\\
-        &=t\sum_{i=1}{n}\sum_{j=1}^nA_{ij}+D.
+        &=t\sum_{i=1}^nA_{i1}+D_1(t)=t\sum_{i=1}^nA_{i1}+t\sum_{i=1}^nA_{i2}+D_2(t)\\
+        &=t\sum_{i=1}^nA_{i1}+t\sum_{i=1}^nA_{i2}+t\sum_{i=1}^nA_{i3}+D_3(t)\\
+        &=\dots=t\sum_{i=1}^{n}\sum_{j=1}^nA_{ij}+D.
         \end{align*}
+\end{proof}
+下面推广一下：
+\begin{example}{}{}
+    求$n$阶行列式的值$(a\ne b)$：
+    \[D=\begin{vmatrix}x_1&a&\cdots&a\\b&x_2&\cdots&a\\
+        \vdots&\vdots&&\vdots\\b&b&\cdots&x_n\end{vmatrix}=\begin{vmatrix}x_1&b&\cdots&b\\a&x_2&\cdots&b\\
+        \vdots&\vdots&&\vdots\\a&a&\cdots&x_n\end{vmatrix}\]
+\end{example}
+\begin{solution}{}{}
+    原题只有第一个行列式，笔者将其进行了转置，得到第二个行列式，目的是方便进行证明，这里运用了“对偶”的思想。这样就可以轻松写出：
+    \[D(-a)=\begin{vmatrix}x_1-a&b-a&\cdots&b-a\\0&x_2-a&\cdots&b-a\\
+        \vdots&\vdots&&\vdots\\0&0&\cdots&x_n-a\end{vmatrix}=\prod_{i=1}^n(x_i-a)\]
+    \[D(-b)=\begin{vmatrix}x_1-b&a-b&\cdots&a-b\\0&x_2-b&\cdots&a-b\\
+        \vdots&\vdots&&\vdots\\0&0&\cdots&x_n-b\end{vmatrix}=\prod_{i=1}^n(x_i-b)\]
+    因此：\[D=\prod_{i=1}^n(x_i-a)+(-a)\sum_{i=1}^n\sum_{j=1}^nA_{ij}=\prod_{i=1}^n(x_i-b)+(-b)\sum_{i=1}^n\sum_{j=1}^nA_{ij}.\]
+    容易发现，\[\sum_{i=1}^n\sum_{j=1}^nA_{ij}\]取决于原来的行列式本身，与引入的参数无关（因为我们是一列一列地拆出参数，而恰好在取代数余子式时避开了含有参数的列），因此上述公式构成二元一次线性方程组，由此可以解得：
+    \[D=\frac{a}{a-b}\prod_{i=1}^{n}(x_{i}-b)-\frac{b}{a-b}\prod_{i=1}^{n}(x_{i}-a).\]
+\end{solution}
+\begin{example}{}{}
+    求$n$阶行列式的值:
+        \[D=\begin{vmatrix}x_1&a&\cdots&a\\a&x_2&\cdots&a\\
+        \vdots&\vdots&&\vdots\\a&a&\cdots&x_n\end{vmatrix}\]
+\end{example}
+\begin{solution}{}{}
+    直接套结论：
+    \[D(-a)=\begin{vmatrix}x_1-a&0&\cdots&0\\0&x_2-a&\cdots&0\\
+        \vdots&\vdots&&\vdots\\0&0&\cdots&x_n-a\end{vmatrix}=\prod_{i=1}^n(x_i-a)\]
+    则：\[D=D(-a)+a\sum_{i=1}^n\sum_{j=1}^nA_{ij}.\]
+    其中对于$A_{ij}$而言，由于只有对角线上的数不是0，因此如果不取对角线上的数写代数余子式，那么由于系数是0，行列式无论是什么都不会影响结果\[
+    A_{ij} = \begin{cases} 
+    0 & i \neq j \\
+    \prod\limits_{k \neq i}^{n} (x_k - a) & i = j \end{cases}\]
+    所以：\[
+    D=D(-a)+a\sum_{i=1}^n\sum_{j=1}^nA_{ij}=D(-a)+a\sum_{i=1}^nA_{ii}=\prod_{i=1}^n(x_i-a)+a\sum_{i=1}^n\prod_{k\neq i}(x_k-a).
+    \]
+\end{solution}
+我们再补充一个例子：
+\begin{example}{}{}
+    求$n$阶行列式的值（$a\neq b$）：\[D=\begin{vmatrix}
+        a&a&\cdots&a&0\\
+        a&a&\cdots&0&b\\
+        \vdots&\vdots&&\vdots&\vdots\\
+        a&0&\cdots&b&b\\
+        0&b&\cdots&b&b\end{vmatrix}\]
+\end{example}
+\begin{solution}{}{}
+    \[D=D(-a)+a\sum_{i=1}^n\sum_{j=1}^nA_{ij}=D(-b)+b\sum_{i=1}^n\sum_{j=1}^nA_{ij}\]
+    其中：\[D(-a)=\begin{vmatrix}        
+        0&0&\cdots&0&-a\\
+        0&0&\cdots&-a&b-a\\
+        \vdots&\vdots&&\vdots&\vdots\\
+        0&-a&\cdots&b-a&b-a\\
+        -a&b-a&\cdots&b-a&b-a\end{vmatrix}
+    \]
+    然后使用定义：
+    \[\begin{vmatrix}a_{11}&a_{12}&\ldots&a_{1n}
+        \\a_{21}&a_{22}&\ldots&a_{2n}\\
+        \vdots&\vdots&\ddots&\vdots\\
+        a_{n1}&a_{n2}&\ldots&a_{nn}\end{vmatrix}
+        =\sum(-1)^{\tau(j_1j_2\ldots j_n)}a_{1j_1}a_{2j_2}\ldots a_{nj_n}\]
+    就可以得到：\[D(-a)=(-a)^{1+2+3+4+...+n-1}(-a)^n=(-1)^{\frac{n(n+1)}{2}}a^n\]
+    \[D(-b)=(-b)^{1+2+3+4+...+n-1}(-b)^n=(-1)^{\frac{n(n+1)}{2}}b^n\]
+    当$a\neq b$时，\[D=(-1)^{\frac{n(n+1)}{2}}\frac{ab^n-ba^n}{a-b}=(-1)^{\frac{n^2+n+2}{2}}(a^{n-1}b+a^{n-2}b^2+\cdots+ab^{n-1})\]
+\end{solution}
+习题一第二大题的第（1）（2）问解答如下：
+\begin{example}{(习题一第二大题：证明恒等式)}{}
+    \[
+    (1)\begin{vmatrix}
+        a&b+x\\
+        c&d+y
+    \end{vmatrix}=\begin{vmatrix}
+        a&b\\
+        c&d
+    \end{vmatrix}+\begin{vmatrix}
+        a&x\\
+        c&y
+    \end{vmatrix}
+    \]\[
+    (2)\begin{vmatrix}
+        0&b&a\\
+        1&e&f\\
+        0&d&c\end{vmatrix}=\begin{vmatrix}
+        a&b\\
+        c&d\end{vmatrix}\]
+\end{example}
+\begin{proof}{}{}
 \end{proof}
