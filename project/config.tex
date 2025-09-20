@@ -7,6 +7,7 @@
 \usepackage{enumitem}
 \usepackage{graphicx}
 \usepackage{array}
+\usepackage{ulem}
 \usepackage{caption}
 \usepackage{tocloft}
 % 2. 图形和颜色宏包
@@ -27,8 +28,8 @@
 % 1. 页面布局设置（窄边距）
 \geometry{
   a4paper,
-  top=25mm,
-  bottom=15mm,
+  top=15mm,
+  bottom=10mm,
   left=15mm,
   right=15mm,
   headheight=25pt,
@@ -98,6 +99,14 @@
   arc=3pt,
   boxrule=1pt,
 }{con}
+\newtcbtheorem[number within=section]{property}{性质}{
+  enhanced,
+  colback=Peach!15,              % 浅橙色背景（比纯Orange更柔和）
+  colframe=Orange!80!black,  % 深橙色边框带黑色加深
+  before upper={\parindent 2em},
+  arc=3pt,
+  boxrule=1pt,        % 标题加粗与其他环境统一
+}{prop}
 % 传统样式环境（无背景色）
 \newtheoremstyle{plain-chinese}% 名称
   {6pt}% 上方空白
