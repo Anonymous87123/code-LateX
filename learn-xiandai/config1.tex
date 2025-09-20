@@ -68,7 +68,6 @@
   arc=3pt,
   boxrule=1pt,
 }{lem}
-
 % 定义环境
 \newtcbtheorem[number within=section,number within=section]{definition}{定义}{
   enhanced,
@@ -129,7 +128,7 @@
   {6pt}% 下方空白
   {\st}% 正文字体（宋体）
   {}% 缩进
-  {\htbf}% 标题字体（黑体加粗）
+  {\heiti}% 标题字体（黑体加粗）
   {.}% 标题后标点
   { }% 标题后空白
   {}% 标题说明
@@ -147,6 +146,7 @@
 \crefname{remark}{注}{注}
 \crefname{property}{性质}{性质}
 \crefname{criterion}{准则}{准则}
+\crefname{proof}{证明}{证明}
 
 % 5. 数学字体设置（修改）
 \usepackage{unicode-math} % 更好的数学字体支持
@@ -203,7 +203,7 @@
 % 正文部分设置（使用阿拉伯数字页码）
 \fancypagestyle{mainmatter}{
     \fancyhf{}
-    \fancyhead[L]{\small\kt 高中数学~~解析几何}
+    \fancyhead[L]{\small\kt 线性代数和解析几何作业}
     \fancyhead[C]{\small\st 居敬持志~~守正出奇}
     \fancyhead[R]{\small\st\rightmark}
     \fancyfoot[C]{\thepage}
@@ -219,7 +219,7 @@
 \ctexset{
     chapter = {
         format = \centering, % 整体居中
-        nameformat = \kaishu\bfseries\LARGE, % 编号部分黑体加粗
+        nameformat = \kaishu\LARGE, % 编号部分黑体加粗
         titleformat = \songti\LARGE, % 标题部分宋体
         aftername = \quad, % 编号和标题之间的间距
         beforeskip = 30pt, % 标题前的垂直间距
