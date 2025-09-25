@@ -49,7 +49,6 @@
 \newcommand{\htbf}{\heiti\bfseries} % 黑体加粗
 
 \newcounter{theoremcounter}[section]
-% 定理环境
 \newtcbtheorem[use counter=theoremcounter,number within=section]{word}{单词}{
   enhanced,  
   colback=SeaGreen!10!CornflowerBlue!10,
@@ -58,8 +57,6 @@
   arc=3pt, % 圆角
   boxrule=1pt, % 边框粗细
 }{word}
-
-% 引理环境
 \newtcbtheorem[number within=section]{expression}{搭配}{
   enhanced,
   colback=Salmon!20,
@@ -68,8 +65,22 @@
   arc=3pt,
   boxrule=1pt,
 }{exp}
-
-% 传统样式环境（无背景色）
+\newtcbtheorem[number within=section]{wordroot}{词根}{
+  enhanced,
+  colback=Peach!15,              % 浅橙色背景（比纯Orange更柔和）
+  colframe=Orange!80!black,  % 深橙色边框带黑色加深
+  before upper={\parindent 2em},
+  arc=3pt,
+  boxrule=1pt,        % 标题加粗与其他环境统一
+}{wordroot}
+\newtcbtheorem[number within=section]{affix}{词缀}{
+  enhanced,
+  colback=Thistle!15,            % 浅紫色背景（柔和）
+  colframe=MediumPurple!80!black, % 深紫色边框带黑色加深
+  before upper={\parindent 2em},
+  arc=3pt,
+  boxrule=1pt,
+}{affix}
 \newtheoremstyle{plain-chinese}% 名称
   {6pt}% 上方空白
   {6pt}% 下方空白
@@ -91,6 +102,8 @@
 \crefname{eg.}{例句}{例句}
 \crefname{attention}{注意}{注意}
 \crefname{releventwords}{形近词}{形近词}
+\crefname{wordroot}{词根}{词根}
+\crefname{affix}{词缀}{词缀}
 
 
 % 5. 数学字体设置（修改）
