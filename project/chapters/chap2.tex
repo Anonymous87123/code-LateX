@@ -56,6 +56,28 @@
 &=-\dfrac14
 \end{align*}
 \end{solution}
+\begin{theorem}{阿贝尔求和}{}
+    设$B_n$是数列$b_n$的前$n$项和，当$n\ge 2$时，有:\vspace{-5pt}\[
+    \sum_{i=1}^na_ib_i=a_nB_n-\sum_{i=1}^{n-1}(a_{i+1}-a_i)B_n\]
+\end{theorem}
+\begin{myproof}
+    当$n\ge 2$时，有
+    \begin{align*}
+        \sum_{i=1}^na_ib_i=&a_1b_1+\sum_{i=2}^{n}a_i(B_i-B_{i-1})\\
+        =&a_1b_1+\sum_{i=2}^{n}a_iB_i-\sum_{i=2}^{n}a_iB_{i-1}\\
+        =&\sum_{i=1}^{n}a_iB_i-\sum_{i=1}^{n-1}a_{i+1}B_i\\
+        =&a_nB_n-\sum_{i=1}^{n-1}(a_{i+1}-a_i)B_n
+    \end{align*}
+\end{myproof}
+\begin{example}{}{}
+    设数列$\{a_n\}$的各项均为实数，且当$n\ge 2$时，$a_{n+1}+a_{n-1}=|a_n|$.证明：
+
+    （1）存在大于$1$的正整数$m$使得$a_m\le 0$
+
+    （2）存在正整数$m$使得$a_m\le 0,~a_{m+1}\le 0$
+
+    （3）$a_n=a_{n+9}$ 
+\end{example}
 % 图片插入示例（注释掉，避免报错）
 % \begin{figure}[htbp]
 %     \centering
