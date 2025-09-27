@@ -1,0 +1,96 @@
+\chapter{集合，映射与函数}
+\section{第1周作业}
+\begin{example}{讨论下列函数的奇偶性}{}\vspace{-10pt}
+\[\begin{array}{l@{\quad\quad}l@{\quad\quad}l}
+    (1)y=3x-x^3&(2)2+3x-x^3&(3)y=\sqrt[3]{(1+x)^2}+\sqrt[3]{(1-x)^2}\\
+    (4)y=\dfrac{e^x+e^{-x}}{2}&(5)y=\sqrt{x(2-x)}&(6)y=2^{-x}\\
+    (7)f(x)=\begin{cases}x-1,&x<0\\0,&x=0\\x+1,&x>0\end{cases}&(8)y=\ln (x+\sqrt{x^2+1})
+\end{array}\]\end{example}
+\begin{solution}
+    (1)由于$f(x)+f(-x)=3x+3(-x)-x^3-(-x)^3=0$，故为奇函数
+
+    (2)由于$f(x)+f(-x)=2+3x+3(-x)+2-x^3-(-x)^3=4$，不为奇函数；而$4\ne 2f(x)\Rightarrow f(x)\ne f(-x)$，故为非奇非偶函数
+
+    (3)由于$f(x)=\sqrt[3]{(1+x)^2}+\sqrt[3]{(1-x)^2}=\sqrt[3]{(1-x)^2}+\sqrt[3]{(1+x)^2}=f(-x)$，故为偶函数
+
+    (4)由于$f(x)=\frac{e^x+e^{-x}}{2}=\frac{e^{-x}+e^x}{2}=f(-x)$，故为偶函数
+
+    (5)由于$f(x)=\sqrt{x(2-x)}\neq\sqrt{-x(2+x)}=f(-x)$，故不为偶函数，由于$f(x)+f(-x)=\sqrt{x(2-x)}+\sqrt{-x(2+x)}\neq=0$，故为非奇非偶函数
+
+    (6)由于$\begin{cases}f(x)+f(-x)=2^{-x}+2^{-(-x)}=2^{-x}+2^{x}\ne 0\\f(x)=2^{-x}\neq2^{-(-x)}=f(-x)\end{cases}$，故为非奇非偶函数
+
+    (7)由于$\begin{cases}f(0)=0\\f(x)+f(-x)=x-1+(-x)+1=0\\f(x)\neq f(-x)\end{cases}$，故为奇函数
+
+    (8)由于$f(x)+f(-x)=\ln (x+\sqrt{x^2+1})+\ln (-x+\sqrt{x^2+1})=\ln (-x^2+(x^2+1))=0$，故为奇函数
+\end{solution}
+\begin{example}{研究函数的单调性}{}
+    (1)$y=ax+b\quad(2)y=ax^2+bx+c\quad(3)y=x^3\quad(4)y=a^x$
+\end{example}
+\begin{solution}
+    (1)若$a\ge0$，则$y$单调递增；若$a<0$，则$y$单调递减；若$a>0$，则$y$严格单调递增
+
+    (2)若$a>0$，则$y$先严格单调减后严格单调增，若$a<0$，则$y$先严格单调增后严格单调减，若$a=0$，则当$b>0$时，$y$单调递增，当$b<0$时，$y$单调递减；若$a=b=0$，则$y$非严格单调递增
+
+    (3)若$x_1>x_2$，则$f(x_1)-f(x_2)=x_1^3-x_2^3=(x_1-x_2)(x_1^2+x_2^2-x_1x_2)>x_1-x_2>0$故单调递增
+
+    (4)需限定$a>0$，则当$a>1$时，$y$单调递增，当$a<1$时，$y$单调递减；若$a=1$，则$y=1$非严格单调递增；
+\end{solution}
+\begin{example}{哪些是周期函数？如果是说明其周期，并说明有无最小周期，有就求出来}{}
+    \[\begin{array}{l@{\quad\quad}l@{\quad\quad}l}
+    (1)y=\sin^2x&(2)y=\sin x^2&(3)y=\cos(x-2)\\
+    (4)y=A\cos\lambda x+B\sin\lambda x&(5)y=x-[x]&(6)y=\tan|x|
+    \end{array}\]
+\end{example}
+\begin{solution}
+    (1)是周期函数，周期为$k\pi,(k\in\mathbb{Z})$，最小正周期为$\pi$
+
+    (2)不是周期函数，因为\[\sin(x+T)^2-\sin x^2=2\cos\dfrac{(x+T)^2+x^2}{2}\sin\dfrac{(x+T)^2-x^2}{2}=2\cos\dfrac{(x+T)^2+x^2}{2}\sin\dfrac{2x+T^2}{2}\ne 0\]则这样的$T$不存在.
+
+    (3)是周期函数，周期为$2k\pi,(k\in\mathbb{Z})$，最小正周期为$2\pi$.
+
+    (4)$y=A\cos\lambda x+B\sin\lambda x=\sqrt{A^2+B^2}\sin(\lambda x+\arctan\dfrac{B}{A})$是周期函数，周期为$\frac{2k\pi}{\lambda},(k\in\mathbb{Z},\lambda>0)$，最小正周期为$\frac{2\pi}{\lambda},(\lambda>0)$
+
+    (5)是周期函数，因为$[x]+1 = [x+1]$，则$x+1-[x+1]=x+1-[x]-1=x-[x]$，所以$y=x-[x]$是周期函数，周期为$\mathbb{Z}$，最小正周期为$1$.
+
+    (6)不是周期函数。证明：由于正切函数的一个周期是$\pi$，假设$\tan|x|$也是周期函数，则存在$T>0$使得对于定义域内的任意实数$x$都有$|x|+\pi=|x+T|$，代入$x=-\pi$得到$T=3\pi$，代入$x=0$得到$T=\pi$，矛盾！所以$y=\tan|x|$不是周期函数.
+\end{solution}
+\begin{example}{证明}{}
+    两个奇函数之积为偶函数，奇函数和偶函数之积仍然是奇函数。
+\end{example}
+\begin{solution}
+    (1)设$f(x),g(x)$为两个奇函数，则\[
+    f(x)g(x)=(-f(-x))(-g(-x))=f(-x)g(-x)
+    \]故两个奇函数之积为偶函数
+
+    (2)设$f(x)$是奇函数,$g(x)$为偶函数，则\[
+    f(x)g(x)=(-f(-x))(g(-x))=-f(-x)g(-x)\Leftrightarrow f(x)g(x)+f(-x)g(-x)=0\]故奇函数和偶函数之积仍然是奇函数.
+\end{solution}
+\begin{example}{证明}{}
+    若函数$f(x)$周期为$T(T>0)$，则函数$f(-x)$的周期也是$T$.
+\end{example}
+\begin{solution}
+    设$f(x)$周期为$T$，则$f(x+T)=f(x)\Rightarrow f(-x+T)=f(-x)$，故$f(-x)$的周期也是$T$.
+\end{solution}
+\begin{example}{证明}{}
+    设$f(x)$和$g(x)$都是定义域为$R$的单调函数，求证：$f(g(x))$也是定义域为$R$的单调函数.
+\end{example}
+\begin{solution}
+    由于$f(x),g(x)$是定义域为$R$的单调函数，则：\[
+    \forall x_1,x_2\in R,~(x_1-x_2)(f(x_1)-f(x_2))\geq 0,~~
+    \forall x_3,x_4\in R,~(x_3-x_4)(g(x_3)-g(x_4))\geq 0,~~\]
+    那么一定存在$x_1=g(x_3),x_2=g(x_4)$，则相乘\[
+    (g(x_3)-g(x_4))(f(g(x_3))-f(g(x_4)))\ge 0\]
+    结合$x_3,x_4\in R,(x_3-x_4)(g(x_3)-g(x_4))\geq 0$就有：\[
+    (x_3-x_4)(g(x_3)-g(x_4))^2(f(g(x_3))-f(g(x_4)))\ge 0\Rightarrow 
+    (x_3-x_4)(f(g(x_3))-f(g(x_4)))\ge 0\]
+    故$f(g(x))$也是定义域为$R$的单调函数.
+\end{solution}
+\begin{example}{证明}{}
+    \[(1)\arctan\dfrac12+\arctan\dfrac13=\dfrac{\pi}{4}.\quad(2)\cos(\arcsin x)=\sqrt{1-x^2}\]
+\end{example}
+\begin{solution}
+    (1)构造复数$z_1=2+i,z_2=3+i\Rightarrow z_1z_2=5+5i$，则：\[
+    \arg(z_1)+\arg(z_2)=\arg(z_1z_2)=\dfrac{\pi}{4}    \]
+    (2)由于$\sin^2x+\cos^2x=1$，代入$x=\arcsin x$即可得到：
+    \[\cos(\arcsin x)=\sqrt{1-x^2}\]
+\end{solution}
