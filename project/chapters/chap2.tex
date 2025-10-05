@@ -175,10 +175,14 @@ PA^2+\lambda^2PC^2+\mu^2PB^2+2\lambda\overrightarrow{PA}\cdot\overrightarrow{PC}
 这等价于\[S_{\triangle{PBC}}\overrightarrow{PA}+S_{\triangle{PAC}}\overrightarrow{PB}+S_{\triangle{PAB}}\overrightarrow{PC}=\vec{0}\]
 这里的三角形面积是有向面积，我们必须在计算三角形面积时按照字母顺序看一下方向（顺时针或逆时针），然后将与其他两个方向不同的三角形的对应面积取负值。
 \end{example}
+\begin{solution}
+
+\end{solution}
 \begin{example}{外心向量关系}{}
     已知平面直角坐标系$xOy$中有一个$\triangle{ABC}$，则其外心满足关系式：
 \end{example}
 \begin{solution}
+
 \end{solution}
 \begin{example}{三角形外心坐标}{}
     已知平面直角坐标系$xOy$中有一个$\triangle{ABC}$，则其外心的坐标为\[
@@ -230,6 +234,9 @@ PA^2+\lambda^2PC^2+\mu^2PB^2+2\lambda\overrightarrow{PA}\cdot\overrightarrow{PC}
     \left(\dfrac{ax_A+bx_B+cx_C}{a+b+c},\dfrac{ay_A+by_B+cy_C}{a+b+c}\right)
     \]
 \end{example}
+\begin{solution}
+
+\end{solution}
 \begin{example}{容斥原理练习}{}
     某学校举办比赛，有$20$个参赛名额，现在分给$4$个不同的班，保证至少有一个班的名额为$4$个，且每一个班都有名额，则共有\underline{\hspace{1cm}}种分法。
 \end{example}
@@ -262,6 +269,53 @@ PA^2+\lambda^2PC^2+\mu^2PB^2+2\lambda\overrightarrow{PA}\cdot\overrightarrow{PC}
     对$(1-x)^{n-1}-(1-x)^n$求导易得$f(x)$只有第$n-1$和$n$阶导数在$x=1$处的值不是$0$，即：\[\sum_{i=0}^{n-1}(-1)^{i}C_{n-1}^{i}(i+1)^k=0
     \]
 \end{solution}
+\begin{example}{证明}{}
+    \vspace{-15pt}\begin{align*}
+    (1)\quad&\frac{\sin B - \cos A}{\sin A + \cos B} - \frac{\sin A + \cos B}{\sin B - \cos A} = 2\tan(A+B)\\
+    (2)\quad&\frac{\sin B - \cos A}{\sin A - \cos B} - \frac{\sin A - \cos B}{\sin B - \cos A} = \frac{\cos B + \sin A}{\cos A + \sin B} - \frac{\cos A + \sin B}{\cos B + \sin A} = 2\tan(A-B)\\
+    (3)\quad&\frac{\cos A - \cos B}{\sin A - \sin B} - \frac{\sin A - \sin B}{\cos A - \cos B} = 2\cot(A+B)\\
+    (4)\quad&\frac{\cos A - \cos B}{\sin A + \sin B} - \frac{\sin A + \sin B}{\cos A - \cos B} = \frac{\cos A + \cos B}{\sin A - \sin B} - \frac{\sin A - \sin B}{\cos A + \cos B} = 2\cot(A-B)\end{align*}
+\end{example}
+\begin{solution}
+第一种方法就是通分，拿一个式子举例
+\begin{align*}
+&\dfrac{\sin B - \cos A}{\sin A - \cos B} - \dfrac{\sin A - \cos B}{\sin B - \cos A}\\[1.2ex]
+&=\dfrac{(\sin B - \cos A)^2 - (\sin A - \cos B)^2}{(\sin B - \cos A)\left(\sin A - \cos B\right)}\\[1.2ex]
+&=\dfrac{\sin^2 B - 2\sin B \cos A + \cos^2 A - \sin^2 A + 2\sin A \cos B - \cos^2 B}{\sin B \sin A - \sin A \cos A - \sin B \cos B + \cos B \cos A}\\[1.2ex]
+&=\dfrac{\cos 2A - \cos 2B + 2\left(\sin A \cos B - \sin B \cos A\right)}{\cos\left(A - B\right) - \dfrac{1}{2}\left(\sin 2A + \sin 2B\right)}\\[1.2ex]
+&=\dfrac{-2\sin\left(A + B\right)\sin\left(A - B\right) + 2\sin\left(A - B\right)}{\cos\left(A - B\right) - \sin\left(A + B\right)\cos\left(A - B\right)}
+=\dfrac{2\left[1 - \sin\left(A + B\right)\right]\sin\left(A - B\right)}{\left[1 - \sin\left(A + B\right)\right]\cos\left(A - B\right)}
+\\[1.2ex]&=\dfrac{2\sin\left(A - B\right)}{\cos\left(A - B\right)} = 2\tan\left(A - B\right).
+\end{align*}
+再写一个：
+\begin{align*}
+&\dfrac{\cos A - \cos B}{\sin A - \sin B} - \dfrac{\sin A - \sin B}{\cos A - \cos B}\\[1.2ex]
+&=\dfrac{(\cos A - \cos B)^2 - (\sin A - \sin B)^2}{(\cos A - \cos B)(\sin A - \sin B)}\\[1.2ex]
+&=\dfrac{\cos^2 A - 2\cos A\cos B + \cos^2 B - \sin^2 A + 2\sin A\sin B - \sin^2 B}{\sin A\cos A - \sin A\cos B - \sin B\cos A + \sin B\cos B}\\[1.2ex]
+&=\dfrac{(\cos^2 A - \sin^2 A) + (\cos^2 B - \sin^2 B) - 2\cos A\cos B + 2\sin A\sin B}{\sin A\cos A + \sin B\cos B - (\sin A\cos B + \sin B\cos A)}\\[1.2ex]
+&=\dfrac{\cos 2A + \cos 2B - 2\cos(A + B)}{\dfrac{1}{2}(\sin 2A + \sin 2B) - \sin(A + B)}
+=\dfrac{2\cos(A + B)\cos(A - B) - 2\cos(A + B)}{\sin(A + B)\cos(A - B) - \sin(A + B)}\\[1.2ex]
+&=\dfrac{2\cos(A + B)[\cos(A - B) - 1]}{\sin(A + B)[\cos(A - B) - 1]}
+=\dfrac{2\cos(A + B)}{\sin(A + B)} = 2\cot(A + B).
+\end{align*}
+\end{solution}
+第二种方法就是按部就班地和差化积，拿一个式子举例
+\begin{align*}
+&\dfrac{\sin B - \cos A}{\sin A - \cos B} - \dfrac{\sin A - \cos B}{\sin B - \cos A}\\[1.2ex]
+&=\dfrac{\cos\left(\dfrac{\pi}{2} - B\right) - \cos A}{\sin A - \sin\left(\dfrac{\pi}{2} - B\right)} - \dfrac{\sin A - \sin\left(\dfrac{\pi}{2} - B\right)}{\cos\left(\dfrac{\pi}{2} - B\right) - \cos A}\\[1.2ex]
+&=\dfrac{-2\sin\left(\dfrac{\pi}{4} + \dfrac{A - B}{2}\right)\sin\left(\dfrac{\pi}{4} - \dfrac{A + B}{2}\right)}{2\cos\left(\dfrac{\pi}{4} + \dfrac{A - B}{2}\right)\sin\left(\dfrac{A + B}{2} - \dfrac{\pi}{4}\right)} - \dfrac{2\cos\left(\dfrac{\pi}{4} + \dfrac{A - B}{2}\right)\sin\left(\dfrac{A + B}{2} - \dfrac{\pi}{4}\right)}{-2\sin\left(\dfrac{\pi}{4} + \dfrac{A - B}{2}\right)\sin\left(\dfrac{\pi}{4} - \dfrac{A + B}{2}\right)}\\[1.2ex]
+&=\dfrac{\sin\left(\dfrac{\pi}{4} + \dfrac{A - B}{2}\right)}{\cos\left(\dfrac{\pi}{4} + \dfrac{A - B}{2}\right)} - \dfrac{\cos\left(\dfrac{\pi}{4} + \dfrac{A - B}{2}\right)}{\sin\left(\dfrac{\pi}{4} + \dfrac{A - B}{2}\right)} = \dfrac{\sin^2\left(\dfrac{\pi}{4} + \dfrac{A - B}{2}\right) - \cos^2\left(\dfrac{\pi}{4} + \dfrac{A - B}{2}\right)}{\sin\left(\dfrac{\pi}{4} + \dfrac{A - B}{2}\right)\cos\left(\dfrac{\pi}{4} + \dfrac{A - B}{2}\right)}\\[1.2ex]
+&=-2\dfrac{\cos\left[2 \cdot \left(\dfrac{\pi}{4} + \dfrac{A - B}{2}\right)\right]}{\sin\left[2 \cdot \left(\dfrac{\pi}{4} + \dfrac{A - B}{2}\right)\right]} = -2\dfrac{\cos\left(\dfrac{\pi}{2} + A - B\right)}{\sin\left(\dfrac{\pi}{2} + A - B\right)}\\[1.2ex]
+&=-2\dfrac{-\sin\left(A - B\right)}{\cos\left(A - B\right)} = 2\tan\left(A - B\right).
+\end{align*}
+再写一个：
+\begin{align*}
+&\dfrac{\cos A - \cos B}{\sin A - \sin B} - \dfrac{\sin A - \sin B}{\cos A - \cos B}\\[1.2ex]
+&=\dfrac{\sin\left(\dfrac{A+B}{2}\right)\sin\left(\dfrac{A-B}{2}\right)}{\cos\left(\dfrac{A+B}{2}\right)\sin\left(\dfrac{A-B}{2}\right)} - \dfrac{\cos\left(\dfrac{A+B}{2}\right)\sin\left(\dfrac{A-B}{2}\right)}{\sin\left(\dfrac{A+B}{2}\right)\sin\left(\dfrac{A-B}{2}\right)}\\[1.2ex]
+&=\dfrac{\sin\left(\dfrac{A+B}{2}\right)}{\cos\left(\dfrac{A+B}{2}\right)} - \dfrac{\cos\left(\dfrac{A+B}{2}\right)}{\sin\left(\dfrac{A+B}{2}\right)} = \dfrac{\sin^2\left(\dfrac{A+B}{2}\right) - \cos^2\left(\dfrac{A+B}{2}\right)}{\sin\left(\dfrac{A+B}{2}\right)\cos\left(\dfrac{A+B}{2}\right)}\\[1.2ex]
+&=-\dfrac{\cos\left[2 \cdot \dfrac{A+B}{2}\right]}{\dfrac{1}{2}\sin\left[2 \cdot \dfrac{A+B}{2}\right]} = -\dfrac{\cos(A+B)}{\dfrac{1}{2}\sin(A+B)}\\[1.2ex]
+&=-2\dfrac{\cos(A+B)}{\sin(A+B)} = 2\cot(A+B).
+\end{align*}
 % 图片插入示例（注释掉，避免报错）
 % \begin{figure}[htbp]
 %     \centering
