@@ -7,6 +7,49 @@
 \begin{solution}
 
 \end{solution}
+\newpage
+\begin{example}{}{}
+    （单选）设代数式$\displaystyle T = \dfrac21\cdot\dfrac{4}{3}\cdot\dfrac{6}{5}\cdots\dfrac{200}{199}$，则（~~~~）
+
+    \begin{tabular}{@{}llll@{}}
+        A.$14\leq T \leq 16$&B.$16 \leq T \leq 18$&C.$18\leq T \leq 20$&D.$20\leq T \leq 22$
+    \end{tabular}
+\end{example}
+\begin{solution}
+    出题背景是大名鼎鼎的Wallis公式：
+    \begin{align*}
+I(n) = \int_0^{\frac{\pi}{2}} \sin^n x \, \mathrm{d}x 
+&= \int_0^{\frac{\pi}{2}} \sin^{n-1} x \, \mathrm{d}(-\cos x) \\
+&= (-\cos x \sin^{n-1} x) \rvert_{0}^{\frac{\pi}{2}} - \int_{0}^{\frac{\pi}{2}} (-\cos x) \, \mathrm{d}\sin^{n-1} x \\
+&= (-\cos x \sin^{n-1} x) |_0^{\frac{\pi}{2}} - \int_0^{\frac{\pi}{2}} (-\cos^2 x) (n-1) \sin^{n-2} x \, \mathrm{d}x \\
+&= (n-1) \int_0^{\frac{\pi}{2}} (\sin^{n-2} x - \sin^n x) \, \mathrm{d}x 
+= (n-1) I(n-2) - (n-1) I(n) \\
+\Rightarrow I(n) = \frac{n-1}{n} I(n-2) 
+&\Rightarrow 
+\begin{cases}
+\dfrac{I(2n+1)}{I(2n-1)} = \dfrac{2n}{2n+1} \\
+\dfrac{I(2n)}{I(2n-2)} = \dfrac{2n-1}{2n}
+\end{cases}
+\end{align*}
+所以累乘有：
+\begin{align*}
+    \dfrac{I(3)}{I(1)} \cdot \dfrac{I(5)}{I(3)} \cdots \dfrac{I(2n+1)}{I(2n-1)} &= \dfrac{2 \times 1}{2 \times 1 + 1} \times \dfrac{2 \times 2}{2 \times 2 + 1} \times \cdots \times \dfrac{2n}{2n + 1} = \dfrac{(2n)!!}{(2n + 1)!!}\\
+    \dfrac{I(2)}{I(0)} \cdot \dfrac{I(4)}{I(2)} \cdots \dfrac{I(2n)}{I(2n - 2)} &= \dfrac{2 \times 1 - 1}{2 \times 1} \times \dfrac{2 \times 2 - 1}{2 \times 2} \times \cdots \times \dfrac{2n - 1}{2n} = \dfrac{(2n - 1)!!}{(2n)!!}\end{align*}
+又因为：
+\begin{align*}
+I(2k+1)<I(2k)<I(2k-1)&\Rightarrow \frac{(2k)!!}{(2k+1)!!}<\frac{(2k-1)!!}{(2k)!!}\frac{\pi}{2}<\frac{(2k-2)!!}{(2k-1)!!} \\&\Rightarrow \frac{1}{2k+1}\cdot[\frac{(2k)!!}{(2k-1)!!}]^{2}<\frac{\pi}{2}<\frac{1}{2k}\cdot[\frac{(2k)!!}{(2k-1)!!}]^{2}
+\end{align*}\vspace{-10pt}
+\[\Rightarrow \frac{\pi}{2}=\prod_{n=1}^\infty\frac{4n^2}{4n^2-1}=\prod_{n=1}^\infty(\frac{2n}{2n+1}\cdot\frac{2n}{2n-1})=(\frac{2}{1}\cdot\frac{2}{3})\cdot(\frac{4}{3}\cdot\frac{4}{5})\cdot(\frac{6}{5}\cdot\frac{6}{7})(\frac{8}{7}\cdot\frac{8}{9})\]
+所以：
+    \begin{align*}
+        T^2=&\dfrac21\cdot\dfrac21\cdot\dfrac{4}{3}\cdot\dfrac{4}{3}\cdot\dfrac{6}{5}\cdot\dfrac{6}{5}\cdots\dfrac{2n}{2n-1}\cdot\dfrac{2n}{2n-1}
+        \approx\dfrac{\dfrac21\cdot\dfrac21\cdot\dfrac{4}{3}\cdot\dfrac{4}{3}\cdot\dfrac{6}{5}\cdot\dfrac{6}{5}\cdots\dfrac{2n}{2n-1}\cdot\dfrac{2n}{2n-1}}{(\dfrac{2}{1}\cdot\dfrac{2}{3})\cdot(\dfrac{4}{3}\cdot\dfrac{4}{5})\cdot(\dfrac{6}{5}\cdot\dfrac{6}{7})\cdots\dfrac{2n}{2n-1}\cdot\dfrac{2n}{2n+1}}\dfrac{\pi}{2}
+    \end{align*}
+则$T\approx\dfrac{(2n+1)\pi}{2}$，简单计算得知原题选B.
+\newpage
+方法二是使用放缩，先平方然后用糖水不等式：
+\begin{align*}P^{2}&=\frac{2}{1}\cdot\frac{2}{1}\cdot\frac{4}{3}\cdot\frac{4}{3}\cdot\frac{6}{5}\cdot\frac{6}{5}\cdots\frac{200}{199}\cdot\frac{200}{199}\\&>\frac{2}{1}\cdot\frac{2}{1}\cdot\frac{4}{3}\cdot\frac{5}{4}\cdot\frac{6}{5}\cdot\frac{7}{6}\cdots\frac{200}{199}\cdot\frac{201}{200}\\&=268>16^2\end{align*}
+\end{solution}
 \begin{example}{}{}
     （单选）数列$a_{n}$各项为正整数且递增，$a_{n+2}=C_{a_{n+1}}^{a_{n}}$，则（~~~~~）
 

@@ -1,2 +1,31 @@
 \chapter{极限}
+\newpage
 \section{第2周作业}
+\begin{example}{给出下列极限的精确定义}{}
+    （1）$\displaystyle\lim_{x\to 0}f(x)=A$\quad （2）$\displaystyle\lim_{x\to 0}(1+x)^{\frac{1}{x}}=e$
+\end{example}
+\begin{solution}
+    （1）对于任意$\varepsilon >0$,存在$\delta>0$使得当$0<|x|<\delta$时，$|f(x)|<\varepsilon$.
+
+    （2）对于任意$\varepsilon>0$,存在$\delta>0$使得当$0<|x|<\delta$时，$|(1+x)^{\frac{1}{x}}-e|<\varepsilon$.
+\end{solution}
+\begin{example}{利用极限的精确定义证明下列函数的极限}{}
+    （1）$\displaystyle\lim_{x\to 3}(x^2+5x)=24$\quad （2）$\displaystyle\lim_{x\to 1}\frac{x^2-1}{x-1}=2$
+\end{example}
+\begin{solution}
+    （1）要证对于任意$\varepsilon>0$,存在$\delta>0$使得当$0<|x-3|<\delta$时，$|(x^2+5x)-24|=|(x+8)(x-3)|<\varepsilon$。已经出现了$|x-3|$，所以现在只需限定$|x+8|$，先限定$|x-3|<1$，那么$|x+8|<12$，此时还需满足$|(x+8)(x-3)|<12|x-3|<\varepsilon$，得$|x-3|<\dfrac{\varepsilon}{12}$，故取$\delta=\min\{1,\dfrac{\varepsilon}{12}\}$，当$0<|x-3|<\delta$时，$|(x^2+5x)-24|=|(x+8)(x-3)|<\varepsilon$.
+
+    （2）要证对于任意$\varepsilon>0$,存在$\delta>0$使得当$0<|x-1|<\delta$时，$|\frac{x^2-1}{x-1}-2|=|x-1|<\varepsilon$。取$\delta=\varepsilon$，当$0<|x-1|<\delta$时，$|\frac{x^2-1}{x-1}-2|<\varepsilon$.
+\end{solution}
+\begin{example}{证明}{}
+    由$\displaystyle\lim_{x\to a}f(x)=A$能推出$\displaystyle\lim_{x\to a}|f(x)|=|A|$，但反之不然。
+\end{example}
+\begin{solution}
+    对于任意$\varepsilon>0$,存在$\delta>0$使得当$0<|x-a|<\delta$时，$|f(x)-A|=<\varepsilon$，所以由绝对值不等式得到$\displaystyle|f(x)-A|>||f(x)-|-A||=||f(x)|-|A||>0$，故$||f(x)|-|A||<\varepsilon$，所以由$\displaystyle\lim_{x\to a}f(x)=A$能推出$\displaystyle\lim_{x\to a}|f(x)|=|A|$.然后反过来，考虑定义在实数域上的函数$f(x)=\begin{cases}1,x\in Q\\-1,x\notin Q\end{cases}$，其极限$\displaystyle\lim_{x\to a}|f(x)|=1$，但是$\displaystyle\lim_{x\to a}f(x)$不存在。
+\end{solution}
+\begin{example}{利用极限的精确证明}{}
+   $\displaystyle\lim_{x\to a}\sin x=\sin a$
+\end{example}
+\begin{solution}
+    要证$\displaystyle\lim_{x\to a}\sin x=\sin a$，只需证对于任意$\varepsilon>0$,存在$\delta>0$使得当$0<|x-a|<\delta$时，$\displaystyle\lim_{x\to a}|\sin x-\sin a|=2|\cos\dfrac{x+a}{2}||\sin\dfrac{x-a}{2}|<\varepsilon$。又因为$2|\cos\dfrac{x+a}{2}||\sin\dfrac{x-a}{2}|<2|\sin\dfrac{x-a}{2}|<2|\dfrac{x-a}{2}|=|x-a|$，所以取$\delta=\varepsilon$，当$0<|x-a|<\delta$时，$\displaystyle\lim_{x\to a}|\sin x-\sin a|<\varepsilon$.
+\end{solution}
