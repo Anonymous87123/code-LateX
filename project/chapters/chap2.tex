@@ -8,11 +8,11 @@
 
 \end{solution}
 \newpage
-\begin{example}{}{}
+\begin{example}{（高考题改编）}{}
     （单选）设代数式$\displaystyle T = \dfrac21\cdot\dfrac{4}{3}\cdot\dfrac{6}{5}\cdots\dfrac{200}{199}$，则（~~~~）
 
     \begin{tabular}{@{}llll@{}}
-        A.$14\leq T \leq 16$&B.$16 \leq T \leq 18$&C.$18\leq T \leq 20$&D.$20\leq T \leq 22$
+        A.$14< T < 16$&B.$16 < T < 18$&C.$18< T < 20$&D.$20< T < 22$
     \end{tabular}
 \end{example}
 \begin{solution}
@@ -45,12 +45,19 @@ I(2k+1)<I(2k)<I(2k-1)&\Rightarrow \frac{(2k)!!}{(2k+1)!!}<\frac{(2k-1)!!}{(2k)!!
         T^2=&\dfrac21\cdot\dfrac21\cdot\dfrac{4}{3}\cdot\dfrac{4}{3}\cdot\dfrac{6}{5}\cdot\dfrac{6}{5}\cdots\dfrac{2n}{2n-1}\cdot\dfrac{2n}{2n-1}
         \approx\dfrac{\dfrac21\cdot\dfrac21\cdot\dfrac{4}{3}\cdot\dfrac{4}{3}\cdot\dfrac{6}{5}\cdot\dfrac{6}{5}\cdots\dfrac{2n}{2n-1}\cdot\dfrac{2n}{2n-1}}{(\dfrac{2}{1}\cdot\dfrac{2}{3})\cdot(\dfrac{4}{3}\cdot\dfrac{4}{5})\cdot(\dfrac{6}{5}\cdot\dfrac{6}{7})\cdots\dfrac{2n}{2n-1}\cdot\dfrac{2n}{2n+1}}\dfrac{\pi}{2}
     \end{align*}
-则$T\approx\dfrac{(2n+1)\pi}{2}$，简单计算得知原题选B.
+则$T^2\approx\dfrac{(2n+1)\pi}{2}$，简单计算得知原题选B.
 \newpage
-方法二是使用放缩，先平方然后用糖水不等式：
-\begin{align*}P^{2}&=\frac{2}{1}\cdot\frac{2}{1}\cdot\frac{4}{3}\cdot\frac{4}{3}\cdot\frac{6}{5}\cdot\frac{6}{5}\cdots\frac{200}{199}\cdot\frac{200}{199}\\&>\frac{2}{1}\cdot\frac{2}{1}\cdot\frac{4}{3}\cdot\frac{5}{4}\cdot\frac{6}{5}\cdot\frac{7}{6}\cdots\frac{200}{199}\cdot\frac{201}{200}\\&=268>16^2\end{align*}
+方法二是使用放缩，先平方然后用糖水不等式，这个方法很套路，稍微一放就排除了A选项：
+\begin{align*}T^{2}&=\frac{2}{1}\cdot\frac{2}{1}\cdot\frac{4}{3}\cdot\frac{4}{3}\cdot\frac{6}{5}\cdot\frac{6}{5}\cdots\frac{200}{199}\cdot\frac{200}{199}\\&>\frac{2}{1}\cdot\frac{2}{1}\cdot\frac{4}{3}\cdot\frac{5}{4}\cdot\frac{6}{5}\cdot\frac{7}{6}\cdots\frac{200}{199}\cdot\frac{201}{200}\\&=268>16^2\end{align*}
+但是另一边就有点难度了，首先我们可以根据应试技巧，由“下界比较松”推测出来“上界比较紧”，所以在找上界的时候要放得仔细一点，当然严格说来这个推测逻辑缺乏依据。或者我们根据“仍有BCD选项需要分辨”的现状，可以考虑多保留几项再放缩，提高一下精度：
+\begin{align*}T^2=&\frac{2}{1}\cdot\frac{2}{1}\cdot\frac{4}{3}\cdot\frac{4}{3}\cdots\frac{18}{17}\cdot\frac{18}{17}\cdot\frac{20}{19}\cdot\frac{20}{19}\cdot\frac{22}{21}\cdot\frac{22}{21}\cdot\frac{24}{23}\cdot\frac{24}{23}\cdots\frac{200}{199}\cdot\frac{200}{199}\\
+    =&\frac{2}{1}\cdot\frac{2}{1}\cdot\frac{4}{3}\cdot\frac{4}{3}\cdots\frac{18}{17}\cdot\frac{18}{17}\cdot\frac{20}{19}\cdot\frac{20}{19}\cdot\frac{22}{21}\cdot\boxed{\frac{22}{21}}\cdot\frac{24}{23}\cdot\boxed{\frac{23}{22}}\cdots\frac{200}{199}\cdot\boxed{\frac{199}{198}}\\
+    \Rightarrow T\leq&\frac{2}{1}\cdot\frac{4}{3}\cdot\frac{6}{5}\cdots\frac{20}{19}\cdot\sqrt{\frac{200}{20}}=\frac{512\times 512}{(15-4)(15-2)(15+2)(15+4)}\sqrt{10}\\
+    =&\frac{262144}{46189}\sqrt{10}<3.1623\times5.68<18
+\end{align*}
+熟知$\sqrt{10}=3.16227766...<3.1623$，计算得到$\frac{262144}{46189}<5.68$这样得知本题选B.\newline 对于考试来说，把题目的答案改成$17<T<19$或许是更好的选择.
 \end{solution}
-\begin{example}{}{}
+\begin{example}{（高考题改编）}{}
     （单选）数列$a_{n}$各项为正整数且递增，$a_{n+2}=C_{a_{n+1}}^{a_{n}}$，则（~~~~~）
 
     \begin{tabular}{@{}ll@{}}
@@ -341,7 +348,6 @@ PA^2+\lambda^2PC^2+\mu^2PB^2+2\lambda\overrightarrow{PA}\cdot\overrightarrow{PC}
 &=\dfrac{2\cos(A + B)[\cos(A - B) - 1]}{\sin(A + B)[\cos(A - B) - 1]}
 =\dfrac{2\cos(A + B)}{\sin(A + B)} = 2\cot(A + B).
 \end{align*}
-\end{solution}
 第二种方法就是按部就班地和差化积，拿一个式子举例
 \begin{align*}
 &\dfrac{\sin B - \cos A}{\sin A - \cos B} - \dfrac{\sin A - \cos B}{\sin B - \cos A}\\[1.2ex]
@@ -359,6 +365,97 @@ PA^2+\lambda^2PC^2+\mu^2PB^2+2\lambda\overrightarrow{PA}\cdot\overrightarrow{PC}
 &=-\dfrac{\cos\left[2 \cdot \dfrac{A+B}{2}\right]}{\dfrac{1}{2}\sin\left[2 \cdot \dfrac{A+B}{2}\right]} = -\dfrac{\cos(A+B)}{\dfrac{1}{2}\sin(A+B)}\\[1.2ex]
 &=-2\dfrac{\cos(A+B)}{\sin(A+B)} = 2\cot(A+B).
 \end{align*}
+\end{solution}
+\newpage
+\begin{example}{（2008年江西浸泡压轴题）}{}
+    已知$\displaystyle f \left( x \right)= \frac{1}{ \sqrt{1+x}}+ \frac{1}{ \sqrt{1+a}}+ \sqrt{ \frac{ax}{ax+8}},x \in \left( 0,+ \infty \right)$
+\vspace{5pt}
+
+    （1）当$a=8$时，求$f(x)$的单调区间.
+
+    （2）对于任意正数$a$，求证$1<f(x)<2$.
+\end{example}
+\begin{solution}
+    （1）当$a=8$时，$\displaystyle f(x)= \frac{1}{ \sqrt{1+x}}+ \frac{1}{3}+ \sqrt{ \frac{x}{x+1}}$，观察式子不难想到换元$x=\tan^2\theta$：
+    \[f(x)=\frac{1}{ \sqrt{1+\tan^2\theta}}+ \frac{1}{3}+ \sqrt{ \frac{\tan^2\theta}{\tan^2\theta+1}}\\=\cos \theta+ \frac{1}{3}+ \sin \theta\\=\sqrt{2}\sin(\theta+\frac{\pi}{4})+\frac13\]
+    由$\theta\in(0,\frac{\pi}{2})$，所以$\sin(\theta+\frac{\pi}{4})$在$(0,\frac{\pi}{4})$上单调递增，在$(\frac{\pi}{4},\frac{\pi}{2})$上单调递减，所以$f(x)$在$(0,1)$上单调递增，在$(1,+\infty)$上单调递减。
+
+    （2）这道题难就难在题目给了函数，似乎是暗示学生走求导的路子，但求导异常难做，反而看成是不等式问题却能找到方向。由于函数结构不对称，我们引入第三个变元就可以将本题条件化为对称形式：令$f \left( x \right)= \frac{1}{ \sqrt{1+x}}+ \frac{1}{ \sqrt{1+y}}+ \sqrt{ \frac{xy}{xy+8}},x,y \in \left( 0,+ \infty \right)$:
+    \[
+    \begin{cases}a=\dfrac{1}{\sqrt{1+x}}\in(0,1)\\b=\dfrac{1}{ \sqrt{1+y}}\in(0,1)\\c=\sqrt{ \dfrac{xy}{xy+8}}\in(0,1)\end{cases}\Rightarrow 
+    \begin{cases}a^2=\dfrac{1}{1+x},x=\dfrac{1}{a^2}-1\\[1.2ex]b^2=\dfrac{1}{1+y},y=\dfrac{1}{b^2}-1\\[1.2ex]c^2=\dfrac{ax}{ax+8}=1-\dfrac{8}{ax+8}\end{cases}
+    \]
+现在要找到三个元之间的关系式，消元法就够了：
+\[
+c^2=1-\dfrac{8}{ax+8}=1-\dfrac{8}{(\dfrac{1}{a^2}-1)(\dfrac{1}{b^2}-1)+8}\Rightarrow (1-a^2)(1-b^2)(1-c^2)=8a^2b^2c^2
+\]先假设$a+b+c>=2$，列出已知条件：
+\[\begin{cases}a,b,c\in(0,1),\quad a+b+c\geq 2\\(1-a^2)(1-b^2)(1-c^2)=8a^2b^2c^2\end{cases}\]
+我们现在要证明的是“同时满足这几个条件的题目是一个错题”。其中最后一个条件看似很强，给出了三元关系，但是如果不拿来消元的话很难用上，而消元又回到了原题的情形，这就很尴尬了。那我们不妨尝试删除$(1-a^2)(1-b^2)(1-c^2)=8a^2b^2c^2$并尝试通过剩余条件导出$(1-a^2)(1-b^2)(1-c^2)\ne8a^2b^2c^2$，即$(1-a^2)(1-b^2)(1-c^2)>8a^2b^2c^2$或$(1-a^2)(1-b^2)(1-c^2)<8a^2b^2c^2$。而这个式子是对称的，我们不妨拆成$(1-a^2)>2bc$或$(1-a^2)<2bc$来证明，虽然这个转换之后的式子是原来式子成立的充分而非必要条件，但确实是可以尝试的方向，是不是可以叫“充分性探路”呢？
+\[\begin{cases}1-a^2=(1-a)(1+a)<2(1-a)=2(b+c-1)\\(1-b)(1-c)\in(0,1)\Rightarrow bc+1<b+c\end{cases}\Rightarrow 1-a^2<2bc\]
+这样同理得到$1-b^2<2ac,1-c^2<2ab$，这样就有$(1-a^2)(1-b^2)(1-c^2)<8a^2b^2c^2$，矛盾，所以$a+b+c<2$。然后我们紧接着设$a+b+c\leq 1$，同样列出已知条件：
+\[\begin{cases}a,b,c\in(0,1),\quad a+b+c<=1\\(1-a^2)(1-b^2)(1-c^2)=8a^2b^2c^2\end{cases}\]
+同样的套路，我们依然考虑证明$(1-a^2)>2bc$或$(1-a^2)<2bc$，由
+\[\begin{cases}1-a^2=(1-a)(1+a)>1-a\geq b+c\\(1-b)(1-c)\in(0,1)\Rightarrow bc<b+c\end{cases}\Rightarrow 1-a^2>2bc\]
+这样同理得到$1-b^2>2ac,1-c^2>2ab$，这样就有$(1-a^2)(1-b^2)(1-c^2)>8a^2b^2c^2$，矛盾。所以只能是$1<a+b+c<2$.
+
+\noindent（3）当然本题解法不唯一，比如说我们根据
+\[f \left( x \right)= \frac{1}{ \sqrt{1+x}}+ \frac{1}{ \sqrt{1+y}}+ \sqrt{ \frac{xy}{xy+8}}=\frac{1}{ \sqrt{1+x}}+ \frac{1}{\sqrt{1+y}}+ \frac{1}{1+\sqrt{\frac{8}{xy}}}\]
+来换元$z=\dfrac{8}{xy}$，则有$xyz=8$要证明$ 1<\dfrac{1}{ \sqrt{1+x}}+ \dfrac{1}{ \sqrt{1+y}}+ \dfrac{1}{\sqrt{1+z}}<2$，已知条件是$x,y,z>0$，那么$(x-2)(y-2)(z-2)<8$，不妨假设数量关系$x\leq y\leq z$，就有
+\[\begin{cases}2\leq z\\xyz=8\end{cases}\Rightarrow xy\leq 4\]
+然后运用对偶式的思想证明出：\[
+\frac{1}{\sqrt{1+x}}+\frac{1}{\sqrt{1+y}}>\frac{1}{1+\frac{x}{2}}+\frac{1}{1+\frac{y}{2}}\geq\frac{1}{1+\frac{x}{2}}+\frac{1}{1+\frac{2}{x}}=1
+\]
+由$z\geq 2$得到\[\frac{1}{\sqrt{1+z}}<\frac{1}{1+\frac{z}{8}}=\frac{1}{\sqrt{\frac{1}{xy}}}=\frac{\sqrt{xy}}{1+\sqrt{xy}}\]
+以及\[(1-\frac{1}{\sqrt{1+x}})(1-\frac{1}{\sqrt{1+y}})>0\Rightarrow \frac{1}{\sqrt{1+x}}+\frac{1}{\sqrt{1+y}}<1+\frac{1}{\sqrt{(1+x)(1+y)}}<1+\frac{1}{1+\sqrt{xy}}\]
+合起来就是：
+\[\dfrac{1}{ \sqrt{1+x}}+ \dfrac{1}{ \sqrt{1+y}}+ \dfrac{1}{\sqrt{1+z}}<1+\frac{1}{1+\sqrt{xy}}+\frac{\sqrt{xy}}{1+\sqrt{xy}}=2\]
+这个$\dfrac{1}{\sqrt{1+z}}<\dfrac{1}{1+\dfrac{z}{8}}$是事后诸葛，高考生不必深究。
+\end{solution}
+\begin{example}{（2008年江西导数压轴）}{}
+已知函数$f \left( x \right)= \dfrac{1}{ \sqrt{1+x}}+ \dfrac{1}{ \sqrt{1+a}}+ \dfrac{1}{ \sqrt{1+ \dfrac{8}{ax}}}.$证明：$1<f(x)<2.$
+\end{example}
+\begin{solution}
+将$a$视作参数，直接暴力求导：
+\begin{align*}f^{\prime}(x)&=-\frac{1}{2(1+x)^{\frac{3}{2}}}+\frac{1}{2(1+\frac{8}{ax})^{\frac{3}{2}}}\cdot\frac{8}{ax^2}\\&=-\frac{1}{2(1+x)^\frac{3}{2}}+\frac{4\sqrt{a}}{\sqrt{x}(ax+8)^\frac{3}{2}}=\frac{8\sqrt{a}(1+x)^\frac{3}{2}-\sqrt{x}(ax+8)^\frac{3}{2}}{2\sqrt{x}(1+x)^\frac{3}{2}(ax+8)^\frac{3}{2}}\\&=\frac{64a(1+x)^3-x(ax+8)^3}{2\sqrt{x}(1+x)^{\frac{3}{2}}(ax+8)^{\frac{3}{2}}\left[8\sqrt{a}(1+x)^{\frac{3}{2}}+\sqrt{x}(ax+8)^{\frac{3}{2}}\right]}\\&=\frac{-a^3x^4-24a^2x^3+64ax^3+192ax+64a-512x}{2\sqrt{x}(1+x)^{\frac{3}{2}}(ax+8)^{\frac{3}{2}}\left[8\sqrt{a}(1+x)^{\frac{3}{2}}+\sqrt{x}(ax+8)^{\frac{3}{2}}\right]}\\
+&=\frac{-a(a^2x^4+(24a-64)x^3-8(24-\frac{64}{a})x-64)}{2\sqrt{x}(1+x)^{\frac{3}{2}}(ax+8)^{\frac{3}{2}}\left[8\sqrt{a}(1+x)^{\frac{3}{2}}+\sqrt{x}(ax+8)^{\frac{3}{2}}\right]}\\
+&=\frac{-a\bigg((ax^2-8)(ax^2+8)+(24-\frac{64}{a})(ax^3-8x)\bigg)}{2\sqrt{x}(1+x)^{\frac{3}{2}}(ax+8)^{\frac{3}{2}}\left[8\sqrt{a}(1+x)^{\frac{3}{2}}+\sqrt{x}(ax+8)^{\frac{3}{2}}\right]}\\
+&=\frac{\left(ax^{2}-8 \right) \left(-x^{2}a^{2}-24xa-8a+64x \right)}{2\sqrt{x}(1+x)^{\frac{3}{2}}(ax+8)^{\frac{3}{2}}\left[8\sqrt{a}(1+x)^{\frac{3}{2}}+\sqrt{x}(ax+8)^{\frac{3}{2}}\right]}\\
+&=\frac{(\sqrt{a}x-2\sqrt2)(\sqrt{a}x+2\sqrt2)(-a^2x^2+(64-24a)x-8a)}{2\sqrt{x}(1+x)^{\frac{3}{2}}(ax+8)^{\frac{3}{2}}\left[8\sqrt{a}(1+x)^{\frac{3}{2}}+\sqrt{x}(ax+8)^{\frac{3}{2}}\right]}
+\end{align*}
+这个分子有理化（目的是提取恒正的项）肯定是套路式的，但是这个因式分解，笔者认为有点小技巧，我们提取$a$使得常数项真正地为常数，然后由于二次项为0，以及一次项和三次项之间有倍数关系，采取凑平方差，分解成了两个二次函数，由于分母大于0，现在要对分子的正负性进行讨论，方便起见，我们看一下后面那个丑陋的二次函数的判别式长什么样：
+\[\Delta = (64-24a)^2-32a^3=32(-a^3+18a^2-96a+128)=32(2-a)(a-8)^2\]
+所以如果限定$a\geq 2$那么$\Delta\leq 0$，再加上二次项为负数，所以这个二次函数小于0，但是我们能不能做这样的限定呢？其实是可以的，因为$f(x)$根号的下面主要有$a,x,\frac{8}{ax}$，这三个东西乘起来是$8$，是对称的三个变元，我们显然可以给它们规定大小顺序，所以想一想不难知道规定$a\geq 2$是合理的，那么规定另外两个大于等于2行不行呢？也行，但是会导致解题变得更加复杂，所以不推荐。
+
+现在，我们只需关注$\sqrt{a}x-2\sqrt2$的正负性了，这东西是一次函数，容易知道$f'(x)$在$(0,\sqrt{\dfrac{8}{a}})$
+大于0，在$(\sqrt{\dfrac{8}{a}},+\infty)$小于0，所以$f(x)$在$(0,\sqrt{\dfrac{8}{a}})$单调递增，在$(\sqrt{\dfrac{8}{a}},+\infty)$单调递减。所以$f(x)$的最大值是\[f(\sqrt{\dfrac{8}{a}})=\frac{2}{\sqrt{1+\sqrt{\frac{8}{a}}}}+\frac{1}{\sqrt{1+a}}\]
+下面考虑最小值，发现当$x\rightarrow 0$时，$f(x)\rightarrow 1+\frac{1}{\sqrt{1+a}}$，当$x\rightarrow +\infty$时，$f(x)\rightarrow 1+\frac{1}{\sqrt{1+a}}$，所以\[1+\frac{1}{\sqrt{1+a}}<f(x)<\frac{2}{\sqrt{1+\sqrt{\frac{8}{a}}}}+\frac{1}{\sqrt{1+a}}\]
+此时$1<f(x)$已经得证，下面只需证明\[g(a)=\frac{2}{\sqrt{1+\sqrt{\frac{8}{a}}}}+\frac{1}{\sqrt{1+a}}<2\]
+再次求导：
+\begin{align*}g'(a)&=-\frac{1}{\left(1+\sqrt{\frac{8}{a}}\right)^{\frac{3}{2}}}\cdot\frac{-2\sqrt2}{2a^{\frac{3}{2}}}-\frac{1}{2(1+a)^{\frac{3}{2}}}\\&=\frac{2\sqrt{2}(1+a)^{\frac{3}{2}}-a^{\frac{3}{2}}\left(1+\sqrt{\frac{8}{a}}\right)^{\frac{3}{2}}}{2a^{\frac{3}{2}}\left(1+\sqrt{\frac{8}{a}}\right)^{\frac{3}{2}}(1+a)^{\frac{3}{2}}}\\&=\frac{8(1+a)^3-\left(a+2\sqrt{2a}\right)^3}{2a^{\frac{3}{2}}\left(1+\sqrt{\frac{8}{a}}\right)^{\frac{3}{2}}(1+a)^{\frac{3}{2}}\left[2\sqrt{2}(1+a)^{\frac{3}{2}}+a^{\frac{3}{2}}\left(1+\sqrt{\frac{8}{a}}\right)^{\frac{3}{2}}\right]}\\&=\frac{(a-2\sqrt{2a}+2)\left[4(1+a)^2+2(1+a)(a+2\sqrt{2a})+(a+2\sqrt{2a})^2\right]}{2a^{\frac{3}{2}}\left(1+\sqrt{\frac{8}{a}}\right)^{\frac{3}{2}}(1+a)^{\frac{3}{2}}\left[2\sqrt{2}(1+a)^{\frac{3}{2}}+a^{\frac{3}{2}}\left(1+\sqrt{\frac{8}{a}}\right)^{\frac{3}{2}}\right]}\\&=\frac{(\sqrt{a}-\sqrt{2})^2\left[4(1+a)^2+2(1+a)(a+2\sqrt{2a})+(a+2\sqrt{2a})^2\right]}{2a^{\frac{3}{2}}\left(1+\sqrt{\frac{8}{a}}\right)^{\frac{3}{2}}(1+a)^{\frac{3}{2}}\left[2\sqrt{2}(1+a)^{\frac{3}{2}}+a^{\frac{3}{2}}\left(1+\sqrt{\frac{8}{a}}\right)^{\frac{3}{2}}\right]}\geq0\end{align*}
+所以原函数$g(a)$单调递增，考虑到\[\lim_{x\rightarrow +\infty}g(a)=0+2=2\]所以$f(x)<2$也得证。
+\end{solution}
+\newpage
+\begin{example}{（抹茶奶绿）}{}
+    平面直角坐标系$xOy$中，椭圆$\frac{x^2}{16}+\frac{y^2}{a^2}=1,(a>4)$，椭圆的弦$AB$过点$D(-2,0)$，连接$OA,OB$，线段$OB$交圆$(x+1)^2+y^2=4$于$C$，若$DC$平行于$OA$，求$a=$\underline{\hspace{1.2cm}}.
+\end{example}
+\begin{solution}
+    设$B(x_1,y_1),A(x_2,y_2),C(x_3,y_3)$，比值换元$-\lambda=\dfrac{x_1+2}{x_2+2}=\dfrac{y_1}{y_2}$，则：
+    \[\begin{cases}\dfrac{x_1^2}{16}+\dfrac{y_1^2}{a^2}=1&\Rightarrow \dfrac{x_1^2-\lambda^2x_2^2}{16}+\dfrac{y_1^2-\lambda^2y_2^2}{a^2}=1-\lambda^2\\[1.2ex]\dfrac{\lambda^2x_2^2}{16}+\dfrac{\lambda^2y_2^2}{a^2}=\lambda^2&\Rightarrow \dfrac{(x_1+\lambda x_2)(x_1-\lambda x_2)}{16(1+\lambda)(1-\lambda)}+\dfrac{(y_1+\lambda y_2)(y_1-\lambda y_2)}{a^2(1+\lambda)(1-\lambda)}=1\end{cases}\]
+    代入$x_1+\lambda x_2=(-2)(1+\lambda),y_1+\lambda y_2=0$得
+    \begin{align*}\dfrac{-(x_1-\lambda x_2)}{8(1-\lambda)}=1&\Rightarrow \lambda=\dfrac{x_1+8}{x_2+8}\Rightarrow -\lambda=\dfrac{x_1+2}{x_2+2}=\dfrac{y_1}{y_2}=\dfrac{x_1+8}{-x_2-8}\\
+    &\Rightarrow y_2=\dfrac{-3y_1}{x_1+5},\quad x_2=\dfrac{-3(x_1+2)}{x_1+5}-2=\dfrac{-5x_1-16}{x_1+5}
+\end{align*}
+设$y_1=kx_1$，则代入$\dfrac{x^2}{16}+\dfrac{y^2}{a^2}=1$得$\dfrac{x_1^2}{16}+\dfrac{k^2x_1^2}{a^2}=1\Rightarrow \begin{cases}x_1=\pm\dfrac{4}{\sqrt{a^2+16k^2}}\\[1.2ex]y_1=\pm\dfrac{4k}{\sqrt{a^2+16k^2}}\end{cases}$\newline
+再代入圆方程得到$(x+1)^2+k^2x^2=4\Rightarrow (k^2+1)x^2+2x-3=0\Rightarrow \begin{cases}x_3=\dfrac{-1\pm\sqrt{3k^2+4}}{k^2+1}\\y_3=\dfrac{-k\pm k\sqrt{3k^2+4}}{k^2+1}\end{cases}$.\newline
+我们不妨先带着正负号一起计算，注意下面的正负号一起取正或取负
+\begin{align*}
+    k_{AO}&=\dfrac{3y_1}{5x_1+16}=\dfrac{\dfrac{\pm 12k}{\sqrt{a^2+16k^2}}}{\pm\dfrac{20}{\sqrt{a^2+16k^2}}+16}=\dfrac{\pm 3k}{4\sqrt{a^2+16k^2}\pm 5}\\[1.2ex]
+    k_{DC}&=\dfrac{\dfrac{-k\pm k\sqrt{3k^2+4}}{k^2+1}}{\dfrac{-1\pm\sqrt{3k^2+4}}{k^2+1}+2}=\dfrac{-k\pm k\sqrt{3k^2+4}}{2k^2+1\pm \sqrt{3k^2+4}}
+\end{align*}
+由$k_{AO}=k_{CD}$得到$\dfrac{-1\pm \sqrt{3k^2+4}}{2k^2+1\pm \sqrt{3k^2+4}}=\dfrac{\pm 3}{4\sqrt{a^2+16k^2}\pm 5}$，变形得到：
+\[\pm 1=\dfrac{1}{\sqrt{3k^2+4}}-\dfrac{2\sqrt{a^2+16k^2}}{3k^2+4}\pm 2\sqrt{\dfrac{a^2+16k^2}{3k^2+4}}\]
+所以若要求此式成立且$a$为常数，必有$\dfrac{a^2+16k^2}{3k^2+4}$为常数，则计算得到$a=\dfrac{8}{\sqrt{3}}>4$，反向代入验证充分性即可得到答案为$a=\dfrac{8}{\sqrt{3}}$.
+\end{solution}
 % 图片插入示例（注释掉，避免报错）
 % \begin{figure}[htbp]
 %     \centering
