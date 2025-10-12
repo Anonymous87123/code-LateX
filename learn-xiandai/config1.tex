@@ -1,29 +1,40 @@
 % ========== 基本包加载 ==========
+% 0. 先加载 unicode-math
+\usepackage{unicode-math}
+\setmathfont{XITS Math}  % 设置数学字体
+
 % 1. 基础宏包
 \usepackage{geometry}
 \usepackage{fontspec}
-\usepackage{amsmath, amsthm, amssymb}
-\usepackage{mathrsfs}
+\usepackage{amsmath, amsthm} % 注意：移除了 amsfonts 和 amssymb
+\usepackage{bm}
 \usepackage{enumitem}
 \usepackage{graphicx}
 \usepackage{array}
 \usepackage{ulem}
 \usepackage{caption}
 \usepackage{tocloft}
+
 % 2. 图形和颜色宏包
 \usepackage[dvipsnames]{xcolor}
 \usepackage{tikz}
 \usetikzlibrary{shapes.geometric}
 \usepackage[most]{tcolorbox}
 \tcbuselibrary{theorems}
+
 % 3. 页眉页脚宏包
 \usepackage{fancyhdr}
 \usepackage{lastpage}
+
 % 4. 超链接和书签
 \usepackage{hyperref}
 \usepackage{bookmark}
+
 % 5. 智能引用
 \usepackage{cleveref}
+
+% ========== 自定义命令 ==========
+\newcommand{\bv}[1]{\symbfit{#1}} % 使用 unicode-math 的粗斜体命令
 % ========================
 % 1. 页面布局设置（窄边距）
 \geometry{
@@ -148,16 +159,11 @@
 \crefname{criterion}{准则}{准则}
 \crefname{proof}{证明}{证明}
 
-% 5. 数学字体设置（修改）
-\usepackage{unicode-math} % 更好的数学字体支持
-\setmathfont{Latin Modern Math} % 使用默认数学字体
-% ========== 自定义命令（保持不变） ==========
 \newcommand{\R}{\mathbb{R}} % 实数集
 \newcommand{\C}{\mathbb{C}} % 复数集
 \newcommand{\Z}{\mathbb{Z}} % 整数集
 \newcommand{\N}{\mathbb{N}} % 自然数集
-\newcommand{\dif}{\mathrm{d}} % 微分符号
-
+\newcommand{\dif}{\mathrm{d}}% 微分符号
 % ========== 图形路径设置（保持不变） ==========
 \graphicspath{{./flg/}} % 图片路径
 

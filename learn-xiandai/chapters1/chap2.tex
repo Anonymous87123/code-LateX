@@ -1,3 +1,91 @@
-chapter{矩阵}
+\chapter{矩阵}
 \section{第1周作业}
-测试
+\begin{example}{}{}
+    求$\left( \begin{matrix} \cos \alpha&- \sin \alpha \\ \sin \alpha& \cos \alpha \end{matrix} \right)^{n}$
+\end{example}
+\begin{solution}
+    因为\begin{align*}&\left( \begin{matrix} \cos n\alpha&- \sin n\alpha \\ \sin n\alpha& \cos n\alpha \end{matrix} \right)\left( \begin{matrix} \cos \alpha&- \sin \alpha \\ \sin \alpha& \cos \alpha \end{matrix} \right)\\&=\left( \begin{matrix} \cos\alpha\cos n\alpha-\sin \alpha\sin n\alpha &-\sin\alpha\cos n\alpha-\cos\alpha\sin n\alpha \\ \sin\alpha\cos n\alpha+\cos\alpha\sin n\alpha& \cos\alpha\cos n\alpha-\sin \alpha\sin n\alpha \end{matrix} \right)\\&=\left( \begin{matrix} \cos (n+1)\alpha&- \sin (n+1)\alpha \\ \sin (n+1)\alpha& \cos (n+1)\alpha \end{matrix} \right)\end{align*}所以答案是$\left( \begin{matrix} \cos n\alpha&- \sin n\alpha \\ \sin n\alpha& \cos n\alpha \end{matrix} \right)$
+\end{solution}
+\begin{example}{}{}
+    $\begin{aligned}&\text{令}A=\begin{pmatrix}0&1&0\\0&0&1\\-2&0&1\end{pmatrix},\text{计算}\\&(1)A^2,A^3\text{ 和 }f(A),\text{ 其中 }f(x)=x^3-3x^2-2x+2;\end{aligned}$
+\end{example}
+\begin{solution}
+    $A^2=\begin{pmatrix}0&0&1\\-2&0&1\\-2&-2&1\end{pmatrix},A^3=\begin{pmatrix}-2&0&1\\-2&-2&1\\-2&-2&-1\end{pmatrix},2=2I=\begin{pmatrix}2&0&0\\0&2&0\\0&0&2\end{pmatrix}$\\
+    $f(A)=\begin{pmatrix}-2&0&1\\-2&-2&1\\-2&-2&-1\end{pmatrix}-3\begin{pmatrix}0&0&1\\-2&0&1\\-2&-2&1\end{pmatrix}-2\begin{pmatrix}0&1&0\\0&0&1\\-2&0&1\end{pmatrix}+\begin{pmatrix}2&0&0\\0&2&0\\0&0&2\end{pmatrix}=\begin{pmatrix}0&-2&-2\\4&0&-4\\8&4&-4\end{pmatrix}$
+\end{solution}
+\begin{example}{}{}
+    求与$\begin{pmatrix}3&1\\-2&2\end{pmatrix}$可交换的所有矩阵.
+\end{example}
+\begin{solution}
+    设所求矩阵为$\begin{pmatrix}a&b\\c&d\end{pmatrix}$，则
+    \begin{align*}
+    &\begin{pmatrix}a&b\\c&d\end{pmatrix}\begin{pmatrix}3&1\\-2&2\end{pmatrix}=\begin{pmatrix}3&1\\-2&2\end{pmatrix}\begin{pmatrix}a&b\\c&d\end{pmatrix}\\
+    &\Rightarrow \begin{pmatrix}3a-2b&a+2b\\3c-2d&c+2d\end{pmatrix}=\begin{pmatrix}3a+c&3b+d\\-2a+2c&-2b+2d\end{pmatrix}\Rightarrow 
+    \begin{cases}3a-2b=3a+c\\a+2b=-2a+2c\\3c-2d=3b+d\\c+2d=-2b+2d\end{cases}\\
+    &\Rightarrow \begin{pmatrix}a&b\\-2b&a-b\end{pmatrix},a,b\in Z\end{align*}\end{solution}
+\begin{example}{}{}
+    证明：与任意$n$阶矩阵都可交换的矩阵只能是数量矩阵，即$\bv{A}=k\bv{E}$
+\end{example}
+\begin{solution}
+    考虑一个特殊的矩阵$\bv{E_{ij}}$，这个矩阵的第$i$行$j$列的元素是$1$，其余元素全为$0$。并设矩阵$\bv{A}$与任意$n$阶矩阵都可交换，那么它显然为$n$阶矩阵。那么$n$阶矩阵$\bv{A}\bv{E_{ij}}$ 满足第$j$列的元素为$a_{i1},a_{i2},...,a_{in}$，其余元素全为0，而$n$阶矩阵$\bv{E_{ij}}\bv{A}$满足第$i$行的元素为$a_{1j},a_{2j},...,a_{nj}$，其余元素全为0。因此由于$\bv{E_{ij}}\bv{A}=\bv{A}\bv{E_{ij}}$，那么对于任意$i\ne j,a_{ij}=0$，所以矩阵$\bv{A}$只有对角线上的元素不是0，其余元素全为0。然后由于$\bv{E_{ij}}$中的1元素的位置任意，所以矩阵$\bv{A}$对角线上的元素必须互相相同，故与任意$n$阶矩阵都可交换的矩阵只能是数量矩阵，即$\bv{A}=k\bv{E}$
+\end{solution}
+\begin{example}{}{}
+    证明：若$\bv{A}$为实对称矩阵且$\bv{A}^2=\bf{0}$，则$\bv{A}=\bf{0}$.
+\end{example}
+\begin{solution}
+设 $\bv{A}$ 的行向量为 $\bv{\alpha}_1, \bv{\alpha}_2, \bv{\alpha}_3, \dots, \bv{\alpha}_n$，
+列向量为 $\bv{\beta}_1, \bv{\beta}_2, \bv{\beta}_3, \dots, \bv{\beta}_n$。
+考虑到 $\bv{0} = \bv{A}\bv{A}$，
+则 $\bv{0}$ 的第 $i$ 行 $j$ 列的元素是 $\bv{\alpha}_i \cdot \bv{\beta}_j$，
+故任意 $i,j$ 均有 $\bv{\alpha}_i \cdot \bv{\beta}_j = 0$。
+又因为 $\bv{A}$ 为实对称矩阵，
+所以 $\bv{\beta}_j = \bv{\alpha}_j$，
+所以考虑当 $i=j$ 时，$\bv{\alpha}_i^2 = 0$，
+则 $\bv{\alpha}_i$ 的元素均为 $0$，
+故 $\bv{A}$ 为 $\bf{0}$。
+\end{solution}
+\begin{example}{}{}
+    证明：任一方阵可以表示成一个对称矩阵和一个反对称矩阵的和
+\end{example}
+\begin{solution}
+    设 \( A \) 为任意 \( n \times n \) 方阵。定义两个矩阵：
+\begin{align}
+S &= \frac{1}{2} (A + A^T) \\
+K &= \frac{1}{2} (A - A^T)
+\end{align}
+
+\noindent 首先，验证 \( S \) 是对称矩阵：
+\[
+S^T = \left( \frac{1}{2} (A + A^T) \right)^T = \frac{1}{2} (A^T + A) = S
+\]
+因此，\( S \) 是对称矩阵。
+
+\noindent 其次，验证 \( K \) 是反对称矩阵：
+\[
+K^T = \left( \frac{1}{2} (A - A^T) \right)^T = \frac{1}{2} (A^T - A) = -\frac{1}{2} (A - A^T) = -K
+\]
+因此，\( K \) 是反对称矩阵。
+
+\noindent 最后，验证 \( A = S + K \):
+\[
+S + K = \frac{1}{2} (A + A^T) + \frac{1}{2} (A - A^T) = \frac{1}{2} (2A) = A
+\]
+
+故任一方阵 \( A \) 可分解为对称矩阵 \( S \) 和反对称矩阵 \( K \) 的和，即 \( A = S + K \)。证明完毕。
+\end{solution}
+\begin{example}{}{}
+    将$\begin{pmatrix}1&3&5&-1\\2&-1&-3&4\\5&1&-1&7\\7&7&9&1\end{pmatrix}$化为阶梯形矩阵.
+\end{example}
+\begin{solution}
+    第2行减去2倍第1行，第3行减去5倍第1行，第4行减去7倍第1行，得到：
+\[\begin{pmatrix}1&3&5&-1\\2&-1&-3&4\\5&1&-1&7\\7&7&9&1\end{pmatrix}\rightarrow \begin{pmatrix}1&3&5&-1\\0&-7&-13&6\\0&-14&-26&12\\0&-14&-26&8\end{pmatrix}\]
+第3行减去2倍第2行，第4行减去2倍第2行，交换第3行和第4行得到：
+ \[\begin{pmatrix}1&3&5&-1\\0&-7&-13&6\\0&0&0&0\\0&0&0&-4\end{pmatrix}\rightarrow \begin{pmatrix}1&3&5&-1\\0&-7&-13&6\\0&0&0&-4\\0&0&0&0\end{pmatrix}\]
+\end{solution}
+\begin{example}{}{}
+    $\text{已知}\bv{A}=\begin{pmatrix}1&2&-1&0&0&0\\3&4&-2&0&0&0\\5&-3&1&0&0&0\\0&0&0&3&2&0\\0&0&0&1&4&0\\0&0&0&0&0&3\end{pmatrix},\text{用分块矩阵的方法求}\bv{A}^2.$
+\end{example}
+\begin{solution}
+    令$\bv{A}=\begin{pmatrix}\bv{B}&\bv{O}\\\bv{O}&\bv{C}\end{pmatrix}$，则$\bv{A}^2=\begin{pmatrix}\bv{B}^2&\bv{O}\\\bv{O}&\bv{C}^2\end{pmatrix}$，其中$\bv{O}$为零矩阵。
+    \newline 计算得到$\bv{B^2}=\begin{pmatrix}2&13&-6\\5&28&-13\\1&5&-2\end{pmatrix},\bv{C^2}=\begin{pmatrix}10&-13&3\\-13&46&-13\\3&-13&10\end{pmatrix}$.故答案为\[\begin{pmatrix}2&13&-6&0&0&0\\5&28&-13&0&0&0\\1&-5&2&0&0&0\\0&0&0&11&14&0\\0&0&0&7&18&0\\0&0&0&0&0&9\end{pmatrix}\]
+\end{solution}
