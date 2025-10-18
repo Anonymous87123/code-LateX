@@ -1,0 +1,43 @@
+\chapter{曲线系}
+\section{曲线系引入}
+\begin{example}{（椭圆上的中点弦直线）}{}
+设椭圆$\dfrac{x^2}{a^2}+\dfrac{y^2}{b^2}=1$内有一点$P(x_0,y_0)$，求以$P$为弦中点的直线方程.
+\end{example}
+\begin{solution}
+    构造两个椭圆\[\begin{cases}\dfrac{x^2}{a^2}+\dfrac{y^2}{b^2}=1\\\dfrac{(2x_0-x)^2}{a^2}+\dfrac{(2y_0-y)^2}{b^2}=1\end{cases}\]
+    相减得到答案\[\dfrac{x_0x}{a^2}+\dfrac{y_0y}{b^2}=\dfrac{x_0^2}{a^2}+\dfrac{y_0^2}{b^2}\]
+\end{solution}
+\begin{exmaple}{（椭圆上的直线两点式）}{}
+设椭圆$\dfrac{x^2}{a^2}+\dfrac{y^2}{b^2}=1$上有两点$A(x_1,y_1),B(x_2,y_2)$，求$AB$方程.
+\end{exmaple}
+\begin{solution}
+    构造以$A(x_1,y_1),B(x_2,y_2)$为直径的相似椭圆\[\dfrac{(x-x_1)(x-x_2)}{a^2}+\dfrac{(y-y_1)(y-y_2)}{b^2}=1\]则与原来的椭圆方程相减
+    \[\dfrac{x^2}{a^2}+\dfrac{y^2}{b^2}=\dfrac{(x_1+x_2)^2}{a^2}+\dfrac{(y_1+y_2)^2}{b^2}\]就可以得到$AB$的方程为
+    \[\dfrac{x_1+x_2}{a^2}x+\dfrac{y_1+y_2}{b^2}y=1+\dfrac{x_1x_2}{a^2}+\dfrac{y_1y_2}{b^2}\]
+    再对这个方程使用万能代换便可以得到参数方程直线两点式的形式
+\end{solution}
+\begin{example}{（抛物线上的直线两点式）}{}
+设$y^2=2px$上有两点$A(x_1,y_1),B(x_2,y_2)$，求$AB$方程.
+\end{example}
+\begin{solution}
+    构造直线系$(y-y_1)(y-y_2)=0$，与$y^2=2px$相减得到\[y^2-(y-y_1)(y-y_2)=2px\Leftrightarrow 2px-(y_1+y_2)y+y_1y_2=0\]
+\end{solution}
+\begin{example}{（利用梯形构造四点共圆）}{}
+    二次函数$y=x^2+(a+1)x+a-2$与坐标轴交于$A,B,C$三点，求$\triangle ABC$的外接圆的方程，并验证圆心是否在定直线上，以及外接圆是否过定点.
+\end{example}
+\begin{solution}
+    构造直线系$(y-0)(y-(a-2))=y(y-a+2)$再与抛物线$x^2+(a+1)x-y+a-2=0$相加得到：
+    \[x^2+y^2+(a+1)x-y-ay+2y+a-2=x^2+y^2+(a+1)x+(1-a)y+a-2=0\]
+    圆心$\bigg(\dfrac{a+1}{-2},\dfrac{1-a}{-2}\bigg)$一定在定直线上。将方程改写为
+    \[a(x-y+1)+x^2+y^2+x+y-2=0\]发现当$x=0,y=1$和$x=-2,y=-1$符合要求，这样就得到定点$(0,1),(-2,-1)$
+\end{solution}
+\begin{example}{（2025八省联考）}{}
+    椭圆$\dfrac{x^2}{9}+\dfrac{y^2}{8}=1$，$A(-3,0),B(2,0)$，过$B$的弦$MN$与点$A$形成的三角形$AMN$外心为$D$，证明$k_{MN}k_{OD}$为定值.
+\end{example}
+\begin{solution}
+    由斜率相反出共圆的结论，可以构造直线系$(x-ty-2)(x-ty+3)=0$，然后与椭圆联立：
+    \[\begin{cases}(x-ty-2)(x-ty+3)=0\\8x^2+9y^2-72=0\end{cases}\]
+    然后待定$x^2,y^2$系数相等得到椭圆的系数是$(t^2+1)$，所以相加得到：
+    \begin{align*}&(t^{2}+1)(8x^{2}+9y^{2}-72)+(x-ty-2)(x+ty+3)=0\\&\Leftrightarrow{}(8t^{2}+9)x^{2}+(8t^{2}+9)y^{2}+x-5ty-72t^{2}-78=0\end{align*}
+    则$k_{OD}=-5t,k_{MN}=\dfrac1{t}$，定值为$-5$.
+\end{solution}

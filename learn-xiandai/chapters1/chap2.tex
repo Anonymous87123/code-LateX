@@ -1,4 +1,5 @@
 \chapter{矩阵}
+\newpage
 \section{第1周作业}
 \begin{example}{}{}
     求$\left( \begin{matrix} \cos \alpha&- \sin \alpha \\ \sin \alpha& \cos \alpha \end{matrix} \right)^{n}$
@@ -88,4 +89,181 @@ S + K = \frac{1}{2} (A + A^T) + \frac{1}{2} (A - A^T) = \frac{1}{2} (2A) = A
 \begin{solution}
     令$\bv{A}=\begin{pmatrix}\bv{B}&\bv{O}\\\bv{O}&\bv{C}\end{pmatrix}$，则$\bv{A}^2=\begin{pmatrix}\bv{B}^2&\bv{O}\\\bv{O}&\bv{C}^2\end{pmatrix}$，其中$\bv{O}$为零矩阵。
     \newline 计算得到$\bv{B^2}=\begin{pmatrix}2&13&-6\\5&28&-13\\1&5&-2\end{pmatrix},\bv{C^2}=\begin{pmatrix}10&-13&3\\-13&46&-13\\3&-13&10\end{pmatrix}$.故答案为\[\begin{pmatrix}2&13&-6&0&0&0\\5&28&-13&0&0&0\\1&-5&2&0&0&0\\0&0&0&11&14&0\\0&0&0&7&18&0\\0&0&0&0&0&9\end{pmatrix}\]
+\end{solution}
+\begin{example}{}{}
+    计算下列矩阵的秩，如果矩阵为满秩，计算出矩阵的逆：\[\bv{A}=\begin{pmatrix}2&0&0\\0&2&-1\\0&3&5\end{pmatrix}\]
+\end{example}
+\begin{solution}
+    \[\begin{pmatrix}2&0&0\\0&2&-1\\0&3&5\end{pmatrix}\rightarrow \begin{pmatrix}2&0&0\\0&2&-1\\0&0&6.5\end{pmatrix}\]
+    则$\det{\bv{A}}\ne 0$矩阵的秩为3，矩阵为满秩，下求逆矩阵：
+    \begin{align*}
+        &\begin{pmatrix}2&0&0&1&0&0\\0&2&-1&0&1&0\\0&3&5&0&0&1\end{pmatrix}\rightarrow \begin{pmatrix}1&0&0&\frac{1}{2}&0&0\\0&1&-\frac{1}{2}&0&\frac{1}{2}&0\\0&3&5&0&0&1\end{pmatrix}\rightarrow \begin{pmatrix}1&0&0&\frac{1}{2}&0&0\\0&1&-\frac{1}{2}&0&\frac{1}{2}&0\\0&0&\frac{13}{2}&0&-\frac{3}{2}&1\end{pmatrix}\\&\rightarrow  \begin{pmatrix}1&0&0&\frac{1}{2}&0&0\\0&1&-\frac{1}{2}&0&\frac{1}{2}&0\\0&0&\frac{1}{2}&0&-\frac{3}{26}&\frac{1}{13}\end{pmatrix}\rightarrow \begin{pmatrix}1&0&0&\frac{1}{2}&0&0\\0&1&0&0&\frac{5}{13}&\frac{1}{13}\\0&0&\frac{1}{2}&0&-\frac{3}{26}&\frac{1}{13}\end{pmatrix}\rightarrow \begin{pmatrix}1&0&0&\frac{1}{2}&0&0\\0&1&0&0&\frac{5}{13}&\frac{1}{13}\\0&0&1&0&-\frac{3}{13}&\frac{2}{13}\end{pmatrix}\
+    \end{align*}
+所以\[\bv{A}^{-1}=\begin{pmatrix}
+    \frac{1}{2}&0&0\\0&\frac{5}{13}&\frac{1}{13}\\0&-\frac{3}{13}&\frac{2}{13}
+\end{pmatrix}\]
+\end{solution}
+\begin{example}{}{}
+    求这个矩阵的逆，其中$a_i\neq 0,(i=1,2,\cdots,n)$\[\begin{pmatrix}0&a_1&0&\cdots&0&0\\0&0&a_2&\cdots&0&0\\\vdots&\vdots&\vdots&&\vdots&\vdots\\0&0&0&\cdots&a_{n-2}&0\\0&0&0&\cdots&0&a_{n-1}\\a_n&0&0&\cdots&0&0\end{pmatrix}\]
+\end{example}
+\begin{solution}
+    考虑矩阵
+将矩阵的第$1$行乘以$\frac{1}{a_n}$，第二行乘以$\frac{1}{a_1}$，依此类推，得到：
+\[
+\left(\begin{array}{cccccc|cccccc}
+0 & a_1 & 0 & \cdots & 0 & 0 & 1 & 0 & 0 & \cdots & 0 & 0 \\
+0 & 0 & a_2 & \cdots & 0 & 0 & 0 & 1 & 0 & \cdots & 0 & 0 \\
+\vdots & \vdots & \vdots & \ddots & \vdots & \vdots & \vdots & \vdots & \vdots & \ddots & \vdots & \vdots \\
+0 & 0 & 0 & \cdots & a_{n-2} & 0 & 0 & 0 & 0 & \cdots & 0 & 0 \\
+0 & 0 & 0 & \cdots & 0 & a_{n-1} & 0 & 0 & 0 & \cdots & 1 & 0 \\
+a_n & 0 & 0 & \cdots & 0 & 0 & 0 & 0 & 0 & \cdots & 0 & 1
+\end{array}\right)
+\]
+将这个矩阵的第$n$行与第$n-1$行交换，再将第$n-1$行与第$n-2$行交换，依此类推，直到第$2$行与第$1$行交换，得到：
+\[
+\left(\begin{array}{cccccc|cccccc}
+a_n & 0 & 0 & \cdots & 0 & 0 & 0 & 0 & 0 & \cdots & 0 & 1 \\
+0 & a_1 & 0 & \cdots & 0 & 0 & 1 & 0 & 0 & \cdots & 0 & 0 \\
+0 & 0 & a_2 & \cdots & 0 & 0 & 0 & 1 & 0 & \cdots & 0 & 0 \\
+0 & 0 & 0 & \cdots & 0 & 0 & 0 & 0 & 1 & \cdots & 0 & 0 \\
+\vdots & \vdots & \vdots & \ddots & \vdots & \vdots & \vdots & \vdots & \vdots & \ddots & \vdots & \vdots \\
+0 & 0 & 0 & \cdots & a_{n-2} & 0 & 0 & 0 & 0 & \cdots & 1 & 0 \\
+0 & 0 & 0 & \cdots & 0 & a_{n-1} & 0 & 0 & 0 & \cdots & 0 & 1 
+\end{array}\right)
+\]
+将矩阵的第$1$行乘以$\frac{1}{a_n}$，第二行乘以$\frac{1}{a_1}$，依此类推，得到：
+\[
+\left(\begin{array}{cccccc|cccccc}
+1 & 0 & 0 & \cdots & 0 & 0 & 0 & 0 & 0 & \cdots & 0 & \frac{1}{a_n} \\
+0 & 1 & 0 & \cdots & 0 & 0 & \frac{1}{a_1} & 0 & 0 & \cdots & 0 & 0 \\
+0 & 0 & 1 & \cdots & 0 & 0 & 0 & \frac{1}{a_2} & 0 & \cdots & 0 & 0 \\
+0 & 0 & 0 & \cdots & 0 & 0 & 0 & 0 & \frac{1}{a_3} & \cdots & 0 & 0 \\
+\vdots & \vdots & \vdots & \ddots & \vdots & \vdots & \vdots & \vdots & \vdots & \ddots & \vdots & \vdots \\
+0 & 0 & 0 & \cdots & 1 & 0 & 0 & 0 & 0 & \cdots & \frac{1}{a_{n-2}} & 0 \\
+0 & 0 & 0 & \cdots & 0 & 1 & 0 & 0 & 0 & \cdots & 0 & \frac{1}{a_{n-1}} 
+\end{array}\right)
+\Rightarrow\text{逆矩阵为}
+\begin{pmatrix}
+0 & 0 & 0 & \cdots & 0 & \frac{1}{a_n} \\
+\frac{1}{a_1} & 0 & 0 & \cdots & 0 & 0 \\
+0 & \frac{1}{a_2} & 0 & \cdots & 0 & 0 \\
+0 & 0 & \frac{1}{a_3} & \cdots & 0 & 0 \\
+\vdots & \vdots & \vdots & \ddots & \vdots & \vdots \\
+0 & 0 & 0 & \cdots & \frac{1}{a_{n-2}} & 0 \\
+0 & 0 & 0 & \cdots & 0 & \frac{1}{a_{n-1}}
+\end{pmatrix}
+\]
+\end{solution}
+\begin{example}{}{}
+    求矩阵$\bv{X}$使得：
+    \[\begin{pmatrix}1&1&1&\cdots&1&1\\0&1&1&\cdots&1&1\\0&0&1&\cdots&1&1\\\vdots&\vdots&\vdots&&\vdots&\vdots\\0&0&0&\cdots&1&1\\0&0&0&\cdots&0&1\end{pmatrix}\bv{X}=\begin{pmatrix}2&1&0&\cdots&0&0\\1&2&1&\cdots&0&0\\0&1&2&\cdots&0&0\\\vdots&\vdots&\vdots&&\vdots&\vdots\\0&0&0&\cdots&2&1\\0&0&0&\cdots&1&2\end{pmatrix}.\]
+\end{example}
+\begin{solution}
+    转化为求这个矩阵的逆：\[\bv{A}=\begin{pmatrix}1&1&1&\cdots&1&1\\0&1&1&\cdots&1&1\\0&0&1&\cdots&1&1\\\vdots&\vdots&\vdots&&\vdots&\vdots\\0&0&0&\cdots&1&1\\0&0&0&\cdots&0&1\end{pmatrix}\Rightarrow\text{构造}[A|E]=\left(\begin{array}{cccccc|cccccc}1&1&1&\cdots&1&1&1&0&0&\cdots&0&0\\0&1&1&\cdots&1&1&0&1&0&\cdots&0&0\\0&0&1&\cdots&1&1&0&0&1&\cdots&0&0\\\vdots&\vdots&\vdots&\ddots&\vdots&\vdots&\vdots&\vdots&\vdots&\ddots&\vdots&\vdots\\0&0&0&\cdots&1&1&0&0&0&\cdots&1&0\\0&0&0&\cdots&0&1&0&0&0&\cdots&0&1\end{array}\right)\]
+    第k行减去第k+1行，即可消去第k行中第k+1列及以后的所有1，得到：
+    \[\left(
+    \begin{array}{cccccc|cccccc}
+1&0&0&\cdots&0&0&1&-1&0&\cdots&0&0\\0&1&0&\cdots&0&0&0&1&-1&\cdots&0&0\\0&0&1&\cdots&0&0&0&0&1&\cdots&0&0\\\vdots&\vdots&\vdots&\ddots&\vdots&\vdots&\vdots&\vdots&\vdots&\ddots&\vdots&\vdots\\0&0&0&\cdots&1&0&0&0&0&\cdots&1&-1\\0&0&0&\cdots&0&1&0&0&0&\cdots&0&1
+    \end{array}\right)\Rightarrow\bv{A}^{-1}=\begin{pmatrix}1&-1&0&\cdots&0&0\\0&1&-1&\cdots&0&0\\0&0&1&\cdots&0&0\\\vdots&\vdots&\vdots&\ddots&\vdots&\vdots\\0&0&0&\cdots&1&-1\\0&0&0&\cdots&0&1\end{pmatrix}
+    \]
+    等式两边右乘以$\bv{A}^{-1}$，得：
+    \[\bv{X}=\begin{pmatrix}1&-1&0&\cdots&0&0\\0&1&-1&\cdots&0&0\\0&0&1&\cdots&0&0\\\vdots&\vdots&\vdots&\ddots&\vdots&\vdots\\0&0&0&\cdots&1&-1\\0&0&0&\cdots&0&1\end{pmatrix}\begin{pmatrix}2&1&0&\cdots&0&0\\1&2&1&\cdots&0&0\\0&1&2&\cdots&0&0\\\vdots&\vdots&\vdots&&\vdots&\vdots\\0&0&0&\cdots&2&1\\0&0&0&\cdots&1&2\end{pmatrix}=\begin{pmatrix}1&-1&-1&0&\cdots&0&0&0\\1&1&-1&-1&\cdots&0&0&0\\0&1&1&-1&\cdots&0&0&0\\\vdots&\vdots&\vdots&\vdots&&\vdots&\vdots&\vdots\\0&0&0&0&\cdots&1&1&-1\\0&0&0&0&\cdots&0&1&2\end{pmatrix}\]
+\end{solution}
+\newpage
+\begin{example}{}{}
+    求解线性方程组：$\left\{\begin{aligned}2x_1+3x_3&=1,\\3x_2-5x_3&=-4,\\-2x_1+3x_2+2x_3&=4;\end{aligned}\right.$
+\end{example}
+\begin{solution}
+    构造增广矩阵并进行矩阵的行变换：\[\left(\begin{array}{cccc}2&0&3&1\\0&3&-5&4\\-2&3&2&4\end{array}\right)\rightarrow \left(\begin{array}{cccc}2&0&3&1\\0&3&-5&-4\\0&3&5&5\end{array}\right)\rightarrow \left(\begin{array}{cccc}2&0&3&1\\0&3&-5&-4\\0&0&10&9\end{array}\right)\rightarrow \begin{pmatrix}1&0&\frac{3}{2}&\frac{1}{2}\\0&1&-\frac{5}{3}&-\frac{4}{3}\\0&0&1&\frac{9}{10}\end{pmatrix}\]\[\rightarrow \begin{pmatrix}1&0&0&-\frac{17}{20}\\0&1&0&\frac{1}{6}\\0&0&1&\frac{9}{10}\end{pmatrix} \Rightarrow x_1=-\dfrac{17}{20},x_2=\dfrac16,x_3=\dfrac{9}{10}.\]
+最后一行是由于$\begin{pmatrix}2&0&3\\0&3&-5\\-2&3&2\end{pmatrix}\begin{pmatrix}x_1\\x_2\\x_3\end{pmatrix}=\bv{E}$，则$x_1=-\dfrac{17}{20},x_2=\dfrac16,x_3=\dfrac{9}{10}$
+\end{solution}
+\begin{example}{}{}
+    设$\bv{A}=\left(\begin{array}{rrr}1&2&-1\\3&4&-2\\5&-3&1\end{array}\right)~~~~~~\bv{B}=\begin{pmatrix}3&4&-2\\5&-3&1\\1&2&-1\end{pmatrix}$，求$\bv{A}^{-1}\bv{B}$.
+\end{example}
+\begin{solution}
+构造增广矩阵并进行矩阵的行变换
+\[[A|E]=\left(\begin{array}{ccc|ccc}1&2&-1&1&0&0\\3&4&-2&0&1&0\\5&-3&1&0&0&1\end{array}\right)\rightarrow \left(\begin{array}{ccc|ccc}1&2&-1&1&0&0\\0&-2&-5&-3&1&0\\0&-13&-4&-5&0&1\end{array}\right)\rightarrow \left(\begin{array}{ccc|ccc}1&2&-1&1&0&0\\0&1&-\frac{1}{2}&\frac{3}{2}&-\frac{1}{2}&0\\0&-13&6&-5&0&1\end{array}\right)\]
+\[\rightarrow \left(\begin{array}{ccc|ccc}1&0&0&-2&1&0\\0&1&-\frac{1}{2}&\frac{3}{2}&-\frac{1}{2}&0\\0&0&-\frac{1}{2}&\frac{29}{2}&-\frac{13}{2}&1\end{array}\right)
+\rightarrow \left(\begin{array}{ccc|ccc}1&0&0&-2&1&0\\0&1&-\frac{1}{2}&\frac{3}{2}&-\frac{1}{2}&0\\0&0&1&-29&13&-2\end{array}\right)\rightarrow 
+\left(\begin{array}{ccc|ccc}1&0&0&-2&1&0\\0&1&0&-13&6&-1\\0&0&1&-29&13&-2\end{array}\right)\]
+\[\bv{A}^{-1}\bv{B}=\begin{pmatrix}-2&1&0\\-13&6&-1\\-29&13&-2\end{pmatrix}\begin{pmatrix}3&4&-2\\5&-3&1\\1&2&-1\end{pmatrix}=\begin{pmatrix}-1&-11&5\\-10&-72&33\\-24&-159&73\end{pmatrix}\]
+\end{solution}
+\begin{example}{}{}
+    求$(k+l)\times(k+l)$矩阵$\begin{pmatrix}\bv{E}_k&\bv{B}\\\bv{O}&\bv{E}_l\end{pmatrix}$的逆，其中$\bv{E}_k$为$k\times k$单位矩阵，$\bv{E}_l$为$l\times l$单位矩阵.
+\end{example}
+\begin{solution}
+设逆矩阵为：$\bv{M}^{-1} = \begin{pmatrix} \bv{X} & \bv{Y} \\ \bv{Z} & \bv{W} \end{pmatrix}$，其中 $\bv{X}$ 是 $k \times k$ 矩阵，$\bv{Y}$ 是 $k \times l$ 矩阵，$\bv{Z}$ 是 $l \times k$ 矩阵，$\bv{W}$ 是 $l \times l$ 矩阵。计算矩阵乘积：
+\begin{align*}
+\begin{pmatrix} \bv{E}_k & \bv{B} \\ \bv{O} & \bv{E}_l \end{pmatrix}
+\begin{pmatrix} \bv{X} & \bv{Y} \\ \bv{Z} & \bv{W} \end{pmatrix} 
+&= \begin{pmatrix}
+    \bv{E}_k\bv{X} + \bv{B}\bv{Z} & \bv{E}_k\bv{Y} + \bv{B}\bv{W} \\
+    \bv{O}\bv{X} + \bv{E}_l\bv{Z} & \bv{0}\bv{Y} + \bv{E}_l\bv{W}
+\end{pmatrix} \\
+&= \begin{pmatrix}
+    \bv{X} + \bv{B}\bv{Z} & \bv{Y} + \bv{B}\bv{W} \\
+    \bv{Z} & \bv{W}
+\end{pmatrix}
+\end{align*}
+等式成立：
+\[
+\begin{pmatrix}
+    \bv{X} + \bv{B}\bv{Z} & \bv{Y} + \bv{B}\bv{W} \\
+    \bv{Z} & \bv{W}
+\end{pmatrix} = 
+\begin{pmatrix} \bv{E}_k & \bv{O} \\ \bv{O} & \bv{E}_l \end{pmatrix}
+\]
+得到方程组：
+$\bv{X} + \bv{B}\bv{Z} = \bv{E}_k,\quad\bv{Y} + \bv{B}\bv{W} = \bv{O},\quad\bv{Z} = \bv{O},\quad\bv{W} = \bv{E}_l$，因此，逆矩阵为：
+\[\bv{M}^{-1} = \begin{pmatrix} \bv{E}_k & -\bv{B} \\ \bv{O} & \bv{E}_l \end{pmatrix}\]
+\end{solution}
+\begin{example}{}{}
+    设$\bv{A},\bv{B},\bv{C}$是同阶方阵，其中$\bv{A},\bv{B}$可逆，求下列矩阵的逆：\[\bv{D}=\begin{pmatrix}\bv{O}&\bv{A}\\\bv{B}&\bv{C}\end{pmatrix}\]
+\end{example}
+\begin{solution}
+    设逆矩阵为：\[\bv{D}^{-1} = \begin{pmatrix} \bv{X} & \bv{Y} \\ \bv{Z} & \bv{W} \end{pmatrix}\]其中 \(\bv{X}, \bv{Y}, \bv{Z}, \bv{W}\) 是与 \(\bv{A}\) 同阶的方阵。计算矩阵乘积：
+\begin{align*}
+\begin{pmatrix} \bv{O} & \bv{A} \\ \bv{B} & \bv{C} \end{pmatrix}
+\begin{pmatrix} \bv{X} & \bv{Y} \\ \bv{Z} & \bv{W} \end{pmatrix} 
+&= \begin{pmatrix}
+    \bv{O}\bv{X} + \bv{A}\bv{Z} & \bv{O}\bv{Y} + \bv{A}\bv{W} \\
+    \bv{B}\bv{X} + \bv{C}\bv{Z} & \bv{B}\bv{Y} + \bv{C}\bv{W}
+\end{pmatrix} \\
+&= \begin{pmatrix} \bv{E} & \bv{O} \\ \bv{O} & \bv{E} \end{pmatrix}
+\end{align*}
+因此$\bv{A}\bv{Z} = \bv{E} ,\bv{A}\bv{W} = \bv{O} ,\bv{B}\bv{X} + \bv{C}\bv{Z} = \bv{O} ,\bv{B}\bv{Y} + \bv{C}\bv{W} = \bv{E}$，计算得到
+\[\bv{D}^{-1} = \begin{pmatrix} 
+    -\bv{B}^{-1}\bv{C}\bv{A}^{-1} & \bv{B}^{-1} \\
+    \bv{A}^{-1} & \bv{O}
+\end{pmatrix}\]
+\end{solution}
+\begin{example}{}{}
+    若$\bv{A}^k=\bv{O}$，证明：\[(\bv{E}-\bv{A})^{-1}=\bv{E}+\bv{A}+\bv{A}^2+\cdots+\bv{A}^{k-1}\]
+\end{example}
+\begin{solution}
+    设 $\bv{S} = \bv{E} + \bv{A} + \bv{A}^2 + \cdots + \bv{A}^{k-1}$，计算乘积：
+\begin{align*}
+(\bv{E} - \bv{A})\bv{S} &= \bv{E}(\bv{E} + \bv{A} + \bv{A}^2 + \cdots + \bv{A}^{k-1})- \bv{A}(\bv{E} + \bv{A} + \bv{A}^2 + \cdots + \bv{A}^{k-1}) \\
+&= (\bv{E} + \bv{A} + \bv{A}^2 + \cdots + \bv{A}^{k-1}) - (\bv{A} + \bv{A}^2 + \bv{A}^3 + \cdots + \bv{A}^k)\\
+&= \bv{E} + (\bv{A} - \bv{A}) + (\bv{A}^2 - \bv{A}^2) + \cdots + (\bv{A}^{k-1} - \bv{A}^{k-1}) - \bv{A}^k \\
+&= \bv{E} + \bv{O} + \bv{O} + \cdots + \bv{O} - \bv{O} = \bv{E}
+\end{align*}
+\end{solution}
+\begin{example}{}{}
+    设$\bv{A}$为$n(n\geq 2)$阶方阵，证明$|\bv{A}^{*}|=|\bv{A}|^{n-1}$.
+\end{example}
+\begin{solution}
+由伴随矩阵的定义，有：
+\[\bv{A} \bv{A}^{*} = \bv{A}^{*} \bv{A} = |\bv{A}| \bv{E}\]
+其中 $\bv{E}$ 是 $n$ 阶单位矩阵。对等式 $\bv{A} \bv{A}^{*} = |\bv{A}| \bv{E}$ 两边取行列式：
+\[|\bv{A} \bv{A}^{*}| =|\bv{A}||\bv{A}^{*}|= ||\bv{A}| \bv{E}|=\begin{vmatrix}
+|\bv{A}| & 0 & 0 & \cdots & 0 & 0 \\
+0 & |\bv{A}| & 0 & \cdots & 0 & 0 \\
+0 & 0 & |\bv{A}| & \cdots & 0 & 0 \\
+\vdots & \vdots & \vdots & \ddots & \vdots & \vdots \\
+0 & 0 & 0 & \cdots & |\bv{A}| & 0 \\
+0 & 0 & 0 & \cdots & 0 & |\bv{A}|
+\end{vmatrix}=|\bv{A}|^{n}\]
+分情况讨论：当$ |\bv{A}|\neq 0$时可以直接得到$|\bv{A}^{*}|=|\bv{A}|^{n-1}$.当$ |\bv{A}|=0$时，则我们可以对矩阵$\bv{A}$进行初等变换使之变成阶梯型矩阵，那么最后一行元素一定全为$0$，因此$|\bv{A}|$中最多只有最后一行的元素对应的代数余子式非零，所以$|\bv{A}^{*}|$中一定有全为$0$的列，所以$|\bv{A}^{*}|=0=|\bv{A}|^{n-1}$，综上所述，无论 $|\bv{A}|$ 是否为零，都有：
+\[|\bv{A}^{*}| = |\bv{A}|^{n-1}\]
 \end{solution}

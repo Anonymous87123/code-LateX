@@ -1,6 +1,6 @@
 % 第二章：导数与微分
-\chapter{导数与微分}
-\section{导数的定义}
+\chapter{手稿}
+\section{杂题收录}
 \begin{example}{}{}
     已知$x,y>0$，且$x^2+9y^2=12$，则$\dfrac{x+2}{y+1}-3x$的最小值为\underline{\hspace{2cm}}.
 \end{example}
@@ -472,6 +472,26 @@ c^2=1-\dfrac{8}{ax+8}=1-\dfrac{8}{(\dfrac{1}{a^2}-1)(\dfrac{1}{b^2}-1)+8}\Righta
     写出半代入形式的直线两点式\[\dfrac{-2}{2}\dfrac{1-t_1t_2}{1+t_1t_2}+\dfrac{2}{\sqrt3}\dfrac{t_1+t_2}{1+t_1t_2}=1\Rightarrow t_1+t_2=\sqrt3\]
     得到$\dfrac{|OP|}{|OQ|}=1$.
 \end{solution}
+\begin{example}{（群友供题）}{}
+    已知$f(x)=\text{e}^x-\ln x$，且$f(x_1)=f(x_2)$，$x_1>x_2$，求证$x_1+x_2>1$.
+\end{example}
+\begin{solution}
+    本题对称化构造已经有解法了，笔者补一个构造函数的做法。首先转化为证明\[g(x)=(x-\dfrac12)^2,g(x_1)=(x_1-\dfrac12)^2>(x_2-\dfrac12)^2=g(x_2)\]进行观察，我们发现如果$x_1$稍微大一点，比如当$x_1>1$就已经有$x_1+x_2>1$，所以本题的关键是在$x=\dfrac12$附近证明这个结论，由此不难想到级数展开，我们首先求导得到：\vspace{-5pt}
+    \[f'(x)=\text{e}^x-\dfrac{1}{x},f'(\dfrac12)=\sqrt{\text{e}}-2,f''(x)=\text{e}^x+\dfrac{1}{x^2},f''(\dfrac12)=\sqrt{\text{e}}+4,...\]
+    这样不难得到$f(x)$先减再增，极值点不好求，并列出$f(x)$在$x=\dfrac12$附近的级数形式：
+    \[f(x)=f(\dfrac12)+(\sqrt{\text{e}}-2)(x-\dfrac12)+\dfrac{\sqrt{\text{e}}+4}{2!}(x-\dfrac12)^2+\dfrac{\sqrt{e}+8}{3!}(x-\dfrac12)^3+\cdots\]
+    我们要构造在$x=\dfrac12$左右侧正负性相反的函数$\varphi(x)=h_1(g(x))+h_2(f(x))$，同时规定$h_1(x)$单调递增，$h_2(x)$在$f(x)$值域内单调，这样我们就可以转化证明
+    \[g(x_1)>g(x_2)\Leftrightarrow h_1(g(x_1))>h_1(g(x_2))\Leftrightarrow  \varphi(x_1)>\varphi(x_2)\]
+    但是显然我们不必大费周章地考虑$h_2(x)$，除非你想优雅地解题。此处我们可以直接取$\varphi(x)=h_1(g(x))-f(x)$，直观一点来说，只需要找到$(x-\dfrac12)^2$的某个复合函数穿过$\bigg(\dfrac12,f(\dfrac12)\bigg)$这个点，且在该点左侧比$f(x)$“矮”，右侧比$f(x)$“高”，那么就能证明$g(x_1)>g(x_2)$。那既然要求右侧比$f(x)$“高”，我们初步考虑$h_1(x)=e^{g(x)}$，由
+    \[\text{e}^x=1+x+\dfrac{x^2}{2!}+\dfrac{x^3}{3!}+\cdots\Rightarrow e^{(x-\frac12)^2}=1+(x-\dfrac12)^2+\dfrac{(x-\dfrac12)^4}{2!}+\dfrac{(x-\dfrac12)^6}{3!}+\cdots\]
+    所以消去偶数次项得到$\varphi(x)=\dfrac{\sqrt{\text{e}}+4}{2}e^{g(x)}-f(x)-2+\ln 2+\dfrac{\sqrt{\text{e}}}{2}$，即
+    \begin{align*}
+        \varphi(x)&=\dfrac{\sqrt{\text{e}}+4}{2}e^{(x-\frac12)^2}-\text{e}^x+\ln x-2+\ln 2+\dfrac{\sqrt{\text{e}}}{2}\\
+        \varphi'(x)&=(\sqrt{\text{e}}+4)(x-\dfrac12)\text{e}^{(x-\frac12)^2}-\text{e}^x+\dfrac1{x}
+    \end{align*}
+    由刚才分析可知，$\varphi''(x)$显然单增，且满足$\varphi''(\dfrac12)=0$，故$\varphi'(x)\geq\varphi'(\dfrac12)>0$，所以$\varphi(x)$单增，$\varphi(x_1)>\varphi(x_2)$，原题得证。
+\end{solution}
+\newpage
 \begin{conclusion}{比值代换法}{}
 \noindent 椭圆$\dfrac{x^2}{a^2}+\dfrac{y^2}{b^2}=1$上两点$A(x_1,y_1),B(x_2,y_2)$与非椭圆上点$P(x_0,y_0)$满足$\overrightarrow{AP}=\lambda\overrightarrow{PB}$，则
 \[\begin{cases}\lambda=\dfrac{x_1-x_0}{x_0-x_2}=\dfrac{y_1-y_0}{y_0-y_2}=\dfrac{\dfrac{x_0x_1}{a^2}+\dfrac{y_0y_1}{b^2}-1}{\dfrac{x_0x_2}{a^2}+\dfrac{y_0y_2}{b^2}-1}\\(1+\lambda)^2\bigg(\dfrac{x_0^2}{a^2}+\dfrac{y_0^2}{b^2}-1\bigg)=2\lambda\bigg(\dfrac{x_1x_2}{a^2}+\dfrac{y_1y_2}{b^2}-1\bigg)\end{cases}\]

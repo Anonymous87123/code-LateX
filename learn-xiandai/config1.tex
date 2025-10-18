@@ -59,79 +59,144 @@
 \newcommand{\st}{\songti} % 宋体
 \newcommand{\htbf}{\heiti\bfseries} % 黑体加粗
 
+\definecolor{deepblue}{HTML}{003366}
+\definecolor{lightblue}{HTML}{E5F6FF}
+\definecolor{deepgreen}{HTML}{006633}
+\definecolor{lightgreen}{HTML}{E5F6E5}
+\definecolor{deeppurple}{HTML}{660066}
+\definecolor{lightpurple}{HTML}{F6E5F6}
+\definecolor{deepred}{HTML}{990000}
+\definecolor{lightred}{HTML}{FFE5E5}
+\definecolor{deeporange}{HTML}{CC6600}
+\definecolor{lightorange}{HTML}{FFF6E5}
+\definecolor{deepgray}{HTML}{333333}
+\definecolor{lightgray}{HTML}{F6F6F6}
+\definecolor{deepbrown}{HTML}{8B4513}
+\definecolor{lightbrown}{HTML}{FFE4B5}
+\definecolor{lightyellow}{HTML}{FFFFE0}
+\definecolor{darkyellow}{HTML}{CCCC00}
+\definecolor{lightcyan}{HTML}{E0FFFF}
+\definecolor{darkcyan}{HTML}{008B8B}
+\definecolor{lightpink}{HTML}{FFB6C1}
+\definecolor{darkpink}{HTML}{FF1493}
+\definecolor{lavender}{HTML}{E6E6FA}
+\definecolor{thistle}{HTML}{D8BFD8}
+\definecolor{lightblue}{HTML}{ADD8E6}
+\definecolor{darkblue}{HTML}{00008B}
+\definecolor{lightgray}{HTML}{D3D3D3}
+\definecolor{darkgray}{HTML}{A9A9A9}
 \newcounter{theoremcounter}[section]
 % 定理环境
 \newtcbtheorem[use counter=theoremcounter,number within=section]{theorem}{定理}{
-  enhanced,  
-  colback=SeaGreen!10!CornflowerBlue!10,
-  colframe=RoyalPurple!55!Aquamarine!100!,
-  before upper={\parindent 2em}, % 首行缩进
-  arc=3pt, % 圆角
-  boxrule=1pt, % 边框粗细
+    colback=lightgreen, %背景颜色
+    colframe=deepgreen, %边框颜色
+    colbacktitle=deepgreen, %标题框颜色
+    coltitle=white,  %标题颜色
+    fonttitle=\upshape\color{white}, %标题字体
+    fontupper=\rmfamily, %标题内容字体
+    separator sign none,
+    top=8pt,
+    attach boxed title to top left={yshift=-2mm,xshift=5mm},
+    description delimiters={ }{ },
+    enhanced % 边框粗细
 }{thm}
-
 % 引理环境
 \newtcbtheorem[use counter=theoremcounter,number within=section]{lemma}{引理}{
-  enhanced,
-  colback=Salmon!20,
-  colframe=Salmon!90!Black,
-  before upper={\parindent 2em},
-  arc=3pt,
-  boxrule=1pt,
+    colback=lightpurple,
+    colframe=deeppurple,
+    colbacktitle=deeppurple,
+    coltitle=white,
+    fonttitle=\upshape\color{white},
+    fontupper=\rmfamily,
+    separator sign none,
+    top=8pt,
+    attach boxed title to top left={yshift=-2mm,xshift=5mm},
+    description delimiters={ }{ },
+    enhanced
 }{lem}
 % 定义环境
 \newtcbtheorem[number within=section,number within=section]{definition}{定义}{
-  enhanced,
-  colback=OliveGreen!10,
-  colframe=Green!70,
-  before upper={\parindent 2em},
-  arc=3pt,
-  boxrule=1pt,
+    colback=lightred,
+    colframe=deepred,
+    colbacktitle=deepred,
+    coltitle=white,
+    fonttitle=\upshape\color{white},
+    fontupper=\rmfamily,
+    separator sign none,
+    top=8pt,
+    attach boxed title to top left={yshift=-2mm,xshift=5mm},
+    description delimiters={ }{ },
+    enhanced
 }{def}
 
 % 例题和解共享计数器
 \newcounter{examplecounter}[section]
 % 例题环境
 \newtcbtheorem[use counter=examplecounter,number within=section]{example}{例题}{
-  enhanced,
-  colback=green!5,
-  colframe=green!35!black,
-  before upper={\parindent 2em},
-  arc=3pt,
-  boxrule=1pt,
+    colback=lightblue,
+    colframe=deepblue,
+    colbacktitle=deepblue,
+    coltitle=white,
+    fonttitle=\upshape\color{white},
+    fontupper=\rmfamily,
+    separator sign none,
+    top=8pt,
+    attach boxed title to top left={yshift=-2mm,xshift=5mm},
+    description delimiters={ }{ },
+    enhanced  
 }{ex}
 % 结论环境（宋体）
 \newtcbtheorem[number within=section]{conclusion}{结论}{
-  enhanced,
-  colback=Emerald!10,
-  colframe=cyan!40!black,
-  before upper={\parindent 2em},
-  arc=3pt,
-  boxrule=1pt,
+    colback=lightorange,
+    colframe=deeporange,
+    colbacktitle=deeporange,
+    coltitle=white,
+    fonttitle=\upshape\color{white},
+    fontupper=\rmfamily,
+    separator sign none,
+    top=8pt,
+    attach boxed title to top left={yshift=-2mm,xshift=5mm},
+    description delimiters={ }{ },
+    enhanced
 }{con}
 \newtcbtheorem[number within=section]{property}{性质}{
-  enhanced,
-  colback=Peach!15,              % 浅橙色背景（比纯Orange更柔和）
-  colframe=Orange!80!black,  % 深橙色边框带黑色加深
-  before upper={\parindent 2em},
-  arc=3pt,
-  boxrule=1pt,        % 标题加粗与其他环境统一
+    colback=lightgray,
+    colframe=deepgray,
+    colbacktitle=deepgray,
+    coltitle=white,
+    fonttitle=\upshape\color{white},
+    fontupper=\rmfamily,
+    separator sign none,
+    top=8pt,
+    attach boxed title to top left={yshift=-2mm,xshift=5mm},
+    description delimiters={ }{ },
+    enhanced       % 标题加粗与其他环境统一
 }{prop}
 \newtcbtheorem[number within=section]{criterion}{准则}{
-  enhanced,
-  colback=Thistle!15,            % 浅紫色背景（柔和）
-  colframe=MediumPurple!80!black, % 深紫色边框带黑色加深
-  before upper={\parindent 2em},
-  arc=3pt,
-  boxrule=1pt,
+    colback=lightbrown,
+    colframe=deepbrown,
+    colbacktitle=deepbrown,
+    coltitle=white,
+    fonttitle=\upshape\color{white},
+    fontupper=\rmfamily,
+    separator sign none,
+    top=8pt,
+    attach boxed title to top left={yshift=-2mm,xshift=5mm},
+    description delimiters={ }{ },
+    enhanced
 }{crit}
 \newtcbtheorem[use counter=theoremcounter,number within=section]{corollary}{推论}{
-  enhanced,
-  colback=Gold!10,               % 浅金色背景
-  colframe=Goldenrod!80!black,   % 深金色边框带黑色加深
-  before upper={\parindent 2em},
-  arc=3pt,
-  boxrule=1pt,        % 标题加粗与其他环境统一
+    colback=lightcyan,
+    colframe=darkcyan,
+    colbacktitle=darkcyan,
+    coltitle=white,
+    fonttitle=\upshape\color{white},
+    fontupper=\rmfamily,
+    separator sign none,
+    top=8pt,
+    attach boxed title to top left={yshift=-2mm,xshift=5mm},
+    description delimiters={ }{ },
+    enhanced       % 标题加粗与其他环境统一
 }{cor}
 % 传统样式环境（无背景色）
 \newtheoremstyle{plain-chinese}% 名称
