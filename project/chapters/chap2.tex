@@ -492,6 +492,29 @@ c^2=1-\dfrac{8}{ax+8}=1-\dfrac{8}{(\dfrac{1}{a^2}-1)(\dfrac{1}{b^2}-1)+8}\Righta
     由刚才分析可知，$\varphi''(x)$显然单增，且满足$\varphi''(\dfrac12)=0$，故$\varphi'(x)\geq\varphi'(\dfrac12)>0$，所以$\varphi(x)$单增，$\varphi(x_1)>\varphi(x_2)$，原题得证。
 \end{solution}
 \newpage
+\begin{example}{（2019年浙江导数）}{}
+    对任意$x\geq \dfrac{1}{e^2}$均有$f(x)=a\ln x+\sqrt{1+x}-\dfrac{\sqrt{x}}{2a}\leq 0$，求$a$的取值范围.
+\end{example}
+\begin{solution}
+    必要性探路，什么极点效应，内点效应啥的，都是一个函数与$x$轴相切的不同情形，所以我们可以直接研究$f(x)$与$x$轴的相切问题，从而规避使用端点效应带来的潜在风险。
+    \[\begin{cases}f(x)=a\ln x+\sqrt{1+x}-\dfrac{\sqrt{x}}{2a}=0\\[1.2ex]f'(x)=\dfrac{a}{x}+\dfrac{1}{2\sqrt{1+x}}-\dfrac{1}{4a\sqrt{x}}=0\end{cases}
+    \Rightarrow \begin{cases}a\ln x+\sqrt{1+x}-\dfrac{\sqrt{x}}{2a}=0\\[1.2ex]\dfrac{1}{x_0}a^2+\dfrac{1}{2\sqrt{x_0+1}}a-\dfrac{1}{4\sqrt{x_0}}=0\end{cases}\]
+    我们虽然难以直接解出第一个方程，但是却可以从第二个方程解出$a$，利用求根公式得到：
+    \[a=\sqrt{\left(\frac{x_0}{4\sqrt{x_0+1}}\right)^2+\dfrac{\sqrt{x_0}}{4}}-\frac{x_0}{4\sqrt{x_0+1}}>0\]
+    代入第一个方程得到一个很浸泡的式子：\[\ln x_0=\frac{x_0}{2\left(\sqrt{\left(\frac{x_0}{4\sqrt{x_0+1}}\right)^2+\frac{\sqrt{x_0}}{4}}-\frac{x_0}{4\sqrt{x_0+1}}\right)^2}-\dfrac{\sqrt{1+x_0}}{\left(\sqrt{\left(\frac{x_0}{4\sqrt{x_0+1}}\right)^2+\frac{\sqrt{x_0}}{4}}-\frac{x_0}{4\sqrt{x_0+1}}\right)}\]
+    显然这里只能取$x=1$得到$a\in\left(0,\dfrac{\sqrt{2}}{4}\right]$，这样就转化为证明充分性:\[f(x)\leq0\Rightarrow-2\ln x-\frac{2\sqrt{x+1}}{a}+\frac{\sqrt{x}}{a^2}\geq0\]
+    直接上求根公式好了，懒得讨论了：\[\Leftrightarrow \dfrac{1}{a}\geq\sqrt{1+\frac{1}{x}}+\sqrt{1+\frac{1}{x}+\frac{2\ln x}{\sqrt x}}\Rightarrow 2\sqrt2\geq\sqrt{1+\frac{1}{x}}+\sqrt{1+\frac{1}{x}+\frac{2\ln x}{\sqrt x}}\]
+    \[\Leftrightarrow\left(2\sqrt{2}-\sqrt{1+\frac{1}{x}}\right)^{2}\geq1+\frac{1}{x}+\frac{2\ln x}{\sqrt{x}}\Leftrightarrow \ln x\leq4\sqrt{x}-2\sqrt{2}\sqrt{x+1}\]
+    换元$t=x^2,t\in\left(\dfrac{1}{e},1\right)$，转化为证明$\ln t\leq 2t-\sqrt2\sqrt{t^2+1}$，并利用飘带放缩：即$\forall x\in\left(\dfrac{1}{e},1\right]$
+    \[g(x)=2x-\sqrt{2x^2+2}-\ln x=\dfrac{\sqrt2(x-1)(x+1)}{\sqrt{2}x+\sqrt{1+x^2}}-\ln x\geq \dfrac{\sqrt2(x-1)(x+1)}{\sqrt{2}x+\sqrt{1+x^2}}-2\dfrac{x-1}{x+1}\geq 0\]
+    最后一个不等号成立，要求$\dfrac{(x+1)^2}{\sqrt{2}x+\sqrt{1+x^2}}\leq \sqrt2\Leftrightarrow \sqrt{1+x^2}\leq \sqrt{2}$，成立！因此我们知道充分性也成立，而条件$x\geq \dfrac{1}{e^2}$并没有用上，所以任意$x\in(0,1]$，都有$a\in\left(0,\dfrac{\sqrt{2}}{4}\right]$满足要求.
+\end{solution}
+\begin{example}{}{}
+    已知正数$a,b,c$满足$abc=1$，证明：\[\sqrt{a^2+1}+\sqrt{b^2+1}+\sqrt{c^2+1}\leqslant\sqrt{2}\left(a+b+c\right)\]
+\end{example}
+\begin{solution}
+    
+\end{solution}
 \begin{conclusion}{比值代换法}{}
 \noindent 椭圆$\dfrac{x^2}{a^2}+\dfrac{y^2}{b^2}=1$上两点$A(x_1,y_1),B(x_2,y_2)$与非椭圆上点$P(x_0,y_0)$满足$\overrightarrow{AP}=\lambda\overrightarrow{PB}$，则
 \[\begin{cases}\lambda=\dfrac{x_1-x_0}{x_0-x_2}=\dfrac{y_1-y_0}{y_0-y_2}=\dfrac{\dfrac{x_0x_1}{a^2}+\dfrac{y_0y_1}{b^2}-1}{\dfrac{x_0x_2}{a^2}+\dfrac{y_0y_2}{b^2}-1}\\(1+\lambda)^2\bigg(\dfrac{x_0^2}{a^2}+\dfrac{y_0^2}{b^2}-1\bigg)=2\lambda\bigg(\dfrac{x_1x_2}{a^2}+\dfrac{y_1y_2}{b^2}-1\bigg)\end{cases}\]

@@ -41,3 +41,77 @@
     \begin{align*}&(t^{2}+1)(8x^{2}+9y^{2}-72)+(x-ty-2)(x+ty+3)=0\\&\Leftrightarrow{}(8t^{2}+9)x^{2}+(8t^{2}+9)y^{2}+x-5ty-72t^{2}-78=0\end{align*}
     则$k_{OD}=-5t,k_{MN}=\dfrac1{t}$，定值为$-5$.
 \end{solution}
+\begin{example}{（直径圆的构造）}{}
+    已知抛物线$y^2=2px$和弦$AB$所在的直线$x=ty+m$，求$A,B$的直径圆方程.
+\end{example}
+\begin{solution}
+    消去$x$得到\[y^2=2p(ty+m)=2pty+2pm\Rightarrow y^2-2pty-2pm=0\]
+    消去$y$得到\[t^2y^2=(x-m)^2=2p^2t^2x\Rightarrow x^2-(2m+2p^2t^2)x+m^2=0\]
+    加起来就可以得到直径圆方程\[x^2+y^2-(2m+2p^2t^2)x-2pty+m^2-2pm=0\]
+    原因是消去$x,y$得到的式子都可以变为$(x-x_1)(x-x_2)=0$和$(y-y_1)(y-y_2)=0$的形式，而$(x_1,y_1),(x_2,y_2)$是弦$AB$的两端点，所以直径圆的方程就是这两个直线的交点的方程。
+\end{solution}
+\begin{example}{（过两点的圆系方程例题）}{}
+    已知$C:y^2=4x,l:y=x+1$交于$A,B$两点，求经过$A,B$且与$x=-1$相切的圆的方程.
+\end{example}
+\begin{solution}
+    联立有：\[\begin{cases}y^2=4(y-1)\\(x+1)^2=4x\end{cases}\Rightarrow 
+    \begin{cases}y^2-4y+4=0\\x^2-2x+1=0\end{cases}\]
+    相加就有：\[x^2+y^2-2x-4y+5=0\]这是直径圆，接下来配凑圆系方程：
+    \[x^{2}+y^{2}-6x-4y-3+\lambda(x-y-1)=0\]
+    代入$x=-1$，得到\[y^{2}-4y+4+\lambda(-2-y)=0\]
+    并让$\Delta=0$，得到：\[\Delta=(4+\lambda)^{2}-4(4-2\lambda)=0\Rightarrow 
+    \lambda_1=0,\lambda_2=-16\]
+    所以圆方程有两个：$x^2+y^2-2x-4y+5=0$和$x^2+y^2-18x+12y+21=0$，本题目是易错题，容易漏解.
+\end{solution}
+\begin{example}{（直径圆习题）}{}
+    已知椭圆$\dfrac{x^2}{a^2}+\dfrac{y^2}{b^2}=1$，弦$AB$过定点$(m,0)$，其直径圆与椭圆交于点$C,D$，证明直线$CD$过定点.
+\end{example}
+\begin{solution}
+    设$AB:x=ty+m$，其中$m$已知，联立韦达：\[\begin{cases}3x^{2}+4y^{2}-12=0\\x=ty+m&\end{cases}\Rightarrow\begin{cases}(3t^{2}+4)y^{2}+6tmy+3m^{2}-12=0\\(3t^{2}+4)x^{2}-8mx+4m^{2}-12t^{2}=0\end{cases}\]
+    两式相加得到:\[(3t^2+4)x^2+(3t^2+4)y^2-8mx+6tmy+7m^2-12-12t^2=0\]
+    引入$\lambda(3x^2+4y^2=12)=0$并配凑$(x+ty+...)(x-ty+...)$结构，就有
+    \[-(t^2+1)(3x^{2}+4y^{2}-12)+(3t^{2}+4)(x^{2}+y^{2})-8mx+6tmy+7m^{2}-12-12t^{2}=0\]
+    因式分解成\[(x-ty-m)(x+ty-7m)=0\]，所以$CD$过定点$(7m,0)$.
+\end{solution}
+\begin{example}{（角平分线）}
+    已知椭圆$\dfrac{x^2}{a^2}+\dfrac{y^2}{b^2}=1$，弦$AB$过定点$P(1,0)$，$C(4,0)$，证明$x$轴平分$\angle{ACB}$
+\end{example}
+\begin{solution}
+    由$AB:x=ty+1$，由对称性可以设$A'B':x=-ty+1$，得到退化二次曲线\[(x-ty-1)(x+ty-1)=0\]
+    待定$\lambda(3x^2+4y^2-12)=0$，再根据要配凑的结构
+    \[(x-?y-4)(x+?y-4)=0\]中的常数项，得到$\lambda=-\dfrac14$
+    \[-(3x^{2}+4y^{2}-12)+4(x-ty-1)(x+ty-1)=0\]
+    得到$(x-4)^2=(4+t^2)y^2$，这等价于\[(x+\sqrt{4+t^2}y-4)(x-\sqrt{4+t^2}y-4)=0\]
+    这个方程的根显然为$(x_1,y_1),(x_2,y_2)$，所以斜率相反，角平分线得证.
+\end{solution}
+\newpage
+\begin{example}{（抹茶奶绿）}{}
+    椭圆$x^2+4y^2=4$的右焦点为$(\sqrt3,0)$，点$M,N$在$x$轴上方的椭圆上，且$\triangle{MNF}$的外心$D$在$x$轴上，$\sqrt{3}|FM||FN|=2|MN|$，求$S_{\triangle{MNF}}$
+\end{example}
+\begin{solution}
+    设直线方程$MN:y=kx+m\Leftrightarrow kx=y-m$，并联立
+    \vspace{-10pt}
+    \[\begin{cases}(1):(4k^2+1)x^2+8kmx+4m^2-4=0\\(2):(4k^2+1)y^2-2my+m^2-4k^2=0\\(3):y-kx-m=0\end{cases}\vspace{-10pt}\]
+    由$(1)+(2)+2m(3)$相加得到过$A,B$两点，且圆心在$x$轴上的圆\vspace{-10pt}
+    \[(4k^2+1)(x^2+y^2)+6kmx+3m^2-4k^2-4=0\vspace{-10pt}\]
+    代入$F(\sqrt3,0)$，得到直线$MN$到焦点$(\sqrt3,0)$的距离:$d$（后面要根据这个式子求斜率）:\vspace{-10pt}
+    \[8k^2+6\sqrt{3}km+3m^2=1\Leftrightarrow d=\dfrac{\sqrt{3}k+m}{\sqrt{k^2+1}}=\dfrac{1}{\sqrt3}\vspace{-10pt}\]
+    此时设圆半径为$R$，并由等面积法推算得:\vspace{-10pt}\[\begin{cases}S_{\triangle{MNF}}=\dfrac12|FM||FN|\sin\angle{MFN}=\dfrac12|MN|d=\dfrac{1}{2}\dfrac{1}{\sqrt3}|MN|\\\sqrt{3}|FM||FN|=2|MN|\end{cases}\Rightarrow \sin\angle{MFN}=\dfrac12\vspace{-10pt}\]
+    于是设$M(x_1,y_1),N(x_2,y_2)$由向量公式得到
+    \begin{align*}
+        \cos\angle{MFN}=&\dfrac{\sqrt3}{2}=\dfrac{\overrightarrow{FM}\cdot\overrightarrow{FN}}{|FM||FN|}=\dfrac{(x_1-\sqrt3)(x_2-\sqrt3)+y_1y_2}{(2-\frac{\sqrt3}{2}x_1)(2-\frac{\sqrt3}{2}x_2)}=\dfrac{(x_1-\sqrt3)(x_2-\sqrt3)+y_1y_2}{\frac34(\frac{4}{\sqrt3}-x_1)(\frac{4}{\sqrt3}-x_2)}\\
+        =&\dfrac{4}{3}\dfrac{12k^2+8\sqrt{3}km+4m^2-1+m^2-4k^2}{(4k^2+1)\frac{16}{3}+\frac{32}{\sqrt3}km+4m^2-4}=\dfrac{8k^2+8\sqrt{3}km+5m^2-1}{16k^2+8\sqrt{3}km+3m^2+1}\\
+        =&\frac{8k^2+8\sqrt{3}km+5m^2-(8k^2+6\sqrt{3}km+3m^2)}{16k^2+8\sqrt{3}km+3m^2+8k^2+6\sqrt{3}km+3m^2}=\frac{\sqrt3km+m^2}{12k^2+7\sqrt3km+3m^2}
+    \end{align*}
+    齐次化后，设$t=\dfrac{m}{k}$，得到$(3\sqrt3-2)t^2+(21-2\sqrt3)t+12\sqrt3=0$解得横截距，另一个根舍去：\vspace{-10pt}
+    \[t_1=\dfrac{2\sqrt3-21-2\sqrt3-3}{2(3\sqrt3-2)}=\dfrac{12}{2-3\sqrt3},t_1^2=\dfrac{144}{31-12\sqrt3},t_2=-\sqrt3\vspace{-5pt}\]
+    然后根据前面求出的距离，利用斜率的定义计算：
+    \[k^2=\dfrac{d^2}{(-\frac{m}{k}-\sqrt3)^2-d^2}=\dfrac{1}{3(\frac{3+2\sqrt3}{3\sqrt3-2})^2-1}=\dfrac{31-12\sqrt3}{3(3+2\sqrt3)^2-(3\sqrt3-2)^2}=\dfrac{1}{16}\dfrac{31-12\sqrt3}{2+3\sqrt3}\vspace{-5pt}\]
+    \[m^2=k^2\dfrac{m^2}{k^2}=\dfrac{1}{16}\dfrac{31-12\sqrt3}{2+3\sqrt3}\dfrac{144}{31-12\sqrt3}=\dfrac{9}{2+3\sqrt3},km=\dfrac34\dfrac{2-3\sqrt3}{2+3\sqrt3}\]\vspace{-10pt}
+    最后得到面积：
+    \begin{align*}
+        S_{\triangle{MNF}}&=\dfrac12\sin\angle{MFN}|FM||FN|=\dfrac{1}{4}|FM||FN|=\dfrac{16k^2+8\sqrt{3}km+3m^2+1}{4k^2+1}\\
+        &=\dfrac{(31-12\sqrt3)+6\sqrt{3}(2-3\sqrt3)+27+2+3\sqrt3}{\frac14(31-12\sqrt3)+2+3\sqrt3}=\dfrac{2+\sqrt3}{13}
+    \end{align*}
+    当然，设出圆方程和椭圆联立也是一种不错的选择.
+\end{solution}
