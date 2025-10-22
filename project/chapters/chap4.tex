@@ -5,13 +5,24 @@
     $a,d\geq 0,b,c>0,b+c\geq a+d$，求$\dfrac{b}{c+d}+\dfrac{c}{a+b}$的最小值.
 \end{example}
 \begin{solution}
-    观察到$b,c$在两个部分都出现了，而$a,b$在只出现了一次，如果我们固定$b,c$，并分开考虑两个式子就会发现，左边式子关于$a$单调递减，右边式子关于$d$单调递减，又有$b+c\geq a+d$，所以我们仍然固定$b,c$，扩大$a,d$直到$a+d=b+c$，此时式子会变小，因此我们研究在$a+d=b+c$的条件下
+    观察到$b,c$在两个部分都出现，而$a,b$在只出现了一次，若固定$b,c$，左边式子关于$a$单调递减，右边式子关于$d$单调递减，又有$b+c\geq a+d$，所以此时不断扩大$a,d$直到$a+d=b+c$，原式会变小，因此研究在$a+d=b+c$的条件下
     \[\dfrac{b}{c+d}+\dfrac{c}{a+b}=\dfrac{b}{c+d}+\dfrac{c}{2b+c-d}=\dfrac{1}{\frac{c}{b}+\frac{d}{b}}+\dfrac{\frac{c}{b}}{2+\frac{c}{b}-\frac{d}{b}}\]的最小值.
     换元$t=\dfrac{c}{b},x=\dfrac{d}{b}$，则需要研究这个函数的最小值
-    \begin{align*}f(x)=&\dfrac{1}{x+t}+\dfrac{t}{2+t-x},x\in[0,t+1],t>0\\
-        f'(x)=&\dfrac{t}{(2+t-x)^2}-\dfrac{1}{(x+t)^2}\quad
-        f'(x)=0\Leftrightarrow \dfrac{\sqrt{t}}{2+t-x}=\dfrac{1}{x+t}
-        \Rightarrow x=\dfrac{2+t-t\sqrt{t}}{\sqrt{t}+1}\\
+    \begin{align*}f(x)=\dfrac{1}{x+t}+\dfrac{t}{2+t-x},x\in[0,t+1],t>0\quad
+        f'(x)=\dfrac{t}{(2+t-x)^2}-\dfrac{1}{(x+t)^2}\\
+        f'(x)>0\Leftrightarrow \dfrac{\sqrt{t}}{2+t-x}>\dfrac{1}{x+t}
+        \Rightarrow x>x_0=\dfrac{2+t-t\sqrt{t}}{\sqrt{t}+1}=\dfrac{2+u^2-u^3}{u+1},u=t^2
     \end{align*}
-    令$u=t^2\Rightarrow x=\dfrac{2+u^2-u^3}{u+1}$，此时由于$x$的定义域变为$[0,1+u^2]$，下面讨论极值点在定义域的左侧，右侧，内部三种情况。
+    且$2+u^2-u^3=0$只有一根$u_0>1$，$ 2u^3+u-1=0$只有一根$u_1<1$，当极值点在定义域内
+    \[x_0\in(0,1+u^2)\Leftrightarrow\begin{cases}x_0=\frac{2+u^2-u^3}{u+1}<u^2+1\\x_0=\frac{2+u^2-u^3}{u+1}>0\end{cases}\Leftrightarrow\begin{cases}2u^3+u-1>0\\2+u^2-u^3>0\end{cases}\Leftrightarrow \begin{cases}u>u_1\\u<u_0\end{cases}\]
+    所以此时$f(x)$最小值在$x=u_0$处取到
+    \[f_1(u_0)=\dfrac{1}{u_0+u^2}+\dfrac{u^2}{2+u^2-u_0}=g_1(u)\leq\dfrac{(1+u)^2}{2(1+u^2)},u_1<u<u_0\]
+    取得等号时，由于多了一个取等条件，所以由$u_0$为常数知$u$为常数，但我们先当函数研究，希望它的全局最小值仍然；当极值点在定义域的右侧
+    \[x_0>1+u^2\Leftrightarrow\begin{cases}\frac{2+u^2-u^3}{u+1}>u^2+1\\\frac{2+u^2-u^3}{u+1}>0\end{cases}\Leftrightarrow \begin{cases}2u^3+u-1<0\\2+u^2-u^3>0\end{cases}\Leftrightarrow u_0>u_1>u\]
+    所以$f(x)$单减，在$x=u^2+1$处取到最小值
+    \[f_2(u_0)=\dfrac{1}{2u^2+1}+\dfrac{u^2}{2+u^2-u^2-1}=u^2+\dfrac{1}{2u^2+1}=g_2(u),u<u_1\]
+    然而还有极值点在定义域的左侧的情况，当
+    \[x_0<0<1+u^2\Leftrightarrow2+u^2-u^3<0\Leftrightarrow u>u_0\]时有$f(x)$单增，则$f(x)$在$x=0$处取到最小值
+    \[f_3(0)=\dfrac{1}{0+u^2}+\dfrac{u^2}{2+u^2-0}=\dfrac{1}{u^2}+\dfrac{u^2}{2+u^2}=g_3(u),u>u_0\]
+    分别求导得到$g_1(u)\geq g_1(u_0),g_2(u)\geq \sqrt2-\dfrac12,g_3(u)\geq\sqrt{2+\sqrt2}>1$
 \end{solution}
