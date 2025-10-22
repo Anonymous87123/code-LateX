@@ -1,0 +1,17 @@
+\chapter{杂题}
+\section{数学问题}
+\newpage
+\begin{example}{}{}
+    $a,d\geq 0,b,c>0,b+c\geq a+d$，求$\dfrac{b}{c+d}+\dfrac{c}{a+b}$的最小值.
+\end{example}
+\begin{solution}
+    观察到$b,c$在两个部分都出现了，而$a,b$在只出现了一次，如果我们固定$b,c$，并分开考虑两个式子就会发现，左边式子关于$a$单调递减，右边式子关于$d$单调递减，又有$b+c\geq a+d$，所以我们仍然固定$b,c$，扩大$a,d$直到$a+d=b+c$，此时式子会变小，因此我们研究在$a+d=b+c$的条件下
+    \[\dfrac{b}{c+d}+\dfrac{c}{a+b}=\dfrac{b}{c+d}+\dfrac{c}{2b+c-d}=\dfrac{1}{\frac{c}{b}+\frac{d}{b}}+\dfrac{\frac{c}{b}}{2+\frac{c}{b}-\frac{d}{b}}\]的最小值.
+    换元$t=\dfrac{c}{b},x=\dfrac{d}{b}$，则需要研究这个函数的最小值
+    \begin{align*}f(x)=&\dfrac{1}{x+t}+\dfrac{t}{2+t-x},x\in[0,t+1],t>0\\
+        f'(x)=&\dfrac{t}{(2+t-x)^2}-\dfrac{1}{(x+t)^2}\quad
+        f'(x)=0\Leftrightarrow \dfrac{\sqrt{t}}{2+t-x}=\dfrac{1}{x+t}
+        \Rightarrow x=\dfrac{2+t-t\sqrt{t}}{\sqrt{t}+1}\\
+    \end{align*}
+    令$u=t^2\Rightarrow x=\dfrac{2+u^2-u^3}{u+1}$，此时由于$x$的定义域变为$[0,1+u^2]$，下面讨论极值点在定义域的左侧，右侧，内部三种情况。
+\end{solution}
