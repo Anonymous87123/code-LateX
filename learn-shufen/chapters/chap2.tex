@@ -238,7 +238,7 @@ $(1)\displaystyle \lim_{n\to\infty}\dfrac{n^3-1}{n^2+1}=\infty~~(2)\lim_{n\to\in
     先证数列$\{a_n\}$有界，数列满足$a_1=\sqrt2,\ a_n=\sqrt{2a_{n-1}}$，由于$a_1=\sqrt2<2$，假设$a_k<2,(k\geq 2)$，则有$a_{k+1}=\sqrt{2a_k}<\sqrt4=2$，所以归纳得到$a_k<2$，因此数列$\{a_n\}$有界.\\
     再证明数列$\{a_n\}$单调递增，作商得到$\dfrac{a_{n+1}}{a_n}=\dfrac{\sqrt{2a_n}}{a_n}=\sqrt{\dfrac{2}{a_n}}>1$，所以数列$\{a_n\}$单调递增.\\
     由单调有界收敛定理得到$\{a_n\}$收敛，极限存在，所以设极限为$A$，对$a_n=\sqrt{2a_{n-1}}$两边取极限得
-    \[\displaystyle\lim_{n\to\infty}a_n=\sqrt{2\lim_{n\to\infty}a_{n-1}}\Rightarrow A^2=2\]所以数列$\{a_n\}$收敛，且$\lim_{n\to\infty}a_n=\sqrt2$.
+    \[\displaystyle\lim_{n\to\infty}a_n=\sqrt{2\lim_{n\to\infty}a_{n-1}}\Rightarrow A=2\]所以数列$\{a_n\}$收敛，且$\lim_{n\to\infty}a_n=2$.
 \end{solution}
 \begin{example}{2.5-A-3}{}
     设$a>0,0<x_1<\dfrac1{a},x_{n+1}=x_n(2-ax_n),n=1,2,3,\cdots$证明$\{x_n\}$收敛并求极限.
@@ -295,22 +295,22 @@ $(1)\displaystyle \lim_{n\to\infty}\dfrac{n^3-1}{n^2+1}=\infty~~(2)\lim_{n\to\in
     必要性：设极限为$A$，则存在$N>0$使得当$n>N$时，有$|f(x)-A|<1$，故\vspace{-10pt}
     \[|f(x)|-|A|<||f(x)|-|A||<|f(x_n)-A|<1\Rightarrow |f(x_n)|<1+|A|\vspace{-10pt}\]
     所以$f(x)$在$[a, +\infty)$上有上界.\\
-    充分性：若$f(x)$在$[a, +\infty)$上有上界，则由确界定理得到$f(x)$有上确界$\sup_{x\in[a, +\infty)}f(x)$，由确界定义知道，$\forall \varepsilon_n=\dfrac1{n},(n=1,2,\cdots),\exists x_n\in[a,+\infty)$，使得$|f(x_n)-A|<\dfrac1{n}$，于是得到数列$\{x_n\}$满足$\displaystyle\lim_{n\to\infty}f(x_n)=A$，所以$\forall \varepsilon>0,\exists N$使得$|f(x_n)-A|<\varepsilon$，由于$f(x)$ 为定义于 $[a, +\infty)$ 上的单调增加函数，所以任意$x>x_{N+1}$，均有$f(x_{N+1})\leq f(x)\leq A$，于是$|f(x)-A|<\varepsilon$，所以$\displaystyle\lim_{x\to+\infty}f(x)=A$.
+    充分性：若$f(x)$在$[a, +\infty)$上有上界，则由确界定理得到$f(x)$有上确界$\sup_{x\in[a, +\infty)}f(x)$，由确界定义知道，$\forall \varepsilon_n=\frac1{n},(n=1,2,\cdots),\exists x_n\in[a,+\infty)$，使得$|f(x_n)-A|<\frac1{n}$，于是得到数列$\{x_n\}$满足$\displaystyle\lim_{n\to\infty}f(x_n)=A$，所以$\forall \varepsilon>0,\exists N$使得$|f(x_n)-A|<\varepsilon$，由于$f(x)$ 为定义于 $[a, +\infty)$ 上的单调增加函数，所以任意$x>x_{N+1}$，均有$f(x_{N+1})\leq f(x)\leq A$，于是$|f(x)-A|<\varepsilon$，所以$\displaystyle\lim_{x\to+\infty}f(x)=A$.
 \end{solution}
 \begin{example}{2.6-B-1}{}
     证明：当$x\to 0$时，有$\tan x-\sin x\sim \dfrac12x^3,\arctan x\sim \dfrac14\sin 4x$.
 \end{example}
 \begin{solution}
-（1）$\tan x-\sin x=\tan x(1-\cos x)\sim x\dfrac{x^2}{2}=\dfrac{x^3}{2},x\to 0$.
+（1）$\tan x-\sin x=\tan x(1-\cos x)\sim x\dfrac{x^2}{2}=\dfrac{x^3}{2},x\to 0$.\\
 （2）$\arctan x\sim x=\dfrac{4x}{4}\sim\dfrac{\sin 4x}{4}$，由$\tan x\sim x,x\to 0$换元$x=\arctan y$可得$y\sim\arctan x,x\to 0$.
 \end{solution}
 \begin{example}{2.6-B-2}{}
     利用等价无穷小求极限：$\displaystyle \lim_{x\to 0}\dfrac{\tan 5x}{2x},\lim_{x\to 0}\dfrac{\sin(x^m)}{(\sin x)^n},\lim_{x\to 0}\dfrac{\tan x-\sin x}{\sin^3 x},\lim_{x\to 0}\dfrac{\sqrt{1+x^2}-1}{1-\cos x}$.
 \end{example}
 \begin{solution}
-    （1）$\displaystyle \lim_{x\to 0}\dfrac{\tan 5x}{2x}=\lim_{x\to 0}\dfrac{5x}{2x}=\dfrac25$.
-    （2）$\displaystyle \lim_{x\to 0}\dfrac{\sin(x^m)}{(\sin x)^n}=\lim_{x\to 0}\dfrac{x^m}{x^n}=x^{m-n}$.当$m>n$时，$\lim_{x\to 0}\dfrac{\sin(x^m)}{(\sin x)^n}=0$；当$m=n$时，$\lim_{x\to 0}\dfrac{\sin(x^m)}{(\sin x)^n}=1$；当$m<n$时，$\lim_{x\to 0}\dfrac{\sin(x^m)}{(\sin x)^n}=\infty$.
-    （3）$\displaystyle \lim_{x\to 0}\dfrac{\tan x-\sin x}{\sin^3 x}=\lim_{x\to 0}\dfrac{\tan x(1-\cos x)}{\sin^3x}=\lim_{x\to 0}\dfrac{x\frac12x^2}{x^3}=\dfrac12$.
+    （1）$\displaystyle \lim_{x\to 0}\dfrac{\tan 5x}{2x}=\lim_{x\to 0}\dfrac{5x}{2x}=\dfrac25$.\\
+    （2）$\displaystyle \lim_{x\to 0}\dfrac{\sin(x^m)}{(\sin x)^n}=\lim_{x\to 0}\dfrac{x^m}{x^n}=x^{m-n}$.\\当$m>n$时，$\lim_{x\to 0}\dfrac{\sin(x^m)}{(\sin x)^n}=0$；\\当$m=n$时，$\lim_{x\to 0}\dfrac{\sin(x^m)}{(\sin x)^n}=1$；\\当$m<n$时，$\lim_{x\to 0}\dfrac{\sin(x^m)}{(\sin x)^n}=\infty$.\\
+    （3）$\displaystyle \lim_{x\to 0}\dfrac{\tan x-\sin x}{\sin^3 x}=\lim_{x\to 0}\dfrac{\tan x(1-\cos x)}{\sin^3x}=\lim_{x\to 0}\dfrac{x\frac12x^2}{x^3}=\dfrac12$.\\
     （4）$\displaystyle \lim_{x\to 0}\dfrac{\sqrt{1+x^2}-1}{1-\cos x}=\lim_{x\to 0}\dfrac{1+\frac12x^2-1}{\frac12x^2}=1$.
 \end{solution}
 \begin{example}{2.6-B-3}{}
@@ -318,9 +318,78 @@ $(1)\displaystyle \lim_{n\to\infty}\dfrac{n^3-1}{n^2+1}=\infty~~(2)\lim_{n\to\in
     （3）$2x^3+2x^2=O(x^3)~(x\to\infty)$；（4）$(1+x)^n=1+nx+o(x)~(x\to 0)$.
 \end{example}
 \begin{solution}
-    （1）由定义，验证$\displaystyle \lim_{x\to 0}\dfrac{2x-x^2}{x}=\lim_{x\to 0}(2-2x)=2$为非零常数，故$2x-x^2=O(x)~(x\to 0)$.\\
+    （1）验证$\displaystyle \lim_{x\to 0}\dfrac{2x-x^2}{x}=\lim_{x\to 0}(2-2x)=2$为非零常数，故$2x-x^2=O(x)~(x\to 0)$.\\
     （2）由定义，验证$\displaystyle \lim_{x\to 0}\dfrac{\sqrt{1+x}-1}{1}=\lim_{x\to 0}\dfrac{1+x-1}{1+\sqrt{1+x}}=\lim_{x\to 0}\dfrac{x}{1+\sqrt{1+x}}=0$，故$\sqrt{1+x}-1=o(1)~(x\to 0)$.\\
-    （3）由定义，验证$\displaystyle \lim_{x\to\infty}\dfrac{2x^3+2x^2}{x^3}=\lim_{x\to\infty}(2+\dfrac{2}{x})=2$为非零常数，故$2x^3+2x^2=O(x^3)~(x\to\infty)$.\\（4）由定义，验证$\displaystyle \lim_{x\to 0}\dfrac{(1+x)^n-1-nx}{x}=\lim_{x\to 0}\dfrac{\frac{n(n-1)}{2}x^2+...+x^n}{x}=\lim_{x\to 0}\left(\dfrac{n(n-1)}{2}x+..+x^{n-1}\right)=0$，故$(1+x)^n=1+nx+o(x)~(x\to 0)$.
+    （3）由定义，验证$\displaystyle \lim_{x\to\infty}\dfrac{2x^3+2x^2}{x^3}=\lim_{x\to\infty}(2+\dfrac{2}{x})=2$为非零常数，故$2x^3+2x^2=O(x^3)~(x\to\infty)$.\\（4）验证$\displaystyle \lim_{x\to 0}\dfrac{(1+x)^n-1-nx}{x}=\lim_{x\to 0}\dfrac{\frac{n(n-1)}{2}x^2+...+x^n}{x}=\lim_{x\to 0}\left(\dfrac{n(n-1)}{2}x+..+x^{n-1}\right)=0$，故$(1+x)^n=1+nx+o(x)~(x\to 0)$.
 \end{solution}
-
-    
+\begin{example}{2.6-B-4}{}
+    设在某一极限过程中，$\alpha$和$\beta$都是无穷小.证明：如果 $\alpha\sim\beta$,则 $\beta-\alpha=o(\alpha)$，反之，如果 $\beta-\alpha=o(a)$,则$\alpha\sim\beta.$
+\end{example}
+\begin{solution}
+    如果 $\alpha\sim\beta$，则$\displaystyle \lim_{x\to x_0}\dfrac{\beta-\alpha}{\alpha}=\lim_{x\to x_0}\dfrac{\beta}{\alpha}-1=1-1=0$，故$\beta-\alpha=o(\alpha)$.\\
+    如果$\beta-\alpha=o(a)$，则$\displaystyle 0=\lim_{x\to x_0}\dfrac{\beta-\alpha}{\alpha}=\lim_{x\to x_0}\dfrac{\beta}{\alpha}-1$，所以$\lim_{x\to x_0}\dfrac{\beta}{\alpha}=1$，故$\alpha\sim\beta$.
+\end{solution}
+\begin{example}{2.6-B-5}{}
+    证明：当$x\to 0$时，有：\\
+    （1）$o(x^n)+o(x^m)=o(x^n),(0<n<m)$；（2）$o(x^n)\cdot o(x^m)=o(x^{n+m}),(n,m>0)$.
+\end{example}
+\begin{solution}
+    （1）由定义得到\[\displaystyle\lim_{x\to x_0}\dfrac{g(x)o(1)}{g(x)}=\lim_{x\to x_0}o(1)=0\Rightarrow o(g(x))=g(x)o(1)\]考虑
+    \[\displaystyle \lim_{x\to 0}\dfrac{o(x^n)+o(x^m)}{x^n}=\lim_{x\to 0}\dfrac{x^no(1)+x^mo(1)}{x^n}=\lim_{x\to 0}\left(o(1)+x^{m-n}o(1)\right)=\lim_{x\to 0}o(1)=0\]
+    故$o(x^n)+o(x^m)=o(x^n),(0<n<m)$;
+    （2）考虑
+    \[\displaystyle \lim_{x\to 0}\dfrac{o(x^n)\cdot o(x^m)}{x^n\cdot x^m}=\lim_{x\to 0}\dfrac{x^no(1)x^mo(1)}{x^n\cdot x^m}=\lim_{x\to 0}\left(o(1)\cdot o(1)\right)=0\]
+    由定义得到$o(x^n)\cdot o(x^m)=o(x^{n+m}),(n,m>0)$.
+\end{solution}
+\newpage
+\begin{example}{}{}
+    求积分$\displaystyle \int\dfrac{\dd x}{\sin^6x+\cos^6x}$
+\end{example}
+\begin{solution}
+    \begin{align*}
+    \int\dfrac{\dd x}{\sin^6x+\cos^6x}&=\int\dfrac{\sec^6x\dd x}{1+\tan^6x}=\int\dfrac{\sec^6(\arctan t)\dd\arctan t}{1+\tan^6(\arctan t)}\\
+    &=\int\dfrac{(1+t^2)^3\dd t}{(t^6+1)(1+t^2)}=\int\dfrac{(1+t^2)^2\dd t}{(t^2+1)(t^4-t^2+1)}\\
+    &=\int\dfrac{1+t^2}{t^4-t^2+1}\dd t=\int \dfrac{1+\frac{1}{t^2}}{t^2+\frac{1}{t^2}-1}\dd t\\
+    &=\int\dfrac{\dd(t-\frac1{t})}{(t-\frac1{t})^2+1}=\arctan(t-\dfrac1{t})+C\\
+    &=\arctan(\tan x-\dfrac{1}{\tan x})+C=\arctan(\dfrac{\tan^2x-1}{\tan x})\\
+    &=\arctan(-2\cot 2x)+C=C-\arctan(2\cot 2x).
+    \end{align*}
+\end{solution}
+\begin{example}{}{}
+    求积分$\displaystyle \int\dfrac{\cos^3x\dd x}{\sin x+\cos x}$.
+\end{example}
+\begin{solution}
+    \begin{align*}
+        \int\dfrac{\cos^3x\dd x}{\sin x+\cos x} &= \int\dfrac{\dd x}{(\tan x+1)(\tan^2 x+1)} \\
+        &= \int\dfrac{\dd t}{(1+t)(1+t^2)^2} \quad (\text{令 } t = \tan x) \\
+        &= \int \left( \frac{1/4}{1+t} + \frac{-\frac{1}{4}t + \frac{1}{4}}{1+t^2} + \frac{-\frac{1}{2}t + \frac{1}{2}}{(1+t^2)^2} \right) \dd t \\
+        &= \frac{1}{4} \int \frac{1}{1+t} \dd t + \frac{1}{4} \int \frac{1-t}{1+t^2} \dd t + \frac{1}{2} \int \frac{1-t}{(1+t^2)^2} \dd t \\
+        &= \frac{1}{4} \ln |1+t| + \frac{1}{4} \arctan t - \frac{1}{8} \ln (1+t^2) + \frac{1}{4} \cdot \frac{t+1}{1+t^2} + C \\
+        &= \frac{1}{4} \ln |1+\tan x| - \frac{1}{4} \ln |\sec x| + \frac{1}{2} x + \frac{1}{4} (\sin x \cos x + \cos^2 x) + C \\
+        &= \frac{1}{4} \ln |\sin x + \cos x| + \frac{1}{2} x + \frac{1}{8} \sin 2x + C
+    \end{align*}
+\end{solution}
+\newpage
+\begin{example}{}{}
+    求积分$\displaystyle \int\dfrac{\dd x}{\sin 2x+2\sin x}$.
+\end{example}
+\begin{solution}
+    \begin{align*}
+        \int\dfrac{\dd x}{\sin 2x+2\sin x}&=\int\dfrac{\dd x}{2\sin x(1+\cos x)}=\int\dfrac{\dd x}{4\sin x\cos^2\frac{x}{2}}=\int\dfrac{\dd x}{8\sin\frac{x}{2}\cos^3\frac{x}{2}}\\
+        &=\int\dfrac{\dd t}{4\sin t\cos^3t}=\int\dfrac{(\sin^2 t+\cos^2 t)^2\dd t}{4\sin t\cos^3t}=\dfrac14\int\dfrac{(\tan t^2+1)^2}{\tan t}\dd t\\
+        &=\dfrac14\int\dfrac{(\tan(\arctan \theta)^2+1)^2}{\tan\arctan\theta}\dd\arctan\theta=\dfrac14\int\dfrac{\theta^2+1}{\theta}\dd\theta\\
+        &=\dfrac14\int\left(\theta+\dfrac1\theta\right)\dd\theta=\dfrac18\theta^2+\dfrac14\ln|\theta|+C\\
+        &=\dfrac18\tan^2\dfrac{x}{2}+\dfrac14\ln|\tan\frac{x}{2}|+C
+    \end{align*}
+\end{solution}
+\begin{example}{}{}
+    求积分$\displaystyle \int\dfrac{x\e^{-x}}{(1+e^{-x})^2}\dd x$.
+\end{example}
+\begin{solution}
+    \begin{align*}
+        \int\dfrac{x\e^{-x}}{(1+e^{-x})^2}\dd x&=\int\dfrac{x\e^x}{(e^x+1)^2}\dd x=\int\dfrac{\e^{\ln t}\ln t}{(\e^{\ln t}+1)^2}\dd\ln t=\int\dfrac{\ln t}{(t+1)^2}\dd t\\
+        &=\int\ln t\dd\left(-\dfrac{1}{1+t}\right)=-\dfrac{\ln t}{t+1}+\int\dfrac{1}{1+t}\dd \ln t\\
+        &=-\dfrac{\ln t}{t+1}+\int\dfrac{1}{t(1+t)}\dd t=-\dfrac{\ln t}{t+1}+\int\left(\dfrac{1}{t}-\dfrac{1}{t+1}\right)\dd t\\
+        &=-\dfrac{\ln t}{t+1}+\ln t-\ln(t+1)+C=-\dfrac{x}{\e^x+1}+x-\ln(\e^x+1)+C\\
+    \end{align*}
+\end{solution}
