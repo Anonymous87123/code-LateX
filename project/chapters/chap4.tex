@@ -27,3 +27,23 @@
     分别求导得到$g_1(u)\geq g_1(u_1),g_2(u)\geq \sqrt2-\dfrac12,g_3(u)\geq\sqrt{2+\sqrt2}>1$
     因此淘汰$g_3(u)$，比较前两个，由于$\begin{cases}g_1(u_1)=\dfrac{(1+u_1)^2}{2(1+u_1^2)}>g\bigg(\dfrac47\bigg)>\sqrt2-\frac12\\2u_1^3+u_1-1=0\Rightarrow u_1>\dfrac47\end{cases}$发现成立，得到最小值$\sqrt2-\dfrac12$.
 \end{solution}
+\begin{example}{}{}
+    证明$\left(\dfrac{1}{n}\right)^n+\left(\dfrac{2}{n}\right)^n+\left(\dfrac{3}{n}\right)^n+\cdots+\left(\dfrac{n-1}{n}\right)^n+\left(\dfrac{n}{n}\right)^n>\dfrac{2(n-1)}{n+1}$.
+\end{example}
+\begin{solution}
+    这个不等式有明显的几何意义，首先分母都有$n$，然后分子每次自增，长得很像一个个矩形的面积求和，然后右边是个分式，感觉就是积分后的结果，所以我们根据题目中的$n$次方结构，找到函数$f(x)=x^n$，然后将其积分区间$[0,1]$分成$n$等分，并由$f(x)$下凸，将每一个曲边梯形“扩大”成直边梯形（为什么不先放成矩形？因为放成梯形明显更紧，而且求和的难度不会显著变大），根据题中的$k=1,2,3,\cdots,n$：
+    \[\dfrac{1}{2}\left(\left(\dfrac{k-1}{n}\right)^n+\left(\dfrac{k}{n}\right)^n\right)\left(\dfrac{k}{n}-\dfrac{k-1}{n}\right)>\int_{\frac{k-1}{n}}^{\frac{k}{n}}x^n\dd x\]
+    求和得到
+    \begin{align*}
+    &\left(\dfrac{1}{n}\right)^n+2\left(\dfrac{2}{n}\right)^n+2\left(\dfrac{3}{n}\right)^n+\cdots+2\left(\dfrac{n-1}{n}\right)^n+\left(\dfrac{n}{n}\right)^n>n\int_{0}^1x^n\dd x\\
+    &\Leftrightarrow 2\sum_{k=1}^n\left(\dfrac{k}{n}\right)^n-\left(\dfrac{0}{n}\right)^n-\left(\dfrac{n}{n}\right)^n>\left.\dfrac{x^{n+1}}{n+1}\right|^{1}_0=\dfrac{n}{n+1}\\
+    &\Leftrightarrow \sum_{k=1}^n\left(\dfrac{k}{n}\right)^n>\dfrac{2(n-1)}{n+1}\\
+    \end{align*}
+\end{solution}
+\begin{example}{}{}
+    证明$f(x)=\ln x-8\dfrac{x-1}{(x^{\frac13}+1)^3}$单调递增
+\end{example}
+\begin{solution}
+    转化为$\displaystyle F(t)=3\ln t-8\cdot\frac{t^3-1}{(t+1)^3}$单增，$\displaystyle F^{\prime}(t)=\frac{3}{t}-8\cdot\frac{3(t^2+1)}{(t+1)^4}=\frac{3}{t}-\frac{24(t^2+1)}{(t+1)^4}$
+    链式法则$f^{\prime}(x)=\frac{dF}{dt}\cdot\frac{dt}{dx}=F^{\prime}(t)\cdot\frac{1}{3t^2}$，所以\[f^{\prime}(x)=\left(\frac{3}{t}-\frac{24(t^2+1)}{(t+1)^4}\right)\cdot\frac{1}{3t^2}=\frac{1}{t^3}-\frac{8(t^2+1)}{t^2(t+1)^4}=\frac{(t-1)^4}{t^3(t+1)^4}>0.\]
+\end{solution}

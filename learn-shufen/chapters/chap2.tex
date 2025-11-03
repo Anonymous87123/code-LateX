@@ -137,7 +137,7 @@ $(1)\displaystyle \lim_{n\to\infty}\dfrac{n^3-1}{n^2+1}=\infty~~(2)\lim_{n\to\in
 \begin{solution}
     （1）要证明任意$G>0$，存在$N\in\mathbb{N}$使得当$n\geq N$时有$\left|\dfrac{n^3-1}{n^2+1}\right|=\dfrac{n^3-1}{n^2+1}>G$，由
     \[\dfrac{n^3-1}{n^2+1}=\dfrac{(n-1)(n^2+n+1)}{n^2+1}>\dfrac{(n-1)(n^2+1)}{n^2+1}=n-1\]所以取$N=G+2$，则任意$G>0$，$\left|\dfrac{n^3-1}{n^2+1}\right|>G$.\newline
-    （2）要证明对于任意$\varepsilon>0$，存在$N\in\mathbb{N}$使得当$n\geq N$时，$\left|\arctan n-\dfrac{\pi}{2}\right|=\dfrac{\pi}{2}-\arctan n<\varepsilon$，则取$N=[\tan\dfrac{\pi}{2}-\varepsilon]$，任意$\varepsilon>0$，$\left|\arctan n-\dfrac{\pi}{2}\right|<\varepsilon$.\newline
+    （2）要证明对于任意$\varepsilon>0$，存在$N\in\mathbb{N}$使得当$n\geq N$时，$\left|\arctan n-\dfrac{\pi}{2}\right|=\dfrac{\pi}{2}-\arctan n<\varepsilon$，则取$N=[\tan\dfrac{\pi}{2}-\varepsilon]+1$，任意$\varepsilon>0$，$\left|\arctan n-\dfrac{\pi}{2}\right|<\varepsilon$.\newline
     （3）要证明对于任意$\varepsilon>0$，存在$N\in\mathbb{N}$使得当$n\geq N$时，$\left|\dfrac{\sqrt{n}}{2\sqrt{n}+1}-\dfrac{1}{2}\right|=\dfrac{1}{2(2\sqrt{n}+1)}$，取$N=\left[1+\bigg(\dfrac{1}{4\varepsilon}-\dfrac12\bigg)^2\right]$，任意$\varepsilon>0$，$\left|\dfrac{\sqrt{n}}{2\sqrt{n}+1}-\dfrac{1}{2}\right|<\varepsilon$.\newline
     （4）要证明对于任意$\varepsilon>0$，存在$N\in\mathbb{N}$使得当$n\geq N$时，$\left|\dfrac{a^n}{n!}\right|=\dfrac{a^n}{n!}<\varepsilon$，由
     \[\dfrac{a^n}{n!}=\dfrac{a}{1}\dfrac{a}{2}\dfrac{a}{3}\cdots\dfrac{a}{[a]}\dfrac{a}{[a]+1}\cdots\dfrac{a}{n}<\dfrac{a^{[a]}}{[a]!}\dfrac{a}{n}\]
@@ -238,22 +238,29 @@ $(1)\displaystyle \lim_{n\to\infty}\dfrac{n^3-1}{n^2+1}=\infty~~(2)\lim_{n\to\in
     先证数列$\{a_n\}$有界，数列满足$a_1=\sqrt2,\ a_n=\sqrt{2a_{n-1}}$，由于$a_1=\sqrt2<2$，假设$a_k<2,(k\geq 2)$，则有$a_{k+1}=\sqrt{2a_k}<\sqrt4=2$，所以归纳得到$a_k<2$，因此数列$\{a_n\}$有界.\\
     再证明数列$\{a_n\}$单调递增，作商得到$\dfrac{a_{n+1}}{a_n}=\dfrac{\sqrt{2a_n}}{a_n}=\sqrt{\dfrac{2}{a_n}}>1$，所以数列$\{a_n\}$单调递增.\\
     由单调有界收敛定理得到$\{a_n\}$收敛，极限存在，所以设极限为$A$，对$a_n=\sqrt{2a_{n-1}}$两边取极限得
-    \[\displaystyle\lim_{n\to\infty}a_n=\sqrt{2\lim_{n\to\infty}a_{n-1}}\Rightarrow A=2\]所以数列$\{a_n\}$收敛，且$\lim_{n\to\infty}a_n=2$.
+    \[\displaystyle\lim_{n\to\infty}a_n=\sqrt{2\lim_{n\to\infty}a_{n-1}}\Rightarrow A=2\]所以数列$\{a_n\}$收敛，且$\lim_{n\to\infty}a_n=2$.\\
+    进一步地，设$b_n=a_n-2$，所以
+    \[b_{n+1}=a_{n+1}-2=\sqrt{2a_n}-2=\sqrt{2(2+b_n)}-2=\sqrt{4+2b_n}-2\]
+    泰勒展开得到
+    \[\sqrt{4+2b_n}=2\sqrt{1+\frac{b_n}{2}}=2\left(1+\frac{b_n}{4}-\frac{b_n^2}{32}+O(b_n^3)\right)\Rightarrow b_{n+1}=\frac{b_n}{2}-\frac{b_n^2}{16}+O(b_n^3)\]
+    对于大的$n$ ,有$b_n\to 0$ ,主导项为$\frac{b_n}2$,因此$b_{n+1}\sim\frac12b_n$，这意味着$b_n$以指数速率衰减，即$b_n\sim C\left(\frac12\right)^{n-1}$,其中
+$C=b_1=\sqrt{2}-2$。因此$b_n^2 \sim C^2\left(\frac{1}{4}\right)^{n-1}$, 因此误差项为 $O\left(\left(\frac{1}{4}\right)^n\right)$
+    \[a_n=2+(\sqrt{2}-2)\left(\frac{1}{2}\right)^{n-1}+o\left(\left(\frac{1}{2}\right)^{n}\right)~~(n\to\infty)\]
 \end{solution}
 \begin{example}{2.5-A-3}{}
     设$a>0,0<x_1<\dfrac1{a},x_{n+1}=x_n(2-ax_n),n=1,2,3,\cdots$证明$\{x_n\}$收敛并求极限.
 \end{example}
 \begin{solution}
-    先证明数列$\{x_n\}$有界，已知$0<x_1<\dfrac1{a}$，则假设$x_k\in(0,\dfrac1{a}),k\in \text{N}_+$，则$ax_k\in(0,1)$，而$x_k(2-ax_k)$是$x_k$的二次函数，在$(0,\dfrac1{a})$上单增，在$(\dfrac1{a},\dfrac2{a})$上单减，所以$x_{k+1}=x_k(2-ax_k)>0$，且$x_{k+1}<\dfrac1{a}(2-a\dfrac1{a})=\dfrac1{a}$，所以$x_n\in(0,\dfrac1a)$,数列$\{x_n\}$有界.再证明数列$\{x_n\}$单调递增，作商得到$\dfrac{x_{n+1}}{x_n}=2-ax_n>1$，所以数列$\{x_n\}$单调递增.由单调有界收敛定理得到$\{x_n\}$收敛，极限存在，所以设极限为$A$，对$x_{n+1}=x_n(2-ax_n)$两边取极限得到\[\displaystyle\lim_{x\to\infty}x_{n+1}=\lim_{x\to\infty}x_n(2-a\lim_{x\to\infty}x_n)\Leftrightarrow A=A(2-aA)\Leftrightarrow A=\dfrac1{a}\]所以数列$\{x_n\}$收敛，且$\lim_{n\to\infty}x_n=\dfrac1{a}$.
+    先证明数列$\{x_n\}$有界，已知$0<x_1<\dfrac1{a}$，则假设$x_k\in(0,\dfrac1{a}),k\in \text{N}_+$，则$ax_k\in(0,1)$，而$x_k(2-ax_k)$是$x_k$的二次函数，在$(0,\dfrac1{a})$上单增，在$(\dfrac1{a},\dfrac2{a})$上单减，所以$x_{k+1}=x_k(2-ax_k)>0$，且$x_{k+1}<\dfrac1{a}(2-a\dfrac1{a})=\dfrac1{a}$，所以$x_n\in(0,\dfrac1a)$,数列$\{x_n\}$有界.再证明数列$\{x_n\}$单调递增，作商得到$\dfrac{x_{n+1}}{x_n}=2-ax_n>1$，所以数列$\{x_n\}$单调递增.由单调有界收敛定理得到$\{x_n\}$收敛，极限存在，所以设极限为$A$，对$x_{n+1}=x_n(2-ax_n)$两边取极限得到\[\displaystyle\lim_{x\to\infty}x_{n+1}=\lim_{x\to\infty}x_n(2-a\lim_{x\to\infty}x_n)\Leftrightarrow A=A(2-aA)\Leftrightarrow A=\dfrac1{a}\]所以数列$\{x_n\}$收敛，且$\lim_{n\to\infty}x_n=\dfrac1{a}$，事实上这个数列的通项公式是$x_n=\dfrac{1}{a}\left[1-(1-ax_1)^{2^{n-1}}\right]$
 \end{solution}
 \begin{example}{2.5-A-4}{}
-    设$x_1>0,x_{n+1}=\dfrac{3(1+x_n)}{3+x_n},n=1,2,3,\cdots$证明$\displaystyle\lim_{n\to\infty}=\sqrt3$.
+    设$x_1>0,x_{n+1}=\dfrac{3(1+x_n)}{3+x_n},n=1,2,3,\cdots$证明$\displaystyle\lim_{n\to\infty}x_n=\sqrt3$.
 \end{example}
 \begin{solution}
     （1）当$x_1=\sqrt3$时，假设$x_k=\sqrt3,k\in\text{N}_+$，则
     \[x_{k+1}=\dfrac{3(1+\sqrt3)}{3+\sqrt3}=\dfrac{3\sqrt3+3}{3+\sqrt3}=\sqrt3\]
     所以$\{x_n=\sqrt3\}$，$\lim_{n\to\infty}x_n=\sqrt3$.\\
-    （2）当$0<x_1<\sqrt3$时，假设$0<x_k<sqrt3,k\in\text{N}_+$，则由函数$f(x)=\dfrac{3x+3}{3+x}=3-\dfrac{6}{3+x}$在$(0,\sqrt3)$上单增，得到：
+    （2）当$0<x_1<\sqrt3$时，假设$0<x_k<\sqrt3,k\in\text{N}_+$，则由函数$f(x)=\dfrac{3x+3}{3+x}=3-\dfrac{6}{3+x}$在$(0,\sqrt3)$上单增，得到：
     \[\dfrac{3+0}{3+0}=1<x_{k+1}=\dfrac{3(1+x_k)}{3+x_k}<\dfrac{3+3\sqrt3}{3+\sqrt3}=\sqrt3\]所以归纳得到$x_k\in(0,\sqrt3)$，且
     \[x_{n+1}-x_n=\dfrac{3+3x_n-3x_n-x_n^2}{3+x_n}=\dfrac{3-x_n^2}{3+x_n}>0\]
     则$\{x_n\}$单调递增，由单调有界收敛定理得到$\{x_n\}$收敛，设极限为$A$，代入递推式得到$A=\dfrac{3+3A}{3+A}\Rightarrow A=\sqrt3$，则$\lim_{n\to\infty}x_n=\sqrt3$.\\
@@ -277,16 +284,16 @@ $(1)\displaystyle \lim_{n\to\infty}\dfrac{n^3-1}{n^2+1}=\infty~~(2)\lim_{n\to\in
 \begin{solution}
     （1）设$m>n$，则
     \[|x_m-x_n|=|a_{n+1}q^{n+1}+a_{n+2}q^{n+2}+\cdots+a_{m}q^{m}| \leqslant M|q^{n+1}+q^{n+2}+\cdots+q^{m}|<M\dfrac{|q^{n+1}|}{1-|q|}\]
-    任意$\varepsilon>0$，存在$N=[\log_{q}\varepsilon]$使得任意$x>N$，$\dfrac{|q^{n+1}|}{1-|q|}<|q^{n+1}|<\varepsilon$，则数列$\{x_n\}$收敛.
+    任意$\varepsilon>0$，存在$N=[\log_{q}\dfrac{\varepsilon}{M}+1]$使得任意$x>N$，$M\dfrac{|q^{n+1}|}{1-|q|}<M|q^{n+1}|<\varepsilon$，则数列$\{x_n\}$收敛.
     （2）设$m>n$，则
     \[|x_m-x_n|=\left|\frac{\sin(n+1)}{2^{n+1}}+\frac{\sin(n+2)}{2^{n+2}}+\cdots+\frac{\sin(m)}{2^m}\right|<\left|\dfrac1{2^{n+1}}+\dfrac1{2^{n+2}}+\cdots+\dfrac1{2^m}\right|<\dfrac1{2^n}\]
-    所以任意$\varepsilon>0$，存在$N=[1-\log_{2}\varepsilon]$使得任意$n>N$，$|x_m-x_n|<\dfrac1{2^n}<\varepsilon$，则数列$\{x_n\}$收敛.
+    所以任意$\varepsilon>0$，存在$N=[2-\log_{2}\varepsilon]$使得任意$n>N$，$|x_m-x_n|<\dfrac1{2^n}<\varepsilon$，则数列$\{x_n\}$收敛.
 \end{solution}
 \begin{example}{2.5-B-3}{}
     对于数列$\{x_n\}$，若子列$\{x_{2k}\}$与$\{x_{2k+1}\}$都收敛于$a$,试用“$\varepsilon-N$”的语言证明数列$\{x_n\}$也收敛于$a$.
 \end{example}
 \begin{solution}
-    任意$\varepsilon>0$，存在$N_1\in\mathbb{N}$使得$\forall n>N,|x_{2n-1}-a|<\dfrac{\varepsilon}{2}$；任意$\varepsilon>0$，存在$N_2\in\mathbb{N}$使得$\forall n>N,|x_{2n}-a|<\dfrac{\varepsilon}{2}$，则数列$\{x_n\}$收敛于$a$；那么对$2n-1$代入$n=N_1+1$，对$2n$代入$n=N_2+1$，可知取$N=\max{2N_1+2,2N_2+2}$，则$\forall n>N,|x_{n}-a|<\dfrac{\varepsilon}{2}+\dfrac{\varepsilon}2=\varepsilon$，则数列$\{x_n\}$收敛于$a$.
+    任意$\varepsilon>0$，存在$N_1\in\mathbb{N}$使得$\forall n>N,|x_{2n-1}-a|<\dfrac{\varepsilon}{2}$；任意$\varepsilon>0$，存在$N_2\in\mathbb{N}$使得$\forall n>N,|x_{2n}-a|<\dfrac{\varepsilon}{2}$，则数列$\{x_n\}$收敛于$a$；那么对$2n-1$代入$n=N_1+1$，对$2n$代入$n=N_2+1$，可知取$N=\max\{2N_1+4,2N_2+4\}$，则$\forall n>N,|x_{n}-a|<\dfrac{\varepsilon}{2}+\dfrac{\varepsilon}2=\varepsilon$，则数列$\{x_n\}$收敛于$a$.
 \end{solution}
 \begin{example}{2.5-B-4}{}
     证明：若 $f(x)$ 为定义于 $[a, +\infty)$ 上的单调增加函数，则极限 $\lim_{x \to +\infty} f(x)$ 存在的充要条件是 $f(x)$ 在 $[a, +\infty)$ 上有上界.
@@ -309,7 +316,7 @@ $(1)\displaystyle \lim_{n\to\infty}\dfrac{n^3-1}{n^2+1}=\infty~~(2)\lim_{n\to\in
 \end{example}
 \begin{solution}
     （1）$\displaystyle \lim_{x\to 0}\dfrac{\tan 5x}{2x}=\lim_{x\to 0}\dfrac{5x}{2x}=\dfrac25$.\\
-    （2）$\displaystyle \lim_{x\to 0}\dfrac{\sin(x^m)}{(\sin x)^n}=\lim_{x\to 0}\dfrac{x^m}{x^n}=x^{m-n}$.\\当$m>n$时，$\lim_{x\to 0}\dfrac{\sin(x^m)}{(\sin x)^n}=0$；\\当$m=n$时，$\lim_{x\to 0}\dfrac{\sin(x^m)}{(\sin x)^n}=1$；\\当$m<n$时，$\lim_{x\to 0}\dfrac{\sin(x^m)}{(\sin x)^n}=\infty$.\\
+    （2）$\displaystyle \lim_{x\to 0}\dfrac{\sin(x^m)}{(\sin x)^n}=\lim_{x\to 0}\dfrac{x^m}{x^n}=\lim_{x\to 0}x^{m-n}$.\\当$m>n$时，$\lim_{x\to 0}\dfrac{\sin(x^m)}{(\sin x)^n}=0$；\\当$m=n$时，$\lim_{x\to 0}\dfrac{\sin(x^m)}{(\sin x)^n}=1$；\\当$m<n$时，$\lim_{x\to 0}\dfrac{\sin(x^m)}{(\sin x)^n}=\infty$.\\
     （3）$\displaystyle \lim_{x\to 0}\dfrac{\tan x-\sin x}{\sin^3 x}=\lim_{x\to 0}\dfrac{\tan x(1-\cos x)}{\sin^3x}=\lim_{x\to 0}\dfrac{x\frac12x^2}{x^3}=\dfrac12$.\\
     （4）$\displaystyle \lim_{x\to 0}\dfrac{\sqrt{1+x^2}-1}{1-\cos x}=\lim_{x\to 0}\dfrac{1+\frac12x^2-1}{\frac12x^2}=1$.
 \end{solution}
@@ -341,7 +348,147 @@ $(1)\displaystyle \lim_{n\to\infty}\dfrac{n^3-1}{n^2+1}=\infty~~(2)\lim_{n\to\in
     \[\displaystyle \lim_{x\to 0}\dfrac{o(x^n)\cdot o(x^m)}{x^n\cdot x^m}=\lim_{x\to 0}\dfrac{x^no(1)x^mo(1)}{x^n\cdot x^m}=\lim_{x\to 0}\left(o(1)\cdot o(1)\right)=0\]
     由定义得到$o(x^n)\cdot o(x^m)=o(x^{n+m}),(n,m>0)$.
 \end{solution}
+\begin{example}{2.7-B-2}{}
+判断$x=0$处的间断点类型
+（1）$f(x)=\begin{cases}\dfrac{e^{1/x}+1}{e^{1/x}-1},x\ne 0\\0,x=0\end{cases}$；（2）$\displaystyle\lim_{n\to\infty}\dfrac{nx}{1+nx^2}$.
+\end{example}
+\begin{solution}
+（1）$\displaystyle\lim_{x\to 0^-}=\dfrac{0+1}{0-1}=-1,\lim_{x\to 0^+}=\dfrac{1}{1}=1$，所以$f(x)$在$x=0$两侧的极限均存在，但不等于$f(0)$，且$f(0^-)\neq f(0^+)$，所以是跳跃间断点.\\
+（2）$\displaystyle\lim_{n\to\infty}\dfrac{nx}{1+nx^2}=\lim_{n\to\infty}\dfrac{x}{\frac{1}{n}+x^2}=\lim_{n\to\infty}\dfrac{x}{0+x^2}=\dfrac{1}{x}$，所以$x=0$为无穷间断点.
+\end{solution}
+\begin{example}{2.7-B-3}{}
+    设函数$\displaystyle f(x)=\lim_{n\to\infty}\dfrac{1+x}{1+x^{2n}}$，试找出其间断点.
+\end{example}
+\begin{solution}
+    观察发现分母在$x=1$处的变化速度很快，计算$f(x)$的分段函数得到：
+    \[f(x)=\begin{cases}0,x=-1\\0,|x|>1\\1+x,|x|<1\\1,x=1\end{cases}\]
+    所以$f(1^-),f(1),f(1^+)$都不等，所以$x=1$为间断点.
+\end{solution}
+\begin{example}{2.7-B-4}{}
+    试确定 $a,b$ 的值, 使 $f(x)=\dfrac{\e^x-b}{(x-a)(x-1)}$ 有无穷间断点 $x=0$, 有可去间断点 $x=1$.\end{example}
+\begin{solution}
+    （1）由题意得到$f(x)$在$x=0$处左极限和右极限至少一个为无穷大，假设$a\ne 0$，由于$f(x)$为初等函数，所以$\displaystyle\lim_{x\to 0}\dfrac{\e^x-b}{(x-a)(x-1)}=\dfrac{1-b}{a}$为常数，矛盾，所以$a=0$；当$b=1$时，$\displaystyle \lim_{x\to 0}\dfrac{\e^x-1}{x(x-1)}=\lim_{x\to 0}\dfrac{1}{1-x}=1$，所以需要同时满足$a=0,b\ne 1$，下证充分性，当$a=0,b\ne 1$时\[\displaystyle\lim_{x\to 0}\dfrac{\e^x-b}{(x-a)(x-1)}=\displaystyle\lim_{x\to 0}\dfrac{\e}{x}+\dfrac{\e-b}{x-1}=\infty\]
+    （2）要使得$f(x)$有可去间断点 $x=1$，则$f(1^-)=f(1^+)$，假设$b\ne \e$，计算发现\[\displaystyle\lim_{x\to 1}\dfrac{e^x-b}{(x-a)(x-1)}=\lim_{x\to 1}\dfrac{\e-b}{(x-1)(1-a)}=\infty\]
+    矛盾，所以$b=\e$为必要条件，当$b=\e$时，计算极限并使用等价无穷小替换：\[\displaystyle\lim_{x\to 1}\dfrac{\e^x-\e}{(x-a)(x-1)}=\lim_{x\to 1}\dfrac{\e(\e^{x-1}-1)}{(x-a)(x-1)}=\lim_{x\to 1}\dfrac{\e}{1-a}\]所以$a\ne 1$，下面证明充分性。当$a\ne 1,b=\e$时，$\displaystyle\lim_{x\to 1}\dfrac{\e^x-\e}{(x-a)(x-1)}=\lim_{x\to 1}\dfrac{\e(\e^{x-1}-1)}{(x-a)(x-1)}=\lim_{x\to 1}\dfrac{\e}{1-a}=\e$，所以此时$f(1^-)=f(1^+)=\e$，因此$x=1$为可去间断点，等价于$a\ne 1,b=\e$.\\
+    所以答案为$a=0,b\ne 1;a\ne 1,b=\e$.
+\end{solution}
+\begin{example}{2.8-A-3 求极限}{}
+    $\lim_{x\to\frac{\pi}{2}}\left(2\cos^2\dfrac{x}2\right)^{3\sec x},~\lim_{x\to+\infty}(\arctan x)^{\cos\frac1x},~\lim_{x\to 0}\left[\dfrac{\ln(\cos^2x+\sqrt{1-x^2})}{e^x+\sin x}+(1+x)^x\right]$
+\end{example}
+\begin{solution}
+    （1）$\displaystyle\lim_{x\to\frac{\pi}{2}}\left(2\cos^2\dfrac{x}2\right)^{3\sec x}=\lim_{x\to\frac{\pi}{2}}\left[(1+\cos x)^{\frac1{\cos x}}\right]^3=\e^3$.\\
+    （2）由于该函数为初等函数，故$\displaystyle\lim_{x\to+\infty}(\arctan x)^{\cos\frac1x}=\left(\dfrac{\pi}{2}\right)^1=\frac{\pi}{2}$.\\
+    （3）$\displaystyle\lim_{x\to 0}\left[\dfrac{\ln(\cos^2x+\sqrt{1-x^2})}{e^x+\sin x}+(1+x)^x\right]=1+\lim_{x\to 0}\ln(\cos^2x+\sqrt{1-x^2})=1+\ln 2$.
+\end{solution}
+\begin{example}{2.8-A-5}{}
+    证明下列方程在给定区间至少有一个根：$x2^x=1,x\in[0,1];x^3+px-q=0,p>0,x\in R$
+\end{example}
+\begin{solution}
+    （1）设初等函数$f(x)=x2^x-1$在$[0,1]$上连续，且$f(0)=-1,f(1)=1$，由零点存在性定理知$f(x)$在$[0,1]$上有至少一个根.\\
+    （2）设初等函数$g(x)=x^3+px-q$在$R$上连续，\[\begin{cases}\displaystyle\lim_{x\to-\infty}g(x)=\displaystyle\lim_{x\to-\infty}x^3\left(1+\dfrac{p}{x^2}-\dfrac{q}{x^3}\right)=-\infty\\\displaystyle\lim_{x\to+\infty}g(x)=\displaystyle\lim_{x\to+\infty}x^3\left(1+\dfrac{p}{x^2}-\dfrac{q}{x^3}\right)=+\infty\end{cases}\]零点存在性定理知$g(x)$在$R$上有至少一个根.
+\end{solution}
+\begin{example}{2.8-A-6}{}
+    设 $f(x)\in C[0,1]$,并且 $\forall x\in[0,1],0<f(x)<1($画-图).求证：$\exists x_0\in(0,1)$,使得$f(x_0)=x_0$.
+\end{example}
+\begin{solution}
+    设连续函数$g(x)=f(x)-x$，则$g(0)=f(0)-0>0,g(1)=f(1)-1<0$，由零点存在性定理知$g(x)$在$[0,1]$上有根$x_0$，$\exists x_0\in(0,1)$,使得$f(x_0)=x_0$.
+\end{solution}
+\begin{example}{2.8-B-2}{}
+    $\text{证明:若}f(x)\in C(-\infty,+\infty),\text{且}\lim_{x\to+\infty}f(x)\text{与}\lim_{x\to-\infty}f(x)\text{都存在},\text{则 }f(x)\text{必有界}.$
+\end{example}
+\begin{solution}
+   设$\displaystyle\lim_{x\to+\infty}f(x)=A$，则任意$\varepsilon_1>0$，存在$N_1\in R$使得$\forall x>N_1$，有$|f(x)-A|<\varepsilon_1$，即$A-\varepsilon_1<f(x)<A+\varepsilon_1$，说明$f(x)$在$(N_1,+\infty)$有上界$A+\varepsilon_1$和下界$A-\varepsilon_1$；设$\displaystyle\lim_{x\to-\infty}f(x)=B$，则任意$\varepsilon_2>0$，存在$N_2\in R$使得$\forall x<N_2$，有$|f(x)-B|<\varepsilon_2$，即$B-\varepsilon_2<f(x)<B+\varepsilon_2$，说明$f(x)$在$(-\infty,N_2)$有上界$B+\varepsilon_2$和下界$B-\varepsilon_2$；由于$f(x)$在$[N_2,N_1]$上连续，所以在$[N_2,N_1]$上也有上界$C_1$，有下界$C_2$，则取$D_1=\max\{C_1,A+\varepsilon_1,B+\varepsilon_2\},D_2=\min\{C_2,A-\varepsilon_1,B-\varepsilon_2\}$，则$f(x)$在$(-\infty,+\infty)$上有上界$D_1$和下界$D_2$；证毕.
+\end{solution}
+\begin{example}{2.8-B-3}{}
+    设$f(x)\in C(a,b)$，且$f(a^+)$与$f(b^-)$都存在，证明$f(x)$在$(a,b)$上一致连续.
+\end{example}
+\begin{solution}
+    补充定义函数$g(x)=\begin{cases}f(a^+),x=a\\f(x),x\in(a,b)\\f(b^-),x=b\end{cases}$，则$\displaystyle g(a^+)=\lim_{x\to a^+}g(x)=\lim_{x\to a^+}f(x)=f(a^+)=g(a)$，所以$g(x)$在$a$点右连续，同理$g(b)$在$b$点左连续，由此可知$g(x)$在$[a,b]$上一致连续，那么$f(x)$在$(a,b)$上一致连续.
+\end{solution}
+\begin{example}{2.8-B-4}{}
+    设$f(x)$在$[a,b]$上满足$|f(x)-f(y)|\leq L|x-y|,\forall x,y\in[a,b]$，$L$为常数，证明$f(x)$在$(a,b)$上一致连续.
+\end{example}
+\begin{solution}
+    任意$\varepsilon>0$，存在仅与$\varepsilon$有关的$\delta = \dfrac{\varepsilon}L$，使得$\forall x,y\in[a,b],|x-y|<\delta=\dfrac{\varepsilon}L$，有$|f(x)-f(y)|\leq L|x-y|<L\dfrac{\varepsilon}L=\varepsilon$，即$f(x)$在$(a,b)$上一致连续.
+\end{solution}
 \newpage
+\begin{example}{}{}
+    数列$\{a_n\}$满足$a_1=1,a_{n+1}=\dfrac{a_1+a_2+\cdots+a_{n-1}+a_n}{a_1a_2\cdots a_{n-1}a_n}$，试求$\{a_n\}$的渐进.
+\end{example}
+\begin{solution}
+    设数列$\{a_n\}$的前$n$项和为$S_n$，前$n$项积为$T_{n}$，则有
+    \[a_{n+1}=\dfrac{S_n}{T_{n}}=\dfrac{S_n}{a_nT_{n-1}}=\dfrac{S_n}{\frac{S_{n-1}}{T_{n-1}}T_{n-1}}=\dfrac{S_{n}}{S_{n-1}}\]
+    转化为估计$S_n$的阶，将$a_{n+1}=S_{n+1}-S_n$代入得到：\[S_1=1,S_2=2,S_{n+1}=S_n+\dfrac{S_{n}}{S_{n-1}}\]
+    下面估计$S_n$的主阶，先考察它的有界性和单调性，由
+    \[S_n>0,S_{n+1}-S_n=\dfrac{S_{n}}{S_{n-1}}>0\Rightarrow S_{n+1}>S_n\]
+    可知$S_n$是单调递增的，再次代入递推式有\[S_{n+1}-S_n=\dfrac{S_{n}}{S_{n-1}}>1\Rightarrow S_{n+1}-S_n>1\Rightarrow S_n\geq n\]
+    所以$S_n$发散到正无穷，无上界，我们再把这个结论代入到递推公式中：
+    \[S_{n+1}=S_n+\dfrac{S_{n}}{S_{n-1}}\Leftrightarrow \dfrac{S_{n+1}}{S_n}=1+\dfrac{1}{S_{n-1}}\to 1~~(n\to \infty)\]
+    当$n$趋于无穷时，$S_n\sim n$，构造$b_n=S_n-n$以得到更精确的阶，将$S_n=n+b_n$代入递推公式：
+    \[S_{n+1}-S_n=\dfrac{S_{n}}{S_{n-1}}\Leftrightarrow b_{n+1}-b_n=\dfrac{n+b_n}{n-1+b_{n-1}}-1=\dfrac{1+\frac{b_n}{n}}{1-\left(\frac1{n}-\frac{b_{n-1}}{n}\right)}-1\]
+泰勒展开可得：
+\begin{align*}
+    b_{n+1}-b_n=&-1+\left(1+\frac{b_n}{n}\right)\left(1+\left(\frac{1}{n}-\frac{b_{n-1}}{n}\right)+O\left(\frac{1}{n^2}\right)\right)\\
+    =&-1+\left(1+\frac{b_n}{n}\right)+\dfrac1{n}\left(1+\frac{b_n}{n}\right)-\frac{b_{n-1}}{n}\left(1+\frac{b_n}{n}\right)+O\left(\frac{1}{n^2}\right)\\
+    =&\dfrac1{n}+\dfrac{b_n-b_{n-1}}{n}+\dfrac{b_n(1-b_{n-1})}{n^2}+O\left(\frac{1}{n^2}\right)\\
+    =&\dfrac1{n}+O\left(\frac{1}{n^2}\right)\\
+    \Rightarrow b_{n+1}-b_n\sim &\frac1{n}\Rightarrow b_n\sim \ln n+O(1)\Rightarrow S_n= n+b_n\sim n+\ln n+O(1)
+\end{align*}
+所以$\{S_n\}$的阶为$n+\ln n+c+o(1)$，代入$a_n=\dfrac{S_{n-1}}{S_{n-2}}$得到：
+\[a_n=\frac{S_{n-1}}{S_{n-2}}=\frac{(n-1)+\ln(n-1)+c+o(1)}{(n-2)+\ln(n-2)+c+o(1)}\]
+并利用
+\[\ln(n-1)=\ln n-\frac{1}{n}-\frac{1}{2n^2}+O\left(\frac{1}{n^3}\right),\quad\ln(n-2)=\ln n-\frac{2}{n}-\frac{2}{n^2}+O\left(\frac{1}{n^3}\right)\]
+代入：
+\begin{align*}S_{n-1}&=n-1+\ln n+c-\frac{1}{n}-\frac{1}{2n^2}+O\left(\frac{1}{n^3}\right)=n\left(1+\frac{\ln n+c-1}{n}-\frac{3}{2n^2}+O\left(\frac{1}{n^3}\right)\right)\\S_{n-2}&=n-2+\ln n+c-\frac{2}{n}-\frac{2}{n^2}+O\left(\frac{1}{n^3}\right)=n\left(1+\frac{\ln n+c-2}{n}-\frac{4}{n^2}+O\left(\frac{1}{n^3}\right)\right)\end{align*}
+故技重施：
+\[\frac{1}{S_{n-2}}=\frac{1}{n}\left(1-\frac{\ln n+c-2}{n}+\frac{(\ln n+c-2)^2+4}{n^2}+O\left(\frac{1}{n^3}\right)\right)\]
+代入得到\begin{align*}
+    a_n=&\left(1+\frac{\ln n+c-1}{n}-\frac{3}{2n^2}\right)\cdot\left(1-\frac{\ln n+c-2}{n}+\frac{(\ln n+c-2)^2+4}{n^2}\right)+O\left(\frac{1}{n^3}\right)\\
+    =&1-\frac{\ln n+c-2}{n}+\frac{\ln n+c-1}{n}+\frac{(\ln n+c-2)^2+2}{n^2}\\&-\frac{(\ln n+c-1)(\ln n+c-2)}{n^2}-\frac{1}{n^2}+O\left(\frac{1}{n^3}\right)\\
+    =&1+\frac{1}{n}+\frac{3-c-\ln n}{n^2}+O\left(\frac{1}{n^3}\right)
+\end{align*}
+\end{solution}
+\begin{example}{}{}
+    数列$\{a_n\}$满足$a_1=1,a_{n+1}=\dfrac{a_1+a_2+\cdots+a_{n-1}+a_n}{a_1a_2\cdots a_{n-1}a_n}$，找到一个正整数$k$，使得$n\geq k$时，$a_n<1+\dfrac1n$.
+\end{example}
+\begin{solution}
+\end{solution}
+\begin{example}{}{}
+    数列$\{a_n\}$满足$a_1=1,a_{n+1}=a_{n}+\dfrac{1}{a_{n}}$，求$\{a_n\}$的渐进.
+\end{example}
+\begin{solution}
+    解微分方程
+    \[a_{n+1}-a_n=\dfrac1{a_n}\Rightarrow \dfrac{\dd a}{\dd n}=\dfrac{1}{a}\Rightarrow a\dd a=\dd n\Rightarrow a \sim\sqrt{2n}\Rightarrow a_n^2\sim 2n\]
+    设$a_n^2=b_n+2n$，代入递推公式得到
+    \[a_{n+1}=a_n^2+\dfrac{1}{a_n^2}+2\Leftrightarrow 2(n+1)+b_{n+1}=2n+b_n+2+\dfrac1{2n+b_n}\]
+    化简得到$b_{n+1}=b_n+\dfrac{1}{2n+b_n}=b_n+\dfrac{\frac{1}{2n}}{1-(-\frac{b_n}{2n})}$，泰勒展开：
+    \[b_{n+1}-b_n\sim \dfrac1{2n}-\dfrac{b_n}{4n^2}+O\left(\dfrac1{n^3}\right)\Rightarrow b_n\sim \dfrac12\ln n+c_n\]
+    再次代入递推公式：\[\]
+\end{solution}
+\begin{example}{}{}
+    已知$k$为正整数，求积分$\displaystyle \int_{0}^{\pi}\dfrac{x\sin^{2k}x}{\sin^{2k}x+\cos^{2k}x}\dd x$
+\end{example}
+\begin{solution}
+    \begin{align*}
+        I&=\int_{0}^{\pi}\dfrac{x\sin^{2k}x}{\sin^{2k}x+\cos^{2k}x}\dd x=\int_{-\pi}^{0}\dfrac{(x+\pi)\sin^{2k}x}{\sin^{2k}x+\cos^{2k}x}\\
+        &=\int_{-\pi}^0\dfrac{x\sin^{2k}x}{\sin^{2k}x+\cos^{2k}x}\dd x+\pi\int_{0}^{\pi}\dfrac{\sin^{2k}x}{\sin^{2k}x+\cos^{2k}x}\dd x=-I+\pi\int_{0}^{\pi}\dfrac{\sin^{2k}x}{\sin^{2k}x+\cos^{2k}x}\dd x\\
+        &=-I+\pi\int_{-\frac{\pi}{2}}^{\frac{\pi}{2}}\dfrac{\cos^{2k}x}{\sin^{2k}x+\cos^{2k}x}\dd x=-I+2\pi\int_{0}^{\frac{\pi}{2}}\dfrac{\cos^{2k}x}{\sin^{2k}x+\cos^{2k}x}\dd x\\
+        &=-I+2\pi\int_{-\frac{\pi}{2}}^0\dfrac{\sin^{2k}x}{\sin^{2k}x+\cos^{2k}x}\dd x=-I+2\pi\int_0^{\frac{\pi}{2}}\dfrac{\sin^{2k}x}{\sin^{2k}x+\cos^{2k}x}\dd x\\
+        &=-I+\pi\int_0^{\frac{\pi}{2}}\dfrac{\sin^{2k}x+\cos^{2k}x}{\sin^{2k}x+\cos^{2k}x}\dd x=-I+\dfrac{\pi^2}2\\
+    \Rightarrow I&=\dfrac{\pi^2}{4}.
+    \end{align*}
+\end{solution}
+\begin{example}{}{}
+    给出$\displaystyle\int^1_0\dfrac{\ln(1+x)}{x}\dd x=\dfrac{\pi^2}{12}$，计算$\displaystyle\int_0^1\int_0^y\dfrac{\ln(1+x)}{x}\dd x\dd y$.
+\end{example}
+\begin{solution}
+    根据所给式子，得到$0\leq x\leq y$（因为$x$从$0$到$y$积分），再根据外层积分确定$0\leq y\leq 1$，所以$0\leq x\leq y\leq1$，所以:
+    \begin{align*}
+        \int_0^1\int_0^y\dfrac{\ln(1+x)}{x}\dd x\dd y&=\int_0^1\int_{x}^1\dfrac{\ln(1+x)}{x}\dd y\dd x=\int_0^1\dfrac{(1-x)\ln(1+x)}{x}\dd x\\
+        &=\int_0^1\dfrac{\ln(1+x)}{x}\dd x-\int_0^1\ln(x+1)\dd x\\
+        &=\dfrac{\pi^2}{12}-2\ln 2+1
+    \end{align*}
+\end{solution}
 \begin{example}{}{}
     求积分$\displaystyle \int\dfrac{\dd x}{\sin^6x+\cos^6x}$
 \end{example}

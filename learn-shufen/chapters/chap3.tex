@@ -1,0 +1,79 @@
+\chapter{一元函数微分学}
+\section{习题3.1}
+\begin{example}{3.1-A-3}{}
+下列各式可否成为$f(x)$在$x_{0}$点的导数的定义？请说明理由.\\
+(1) $y=f(x)$在$(a,b)$内定义,$x_{0}\in(a,b)$，若极限$\displaystyle\lim_{\Delta x \to 0}\frac{f(x_{0})-f(x_{0}-\Delta x)}{\Delta x}$存在,则称该极限为$f(x)$在$x_{0}$点的导数.\\
+(2) $y=f(x)$在$(a,b)$内定义,$x_{0}\in(a,b)$，若极限$\displaystyle\lim_{x \to x_{0}}\frac{f(x)-f(x_{0})}{x-x_{0}}$存在,则称该极限为$f(x)$在$x_{0}$点的导数.\\
+(3) $y=f(x)$在$(a,b)$内定义,$x_{0}\in(a,b)$，若极限$\displaystyle\lim_{\Delta x \to 0}\frac{f(x_{0}+\Delta x)-f(x_{0}-\Delta x)}{2\Delta x}$存在,则称该极限为$f(x)$在$x_{0}$点的导数.                                                   
+\end{example}
+\begin{solution}
+（1）可以，因为\[\lim_{\Delta x \to 0}\dfrac{f(x_0)-f(x_0-\Delta x)}{\Delta x}=\lim_{\Delta x \to 0}\dfrac{f(x_0-\Delta x)-f(x_0)}{-\Delta x}=f'(x_0)\]
+（2）可以，因为\[\lim_{x \to x_{0}}\dfrac{f(x)-f(x_{0})}{x-x_{0}}=\lim_{x-x_0\to 0}\dfrac{f(x)-f(x_{0})}{x-x_0}=\lim_{x-x_0\to 0}\dfrac{f(x_0+x-x_0)-f(x_0)}{x-x_0}=f'(x_0)\]
+（3）不可以，当$f'(x_0)$存在时，该极限等于$f'(x_0)$，这是因为
+\begin{align*}
+    \lim_{\Delta x \to 0}\frac{f(x_{0}+\Delta x)-f(x_{0}-\Delta x)}{2\Delta x}&=\lim_{\Delta x \to 0}\frac{f(x_{0}+\Delta x)-f(x_{0})+f(x_{0})-f'(x_{0}-\Delta x)}{2\Delta x}\\
+    &=\lim_{\Delta x \to 0}\frac{f(x_{0}+\Delta x)-f(x_{0})}{2\Delta x}+\lim_{\Delta x \to 0}\frac{f(x_{0})-f'(x_{0}-\Delta x)}{2\Delta x}\\
+    &=\dfrac12 f'(x_0)+\dfrac12 f'(x_0)=f'(x_0)
+\end{align*}
+但是当$f'(x_0)$不存在，而左右导数存在时，该极限推出的是左导数和右导数的平均值，并非$f'(x_0)$，比如当$f(x)=|x|,x=0$导数不存在，但是\[\lim_{\Delta x \to 0}\frac{f(x_{0}+\Delta x)-f(x_{0}-\Delta x)}{2\Delta x}=\lim_{\Delta\to 0}\dfrac{|\Delta x|-|-\Delta x|}{2\Delta x}=0\]矛盾，所以不可以用作导数的定义.
+\end{solution}
+\begin{example}{3.1-A-9}{}
+    利用定义求函数在$x=0$处的导数$f(x)=\begin{cases}x^2\sin \dfrac1{x},x\neq 0\\0,x=0\end{cases}$.
+\end{example}
+\begin{solution}
+    利用定义，有\[f'(0)=\lim_{h\to 0}\dfrac{f(0+h)-f(0)}{h}=\lim_{h\to 0}h\sin \dfrac1{h}=0\]
+\end{solution}
+\begin{example}{3.1-B-3}{}
+    求证：偶函数的导数是奇函数，奇函数的导数是偶函数；
+\end{example}
+\begin{solution}
+    设$f(x)$是偶函数，所以$f(x)-f(-x)=0$，两边求导得到$f'(x)+f'(-x)=0$，所以偶函数的导数是奇函数；设$f(x)$是奇函数，所以$f(x)+f(-x)=0$，两边求导得到$f'(x)-f'(-x)=0$，所以奇函数的导数是偶函数\\我们也可以考虑定义：设$f(x)$是偶函数，所以\[f'(x)=\lim_{h\to 0}\dfrac{f(x+h)-f(x)}{h}=\lim_{h\to 0}\dfrac{f(-x-h)-f(-x)}{-(-h)}=-f'(-x)\]所以偶函数的导数是奇函数；设$f(x)$是奇函数，所以\[f'(x)=\lim_{h\to 0}\dfrac{f(x+h)-f(x)}{h}=\lim_{h\to 0}\dfrac{f(-x)-f(-x-h)}{-(-h)}=f'(-x)\]所以奇函数的导数是偶函数。
+\end{solution}
+\begin{example}{3.1-B-4}{}
+    求证：周期函数的导数仍然是周期函数
+\end{example}
+\begin{solution}
+    设$f(x)$是周期函数，$T$是周期，$f(x+T)=f(x)$，则两边求导得到$f'(x+T)=f'(x)$，所以$f'(x)$也是周期函数，也可以从定义考虑：\[f'(x)=\lim_{h\to 0}\dfrac{f(x+h)-f(x)}{h}=\lim_{h\to 0}\dfrac{f(x+T+h)-f(x+T)}{h}=f'(x+T)\]所以$f'(x)$是周期函数.
+\end{solution}
+\begin{example}{3.2-A-2}{}
+    求导（1）$y=1-\dfrac1x+\dfrac1{x^2}$；（2）$y=\dfrac1{x^3+2x+1}$；（3）$y=\dfrac1{x+\sqrt{x}}$.
+\end{example}
+\begin{solution}
+    （1）$y'=\dfrac1{x^2}-\dfrac2{x^3}$；（2）$y'=\dfrac{-3x^2-2}{(x^3+2x+1)^2}$；（3）$y'=-\dfrac{1+2\sqrt{x}}{2\sqrt{x}(x+\sqrt{x})^2}$
+\end{solution}
+\begin{example}{3.2-A-4}{}
+    求导（1）$y=\ln(x+\sqrt{1+x^2})$；（2）$y=\dfrac{x}{\sqrt{a^2-x^2}}$；（3）$y=\sqrt{x+\sqrt{x+\sqrt{x}}}$.
+\end{example}
+\begin{solution}
+    （1）$y'=\dfrac{1+\frac{2x}{2\sqrt{1+x^2}}}{x+\sqrt{1+x^2}}=\dfrac1{\sqrt{1+x^2}}$；\\
+    （2）$y'=\dfrac{\sqrt{a^2-x^2}-x\frac{-2x}{2\sqrt{a^2-x^2}}}{(\sqrt{a^2-x^2})^2}=\dfrac{a^2}{(\sqrt{a^2-x^2})^3}$；\\
+    （3）$y'=\dfrac{1+\frac{1+\frac1{2\sqrt{x}}}{2\sqrt{x+\sqrt{x}}}}{2\sqrt{x+\sqrt{x+\sqrt{x}}}}=\dfrac{1+2\sqrt{x}+4\sqrt{x}\sqrt{x+\sqrt{x}}}{8\sqrt{x}\sqrt{x+\sqrt{x}}\sqrt{x+\sqrt{x+\sqrt{x}}}}$.
+\end{solution}
+\begin{example}{3.2-B-1}{}
+    设 $y=f(x)$为严格递增的可导函数，$x=\varphi(y)$是它的反函数.证明：\\
+(1) 当 $h\neq 0$时 ,$ f( x+ h) - f( x) = k\neq 0$，若 记 $f( x+ h) = y+ k$, 则$\varphi ( y+ k) = x+ h.$\\
+(2)当$k\to0$时，$\dfrac{\varphi(y+k)-\varphi(y)}{k}=\dfrac{h}{k}=\dfrac{h}{y+k-y}=\dfrac{h}{f(x+h)-f(x)}$趋于$\dfrac1{f^{\prime}(x)}.$
+\end{example}
+\begin{solution}
+    （1）由$x=\varphi(f(x))=f(\varphi(x))$，以及 $y=f(x)$为严格递增的可导函数，所以$\varphi'(x)=\dfrac{1}{f'(\varphi(x))}>0$，所以$x=\varphi(y)$为严格递增的可导函数，所以\[f( x+ h) = y+ k\Rightarrow \varphi(f(x+h))=x+h=\varphi ( y+ k)\]\\
+    （2）$\displaystyle\lim_{k\to 0}\dfrac{\varphi(y+k)-\varphi(y)}{k}=\lim_{h\to 0}\dfrac{1}{\dfrac{f(x+h)-f(x)}{h}}=\dfrac1{f'(x)}$，这里$h\to 0\Leftrightarrow k\to 0$.
+\end{solution}
+\begin{example}{3.2-B-2}{}
+    $\text{设 }f(x)=x^3+2x^2+3x+1,\text{用 }\varphi\text{表示 }f\text{ 的反函数}.\text{求证}:f(1)=7,\varphi(7)=1.\text{并计算}\varphi^{\prime}(7).$
+\end{example}
+\begin{solution}
+代入得到$f(1)=1+2+3+1=7$，所以$\varphi(7)=1$，由$f(x)=x^3+2x^2+3x+1$可得$f'(x)=3x^2+4x+3$，所以$\varphi^{\prime}(7)=\dfrac{1}{f'(\varphi(7))}=\dfrac{1}{f'(1)}=\dfrac1{10}$.
+\end{solution}
+\begin{example}{3.2-B-3}{}
+    $\text{设 }y=(\arcsin x)^{2},\text{证明}(1-x^{2})y''-xy'=2.$
+\end{example}
+\begin{solution}
+    两边求导数得到$y'=2\arcsin x\cdot \dfrac1{\cos\arcsin x}=2\dfrac{\arcsin x}{\sqrt{1-x^2}}$，所以$\sqrt{1-x^2}y'=2\arcsin x$，再次两边求导得到$\sqrt{1-x^2}y''+\dfrac{-2x}{2\sqrt{1-x^2}}y'=\dfrac2{\sqrt{1-x^2}}$，等价变形就有$(1-x^{2})y''-xy'=2$.
+\end{solution}
+\begin{example}{3.2-B-4}{}
+    求下列函数的$n$阶导数$y^{(n)}$：（1） $y= \frac 1{1- x^{2}}$ ;（2） $y= \sin ^{2}x.$
+\end{example}
+\begin{solution}
+    （1）裂项有$y=\dfrac12\left(\dfrac1{1+x}+\dfrac1{1-x}\right)$，所以$y^{(n)}=\dfrac12\left[\left(\dfrac1{1+x}\right)^{(n)}+\left(\dfrac1{1-x}\right)^{(n)}\right]$，求$n$阶导数有$y^{(n)}=\dfrac12\left[\dfrac{(-1)^nn!}{(1+x)^{n+1}}+\dfrac{n!}{(1-x)^{n+1}}\right]$\\
+    （2）$y=\sin^x=\dfrac12(1-\cos 2x),y^{(n)}=\left[\dfrac12-\dfrac12\cos 2x\right]^{(n)}=-2^{n-1}\cos\left(2x+\dfrac{n\pi}2\right)$，诱导公式得到$y^{(n)}=2^{n-1}\sin\left(2x+\dfrac{(n-1)\pi}2\right)$
+\end{solution}
