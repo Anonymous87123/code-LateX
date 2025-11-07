@@ -1,35 +1,120 @@
 \chapter{第四章作业}
+易错点：进行矩阵行变换时不能将上下两行同时加到中间的那一行上（通常是心血来潮），但是往往忽略了可能导致消掉了后面某一列的0，而前面的某一列出现非0的数字
+\newpage
 \begin{example}{}{}
     解线性方程组$\begin{cases}x_1+2x_2-5x_3+4x_4+x_5&=4,\\3x_1+7x_2-x_3-3x_4+2x_5&=10,\\-x_2-13x_3-2x_4+x_5&=-14,\\x_3-16x_4+2x_5&=-11,\\2x_4+5x_5&=12;\end{cases}$.
 \end{example}
 \begin{solution}
+    构造增广矩阵
+    \[\left(\begin{array}{cccccc}1&2&-5&4&1&4\\3&7&-1&-3&2&10\\0&-1&-13&-2&1&-14\\0&0&1&-16&2&-11\\0&0&0&2&5&12\end{array}\right)\rightarrow
+    \left(\begin{array}{cccccc}1&2&-5&4&1&4\\0&1&14&-15&-1&-2\\0&-1&-13&-2&1&-14\\0&0&1&-16&2&-11\\0&0&0&2&5&12\end{array}\right)
+    \]\[\rightarrow
+    \left(\begin{array}{cccccc}1&2&-5&4&1&4\\0&1&14&-15&-1&-2\\0&0&1&-17&0&-16\\0&0&1&-16&2&-11\\0&0&0&2&5&12\end{array}\right)\rightarrow
+     \left(\begin{array}{cccccc}1&2&-5&4&1&4\\0&1&14&-15&-1&-2\\0&0&1&-17&0&-16\\0&0&0&1&2&5\\0&0&0&2&5&12\end{array}\right)
+    \]
+    \[\rightarrow
+    \left(\begin{array}{cccccc}1&2&-5&4&1&4\\0&1&14&-15&-1&-2\\0&0&1&-17&0&-16\\0&0&0&1&2&5\\0&0&0&0&1&2\end{array}\right)
+    \Rightarrow \begin{cases}x_1=1\\x_2=1\\x_3=1\\x_4=1\\x_5=2\end{cases}
+    \]
 \end{solution}
 \begin{example}{}{}
-    设$\beta=( 1, 2, 1, 1)$, $\bv{\alpha }_1= ( 1, 1, 1, 1)$, $\bv{\alpha }_2= ( 1, 1, - 1, - 1)$, $\bv{\alpha }_3= ( 1, - 1, 1, - 1)$,$\bv{\alpha}_4=(1,-1,-1,1).$试将$\beta$表示成向量$\bv{\alpha_1},\bv{\alpha}_2,\bv{\alpha}_3,\bv{\alpha}_4$的线性组合.
+    设$\bv{\beta}=( 1, 2, 1, 1)$, $\bv{\alpha }_1= ( 1, 1, 1, 1)$, $\bv{\alpha }_2= ( 1, 1, - 1, - 1)$, $\bv{\alpha }_3= ( 1, - 1, 1, - 1)$,$\bv{\alpha}_4=(1,-1,-1,1).$试将$\bv{\beta}$表示成向量$\bv{\alpha_1},\bv{\alpha}_2,\bv{\alpha}_3,\bv{\alpha}_4$的线性组合.
 \end{example}
 \begin{solution}
+    构造增广矩阵并进行行变换
+    \[\left(\begin{array}{ccccc}1&1&1&1&1\\1&1&-1&-1&2\\1&-1&1&-1&1\\1&-1&-1&1&1\end{array}\right)\rightarrow
+\left(\begin{array}{ccccc}1&1&1&1&1\\0&0&-2&-2&1\\0&-2&0&-2&0\\0&-2&-2&0&0\end{array}\right)\rightarrow
+\left(\begin{array}{ccccc}1&1&1&1&1\\0&-2&0&-2&0\\0&0&-2&2&0\\0&0&0&-4&1\end{array}\right)
+\]解得$k_1=\dfrac54,k_2=\dfrac14,k_3=-\dfrac14,k_4=-\dfrac14$，所以
+\[\bv{\beta}=\dfrac54\bv{\alpha}_1+\dfrac14\bv{\alpha}_2-\dfrac14\bv{\alpha}_3-\dfrac14\bv{\alpha}_4.\]
 \end{solution}
 \begin{example}{}{}
     设$\bv{\alpha_1}=(3,-1,1),\bv{\alpha}_2=(1,1,2),\bv{\alpha}_3=(1,-3,-3),\bv{\alpha}_4=(4,0,5).$\\
-(1)证明：$\alpha_1,\boldsymbol{\alpha}_2,\boldsymbol{\alpha}_3,\boldsymbol{\alpha}_4$线性相关；\\
-(2) 证明：$\boldsymbol{\alpha}_1,\boldsymbol{\alpha}_2,\boldsymbol{\alpha}_4$ 线性无关.\end{exmaple}
-\begin{solutiom}
-
-\end{solutiom}
-\begin{example}{}{}
-    设向量组 $\alpha_{1}, \alpha_{2}, \alpha_{3}$ 线性无关. 证明: 向量组 $\alpha_{1}, \alpha_{1}+\alpha_{2}, \alpha_{1}+\alpha_{2}+\alpha_{3}$ 也线性无关.
+(1)证明：$\bv{\alpha_1},\bv{\alpha}_2,\bv{\alpha}_3,\bv{\alpha}_4$线性相关；\\
+(2) 证明：$\bv{\alpha}_1,\bv{\alpha}_2,\bv{\alpha}_4$ 线性无关.
 \end{example}
 \begin{solution}
+（1）证明$k_1\bv{\alpha_1}+k_2\bv{\alpha}_2+k_3\bv{\alpha}_3+k_4\bv{\alpha}_4=\bv{0}$有非零解，系数矩阵$\bv{A}$与增广矩阵$\bv{\widetilde{A} }$:
+\[\bv{A}=\left(\begin{array}{ccccc}3&1&1&4\\-1&1&-3&0\\1&2&-3&5\end{array}\right),\bv{\widetilde{A}}=\left(\begin{array}{ccccc}3&1&1&4&0\\-1&1&-3&0&0\\1&2&-3&5&0\end{array}\right)\]
+取前三列写出行列式计算，易得$r(\bv{A})=r(\bv{\widetilde{A} })$所以有非零解，$\alpha_1,\alpha_2,\alpha_3,\alpha_4$线性相关.\\
+（2）证明$\bv{\alpha}_1,\bv{\alpha}_2,\bv{\alpha}_4$线性无关，构造系数矩阵:
+\[\left(\begin{array}{ccccc}3&1&4\\-1&1&0\\1&2&5\end{array}\right)\rightarrow \left(\begin{array}{ccccc}1&2&5\\-1&1&0\\3&1&4\end{array}\right)\rightarrow \left(\begin{array}{ccccc}1&2&5\\0&3&5\\0&-5&-11\end{array}\right)\]
+计算行列式，得$|\bv{A}|\neq0$，所以$r(\bv{A})=3$，与列数相等，所以方程组无非零解，$\alpha_1,\alpha_2,\alpha_4$线性无关.
 \end{solution}
 \begin{example}{}{}
-    $\text{ 在 }\mathbb{R}^3\text{ 中},\text{ 求由基 }\bv{\alpha}_1=(1,2,-1),\bv{\alpha}_2=(1,-1,1),\bv{\alpha}_3=(-1,2,1)\text{到基 }\bv{\beta}_1=(2,0,1),\bv{\beta}_2=(0,1,1),\bv{\beta}_3=(1,-1,2)\text{的过渡矩阵}.$
+    设向量组 $\bv{\alpha_{1}, \alpha_{2}, \alpha_{3}}$ 线性无关. 证明: 向量组 $\bv{\alpha_{1}, \alpha_{1}+\alpha_{2}, \alpha_{1}+\alpha_{2}+\alpha_{3}}$ 也线性无关.
 \end{example}
 \begin{solution}
+    即证明\[k_1\bv{\alpha_{1}}+k_2(\bv{\alpha_{1}+\alpha_{2}})+k_3(\bv{\alpha_{1}+\alpha_{2}+\alpha_{3}})=\bv{0}\]只有零解，即
+    \[(k_1+k_2+k_3)\bv{\alpha_1}+(k_2+k_3)\bv{\alpha_2}+k_3\bv{\alpha_3}=\bv{0}\]
+    由于向量组 $\bv{\alpha_{1}, \alpha_{2}, \alpha_{3}}$ 线性无关，所以
+    \[\begin{cases}k_1+k_2+k_3=0\\k_2+k_3=0\\k_3=0\end{cases}\Leftrightarrow \begin{cases}k_1=0\\k_2=0\\k_3=0\end{cases}\]
+    所以向量组 $\bv{\alpha_{1}, \alpha_{1}+\alpha_{2}, \alpha_{1}+\alpha_{2}+\alpha_{3}}$ 也线性无关.
 \end{solution}
 \begin{example}{}{}
-    7.已知$\alpha_1=(1,0,0),\boldsymbol{\alpha}_2=(1,1,0),\boldsymbol{\alpha}_3=(1,1,1)$和$\beta_1=(1,2,3),\boldsymbol{\beta}_2=(2,3,1)$,
-$\boldsymbol{\beta}_3=(3,1,2)$是$\mathbb{R}^3$的两组基.
-(1)求从基$\alpha_1,\alpha_2,\alpha_3$到基$\beta_1,\beta_2,\beta_3$的过渡矩阵； (2)分别求向量$\alpha=(1,0,1)$在这两组基下的坐标.
+    $\mathbb{R}^3$中，由基$\bv{\alpha}_1=(1,2,-1),\bv{\alpha}_2=(1,-1,1),\bv{\alpha}_3=(-1,2,1)$到基$\bv{\beta}_1=(2,0,1),\bv{\beta}_2=(0,1,1),\bv{\beta}_3=(1,-1,2)$的过渡矩阵？
 \end{example}
 \begin{solution}
+设\[\bv{E}=\begin{pmatrix}1&0&0\\0&1&0\\0&0&1\end{pmatrix},\bv{A}=\begin{pmatrix}1&1&-1\\2&-1&2\\-1&1&1\end{pmatrix},\bv{B}=\begin{pmatrix}2&0&1\\0&1&-1\\1&1&2\end{pmatrix}\]则设过渡矩阵为$\bv{C},\bv{A}\bv{C}=\bv{B}$，则有$\bv{C}=\bv{A^{-1}}\bv{B}$
+，所以由\[\bv{A^{-1}}(\bv{A}|\bv{B})=(\bv{A^{-1}}\bv{A}|\bv{A^{-1}}\bv{B})=(\bv{E}|\bv{A^{-1}}\bv{B})\]
+且左乘一个可逆矩阵相当于作一系列初等行变换或列变换，所以我们可以写出矩阵$(\bv{A}|\bv{B})$，通过初等行变换得到$\bv{A^{-1}}\bv{B}$：
+\[\left(\begin{array}{ccc|ccc}1&1&-1&2&0&1\\2&-1&2&0&1&-1\\-1&1&1&1&1&2\end{array}\right)\rightarrow \left(\begin{array}{ccc|ccc}1&1&-1&2&0&1\\0&-3&4&-4&1&-3\\-1&1&1&1&1&2\end{array}\right)\]\[
+\rightarrow \left(\begin{array}{ccc|ccc}1&1&-1&2&0&1\\0&-3&4&-4&1&-3\\0&2&0&3&1&3\end{array}\right)\rightarrow
+\left(\begin{array}{ccc|ccc}1&1&-1&2&0&1\\0&2&0&3&1&3\\0&-3&4&-4&1&-3\end{array}\right)\rightarrow
+\left(\begin{array}{ccc|ccc}1&0&-1&0.5&-0.5&-0.5\\0&1&0&1.5&0.5&1.5\\0&-3&4&-4&1&-3\end{array}\right)
+\]\[\rightarrow 
+\left(\begin{array}{ccc|ccc}1&0&0&0.625&0.125&0.125\\0&1&0&1.5&0.5&1.5\\0&0&1&0.125&0.625&0.375\end{array}\right)
+\rightarrow \text{过渡矩阵为：}\begin{pmatrix}\frac{5}{8}&\frac{1}{8}&\frac{1}{8}\\\frac{3}{2}&\frac{1}{2}&\frac{3}{2}\\\frac{1}{8}&\frac{5}{8}&\frac{3}{8}\end{pmatrix}
+\]
+\end{solution}
+\begin{example}{}{}
+    已知$\bv{\alpha_1}=(1,0,0),\bv{\alpha}_2=(1,1,0),\bv{\alpha}_3=(1,1,1)$和$\bv{\beta_1}=(1,2,3),\bv{\beta}_2=(2,3,1)$,
+$\bv{\beta}_3=(3,1,2)$是$\mathbb{R}^3$的两组基.
+(1)求从基$\bv{\alpha_1,\alpha_2,\alpha_3}$到基$\bv{\beta_1,\beta_2,\beta_3}$的过渡矩阵； (2)分别求向量$\bv{\alpha}=(1,0,1)$在这两组基下的坐标.
+\end{example}
+\begin{solution}
+（1）设$\bv{E}=\begin{pmatrix}1&0&0\\0&1&0\\0&0&1\end{pmatrix},\bv{A}=\begin{pmatrix}1&1&1\\0&1&1\\0&0&1\end{pmatrix},\bv{B}=\begin{pmatrix}1&2&3\\2&3&1\\3&1&2\end{pmatrix}$，则有$\bv{A}\bv{C}=\bv{B}$，则有$\bv{C}=\bv{A^{-1}}\bv{B}$，所以由\[\bv{A^{-1}}(\bv{A}|\bv{B})=(\bv{A^{-1}}\bv{A}|\bv{A^{-1}}\bv{B})=(\bv{E}|\bv{A^{-1}}\bv{B})\]
+且左乘一个可逆矩阵相当于作一系列初等行变换或列变换，所以我们可以写出矩阵$(\bv{A}|\bv{B})$，通过初等行变换得到$\bv{A^{-1}}\bv{B}$：
+\[(\bv{A}|\bv{B})=\left(\begin{array}{ccc|ccc}1&1&1&1&2&3\\0&1&1&2&3&1\\0&0&1&3&1&2\end{array}\right)\rightarrow 
+\left(\begin{array}{ccc|ccc}1&0&0&-1&-1&2\\0&1&0&-1&2&-1\\0&0&1&3&1&2\end{array}\right)\]
+所以过渡矩阵为：$\bv{C}=\begin{pmatrix}-1&-1&2\\-1&2&-1\\3&1&2\end{pmatrix}$\\
+（2）构造增广矩阵并进行行变换
+\[\begin{pmatrix}1&1&1&1\\0&1&1&0\\0&0&1&1\end{pmatrix}\rightarrow \begin{pmatrix}1&0&0&1\\0&1&0&-1\\0&0&1&1\end{pmatrix}
+\]所以向量$\bv{\alpha}=(1,0,1)$在基$\bv{\alpha_1}=(1,0,0),\bv{\alpha}_2=(1,1,0),\bv{\alpha}_3=(1,1,1)$的坐标为$(1,-1,1)$;\\
+（3）构造增广矩阵并进行行变换
+\[\begin{pmatrix}1&2&3&1\\2&3&1&0\\3&1&2&1\end{pmatrix}\rightarrow 
+\begin{pmatrix}1&2&3&1\\0&-1&-5&-2\\3&1&2&1\end{pmatrix}\rightarrow 
+\begin{pmatrix}1&2&3&1\\0&-1&-5&-2\\0&-5&-7&-2\end{pmatrix}\rightarrow
+\begin{pmatrix}1&0&-7&-3\\0&1&5&2\\0&-5&-7&-2\end{pmatrix}\]
+\[\rightarrow\begin{pmatrix}1&0&-7&-3\\0&1&5&2\\0&0&18&8\end{pmatrix}\rightarrow
+\begin{pmatrix}1&0&-7&-3\\0&1&5&2\\0&0&1&\frac{4}{9}\end{pmatrix}\rightarrow
+\begin{pmatrix}1&0&-7&-3\\0&1&0&-\frac{2}{9}\\0&0&1&\frac{4}{9}\end{pmatrix}
+\rightarrow\begin{pmatrix}1&0&0&\frac{1}{9}\\0&1&0&-\frac{2}{9}\\0&0&1&\frac{4}{9}\end{pmatrix}\]
+所以向量$\bv{\alpha}=(1,0,1)$在基$\bv{\beta_1}=(1,2,3),\bv{\beta}_2=(2,3,1)$,$\bv{\beta}_3=(3,1,2)$的坐标为
+$\left(\frac{1}{9},-\frac{2}{9},\frac{4}{9}\right)$
+\end{solution}
+\begin{example}{}{}
+    在$\mathbb{R}^3$中求向量$\alpha=(3,7,1)$在基$\bv{\alpha}_1=(1,3,5),\bv{\alpha}_2=(6,3,2),\bv{\alpha}_3=(3,1,0)$下的坐标
+\end{example}
+\begin{solution}
+    构造矩阵进行初等行变换：
+    \[\begin{pmatrix}1&6&3&3\\3&3&1&7\\5&2&0&1\end{pmatrix}\rightarrow\begin{pmatrix}1&6&3&3\\0&-15&-8&-2\\0&-28&-15&-14\end{pmatrix}\rightarrow\begin{pmatrix}1&6&3&3\\0&-15\times 28&-8\times 28&-2\times 28\\0&-28\times 15&-15\times 15&-14\times 15\end{pmatrix}\]\[
+    \rightarrow\begin{pmatrix}1&6&3&3\\0&-15\times 28&-8\times 28&-2\times 28\\0&0&-1&-154\end{pmatrix}\rightarrow\begin{pmatrix}1&6&3&3\\0&-15&-8&-2\\0&0&-1&-154\end{pmatrix}\rightarrow\begin{pmatrix}1&6&3&3\\0&-15&0&1230\\0&0&1&154\end{pmatrix}
+    \]\[
+    \rightarrow\begin{pmatrix}1&6&0&-459\\0&-15&0&1230\\0&0&1&154\end{pmatrix}\rightarrow\begin{pmatrix}1&6&0&-459\\0&1&0&-82\\0&0&1&154\end{pmatrix}\rightarrow\begin{pmatrix}1&0&0&33\\0&1&0&-82\\0&0&1&154\end{pmatrix}\]
+    坐标是$(33,-82,154)$
+\end{solution}
+\begin{example}{}{}
+    在$\mathbb{R}^4$中找一个向量$\gamma$,使它在标准基$\bv{\varepsilon_1,\varepsilon_2,\varepsilon_3,\varepsilon_4}$和基$\bv{\beta}_1=(2,1,-1,1),\bv{\beta}_2=(0,3,1,0),\bv{\beta }_3= ( 5, 3, 2, 1) , \bv{\beta }_4= ( 6, 6, 1, 3)$下有相同的坐标.
+\end{example}
+\begin{solution}
+    设$\gamma=(k_1,k_2,k_3,k_4)$则
+    \[\begin{cases}2k_1+5k_3+6k_4=k_1\\k_1+3k_2+3k_3+6k_4=k_2\\-k_1+k_2+2k_3+k_4=k_3\\k_1+k_3+3k_4=k_4\end{cases}\Leftrightarrow \begin{cases}k_1+5k_3+6k_4=0\\k_1+2k_2+3k_3+6k_4=0\\-k_1+k_2+k_3+k_4=0\\k_1+k_3+2k_4=0\end{cases}\]
+    构建增广矩阵\[\begin{pmatrix}1&0&5&6&0\\1&2&3&6&0\\-1&1&1&1&0\\1&0&1&2&0\end{pmatrix}
+    \rightarrow\begin{pmatrix}1&0&5&6&0\\0&2&-2&0&0\\0&1&6&7&0\\0&0&-4&-4&0\end{pmatrix}
+    \rightarrow\begin{pmatrix}1&0&5&6&0\\0&1&-1&0&0\\0&1&6&7&0\\0&0&-4&-4&0\end{pmatrix}\]
+    \[\rightarrow \begin{pmatrix}1&0&5&6&0\\0&1&-1&0&0\\0&0&7&7&0\\0&0&-4&-4&0\end{pmatrix}\rightarrow
+    \begin{pmatrix}1&0&5&6&0\\0&1&-1&0&0\\0&0&1&1&0\\0&0&0&0&0\end{pmatrix}\rightarrow
+    \begin{pmatrix}1&0&0&1&0\\0&1&0&1&0\\0&0&1&1&0\\0&0&0&0&0\end{pmatrix}\]
+    因为只需要找到一个向量，所以取$k_4=-1$,则$\gamma=(1,1,1,-1)$.
 \end{solution}
