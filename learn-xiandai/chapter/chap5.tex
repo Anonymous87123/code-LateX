@@ -1,7 +1,218 @@
 \chapter{特征值和特征向量}
+\newpage
 \begin{example}{求特征值和特征向量}{}
     （1）$\left(\begin{array}{rrr}3&2&-1\\-2&-2&2\\3&6&-1\end{array}\right)$\quad（2）$\begin{pmatrix}0&0&0&1\\0&0&1&0\\0&1&0&0\\1&0&0&0\end{pmatrix}$
 \end{example}
 \begin{solution}
-
+（1）计算 $\det(A - \lambda E) = 0$：
+\begin{align*}
+\det(\bm{A - \lambda E}) &=\begin{vmatrix}
+3-\lambda & 2 & -1 \\
+-2 & -2-\lambda & 2 \\
+3 & 6 & -1-\lambda
+\end{vmatrix}\\
+&= (3-\lambda)\begin{vmatrix} -2-\lambda & 2 \\ 6 & -1-\lambda \end{vmatrix} 
+- 2\begin{vmatrix} -2 & 2 \\ 3 & -1-\lambda \end{vmatrix} 
++ (-1)\begin{vmatrix} -2 & -2-\lambda \\ 3 & 6 \end{vmatrix} \\
+&= (3-\lambda)[(-2-\lambda)(-1-\lambda) - 12] - 2[(-2)(-1-\lambda) - 6] - 1[(-2)(6) - (-2-\lambda)(3)] \\
+&= (3-\lambda)[(2+3\lambda+\lambda^2) - 12] - 2[2+2\lambda - 6] - 1[-12 + 6 + 3\lambda] \\
+&= (3-\lambda)(\lambda^2 + 3\lambda - 10) - 2(2\lambda - 4) - (3\lambda - 6) \\
+&= (3-\lambda)(\lambda-2)(\lambda+5) - 7(\lambda-2)=(\lambda-2)(15-7-2\lambda-\lambda^2)\\
+&= (\lambda-2)(8-2\lambda-\lambda^2)=-(\lambda-2)^2(\lambda+4)=0
+\end{align*}
+所以特征值是$\lambda_1=2$（二重）和$\lambda_2=-4$（一重）\\
+先计算矩阵$\bm{A-2E}$并进行行变换：
+\[\bm{A-2E}=\begin{pmatrix}
+1 & 2 & -1 \\
+-2 & -4 & 2 \\
+3 & 6 & -3
+\end{pmatrix}\rightarrow\begin{pmatrix}
+1 & 2 & -1 \\
+0 & 0 & 0 \\
+0 & 0 & 0
+\end{pmatrix}\]
+所以选取$x_2,x_3$为自由变量，$x_1=x_3-2x_2$，则有基向量：
+\[x_2 = 1, x_3 = 0 \Rightarrow x_1 = -2,\mathbf{v}_1 = \begin{pmatrix} -2 \\ 1 \\ 0 \end{pmatrix}\quad x_2 = 0, x_3 = 1 \Rightarrow x_1 = 1,\mathbf{v}_2 = \begin{pmatrix} 1 \\ 0 \\ 1 \end{pmatrix}\]
+则特征值$2$对应的特征向量为$k_1\bm{v_1}+k_2\bm{v_2}$，其中$k_1,k_2$为任意常数.\\
+计算矩阵$\bm{A+4E}$并进行行变换：
+\[\bm{A+4E}=\begin{pmatrix}
+7 & 2 & -1 \\
+-2 & 2 & 2 \\
+3 & 6 & 3
+\end{pmatrix}\rightarrow 
+\begin{pmatrix}
+7 & 2 & -1 \\
+-2\times 7+7\times 2 & 2\times 7+2\times 2 & 2\times 7-2\times (-1) \\
+3\times 7-7\times 3 & 6\times 7-2\times 3 & 3\times 7+1\times 3
+\end{pmatrix}\]
+得到$\begin{pmatrix}
+7 & 2 & -1 \\
+0 & 18 & 12 \\
+0 & 36 & 24\end{pmatrix}\rightarrow \begin{pmatrix}
+7 & 2 & -1 \\
+0 & 3 & 2 \\
+0 & 0 & 0\end{pmatrix}$
+选取$x_3$为自由变量，解得$x_2 = -\frac{2}{3}x_3$，代入得 $x_1 = \frac{1}{3}x_3$
+取$x_3 = 3$：$\mathbf{v}_3 = \begin{pmatrix} 1 \\ -2 \\ 3 \end{pmatrix}$，则特征值$-4$对应的特征向量为$k_3\begin{pmatrix} 1 \\ -2 \\ 3 \end{pmatrix}$，其中$k_3$为任意常数.\\
+（2）计算 $\det(A - \lambda E) = 0$：
+\begin{align*}
+|\bm{B - \lambda E}| &= \begin{vmatrix}
+-\lambda & 0 & 0 & 1 \\
+0 & -\lambda & 1 & 0 \\
+0 & 1 & -\lambda & 0 \\
+1 & 0 & 0 & -\lambda
+\end{vmatrix}= (-\lambda)\begin{vmatrix} -\lambda & 1 & 0 \\ 1 & -\lambda & 0 \\ 0 & 0 & -\lambda \end{vmatrix} 
+- 0 + 0 
+- 1\begin{vmatrix} 0 & -\lambda & 1 \\ 0 & 1 & -\lambda \\ 1 & 0 & 0 \end{vmatrix}\\
+&= (-\lambda)^2[(-\lambda)(-\lambda) - 1\cdot1]-(\lambda^2-1)=\lambda^2(\lambda^2-1)-(\lambda^2-1)=(\lambda^2-1)^2
+\end{align*}
+特征值：$\lambda = 1$（二重根），$\lambda = -1$（二重根），对于 $\lambda = 1$，构造矩阵$\bm{A-E}$进行初等行变换：
+\[\bm{A-E}=\begin{pmatrix}
+-1 & 0 & 0 & 1 \\
+0 & -1 & 1 & 0 \\
+0 & 1 & -1 & 0 \\
+1 & 0 & 0 & -1
+\end{pmatrix}\rightarrow\begin{pmatrix}
+-1 & 0 & 0 & 1 \\
+0 & -1 & 1 & 0 \\
+0 & 0 & 0 & 0 \\
+0 & 0 & 0 & 0
+\end{pmatrix}\rightarrow\begin{cases}x_2=x_3\\x_1=x_4\end{cases}\]
+基向量：$x_3 = 1, x_4 = 0\Rightarrow\bm{\xi_1} = \begin{pmatrix} 0 \\ 1 \\ 1 \\ 0 \end{pmatrix}\quad x_3 = 0, x_4 = 1\Rightarrow\bm{\xi_2} = \begin{pmatrix} 1 \\ 0 \\ 0 \\ 1 \end{pmatrix}$\\
+所以特征值$\lambda_1=1$对应的特征向量为$k_1\bm{\xi_1}+k_2\bm{\xi_2}$，其中$k_1,k_2$为任意常数。\\
+对于 $\lambda = -1$，构造矩阵$\bm{A+E}$进行初等行变换：
+\[\bm{A+E}=\begin{pmatrix}
+1 & 0 & 0 & 1 \\
+0 & 1 & 1 & 0 \\
+0 & 1 & 1 & 0 \\
+1 & 0 & 0 & 1
+\end{pmatrix}\rightarrow\begin{pmatrix}
+1 & 0 & 0 & 1 \\
+0 & 1 & 1 & 0 \\
+0 & 0 & 0 & 0 \\
+0 & 0 & 0 & 0
+\end{pmatrix}\rightarrow\begin{cases}x_2=-x_3\\x_1=-x_4\end{cases}\]
+基向量：$x_3 = 1, x_4 = 0\Rightarrow\bm{\xi_3} = \begin{pmatrix} 0 \\ -1 \\ 1 \\ 0 \end{pmatrix}\quad x_3 = 0, x_4 = 1\Rightarrow\bm{\xi_4} = \begin{pmatrix} -1 \\ 0 \\ 0 \\ 1 \end{pmatrix}$\\
+所以特征值$\lambda_1=-1$对应的特征向量为$k_3\bm{\xi_3}+k_4\bm{\xi_4}$，其中$k_3,k_4$为任意常数.
+\end{solution}
+\begin{example}{求该$n$阶矩阵的特征值和特征向量}{}
+    \[\bm{A}=\begin{pmatrix}0&1&1&\cdots&1\\1&0&1&\cdots&1\\1&1&0&\cdots&1\\\vdots&\vdots&\vdots&&\vdots\\1&1&1&\cdots&0\end{pmatrix}\]
+\end{example}
+\begin{solution}
+    计算 $\det(\bm{A - \lambda E}) = 0$：
+    \begin{align*}
+|\bm{A - \lambda E}| &= \begin{vmatrix}
+-\lambda & 1 & 1 & \cdots & 1 \\
+1 & -\lambda & 1 & \cdots & 1 \\
+1 & 1 & -\lambda & \cdots & 1 \\
+\vdots & \vdots & \vdots & \ddots & \vdots \\
+1 & 1 & 1 & \cdots & -\lambda
+\end{vmatrix}=\begin{vmatrix}
+n-1-\lambda & n-1-\lambda & n-1-\lambda & \cdots & n-1-\lambda \\
+1 & -\lambda & 1 & \cdots & 1 \\
+1 & 1 & -\lambda & \cdots & 1 \\
+\vdots & \vdots & \vdots & \ddots & \vdots \\
+1 & 1 & 1 & \cdots & -\lambda
+\end{vmatrix}\\
+&=(n-1-\lambda)\begin{vmatrix}
+1 & 1 & 1 & \cdots & 1 \\
+1 & -\lambda & 1 & \cdots & 1 \\
+1 & 1 & -\lambda & \cdots & 1 \\
+\vdots & \vdots & \vdots & \ddots & \vdots \\
+1 & 1 & 1 & \cdots & -\lambda
+\end{vmatrix}=(n-1-\lambda)\begin{vmatrix}
+1 & 1 & 1 & \cdots & 1 \\
+0 & -\lambda-1 & 0 & \cdots & 0 \\
+0 & 0 & -\lambda-1 & \cdots & 0 \\
+\vdots & \vdots & \vdots & \ddots & \vdots \\
+0 & 0 & 0 & \cdots & -\lambda-1
+\end{vmatrix}\\
+&=(n-1-\lambda)(-\lambda-1)^{n-1}=0\Rightarrow \lambda_1=n-1,\lambda_2=-1
+\end{align*}
+特征值为$\lambda_1=n-1$（一重）和$\lambda_2=-1$（$n-1$重）\\
+对于特征值$\lambda_1=n-1$，我们根据相同的行变换过程发现此时每一列的和为0，因此此时这个矩阵的所有行向量线性相关，所以只有一个有效方程，而且$x_1,x_2,\cdots,x_n$应该相等，严谨的说明过程则需要写出：
+\[\begin{cases}-(n-1)x_1+x_2+x_3+\cdots+x_n=0\\x_1-(n-1)x_2+x_3+\cdots+x_n=0\\x_1+x_2-(n-1)x_3+\cdots+x_n=0\\\cdots\\x_1+x_2+x_3+\cdots-(n-1)x_n=0\end{cases}\]
+设 $S = x_1 + x_2 + \cdots + x_n$，则第 $i$ 个方程为：
+\[-(n-1)x_i + (S - x_i) = 0 \Rightarrow S = n x_i\]
+这对所有 $i = 1, 2, \ldots, n$ 成立，因此：
+\[n x_1 = n x_2 = \cdots = n x_n \Rightarrow x_1 = x_2 = \cdots = x_n\]
+故特征向量为 $\bm{\xi} = k(1, 1, \ldots, 1)^T$，$k \neq 0$.\\
+下面考虑另一个特征向量$\lambda_2=-1$，将刚才进行的行变换作用于矩阵：
+\begin{align*}
+\bm{A - \lambda E}&= \begin{pmatrix}
+-\lambda & 1 & 1 & \cdots & 1 \\
+1 & -\lambda & 1 & \cdots & 1 \\
+1 & 1 & -\lambda & \cdots & 1 \\
+\vdots & \vdots & \vdots & \ddots & \vdots \\
+1 & 1 & 1 & \cdots & -\lambda
+\end{pmatrix}\to\begin{pmatrix}
+n-1-\lambda & n-1-\lambda & n-1-\lambda & \cdots & n-1-\lambda \\
+1 & -\lambda & 1 & \cdots & 1 \\
+1 & 1 & -\lambda & \cdots & 1 \\
+\vdots & \vdots & \vdots & \ddots & \vdots \\
+1 & 1 & 1 & \cdots & -\lambda
+\end{pmatrix}\\
+&\to\begin{pmatrix}
+1 & 1 & 1 & \cdots & 1 \\
+1 & -\lambda & 1 & \cdots & 1 \\
+1 & 1 & -\lambda & \cdots & 1 \\
+\vdots & \vdots & \vdots & \ddots & \vdots \\
+1 & 1 & 1 & \cdots & -\lambda
+\end{pmatrix}\to\begin{pmatrix}
+1 & 1 & 1 & \cdots & 1 \\
+0 & -\lambda-1 & 0 & \cdots & 0 \\
+0 & 0 & -\lambda-1 & \cdots & 0 \\
+\vdots & \vdots & \vdots & \ddots & \vdots \\
+0 & 0 & 0 & \cdots & -\lambda-1
+\end{pmatrix}
+\end{align*}
+代入$\lambda=-1$，则可得到$x_1+x_2+\cdots+x_n=0$，一组基可以取为：
+\[\bm{\xi_1} = (1, -1, 0, 0, \ldots, 0)^T,\bm{\xi_2} = (1, 0, -1, 0, \ldots, 0)^T,\cdots,\bm{\xi_{n-1}}= (1, 0, 0, \ldots, 0, -1)^T\]
+故特征向量为：
+\[k_1\bm{\xi_1}+k_2\bm{\xi_2}+\cdots+k_{n-1}\bm{\xi_{n-1}},\quad k_1,k_2,\cdots,k_{n-1}\text{为任意常数}\]
+\end{solution}
+\begin{example}{}{}
+    设$\lambda$是$n$阶可逆矩阵$A$的一个特征值，$\alpha$是$A$的属于特征值$\lambda$的一个特征向量，证明$\dfrac{|A|}{\lambda}$是$A^*$的一个特征值，$\alpha$也是$A^*$属于此特征值的一个特征向量.
+\end{example}
+\begin{solution}
+    由于矩阵$\bm{A}$可逆，所以$\bm{AA^*}=|\bm{A}|\bm{E}$，设列向量$\bm{\alpha}$满足$\bm{A\alpha}=\lambda\bm{\alpha}$，则$\bm{A^*A\alpha}=\lambda\bm{A^*\alpha}$，即$|\bm{A}|\bm{E\alpha}=|\bm{A}|\bm{\alpha}=\lambda\bm{A^*\alpha}$，即$\dfrac{|\bm{A}|}{\lambda}\alpha=\bm{A^*\alpha}$，所以$\dfrac{|\bm{A}|}{\lambda}$是$\bm{A^*}$的一个特征值，$\bm{\alpha}$也是$\bm{A^*}$属于此特征值的一个特征向量.
+\end{solution}
+\begin{example}{}{}
+    设$\lambda_1,\lambda_2$是矩阵$\bm{A}$的两个不同的特征值，$\bm{\alpha_1,\alpha_2}$分别是属于$\lambda_1,\lambda_2$的特征向量.试证：$\bm{\alpha}_1+\bm{\alpha}_2$一定不是$\bm{A}$的特征向量
+\end{example}
+\begin{solution}
+    由定义得到$\bm{A\alpha_1}=\lambda_1\bm{\alpha_1},\bm{A\alpha_2}=\lambda_2\bm{\alpha_2}$，相加有$\bm{A(\alpha_1+\alpha_2)}=\lambda_1\bm{\alpha_1}+\lambda_2\bm{\alpha_2}$，假如$\bm{\alpha}_1+\bm{\alpha}_2$是$\bm{A}$的特征向量，即$\bm{A(\alpha_1+\alpha_2)}=\lambda_3(\bm{\alpha_1+\alpha_2})$，与$\lambda_1\bm{\alpha_1}+\lambda_2\bm{\alpha_2}$联立得到$(\lambda_3-\lambda_1)\bm{\alpha_1}+(\lambda_3-\lambda_2)\bm{\alpha_2}=0$，由$\bm{\alpha_1,\alpha_2}$线性无关，得到$\lambda_3=\lambda_1=\lambda_2$，但是$\lambda_1,\lambda_2$是矩阵$\bm{A}$的两个不同的特征值，因此矛盾，$\bm{\alpha}_1+\bm{\alpha}_2$一定不是$\bm{A}$的特征向量.
+\end{solution}
+\begin{example}{}{}
+    $\text{矩阵}\boldsymbol{A}=\begin{pmatrix}{3}&{2}&{-1}\\{-2}&{a}&{2}\\{3}&{6}&{-1}\end{pmatrix}\text{与矩阵}\boldsymbol{B}=\begin{pmatrix}{-4}&{0}&{0}\\{0}&{b}&{0}\\{0}&{0}&{2}\end{pmatrix}\text{相似},\text{试求}a,b\text{的值}.$
+\end{example}
+\begin{solution}
+    由于矩阵 $\boldsymbol{A}$ 与 $\boldsymbol{B}$ 相似，它们具有相同的特征值。矩阵 $\boldsymbol{B}$ 是对角矩阵，其特征值即为对角线元素：$-4$、$b$ 和 $2$。因此，$\boldsymbol{A}$ 的特征值也应为 $-4$、$b$ 和 $2$，而且由相似矩阵的迹相等得到$3 + a + (-1) = a + 2 = -4 + b + 2 = b - 2\Rightarrow b = a + 4$，由特征多项式韦达定理得到$\boldsymbol{A}$的所有特征值的积为$|\bm{A}|=-4\times b\times 2=-8b$，下面计算行列式（按行展开）：
+    \begin{align*}
+\det(\boldsymbol{A}) &= 3 \cdot 
+\begin{vmatrix}
+a & 2 \\
+6 & -1
+\end{vmatrix}
+- 2 \cdot 
+\begin{vmatrix}
+-2 & 2 \\
+3 & -1
+\end{vmatrix}
++ (-1) \cdot 
+\begin{vmatrix}
+-2 & a \\
+3 & 6
+\end{vmatrix} \\
+&= 3 \cdot (a \cdot (-1) - 2 \cdot 6) - 2 \cdot ((-2) \cdot (-1) - 2 \cdot 3) - 1 \cdot ((-2) \cdot 6 - a \cdot 3) \\
+&= 3 \cdot (-a - 12) - 2 \cdot (2 - 6) - 1 \cdot (-12 - 3a) \\
+&= -3a - 36 + 8 + 12 + 3a = -16
+\end{align*}
+所以$b=2,a=2-4=-2$
+\end{solution}
+\begin{example}{}{}
+    已知$\lambda=1$是矩阵$\bm{A}=\begin{pmatrix}2&1&1\\1&2&t\\1&t&t+1\end{pmatrix}$的二重特征值，求$t$的值，并求是否存在可逆矩阵$\bm{T}$使得$\bm{T^{-1}AT}$为对角矩阵
+\end{example}
+\begin{solution}
+    
 \end{solution}
