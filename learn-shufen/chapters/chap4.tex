@@ -1,0 +1,19 @@
+\chapter{自用}
+\newpage
+\begin{example}{}{}
+    设函数$f(x)$在$(0,+\infty)$上三阶可导，且$f(x)>0,f'(x)>0,f''(x)>0,\displaystyle\lim_{x\to+\infty}\dfrac{f'(x)f'''(x)}{[f''(x)]^2}=a\ne1$，求极限$\displaystyle\lim_{x\to+\infty}\dfrac{f(x)f''(x)}{[f'(x)]^2}$.
+\end{example}
+\begin{solution}
+    首先由$f(x)>0,f'(x)>0,f''(x)>0$得知$f'(x),f(x)$均单调递增，所以
+    \[f(x+h)>f(x)+f'(\xi)(x+h-x)>f(x)+f'(x)h\]
+    令$h\to+\infty$，得$f(x)\to+\infty$，现在对已知极限变形：
+    \[a=\lim_{x\to+\infty}\dfrac{f'(x)f'''(x)}{[f''(x)]^2}=1-\lim_{x\to+\infty}\dfrac{[f''(x)]^2-f'(x)f'''(x)}{[f''(x)]^2}=1-\lim_{x\to+\infty}\dfrac{\dd}{\dd x}\left(\dfrac{f'(x)}{f''(x)}\right)\]
+    所以$\displaystyle\lim_{x\to+\infty}\dfrac{\dd}{\dd x}\left(\dfrac{f'(x)}{f''(x)}\right)=1-a\ne 0$，同样可以对所求极限变形：
+    \[\lim_{x\to+\infty}\dfrac{f(x)f''(x)}{[f'(x)]^2}=1-\lim_{x\to+\infty}\dfrac{[f'(x)]^2-f(x)f''(x)}{[f'(x)]^2}=1-\lim_{x\to+\infty}\dfrac{\dd}{\dd x}\left(\dfrac{f(x)}{f'(x)}\right)\]
+    问题在于如何沟通$\displaystyle\lim_{x\to+\infty}\dfrac{\dd}{\dd x}\left(\dfrac{f'(x)}{f''(x)}\right)=1-a$和$\displaystyle\lim_{x\to+\infty}\dfrac{\dd}{\dd x}\left(\dfrac{f(x)}{f'(x)}\right)$，观察到它们是微分形式，所以不妨反方向利用洛必达法则。须知，洛必达法则在$\dfrac{*}{\infty}$的情形中是适用的，即若$f\to\infty,f,g$在$a$的某个去心邻域内可导，且$\displaystyle\lim_{x\to a}\dfrac{g'}{f'}$存在（或为无穷大，但分母不等于$0$），那么$\displaystyle\lim_{x\to a}\dfrac{g}{f}=\lim_{x\to a}\dfrac{g'}{f'}$；相关证明可以参阅数分教材（如陈纪修的，卓里奇的，等等）.
+    \begin{align*}\lim_{x\to+\infty}\dfrac{\frac{f(x)}{f'(x)}}{x}=\lim_{x\to+\infty}\dfrac{\dd}{\dd x}\left(\dfrac{f(x)}{f'(x)}\right)=\lim_{x\to+\infty}\dfrac{f(x)}{xf'(x)}\\
+    \lim_{x\to+\infty}\dfrac{\frac{f'(x)}{f''(x)}}{x}=\lim_{x\to+\infty}\dfrac{\dd}{\dd x}\left(\dfrac{f'(x)}{f''(x)}\right)=\lim_{x\to+\infty}\dfrac{f'(x)}{xf''(x)}\end{align*}
+    设$\displaystyle\lim_{x\to+\infty}\dfrac{f(x)f''(x)}{[f'(x)]^2}=A,\lim_{x\to+\infty}\dfrac{\dd}{\dd x}\left(\dfrac{f(x)}{f'(x)}\right)=1-A,\lim_{x\to+\infty}\dfrac{\dd}{\dd x}\left(\dfrac{f'(x)}{f''(x)}\right)=\lim_{x\to+\infty}\dfrac{f'(x)}{xf''(x)}=1-a$
+    \[\displaystyle\lim_{x\to+\infty}\dfrac{xf''(x)}{f'(x)}\lim_{x\to+\infty}\dfrac{f(x)}{xf'(x)}=\lim_{x\to+\infty}\dfrac{f(x)f''(x)}{[f'(x)]^2}\]
+    由于$\lim_{x\to+\infty}\dfrac{f'(x)}{xf''(x)}=1-a\Rightarrow\lim_{x\to+\infty}\dfrac{xf''(x)}{f'(x)}=\dfrac1{1-a}$即$\dfrac{1-A}{1-a}=A$，解得\[A=\displaystyle\lim_{x\to+\infty}\dfrac{f(x)f''(x)}{[f'(x)]^2}=\dfrac1{2-a}\]
+\end{solution}

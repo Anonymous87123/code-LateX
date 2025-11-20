@@ -214,5 +214,103 @@ a & 2 \\
     已知$\lambda=1$是矩阵$\bm{A}=\begin{pmatrix}2&1&1\\1&2&t\\1&t&t+1\end{pmatrix}$的二重特征值，求$t$的值，并求是否存在可逆矩阵$\bm{T}$使得$\bm{T^{-1}AT}$为对角矩阵
 \end{example}
 \begin{solution}
-    
+    由于已知$\lambda=1$是矩阵$\bm{A}=\begin{pmatrix}2&1&1\\1&2&t\\1&t&t+1\end{pmatrix}$的二重特征值，所以直接计算$|\bm{A-E}|$的值：
+    \begin{align*}
+\det(\bm{A} - \bm{I}) &= 
+\begin{vmatrix}
+1 & 1 & 1 \\
+1 & 1 & t \\
+1 & t & t
+\end{vmatrix} = 1 \cdot \begin{vmatrix} 1 & t \\ t & t \end{vmatrix} 
+- 1 \cdot \begin{vmatrix} 1 & t \\ 1 & t \end{vmatrix} 
++ 1 \cdot \begin{vmatrix} 1 & 1 \\ 1 & t \end{vmatrix} \\
+&= 1 \cdot (1 \cdot t - t \cdot t) - 1 \cdot (1 \cdot t - t \cdot 1) + 1 \cdot (1 \cdot t - 1 \cdot 1) \\
+&= (t - t^2) - 0 + (t - 1) = -t^2 + 2t - 1 = -(t-1)^2
+\end{align*}
+必要条件是$\det(\bm{A-E})=0$，即$t=1$，当 $t=1$ 时，矩阵为：
+\[
+\bm{A} = \begin{pmatrix}
+2 & 1 & 1 \\
+1 & 2 & 1 \\
+1 & 1 & 2
+\end{pmatrix}
+\]
+计算特征多项式：
+\begin{align*}
+f(\lambda) &= \det(\bm{A} - \lambda \bm{I}) = 
+\begin{vmatrix}
+2-\lambda & 1 & 1 \\
+1 & 2-\lambda & 1 \\
+1 & 1 & 2-\lambda
+\end{vmatrix}
+=\begin{vmatrix}
+4-\lambda & 4-\lambda & 4-\lambda \\
+1 & 2-\lambda & 1 \\
+1 & 1 & 2-\lambda
+\end{vmatrix}
+= (4-\lambda) \begin{vmatrix}
+1 & 1 & 1 \\
+1 & 2-\lambda & 1 \\
+1 & 1 & 2-\lambda
+\end{vmatrix}\\
+&= (4-\lambda) \left[ 
+\begin{vmatrix}
+2-\lambda & 1 \\
+1 & 2-\lambda
+\end{vmatrix}
+- \begin{vmatrix}
+1 & 1 \\
+1 & 2-\lambda
+\end{vmatrix}
++ \begin{vmatrix}
+1 & 2-\lambda \\
+1 & 1
+\end{vmatrix}
+\right] \\
+&= (4-\lambda) \left[ ((2-\lambda)^2 - 1) - ((2-\lambda) - 1) + (1 - (2-\lambda)) \right] \\
+&= (4-\lambda) \left[ (\lambda^2 - 4\lambda + 3) - (1-\lambda) + (\lambda-1) \right] \\
+&= (4-\lambda)(\lambda^2 - 4\lambda + 3+2\lambda-2)=(4-\lambda)(\lambda-1)^2
+\end{align*}
+因此特征值为 $\lambda = 1$（二重）和 $\lambda = 4$，验证了 $\lambda=1$ 是二重特征值。接下来算出$\bm{T}$，对于特征值 $\lambda = 1$，解方程组$(\bm{A} - \bm{I})\bm{x} = \bm{0}$:
+\[
+\bm{A} - \bm{I} = \begin{pmatrix}
+1 & 1 & 1 \\
+1 & 1 & 1 \\
+1 & 1 & 1
+\end{pmatrix} \xrightarrow{\text{行变换}} \begin{pmatrix}
+1 & 1 & 1 \\
+0 & 0 & 0 \\
+0 & 0 & 0
+\end{pmatrix}
+\]
+得到方程 $x_1 + x_2 + x_3 = 0$。选择两个线性无关的解：
+\[
+\bm{v}_1 = \begin{pmatrix} -1 \\ 1 \\ 0 \end{pmatrix}, \quad
+\bm{v}_2 = \begin{pmatrix} -1 \\ 0 \\ 1 \end{pmatrix}
+\]
+因此$\lambda_1$的代数重数和几何重数相等，对于特征值 $\lambda = 4$，解方程组 $(\bm{A} - 4\bm{I})\bm{x} = \bm{0}$:
+\[
+\bm{A} - 4\bm{I} = \begin{pmatrix}
+-2 & 1 & 1 \\
+1 & -2 & 1 \\
+1 & 1 & -2
+\end{pmatrix} \xrightarrow{\text{行变换}} \begin{pmatrix}
+1 & 0 & -1 \\
+0 & 1 & -1 \\
+0 & 0 & 0
+\end{pmatrix}
+\]
+得到方程 $x_1 = x_3$, $x_2 = x_3$。取一个特解：
+\[
+\bm{v}_3 = \begin{pmatrix} 1 \\ 1 \\ 1 \end{pmatrix}
+\]
+令 $\bm{T} = (\bm{v}_1, \bm{v}_2, \bm{v}_3) = \begin{pmatrix} 1 & 1 & 1 \\ -1 & 0 & 1 \\ 0 & -1 & 1 \end{pmatrix}$。
+且
+$\det(\bm{T}) = \begin{vmatrix} 1 & 1 & 1 \\ -1 & 0 & 1 \\ 0 & -1 & 1 \end{vmatrix} 
+=\begin{vmatrix} 3 & 2 & 1 \\ 0 & 1 & 1 \\ 0 & 0 & 1 \end{vmatrix} = 3 \neq 0$
+可逆，满足：
+\[
+\bm{T}^{-1}\bm{A}\bm{T} = \begin{pmatrix} 1 & 0 & 0 \\ 0 & 1 & 0 \\ 0 & 0 & 4 \end{pmatrix}
+\]
+结果的三个对角线上的元素不用具体计算，因为$\lambda_1=\lambda_2=1,\lambda_3=4$.
 \end{solution}

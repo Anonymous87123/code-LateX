@@ -306,22 +306,95 @@ $$\lim_{h\to0}\frac{f(x_0+2h)-2f(x_0+h)+f(x_0)}{h^2}=f''(x_0).$$
     再利用$f''(x_0)$的存在性，以及导数的定义，得到
     \[\lim_{h\to 0}\dfrac{f'(x_0+2h)-f'(x_0+h)}{h}=f''(x_0)\]即证.
 \end{solution}
-
 \newpage
-\begin{example}{}{}
-    设函数$f(x)$在$(0,+\infty)$上三阶可导，且$f(x)>0,f'(x)>0,f''(x)>0,\displaystyle\lim_{x\to+\infty}\dfrac{f'(x)f'''(x)}{[f''(x)]^2}=a\ne1$，求极限$\displaystyle\lim_{x\to+\infty}\dfrac{f(x)f''(x)}{[f'(x)]^2}$.
+\section{泰勒公式}
+\begin{example}{3.6-A-2}{}
+    按$x$ 的 正 整 数 幂 , 写 出 下 列 函 数 的 展 开 式 至 含 有 指 定 阶 数 的 项 ( 带 皮 亚 诺 余 项 ) : \\
+$(1)\frac1{1-x}$到含 $x^7$ 的项；$(2)\arctan x$到含$x^4$的项\\
+$(3)\frac1{\sqrt{1+x}}$到含 $x^4$ 的项；$(4)\tan x$到含$x^4$的项.
 \end{example}
 \begin{solution}
-    首先由$f(x)>0,f'(x)>0,f''(x)>0$得知$f'(x),f(x)$均单调递增，所以
-    \[f(x+h)>f(x)+f'(\xi)(x+h-x)>f(x)+f'(x)h\]
-    令$h\to+\infty$，得$f(x)\to+\infty$，现在对已知极限变形：
-    \[a=\lim_{x\to+\infty}\dfrac{f'(x)f'''(x)}{[f''(x)]^2}=1-\lim_{x\to+\infty}\dfrac{[f''(x)]^2-f'(x)f'''(x)}{[f''(x)]^2}=1-\lim_{x\to+\infty}\dfrac{\dd}{\dd x}\left(\dfrac{f'(x)}{f''(x)}\right)\]
-    所以$\displaystyle\lim_{x\to+\infty}\dfrac{\dd}{\dd x}\left(\dfrac{f'(x)}{f''(x)}\right)=1-a\ne 0$，同样可以对所求极限变形：
-    \[\lim_{x\to+\infty}\dfrac{f(x)f''(x)}{[f'(x)]^2}=1-\lim_{x\to+\infty}\dfrac{[f'(x)]^2-f(x)f''(x)}{[f'(x)]^2}=1-\lim_{x\to+\infty}\dfrac{\dd}{\dd x}\left(\dfrac{f(x)}{f'(x)}\right)\]
-    问题在于如何沟通$\displaystyle\lim_{x\to+\infty}\dfrac{\dd}{\dd x}\left(\dfrac{f'(x)}{f''(x)}\right)=1-a$和$\displaystyle\lim_{x\to+\infty}\dfrac{\dd}{\dd x}\left(\dfrac{f(x)}{f'(x)}\right)$，观察到它们是微分形式，所以不妨反方向利用洛必达法则。须知，洛必达法则在$\dfrac{*}{\infty}$的情形中是适用的，即若$f\to\infty,f,g$在$a$的某个去心邻域内可导，且$\displaystyle\lim_{x\to a}\dfrac{g'}{f'}$存在（或为无穷大，但分母不等于$0$），那么$\displaystyle\lim_{x\to a}\dfrac{g}{f}=\lim_{x\to a}\dfrac{g'}{f'}$；相关证明可以参阅数分教材（如陈纪修的，卓里奇的，等等）.
-    \begin{align*}\lim_{x\to+\infty}\dfrac{\frac{f(x)}{f'(x)}}{x}=\lim_{x\to+\infty}\dfrac{\dd}{\dd x}\left(\dfrac{f(x)}{f'(x)}\right)=\lim_{x\to+\infty}\dfrac{f(x)}{xf'(x)}\\
-    \lim_{x\to+\infty}\dfrac{\frac{f'(x)}{f''(x)}}{x}=\lim_{x\to+\infty}\dfrac{\dd}{\dd x}\left(\dfrac{f'(x)}{f''(x)}\right)=\lim_{x\to+\infty}\dfrac{f'(x)}{xf''(x)}\end{align*}
-    设$\displaystyle\lim_{x\to+\infty}\dfrac{f(x)f''(x)}{[f'(x)]^2}=A,\lim_{x\to+\infty}\dfrac{\dd}{\dd x}\left(\dfrac{f(x)}{f'(x)}\right)=1-A,\lim_{x\to+\infty}\dfrac{\dd}{\dd x}\left(\dfrac{f'(x)}{f''(x)}\right)=\lim_{x\to+\infty}\dfrac{f'(x)}{xf''(x)}=1-a$
-    \[\displaystyle\lim_{x\to+\infty}\dfrac{xf''(x)}{f'(x)}\lim_{x\to+\infty}\dfrac{f(x)}{xf'(x)}=\lim_{x\to+\infty}\dfrac{f(x)f''(x)}{[f'(x)]^2}\]
-    由于$\lim_{x\to+\infty}\dfrac{f'(x)}{xf''(x)}=1-a\Rightarrow\lim_{x\to+\infty}\dfrac{xf''(x)}{f'(x)}=\dfrac1{1-a}$即$\dfrac{1-A}{1-a}=A$，解得\[A=\displaystyle\lim_{x\to+\infty}\dfrac{f(x)f''(x)}{[f'(x)]^2}=\dfrac1{2-a}\]
+（1）先求$f(x)=\dfrac{1}{1-x}$的在$x=0$处的$n$阶导数$f^{(n)}(0)$，由于$(1-x)f(x)=1$两边求$n$阶导数，并利用莱布尼兹公式，得到\[(1-x)f^{(n)}(x)+(-1)C_n^1f^{(n-1)}(x)=0\Leftrightarrow f^{(n)}(0)=nf^{(n-1)}(0)\]又$f'(0)=1$，所以$f^{(n)}(0)=n!$，于是展开到含 $x^7$ 的项就是：\[f(x)=1+x+x^2+x^3+x^4+x^5+x^6+x^7+o(x^7)\]
+（2）令$f(x)=\dfrac1{1+x^2}=\dfrac1{1-(-x^2)}$，展开得到：\[f'(x)=1+(-x^2)+(-x^2)^2+(-x^2)^3+o(x^4)=1-x^2+x^4-x^6+o(x^6)\]
+积分回去，得到\[\arctan x=x-\dfrac13x^3+\dfrac15x^5+o(x^7)\]保留到到含$x^4$的项就是
+\[\arctan x=x-\dfrac13x^3+o(x^4)\]
+（3）直接使用广义二项式展开：
+\begin{align*}
+    f(x)&=(1+x)^{-\frac12}=1+C_{-\frac12}^1x+C_{-\frac12}^2x^2+C_{-\frac12}^3x^3+C_{-\frac12}^4x^4+o(x^4)\\
+    &=1-\dfrac12x+\dfrac{-\frac12(-\frac12-1)}{2}x^2+\dfrac{\frac12(\frac12-1)(\frac12-2)}{6}x^3+\dfrac{-\frac12(\frac12-1)(\frac12-2)(\frac12-3)}{24}x^4+o(x^4)\\
+    &=1-\frac{1}{2}x+\frac{3}{8}x^2-\frac{5}{16}x^3+\frac{35}{128}x^4+o(x^4)
+\end{align*}
+（4）反复求导过程复杂，可以先建立微分方程：
+\[y'=(\tan x)'=1+\tan^2x=1+y^2\]
+两边求导得到：
+\begin{align*}
+y''&=2yy^{\prime}=2y(1+y^2)=2y+2y^3\\
+y'''&=2y^{\prime}+6y^2y^{\prime}=2(1+y^2)+6y^2(1+y^2)=2+8y^2+6y^4\\
+y^{(4)}&=16yy'+24y^3y'=16y(1+y^2)+24y^3(1+y^2)=16y+40y^3+24y^5
+\end{align*}
+于是得到展开式：
+\[\tan x=x+\dfrac13x^3+o(x^4)\]
+\end{solution}
+\begin{example}{3.6-A-5}{}
+$\text{求函数 }f(x)=x\mathrm{e}^x\text{ 的 }n\text{ 阶麦克劳林公式,带拉格朗日余项}.$
+\end{example}
+\begin{solution}
+设$f(x)=x\e^x$，其泰勒展开式展开到含$x^n$的项的式子，都可以由$x,\e^x$展开式的乘积确定：
+\begin{align*}
+    f(x)&=x\mathrm{e}^x=x\left(1+x+\frac{x^2}{2!}+\frac{x^3}{3!}+\cdots+\frac{x^{n-1}}{(n-1)!}\right)\\
+&=x+x^2+\frac{x^3}{2!}+\frac{x^4}{3!}+\cdots+\frac{x^{n}}{(n-1)!}\end{align*}
+再加上$\dfrac{f^{(n)}(\theta x)}{(n+1)!},\theta\in(0,1)$，即可得到
+\[f(x)=x\e^x=x+x^2+\frac{x^3}{2!}+\frac{x^4}{3!}+\cdots+\frac{x^{n}}{(n-1)!}+\dfrac{\e^{\theta x}(\theta x+n+1)}{(n+1)!}\]
+\end{solution}
+\begin{example}{3.6-A-6}{}
+\begin{tabular}{@{}l@{}l@{}l@{}}
+(1) $\lim\limits_{x\to0}\dfrac{\mathrm{e}^x-1-x}{x^2}$; & 
+(2) $\lim\limits_{x\to0}\dfrac{\mathrm{e}^x-1-x-\frac{x^2}{2}}{x^3}$; & 
+(3) $\lim\limits_{x\to0}\dfrac{\mathrm{e}^{x^3}-1-x^3}{(\sin2x)^6}$; \\
+(4) $\lim\limits_{x\to+\infty}\left(x+\frac{1}{2}\right)\ln\left(1+\frac{1}{x}\right)$; & 
+(5) $\lim\limits_{x\to0}\left(\frac{1}{x}-\frac{1}{\mathrm{e}^x-1}\right)$; & 
+(6) $\lim\limits_{x\to0^+}\dfrac{e^x-1-x}{\sqrt{1-x}-\cos\sqrt{x}}$ \\
+\end{tabular}
+\end{example}
+\begin{solution}
+（1）$\displaystyle\lim_{x\to0}\frac{\e^x-1-x}{x^2}=\lim_{x\to0}\frac{1+x+\frac12x^2+o(x^2)-1-x}{x^2}=\dfrac12$\\
+（2）$\displaystyle\lim_{x\to0}\frac{\e^x-1-x-\frac{x^2}{2}}{x^3}=\lim_{x\to0}\frac{1+x+\frac12x^2+\frac16x^3+o(x^3)-1-x-\frac12x^2}{x^3}=\dfrac16$\\
+（3）$\displaystyle\lim_{x\to0}\frac{\e^{x^3}-1-x^3}{(\sin2x)^6}=\lim_{x\to0}\frac{1+x^3+\frac12x^6+o(x^6)-1-x^3}{64x^6}=\dfrac1{128}$\\
+（4）$\displaystyle\lim_{x\to+\infty}\left(x+\frac{1}{2}\right)\ln\left(1+\frac{1}{x}\right)=\lim_{x\to0^+}\left(\dfrac1x+\frac{1}{2}\right)\ln\left(1+x\right)=\lim_{x\to0^+}\dfrac{x+2}{2}\dfrac{\ln(x+1)}{x}=1$\\
+（5）$\displaystyle\lim_{x\to0}\left(\frac{1}{x}-\frac{1}{\e^x-1}\right)=\lim_{x\to0}\dfrac{\e^x-x-1}{x(\e^x-1)}=\frac{1-x+\frac12x^2+o(x^2)-1-x}{x^2}=\dfrac12$\\
+（6）$\displaystyle\lim_{x\to0^+}\frac{\e^x-1-x}{\sqrt{1-x}-\cos\sqrt{x}}=\lim_{x\to0^+}\frac{1+x+\frac12x^2+o(x^2)-1-x}{1-\frac12x-\frac18x^2+o(x^2)-(1-\frac12x+\frac1{24}x^2)}=\dfrac{\frac12}{-\frac16}=-3$
+\end{solution}
+\section{函数性态的研究}
+\begin{example}{3.7-A-3}{}
+    $\text{证明函数 }y=x+\sin x\text{严格上升}.$
+\end{example}
+\begin{solution}
+    $y'=1-\cos x\geq0$，故$y$严格上升.
+\end{solution}
+\begin{example}{3.7-A-7}{}
+    $\text{设}f(x)=ax\mathrm{e}^{bx},\text{试确定常数 }a,b,\text{使得 }f(\frac{1}{3})=1,\text{且函数在 }x=\frac{1}{3}\text{处有极大值}.$
+\end{example}
+\begin{solution}
+    $f'(x)=a\e^{bx}(bx+1),f'(\frac13)=a\e^{b\frac13}(1+\frac13b)=0,f(\frac13)=a\dfrac13\e^{b\frac13}=1$，得到由必要条件引出的方程组$a\left(b+\dfrac13\right)=0,a\e^{b\frac13}=3$，由第二个方程得到$a\ne 0$，所以$b=-3,a=3\e$，下面证明充分性，当$b=-3,a=3\e$时，$f(x)=3x\e\cdot\e^{-3x}=3x\e^{1-3x},f(\dfrac13)=1,f'(x)=\e\dfrac{1-3x}{\e^{3x}}=0$，导函数的正负性取决于一次函数$y=1-3x$，当$x<\dfrac13$时，$y<0$，当$x>\dfrac13$时，$y>0$，所以$f(x)$在$\frac{1}{3}$处的极大值是$f(\frac{1}{3})=1$.
+\end{solution}
+\begin{example}{3.7-A-8}{}
+    \begin{tabular}{@{}l@{}l@{}}
+(1) $\sin x>\frac{2}{\pi}x\quad(0<x<\frac{\pi}{2})$; & 
+(2) $\cos x>1-\frac{x^{2}}{2}\quad(x\neq0)$; \\
+(3) $x>\ln(1+x)>x-\frac{x^{2}}{2}\quad(x>0)$; & 
+(4) $\ln(1+x)\geqslant\frac{\arctan x}{1+x}\quad(x\geqslant0)$.
+\end{tabular}
+\end{example}
+\begin{solution}
+    （1）对于$y=\sin x$，$y'=\cos x$，$y''=-\sin x$，$y$在$(0,\frac{\pi}{2})$上为凹函数。根据凹函数的定义，设$x_1=0$，$x_2=\frac{\pi}{2}$，$f(x)=\sin x$，有：
+    \[f(tx_1+(1-t)x_2)=f\left(\frac{\pi}{2}(1-t)\right)\geq tf(x_1)+(1-t)f(x_2)=1-t\]
+    令$x=\frac{\pi}{2}(1-t)\in(0,\frac{\pi}{2})$，则有$\sin x>\frac{2}{\pi}x\quad(0<x<\frac{\pi}{2})$.\\
+    （2）考虑函数$f(x)=\cos x-\left(1-\frac{x^2}{2}\right)$，则$f(0)=0$。计算导数：
+    \[f'(x)=-\sin x+x,\quad f''(x)=-\cos x+1\geq0\]
+    因此$f'(x)$单调递增，又$f'(0)=0$，故当$x>0$时$f'(x)>0$，当$x<0$时$f'(x)<0$。所以$f(x)$在$x=0$处取得最小值$f(0)=0$，且当$x\neq0$时$f(x)>0$，即$\cos x>1-\frac{x^2}{2}\quad(x\neq0)$.\\
+    （3）先证左边不等式：令$f(x)=x-\ln(1+x)$，则$f(0)=0$，$f'(x)=1-\frac{1}{1+x}=\frac{x}{1+x}>0\quad(x>0)$，故$f'(x)>0$，又因为$f(x)>f(0)=0$，故$f(x)>0$，即$x>\ln(1+x)$\\
+    再证右边不等式：令$g(x)=\ln(1+x)-\left(x-\frac{x^2}{2}\right)$，则$g(0)=0$，$g'(x)=\frac{1}{1+x}-1+x=\frac{x^2}{1+x}>0\quad(x>0)$，故$g'(x)>0$，$g(x)$单调递增，又因为$g(x)>g(0)=0$，故$g(x)>0$，即$\ln(1+x)>x-\frac{x^2}{2}$\\
+（4）令$h(x)=(1+x)\ln(1+x)-\arctan x$，则$h(0)=0$。计算导数：
+    \[h'(x)=\ln(1+x)+1-\frac{1}{1+x^2}\]
+    当$x\geq0$时，$\ln(1+x)\geq0$，且$1-\frac{1}{1+x^2}\geq0$，故$h'(x)\geq0$，$h(x)$单调递增，因此$h(x)\geq h(0)=0$，即$(1+x)\ln(1+x)\geq\arctan x$，亦即$\ln(1+x)\geq\frac{\arctan x}{1+x}\quad(x\geq0)$.
 \end{solution}
