@@ -1,0 +1,211 @@
+\chapter{命题逻辑}
+\section{命题与命题公式}
+\begin{definition}{命题}{}
+    命题是用陈述句表示的一个为真或者为假，但不能同时为真又为假的判断语句
+\end{definition}
+一个语句是命题，关键在于它是否在“逻辑上”具有一个确定的真值（即要么为真，要么为假），而不取决于我们是否知道或能够验证这个真值。只要一个陈述句在原则上可能为真或为假，即使我们目前无法判断（例如由于科学限制或信息不足），它仍然是一个命题。
+
+比如“除了地球以外的其他星球有生物”，好像我们还不知道真假，但是我们知道，它有一个潜在的真值：要么其他星球上存在生物（真），要么不存在（假）。尽管我们目前无法证实或证伪这个陈述，但它的真值是客观存在的，不会同时为真又为假。
+
+而语句“$2+x=5$”，我们从逻辑上无法认为它一定为真，或者一定为假，因为$x$是变元，有时这个式子成立，有时不成立，因此这个语句不是命题。
+
+除此以外，问句，感叹句，祈使句表示的语义不具备真值，不是命题。比如“多漂亮的花啊！”这句话，有的人觉得好看，有的人觉得不好看，所以它没有确定的真值，不是命题。
+\begin{definition}{悖论}{}
+悖论是用陈述句表示的一个如果为真则推出为假、如果为假则推出为真，从而无法一致地分配真值的判断语句。
+\end{definition}
+比如著名的理发师悖论等
+\begin{definition}{原子命题（简单命题）}{}
+原子命题是不能被分解为更简单命题的命题，它不包含任何逻辑联结词，是构成复合命题的基本单位。
+\end{definition}
+原子命题（简单命题）​ 的特点是它的真值是内在的、最基本的，不依赖于其他命题。例如：“今天是星期五。” 和 “雪是白的。”
+\begin{definition}{复合命题}{}
+复合命题是由一个或一个以上的原子命题（简单句）通过逻辑联结词（如“并非”、“并且”、“或者”、“如果…那么…”、“当且仅当”等连词）组合而成的命题。
+\end{definition}
+复合命题​的真值则完全由其包含的原子命题的真值以及所使用的逻辑联结词的规则共同决定。例如：“今天是星期五并且天气很好。” 这个复合命题的真假，取决于“今天是星期五”和“天气很好”这两个原子命题的真假以及“并且”这个词的逻辑含义。
+\begin{definition}{逻辑联结词}{}
+    逻辑联结词是用来连接一个或多个命题，从而构成更复杂的复合命题的逻辑运算符。它们定义了原子命题之间的逻辑关系，并决定了复合命题的真值。\\
+    1. \textbf{否定联结词}（$\neg$，读作"非"）：表示对原命题的否定。命题 $\neg P$ 为真，当且仅当命题 $P$ 为假。\\
+    2. \textbf{合取联结词}（$\land$，读作"且"或"与"）：表示两个命题同时成立。命题 $P \land Q$ 为真，当且仅当 $P$ 和 $Q$ 同时为真。\\
+    3. \textbf{析取联结词}（$\lor$，读作"或"）：表示两个命题至少有一个成立。命题 $P \lor Q$ 为真，当且仅当 $P$ 和 $Q$ 至少有一个为真（此为"相容或"，即允许两者同时为真）。\\
+    4. \textbf{蕴涵联结词}（$\rightarrow$ 或 $\supset$，读作"如果…那么…"）：表示前一个命题是后一个命题的充分条件。命题 $P \rightarrow Q$ 为假，当且仅当 $P$ 为真而 $Q$ 为假；其余情况均为真。\\
+    5. \textbf{等价联结词}（$\leftrightarrow$，读作"当且仅当"）：表示两个命题互为充分必要条件。命题 $P \leftrightarrow Q$ 为真，当且仅当 $P$ 和 $Q$ 的真值相同（即同真或同假）。\\
+    6. \textbf{与非联结词}（$\uparrow$，读作"与非"）：表示合取的否定。命题 $P \uparrow Q$ 为真，当且仅当 $P$ 和 $Q$ 不同时为真。其真值等价于 $\neg(P \land Q)$。\\
+    7. \textbf{或非联结词}（$\downarrow$，读作"或非"）：表示析取的否定。命题 $P \downarrow Q$ 为真，当且仅当 $P$ 和 $Q$ 同时为假。其真值等价于 $\neg(P \lor Q)$。\\
+    8. \textbf{异或联结词}（$\oplus$，读作"异或"）：表示不相容的析取。命题 $P \oplus Q$ 为真，当且仅当 $P$ 和 $Q$ 的真值不同（即一真一假）。其真值等价于 $(P \land \neg Q) \lor (\neg P \land Q)$。
+\end{definition}
+比如“登录服务器必须输入一个有效的口令”，符号化后就是：令$P$:登录服务器，$Q$：输入一个有效的口令，符号化：$P \rightarrow Q$，需要注意后者是必要不充分条件，因为输入口令后，可能还需要其它步骤才能登陆服务器。
+
+有的人不理解的可能是为什么蕴含前件为假时，蕴含式总为真。这个定义源于我们对“承诺”或“规则”是否被违反的判断。逻辑学中的蕴涵式 $P \rightarrow Q$ 可以看作一个“承诺”：\textbf{如果 $P$ 成立，则我保证 $Q$ 也成立。} 这个承诺的真假，取决于在 $P$ 成立的情况下，我是否履行了承诺。如果 $P$ 是假的，那么前提条件就没有被满足，这个规则或承诺就自动进入“不适用”或“未被激活”的状态。既然承诺没有被激活，那么我们自然不能说它被违反了。在逻辑上，我们便将“未被违反”的状态定义为“真”。
+\begin{definition}{逻辑联结词的运算优先级}{}
+    $\neg> \land> \lor> \rightarrow> \leftrightarrow$，合取优先级大于析取优先级。
+\end{definition}
+给定一个含有$n$个命题变元的命题公式，易得这$n$个命题变元共有$2^n$种不同的赋值，将命题公式在所有赋值下的真值列成一个表，成为该命题的真值表，所以真值表有$2^n$行，真值表实际上定义了一个函数，从 $2^n$种赋值映射到一个真值 (真或假)。对于每种赋值，函数的输出可以是真或假两种选择。因此，所有可能的函数数量是$2^{2^n}$个。这意味着，对于n个命题变元，存在$2^{2^n}$个不同的真值表。
+\begin{definition}{（最小）全功能联结词集}{}
+    在命题逻辑中，一个联结词集合被称为\textbf{全功能联结词集}，当且仅当该集合中的联结词足以表达所有可能的真值函数。换句话说，使用该集合中的联结词可以构造出任意的命题公式，并能够表示所有可能的$2^{2^n}$个不同的真值表（其中$n$为命题变元的个数）。如果从一个全功能联结词集中移除任何一个联结词后，剩下的联结词集合不再是全功能的，则称该集合为\textbf{最小全功能联结词集}。
+\end{definition}
+列举所有的最小全功能联结词集：$\{\neg, \land\}$，$\{\neg, \lor\}$，$\{\neg, \rightarrow\}$，$\{\uparrow\}$ （与非集），$\{\downarrow\}$ （或非集）。考试一般考选择题，归纳出特点就是：一定要出现否定（或者包含有），析取、合取、蕴含这三个出现一个就行，不出现时必然是单一的$\{\uparrow\}$ （与非集），$\{\downarrow\}$ （或非集）。
+
+\textbf{特别的，异或$\{\oplus\}$不是最小全功能联结词集，甚至不是全功能联结词集。}事实上，命题的真值只有0和1，而恰好异或运算有一个重要特性：当输入的真值变化时，输出总是以"可预测的线性方式"变化。具体来说，如果我们只使用异或运算，无论怎么组合，得到的结果都只能表达"奇偶校验"类型的关系——即计算输入中1的个数是奇数还是偶数。这种运算无法表达更复杂的逻辑关系，比如"两个输入必须同时为1"（与运算）或"至少一个输入为1"（或运算）。
+
+为什么与运算和或运算更强大呢？因为它们能表达"非线性"的关系。与运算$P \land Q$要求两个输入必须同时满足条件，这不是简单的奇偶关系。同样，或运算$P \lor Q$允许至少一个条件满足，这也超出了异或的能力范围。
+
+而与非运算$\uparrow$和或非运算$\downarrow$之所以强大，是因为它们内在包含了"否定"的能力。例如，单用与非运算就能表示否定：$\neg P = P \uparrow P$。一旦能够表示否定，再加上它们原有的组合能力，就可以构造出所有其他逻辑运算，包括与、或、蕴含等。
+
+
+
+\begin{example}{}{}
+    证明$\{\uparrow\}$ （与非集），$\{\downarrow\}$ （或非集）是最小全功能联结词集
+\end{example}
+\begin{solution}
+\begin{align*}
+    \neg P &\Leftrightarrow P \uparrow P &
+    P \land Q &\Leftrightarrow (P \uparrow Q) \uparrow (P \uparrow Q) \\
+    P \lor Q &\Leftrightarrow (P \uparrow P) \uparrow (Q \uparrow Q) &
+    P \rightarrow Q &\Leftrightarrow P \uparrow (Q \uparrow Q) \\
+    P \leftrightarrow Q &\Leftrightarrow (P \uparrow (Q \uparrow Q)) \uparrow ((Q \uparrow (P \uparrow P)) \uparrow (Q \uparrow (P \uparrow P)))
+\end{align*}
+类似地：
+\begin{align*}
+    \neg P &\Leftrightarrow P \downarrow P &
+    P \lor Q &\Leftrightarrow (P \downarrow Q) \downarrow (P \downarrow Q) \\
+    P \land Q &\Leftrightarrow (P \downarrow P) \downarrow (Q \downarrow Q) &
+    P \rightarrow Q &\Leftrightarrow (P \downarrow P) \downarrow Q \\
+    P \leftrightarrow Q &\Leftrightarrow ((P \downarrow P) \downarrow Q) \downarrow ((Q \downarrow Q) \downarrow P)
+\end{align*}
+\end{solution}
+\begin{center}
+\begin{tikzpicture}[circuit logic US, thick]
+    
+    % 与门 (AND)
+    \node[and gate] at (0,0) (and) {};
+    \draw (and.input 1) -- ++(-0.3,0) node[left] {A};
+    \draw (and.input 2) -- ++(-0.3,0) node[left] {B};
+    \draw (and.output) -- ++(0.3,0) node[right] {Y};
+    \node[above=0.5cm] at (and.center) {AND};
+    
+    % 或门 (OR)
+    \node[or gate] at (3,0) (or) {};
+    \draw (or.input 1) -- ++(-0.3,0) node[left] {A};
+    \draw (or.input 2) -- ++(-0.3,0) node[left] {B};
+    \draw (or.output) -- ++(0.3,0) node[right] {Y};
+    \node[above=0.5cm] at (or.center) {OR};
+    
+    % 非门 (NOT)
+    \node[not gate] at (6,0) (not) {};
+    \draw (not.input) -- ++(-0.3,0) node[left] {A};
+    \draw (not.output) -- ++(0.3,0) node[right] {Y};
+    \node[above=0.5cm] at (not.center) {NOT};
+    
+    % 与非门 (NAND)
+    \node[nand gate] at (8.5,0) (nand) {};
+    \draw (nand.input 1) -- ++(-0.3,0) node[left] {A};
+    \draw (nand.input 2) -- ++(-0.3,0) node[left] {B};
+    \draw (nand.output) -- ++(0.3,0) node[right] {Y};
+    \node[above=0.5cm] at (nand.center) {NAND};
+    
+    % 或非门 (NOR)
+    \node[nor gate] at (11.5,0) (nor) {};
+    \draw (nor.input 1) -- ++(-0.3,0) node[left] {A};
+    \draw (nor.input 2) -- ++(-0.3,0) node[left] {B};
+    \draw (nor.output) -- ++(0.3,0) node[right] {Y};
+    \node[above=0.5cm] at (nor.center) {NOR};
+\end{tikzpicture}
+\end{center}
+\section{命题演算的关系式}
+$P\Leftrightarrow Q$（逻辑等价）的定义是：$P\leftrightarrow Q$为永真式/重言式；$P\Rightarrow Q$（逻辑蕴含）的定义是：$P\rightarrow Q$为永真式；
+
+证明两个命题公式等价，方法是：1.比较真值表；2. 等价运算（使用等价符号$\Leftrightarrow$）
+
+置换规则：它允许在逻辑公式中，用逻辑等价的子公式替换另一个子公式，而不改变原公式的真值。
+\begin{definition}{对偶式}{}
+    在命题逻辑中，设$A$是一个仅包含联结词$\neg$（否定）、$\land$（合取）和$\lor$（析取）的命题公式。$A$的\textbf{对偶式}是通过将$A$中所有的$\land$替换为$\lor$，所有的$\lor$替换为$\land$，同时将所有的$1$（真）替换为$0$（假），所有的$0$（假）替换为$1$（真）而得到的新公式，记作$A^*$
+\end{definition}
+\begin{theorem}{对偶式的性质}{}
+设$A$和$B$是仅包含联结词$\neg$、$\land$和$\lor$的命题公式，$A^*$和$B^*$分别是它们的对偶式\\
+1. \textbf{对偶原理}：若$A \Leftrightarrow B$，则$A^* \Leftrightarrow B^*$。逻辑等价关系在对偶变换下保持不变。\\
+2. \textbf{否定与对偶的关系}：$A \Leftrightarrow (A^*)^*$，即$A$的对偶式的对偶式等于$A$本身。\\
+3. \textbf{永真式与永假式的对偶}：若$A$永真，则$A^*$永假；若$A$永假，则$A^*$永真。\\
+4. \textbf{对偶式的否定}：$\neg A \Leftrightarrow (\neg A^*)^*$，其中$\neg A^*$表示先将$A$中的原子命题取否定，再求对偶式。\\
+5. \textbf{对偶式的运算}：$(A \land B)^* = A^* \lor B^*$，$(A \lor B)^* = A^* \land B^*$，$(\neg A)^* = \neg (A^*)$\\
+6. $A\Rightarrow B$的充分必要条件是$B^* \Rightarrow A^*$
+\end{theorem}
+性质5是由定义导出的，性质4是因为否定运算在对偶变换下保持不变，对偶式定义只涉及交换$\land$和$\lor$，性质3更显然，因为永真式为1，永假式为0，对偶变换后显然颠倒。
+
+下面证明性质6，\textbf{第一步：证明如果$A \Rightarrow B$，则$B^* \Rightarrow A^*$}，由于$A \Rightarrow B$，所以$A \rightarrow B$是永真式。根据对偶式的性质，永真式的对偶是永假式，因此$(A \rightarrow B)^* $是永假式，将蕴含式转换为基本联结词：$A \rightarrow B \Leftrightarrow \neg A \lor B$，所以$(\neg A \lor B)^* \text{是永假式}$，根据对偶式的定义：$(\neg A \lor B)^* = (\neg A)^* \land B^* = \neg A^* \land B^*$，因此$\neg A^* \land B^*$是永假式，这意味着对于所有赋值，$\neg A^* \land B^*$都为假。两边同时取否定得到$\neg A^* \rightarrow \neg B^*$为真，即$B^* \rightarrow A^*$为永真式，所以$B^* \Rightarrow A^*$。\textbf{第二步：证明如果$B^* \Rightarrow A^*$，则$A \Rightarrow B$}由于$B^* \Rightarrow A^*$，根据第一步的结论（将$A$替换为$B^*$，$B$替换为$A^*$），我们有：$(A^*)^* \Rightarrow (B^*)^*$，根据对偶式的性质，$(A^*)^* = A$，$(B^*)^* = B$，所以$A \Rightarrow B$。综上，$A \Rightarrow B$当且仅当$B^* \Rightarrow A^*$。
+\begin{theorem}{重要等价关系}{}
+\noindent\textbf{1. 基本等价关系}\\
+双重否定律：$\neg\neg P \Leftrightarrow P$\\
+等幂律（幂等律）：$P \lor P \Leftrightarrow P$，$P \land P \Leftrightarrow P$\\
+交换律：$P \lor Q \Leftrightarrow Q \lor P$，$P \land Q \Leftrightarrow Q \land P$\\
+结合律：$(P \lor Q) \lor R \Leftrightarrow P \lor (Q \lor R)$，$(P \land Q) \land R \Leftrightarrow P \land (Q \land R)$\\
+分配律：$P \lor (Q \land R) \Leftrightarrow (P \lor Q) \land (P \lor R)$，$P \land (Q \lor R) \Leftrightarrow (P \land Q) \lor (P \land R)$\\
+吸收律：$P \lor (P \land Q) \Leftrightarrow P$，$P \land (P \lor Q) \Leftrightarrow P$\\
+德摩根律：$\neg(P \lor Q) \Leftrightarrow \neg P \land \neg Q$，$\neg(P \land Q) \Leftrightarrow \neg P \lor \neg Q$\\
+\noindent\textbf{2. 常元相关等价关系}\\
+零元律：$P \lor 1 \Leftrightarrow 1$，$P \land 0 \Leftrightarrow 0$\quad 同一律：$P \lor 0 \Leftrightarrow P$，$P \land 1 \Leftrightarrow P$\\
+排中律：$P \lor \neg P \Leftrightarrow 1$\quad 矛盾律：$P \land \neg P \Leftrightarrow 0$\\
+\noindent\textbf{3. 蕴含与等价关系}\\
+蕴含等值式：$P \rightarrow Q \Leftrightarrow \neg P \lor Q$（“$Q$发生且$P$不发生”是不可能的）\\
+逆否等值式：$P \rightarrow Q \Leftrightarrow \neg Q \rightarrow \neg P$\\
+等价等值式：$P \leftrightarrow Q \Leftrightarrow (P \rightarrow Q) \land (Q \rightarrow P)$\\
+等价否定等值式：$P \leftrightarrow Q \Leftrightarrow \neg P \leftrightarrow \neg Q$\\
+归谬论：$(P \rightarrow Q) \land (P \rightarrow \neg Q) \Leftrightarrow \neg P$（不可能同时蕴含正反面）\\
+\noindent\textbf{4. 其他重要等价关系}\\
+输出律：$(P \land Q) \rightarrow R \Leftrightarrow P \rightarrow (Q \rightarrow R)$
+\end{theorem}
+应该注意，形如$A\Leftrightarrow B,A\Rightarrow B$不是命题公式，而是命题关系式。而应用这些等价关系式可以证明公式互相等价，或者求主析取范式，主合取范式。解题过程中应该利用等价符号。
+
+但是当题目要证明“若$p$则$q$”这样的蕴含关系，就可以出新的考题。我们可以将要证明的蕴含关系利用蕴含式写出来，再证明其永真（解题过程中应该利用等价符号），这就需要用到等价关系式（或者真值表）。
+
+但是，当转化出来的命题公式的蕴含前件或者后件中含有较多的命题变元，就需要使用推理定律，并使用编号1234一步步写出推理过程，而不是这里的等价关系式，解题过程中也不应该出现等价符号。考试一般考“利用构造法验证推理是否有效”（指的是构造定理证明系统）。
+
+上面提到的输出律，即\textbf{CP规则}:
+\begin{theorem}{CP规则（附加前提规则）}{}
+对于任意公式$A_1, A_2, \ldots, A_n, B, C$，如果$A_1, A_2, \ldots, A_n, B$可以推出$C$，则$A_1, A_2, \ldots, A_n$可以推出$B \rightarrow C$。
+
+这意味着，如果我们能从前提集合和临时假设$B$推导出$C$，那么我们就能从原前提集合推导出条件语句$B \rightarrow C$，而不再依赖假设$B$。
+\end{theorem}
+除了这个规则外，还有若干规则需要遵循：\\
+1. 前提引入规则：在证明的任何步骤中，可以随时引入已知的前提条件。在证明过程中，并不需要用完所有给定的前提。关键是选择能够有效推导出结论的前提组合。当前提自身存在矛盾时，并不影响这个规则的合理性，因为矛盾本身已经足以推出任何结论。\\
+2. 结论引入规则：从已知条件出发，通过有效的推理规则推导出新的结论。\\
+3. 置换规则：在证明过程中，可以用逻辑等价的公式替换原公式，而不改变推理的有效性。最后的置换规则恰恰给出了推理中“不允许使用等价符号”的替代方案。
+\begin{theorem}{蕴含关系式}{}
+\textbf{1. 化简律}：$P \land Q \Rightarrow P$（或$P \land Q \Rightarrow Q$），（抓住重点，忽略次要）\\
+\textbf{2. 附加律}：$P \Rightarrow P \lor Q$ ，（有真则真，多说不妨）\\
+\textbf{3. 假言推理（分离规则）}：$(P \rightarrow Q) \land P \Rightarrow Q$（有条件就执行） \\
+\textbf{4. 拒取式}：$(P \rightarrow Q) \land \neg Q \Rightarrow \neg P$ （结果不成立，前提必为假）\\
+\textbf{5. 假言三段论}：$(P \rightarrow Q) \land (Q \rightarrow R) \Rightarrow (P \rightarrow R)$ （环环相扣）\\
+\textbf{6. 析取三段论}：$(P \lor Q) \land \neg P \Rightarrow Q$ （非此即彼）\\
+\textbf{7. 构造性二难}：$(P \rightarrow Q) \land (R \rightarrow S),P \lor R \Rightarrow Q \lor S$ （分兵二路，两路夹击）\\
+\textbf{8. 破坏性二难}：$(P \rightarrow Q) \land (R \rightarrow S) ,\neg Q \lor \neg S \Rightarrow \neg P \lor \neg R$ \\
+\textbf{9. 等价三段论}：$(P \leftrightarrow Q) \land (Q \leftrightarrow R) \Rightarrow (P \leftrightarrow R)$ （两头落空，源头有错）\\
+\textbf{10. 归结式}：$(P \lor Q) \land (\neg P \lor R) \Rightarrow (Q \lor R)$（两头下注，必中一个）
+\end{theorem}
+归结证明是一种基于归结原理的自动定理证明方法，基础是“归结式”：对于两个子句$C_1 = P \lor A$和$C_2 = \neg P \lor B$，可以通过消去互补文字$P$和$\neg P$，得到归结式$A \lor B$。解题过程是：先将待证明的公式转化为合取范式，得到子句集合，然后通过反复应用归结规则，从子句集中推导新的子句，如果能够推导出空子句（矛盾），则证明原公式是不可满足的，否则直到推导出结果为止。
+
+除了利用这些推理规则并使用演绎法进行推理，也可以先附加前提（CP），再直接证明。或者先附加结论的否定（归谬法）再进行间接推演。
+\begin{definition}{相容}{}
+    如果存在一个真值赋值使得所有公式$A_1, A_2, \ldots, A_n$同时为真，则称它们是\textbf{相容的}（一致的）；否则称它们是\textbf{不相容的}（矛盾的），即这些命题公式的合取式为矛盾式。
+\end{definition}
+有了这个思路，我们可以将结论取否定加入到前提条件集合中，证明前提条件不相容，也就是说“题目出错了”，从而证明原来的结论是正确的。
+\section{析取范式，合取范式}
+\begin{definition}{析取范式和合取范式，极小项极大项，主析取，主合取范式}{}
+\textbf{析取范式}是若干个\textbf{简单合取式}（文字的合取）的析取，形如：$(P \land \neg Q) \lor (R \land S) \lor \cdots$\\
+\textbf{合取范式}是若干个\textbf{简单析取式}（文字的析取）的合取，形如：$(P \lor \neg Q) \land (R \lor S) \land \cdots$\\
+任何命题公式都存在等价的析取范式和合取范式，可通过蕴含等价、内移否定、分配律得。\\
+\textbf{极小项}是包含所有命题变元或其否定的简单合取式，每个变元恰好出现一次。例如，对于变元$P,Q$，极小项有：$P \land Q$，$P \land \neg Q$，$\neg P \land Q$，$\neg P \land \neg Q$。\\
+\textbf{极大项}是包含所有命题变元或其否定的简单析取式，每个变元恰好出现一次。例如，对于变元$P,Q$，极大项有：$P \lor Q$，$P \lor \neg Q$，$\neg P \lor Q$，$\neg P \lor \neg Q$。\\
+\textbf{主析取范式}是由极小项组成的析取范式，每个极小项对应公式的一个成真赋值。\\
+\textbf{主合取范式}是由极大项组成的合取范式，每个极大项对应公式的一个成假赋值。\\
+任何命题公式都存在等价的唯一主析取范式和主合取范式。永真式的主合取范式为空（无极大项），永假式的主析取范式为空（无极小项）。
+\end{definition}
+所以由上述定义得知，主析取范式或主合取范式中不一定有极小项或者极大项。极小项一般用小写$m_i$表示，极大项一般用大写$M_i$表示。
+
+由于析取范式由若干个简单合取式（极小项）通过析取联结词连接而成，而析取运算具有"一真即真"的特性，即只要有一个极小项为真，则整个命题公式为真。这类似于逻辑代数中的"或"运算：$0$（假）参与运算不改变结果（相当于没有贡献），而每个$1$（真）项（对应极小项为真）都会使结果为真。
+
+因此，为了和原命题保持等价关系，主析取范式的每一个极小项都要对应着公式的一个成真赋值，整个主析取范式则涵盖了公式的所有成真赋值。进而，将真值表中每个成真赋值对应的二进制数转化为十进制，即可得到该极小项的下标（如赋值$P=1, Q=0, R=1$对应$m_5$）。主析取范式就是所有这些极小项（如$m_2, m_5, m_7$）用逻辑加连接起来的形式：$\sum(2,5,7)$。
+
+由于合取范式由若干个简单析取式（极大项）通过合取联结词连接而成，而合取运算具有"一假即假"的特性，即只要有一个极大项为假，则整个命题公式为假。这类似于逻辑代数中的"与"运算：$1$（真）参与运算不改变结果（相当于没有贡献），而每个$0$（假）项（对应极大项为假）都会使结果为假。
+
+因此，为了和原命题保持等价关系，主合取范式的每一个极大项都要对应着公式的一个成假赋值，整个主合取范式则涵盖了公式的所有成假赋值。进而，将真值表中每个成假赋值对应的二进制数转化为十进制，即可得到该极大项的下标（如赋值$P=1, Q=0, R=1$对应$M_5$）。主合取范式就是所有这些极大项（如$M_2, M_5, M_7$）用逻辑乘连接起来的形式$\prod(2,5,7)$
+
