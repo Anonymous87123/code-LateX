@@ -79,13 +79,24 @@
 \textbf{第一步：自由变元代入}：将自由变元$y$用常元$a$代入：$\forall x (P(x,a) \rightarrow \exists y Q(x,y))$
 
 \textbf{第二步：约束变元换名}：将存在量词$\exists y$的约束变元$y$换名为$z$：$\forall x (P(x,a) \rightarrow \exists z Q(x,z))$。经过两个规则的应用，我们得到的新公式：自由变元$y$已被具体化为常元$a$，约束变元$y$被换名为$z$，避免了名称冲突，现在公式中每个变元的角色清晰：$x$是$\forall$的约束变元，$z$是$\exists$的约束变元，$a$是常元，新公式与原公式逻辑等价，但更便于进行逻辑推理
-\section{谓词公式的等价关系式和蕴含关系式}
+\section{谓词公式的等价和蕴含关系式}
+与上一章类似，当两个谓词公式$A$和$B$满足$A\leftrightarrow B$为永真式时，我们说$A$和$B$是等价的，等价关系式的形式为：$A\Leftrightarrow B$；当两个谓词公式$A$和$B$满足$A\rightarrow B$为永真式时，我们说$A$蕴含$B$，蕴含关系式的形式为：$A\Rightarrow B$。
 \begin{theorem}{常见的等价关系式}{}
-$\exists x(A(x)\to B(x))\Rightarrow \forall xA(x)\to \exists xB(x)$\\
-
-
+1. 去括号（$B$含$x$）：$\exists x(A(x)\to B(x))\Leftrightarrow \forall xA(x)\to \exists xB(x)$\\
+2. 去括号（$B$含$x$）：$\forall y(A(y)\to B(x))\Leftrightarrow \exists xA(x)\to B(x)$\\
+3. 去括号（$B$不含$x$）：$\forall x(\exists x)~(B(\land,\lor,\to)A(x))\Leftrightarrow \forall x(\exists x)~B(\land,\lor,\to)A(x) $\\
+4. 去括号（$B$不含$x$）：$\forall x(A(x)\to B)\Leftrightarrow \exists xA(x)\to B\quad  \exists x(A(x)\to B)\Leftrightarrow \forall xA(x)\to B$\\
+5. 分配律：$\forall x(A(x)\land B(x))\Leftrightarrow \forall xA(x)\land \forall xB(x)\quad \exists x(A(x)\lor B(x))\Leftrightarrow \exists xA(x)\lor \exists xB(x)$\\
+6. 交换律：$\forall x\forall y A(x,y)\Leftrightarrow \forall y\forall x A(x,y)\quad \exists x\exists y A(x,y)\Leftrightarrow \exists y\exists x A(x,y)$
 \end{theorem}
+3和4即书上给出的量词辖域扩张与收缩律，2虽然说$B$含$x$，但是由于此时蕴含前件不含$x$，而是含有$y$，且指导变元是$y$，所以此时和4一样。上面的公式利用等价变形都可以解决，下面给出理解和记忆的方式。
+
+1. 左边说“至少有一个$x$，能够确保：如果它满足$A$，那么它也满足$B$”。右边说“如果所有的$x$都满足$A$，那么至少有一个$x$满足$B$”。例如：“假设你是老师，你承诺说你会找一些幸运儿学生，如果他们来上课就能及格”，这等价于“如果所有学生都来上课，那么有学生能及格”，因为你总要挑选学生给到及格。
+
+2. 需要注意在这个公式中，$B(x)$中的变元是自由变元（没有被任何量词约束），因此两边都表示关于某个特定个体$x$的陈述。
+
 \begin{theorem}{常见的蕴含关系式}{}
-    
+1. $\exists xA(x)\to\exists xB(x)\Rightarrow\exists x(A(x)\to B(x))$\\
+2. 
 \end{theorem}
 
