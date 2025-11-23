@@ -58,7 +58,7 @@
 代换实例保持了原命题公式的逻辑结构，只是将原子命题替换为谓词公式。如果原命题公式是永真式（矛盾式），则其所有代换实例也是永真式（矛盾式）。
 \end{definition}
 例如，命题公式$P \rightarrow (Q \land P)$的一个代换实例可以是：$\forall x P(x) \rightarrow (\exists y Q(y) \land \forall x P(x))$。而在代换实例的视角来看，有些谓词公式可以通过像命题公式那样进行等价变换，从而证明一些命题公式之间有等价关系或者蕴含关系。这就需要用到之前的推理定律。详见$2.3$
-\section{换名}
+\section{换名，前束范式}
 换名的动机是让谓词公式中尽量不要出现同样的变元，以便于区分和进行逻辑推理。
 
 约束变元换名规则允许在公式中更改约束变元的名称，而不改变公式的逻辑含义。比如将 $\forall x (P(x) \rightarrow \exists y Q(x,y))$ 中的 $x$ 换为 $z$，得到 $\forall z (P(z) \rightarrow \exists y Q(z,y))$，要求如下：\\
@@ -72,13 +72,38 @@
 2. 代入项中不能含有在公式中受约束的变元\\
 3. 代入后原公式的逻辑含义保持不变
 
-注意，约束变元换名，改变的是变元符号，不改变变元的性质（仍是约束变元），自由变元代入是用具体的项（常元、函数或其他变元）替换自由变元换名规则保持公式的逻辑等价性，代入规则可能改变公式的真值.
+注意，约束变元换名，改变的是变元符号，不改变变元的性质（仍是约束变元），自由变元代入是用具体的项（常元、函数或其他变元）替换自由变元换名规则保持公式的逻辑等价性。
 
 举一个例子，比如谓词公式：$\forall x (P(x,y) \rightarrow \exists y Q(x,y))$，这个公式存在两个问题：一是自由变元$y$与约束变元$y$同名，容易引起混淆，二是量词$\forall x$和$\exists y$的约束变元$x$和$y$在公式中混合使用，不利于逻辑推理。下面换名：
 
 \textbf{第一步：自由变元代入}：将自由变元$y$用常元$a$代入：$\forall x (P(x,a) \rightarrow \exists y Q(x,y))$
 
-\textbf{第二步：约束变元换名}：将存在量词$\exists y$的约束变元$y$换名为$z$：$\forall x (P(x,a) \rightarrow \exists z Q(x,z))$。经过两个规则的应用，我们得到的新公式：自由变元$y$已被具体化为常元$a$，约束变元$y$被换名为$z$，避免了名称冲突，现在公式中每个变元的角色清晰：$x$是$\forall$的约束变元，$z$是$\exists$的约束变元，$a$是常元，新公式与原公式逻辑等价，但更便于进行逻辑推理
+\textbf{第二步：约束变元换名}：将存在量词$\exists y$的约束变元$y$换名为$z$：$\forall x (P(x,a) \rightarrow \exists z Q(x,z))$。经过两个规则的应用，我们得到的新公式：自由变元$y$已被具体化为常元$a$，约束变元$y$被换名为$z$，避免了名称冲突，现在公式中每个变元的角色清晰：$x$是$\forall$的约束变元，$z$是$\exists$的约束变元，$a$是常元，新公式与原公式逻辑等价，但更便于进行逻辑推理。
+
+常常利用换名将谓词公式化为与其自身等价的规范形式，成为前束范式：
+\begin{definition}{前束范式，首标，母式}{}
+前束范式是谓词逻辑中的一种标准形式，其中所有量词都出现在公式的最前端，且其辖域延伸到公式的末尾。形式化地，一个公式是前束范式当且仅当它具有以下形式：\vspace{-10pt}
+$$Q_1x_1Q_2x_2\cdots Q_nx_nM,\text{其中}Q_1x_1Q_2x_2\text{为首标},M\text{为母式}\vspace{-10pt}$$
+其中：$Q_i$ ($i=1,2,\ldots,n$) 是量词符号（$\forall$ 或 $\exists$），$x_i$ ($i=1,2,\ldots,n$) 是个体变元。
+\end{definition}
+将任意谓词公式化为前束范式的步骤通常包括：消去蕴含联结词 $\rightarrow$ 和等价联结词 $\leftrightarrow$，将否定符号 $\neg$ 内移，使其只作用于原子公式，将量词向左移动，并适当换名避免变元冲突。
+
+例如谓词公式$\forall x\forall y(\exists z(P(x,z)\land P(y,z))\to\exists uQ(x,y,u))$化为前束范式的过程是：
+\begin{align*}
+&\forall x\forall y(\exists z(P(x,z)\land P(y,z))\to\exists uQ(x,y,u))\\
+&\Leftrightarrow \forall x\forall y(\neg\exists z(P(x,z)\land P(y,z))\lor\exists uQ(x,y,u))&\text{置换规则}\\
+&\Leftrightarrow \forall x\forall y(\forall z(\neg P(x,z)\lor\neg P(y,z))\lor\exists uQ(x,y,u))&\text{置换规则}\\
+&\Leftrightarrow \forall x\forall y\forall z\exists u(\neg P(x,z)\lor\neg P(y,z)\lor Q(x,y,u))&\text{量词辖域扩张}
+\end{align*}
+由于上面的$x,y$的辖域覆盖到公式末尾，而且$z$和$u$的虽然辖域不同，但名称不同，无需换名，下面再看一个需要换名的例子。
+求下列谓词公式的前束范式：$\neg\exists xA(x)\to\forall yB(x,y)$
+\begin{align*}
+    &\neg\exists xA(x)\to\forall yB(x,y)\\
+    &\Leftrightarrow \forall x\neg A(x)\to\forall yB(x,y)&\text{否定等价转换}\\
+    &\Leftrightarrow \forall z\neg A(z)\to\forall yB(x,y)&\text{换名}\\
+    &\Leftrightarrow \forall z\forall y(\neg A(z)\to B(x,y))&\text{量词辖域扩张}\\
+    &\Leftrightarrow \forall z\forall y(A(z)\lor B(x,y))&\text{置换规则}
+\end{align*}
 \section{谓词公式的等价和蕴含关系式}
 与上一章类似，当两个谓词公式$A$和$B$满足$A\leftrightarrow B$为永真式时，我们说$A$和$B$是等价的，等价关系式的形式为：$A\Leftrightarrow B$；当两个谓词公式$A$和$B$满足$A\rightarrow B$为永真式时，我们说$A$蕴含$B$，蕴含关系式的形式为：$A\Rightarrow B$。
 \begin{theorem}{常见的等价关系式}{}
@@ -93,10 +118,68 @@
 
 1. 左边说“至少有一个$x$，能够确保：如果它满足$A$，那么它也满足$B$”。右边说“如果所有的$x$都满足$A$，那么至少有一个$x$满足$B$”。例如：“假设你是老师，你承诺说你会找一些幸运儿学生，如果他们来上课就能及格”，这等价于“如果所有学生都来上课，那么有学生能及格”，因为你总要挑选学生给到及格。
 
-2. 需要注意在这个公式中，$B(x)$中的变元是自由变元（没有被任何量词约束），因此两边都表示关于某个特定个体$x$的陈述。
+2. 需要注意在这个公式中，$B(x)$中的变元是自由变元（没有被任何量词约束），因此两边都表示关于某个特定个体$x$的陈述。左边说"对任何一个$y$，如果$y$具有性质$A$，那么$x$具有性质$B$"；右边说"如果存在某个个体具有性质$A$，那么$x$具有性质$B$"。例如，"如果任何人都是医生，那么张三健康"等价于"如果有医生存在，那么张三健康"。由于$x$是自由变元，两边讨论的都是同一个特定的$x$（这里也可以视作存在量词引入），$B(x)$描述的是这个特定个体的性质，不受量词影响。
 
-\begin{theorem}{常见的蕴含关系式}{}
+3. 当B是与x无关的事实陈述时，可以把B从量词中“提出来”。例如，“对所有学生，今天下雨且他们要考试”等价于“今天下雨且所有学生都要考试”。
+
+4. 左边说“每个A都导致B”；右边说“只要有A存在就会导致B”。例如，“如果每个学生都作弊，就取消考试”等价于“只要有学生作弊，就取消考试”。
+
+5. “每个人都既聪明又勤奋”等价于“每个人都聪明且每个人都勤奋”。“有人会唱歌或跳舞”等价于“有人会唱歌或者有人会跳舞”。
+
+6. “任何两个人都是朋友”等价于“对任何人来说，与任何人都是朋友”，量词顺序不影响含义。“存在两个人是朋友”等价于“存在这样的两个人，他们是朋友”，存在量词的顺序也不影响含义。
+\begin{theorem}{常见的蕴含关系式（结论的弱化）}{}
 1. $\exists xA(x)\to\exists xB(x)\Rightarrow\exists x(A(x)\to B(x))$\\
-2. 
+2. $\forall xA(x)\to \exists xB(x)\Rightarrow \exists x(A(x)\to B(x))$\\
+3. $\forall xA(x)\lor \forall xB(x)\Rightarrow \forall x(A(x)\lor B(x))\Rightarrow \neg\forall xA(x)\to\exists xB(x)$\\
+4. $\exists x(A(x)\land B(x))\Rightarrow \exists xA(x)\land \exists xB(x)$\\
+5. $\forall x(A(x)\to B(x))\Rightarrow \forall xA(x)\to \forall xB(x)$\\
+6. $\exists x(A(x)\to B(x))\Rightarrow \exists xA(x)\to \exists xB(x)$\\
+7. $\forall x\forall yA(x,y)\Rightarrow \forall xA(x,x)$\\
+8. $\exists xA(x,x)\Rightarrow \exists x\exists yA(x,y)$\\
+9. $\forall x\forall yA(x,y)\Rightarrow \exists y\forall xA(x,y)\Rightarrow \forall x\exists yA(x,y)\Rightarrow \exists x\exists yA(x,y)$
 \end{theorem}
+1. 如果存在某个$x$满足$A(x)$，那么存在某个$x$满足$B(x)$。注意，这里的两个$x$可能不是同一个个体，也可能是同一个个体，当为后一种情况，就得到了蕴含后件。所以蕴含关系 $\exists xA(x)\to\exists xB(x)\Rightarrow\exists x(A(x)\to B(x))$ 成立。
 
+2. 如果所有$x$满足$A(x)$，那么存在某个$x$满足$B(x)$。单独考虑这个对$B(x)$量身定制的$x$也会满足$A(x)$，此时$A(x)\to B(x)$成立，蕴含关系 $\forall xA(x)\to \exists xB(x)\Rightarrow \exists x(A(x)\to B(x))$ 成立。
+
+3. 左边是一个强条件：要么所有个体都满足$A$，要么所有个体都满足$B$。右边是一个弱条件：每个个体至少满足$A$或$B$之一。显然，如果左边成立，那么右边必须成立，因为如果所有个体都满足$A$，那么每个个体都满足$A$，所以满足$A$或$B$；类似如果所有个体都满足$B$，也一样。但反过来不一定成立：可能有些个体满足$A$但不满足$B$，有些满足$B$但不满足$A$，所以右边真但左边假，因此蕴含关系 $\forall xA(x)\lor \forall xB(x)\Rightarrow \forall x(A(x)\lor B(x))$ 成立。而另一个蕴含关系式作为例题安排在后面了。
+
+4. 如果存在一个个体同时满足$A$和$B$，那么当然存在满足$A$的个体（就是这个个体）和存在满足$B$的个体（也是这个个体），但是右边的两个$x$可能一样也可能不一样，蕴含关系 $\exists x(A(x)\land B(x))\Rightarrow \exists xA(x)\land \exists xB(x)$ 显然成立。
+
+5. 每一个满足$A$的$x$都同时满足$B$，那当$x$恒满足$A$时就会恒满足$B$，但当存在不满足$A$的个体时，前提不施加任何约束，因此可能存在某些个体满足$A$但不满足$B$，只要不是所有个体都满足$A$，前提仍然为真。蕴含关系 $\forall x(A(x)\to B(x))\Rightarrow \forall xA(x)\to \forall xB(x)$ 显然成立。
+
+6. 对于某特定的$x$，如果$A(x)$成立，那么$B(x)$也成立。但是右边的两个$x$可能一样也可能不一样，蕴含关系 $\exists x(A(x)\to B(x))\Rightarrow \exists xA(x)\to \exists xB(x)$ 显然成立。
+
+7. 左边说$A$关系对所有个体对都成立。右边说$A$关系对所有自对（即个体与自身）都成立。如果左边成立，特别地，当$y=x$时，$A(x,x)$成立，因此蕴含关系 $\forall x\forall yA(x,y)\Rightarrow \forall xA(x,x)$ 成立。
+
+8. 如果存在一个个体与自身满足$A$，那么取个体$x$和$y$（取$y=x$）满足$A$。所以左边蕴含右边，即 $\exists xA(x,x)\Rightarrow \exists x\exists yA(x,y)$ 。但可能$A(x,y)$成立对于$x$和$y$不同，$A(x,x)$不成立。
+
+9. 从“全局$A$”到“存在万能$y$”（万能钥匙）到“每个$x$有对应$y$”（专用钥匙）到“存在一对”（碰运气），强度递减，蕴含关系成立。
+
+上面的叙述其实已经用到了四大谓词逻辑推理规则：
+\begin{theorem}{四大谓词逻辑推理规则}{}
+1. 全称实例化 (Universal Instantiation, UI):从全称命题推出特定实例。\vspace{-10pt}
+$$\forall x P(x) \Rightarrow P(c),\text{其中}c\text{是个体域中的任意个体}\vspace{-10pt}$$
+使用要求与注意事项：$c$必须属于个体域中的个体，且$c$不能在$A(x)$中约束出现，可以对同一个全称命题进行多次实例化，得到不同的实例，实例化时保持变元的一致性。例如，从“所有人都会死”推出“苏格拉底会死”。\\
+2. 存在实例化 (Existential Instantiation, EI)从存在命题推出特定实例。\vspace{-10pt}
+$$\exists x P(x) \Rightarrow P(c),\text{其中}c\text{是个体域中的某个特定个体}\vspace{-10pt}$$
+使用要求与注意事项：除了$x$以外，$A(x)$不能出现其它自由出现的个体变元，同时$c$必须是新引入的常元，不能和公式或推理证明过程中的其它常元或变元相同；$c$不能出现在结论中（因为不知道具体是哪个个体）；只能对同一个存在量词使用一次EI。例如，从"有人迟到了"推出"令小王是那个迟到的人"\\
+3. 全称泛化 (Universal Generalization, UG)从特定实例推出全称命题。\vspace{-10pt}
+$$P(c) \Rightarrow \forall x P(x),\text{其中}c\text{是个体域中的任意个体}\vspace{-10pt}$$
+使用要求与注意事项：$c$必须是自由出现的个体变元，不能有特殊性质，且$c$不能在$A(x)$中约束出现，必须确保对个体域中所有个体都成立。示例：通过证明任意一个三角形的内角和为180度，推出所有三角形的内角和为180度。\\
+4. 存在泛化 (Existential Generalization, EG)：从特定实例推出存在命题。\vspace{-10pt}
+$$P(c) \Rightarrow \exists x P(x),\text{其中}c\text{是个体域中的某个特定个体}\vspace{-10pt}$$
+使用要求与注意事项：$c$可以是任意已知个体，但是取代$c$的$x$不可以在$A(c)$中出现过，即不能和已有的量词绑定。示例：从“苏格拉底是哲学家”推出“存在哲学家”。\\
+5. \textbf{易错点：在使用EI引入新常元后，不能再对该常元使用UG}
+\end{theorem}
+例题：证明$\forall x(A(x)\lor B(x))\Rightarrow \neg\forall xA(x)\to\exists xB(x)$
+\begin{align*}
+(1)&\quad \forall x(A(x)\lor B(x)) & \text{前提} \\
+(2)&\quad \neg\forall xA(x) & \text{附加前提} \\
+(3)&\quad \exists x\neg A(x) & \text{由(2)量词否定转换} \\
+(4)&\quad \neg A(c) & \text{由(3)存在实例化(EI)，c为新常量} \\
+(5)&\quad A(c)\lor B(c) & \text{由(1)全称实例化(UI)} \\
+(6)&\quad B(c) & \text{由(4)(5)析取三段论} \\
+(7)&\quad \exists xB(x) & \text{由(6)存在泛化(EG)} \\
+(8)&\quad \neg\forall xA(x)\to\exists xB(x) & \text{由(2)(7)条件证明(CP)}
+\end{align*}

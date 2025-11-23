@@ -1,7 +1,29 @@
-\chapter{集合，关系，函数}
+\chapter{集合与关系}
 \section{集合}
-\section{关系}
-\section{函数}
-\chapter{图论}
-\section{图}
-\section{特殊图}
+\begin{definition}{空集，全集，有限集，无限集，元素个数}{}
+\textbf{空集}：不含任何元素的集合，记作$\varnothing$或$\{x|x\ne x\}$。空集是任何集合的子集。空集是唯一的\\
+\textbf{全集}：特定讨论中包含所有对象的集合，记作$U$。全集是相对的，取决于讨论的上下文。\\
+\textbf{有限集}：元素个数有限的集合。如果集合$A$有$n$个元素，其中$n$是非负整数，则$A$是有限集。\\
+\textbf{无限集}：不是有限集的集合，即元素个数无限多的集合。如自然数集$\mathbb{N}$、实数集$\mathbb{R}$等。\\
+\textbf{元素个数}：有限集$A$中元素的数目，记作$|A|$或$card(A)$。无限集的元素个数用基数概念描述，如可数无限集、不可数无限集等。
+\end{definition}
+\begin{definition}{集合的包含关系}{}
+    \textbf{子集}：如果集合$A$中的每个元素都是集合$B$中的元素，则称$A$是$B$的\textbf{子集}，记作$A \subseteq B$。空集是空集的子集\\
+    \textbf{真子集}：如果$A \subseteq B$且$A \neq B$，则称$A$是$B$的\textbf{真子集}，记作$A \subset B$。即\vspace{-10pt}
+    \[\forall x(A(x) \rightarrow B(x)) \land \exists x(B(x) \land \neg A(x))\]
+\end{definition}
+\begin{definition}{集合的基本运算}{}
+\textbf{交集}：集合$A$和$B$的交集是由所有既属于$A$又属于$B$的元素组成的集合，记作$A \cap B$。\vspace{-10pt}
+$$A \cap B = \{x \mid x \in A \land x \in B\}\vspace{-10pt}$$
+\textbf{并集}：集合$A$和$B$的并集是由所有属于$A$或属于$B$的元素组成的集合，记作$A \cup B$。\vspace{-10pt}
+$$A \cup B = \{x \mid x \in A \lor x \in B\}\vspace{-10pt}$$
+\textbf{补集}：集合$A$的补集是由全集中所有不属于$A$的元素组成的集合，记作$\sim  A$。\vspace{-10pt}
+$$\sim A = \{x \in U \mid x \notin A\}\vspace{-10pt}$$
+\textbf{差集}：集合$A$与$B$的差集是由所有属于$A$但不属于$B$的元素组成的集合：\vspace{-10pt}
+$$A-B = \{x \mid x \in A \land x \notin B\}\vspace{-10pt}$$
+\textbf{对称差}：集合$A$和$B$的对称差是由所有属于$A$或属于$B$但不同时属于两者的元素组成的集合\vspace{-10pt}
+$$A\oplus B = (A - B) \cup (B -A) = (A \cup B)- (A \cap B)\vspace{-10pt}$$
+\textbf{幂集}：集合$A$的幂集是由$A$的所有子集构成的集合，记作$P(A)$或$2^A$：\vspace{-10pt}
+$$P(A) = \{X \mid X \subseteq A\}$$
+\end{definition}
+然后主要写一些差集，对称差，幂集的性质。
