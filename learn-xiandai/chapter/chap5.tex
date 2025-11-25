@@ -429,13 +429,69 @@ $$\bm{T^{-1}AT}=\begin{pmatrix}\bm{E_r}&\mathbf{0}\\\mathbf{0}&\mathbf{0}\end{pm
 \end{solution}
 \begin{example}{}{}
     设$\bm{A,B}$为两个$n$阶方阵，证明：\\
-(1)若$\lambda$为$\bm{AB}$的一个非零特征值，则它也是$BA$的一个特征值；\\
+(1)若$\lambda$为$\bm{AB}$的一个非零特征值，则它也是$\bm{BA}$的一个特征值；\\
 (2)若$\lambda=0$为$\bm{AB}$的一个特征值，则$\lambda=0$也是$\bm{BA}$的一个特征值
-\end{exmaple}
+\end{example}
 \begin{solution}
-    （1）由定义，$\bm{AB}$的特征值$\lambda\ne0$与其对应的特征向量$\bm{\alpha}$满足$AB=\lambda\bm{E}_n$，
+(1) 设 $\lambda \neq 0$ 为 $\bm{AB}$ 的一个特征值，则存在非零向量 $\bm{\alpha}$ 使得$\bm{AB}\bm{\alpha} = \lambda \bm{\alpha}$，由于 $\lambda \neq 0$ 且 $\bm{\alpha} \neq \bm{0}$，有 $\bm{AB}\bm{\alpha} \neq \bm{0}$。假设 $\bm{B}\bm{\alpha} = \bm{0}$，则 $\bm{AB}\bm{\alpha} = \bm{A}(\bm{B}\bm{\alpha}) = \bm{A}\bm{0} = \bm{0}$，与 $\lambda \bm{\alpha} \neq \bm{0}$ 矛盾。因此 $\bm{B}\bm{\alpha} \neq \bm{0}$。将等式两边左乘 $\bm{B}$，得
+\[
+\bm{B}(\bm{AB}\bm{\alpha}) = \bm{B}(\lambda \bm{\alpha}) \implies \bm{BA}(\bm{B}\bm{\alpha}) = \lambda (\bm{B}\bm{\alpha}).
+\]
+由于 $\bm{B}\bm{\alpha} \neq \bm{0}$，上式表明 $\lambda$ 是 $\bm{BA}$ 的一个特征值，对应的特征向量为 $\bm{B}\bm{\alpha}$。\\
+(2) 若 $\lambda = 0$ 为 $\bm{AB}$ 的一个特征值，则 $\bm{AB}$ 是奇异矩阵，即 $\det(\bm{AB}) = 0$。由于 $\det(\bm{AB}) = \det(\bm{A})\det(\bm{B}) = \det(\bm{BA})$，因此 $\det(\bm{BA}) = 0$，即 $\bm{BA}$ 也是奇异矩阵。故 $\lambda = 0$ 是 $\bm{BA}$ 的一个特征值。
 \end{solution}
 \begin{example}{}{}
-    设$A,B$为两个$n$阶方阵，证明若存在同一个可逆矩阵$P$同时对角化$A$和$B$,则有$AB=BA.$
-\end{exmaple}
-
+    $\text{试证对于可逆矩阵 }A,B,\text{ 有 }\bm{AB}\sim \bm{BA}.$
+\end{example}
+\begin{solution}
+矩阵 \(\bm{A}\) 和 \(\bm{B}\) 可逆，考虑相似变换 \(\bm{P} = \bm{A}\)。由于 \(\bm{A}\) 可逆，\(\bm{P}\) 可逆，且 \(\bm{P}^{-1} = \bm{A}^{-1}\)。则
+\[
+\bm{P}^{-1}(\bm{AB})\bm{P} = \bm{A}^{-1}(\bm{AB})\bm{A} = (\bm{A}^{-1}\bm{A})\bm{BA} = \bm{I}\bm{BA} = \bm{BA}.
+\]
+因此，\(\bm{AB}\) 相似于 \(\bm{BA}\)。
+\end{solution}
+\begin{example}{}{}
+    设$\bm{A,B}$为两个$n$阶方阵，证明若存在同一个可逆矩阵$\bm{P}$同时对角化$\bm{A}$和$\bm{B}$,则有$\bm{AB}=\bm{BA}.$
+\end{example}
+\begin{solution}
+设矩阵$\bm{A}$的特征值为$\lambda_1,\lambda_2,\cdots,\lambda_n$，矩阵$\bm{B}$的特征值为$\mu_1,\mu_2,\cdots,\mu_n$，且存在同一个可逆矩阵$\bm{P}$同时对角化$\bm{A}$和$\bm{B}$，根据定义：
+\[\bm{P^{-1}AP}=\diag(\lambda_1,\lambda_2,\cdots,\lambda_n),\quad\bm{P^{-1}BP}=\diag(\mu_1,\mu_2,\cdots,\mu_n)\]
+因此\[\bm{P^{-1}APP^{-1}BP}=\bm{P^{-1}ABP}=\diag(\lambda_1\mu_1,\lambda_2\mu_2,\cdots,\lambda_n\mu_n)\]同理\[\bm{P^{-1}BPP^{-1}A}=\bm{P^{-1}BAP}=\diag(\mu_1\lambda_1,\mu_2\lambda_2,\cdots,\mu_n\lambda_n)\]所以$\bm{P^{-1}ABP}=\bm{P^{-1}BAP}$，同时左乘$\bm{P}$，右乘$\bm{P^{-1}}$，得到$\bm{AB}=\bm{BA}$.
+\end{solution}
+\begin{example}{}{}
+    $\text{设 }\bm{A}\text{ 是 }n(n\geqslant3)\text{ 阶矩阵,如果 }\bm{A}\neq0,\text{ 但 }\bm{A}^3=\bm{0},\text{ 试证明 }\bm{A}\text{ 不可对角化}.$
+\end{example}
+\begin{solution}
+假设 \(\bm{A}\) 可对角化。由于 \(\bm{A}^3 = \bm{0}\)，则 \(\bm{A}\) 是幂零矩阵，其特征值均为零。这是因为若 \(\lambda\) 是 \(\bm{A}\) 的特征值，则 \(\lambda^3\) 是 \(\bm{A}^3\) 的特征值，而 \(\bm{A}^3 = \bm{0}\) 的特征值全为零，故 \(\lambda^3 = 0\)，即 \(\lambda = 0\)。由于 \(\bm{A}\) 可对角化，存在可逆矩阵 \(\bm{P}\)，使得
+\[
+\bm{P}^{-1} \bm{A} \bm{P} = \bm{\Lambda},
+\]
+其中 \(\bm{\Lambda}\) 是对角矩阵，其对角线元素为 \(\bm{A}\) 的特征值，即全为零。因此 \(\bm{\Lambda} = \bm{0}\)，于是
+\[
+\bm{A} = \bm{P} \bm{0} \bm{P}^{-1} = \bm{0},
+\]
+与已知 \(\bm{A} \neq \bm{0}\) 矛盾。故假设不成立，\(\bm{A}\) 不可对角化。
+\end{solution}
+\begin{example}{}{}
+    $\text{若 }\mathrm{rank}(\bm{AB})=\mathrm{rank}(\bm{A}),\text{ 证明存在}\bm{X} \text{使得} \bm{ABX}=\bm{A}.$
+\end{example}
+\begin{solution}
+    对于$\bm{AB}=\bm{C}$，固定$\bm{A}$的某一行，我们发现$\bm{C}$的对应的那一行的每一个元素，都是由$\bm{B}$的每一列的各个元素，乘以$\bm{A}$那一行各个元素所提供的“比例权重”，再求和得到的，遍历每一列操作都一样，于是$\bm{A,B}$相乘等价于对$\bm{B}$进行行变换。固定$\bm{B}$的某一列，对于$\bm{C}$的对应的那一列的各个元素，都是由$\bm{A}$的每一行的元素乘以$\bm{B}$那一列各个元素所提供的“比例权重”，再求和得到的，遍历每一行操作都一样，于是$\bm{A,B}$相乘等价于对$\bm{A}$进行初等列变换。\\
+    已知 \(\mathrm{rank}(\bm{AB}) = \mathrm{rank}(\bm{A})\)，这意味着矩阵 \(\bm{AB}\) 的列空间与矩阵 \(\bm{A}\) 的列空间相同，即 \(\mathrm{col}(\bm{AB}) = \mathrm{col}(\bm{A})\)。设 \(\bm{A}\) 是 \(m \times n\) 矩阵，其列向量为 \(\bm{a}_1, \bm{a}_2, \ldots, \bm{a}_n\)。由于 \(\mathrm{col}(\bm{AB}) = \mathrm{col}(\bm{A})\)，对于每个列向量 \(\bm{a}_j\)，存在向量 \(\bm{x}_j\) 使得
+\[
+\bm{AB} \bm{x}_j = \bm{a}_j.
+\]
+构造矩阵 \(\bm{X}\) 为 \(p \times n\) 矩阵（其中 \(p\) 是 \(\bm{B}\) 的列数），其第 \(j\) 列为 \(\bm{x}_j\)，即 \(\bm{X} = [\bm{x}_1, \bm{x}_2, \ldots, \bm{x}_n]\)。则
+\[
+\bm{AB} \bm{X} = \bm{AB} [\bm{x}_1, \bm{x}_2, \ldots, \bm{x}_n] = [\bm{AB} \bm{x}_1, \bm{AB} \bm{x}_2, \ldots, \bm{AB} \bm{x}_n] = [\bm{a}_1, \bm{a}_2, \ldots, \bm{a}_n] = \bm{A}.
+\]
+因此，存在矩阵 \(\bm{X}\) 使得 \(\bm{ABX} = \bm{A}\)。\\
+另解：设可逆矩阵$\bm{P,Q}$使得$\bm{A}=\bm{P}\begin{pmatrix}\bm{E_r}&0\\0&0\end{pmatrix}\bm{Q}$，则
+\[\text{rank}(\bm{AB})=\text{rank}\left(\bm{P}\begin{pmatrix}\bm{E_r}&0\\0&0\end{pmatrix}\bm{QB}\right)=\text{rank}(A)=\text{rank}\left(\begin{pmatrix}\bm{E_r}&0\\0&0\end{pmatrix}\bm{QB}\right)\]
+记$\bm{QB}=\begin{pmatrix}\bm{B_r}\\\bm{B_s}\end{pmatrix}$，其中$\bm{B_r}$为$r$行矩阵，则
+\[\text{rank}(\bm{AB})=\text{rank}\left(\begin{pmatrix}\bm{E_r}&0\\0&0\end{pmatrix}\begin{pmatrix}\bm{B_r}\\\bm{B_s}\end{pmatrix}\right)=\text{rank}\begin{pmatrix}\bm{B_r}\\0\end{pmatrix}=\text{rank}(\bm{B_r})\]
+所以$\bm{B_r}$行满秩，此时，构造满足要求的矩阵$\bm{X}$就变得非常直观：我们需要一个矩阵，当之右乘 $\bm{Q}\bm{B}=\begin{pmatrix}\bm{B}_r\\\bm{B}_s\end{pmatrix}$时，能“筛选”出左上角的 $\bm{E}_r$ ,而忽略掉其他部分。取矩阵$\bm{C}$使得$\bm{B_rC}=\bm{E_r}$，取$\bm{X}=(\bm{C|O})$，矩阵 $\bm{X}=\begin{pmatrix}\bm{C}&\bm{O}\end{pmatrix}$正是为此目的而设计的:
+\begin{align*}\bm{ABX}&=\bm{P}\begin{pmatrix}\bm{E_r}&0\\0&0\end{pmatrix}\bm{QB}(\bm{C|O})\\
+    &=\bm{P}\begin{pmatrix}\bm{E_r}&0\\0&0\end{pmatrix}\begin{pmatrix}\bm{B_r}\\\bm{B_s}\end{pmatrix}(\bm{C|O})=\bm{P}\begin{pmatrix}\bm{E_r}&0\\0&0\end{pmatrix}\begin{pmatrix}\bm{E_r}&0\\\bm{B_sC}&0\end{pmatrix}\bm{Q}=\bm{P}\begin{pmatrix}\bm{E_r}&0\\0&0\end{pmatrix}\bm{Q}=\bm{A}\end{align*}
+所以$\bm{ABX}=\bm{A}$
+\end{solution}
