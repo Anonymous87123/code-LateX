@@ -90,5 +90,179 @@ $x \in A$ & $x \in B$ & $x \in C$ & $x \in A - (B - C)$ & $x \in (A - B) \cup (A
 \end{center}
 从表3可以看出，第4列和第5列的真值完全相同，因此$A - (B - C) = (A - B) \cup (A \cap C)$
 \begin{theorem}{对称差的性质}{}
-    
+    结合律：$(A \oplus B) \oplus C = A \oplus (B \oplus C)$\\
+    分配律：$A \cap (B \oplus C) = (A \cap B) \oplus (A \cap C)$\\
+    差形式：$A \oplus B = (A \cup B) - (A \cap B)$\\
+    取补集：$\sim(A \oplus B) = (\sim A \oplus B) = (A \oplus \sim B)$\\
+    常见等价关系：$A \oplus B = \varnothing$ 当且仅当 $A = B$，$A \oplus B = A \oplus C$ 当且仅当 $B = C$\\
+    消去律：$(A \oplus B) \oplus (B \oplus C) = A \oplus C$（可以推广）
 \end{theorem}
+证明：$(A \oplus B) \oplus C = A \oplus (B \oplus C)$
+\begin{center}
+\begin{tabular}{ccc|cccccc}
+$A$ & $B$ & $C$ & $A \oplus B$ & $(A \oplus B) \oplus C$ & $B \oplus C$ & $A \oplus (B \oplus C)$ & 是否相等 \\
+\hline
+0 & 0 & 0 & 0 & 0 & 0 & 0 & 是 \\
+0 & 0 & 1 & 0 & 1 & 1 & 1 & 是 \\
+0 & 1 & 0 & 1 & 1 & 1 & 1 & 是 \\
+0 & 1 & 1 & 1 & 0 & 0 & 0 & 是 \\
+1 & 0 & 0 & 1 & 1 & 0 & 1 & 是 \\
+1 & 0 & 1 & 1 & 0 & 1 & 0 & 是 \\
+1 & 1 & 0 & 0 & 0 & 1 & 0 & 是 \\
+1 & 1 & 1 & 0 & 1 & 0 & 1 & 是 \\
+\end{tabular}
+\end{center}
+如果要求必须使用等价变形，我们依然可以使用真值表写出两者的主析取范式，然后比较。两者的的主析取范式完全相同，因此：$(A \oplus B) \oplus C = A \oplus (B \oplus C)$，具体的解答过程则是先将左右两边化为交并补运算，真值表可以起到检查是否正确的作用。
+\begin{align*}
+(A \oplus B) \oplus C = & (\sim A \cap \sim B \cap C) \cup 
+                        (\sim A \cap B \cap \sim C) \cup (A \cap \sim B \cap \sim C) \cup 
+                        (A \cap B \cap C)\\
+A \oplus (B \oplus C) = & (\sim A \cap \sim B \cap C) \cup 
+                         (\sim A \cap B \cap \sim C) \cup 
+                         (A \cap \sim B \cap \sim C) \cup 
+                         (A \cap B \cap C)
+\end{align*}
+证明：$A \cap (B \oplus C) = (A \cap B) \oplus (A \cap C)$
+\begin{center}
+\begin{tabular}{ccc|cccccc}
+$A$ & $B$ & $C$ & $B \oplus C$ & $A \cap (B \oplus C)$ & $A \cap B$ & $A \cap C$ & $(A \cap B) \oplus (A \cap C)$ & 相等 \\
+\hline
+0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 是 \\
+0 & 0 & 1 & 1 & 0 & 0 & 0 & 0 & 是 \\
+0 & 1 & 0 & 1 & 0 & 0 & 0 & 0 & 是 \\
+0 & 1 & 1 & 0 & 0 & 0 & 0 & 0 & 是 \\
+1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 是 \\
+1 & 0 & 1 & 1 & 1 & 0 & 1 & 1 & 是 \\
+1 & 1 & 0 & 1 & 1 & 1 & 0 & 1 & 是 \\
+1 & 1 & 1 & 0 & 0 & 1 & 1 & 0 & 是 \\
+\end{tabular}
+\end{center}
+证明：$(A\cup B)\oplus(A\cup C)\subseteq A\cup(B\oplus C)$
+\begin{center}
+\begin{tabular}{ccc|cccccc}
+$A$ & $B$ & $C$ & $B \oplus C$ & $A \cup (B \oplus C)$ & $A \cup B$ & $A \cup C$ & $(A \cup B) \oplus (A \cup C)$ & 蕴含关系 \\
+\hline
+0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 相等 \\
+0 & 0 & 1 & 1 & 1 & 0 & 1 & 1 & 相等 \\
+0 & 1 & 0 & 1 & 1 & 1 & 0 & 1 & 相等 \\
+0 & 1 & 1 & 0 & 0 & 1 & 1 & 0 & 相等 \\
+1 & 0 & 0 & 0 & 1 & 1 & 1 & 0 & 左真右假 \\
+1 & 0 & 1 & 1 & 1 & 1 & 1 & 0 & 左真右假 \\
+1 & 1 & 0 & 1 & 1 & 1 & 1 & 0 & 左真右假 \\
+1 & 1 & 1 & 0 & 1 & 1 & 1 & 0 & 左真右假 \\
+\end{tabular}
+\end{center}
+可以发现，当全集内的某个元素$x$满足$x\in (A \cup B) \oplus (A \cup C)$时，$x$必然满足$x\in A\cup(B\oplus C)$\\
+证明：$(A \oplus B) \oplus (B \oplus C) = A \oplus C$
+\begin{center}
+\begin{tabular}{ccc|cccccc}
+$A$ & $B$ & $C$ & $A \oplus B$ & $B \oplus C$ & $(A \oplus B) \oplus (B \oplus C)$ & $A \oplus C$ & 是否相等 \\
+\hline
+0 & 0 & 0 & 0 & 0 & 0 & 0 & 是 \\
+0 & 0 & 1 & 0 & 1 & 1 & 1 & 是 \\
+0 & 1 & 0 & 1 & 1 & 0 & 0 & 是 \\
+0 & 1 & 1 & 1 & 0 & 1 & 1 & 是 \\
+1 & 0 & 0 & 1 & 0 & 1 & 1 & 是 \\
+1 & 0 & 1 & 1 & 1 & 0 & 0 & 是 \\
+1 & 1 & 0 & 0 & 1 & 1 & 1 & 是 \\
+1 & 1 & 1 & 0 & 0 & 0 & 0 & 是 \\
+\end{tabular}
+\end{center}
+然而，此题用真值表，是杀鸡用牛刀，其实最简单的方法是利用结合律：
+\begin{align*}
+(A_1 \oplus A_2) \oplus (A_2 \oplus A_3) = A_1 \oplus (A_2 \oplus A_2) \oplus A_3 = A_1 \oplus \varnothing \oplus A_3  = A_1 \oplus A_3 
+\end{align*}
+\begin{theorem}{对称差的代数结构}{}
+    对于任意集合序列 $A_1, A_2, \ldots, A_n$，有\vspace{-10pt}
+$$(A_1 \oplus A_2) \oplus (A_2 \oplus A_3) \oplus \cdots \oplus (A_{n-1} \oplus A_n) = A_1 \oplus A_n$$
+\end{theorem}
+对于任意形式的对称差链，只要每个中间项出现偶数次，就会相互抵消。例如：
+$$(A \oplus B \oplus C) \oplus (B \oplus C \oplus D) = A \oplus D$$
+因为通过结合律和交换律，$B$ 和 $C$ 实际上各出现两次，因此抵消。\\
+证明：$\sim(A \oplus B) = (\sim A \oplus B)$
+\begin{align*}
+      \sim(A \oplus B) &= \sim((A\cap \sim B) \cup (\sim A \cap B))=(\sim A\cup B)\cap (A\cup \sim B) \\
+      &=(\sim A\cap A)\cup(\sim A\cap\sim B)\cup(A\cap B)\cup(B\cap\sim B)\\
+      &=(\sim A\cap\sim B)\cup(A\cap B)= (\sim A \oplus B)
+\end{align*}
+\begin{theorem}{幂集的性质}{}
+设$X$是一个集合，$P(X)$表示$X$的幂集（即$X$的所有子集构成的集合）。幂集具有以下性质：
+1. 如果$|X| = n$（有限），则$|P(X)| = 2^n$，$P(\varnothing) = \{\varnothing\}$，有$1 = 2^0$个元素\\
+2. 单调性：如果$A \subseteq B$，则$P(A) \subseteq P(B)$\\
+3. $P(A) \cup P(B) \subseteq P(A \cup B)$，当且仅当 $A \subseteq B$ 或 $B \subseteq A$取等\\
+4. $P(A) \cap P(B) = P(A \cap B)$\\
+5. $ P(A - B) \subseteq (P(A) - P(B))\cup\{\varnothing\}$
+\end{theorem}
+性质3的证明比较简单：\vspace{-10pt}
+\[P(A) \cup P(B) \subseteq P(A \cup B)\cup P(A\cup B)=P(A\cup B)\vspace{-10pt}\]
+分别放缩左右两侧即可，而且这样的操作还有一个好处，就是可以看清蕴含关系变成等价关系时的特殊条件（当且仅当 $A \subseteq B$ 或 $B \subseteq A$取等）。我们不妨再看一个例子：
+
+证明或证伪：$A\subset B\land C\subset D\Rightarrow (A\cup C)\subset (B\cup D)$\\
+解：考虑$B=A\cup C,D=A\cup C$，则
+\vspace{-10pt}\[A\subset(A\cup C),C\subset(A\cup C)\Rightarrow (A\cup C)=(B\cup D)\vspace{-10pt}\]显然该命题错误，改成$A\subset B\land C\subset D\Rightarrow (A\cup C)\subseteq (B\cup D)$即可。
+
+证明或证伪：$A\subset B\land C\subset D\Rightarrow (A\cap C)\subset (B\cap D)$\\
+解：同样错误，考虑$A\cap C\subset A,C-A\ne\varnothing,B\cap D\subset B,D-B\ne\varnothing$，则转化为\vspace{-10pt}\[(A\cap C)\cap(B\cap D)=(A\cap B)\cap(C\cap D)\subset A\cap B\vspace{-10pt}\]
+显然，这里$(A\cap B)=(C\cap D)$完全是可能的，所以仍然需要改成$\subseteq$
+
+性质4显然，一个集合既是$A$的子集，又是$B$的子集，那么其元素都在$A,B$中，即在$A\cap B$中，反过来，一个集合的元素在$A\cap B$中，那么也在$A,B$中，故既是$A$的子集又是$B$的子集。
+
+下面证明性质5：$ P(A - B) \subseteq (P(A) - P(B))\cup\{\varnothing\}$
+\begin{align*}
+P(A - B) &= \{x|x\subseteq (A\cap\sim B)\}=\{x|x\subseteq A\land x\subseteq\sim B\}\\
+&\subseteq\{x|x\subseteq A\land x\not\subseteq B\}=(P(A)-P(B))\cup\{\varnothing\}
+\end{align*}
+需要说明的是，涉及到幂集的性质的有关证明不可以使用真值表，或者说用真值表比较麻烦，因为我们考虑集合之间的关系的时候，由于集合可能有不止一个元素，所以$x$中的元素全在$A$中的反面，不是“$x$中的元素全不在$A$中”，而是“$x$中的元素不全在$A$中”。这就导致了\vspace{-10pt}\[x\not\subseteq A\land x\not\subseteq B\Leftarrow x\not\subseteq A\cup B\vspace{-10pt}\]和之前的情形大不相同，此时要分多种情形讨论，复杂度明显升高。但是，真值表还是可以帮助我们进行集合的等价运算，如：
+\begin{example}{}{}
+\[(A\cap B\cap C)\cup(\sim A\cap B\cap C)\cup(A\cap B\cap\sim C)\]\end{example}
+\begin{solution}设全集为$U$，观察到三个并集中都有$B$，所以合并：
+    \begin{align*}
+& (A \cap B \cap C) \cup (\sim A \cap B \cap C) \cup (A \cap B \cap \sim C) \\
+&= [B \cap (A \cap C)] \cup [B \cap (\sim A \cap C)] \cup [B \cap (A \cap \sim C)] \quad \text{(结合律)} \\
+&= B \cap [(A \cap C) \cup (\sim A \cap C) \cup (A \cap \sim C)] \quad \text{(分配律)} \\
+&= B \cap \{[(A \cup \sim A) \cap C] \cup (A \cap \sim C)\} \quad \text{(分配律)} \\
+&= B \cap [(U \cap C) \cup (A \cap \sim C)] \quad \text{(补集律：$A \cup \sim A = U$)} \\
+&= B \cap [C \cup (A \cap \sim C)] \quad \text{(同一律：$U \cap C = C$)} \\
+&= B \cap [(C \cup A) \cap (C \cup \sim C)] \quad \text{(分配律)} \\
+&= B \cap [(A \cup C) \cap U] \quad \text{(交换律和补集律)} \\
+&= B \cap (A \cup C) \quad \text{(同一律)}
+\end{align*}
+另一种方式就是使用真值表：我们通过分析元素 $x$ 的属于关系来简化该表达式。定义真值表，其中 1 表示 $x$ 属于集合，0 表示 $x$ 不属于集合：
+\begin{center}
+\begin{tabular}{ccc|cccc}
+$x \in A$ & $x \in B$ & $x \in C$ & $x \in A \cap B \cap C$ & $x \in \sim A \cap B \cap C$ & $x \in A \cap B \cap \sim C$ & $x \in \text{整体表达式}$ \\
+\hline
+0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+0 & 0 & 1 & 0 & 0 & 0 & 0 \\
+0 & 1 & 0 & 0 & 0 & 0 & 0 \\
+0 & 1 & 1 & 0 & 1 & 0 & 1 \\
+1 & 0 & 0 & 0 & 0 & 0 & 0 \\
+1 & 0 & 1 & 0 & 0 & 0 & 0 \\
+1 & 1 & 0 & 0 & 0 & 1 & 1 \\
+1 & 1 & 1 & 1 & 0 & 0 & 1 \\
+\end{tabular}
+\end{center}
+从真值表可知，$x$ 属于整体表达式当且仅当满足以下条件：$x \in B$ 为真， 同时 $x \in A$ 或 $x \in C$ 为真，这等价于 $x \in B \cap (A \cup C)$。
+
+伪装的方式是：\\
+设$x$是全集中的任意元素，我们分析$x$属于该并集的条件。\\
+若$x \in A \cap B \cap C$，则$x \in A$，$x \in B$，$x \in C$\\
+若$x \in \sim A \cap B \cap C$，则$x \notin A$，$x \in B$，$x \in C$\\
+若$x \in A \cap B \cap \sim C$，则$x \in A$，$x \in B$，$x \notin C$\\
+综合三种情况，$x$属于该并集当且仅当同时满足：$x \in B$，$x \in A$ 或 $x \in C$（即$x \in A \cup C$），因此，$x$属于该并集当且仅当$x \in B \cap (A \cup C)$
+\end{solution}
+这种等价变形的题目比较简单，首先化成交并补，然后只需要观察重复出现的结构（有的时候还需要进行适当的换元）接着等价运算。题目一难或者看不出来了，就利用真值表来证明。
+\section{集合的笛卡尔积}
+\begin{definition}{集合的笛卡尔积}{}
+设$A$和$B$是两个集合，$A$与$B$的\textbf{笛卡尔积}（或称直积）定义为所有有序对$(a,b)$组成的集合，其中$a \in A$，$b \in B$，记作$A \times B$：\vspace{-10pt}
+$$A \times B = \{(a,b) \mid a \in A, b \in B\}\vspace{-10pt}$$
+\textbf{推广到$n$个集合}：对于$n$个集合$A_1, A_2, \ldots, A_n$，它们的笛卡尔积定义为所有$n$元有序组$(a_1, a_2, \ldots, a_n)$组成的集合，其中$a_i \in A_i$：
+\vspace{-10pt}$$A_1 \times A_2 \times \cdots \times A_n = \{(a_1, a_2, \ldots, a_n) \mid a_i \in A_i, i = 1,2,\ldots,n\}\vspace{-10pt}$$
+\textbf{特殊情形}：\\
+~~~~当$A = B$时，$A \times A$可简写为$A^2$\\
+~~~~$n$个相同集合$A$的笛卡尔积可简写为$A^n$\\
+~~~~实数集$\mathbb{R}$与自身的笛卡尔积$\mathbb{R}^2$表示平面直角坐标系\\
+~~~~空集与任何集合的笛卡尔积为空集：$\varnothing \times A = A \times \varnothing = \varnothing$
+\end{definition}
+
+

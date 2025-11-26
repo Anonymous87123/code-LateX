@@ -74,40 +74,50 @@
 \end{align*}
 \end{solution}
 \begin{center}
-\begin{tikzpicture}[circuit logic US, thick]
+\begin{tikzpicture}[circuit logic US, thick, 
+    every node/.style={font=\small}]
     
     % 与门 (AND)
     \node[and gate] at (0,0) (and) {};
-    \draw (and.input 1) -- ++(-0.3,0) node[left] {A};
-    \draw (and.input 2) -- ++(-0.3,0) node[left] {B};
+    \draw (and.input 1) -- ++(-0.3,0) coordinate (a1);
+    \draw (and.input 2) -- ++(-0.3,0) coordinate (a2);
     \draw (and.output) -- ++(0.3,0) node[right] {Y};
+    \node[above left=0.1cm and 0.1cm] at (a1) {A};
+    \node[below left=0.1cm and 0.1cm] at (a2) {B};
     \node[above=0.5cm] at (and.center) {AND};
     
     % 或门 (OR)
     \node[or gate] at (3,0) (or) {};
-    \draw (or.input 1) -- ++(-0.3,0) node[left] {A};
-    \draw (or.input 2) -- ++(-0.3,0) node[left] {B};
+    \draw (or.input 1) -- ++(-0.3,0) coordinate (o1);
+    \draw (or.input 2) -- ++(-0.3,0) coordinate (o2);
     \draw (or.output) -- ++(0.3,0) node[right] {Y};
+    \node[above left=0.1cm and 0.1cm] at (o1) {A};
+    \node[below left=0.1cm and 0.1cm] at (o2) {B};
     \node[above=0.5cm] at (or.center) {OR};
     
     % 非门 (NOT)
     \node[not gate] at (6,0) (not) {};
-    \draw (not.input) -- ++(-0.3,0) node[left] {A};
+    \draw (not.input) -- ++(-0.3,0) coordinate (n1);
     \draw (not.output) -- ++(0.3,0) node[right] {Y};
+    \node[left=0.1cm] at (n1) {A};
     \node[above=0.5cm] at (not.center) {NOT};
     
     % 与非门 (NAND)
-    \node[nand gate] at (8.5,0) (nand) {};
-    \draw (nand.input 1) -- ++(-0.3,0) node[left] {A};
-    \draw (nand.input 2) -- ++(-0.3,0) node[left] {B};
+    \node[nand gate] at (9,0) (nand) {};
+    \draw (nand.input 1) -- ++(-0.3,0) coordinate (na1);
+    \draw (nand.input 2) -- ++(-0.3,0) coordinate (na2);
     \draw (nand.output) -- ++(0.3,0) node[right] {Y};
+    \node[above left=0.1cm and 0.1cm] at (na1) {A};
+    \node[below left=0.1cm and 0.1cm] at (na2) {B};
     \node[above=0.5cm] at (nand.center) {NAND};
     
     % 或非门 (NOR)
-    \node[nor gate] at (11.5,0) (nor) {};
-    \draw (nor.input 1) -- ++(-0.3,0) node[left] {A};
-    \draw (nor.input 2) -- ++(-0.3,0) node[left] {B};
+    \node[nor gate] at (12,0) (nor) {};
+    \draw (nor.input 1) -- ++(-0.3,0) coordinate (no1);
+    \draw (nor.input 2) -- ++(-0.3,0) coordinate (no2);
     \draw (nor.output) -- ++(0.3,0) node[right] {Y};
+    \node[above left=0.1cm and 0.1cm] at (no1) {A};
+    \node[below left=0.1cm and 0.1cm] at (no2) {B};
     \node[above=0.5cm] at (nor.center) {NOR};
 \end{tikzpicture}
 \end{center}
@@ -201,11 +211,16 @@ $P\Leftrightarrow Q$（逻辑等价）的定义是：$P\leftrightarrow Q$为永�
 \end{definition}
 所以由上述定义得知，主析取范式或主合取范式中不一定有极小项或者极大项。极小项一般用小写$m_i$表示，极大项一般用大写$M_i$表示。
 
-由于析取范式由若干个简单合取式（极小项）通过析取联结词连接而成，而析取运算具有"一真即真"的特性，即只要有一个极小项为真，则整个命题公式为真。这类似于逻辑代数中的"或"运算：$0$（假）参与运算不改变结果（相当于没有贡献），而每个$1$（真）项（对应极小项为真）都会使结果为真。
+关于成真赋值和成假赋值与谁对应，这里提供理解和记忆的方式：
 
-因此，为了和原命题保持等价关系，主析取范式的每一个极小项都要对应着公式的一个成真赋值，整个主析取范式则涵盖了公式的所有成真赋值。进而，将真值表中每个成真赋值对应的二进制数转化为十进制，即可得到该极小项的下标（如赋值$P=1, Q=0, R=1$对应$m_5$）。主析取范式就是所有这些极小项（如$m_2, m_5, m_7$）用逻辑加连接起来的形式：$\sum(2,5,7)$。
+由于析取范式由若干个简单合取式（极小项）通过析取联结词连接而成，而析取运算具有"一真即真"的特性，这类似于逻辑代数中的"或"运算：$0$（假）参与运算不改变结果（相当于没有贡献），而每个$1$（真）项（对应极小项为真）都会使结果为真。因此，为了和原命题保持等价关系，主析取范式的每一个极小项都要对应着公式的一个成真赋值，不然就不可以代表（或者等价于）原命题公式。
 
-由于合取范式由若干个简单析取式（极大项）通过合取联结词连接而成，而合取运算具有"一假即假"的特性，即只要有一个极大项为假，则整个命题公式为假。这类似于逻辑代数中的"与"运算：$1$（真）参与运算不改变结果（相当于没有贡献），而每个$0$（假）项（对应极大项为假）都会使结果为假。
+进而，将真值表中每个成真赋值对应的二进制数转化为十进制，即可得到该极小项的下标（如赋值$P=1, Q=0, R=1$对应$m_5$）。主析取范式就是所有这些极小项（如$m_2, m_5, m_7$）用逻辑加连接起来的形式：$\sum(2,5,7)$。
 
-因此，为了和原命题保持等价关系，主合取范式的每一个极大项都要对应着公式的一个成假赋值，整个主合取范式则涵盖了公式的所有成假赋值。进而，将真值表中每个成假赋值对应的二进制数转化为十进制，即可得到该极大项的下标（如赋值$P=1, Q=0, R=1$对应$M_5$）。主合取范式就是所有这些极大项（如$M_2, M_5, M_7$）用逻辑乘连接起来的形式$\prod(2,5,7)$
+由于合取范式由若干个简单析取式（极大项）通过合取联结词连接而成，而合取运算具有"一假即假"的特性，这类似于逻辑代数中的"与"运算：$1$（真）参与运算不改变结果（相当于没有贡献），而每个$0$（假）项（对应极大项为假）都会使结果为假。因此，为了和原命题保持等价关系，主合取范式的每一个极大项都要对应着公式的一个成假赋值，不然就不可以代表（或者等价于）原命题公式。
+
+进而，将真值表中每个成假赋值对应的二进制数转化为十进制，即可得到该极大项的下标（如赋值$P=1, Q=0, R=1$对应$M_5$）。主合取范式就是所有这些极大项（如$M_2, M_5, M_7$）用逻辑乘连接起来的形式$\prod(2,5,7)$
+
+对主析取范式（主合取范式）使用分配律（可以理解为多项式乘法）可以得到等价的主合取范式（主析取范式）。
+\[(P \land Q) \lor (\neg P \land \neg Q) = (P\lor \neg P)\land (P\lor \neg Q)\land (Q\lor \neg P)\land (Q\lor \neg Q)= (P\lor \neg Q)\land (Q\lor \neg P) \]
 
