@@ -223,4 +223,32 @@ $P\Leftrightarrow Q$（逻辑等价）的定义是：$P\leftrightarrow Q$为永�
 
 对主析取范式（主合取范式）使用分配律（可以理解为多项式乘法）可以得到等价的主合取范式（主析取范式）。
 \[(P \land Q) \lor (\neg P \land \neg Q) = (P\lor \neg P)\land (P\lor \neg Q)\land (Q\lor \neg P)\land (Q\lor \neg Q)= (P\lor \neg Q)\land (Q\lor \neg P) \]
-
+\begin{example}{2023年真题}{}
+    用等值演算法求取下列公式：$(\neg P\to Q)\to(P\lor\neg Q)$的合取范式
+\end{example}
+\vspace{-20pt}
+\begin{align*}
+ (\neg P \to Q) \to (P \lor \neg Q) 
+\Leftrightarrow & \neg (\neg P \to Q) \lor (P \lor \neg Q) \quad \text{（蕴含等值式）} \\
+\Leftrightarrow & \neg (P \lor Q) \lor (P \lor \neg Q) \quad \text{（蕴含等值式）} \\
+\Leftrightarrow & (\neg P \land \neg Q) \lor (P \lor \neg Q) \quad \text{（德摩根定律）} \\
+\Leftrightarrow & [\neg P \lor (P \lor \neg Q)] \land [\neg Q \lor (P \lor \neg Q)] \quad \text{（分配律）} \\
+\Leftrightarrow & [(\neg P \lor P) \lor \neg Q] \land [P \lor (\neg Q \lor \neg Q)] \quad \text{（结合律）} \\
+\Leftrightarrow & P \lor \neg Q 
+\end{align*}
+\begin{example}{2023年真题}{}
+构造下面推理的证明。前提：$p\lor q, p\to \neg r, s\to t,\neg s\to r, \neg t$，结论：$q$
+\end{example}
+\vspace{-20pt}
+\begin{align*}
+1\quad& s\to t&\text{前提引入}\\
+2\quad& \neg s\lor t&\text{蕴含等值式（从1）}\\
+3\quad& \neg t&\text{前提引入}\\
+4\quad& \neg s&\text{析取三段论（从2,3）}\\
+5\quad& \neg s\to r&\text{前提引入}\\
+6\quad& r&\text{假言推理（从4,5）}\\
+7\quad& p\to \neg r&\text{前提引入}\\
+8\quad& \neg p&\text{拒取式（从6,7）}\\
+9\quad& p\lor q&\text{前提引入}\\
+10\quad& q&\text{析取三段论（从8,9）}
+\end{align*}
