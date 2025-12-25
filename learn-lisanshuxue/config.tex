@@ -3,18 +3,27 @@
 \usepackage{geometry}
 \usepackage{fontspec}
 \usepackage{amsmath, amsthm, amssymb}
+\usepackage{bm}
 \allowdisplaybreaks
 \usepackage{mathrsfs}
 \usepackage{enumitem}
+\setlist{itemsep=-1pt}
+\setlist[enumerate]{itemsep=-1pt, parsep=-1pt, topsep=0pt}
+\usepackage{eso-pic}
 \usepackage{graphicx}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
 \usepackage{array}
 \usepackage{ulem}
 \usepackage{caption}
 \usepackage{tocloft}
 % 2. 图形和颜色宏包
+\usepackage{xcolor}
 \usepackage[dvipsnames]{xcolor}
 \usepackage{tikz}
 \usepackage{circuitikz}
+\usepackage{mathrsfs}
+\usetikzlibrary{arrows}
 \usetikzlibrary{shapes.geometric}
 \usetikzlibrary{circuits.logic.US, positioning}
 \usepackage[most]{tcolorbox}
@@ -28,6 +37,11 @@
 % 5. 智能引用
 \usepackage{cleveref}
 % ========================
+\AddToShipoutPictureFG{%
+  \begin{tikzpicture}[remember picture,overlay]
+    \node[opacity=0.1] at (current page.center) {\includegraphics[width=0.5\paperwidth]{SCUT_emblem_single_RGB_unofficial_DevlinNul.eps}};
+  \end{tikzpicture}%
+}
 % 1. 页面布局设置（窄边距）
 \geometry{
   a4paper,
@@ -80,21 +94,122 @@
 \definecolor{lightgray}{HTML}{D3D3D3}
 \definecolor{darkgray}{HTML}{A9A9A9}
 \newcounter{theoremcounter}[section]
-% 定理环境
-\newtcbtheorem[use counter=theoremcounter,number within=section]{theorem}{定理}{
-    colback=lightgreen, %背景颜色
-    colframe=deepgreen, %边框颜色
-    colbacktitle=deepgreen, %标题框颜色
-    coltitle=white,  %标题颜色
-    fonttitle=\upshape\color{white}, %标题字体
-    fontupper=\rmfamily, %标题内容字体
+
+% ========== 只定义4个最常用的索引列表 ==========
+\newlistof{definitions}{lod}{定义索引}
+\newlistof{theorems}{loth}{定理索引}
+\newlistof{examples}{loex}{例题索引}
+\newlistof{properties}{lopr}{性质索引}
+
+% ========== 使用\NewDocumentEnvironment重新定义需要索引的环境 ==========
+
+% 1. 定义环境
+\newcounter{definition}[section]
+\renewcommand{\thedefinition}{\thesection.\arabic{definition}}
+
+\NewDocumentEnvironment{definition}{m m}{%
+  \refstepcounter{definition}%
+  \begin{tcolorbox}[
+    colback=lightred,
+    colframe=deepred,
+    colbacktitle=deepred,
+    coltitle=white,
+    fonttitle=\upshape\color{white},
+    fontupper=\rmfamily,
     separator sign none,
     top=8pt,
     attach boxed title to top left={yshift=-2mm,xshift=5mm},
-    description delimiters={ }{ },
-    enhanced % 边框粗细
-}{thm}
-% 引理环境
+    enhanced,
+    title={\thedefinition\ 定义: #1}
+  ]%
+  \phantomsection\addcontentsline{lod}{definitions}{%
+    \thedefinition\hspace{1em}#1}%
+  \label{def:\thedefinition}%
+}{%
+  \end{tcolorbox}%
+}
+
+% 2. 定理环境
+\newcounter{theorem}[section]
+\renewcommand{\thetheorem}{\thesection.\arabic{theorem}}
+
+\NewDocumentEnvironment{theorem}{m m}{%
+  \refstepcounter{theorem}%
+  \begin{tcolorbox}[
+    colback=lightgreen,
+    colframe=deepgreen,
+    colbacktitle=deepgreen,
+    coltitle=white,
+    fonttitle=\upshape\color{white},
+    fontupper=\rmfamily,
+    separator sign none,
+    top=8pt,
+    attach boxed title to top left={yshift=-2mm,xshift=5mm},
+    enhanced,
+    title={\thetheorem\ 定理: #1}
+  ]%
+  \phantomsection\addcontentsline{loth}{theorems}{%
+    \thetheorem\hspace{1em}#1}%
+  \label{thm:\thetheorem}%
+}{%
+  \end{tcolorbox}%
+}
+
+% 3. 例题环境
+\newcounter{example}[section]
+\renewcommand{\theexample}{\thesection.\arabic{example}}
+
+\NewDocumentEnvironment{example}{m m}{%
+  \refstepcounter{example}%
+  \begin{tcolorbox}[
+    colback=lightblue,
+    colframe=deepblue,
+    colbacktitle=deepblue,
+    coltitle=white,
+    fonttitle=\upshape\color{white},
+    fontupper=\rmfamily,
+    separator sign none,
+    top=8pt,
+    attach boxed title to top left={yshift=-2mm,xshift=5mm},
+    enhanced,
+    title={\theexample\ 例题: #1}
+  ]%
+  \phantomsection\addcontentsline{loex}{examples}{%
+    \theexample\hspace{1em}#1}%
+  \label{ex:\theexample}%
+}{%
+  \end{tcolorbox}%
+}
+
+% 4. 性质环境
+\newcounter{property}[section]
+\renewcommand{\theproperty}{\thesection.\arabic{property}}
+
+\NewDocumentEnvironment{property}{m m}{%
+  \refstepcounter{property}%
+  \begin{tcolorbox}[
+    colback=lightgray,
+    colframe=deepgray,
+    colbacktitle=deepgray,
+    coltitle=white,
+    fonttitle=\upshape\color{white},
+    fontupper=\rmfamily,
+    separator sign none,
+    top=8pt,
+    attach boxed title to top left={yshift=-2mm,xshift=5mm},
+    enhanced,
+    title={\theproperty\ 性质: #1}
+  ]%
+  \phantomsection\addcontentsline{lopr}{properties}{%
+    \theproperty\hspace{1em}#1}%
+  \label{prop:\theproperty}%
+}{%
+  \end{tcolorbox}%
+}
+
+% ========== 其他不需要索引的环境保持原样 ==========
+
+% 引理环境（暂不添加索引）
 \newtcbtheorem[use counter=theoremcounter,number within=section]{lemma}{引理}{
     colback=lightpurple,
     colframe=deeppurple,
@@ -108,38 +223,8 @@
     description delimiters={ }{ },
     enhanced
 }{lem}
-% 定义环境
-\newtcbtheorem[number within=section,number within=section]{definition}{定义}{
-    colback=lightred,
-    colframe=deepred,
-    colbacktitle=deepred,
-    coltitle=white,
-    fonttitle=\upshape\color{white},
-    fontupper=\rmfamily,
-    separator sign none,
-    top=8pt,
-    attach boxed title to top left={yshift=-2mm,xshift=5mm},
-    description delimiters={ }{ },
-    enhanced
-}{def}
 
-% 例题和解共享计数器
-\newcounter{examplecounter}[section]
-% 例题环境
-\newtcbtheorem[use counter=examplecounter,number within=section]{example}{例题}{
-    colback=lightblue,
-    colframe=deepblue,
-    colbacktitle=deepblue,
-    coltitle=white,
-    fonttitle=\upshape\color{white},
-    fontupper=\rmfamily,
-    separator sign none,
-    top=8pt,
-    attach boxed title to top left={yshift=-2mm,xshift=5mm},
-    description delimiters={ }{ },
-    enhanced  
-}{ex}
-% 结论环境（宋体）
+% 结论环境（暂不添加索引）
 \newtcbtheorem[number within=section]{conclusion}{结论}{
     colback=lightorange,
     colframe=deeporange,
@@ -153,19 +238,8 @@
     description delimiters={ }{ },
     enhanced
 }{con}
-\newtcbtheorem[number within=section]{property}{性质}{
-    colback=lightgray,
-    colframe=deepgray,
-    colbacktitle=deepgray,
-    coltitle=white,
-    fonttitle=\upshape\color{white},
-    fontupper=\rmfamily,
-    separator sign none,
-    top=8pt,
-    attach boxed title to top left={yshift=-2mm,xshift=5mm},
-    description delimiters={ }{ },
-    enhanced       % 标题加粗与其他环境统一
-}{prop}
+
+% 准则环境（暂不添加索引）
 \newtcbtheorem[number within=section]{criterion}{准则}{
     colback=lightbrown,
     colframe=deepbrown,
@@ -179,6 +253,8 @@
     description delimiters={ }{ },
     enhanced
 }{crit}
+
+% 推论环境（暂不添加索引）
 \newtcbtheorem[use counter=theoremcounter,number within=section]{corollary}{推论}{
     colback=lightcyan,
     colframe=darkcyan,
@@ -190,8 +266,9 @@
     top=8pt,
     attach boxed title to top left={yshift=-2mm,xshift=5mm},
     description delimiters={ }{ },
-    enhanced       % 标题加粗与其他环境统一
+    enhanced
 }{cor}
+
 % 传统样式环境（无背景色）
 \newtheoremstyle{plain-chinese}% 名称
   {6pt}% 上方空白
@@ -205,6 +282,7 @@
 \theoremstyle{plain-chinese}
 \newtheorem{solution}{解}[section] % 使用与例题相同的计数器
 \newtheorem{remark}{注}[section]
+
 % 4. 智能引用设置（保持不变）
 % ========================
 \crefname{theorem}{定理}{定理}
@@ -216,6 +294,7 @@
 \crefname{remark}{注}{注}
 \crefname{property}{性质}{性质}
 \crefname{criterion}{准则}{准则}
+\crefname{corollary}{推论}{推论}
 \crefname{proof}{证明}{证明}
 
 % 5. 数学字体设置（修改）
@@ -256,7 +335,7 @@
     \pagenumbering{Roman} % 罗马数字页码
 }
 
-% 目录部分设置（使用罗马数字页码，延续前言页码）          % 去掉标题下方的横线
+% 目录部分设置
 \fancypagestyle{tocmatter}{
     \fancyhf{}
     \fancyhead[L]{\small\kt 离散数学}
@@ -265,13 +344,24 @@
     \fancyfoot[C]{\thepage}
     \renewcommand{\headrulewidth}{0.4pt}
     \renewcommand{\footrulewidth}{0pt}
-    % 注意：这里不重置页码，延续前面的罗马数字
 }
+
+% 索引部分设置
+\fancypagestyle{indexmatter}{
+    \fancyhf{}
+    \fancyhead[L]{\small\kt 离散数学}
+    \fancyhead[C]{\small\st 环境索引}
+    \fancyhead[R]{\small\st 夏同} 
+    \fancyfoot[C]{\thepage}
+    \renewcommand{\headrulewidth}{0.4pt}
+    \renewcommand{\footrulewidth}{0pt}
+}
+
 % 正文部分设置（使用阿拉伯数字页码）
 \fancypagestyle{mainmatter}{
     \fancyhf{}
     \fancyhead[L]{\small\kt 离散数学}
-    \fancyhead[C]{\small\st 计算机学院~计类1班~夏同}
+    \fancyhead[C]{\small\st 计算机科学与工程学院~夏同}
     \fancyhead[R]{\small\st\rightmark}
     \fancyfoot[C]{\thepage}
     \renewcommand{\headrulewidth}{0.4pt} % 页眉线
@@ -310,4 +400,11 @@
         beforeskip = 6pt, % 标题前的垂直间距
         afterskip = 3pt, % 标题后的垂直间距
     }
+}
+
+% ========== 精简的环境索引命令 ==========
+\newcommand{\makeenvindex}{
+    \listofdefinitions
+    \listoftheorems
+    \listofexamples
 }

@@ -1,4 +1,59 @@
 \chapter{自用}
+\begin{theorem}{双元第一公式}{}
+    若$x^2+y^2=a^2$，则
+    \[x\dd x+y\dd y=0\Rightarrow\int\frac{\dd x}{y}=\arctan\frac{x}{y}+C\]
+    若$x^2-y^2=a^2$或$x^2-y^2=-a^2$，则
+    \[x\dd x=y\dd y\Rightarrow\int\frac{\dd x}{y}=\ln (x+y)+C\]
+\end{theorem}
+若$x^2+y^2=a^2$，则$x\dd x+y\dd y=0\Rightarrow \dfrac{x\dd x+y\dd y}{xy}=\dfrac{\dd x}{y}+\dfrac{\dd y}{x}=0$，所以
+\begin{align*}
+    \int\frac{\dd x}{y}&=\int\frac{y\dd x}{y^2}=\int\frac{-\dd y}{x}=\int\frac{-x\dd y}{x^2}\\
+    &=\int\dfrac{y\dd x-x\dd y}{x^2+y^2}=\int\dfrac{y^2}{x^2+y^2}\dfrac{y\dd x-x\dd y}{y^2}\\
+    &=\int\dfrac{1}{1+(\frac{x}{y})^2}\dd\dfrac{x}{y}=\arctan\frac{x}{y}+C
+\end{align*}
+若$x^2-y^2=a^2$或$x^2-y^2=-a^2$，则$x\dd x=y\dd y\Rightarrow \dfrac{\dd x}{y}=\dfrac{\dd y}{x}$，所以
+\begin{align*}
+    \int\frac{\dd x}{y}&=\int\frac{\dd y}{x}=\int\dfrac{\dd x+\dd y}{x+y}=\int\dfrac{\dd(x+y)}{x+y}=\ln (x+y)+C\\
+\end{align*}
+\begin{theorem}{双元第二公式}{}
+形如\[y\dd x-x\dd y\quad y\dd x+x\dd y\]
+等都可以用$x\dd x+y\dd y=0$或$x\dd x=y\dd y$消元，化归成第一公式的适用情形，同样的，第一公式也可以向第二公式转化，若$x^2+y^2=a^2$：
+\[\dfrac{\dd x}{y}=-\dfrac{\dd y}{x}=\dfrac{y\dd x}{y^2}=-\dfrac{x\dd y}{x^2}=\dfrac{y\dd x-x\dd y}{y^2+x^2}\]
+若$x^2-y^2=a^2$或$x^2-y^2=-a^2$，则
+\[\dfrac{\dd x}{y}=\dfrac{\dd y}{x}=\dfrac{y\dd x}{y^2}=\dfrac{x\dd y}{x^2}=\dfrac{y\dd x-x\dd y}{y^2-x^2}\]
+\end{theorem}
+若$x^2+y^2=a^2$，则
+\begin{align*}
+    y\dd x-x\dd y&=y\dd x-x\left(-\dfrac{x\dd x}{y}\right)=(x^2+y^2)\dfrac{\dd x}{y}\\
+    y\dd x-x\dd y&=y\left(\dfrac{-y\dd y}{x}\right)-x\dd y=-(x^2+y^2)\dfrac{\dd y}{x}
+\end{align*}
+若$x^2-y^2=a^2$或$x^2-y^2=-a^2$，则
+\begin{align*}
+    y\dd x-x\dd y&=y\dd x-x\left(\dfrac{x\dd x}{y}\right)=(y^2-x^2)\dfrac{\dd x}{y}\\
+    y\dd x-x\dd y&=y\left(\dfrac{y\dd y}{x}\right)-x\dd y=(y^2-x^2)\dfrac{\dd y}{x}
+\end{align*}
+\begin{theorem}{双元第三公式}{}
+    单独的$y\dd x$和$x\dd y$都可以用“加一项，减一项”的方法化归成$\dd (xy)$和公式二的情形
+\end{theorem}
+这里只给出其中一种：
+\begin{align*}
+y\dd x&=\dfrac12\left(y\dd x+y\dd x\right)=\dfrac12\left(y\dd x+x\dd y+y\dd x-x\dd y\right)\\
+&=\dfrac12\left[\dd(xy)+(y\dd x-x\dd y)\right]
+\end{align*}
+\begin{theorem}{双元第四公式}{}
+    形如$\displaystyle \dfrac{\dd x}{y^3}$的式子可以通过第二公式化成含有$\displaystyle \dd\left(\dfrac{y}{x}\right)$的形式
+\end{theorem}
+若$x^2+y^2=a^2$，则
+\begin{align*}
+\dfrac{\dd x}{y^3}&=\dfrac1{y^2}\dfrac{\dd x}{y}=\dfrac1{y^2}\dfrac{y\dd x-x\dd y}{x^2+y^2}=\dfrac1{x^2+y^2}\dd\left(\dfrac{x}{y}\right)\\
+\dfrac{\dd y}{x^3}&=\dfrac1{x^2}\dfrac{\dd y}{x}=\dfrac1{x^2}\dfrac{x\dd y-y\dd x}{x^2+y^2}=\dfrac1{x^2+y^2}\dd\left(\dfrac{y}{x}\right)
+\end{align*}
+若$x^2-y^2=a^2$或$x^2-y^2=-a^2$，则
+\begin{align*}
+\dfrac{\dd x}{y^3}&=\dfrac1{y^2}\dfrac{\dd x}{y}=\dfrac1{y^2}\dfrac{y\dd x-x\dd y}{x^2-y^2}=\dfrac1{x^2-y^2}\dd\left(\dfrac{x}{y}\right)\\
+\dfrac{\dd y}{x^3}&=\dfrac1{x^2}\dfrac{\dd y}{x}=\dfrac1{x^2}\dfrac{x\dd y-y\dd x}{x^2-y^2}=\dfrac1{x^2-y^2}\dd\left(\dfrac{y}{x}\right)
+\end{align*}
+
 \newpage
 \begin{example}{}{}
     设函数$f(x)$在$(0,+\infty)$上三阶可导，且$f(x)>0,f'(x)>0,f''(x)>0,\displaystyle\lim_{x\to+\infty}\dfrac{f'(x)f'''(x)}{[f''(x)]^2}=a\ne1$，求极限$\displaystyle\lim_{x\to+\infty}\dfrac{f(x)f''(x)}{[f'(x)]^2}$.
@@ -50,4 +105,262 @@
 +\infty\text{或不存在} & \text{如果 } x > 2 
 \end{cases}
 \]
+\end{solution}
+\newpage
+\begin{example}{}{}
+    设$f(x)=\left(\tan\dfrac{\pi x}4-1\right)\left(\tan\dfrac{\pi x^2}4-1\right)\left(\tan\dfrac{\pi x^3}4-1\right)\cdots\left(\tan\dfrac{\pi x^n}4-1\right)$，求$\displaystyle f^{(n)}(x)$
+\end{example}
+\begin{solution}
+等价于给定函数 $\displaystyle f(x) = \prod_{k=1}^n \left( \tan \frac{\pi x^k}{4} - 1 \right)$，求 $f^{(n)}(1)$。由于当 $x=1$ 时，每个因子 $\tan \frac{\pi x^k}{4} - 1 = 0$，因此 $x=1$ 是 $f(x)$ 的 $n$ 重零点。由泰勒公式，在 $x=1$ 处展开：
+\[
+f(x) = \frac{f^{(n)}(1)}{n!} (x-1)^n + O((x-1)^{n+1}).
+\]
+计算 $h(1) = \displaystyle\lim_{x \to 1} \frac{f(x)}{(x-1)^n}$。由于 $f(x)$ 是乘积形式，我们将每个因子除以$x-1$有
+\[
+\frac{f(x)}{(x-1)^n} = \prod_{k=1}^n \frac{\tan \frac{\pi x^k}{4} - 1}{x-1}.
+\]
+取极限 $x \to 1$，每个因子的极限为导数：
+\[
+\lim_{x \to 1} \frac{\tan \frac{\pi x^k}{4} - 1}{x-1} = \frac{\dd}{\dd x} \left. \left( \tan \frac{\pi x^k}{4} \right) \right|_{x=1} = \frac{\pi}{4} \cdot k x^{k-1} \sec^2 \frac{\pi x^k}{4} \Big|_{x=1}=\frac{\pi}{4} \cdot k \cdot 1 \cdot 2 = \frac{\pi k}{2}.
+\]
+所以
+\[
+h(1) = \prod_{k=1}^n \frac{\pi k}{2} = \frac{\pi^n}{2^n} \prod_{k=1}^n k = \frac{\pi^n}{2^n} n!\quad f^{(n)}(1) = n! \cdot h(1) = \left( \frac{\pi}{2} \right)^n (n!)^2.
+\]
+
+当然本题目还可以先代入泰勒展开，再相乘，结果是一样的，对于第 $k$ 个因子 $\tan\left(\dfrac{\pi x^k}{4}\right) - 1$直接泰勒展开得：
+\[
+\tan\left(\frac{\pi x^k}{4}\right) - 1 = \frac{\pi k}{2} (x - 1) + O((x-1)^2)
+\]
+将各因子相乘，注意每个因子都包含 $(x-1)$ 的一阶项：
+\[
+f(x) = \prod_{k=1}^n \left( \tan\left(\frac{\pi x^k}{4}\right) - 1 \right) 
+= \prod_{k=1}^n \left[ \frac{\pi k}{2} (x-1) + O((x-1)^2) \right]= \dfrac{\pi}{2}\prod_{k=1}^n \left[ k (x-1) + O((x-1)^2) \right]
+\]
+实际上我们只关心 $(x-1)^n$ 项的系数（因为高阶项对 $f^{(n)}(1)$ 无贡献），可得：
+\[
+f(x) = \left( \frac{\pi}{2} \right)^n \left( \prod_{k=1}^n k \right) (x-1)^n + O((x-1)^{n+1})
+= \left( \frac{\pi}{2} \right)^n n! (x-1)^n + O((x-1)^{n+1})
+\]
+由泰勒公式：
+\[
+f(x) = \frac{f^{(n)}(1)}{n!} (x-1)^n + O((x-1)^{n+1})
+\]
+比较 $(x-1)^n$ 的系数：
+\[
+\frac{f^{(n)}(1)}{n!} = \left( \frac{\pi}{2} \right)^n n! \quad \Rightarrow \quad f^{(n)}(1) = \left( \frac{\pi}{2} \right)^n (n!)^2
+\]
+\end{solution}
+\newpage
+\begin{example}{}{}
+    $f(x)=(x-1)(\sqrt x-1)(\sqrt[3]x-1)\cdots(\sqrt[n]x-1)$，求$\displaystyle f^{(n)}(1)$。
+\end{example}
+\begin{solution}
+由于当 $x=1$ 时，每个因子 $x^{1/k} - 1 = 0$，因此 $x=1$ 是 $f(x)$ 的 $n$ 重零点。在 $x=1$ 处展开：
+\[
+f(x) = \frac{f^{(n)}(1)}{n!} (x-1)^n + O((x-1)^{n+1}).
+\]
+现在计算 $g(1) = \displaystyle\lim_{x \to 1} \frac{f(x)}{(x-1)^n}$。由于 $f(x)$ 是乘积，我们有
+\[
+\frac{f(x)}{(x-1)^n} = \prod_{k=1}^{n} \frac{x^{1/k} - 1}{x-1}.
+\]
+取极限 $x \to 1$，每个因子的极限为导数：
+\[
+\lim_{x \to 1} \frac{x^{1/k} - 1}{x-1} = \frac{\dd}{\dd x} \left. \left( x^{1/k} \right) \right|_{x=1} = \frac{1}{k} \cdot x^{1/k - 1} \Big|_{x=1} = \frac{1}{k}.
+\]
+因此
+\[
+g(1) = \prod_{k=1}^{n} \frac{1}{k} = \frac{1}{1 \cdot 2 \cdots n} = \frac{1}{n!}\quad f^{(n)}(1) = n! \cdot \frac{1}{n!} = 1.
+\]
+\end{solution}
+\newpage
+\begin{example}{}{}
+    函数$f(x)$在区间$[0,1]$上有连续导数，且$\displaystyle \int_0^1f(x)\dd x=0$，证明对于任意的$\xi\in(0,1)$:\[\left|\int_0^{\xi}f(x)\dd x\right|\leqslant \dfrac18\max_{x\in[0,1]}|f'(x)|\]
+\end{example}
+\begin{solution}
+由于 $f(x)$ 在 $[0,1]$ 上有连续导数，根据牛顿-莱布尼茨公式，对于任意 $\xi \in (0,1)$，考虑积分
+\[
+\int_0^\xi f(x) \dd x = \int_0^\xi \left( f(0) + \int_0^x f'(t) \dd t \right) \dd x = f(0) \xi + \int_0^\xi \int_0^x f'(t) \dd t \dd x.
+\]
+交换积分次序，
+\[
+\int_0^\xi \int_0^x f'(t) \dd t \dd x = \int_0^\xi \int_t^\xi f'(t) \dd x \dd t = \int_0^\xi (\xi - t) f'(t) \dd t.
+\]
+所以
+\[
+\int_0^\xi f(x) \dd x = f(0) \xi + \int_0^\xi (\xi - t) f'(t) \dd t.
+\]
+代入$\xi=1,\displaystyle  \int_0^1f(x)\dd x=0\Rightarrow f(0) = - \int_0^1 (1 - t) f'(t) \dd t$，所以代入并分区间讨论，利用绝对值不等式，有
+\[
+\left|\int_0^\xi f(x) \dd x \right|=\begin{cases}\displaystyle\left|\int_0^{\xi}(\xi-1)tf'(t)\dd t\right|\leqslant \max_{x \in [0,1]} |f'(x)|\left|\int_0^{\xi}(\xi-1)t\dd t\right|,&0\leqslant t\leqslant\xi\\[1.2ex]\displaystyle\left|\int_{\xi}^1\xi(t-1)f'(t)\dd t\right|\leqslant \max_{x \in [0,1]} |f'(x)|\left|\int_{\xi}^1\xi(t-1)\dd t\right|,&\xi\leqslant t\leqslant 1
+\end{cases}
+\]
+去绝对值，只需分别计算：
+\[
+\int_0^\xi (1 - \xi) t \dd t = (1 - \xi) \cdot \frac{1}{2} \xi^2 = \frac{1}{2} (1 - \xi) \xi^2\quad
+\int_\xi^1 \xi (1 - t) \dd t = \xi \cdot \frac{1}{2} (1 - \xi)^2 = \frac{1}{2} \xi (1 - \xi)^2.
+\]
+利用$\dfrac{\displaystyle \left|\int_0^\xi f(x) \dd x \right|}{\displaystyle \max_{x \in [0,1]} |f'(x)|}\leqslant \begin{cases}\displaystyle\left|\int_0^{\xi}(\xi-1)t\dd t\right|,&0\leqslant t\leqslant\xi\\\displaystyle\left|\int_{\xi}^1\xi(t-1)\dd t\right|,&\xi\leqslant t\leqslant 1\end{cases}$
+相加得
+\[
+\dfrac{\displaystyle \left|\int_0^1 f(x) \dd x \right|}{\displaystyle \max_{x \in [0,1]} |f'(x)|}\leqslant \frac{1}{2} (1 - \xi) \xi^2 + \frac{1}{2} \xi (1 - \xi)^2 = \frac{1}{2} \xi (1 - \xi) \left( \xi + (1 - \xi) \right) = \frac{1}{2} \xi (1 - \xi)\leqslant\dfrac18.
+\]
+这就完成了证明。
+\end{solution}
+\begin{example}{}{}
+$a_1=5,a_{n+1}=\dfrac{(1+a_n)^3-5}{3}$，计算$\displaystyle\sum_{n=1}^{\infty}\dfrac{a_n-1}{a_n^2+a_n+1}$
+\end{example}
+\begin{solution}
+关键在于不动点方程的多重根，因为对于$a_{n+1}=f(a_n)$，若方程$f(x)-x=0$有二重根（甚至多重根）r，那么设$g(x)=f(x)-x$，则其可以被分解出一个因式$(x-r)^2$，此时不妨设
+\[a_{n+1}-a_n=f(a_n)-a_n=(a_n-r)^2h(a_n)\]
+然后就是等式两边减去$r$，此时：
+\[a_{n+1}-r=f(a_n)-r=(a_n-r)^2h(a_n)+a_n-r=(a_n-r)(1+(a_n-r)h(a_n))\]
+在尝试裂项求和时，常常考虑$\dfrac{1}{a_n-r}$的差分形式：
+\begin{align*}
+    \dfrac{1}{a_n-r}-\dfrac1{a_{n+1}-r}&=\dfrac{a_{n+1}-a_n}{(a_n-r)(a_{n+1}-r)}=\dfrac{(a_n-r)^2h(a_n)}{(a_n-r)(a_n-r)(1+(a_n-r)h(a_n))}\\&=\dfrac{h(a_n)}{1+(a_n-r)h(a_n)}
+\end{align*}
+此时分母的次数一定低于$f(a_n)$的次数，反观如果是一重零点，就变成
+\begin{align*}
+    \dfrac{1}{a_n-r}-\dfrac1{a_{n+1}-r}&=\dfrac{a_{n+1}-a_n}{(a_n-r)(a_{n+1}-r)}=\dfrac{(a_n-r)h(a_n)}{(a_n-r)^2(1+h(a_n))}\\&=\dfrac{h(a_n)}{(a_n-r)(1+h(a_n))}
+\end{align*}
+此时分母次数一定等于$f(a_n)$的次数，不符合题干结构。所以关注多重根，不妨通过做差来解：
+\begin{align*}
+    a_{n+1}-a_{n}&=\dfrac{(1+a_n)^3-3a_n-5}{3}=\dfrac{a_n^3+3a_n^2-4}{3}=\dfrac{(a_n+2)^2(a_n-1)}3\\
+    \Leftrightarrow\dfrac{a_{n+1}-a_n}{(a_n+2)(a_{n+1}+2)}&=\dfrac{(a_n+2)^2(a_n-1)}{3(a_n+2)(a_{n+1}+2)}=\dfrac{a_n+2}{a_{n+1}+2}\dfrac{a_n-1}3\\
+    \Leftrightarrow\dfrac{1}{a_n+2}-\dfrac1{a_{n+1}+2}&=\dfrac{a_n+2}{\dfrac{(1+a_n)^3-5}{3}+2}\dfrac{a_n-1}3=(a_n-1)\dfrac{a_n+2}{(1+a_n)^3+1}\\
+    &=\dfrac{(a_n+2)(a_n-1)}{(a_n+1+1)((a_n+1)^2-(a_n+1)+1)}=\dfrac{a_n-1}{a_n^2+a_n+1}\\
+    \Rightarrow\sum_{n=1}^{\infty}\dfrac{a_{n}-1}{a_n^2+a_n+1}&=\sum_{n=1}^{\infty}\left(\dfrac{1}{a_n+2}-\dfrac1{a_{n+1}+2}\right)=\dfrac{1}{a_1+2}=\dfrac17
+\end{align*}
+第一行找出来了$-2$是多重根，之后直接除以$(a_n+2)(a_{n+1}+2)$强行凑裂项，之后就出现了$\dfrac{a_n-r}{a_{n+1}-r}$结构，直接代入递推公式就可以，这就是通法了。
+\end{solution}
+
+\begin{theorem}{}{}
+设$\lambda> 1,a_0\ne 0,a_1=\dfrac{\lambda+\lambda^{-1}}2a_0$，递推关系$a_{n+2}-(\lambda+\lambda^{-1})a_{n+1}+a_n=0$，则
+\[a_n=\dfrac{a_0}{2}(\lambda^n+\lambda^{-n})\]进一步的
+\[\sum_{n=0}^{\infty}\dfrac{4^n}{a_{2^n}^2}=\dfrac{4}{a_0^2}\dfrac{1}{(\lambda-\lambda^{-1})^2}\]
+\end{theorem}
+    注意到恒等式
+    \begin{align*}
+        \dfrac{1}{(a+a^{-1})^2}&=\dfrac{(a-a^{-1})^2}{(a^2-a^{-2})^2}=\dfrac{(a+a^{-1})^2-4}{(a^2-a^{-2})^2}\\
+        &=\dfrac{(a+a^{-1})^2}{(a^2-a^{-2})^2}-\dfrac{4}{(a^2-a^{-2})^2}\\
+        &=\dfrac1{(a-a^{-1})^2}-\dfrac{4}{(a^2-a^{-2})^2}
+    \end{align*}
+    代入$a=\lambda^{2^n}$得：
+    \begin{align*}
+        &\dfrac{1}{(\lambda^{2^n}+\lambda^{-2^n})^2}=\dfrac{1}{(\lambda^{2^n}-\lambda^{-2^n})^2}-\dfrac{4}{(\lambda^{2^{n+1}}-\lambda^{-2^{n+1}})^2}\\
+        \Leftrightarrow &\dfrac{4^n}{(\lambda^{2^n}+\lambda^{-2^n})^2}=\dfrac{4^n}{(\lambda^{2^n}-\lambda^{-2^n})^2}-\dfrac{4^{n+1}}{(\lambda^{2^{n+1}}-\lambda^{-2^{n+1}})^2}\\
+        \Leftrightarrow&\sum_{n=0}^{\infty}\dfrac{4^n}{a_{2^n}^2}=\dfrac{4}{a_0^2}\sum_{n=0}^{\infty}\left(\dfrac{4^n}{(\lambda^{2^n}-\lambda^{-2^n})^2}-\dfrac{4^{n+1}}{(\lambda^{2^{n+1}}-\lambda^{-2^{n+1}})^2}\right)
+        =\dfrac{4}{a_0^2}\dfrac{1}{(\lambda-\lambda^{-1})^2}
+    \end{align*}
+\newpage
+\begin{theorem}{}{}
+    设$a_0$为已知量，数列$\{a_n\}$满足通项公式$a_n=C(\lambda^n-\lambda^{-n})$，则
+    \[\sum_{n=0}^{\infty}\dfrac{1}{a_{2^n}}=\dfrac1{a_1}+\dfrac1{a_k}\left(\dfrac{1}{\lambda^k}-\dfrac{a_{1-k}}{a_1}\right)\]
+\end{theorem}
+注意到对任意整数$k$，成立恒等式：
+\begin{align*}
+    \dfrac{\lambda^k-\lambda^{-k}}{\lambda^{2n}-\lambda^{-2n}}&=\dfrac{\lambda^n\lambda^{-n}\lambda^k-\lambda^n\lambda^{-n}\lambda^{-k}}{\lambda^{2n}-\lambda^{-2n}}\\
+    &=\dfrac{\lambda^n\lambda^{-n}\lambda^k-\lambda^n\lambda^{-n}\lambda^{-k}-(\lambda^{2n}\lambda^{-k}-\lambda^{-2n}\lambda^k)+(\lambda^{2n}\lambda^{-k}-\lambda^{-2n}\lambda^k)}{\lambda^{2n}-\lambda^{-2n}}\\
+    &=\dfrac{\lambda^n\lambda^{-n}\lambda^k+\lambda^{-2n}\lambda^k-\lambda^n\lambda^{-n}\lambda^{-k}-\lambda^{2n}\lambda^{-k}+(\lambda^{2n}\lambda^{-k}-\lambda^{-2n}\lambda^k)}{\lambda^{2n}-\lambda^{-2n}}\\
+    &=\dfrac{(\lambda^n+\lambda^{-n})(\lambda^{-n}\lambda^{k})-\lambda^n\lambda^{-k}(\lambda^n+\lambda^{-n})+(\lambda^{2n}\lambda^{-k}-\lambda^{-2n}\lambda^k)}{\lambda^{2n}-\lambda^{-2n}}\\
+    &=\dfrac{(\lambda^n+\lambda^{-n})(\lambda^{-n}\lambda^{k}-\lambda^n\lambda^{-k})+(\lambda^{2n}\lambda^{-k}-\lambda^{-2n}\lambda^k)}{\lambda^{2n}-\lambda^{-2n}}\\
+    &=-\dfrac{\lambda^n\lambda^{-k}-\lambda^{-n}\lambda^{k}}{\lambda^{n}-\lambda^{-n}}+\dfrac{\lambda^{2n}\lambda^{-k}-\lambda^{-2n}\lambda^k}{\lambda^{2n}-\lambda^{-2n}}\\
+    &=\frac{\lambda^{2n-k} - \lambda^{-(2n-k)}}{\lambda^{2n} - \lambda^{-2n}}-\frac{\lambda^{n-k} - \lambda^{-(n-k)}}{\lambda^{n} - \lambda^{-n}} 
+\end{align*}
+赋值$n=2^{n-1}$，保留$k$，那么
+\begin{align*}
+\dfrac{\lambda^k-\lambda^{-k}}{\lambda^{2^{n}}-\lambda^{-2^{n}}}=\frac{\lambda^{2^n-k} - \lambda^{-(2^n-k)}}{\lambda^{2^n} - \lambda^{-2^n}}-\frac{\lambda^{2^{n-1}-k} - \lambda^{-(2^{n-1}-k)}}{\lambda^{2^{n-1}} - \lambda^{-2^{n-1}}} 
+\end{align*}
+所以当数列的通项是$a_n=C(\lambda^n-\lambda^{-n})$时，即:
+\begin{align*}
+\dfrac{a_k}{a_{2^n}}=\dfrac{a_{2^n-k}}{a_{2^{n}}}-\dfrac{a_{2^{n-1}-k}}{a_{2^{n-1}}}\Leftrightarrow& \dfrac{1}{a_{2^n}}=\dfrac1{a_k}\left(\dfrac{a_{2^n-k}}{a_{2^{n}}}-\dfrac{a_{2^{n-1}-k}}{a_{2^{n-1}}}\right)\\
+\Rightarrow& \sum_{n=0}^{\infty}\dfrac{1}{a_{2^n}}=\dfrac1{a_1}+\dfrac1{a_k}\sum_{n=1}^{\infty}\left(\dfrac{a_{2^n-k}}{a_{2^{n}}}-\dfrac{a_{2^{n-1}-k}}{a_{2^{n-1}}}\right)\\
+\Leftrightarrow& \sum_{n=0}^{\infty}\dfrac{1}{a_{2^n}}=\dfrac1{a_1}+\dfrac1{a_k}\left(\dfrac{1}{\lambda^k}-\dfrac{a_{1-k}}{a_1}\right)
+\end{align*}
+此时需将$a_n$的定义域延拓至整数集合，相应地，若$a_n=C(\lambda^n-(-\lambda^{-1})^{n})$，则只需取$k$为偶数$2k$，这样就回到了本题的情形：
+\begin{theorem}{}{}
+    设$a_0$为已知量，数列$\{a_n\}$满足通项公式$a_n=C(\lambda^n-(-\lambda^{-1})^{n})$，则
+    \[\sum_{n=0}^{\infty}\dfrac{1}{a_{2^n}}=\dfrac1{a_1}+\dfrac1{a_{2k}}\left(\dfrac{1}{\lambda^{2k}}-\dfrac{a_{1-2k}}{a_1}\right)\]
+\end{theorem}
+
+
+
+
+\begin{example}{}{}
+    $a_1=a_2=1,a_{n+2}=a_{n+1}+a_n$，求$\displaystyle $
+\end{example}
+\begin{example}{}{}
+    $f(x)$在区间$[0,1]$上连续，证明存在$\xi\in(0,1)$使得\[\int_{\xi}^1f(x)\dd x=\xi f(\xi)\]
+\end{example}
+\begin{solution}
+    设$f(x)$的原函数是$F(x)$，则要证明的结论等价为：
+    \begin{align*}
+        \int_{\xi}^1f(x)\dd x=\xi F(\xi)&\Leftrightarrow F(1)-F(\xi)=\xi F'(\xi)\\
+&\Leftrightarrow \xi F'(\xi)+F(\xi)=F(1)\\
+&\Leftrightarrow (\xi F(\xi))'=F(1)
+    \end{align*}
+    所以辅助函数就是$g(x)=xF(x)$，它在$[0,1]$内也连续，要证明存在$\xi\in(0,1)$使得$g'(\xi)=g(1)$，即:
+    \[g'(\xi)=\dfrac{g(1)-0}{1-0}=\dfrac{g(1)-g(0)}{1-0}\]
+    这正是拉格朗日中值定理的应用。
+\end{solution}
+\begin{example}{}{}
+    设$f(x)$在区间$[0,1]$上可导，且$f(1)=0$，$\displaystyle \int_0^1xf'(x)\dd x=1$，证明：至少存在$\xi\in(0,1)$使得$f'(\xi)=2$。
+\end{example}
+\begin{solution}
+    \[1=\displaystyle \int_0^1xf'(x)\dd x=\int_0^1x\dd f(x)=xf(x)\Big|_0^1-\int_0^1f(x)\dd x\Rightarrow \int_0^1f(x)\dd x=-1\]
+    所以设$f(x)$的原函数为$F(x)$，则有$F(1)-F(0)=-1$，使用泰勒公式，存在$\xi\in(0,1)$使得:
+    \[F(0)=F(1)+F'(1)(0-1)+\dfrac{1}{2}F''(\xi)\Rightarrow F''(\xi)=f'(\xi)=2\]
+\end{solution}
+\begin{example}{}{}
+    \[\int_0^1\dfrac{x^2-1}{\ln x}\dd x\]
+\end{example}
+\begin{solution}
+\begin{align*}
+\int_0^1\dfrac{x^2-1}{\ln x}\dd x&=\int_0^1\dfrac{x^2-x^0}{\ln x}\dd x=\int_0^1\int_0^2x^y\dd y\dd x\\
+&=\int_0^2\int_0^1x^y\dd x\dd y=\int_0^2\dfrac{\dd y}{y+1}=\ln|y+1|\Big|_0^2\\
+&=\ln 3
+\end{align*}
+\end{solution}
+\newpage
+\begin{example}{}{}
+    \[\int_0^{\frac{\pi}{2}}\dfrac{x\sin x}{1+\cos^2x}\dd x\]
+\end{example}
+\begin{solution}
+\begin{align*}
+\int_0^{\frac{\pi}{2}}\dfrac{x\sin x}{1+\cos^2x}\dd x&=-\int_0^{\frac{\pi}{2}}\dfrac{x\dd\cos x}{1+\cos^2 x}=\int_0^{\frac{\pi}{2}}x\dd\arctan(\cos x)\\
+&=-x\arctan \cos x\Big|_0^{\frac{\pi}{2}}+\int_0^{\frac{\pi}{2}}\arctan\cos x\dd x\\
+&=\int_0^{\frac{\pi}{2}}\arctan\cos x\dd x=\int_0^{\frac{\pi}{2}}\arctan\sin x\dd x
+\end{align*}
+令$I(a)=\displaystyle \int_0^{\frac{\pi}{2}}\arctan a\sin x\dd x$，则
+\begin{align*}
+    I'(a)=&\dfrac{\dd}{\dd a}\left(\int_0^{\frac{\pi}{2}}\arctan a\sin x\dd x\right)=\int_0^{\frac{\pi}{2}}\left(\dfrac{\dd}{\dd a}\arctan a\sin x\right)\dd x\\
+    &=\int_0^{\frac{\pi}{2}}\dfrac{\sin x}{1+a^2\sin^2 x}\dd x=\int_0^{\frac{\pi}{2}}\frac{\sin x}{\left(a^2+1\right)-a^2\cos^2x}\mathrm{d}x\\&=-\int_0^{\frac{\pi}{2}}\frac{\mathrm{d}\cos x}{\left(a^2+1\right)-a^2\cos^2x}=\int_0^1\frac{\mathrm{d}t}{\left(a^2+1\right)-a^2t^2}=\frac{1}{a^2}\int_0^1\frac{\mathrm{d}t}{\frac{a^2+1}{a^2}-t^2}\\&=\frac{1}{2a\sqrt{a^2+1}}\mathrm{ln}\left|\frac{\frac{\sqrt{a^2+1}}{a}+t}{\frac{\sqrt{a^2+1}}{a}-t}\right||_0^1=\frac{\ln\left(\sqrt{a^2+1}+a\right)}{a\sqrt{a^2+1}}
+\end{align*}
+于是
+\begin{align*}I(1)&=\int_0^1I^{\prime}(a)\mathrm{d}a\\&=\int_0^1\frac{\ln\left(\sqrt{a^2+1}+a\right)}{a\sqrt{a^2+1}}\mathrm{d}a\\&=-\ln(\sqrt{1+a^2}+a)\ln\left(\frac{\sqrt{1+a^2}+1}{a}\right)|_0^1+\int_0^1\frac{\ln\left(\frac{\sqrt{1+a^2}+1}{a}\right)}{\sqrt{1+a^2}}\mathrm{d}a\\&=-\ln^{2}(1+\sqrt{2})+\int_{0}^{1}\frac{\ln\left(\frac{\sqrt{1+a^{2}}+1}{a}\right)}{\sqrt{1+a^{2}}}\mathrm{d}a\\&=-\ln^2(1+\sqrt{2})+\int_1^\infty\frac{\ln\left(\sqrt{a^2+1}+a\right)}{a\sqrt{1+a^2}}\mathrm{d}a\\&=-\ln^2(1+\sqrt{2})+I(\infty)-I(1)\end{align*}
+于是
+\[I(1)=-\frac{1}{2}\mathrm{ln}^2(1+\sqrt{2})+\frac{I(\infty)}{2}=-\frac{1}{2}\mathrm{ln}^2(1+\sqrt{2})+\frac{\pi^2}{8}\]
+\end{solution}
+\begin{example}{}{}
+    \[\int_0^{\frac{\pi}{2}}\dfrac{x\sin x}{1+\cos^2x}\dd x\]
+\end{example}
+\begin{solution}
+    \begin{align*}
+\int_0^{\frac{\pi}{2}}\dfrac{x\sin x}{1+\cos^2x}\dd x&=-\int_0^{\frac{\pi}{2}}\dfrac{x\dd\cos x}{1+\cos^2 x}=\int_0^{\frac{\pi}{2}}x\dd\arctan(\cos x)\\
+&=-x\arctan \cos x\Big|_0^{\frac{\pi}{2}}+\int_0^{\frac{\pi}{2}}\arctan\cos x\dd x=\int_0^{\frac{\pi}{2}}\arctan\cos x\dd x\\
+&=\int_0^{\frac{\pi}{2}}\int_0^1\dfrac{\cos x}{1+y^2\cos^2x}\dd y\dd x=\int_0^1\int_0^{\frac{\pi}{2}}\dfrac{\cos x}{1+y^2\cos^2x}\dd x\dd y\\
+&=\int_0^{1}\int_0^1\dfrac{\dd\sin x}{1+y^2(1-\sin^2 x)}\dd y=\int_0^1\int_0^1\dfrac{\dd\sin x}{(\sqrt{1+y^2})^2-(y\sin x)^2}\dd y\\
+&=\dfrac{1}{2y\sqrt{1+y^2}}\int_0^1\int_0^1\left(\dfrac1{\sqrt{1+y^2}+y\sin x}+\dfrac1{\sqrt{1+y^2}-y\sin x}\right)\dd\sin x\dd y\\
+&=\int_0^1\dfrac{\ln(y+\sqrt{1+y^2})}{y\sqrt{1+y^2}}\dd y \xlongequal{y=\frac{t^2-1}{2t}\text{(万能代换)}} 2 \int_1^{1+\sqrt{2}} \frac{\ln t}{t^2 - 1}\dd t\\
+    2 \int_1^{1+\sqrt{2}} \frac{\ln t}{t^2 - 1}\dd t&=\int_1^{1+\sqrt2}\ln t\left(\dfrac1{t-1}-\dfrac1{t+1}\right)\dd t=\int_1^{1+\sqrt2}\ln t~\dd\ln\dfrac{t-1}{t+1}\\
+   &=-\ln^2(1+\sqrt2)- \int_1^{1+\sqrt{2}} \frac{1}{t} \ln \frac{t-1}{t+1}\dd t\quad\text{令}\frac{t-1}{t+1}=m\\
+    &= -\ln^2(1+\sqrt2) - \int_0^{\sqrt{2}-1} \dfrac{1-m}{1+m}\ln\dfrac{\frac{1+m}{1-m}-1}{\frac{1+m}{1-m}+1}\dd\frac{1+m}{1-m}\\
+    &=-\ln^2(1+\sqrt2) - 2\int_0^{\sqrt{2}-1}\dfrac{\ln m}{1-m^2}\dd m=-\ln^2(1+\sqrt2)-2\int_{+\infty}^{\sqrt2+1}\dfrac{\ln\frac1u}{1-\frac1{u^2}}\dd\frac1u\\
+    &= -\ln^2(1+\sqrt2) - 2\int_{+\infty}^{\sqrt2+1}\dfrac{\ln u}{u^2-1}\dd u=-\ln^2(1+\sqrt2) + 2\int_{\sqrt2+1}^{+\infty}\dfrac{\ln u}{u^2-1}\dd u\\
+    &=-\ln^2(1+\sqrt2) + 2\int_1^{+\infty}\dfrac{\ln t}{t^2-1}\dd t-2\int_1^{1+\sqrt2}\dfrac{\ln t}{t^2-1}\dd t\\
+    2 \int_1^{1+\sqrt{2}} \frac{\ln t}{t^2 - 1}\dd t&=-\dfrac12\ln^2(1+\sqrt2) +\int_1^{+\infty}\dfrac{\ln t}{t^2-1}\dd t\xlongequal{t\leftarrow \frac1t}-\dfrac12\ln^2(1+\sqrt2) -\int_0^1\dfrac{\ln t}{1-t^2}\dd t\\
+    &=-\dfrac12\ln^2(1+\sqrt2)-\int_0^1\sum_{n=0}^{\infty}t^{2n}\ln t\dd t=-\dfrac12\ln^2(1+\sqrt2)+\sum_{n=0}^{\infty}\dfrac{1}{(2n+1)^2}\\
+    &=\dfrac{\pi^2}8-\dfrac12\ln^2(1+\sqrt2)
+\end{align*}
+
 \end{solution}

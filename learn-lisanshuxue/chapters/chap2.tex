@@ -59,12 +59,16 @@
 \end{definition}
 例如，命题公式$P \rightarrow (Q \land P)$的一个代换实例可以是：$\forall x P(x) \rightarrow (\exists y Q(y) \land \forall x P(x))$。而在代换实例的视角来看，有些谓词公式可以通过像命题公式那样进行等价变换，从而证明一些命题公式之间有等价关系或者蕴含关系。这就需要用到之前的推理定律。详见$2.3$
 \section{换名，前束范式}
-换名的动机是让谓词公式中尽量不要出现同样的变元，以便于区分和进行逻辑推理。
+换名的动机是让谓词公式中尽量不要出现同样的变元，避免变量名的混淆，同时便于进行逻辑推理。
 
-约束变元换名规则允许在公式中更改约束变元的名称，而不改变公式的逻辑含义。比如将 $\forall x (P(x) \rightarrow \exists y Q(x,y))$ 中的 $x$ 换为 $z$，得到 $\forall z (P(z) \rightarrow \exists y Q(z,y))$，要求如下：\\
-1. 只能更改约束变元的名称，不能更改自由变元；\\
-2. 换名必须在整个量词的辖域内一致进行\\
-3. 新变元名称不能与公式中已有的自由变元同名\\
+约束变元换名规则允许在公式中更改约束变元的名称，而不改变公式的逻辑含义。比如将 $\forall x (P(x) \rightarrow \exists y Q(x,y))$ 中的 $x$ 换为 $z$，得到 $\forall z (P(z) \rightarrow \exists y Q(z,y))$，要求如下：
+
+1. 只能更改约束变元的名称，不能更改自由变元；
+
+2. 换名必须在整个量词的辖域内一致进行
+
+3. 新变元名称不能与公式中已有的自由变元同名
+
 4. 多个量词约束的同名变元必须同时换名
 
 自由变元代入规则允许用项替换公式中的自由变元。例如将 $\forall x P(x,y)$ 中的自由变元 $y$ 用常元 $a$ 代入，得到 $\forall x P(x,a)$，要求如下：\\
@@ -114,7 +118,7 @@ $$Q_1x_1Q_2x_2\cdots Q_nx_nM,\text{其中}Q_1x_1Q_2x_2\text{为首标},M\text{�
 5. 分配律：$\forall x(A(x)\land B(x))\Leftrightarrow \forall xA(x)\land \forall xB(x)\quad \exists x(A(x)\lor B(x))\Leftrightarrow \exists xA(x)\lor \exists xB(x)$\\
 6. 交换律：$\forall x\forall y A(x,y)\Leftrightarrow \forall y\forall x A(x,y)\quad \exists x\exists y A(x,y)\Leftrightarrow \exists y\exists x A(x,y)$
 \end{theorem}
-3和4即书上给出的量词辖域扩张与收缩律，2虽然说$B$含$x$，但是由于此时蕴含前件不含$x$，而是含有$y$，且指导变元是$y$，所以此时和4一样。上面的公式利用等价变形都可以解决，下面给出理解和记忆的方式。
+3和4即书上给出的量词辖域扩张与收缩律，2虽然说$B$含$x$，但是由于此时蕴含前件不含$x$，而是含有$y$，且指导变元是$y$，所以此时和4一样。上面的公式利用等价变形都可以解决。
 
 1. 左边说“至少有一个$x$，能够确保：如果它满足$A$，那么它也满足$B$”。右边说“如果所有的$x$都满足$A$，那么至少有一个$x$满足$B$”。例如：“假设你是老师，你承诺说你会找一些幸运儿学生，如果他们来上课就能及格”，这等价于“如果所有学生都来上课，那么有学生能及格”，因为你总要挑选学生给到及格。
 
@@ -126,17 +130,20 @@ $$Q_1x_1Q_2x_2\cdots Q_nx_nM,\text{其中}Q_1x_1Q_2x_2\text{为首标},M\text{�
 
 5. “每个人都既聪明又勤奋”等价于“每个人都聪明且每个人都勤奋”。“有人会唱歌或跳舞”等价于“有人会唱歌或者有人会跳舞”。
 
-6. “任何两个人都是朋友”等价于“对任何人来说，与任何人都是朋友”，量词顺序不影响含义。“存在两个人是朋友”等价于“存在这样的两个人，他们是朋友”，存在量词的顺序也不影响含义。
-\begin{theorem}{常见的蕴含关系式（结论的弱化）}{}
+6. “任何两个人都是朋友”等价于“对任何人来说，与任何人都是朋友”，量词顺序不影响含义。“存在两个人是朋友”等价于“存在这样两个人，他们是朋友”，存在量词顺序也不影响含义。
+\begin{example}{}{}
+    0元谓词公式是命题吗？
+\end{example}
+是。
+\begin{theorem}{常见的蕴含关系式（结论的弱化，也可以理解为前提的增多）}{}
 1. $\exists xA(x)\to\exists xB(x)\Rightarrow\exists x(A(x)\to B(x))$\\
 2. $\forall xA(x)\to \exists xB(x)\Rightarrow \exists x(A(x)\to B(x))$\\
-3. $\forall xA(x)\lor \forall xB(x)\Rightarrow \forall x(A(x)\lor B(x))\Rightarrow \neg\forall xA(x)\to\exists xB(x)$\\
+3. $\forall xA(x)\lor \forall xB(x)\Rightarrow \forall x(A(x)\lor B(x))\Rightarrow \neg\forall xA(x)\to\exists xB(x)~or~\forall xA(x)\lor \exists xB(x)$\\
 4. $\exists x(A(x)\land B(x))\Rightarrow \exists xA(x)\land \exists xB(x)$\\
 5. $\forall x(A(x)\to B(x))\Rightarrow \forall xA(x)\to \forall xB(x)$\\
-6. $\exists x(A(x)\to B(x))\Rightarrow \exists xA(x)\to \exists xB(x)$\\
-7. $\forall x\forall yA(x,y)\Rightarrow \forall xA(x,x)$\\
-8. $\exists xA(x,x)\Rightarrow \exists x\exists yA(x,y)$\\
-9. $\forall x\forall yA(x,y)\Rightarrow \exists y\forall xA(x,y)\Rightarrow \forall x\exists yA(x,y)\Rightarrow \exists x\exists yA(x,y)$
+6. $\forall x\forall yA(x,y)\Rightarrow \forall xA(x,x)$\\
+7. $\exists xA(x,x)\Rightarrow \exists x\exists yA(x,y)$\\
+8. $\forall x\forall yA(x,y)\Rightarrow \exists y\forall xA(x,y)\Rightarrow \forall x\exists yA(x,y)\Rightarrow \exists x\exists yA(x,y)$
 \end{theorem}
 1. 如果存在某个$x$满足$A(x)$，那么存在某个$x$满足$B(x)$。注意，这里的两个$x$可能不是同一个个体，也可能是同一个个体，当为后一种情况，就得到了蕴含后件。所以蕴含关系 $\exists xA(x)\to\exists xB(x)\Rightarrow\exists x(A(x)\to B(x))$ 成立。
 
@@ -148,13 +155,11 @@ $$Q_1x_1Q_2x_2\cdots Q_nx_nM,\text{其中}Q_1x_1Q_2x_2\text{为首标},M\text{�
 
 5. 每一个满足$A$的$x$都同时满足$B$，那当$x$恒满足$A$时就会恒满足$B$，但当存在不满足$A$的个体时，前提不施加任何约束，因此可能存在某些个体满足$A$但不满足$B$，只要不是所有个体都满足$A$，前提仍然为真。蕴含关系 $\forall x(A(x)\to B(x))\Rightarrow \forall xA(x)\to \forall xB(x)$ 显然成立。
 
-6. 对于某特定的$x$，如果$A(x)$成立，那么$B(x)$也成立。但是右边的两个$x$可能一样也可能不一样，蕴含关系 $\exists x(A(x)\to B(x))\Rightarrow \exists xA(x)\to \exists xB(x)$ 显然成立。
+6. 左边说$A$关系对所有个体对都成立。右边说$A$关系对所有自对（即个体与自身）都成立。如果左边成立，特别地，当$y=x$时，$A(x,x)$成立，因此蕴含关系 $\forall x\forall yA(x,y)\Rightarrow \forall xA(x,x)$ 成立。
 
-7. 左边说$A$关系对所有个体对都成立。右边说$A$关系对所有自对（即个体与自身）都成立。如果左边成立，特别地，当$y=x$时，$A(x,x)$成立，因此蕴含关系 $\forall x\forall yA(x,y)\Rightarrow \forall xA(x,x)$ 成立。
+7. 如果存在一个个体与自身满足$A$，那么取个体$x$和$y$（取$y=x$）满足$A$。所以左边蕴含右边，即 $\exists xA(x,x)\Rightarrow \exists x\exists yA(x,y)$ 。但可能$A(x,y)$成立对于$x$和$y$不同，$A(x,x)$不成立。
 
-8. 如果存在一个个体与自身满足$A$，那么取个体$x$和$y$（取$y=x$）满足$A$。所以左边蕴含右边，即 $\exists xA(x,x)\Rightarrow \exists x\exists yA(x,y)$ 。但可能$A(x,y)$成立对于$x$和$y$不同，$A(x,x)$不成立。
-
-9. 从“全局$A$”到“存在万能$y$”（万能钥匙）到“每个$x$有对应$y$”（专用钥匙）到“存在一对”（碰运气），强度递减，蕴含关系成立。
+8. 从“全局$A$”到“存在万能$y$”（万能钥匙）到“每个$x$有对应$y$”（专用钥匙）到“存在一对”（碰运气），强度递减，蕴含关系成立。
 
 上面的叙述其实已经用到了四大谓词逻辑推理规则：
 \begin{theorem}{四大谓词逻辑推理规则}{}
@@ -172,14 +177,172 @@ $$P(c) \Rightarrow \exists x P(x),\text{其中}c\text{是个体域中的某个�
 使用要求与注意事项：$c$可以是任意已知个体，但是取代$c$的$x$不可以在$A(c)$中出现过，即不能和已有的量词绑定。示例：从“苏格拉底是哲学家”推出“存在哲学家”。\\
 5. \textbf{易错点：在使用EI引入新常元后，不能再对该常元使用UG}
 \end{theorem}
-例题：证明$\forall x(A(x)\lor B(x))\Rightarrow \neg\forall xA(x)\to\exists xB(x)$
+\noindent
+\textbf{证明 1:} $\exists xA(x)\to\exists xB(x)\Rightarrow\exists x(A(x)\to B(x))$
+\vspace{-10pt}
 \begin{align*}
-(1)&\quad \forall x(A(x)\lor B(x)) & \text{前提} \\
-(2)&\quad \neg\forall xA(x) & \text{附加前提} \\
-(3)&\quad \exists x\neg A(x) & \text{由(2)量词否定转换} \\
-(4)&\quad \neg A(c) & \text{由(3)存在实例化(EI)，c为新常量} \\
-(5)&\quad A(c)\lor B(c) & \text{由(1)全称实例化(UI)} \\
-(6)&\quad B(c) & \text{由(4)(5)析取三段论} \\
-(7)&\quad \exists xB(x) & \text{由(6)存在泛化(EG)} \\
-(8)&\quad \neg\forall xA(x)\to\exists xB(x) & \text{由(2)(7)条件证明(CP)}
+&(1)\ \exists xA(x) \to \exists xB(x) && \text{前提} \\
+&(2)\ \neg\exists x(A(x)\to B(x)) && \text{临时假设（用于反证）} \\
+&(3)\ \forall x\neg(A(x)\to B(x)) && \text{由(2)量词否定} \\
+&(4)\ \forall x(A(x) \land \neg B(x)) && \text{由(3)蕴含等值式} \\
+&(5)\ A(c) \land \neg B(c) && \text{由(4)UI，$c$任意} \\
+&(6)\ A(c) && \text{由(5)化简} \\
+&(7)\ \exists xA(x) && \text{由(6)EG} \\
+&(8)\ \exists xB(x) && \text{由(1)(7)MP} \\
+&(9)\ B(d) && \text{由(8)EI，$d$为新常量} \\
+&(10)\ \neg B(d) && \text{由(4)UI（$x=d$）得$A(d) \land \neg B(d)$，化简} \\
+&(11)\ B(d) \land \neg B(d) && \text{由(9)(10)合取} \\
+&(12)\ \exists x(A(x)\to B(x)) && \text{由(2)(11)反证法}
+\end{align*}
+
+\noindent
+\textbf{证明 2:} $\forall xA(x)\to \exists xB(x)\Rightarrow \exists x(A(x)\to B(x))$
+\vspace{-10pt}
+\begin{align*}
+&(1)\ \forall xA(x) \to \exists xB(x) && \text{前提} \\
+&(2)\ \text{假设 } \forall xA(x) && \text{情况1假设} \\
+&(3)\ \exists xB(x) && \text{由(1)(2)MP} \\
+&(4)\ B(c) && \text{由(3)EI，$c$为新常量} \\
+&(5)\ A(c) && \text{由(2)UI} \\
+&(6)\ A(c) \to B(c) && \text{由(4)条件引入} \\
+&(7)\ \exists x(A(x)\to B(x)) && \text{由(6)EG} \\
+&(8)\ \neg\forall xA(x) && \text{情况2假设} \\
+&(9)\ \exists x\neg A(x) && \text{由(8)量词否定} \\
+&(10)\ \neg A(d) && \text{由(9)EI，$d$为新常量} \\
+&(11)\ A(d) \to B(d) && \text{由(10)（前件假则蕴含真）} \\
+&(12)\ \exists x(A(x)\to B(x)) && \text{由(11)EG} \\
+&(13)\ \exists x(A(x)\to B(x)) && \text{由(2)-(7)和(8)-(12)两种情况}
+\end{align*}
+
+\noindent
+\textbf{证明 3.1:} $\forall xA(x)\lor \forall xB(x)\Rightarrow \forall x(A(x)\lor B(x))$
+\vspace{-10pt}
+\begin{align*}
+&(1)\ \forall xA(x) \lor \forall xB(x) && \text{前提} \\
+&(2)\ \text{设任意个体 $c$} && \text{UG的准备} \\
+&(3)\ \text{假设 } \forall xA(x) && \text{情况1假设} \\
+&(4)\ A(c) && \text{由(3)UI} \\
+&(5)\ A(c) \lor B(c) && \text{由(4)添加析取} \\
+&(6)\ \text{假设 } \forall xB(x) && \text{情况2假设} \\
+&(7)\ B(c) && \text{由(6)UI} \\
+&(8)\ A(c) \lor B(c) && \text{由(7)添加析取} \\
+&(9)\ A(c) \lor B(c) && \text{由(1)(3)-(5)(6)-(8)析取消除} \\
+&(10)\ \forall x(A(x)\lor B(x)) && \text{由(2)(9)UG}
+\end{align*}
+
+\noindent
+\textbf{证明 3.2:} $\forall x(A(x)\lor B(x))\Rightarrow \neg\forall xA(x)\to\exists xB(x)$
+\vspace{-10pt}
+\begin{align*}
+&(1)\ \forall x(A(x)\lor B(x)) && \text{前提} \\
+&(2)\ \neg\forall xA(x) && \text{附加前提} \\
+&(3)\ \exists x\neg A(x) && \text{由(2)量词否定} \\
+&(4)\ \neg A(c) && \text{由(3)EI，$c$为新常量} \\
+&(5)\ A(c) \lor B(c) && \text{由(1)UI} \\
+&(6)\ B(c) && \text{由(4)(5)DS} \\
+&(7)\ \exists xB(x) && \text{由(6)EG} \\
+&(8)\ \neg\forall xA(x) \to \exists xB(x) && \text{由(2)(7)CP}
+\end{align*}
+
+\noindent
+\textbf{证明 3.3:} $\forall x(A(x)\lor B(x))\Rightarrow \forall xA(x)\lor \exists xB(x)$
+\vspace{-10pt}
+\begin{align*}
+&(1)\ \forall x(A(x)\lor B(x)) && \text{前提} \\
+&(2)\ \neg(\forall xA(x) \lor \exists xB(x)) && \text{临时假设（反证）} \\
+&(3)\ \neg\forall xA(x) \land \neg\exists xB(x) && \text{由(2)德摩根} \\
+&(4)\ \neg\forall xA(x) && \text{由(3)化简} \\
+&(5)\ \neg\exists xB(x) && \text{由(3)化简} \\
+&(6)\ \forall x\neg B(x) && \text{由(5)量词否定} \\
+&(7)\ \exists x\neg A(x) && \text{由(4)量词否定} \\
+&(8)\ \neg A(c) && \text{由(7)EI，$c$为新常量} \\
+&(9)\ A(c) \lor B(c) && \text{由(1)UI} \\
+&(10)\ B(c) && \text{由(8)(9)DS} \\
+&(11)\ \neg B(c) && \text{由(6)UI} \\
+&(12)\ B(c) \land \neg B(c) && \text{由(10)(11)合取} \\
+&(13)\ \forall xA(x) \lor \exists xB(x) && \text{由(2)(12)反证法}
+\end{align*}
+
+\noindent
+\textbf{证明 4:} $\exists x(A(x)\land B(x))\Rightarrow \exists xA(x)\land \exists xB(x)$
+\vspace{-10pt}
+\begin{align*}
+&(1)\ \exists x(A(x)\land B(x)) && \text{前提} \\
+&(2)\ A(c) \land B(c) && \text{由(1)EI，$c$为新常量} \\
+&(3)\ A(c) && \text{由(2)化简} \\
+&(4)\ \exists xA(x) && \text{由(3)EG} \\
+&(5)\ B(c) && \text{由(2)化简} \\
+&(6)\ \exists xB(x) && \text{由(5)EG} \\
+&(7)\ \exists xA(x) \land \exists xB(x) && \text{由(4)(6)合取}
+\end{align*}
+
+\noindent
+\textbf{证明 5:} $\forall x(A(x)\to B(x))\Rightarrow \forall xA(x)\to \forall xB(x)$
+\vspace{-10pt}
+\begin{align*}
+&(1)\ \forall x(A(x)\to B(x)) && \text{前提} \\
+&(2)\ \forall xA(x) && \text{附加前提} \\
+&(3)\ \text{设任意个体 $c$} && \text{UG的准备} \\
+&(4)\ A(c) \to B(c) && \text{由(1)UI} \\
+&(5)\ A(c) && \text{由(2)UI} \\
+&(6)\ B(c) && \text{由(4)(5)MP} \\
+&(7)\ \forall xB(x) && \text{由(3)(6)UG} \\
+&(8)\ \forall xA(x) \to \forall xB(x) && \text{由(2)(7)CP}
+\end{align*}
+
+\noindent
+\textbf{证明 7:} $\forall x\forall yA(x,y)\Rightarrow \forall xA(x,x)$
+\vspace{-10pt}
+\begin{align*}
+&(1)\ \forall x\forall yA(x,y) && \text{前提} \\
+&(2)\ \text{设任意个体 $c$} && \text{UG的准备} \\
+&(3)\ \forall yA(c,y) && \text{由(1)UI} \\
+&(4)\ A(c,c) && \text{由(3)UI} \\
+&(5)\ \forall xA(x,x) && \text{由(2)(4)UG}
+\end{align*}
+
+\noindent
+\textbf{证明 8:} $\exists xA(x,x)\Rightarrow \exists x\exists yA(x,y)$
+\vspace{-10pt}
+\begin{align*}
+&(1)\ \exists xA(x,x) && \text{前提} \\
+&(2)\ A(c,c) && \text{由(1)EI，$c$为新常量} \\
+&(3)\ \exists yA(c,y) && \text{由(2)EG} \\
+&(4)\ \exists x\exists yA(x,y) && \text{由(3)EG}
+\end{align*}
+
+\noindent
+\textbf{证明 9.1:} $\forall x\forall yA(x,y)\Rightarrow \exists y\forall xA(x,y)$
+\vspace{-10pt}
+\begin{align*}
+&(1)\ \forall x\forall yA(x,y) && \text{前提} \\
+&(2)\ \text{令 $d$ 为个体常量} && \text{论域非空假设} \\
+&(3)\ \text{设任意个体 $a$} && \text{UG的准备} \\
+&(4)\ \forall yA(a,y) && \text{由(1)UI} \\
+&(5)\ A(a,d) && \text{由(4)UI} \\
+&(6)\ \forall xA(x,d) && \text{由(3)(5)UG} \\
+&(7)\ \exists y\forall xA(x,y) && \text{由(6)EG}
+\end{align*}
+
+\noindent
+\textbf{证明 9.2:} $\exists y\forall xA(x,y)\Rightarrow \forall x\exists yA(x,y)$
+\vspace{-10pt}
+\begin{align*}
+&(1)\ \exists y\forall xA(x,y) && \text{前提} \\
+&(2)\ \forall xA(x,c) && \text{由(1)EI，$c$为新常量} \\
+&(3)\ \text{设任意个体 $d$} && \text{UG的准备} \\
+&(4)\ A(d,c) && \text{由(2)UI} \\
+&(5)\ \exists yA(d,y) && \text{由(4)EG} \\
+&(6)\ \forall x\exists yA(x,y) && \text{由(3)(5)UG}
+\end{align*}
+
+\noindent
+\textbf{证明 9.3:} $\forall x\exists yA(x,y)\Rightarrow \exists x\exists yA(x,y)$
+\vspace{-10pt}
+\begin{align*}
+&(1)\ \forall x\exists yA(x,y) && \text{前提} \\
+&(2)\ \text{令 $d$ 为个体常量} && \text{论域非空假设} \\
+&(3)\ \exists yA(d,y) && \text{由(1)UI} \\
+&(4)\ A(d,c) && \text{由(3)EI，$c$为新常量} \\
+&(5)\ \exists x\exists yA(x,y) && \text{由(4)两次EG（先EG得$\exists yA(d,y)$，再EG得$\exists x\exists yA(x,y)$）}
 \end{align*}

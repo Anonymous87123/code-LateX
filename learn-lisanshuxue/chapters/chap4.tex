@@ -33,9 +33,9 @@ f_S(a) =
 \]
 \textbf{自然映射}：设 $\sim$ 是 $A$ 上的等价关系，$A/\sim$ 是商集。自然映射 $\pi: A \to A/\sim$ 定义为 $\pi(a) = [a]$，其中 $[a]$ 是 $a$ 的等价类。
 
-\textbf{上取整函数}：函数 $\lceil \cdot \rceil: \mathbb{R} \to \mathbb{Z}$ 定义为 $\lceil x \rceil = \min\{n \in \mathbb{Z} \mid n \geq x\}$，即不小于 $x$ 的最小整数。
+\textbf{上取整函数}：函数 $\lceil \cdot \rceil: \mathbb{R} \to \mathbb{Z}$ 定义为 $\lceil x \rceil = \min\{n \in \mathbb{Z} \mid n \geqslant x\}$，即不小于 $x$ 的最小整数。
 
-\textbf{下取整函数}：函数 $\lfloor \cdot \rfloor: \mathbb{R} \to \mathbb{Z}$ 定义为 $\lfloor x \rfloor = \max\{n \in \mathbb{Z} \mid n \leq x\}$，即不大于 $x$ 的最大整数。
+\textbf{下取整函数}：函数 $\lfloor \cdot \rfloor: \mathbb{R} \to \mathbb{Z}$ 定义为 $\lfloor x \rfloor = \max\{n \in \mathbb{Z} \mid n \leqslant x\}$，即不大于 $x$ 的最大整数。
 \end{definition}
 \begin{theorem}{函数经过集合运算后的函数性}{function-operations}
 设 $f, g: A \to B$ 是两个函数。将 $f$ 和 $g$ 视为 $A \times B$ 的子集（即它们的图像）。那么：\\
@@ -303,9 +303,9 @@ f_{A \oplus B}(x) &= |f_A(x) - f_B(x)| = f_A(x) + f_B(x) - 2f_A(x)f_B(x)
 
 $A$ 和 $B$ 称为等势（记作 $|A| = |B|,A\sim B$），即存在一个从 $A$ 到 $B$ 的双射（一一对应）。
 
-$|A| \leq |B|$ 表示存在从 $A$ 到 $B$ 的单射\\
-$|A| < |B|$ 表示 $|A| \leq |B|$ 但 $|A| \neq |B|$\\
-$|A| \geq |B|$ 表示存在从 $A$ 到 $B$ 的满射
+$|A| \leqslant |B|$ 表示存在从 $A$ 到 $B$ 的单射\\
+$|A| < |B|$ 表示 $|A| \leqslant |B|$ 但 $|A| \neq |B|$\\
+$|A| \geqslant |B|$ 表示存在从 $A$ 到 $B$ 的满射
 \end{definition}
 \begin{theorem}{基数的性质}{}
 设$M$是一个集合，$P(M)$是其幂集，$P(M)$的基数记为$|P(M)|$。则：$|P(M)|>|M|$
@@ -367,7 +367,7 @@ g(n) = (i,j) \quad \text{其中} \quad n = \frac{(i+j)(i+j+1)}{2} + j
 结合第一步的结果，$\mathbb{Z} \times \mathbb{N}^+$ 与 $\mathbb{N}$ 等势，因此 $\mathbb{Q}$ 与 $\mathbb{N}$ 等势。
 
 综上，自然数集 $\mathbb{N}$ 与有理数集 $\mathbb{Q}$ 等势。
-\begin{theorem}{}{}
+\begin{theorem}{可数个可数集合的并集仍然是可数集合}{}
     可数个可数集合的并集仍然是可数集合。
     
     设有一族可数集合 $\{A_n\}_{n=1}^\infty$，其中每个 $A_n$ 是可数集合（即至多可数）。考虑并集 $S = \bigcup_{n=1}^\infty A_n$。需要证明 $S$ 是可数集合。
@@ -381,7 +381,7 @@ f(n, m) = f_n(m).
 由于每个 $f_n$ 是满射，$f$ 是满射从 $\mathbb{N} \times \mathbb{N}$ 到 $S$。又因为存在满射 $g: \mathbb{N} \to \mathbb{N} \times \mathbb{N}$，复合映射 $f \circ g: \mathbb{N} \to S$ 是满射。因此，存在满射从 $\mathbb{N}$ 到 $S$，这意味着 $S$ 至多可数。
 
 如果至少有一个 $A_n$ 是无限集合，则 $S$ 是无限集合，因此 $S$ 是可数无限集合；否则，如果所有 $A_n$ 有限，则 $S$ 可能有限或无限，但至多可数。综上，$S$ 是可数集合。
-\begin{theorem}{}{}
+\begin{theorem}{开区间不可列}{}
     开区间$(0,1)$是不可列的
 \end{theorem}
 使用康托尔对角线法证明。假设 $(0,1)$ 是可数集合，则存在双射 $f: \mathbb{N} \to (0,1)$。
@@ -409,7 +409,7 @@ b_n =
 这样确保 $b_n \neq a_{nn}$ 且 $b_n \neq 9$（避免表示歧义）。
 
 则 $y$ 与每个 $x_n$ 都不同，\textbf{因为 $y$ 的第 $n$ 位小数 $b_n$ 与 $x_n$ 的第 $n$ 位小数 $a_{nn}$ 不同}。因此 $y$ 不在枚举中，与 $f$ 是满射矛盾。假设错误，$(0,1)$ 是不可数集合。
-\begin{theorem}{}{}
+\begin{theorem}{实数集是不可列的}{}
 实数集是不可列的
 \end{theorem}
 本题只需构造一个一一对应映射将$\mathbb{R}$映射到$(0,1)$上即可。或者构造一个一一对应映射将$(0,1)$映射到$\mathbb{R}$上即可。比如$f: (0,1) \to \mathbb{R}$可以定义为：$f(x)=\tan\left(\pi x-\dfrac{\pi}{2}\right)$

@@ -1,6 +1,6 @@
 \chapter{命题逻辑}
 \section{命题与命题公式}
-\begin{definition}{命题}{}
+\begin{definition}{命题}{命题}
     命题是用陈述句表示的一个为真或者为假，但不能同时为真又为假的判断语句
 \end{definition}
 一个语句是命题，关键在于它是否在“逻辑上”具有一个确定的真值（即要么为真，要么为假），而不取决于我们是否知道或能够验证这个真值。只要一个陈述句在原则上可能为真或为假，即使我们目前无法判断（例如由于科学限制或信息不足），它仍然是一个命题。
@@ -50,9 +50,33 @@
 为什么与运算和或运算更强大呢？因为它们能表达"非线性"的关系。与运算$P \land Q$要求两个输入必须同时满足条件，这不是简单的奇偶关系。同样，或运算$P \lor Q$允许至少一个条件满足，这也超出了异或的能力范围。
 
 而与非运算$\uparrow$和或非运算$\downarrow$之所以强大，是因为它们内在包含了"否定"的能力。例如，单用与非运算就能表示否定：$\neg P = P \uparrow P$。一旦能够表示否定，再加上它们原有的组合能力，就可以构造出所有其他逻辑运算，包括与、或、蕴含等。
+\begin{example}{}{}
+联结词集 $\{\oplus, \rightarrow\}$ 是最小全功能联结词集。
+\end{example}
+\begin{solution}
+1. 全功能性证明。
+已知 $\{\neg, \rightarrow\}$ 是全功能集，因为
+\[
+P \land Q \equiv \neg(P \rightarrow \neg Q), \quad
+P \lor Q \equiv \neg P \rightarrow Q.
+\]
+因此，只需证明用 $\oplus$ 和 $\rightarrow$ 可以表示 $\neg$。注意到 $P \oplus P$ 是永假式（因为 $P$ 与自身相同时异或结果为假）。考虑公式
+\[
+P \rightarrow (P \oplus P).
+\]
+当 $P$ 为真时，$P \oplus P$ 为假，于是 $P \rightarrow \text{假}$ 为假；当 $P$ 为假时，蕴含式 $P \rightarrow \text{假}$ 为真。所以
+\[
+\neg P \equiv P \rightarrow (P \oplus P).
+\]
+因此 $\neg$ 可由 $\{\oplus, \rightarrow\}$ 表示。由于 $\rightarrow$ 已在集合中，故 $\{\oplus, \rightarrow\}$ 可以模拟 $\{\neg, \rightarrow\}$，从而是全功能的。
+\\2. 极小性证明：需验证 $\{\oplus\}$ 和 $\{\rightarrow\}$ 单独都不是全功能的。
 
+$\{\oplus\}$ 不是全功能的：考虑只由 $\oplus$ 和命题变元构成的公式。对任意赋值，公式的真值等于各变元真值的“奇偶和”（即模2加法）。具体来说，每个变元出现奇数次时会影响结果，出现偶数次时不影响。但并非所有布尔函数都能写成这种形式。例如，合取 $P \land Q$ 就无法用 $\oplus$ 表示。因为假设存在由 $\oplus$ 构成的公式 $\varphi(P,Q)$ 等价于 $P \land Q$，则 $\varphi$ 的真值表应满足：当 $(P,Q)=(0,0),(0,1),(1,0)$ 时 $\varphi$ 为假，$(1,1)$ 时 $\varphi$ 为真。但任何由 $\oplus$ 构成的公式，其真值表中为真的赋值个数一定是偶数（因为异或运算相当于线性函数）。然而 $P \land Q$ 的真值表中只有一个赋值使其为真，是奇数，矛盾。所以 $\{\oplus\}$ 不能表示 $P \land Q$，从而不是全功能的。
 
+ $\{\rightarrow\}$ 不是全功能的：考虑只由 $\rightarrow$ 和命题变元构成的公式。当所有命题变元都赋值为真时，公式的真值也一定为真。这是因为：如果 $A$ 和 $B$ 都为真，则 $A \rightarrow B$ 为真；归纳可知，任何只含 $\rightarrow$ 的公式在所有变元为真时必真。但否定 $\neg P$ 在所有变元为真（即 $P$ 为真）时为假，所以 $\neg P$ 不能用一个在所有变元为真时也为真的公式表示。因此 $\{\rightarrow\}$ 不能表示否定，从而不是全功能的。
 
+综上，$\{\oplus, \rightarrow\}$ 是全功能的，且去掉其中任何一个联结词后都不再全功能，故为最小全功能联结词集。
+\end{solution}
 \begin{example}{}{}
     证明$\{\uparrow\}$ （与非集），$\{\downarrow\}$ （或非集）是最小全功能联结词集
 \end{example}
@@ -73,6 +97,30 @@
     P \leftrightarrow Q &\Leftrightarrow ((P \downarrow P) \downarrow Q) \downarrow ((Q \downarrow Q) \downarrow P)
 \end{align*}
 \end{solution}
+这里补充一下是怎么做的：
+\textbf{示例：将 $P \lor Q$ 化为只用 $\uparrow$ 的表达式。}
+\begin{itemize}
+    \item \textbf{步骤1:} 用 $\neg$ 和 $\land$ 表示 $P \lor Q$:
+    \[
+    P \lor Q \Leftrightarrow \neg(\neg P \land \neg Q).
+    \]
+    \item \textbf{步骤2:} 替换 $\neg$ 和 $\land$:
+    \begin{align*}
+        \neg P &=P \uparrow P, \\
+        \neg Q &= Q \uparrow Q, \\
+        \neg P \land \neg Q =\neg(\neg(\neg P \land \neg Q))&=((P \uparrow P) \uparrow (Q \uparrow Q)) \uparrow ((P \uparrow P) \uparrow (Q \uparrow Q)).
+    \end{align*}
+    将最外层的 $\neg$ 也替换为 $\uparrow$，即对 $((P \uparrow P) \uparrow (Q \uparrow Q)) \uparrow ((P \uparrow P) \uparrow (Q \uparrow Q))$ 整体再应用 $\neg$ 的替换规则：
+    \[
+    \neg\Big(((P \uparrow P) \uparrow (Q \uparrow Q)) \uparrow ((P \uparrow P) \uparrow (Q \uparrow Q))\Big) =\]
+    \[\Big[((P \uparrow P) \uparrow (Q \uparrow Q)) \uparrow ((P \uparrow P) \uparrow (Q \uparrow Q))\Big] \uparrow \Big[((P \uparrow P) \uparrow (Q \uparrow Q)) \uparrow ((P \uparrow P) \uparrow (Q \uparrow Q))\Big].
+    \]
+    \item \textbf{化简:} 记 $A = (P \uparrow P) \uparrow (Q \uparrow Q)$，则上述表达式为 $(A \uparrow A) \uparrow (A \uparrow A)$。由于对任意公式 $A$ 有 $(A \uparrow A) \uparrow (A \uparrow A) \Leftrightarrow A$（因为 $A \uparrow A = \neg A$，进而 $(\neg A) \uparrow (\neg A) = \neg(\neg A \land \neg A) = A$），所以原式可化简为 $A$，即
+    \[
+    (P \uparrow P) \uparrow (Q \uparrow Q).
+    \]
+    这正是前面证明中给出的 $P \lor Q$ 的与非表达式。
+\end{itemize}
 \begin{center}
 \begin{tikzpicture}[circuit logic US, thick, 
     every node/.style={font=\small}]
@@ -121,6 +169,7 @@
     \node[above=0.5cm] at (nor.center) {NOR};
 \end{tikzpicture}
 \end{center}
+\newpage
 \section{命题演算的关系式}
 $P\Leftrightarrow Q$（逻辑等价）的定义是：$P\leftrightarrow Q$为永真式/重言式；$P\Rightarrow Q$（逻辑蕴含）的定义是：$P\rightarrow Q$为永真式；
 
@@ -133,7 +182,7 @@ $P\Leftrightarrow Q$（逻辑等价）的定义是：$P\leftrightarrow Q$为永�
 \begin{theorem}{对偶式的性质}{}
 设$A$和$B$是仅包含联结词$\neg$、$\land$和$\lor$的命题公式，$A^*$和$B^*$分别是它们的对偶式\\
 1. \textbf{对偶原理}：若$A \Leftrightarrow B$，则$A^* \Leftrightarrow B^*$。逻辑等价关系在对偶变换下保持不变。\\
-2. \textbf{否定与对偶的关系}：$A \Leftrightarrow (A^*)^*$，即$A$的对偶式的对偶式等于$A$本身。\\
+2. \textbf{对偶的对偶}：$A \Leftrightarrow (A^*)^*$，即$A$的对偶式的对偶式等于$A$本身。\\
 3. \textbf{永真式与永假式的对偶}：若$A$永真，则$A^*$永假；若$A$永假，则$A^*$永真。\\
 4. \textbf{对偶式的否定}：$\neg A \Leftrightarrow (\neg A^*)^*$，其中$\neg A^*$表示先将$A$中的原子命题取否定，再求对偶式。\\
 5. \textbf{对偶式的运算}：$(A \land B)^* = A^* \lor B^*$，$(A \lor B)^* = A^* \land B^*$，$(\neg A)^* = \neg (A^*)$\\
@@ -141,7 +190,11 @@ $P\Leftrightarrow Q$（逻辑等价）的定义是：$P\leftrightarrow Q$为永�
 \end{theorem}
 性质5是由定义导出的，性质4是因为否定运算在对偶变换下保持不变，对偶式定义只涉及交换$\land$和$\lor$，性质3更显然，因为永真式为1，永假式为0，对偶变换后显然颠倒。
 
-下面证明性质6，\textbf{第一步：证明如果$A \Rightarrow B$，则$B^* \Rightarrow A^*$}，由于$A \Rightarrow B$，所以$A \rightarrow B$是永真式。根据对偶式的性质，永真式的对偶是永假式，因此$(A \rightarrow B)^* $是永假式，将蕴含式转换为基本联结词：$A \rightarrow B \Leftrightarrow \neg A \lor B$，所以$(\neg A \lor B)^* \text{是永假式}$，根据对偶式的定义：$(\neg A \lor B)^* = (\neg A)^* \land B^* = \neg A^* \land B^*$，因此$\neg A^* \land B^*$是永假式，这意味着对于所有赋值，$\neg A^* \land B^*$都为假。两边同时取否定得到$\neg A^* \rightarrow \neg B^*$为真，即$B^* \rightarrow A^*$为永真式，所以$B^* \Rightarrow A^*$。\textbf{第二步：证明如果$B^* \Rightarrow A^*$，则$A \Rightarrow B$}由于$B^* \Rightarrow A^*$，根据第一步的结论（将$A$替换为$B^*$，$B$替换为$A^*$），我们有：$(A^*)^* \Rightarrow (B^*)^*$，根据对偶式的性质，$(A^*)^* = A$，$(B^*)^* = B$，所以$A \Rightarrow B$。综上，$A \Rightarrow B$当且仅当$B^* \Rightarrow A^*$。
+下面证明性质6
+
+\textbf{第一步：证明如果$A \Rightarrow B$，则$B^* \Rightarrow A^*$}，由于$A \Rightarrow B$，所以$A \rightarrow B$是永真式。根据对偶式的性质，永真式的对偶是永假式，因此$(A \rightarrow B)^* $是永假式，将蕴含式转换为基本联结词：$A \rightarrow B \Leftrightarrow \neg A \lor B$，所以$(\neg A \lor B)^* \text{是永假式}$，根据对偶式的定义：$(\neg A \lor B)^* = (\neg A)^* \land B^* = \neg A^* \land B^*$，因此$\neg A^* \land B^*$是永假式，这意味着对于所有赋值，$\neg A^* \land B^*$都为假。两边同时取否定得到$\neg A^* \rightarrow \neg B^*$为真，即$B^* \rightarrow A^*$为永真式，所以$B^* \Rightarrow A^*$。
+
+\textbf{第二步：证明如果$B^* \Rightarrow A^*$，则$A \Rightarrow B$}由于$B^* \Rightarrow A^*$，根据第一步的结论（将$A$替换为$B^*$，$B$替换为$A^*$），我们有：$(A^*)^* \Rightarrow (B^*)^*$，根据对偶式的性质，$(A^*)^* = A$，$(B^*)^* = B$，所以$A \Rightarrow B$。综上，$A \Rightarrow B$当且仅当$B^* \Rightarrow A^*$。
 \begin{theorem}{重要等价关系}{}
 \noindent\textbf{1. 基本等价关系}\\
 双重否定律：$\neg\neg P \Leftrightarrow P$\\
@@ -188,7 +241,7 @@ $P\Leftrightarrow Q$（逻辑等价）的定义是：$P\leftrightarrow Q$为永�
 \textbf{6. 析取三段论}：$(P \lor Q) \land \neg P \Rightarrow Q$ （非此即彼）\\
 \textbf{7. 构造性二难}：$(P \rightarrow Q) \land (R \rightarrow S),P \lor R \Rightarrow Q \lor S$ （分兵二路，两路夹击）\\
 \textbf{8. 破坏性二难}：$(P \rightarrow Q) \land (R \rightarrow S) ,\neg Q \lor \neg S \Rightarrow \neg P \lor \neg R$ \\
-\textbf{9. 等价三段论}：$(P \leftrightarrow Q) \land (Q \leftrightarrow R) \Rightarrow (P \leftrightarrow R)$ （两头落空，源头有错）\\
+\textbf{9. 等价三段论}：$(P \leftrightarrow Q) \land (Q \leftrightarrow R) \Rightarrow (P \leftrightarrow R)$ \\
 \textbf{10. 归结式}：$(P \lor Q) \land (\neg P \lor R) \Rightarrow (Q \lor R)$（两头下注，必中一个）
 \end{theorem}
 归结证明是一种基于归结原理的自动定理证明方法，基础是“归结式”：对于两个子句$C_1 = P \lor A$和$C_2 = \neg P \lor B$，可以通过消去互补文字$P$和$\neg P$，得到归结式$A \lor B$。解题过程是：先将待证明的公式转化为合取范式，得到子句集合，然后通过反复应用归结规则，从子句集中推导新的子句，如果能够推导出空子句（矛盾），则证明原公式是不可满足的，否则直到推导出结果为止。
@@ -226,11 +279,10 @@ $P\Leftrightarrow Q$（逻辑等价）的定义是：$P\leftrightarrow Q$为永�
 \begin{example}{2023年真题}{}
     用等值演算法求取下列公式：$(\neg P\to Q)\to(P\lor\neg Q)$的合取范式
 \end{example}
-\vspace{-20pt}
+\vspace{-30pt}
 \begin{align*}
  (\neg P \to Q) \to (P \lor \neg Q) 
-\Leftrightarrow & \neg (\neg P \to Q) \lor (P \lor \neg Q) \quad \text{（蕴含等值式）} \\
-\Leftrightarrow & \neg (P \lor Q) \lor (P \lor \neg Q) \quad \text{（蕴含等值式）} \\
+\Leftrightarrow &  \neg (P \lor Q) \lor (P \lor \neg Q) \quad \text{（蕴含等值式）} \\
 \Leftrightarrow & (\neg P \land \neg Q) \lor (P \lor \neg Q) \quad \text{（德摩根定律）} \\
 \Leftrightarrow & [\neg P \lor (P \lor \neg Q)] \land [\neg Q \lor (P \lor \neg Q)] \quad \text{（分配律）} \\
 \Leftrightarrow & [(\neg P \lor P) \lor \neg Q] \land [P \lor (\neg Q \lor \neg Q)] \quad \text{（结合律）} \\
@@ -239,7 +291,7 @@ $P\Leftrightarrow Q$（逻辑等价）的定义是：$P\leftrightarrow Q$为永�
 \begin{example}{2023年真题}{}
 构造下面推理的证明。前提：$p\lor q, p\to \neg r, s\to t,\neg s\to r, \neg t$，结论：$q$
 \end{example}
-\vspace{-20pt}
+\vspace{-30pt}
 \begin{align*}
 1\quad& s\to t&\text{前提引入}\\
 2\quad& \neg s\lor t&\text{蕴含等值式（从1）}\\
@@ -252,3 +304,10 @@ $P\Leftrightarrow Q$（逻辑等价）的定义是：$P\leftrightarrow Q$为永�
 9\quad& p\lor q&\text{前提引入}\\
 10\quad& q&\text{析取三段论（从8,9）}
 \end{align*}
+\begin{example}{}{}
+    下面哪些是合取范式？\\
+    A. $q$\quad B. $p\lor q$\quad C. $(p\lor q)\land(\neg p\lor q)$\\
+    下面哪些是同时是析取范式和合取范式？\\
+    A. $p\lor q$\quad B. $q$\quad C. $p\land \neg q$
+\end{example}
+答案：都是ABC

@@ -3,11 +3,42 @@
 \hypersetup{colorlinks=true,linkcolor=black}
 \begin{document}
 \include{cover}
-% 目录部分
+
+% 前言部分
+\frontmatter
+\pagestyle{frontmatter}
+
+% 前言
+\chapter*{前言}
+\addcontentsline{toc}{chapter}{前言}
+
+离散数学作为计算机科学的基础核心课程，涵盖逻辑、集合、关系、图论等众多重要概念。这些抽象的理论不仅是后续课程（如数据结构、算法、数据库、编译原理）的基石，更是培养计算思维和形式化推理能力的关键。
+
+为帮助同学们更好地复习和掌握本课程的核心内容，特编写此份学习笔记。笔记以华南理工大学计算机科学与工程学院使用的《离散数学及其应用》（陈琼，马千里等编著）为主要参考，结合课堂讲授和个人理解，对知识点进行了系统梳理和归纳。
+
+首先感谢陈琼、马千里等老师编著的优秀教材，为学习离散数学提供了系统而全面的框架。同时感谢学院老师们的悉心讲授，使我能够理解并掌握这些抽象概念。
+
+由于本人学识有限，笔记中难免存在疏漏、错误或不妥之处。恳请各位读者不吝指正。期望这份笔记能够为同学们的期末复习提供些许帮助。
+
+\vspace{0.5cm}
+\begin{flushright}
+夏同\\
+于华南理工大学\\
+\today
+\end{flushright}
+
+% 目录
 \newpage
 \ctexset{tocdepth=2}
 \tableofcontents
 \thispagestyle{tocmatter} 
+
+% 环境索引页（暂时禁用）
+\cleardoublepage
+\pagestyle{indexmatter}
+\makeenvindex
+\cleardoublepage
+
 % 正文部分
 \mainmatter
 \pagestyle{mainmatter} % 应用正文样式
