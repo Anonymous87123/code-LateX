@@ -1,4 +1,14 @@
 \chapter{自用}
+\begin{example}{}{}
+    $f(x)$在$[0,1]$可导，且$\displaystyle \int_0^1f(x)\dd x=\dfrac52,\int_0^1 xf(x)\dd x=\dfrac32$,求证在$(0,1)$存在$\xi$使$f'(\xi)=3$.
+\end{example}
+\begin{solution}
+套路式地，设\[F(x)=\displaystyle\int_0^xf(t)\dd t,G(x)=\displaystyle\int_0^xtf(t)\dd t\]则有\[F(0)=G(0)=0,F(1)=\dfrac52,G(1)=\dfrac32\]而问题要证明的结论似乎仅与$f(x)$（以及其导函数，原函数）有关，所以要从$G(x)$中分出$F(x)$或者$f(x)$来，考虑分部积分：
+\[\int_0^1xf(x)\dd x=\int_0^1x\dd F(x)=\left.xF(x)\right|_0^1-\int_0^1F(x)\dd x\Rightarrow \int_0^1F(x)\dd x=\dfrac12\]
+则问题转化为$F(x)$在$(0,1)$上二阶可导，且$F(0)=0,F(1)=\dfrac52,\int_0^1F(x)\dd x=\dfrac12$，求证存在$\xi\in(0,1)$使得$F''(\xi)=3$。又注意到$\displaystyle\int_0^1 x\dd x=\dfrac12$，所以考虑$\varphi(x)=F(x)-x$，则$\varphi(0)=0,\varphi(1)=\dfrac32,\int_0^1\varphi(x)\dd x=0$，求证存在$\xi\in(0,1)$使得$\varphi''(\xi)=3$
+要证$\varphi''(\xi)-3=0$，如果我们可以证明$\varphi'(x)-3x+C=0$
+\end{solution}
+
 \begin{theorem}{双元第一公式}{}
     若$x^2+y^2=a^2$，则
     \[x\dd x+y\dd y=0\Rightarrow\int\frac{\dd x}{y}=\arctan\frac{x}{y}+C\]
