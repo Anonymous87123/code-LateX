@@ -116,7 +116,7 @@
 \lhead{\small\sffamily \team}
 \rhead{\small\sffamily Page \thepage }
 }
-\setlength{\parskip}{0pt}   % ????????????????
+\setlength{\parskip}{.15\baselineskip}   % ????????????
 \setcounter{tocdepth}{3}   
 \let\olditemize\itemize
 \renewcommand{\itemize}{%
