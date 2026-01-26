@@ -54,6 +54,7 @@
 \usepackage{tabularray}   % 增强表格功能
 
 \usepackage[style=numeric,backend=biber]{biblatex}  % APA风格: style=apa
+\usepackage{tocloft}           % 精确控制目录间距
 \ExecuteBibliographyOptions{sorting=none}           % 按引用顺序
 \addbibresource{references.bib}                     % bib参考文献可用kimi生成
 
@@ -126,13 +127,17 @@ Building Preservation Model
 %% Generate the Table of Contents, if it's needed.
 \setcounter{tocdepth}{3}   % 设置目录深度为3级，支持section/subsection/subsubsection
 
-% 调整目录行距，使其与正文普通换行一致
+% 使用tocloft精确控制目录间距
+\setlength{\cftbeforesecskip}{0pt}        % section条目间距
+\setlength{\cftbeforesubsecskip}{0pt}     % subsection条目间距
+\setlength{\cftbeforesubsubsecskip}{0pt}  % subsubsection条目间距
+
+% 调整目录行距
 \begingroup
 \linespread{1.0}\selectfont
-\setlength{\parskip}{0pt}  % 覆盖类文件中的parskip设置，设为0消除一级标题间的额外间距
-
+\setlength{\parskip}{0pt}
+\setlength{\itemsep}{0pt}
 \tableofcontents
-\vspace{-20pt}  % 负消类文件中的5ex间距，将"Contents"标题与目录内容间距缩为1ex
 \endgroup
 
 \newpage

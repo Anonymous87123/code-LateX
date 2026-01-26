@@ -116,7 +116,7 @@
 \lhead{\small\sffamily \team}
 \rhead{\small\sffamily Page \thepage }
 }
-\setlength\parskip{.15\baselineskip}   % 修改紧凑目录
+\setlength{\parskip}{0pt}   % ????????????????
 \setcounter{tocdepth}{3}   
 \let\olditemize\itemize
 \renewcommand{\itemize}{%
@@ -132,7 +132,6 @@
     \centerline{\normalfont\Large\bfseries\sffamily\contentsname
         \@mkboth{%
            \MakeUppercase\contentsname}{\MakeUppercase\contentsname}}%
-    \vskip 5ex%               
     \@starttoc{toc}%
     }
 \setcounter{totalnumber}{4}
