@@ -1,0 +1,758 @@
+\chapter{深度强化学习之策略学习}
+
+\section{引言：为什么需要策略学习？}
+
+\subsection{价值学习方法的局限性}
+
+在前面的学习中，我们探讨了价值学习（Value-Based Learning）方法，如Q-Learning、DQN及其变种。这些方法通过学习价值函数（Value Function）来间接得到策略，其核心思想是：找到最优动作价值函数$Q^*(s,a)$，然后通过贪心策略$\pi^*(s) = \arg\max_a Q^*(s,a)$得到最优策略。
+
+然而，价值学习方法在某些场景下存在明显局限性：
+
+\begin{table}[H]
+\centering
+\caption{价值学习方法的局限性}
+\begin{tabular}{p{0.3\textwidth}p{0.65\textwidth}}
+\toprule
+\textbf{局限性类型} & \textbf{详细说明与示例} \\
+\midrule
+\textbf{大动作空间问题} & 
+\begin{itemize}
+    \item 当动作空间很大时，需要计算每个动作的Q值，计算成本高
+    \item 例如：机器人控制可能有几十个连续关节，每个关节有多个自由度
+    \item 在Atari游戏中，虽然动作空间有限，但某些游戏动作空间也很大
+\end{itemize} \\
+\hline
+\textbf{连续动作空间} & 
+\begin{itemize}
+    \item 连续动作空间中无法通过$\arg\max$选择动作
+    \item 例如：自动驾驶的转向角度是连续值
+    \item 机械臂控制的关节角度是连续值
+    \item 需要额外的优化过程来找到最大化Q值的动作
+\end{itemize} \\
+\hline
+\textbf{随机策略表示困难} & 
+\begin{itemize}
+    \item 某些问题的最优策略本质上是随机的
+    \item 例如：石头剪刀布游戏中，最优策略是以1/3概率选择每个动作
+    \item 部分可观察马尔可夫决策过程（POMDP）中可能需要随机策略
+    \item 探索时也需要一定随机性
+\end{itemize} \\
+\hline
+\textbf{策略表示受限} & 
+\begin{itemize}
+    \item 通常只能表示确定性策略或$\epsilon$-贪婪策略
+    \item 难以表示更复杂的策略形式
+    \item 策略缺乏明确的概率解释
+\end{itemize} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{策略学习的优势}
+
+策略学习（Policy Learning）或策略梯度（Policy Gradient）方法直接对策略进行参数化和优化，具有以下优势：
+
+\begin{itemize}
+    \item \textbf{直接优化目标}：直接优化累积奖励，不通过价值函数作为中间步骤
+    \item \textbf{自然处理连续动作}：策略网络可以直接输出连续动作或动作分布参数
+    \item \textbf{支持随机策略}：策略网络可以直接输出动作的概率分布
+    \item \textbf{更好的收敛性}：在某些问题中，策略梯度方法有更好的收敛保证
+    \item \textbf{探索与利用的自然平衡}：随机策略本身带有探索性质
+\end{itemize}
+
+\subsection{策略学习的基本框架}
+
+策略学习的核心思想是：使用参数化的函数（通常是神经网络）直接表示策略$\pi_\theta(a|s)$，然后通过优化参数$\theta$来最大化期望累积奖励。
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.7\textwidth]{picture/3.png}
+\caption{策略网络：输入状态，输出动作的概率分布}
+\end{figure}
+
+策略网络$\pi_\theta(a|s)$接收状态$s$作为输入，输出动作$a$的概率分布（对于离散动作空间）或动作分布的参数（对于连续动作空间）。
+
+\section{策略梯度定理：理论基础}
+
+\subsection{目标函数的定义}
+
+我们的目标是最大化期望累积奖励。考虑折扣奖励情况，定义目标函数为：
+
+\[
+J(\theta) = \mathbb{E}_{\tau \sim p_\theta(\tau)} \left[ \sum_{t=0}^{T} \gamma^t r_{t+1} \right]
+\]
+
+其中：
+\begin{itemize}
+    \item $\tau = (s_0, a_0, r_1, s_1, a_1, r_2, \dots, s_T, a_T, r_{T+1})$是一条轨迹
+    \item $p_\theta(\tau)$是在策略$\pi_\theta$下生成轨迹$\tau$的概率
+    \item $\gamma \in [0,1]$是折扣因子
+    \item $T$可以是有限的（分幕式任务）或无限的（持续式任务）
+\end{itemize}
+
+\subsection{轨迹概率的分解}
+
+根据马尔可夫决策过程的性质，轨迹概率可以分解为：
+
+\[
+p_\theta(\tau) = p(s_0) \prod_{t=0}^{T} \pi_\theta(a_t|s_t) p(s_{t+1}|s_t, a_t)
+\]
+
+其中：
+\begin{itemize}
+    \item $p(s_0)$是初始状态分布
+    \item $\pi_\theta(a_t|s_t)$是策略在状态$s_t$下选择动作$a_t$的概率
+    \item $p(s_{t+1}|s_t, a_t)$是状态转移概率
+\end{itemize}
+
+\subsection{策略梯度推导}
+
+我们需要计算目标函数$J(\theta)$关于参数$\theta$的梯度。直接计算梯度很困难，因为目标函数中包含对轨迹的期望。策略梯度定理提供了计算这个梯度的方法。
+
+\begin{theorem}[策略梯度定理]
+对于参数化的策略$\pi_\theta(a|s)$，目标函数$J(\theta)$的梯度为：
+\[
+\nabla_\theta J(\theta) = \mathbb{E}_{\tau \sim p_\theta(\tau)} \left[ \left( \sum_{t=0}^{T} \nabla_\theta \log \pi_\theta(a_t|s_t) \right) \left( \sum_{t=0}^{T} \gamma^t r_{t+1} \right) \right]
+\]
+\end{theorem}
+
+\textbf{证明}：
+
+\begin{align*}
+\nabla_\theta J(\theta) &= \nabla_\theta \mathbb{E}_{\tau \sim p_\theta(\tau)} \left[ \sum_{t=0}^{T} \gamma^t r_{t+1} \right] \\
+&= \nabla_\theta \int p_\theta(\tau) R(\tau) d\tau \quad \text{（其中 } R(\tau) = \sum_{t=0}^{T} \gamma^t r_{t+1} \text{）} \\
+&= \int \nabla_\theta p_\theta(\tau) R(\tau) d\tau \\
+&= \int p_\theta(\tau) \nabla_\theta \log p_\theta(\tau) R(\tau) d\tau \quad \text{（使用对数导数技巧）} \\
+&= \mathbb{E}_{\tau \sim p_\theta(\tau)} \left[ \nabla_\theta \log p_\theta(\tau) R(\tau) \right]
+\end{align*}
+
+接下来计算$\nabla_\theta \log p_\theta(\tau)$：
+
+\begin{align*}
+\log p_\theta(\tau) &= \log p(s_0) + \sum_{t=0}^{T} \left[ \log \pi_\theta(a_t|s_t) + \log p(s_{t+1}|s_t, a_t) \right] \\
+\nabla_\theta \log p_\theta(\tau) &= \sum_{t=0}^{T} \nabla_\theta \log \pi_\theta(a_t|s_t)
+\end{align*}
+
+因为$\log p(s_0)$和$\log p(s_{t+1}|s_t, a_t)$与$\theta$无关，所以它们的梯度为零。代入得：
+
+\[
+\nabla_\theta J(\theta) = \mathbb{E}_{\tau \sim p_\theta(\tau)} \left[ \left( \sum_{t=0}^{T} \nabla_\theta \log \pi_\theta(a_t|s_t) \right) R(\tau) \right]
+\]
+
+证毕。
+
+\subsection{直观理解}
+
+策略梯度定理可以直观地理解：
+\begin{itemize}
+    \item $\nabla_\theta \log \pi_\theta(a_t|s_t)$是指数族分布的性质，表示在当前参数下，增加动作$a_t$在状态$s_t$下概率的方向
+    \item $R(\tau)$是整条轨迹的回报，作为权重
+    \item 如果一条轨迹的回报$R(\tau)$很高，就增加这条轨迹中所有动作的概率
+    \item 如果一条轨迹的回报$R(\tau)$很低，就减少这条轨迹中所有动作的概率
+\end{itemize}
+
+\section{REINFORCE算法：蒙特卡洛策略梯度}
+
+\subsection{基本REINFORCE算法}
+
+REINFORCE（REward Increment = Nonnegative Factor × Offset Reinforcement × Characteristic Eligibility）是最基础的策略梯度算法。它直接使用蒙特卡洛采样来估计策略梯度。
+
+\begin{algorithm}[H]
+\caption{REINFORCE算法}
+\begin{algorithmic}[1]
+\REQUIRE 策略参数$\theta$，学习率$\alpha$，折扣因子$\gamma$
+\ENSURE 最优策略参数$\theta^*$
+\STATE 初始化策略参数$\theta$
+\FOR{每个回合（episode）}
+    \STATE 使用当前策略$\pi_\theta$生成一条轨迹：$\tau = (s_0, a_0, r_1, s_1, a_1, r_2, \dots, s_T, a_T, r_{T+1})$
+    \STATE 计算轨迹回报：$R(\tau) = \sum_{t=0}^{T} \gamma^t r_{t+1}$
+    \FOR{$t = 0$ 到 $T$}
+        \STATE 计算梯度：$g_t = \nabla_\theta \log \pi_\theta(a_t|s_t)$
+    \ENDFOR
+    \STATE 估计梯度：$\nabla_\theta J(\theta) \approx \left( \sum_{t=0}^{T} g_t \right) R(\tau)$
+    \STATE 更新参数：$\theta \leftarrow \theta + \alpha \nabla_\theta J(\theta)$
+\ENDFOR
+\end{algorithmic}
+\end{algorithm}
+
+\subsection{REINFORCE的改进：因果关系修正}
+
+基本REINFORCE算法有一个问题：在时刻$t$采取的动作$a_t$不应该影响$t$时刻之前的奖励。因此，我们使用从时刻$t$开始的折扣回报：
+
+\[
+G_t = \sum_{k=t}^{T} \gamma^{k-t} r_{k+1}
+\]
+
+改进后的策略梯度为：
+
+\[
+\nabla_\theta J(\theta) = \mathbb{E}_{\tau \sim p_\theta(\tau)} \left[ \sum_{t=0}^{T} \nabla_\theta \log \pi_\theta(a_t|s_t) G_t \right]
+\]
+
+对应的算法更新为：
+
+\begin{algorithm}[H]
+\caption{REINFORCE with Causality}
+\begin{algorithmic}[1]
+\REQUIRE 策略参数$\theta$，学习率$\alpha$，折扣因子$\gamma$
+\STATE 初始化策略参数$\theta$
+\FOR{每个回合（episode）}
+    \STATE 使用当前策略$\pi_\theta$生成一条轨迹：$\tau = (s_0, a_0, r_1, s_1, a_1, r_2, \dots, s_T, a_T, r_{T+1})$
+    \STATE 计算每个时刻的回报$G_t$：
+    \FOR{$t = T$ 到 $0$（反向计算）}
+        \IF{$t = T$}
+            \STATE $G_T = r_{T+1}$
+        \ELSE
+            \STATE $G_t = r_{t+1} + \gamma G_{t+1}$
+        \ENDIF
+    \ENDFOR
+    \FOR{$t = 0$ 到 $T$}
+        \STATE 计算梯度：$g_t = \nabla_\theta \log \pi_\theta(a_t|s_t)$
+        \STATE 更新参数：$\theta \leftarrow \theta + \alpha g_t G_t$
+    \ENDFOR
+\ENDFOR
+\end{algorithmic}
+\end{algorithm}
+
+\subsection{REINFORCE的改进：引入基线}
+
+REINFORCE算法的另一个问题是高方差。即使使用因果关系修正，回报$G_t$的方差仍然很大。为了降低方差，我们引入基线（baseline）$b(s_t)$：
+
+\[
+\nabla_\theta J(\theta) = \mathbb{E}_{\tau \sim p_\theta(\tau)} \left[ \sum_{t=0}^{T} \nabla_\theta \log \pi_\theta(a_t|s_t) (G_t - b(s_t)) \right]
+\]
+
+基线$b(s_t)$可以是任何不依赖于动作$a_t$的函数。常用的基线是状态值函数$V(s_t)$的估计。可以证明，只要基线不依赖于动作，引入基线不会改变梯度的期望值：
+
+\begin{proof}
+\begin{align*}
+\mathbb{E}_{\tau \sim p_\theta(\tau)} \left[ \sum_{t=0}^{T} \nabla_\theta \log \pi_\theta(a_t|s_t) b(s_t) \right]
+&= \sum_{t=0}^{T} \mathbb{E}_{s_t} \left[ \mathbb{E}_{a_t \sim \pi_\theta(\cdot|s_t)} \left[ \nabla_\theta \log \pi_\theta(a_t|s_t) b(s_t) \right] \right] \\
+&= \sum_{t=0}^{T} \mathbb{E}_{s_t} \left[ b(s_t) \mathbb{E}_{a_t \sim \pi_\theta(\cdot|s_t)} \left[ \nabla_\theta \log \pi_\theta(a_t|s_t) \right] \right] \\
+&= \sum_{t=0}^{T} \mathbb{E}_{s_t} \left[ b(s_t) \cdot 0 \right] = 0
+\end{align*}
+\end{proof}
+
+最简单的基线是平均回报：$b = \frac{1}{N} \sum_{i=1}^{N} R(\tau^i)$。改进后的REINFORCE算法：
+
+\begin{algorithm}[H]
+\caption{REINFORCE with Baseline}
+\begin{algorithmic}[1]
+\REQUIRE 策略参数$\theta$，学习率$\alpha$，折扣因子$\gamma$
+\STATE 初始化策略参数$\theta$
+\FOR{每个回合（episode）}
+    \STATE 使用当前策略$\pi_\theta$生成一条轨迹，计算$G_t$
+    \STATE 计算基线$b$（可以使用多个轨迹的平均回报）
+    \FOR{$t = 0$ 到 $T$}
+        \STATE 计算优势：$A_t = G_t - b$
+        \STATE 计算梯度：$g_t = \nabla_\theta \log \pi_\theta(a_t|s_t)$
+        \STATE 更新参数：$\theta \leftarrow \theta + \alpha g_t A_t$
+    \ENDFOR
+\ENDFOR
+\end{algorithmic}
+\end{algorithm}
+
+\subsection{REINFORCE的优缺点}
+
+\begin{table}[H]
+\centering
+\caption{REINFORCE算法的优缺点}
+\begin{tabular}{p{0.45\textwidth}p{0.45\textwidth}}
+\toprule
+\textbf{优点} & \textbf{缺点} \\
+\midrule
+简单直观，易于实现 & 高方差，训练不稳定 \\
+可以处理连续动作空间 & 样本效率低（需要完整轨迹） \\
+可以学习随机策略 & 更新频率低（每回合更新一次） \\
+理论上有收敛保证 & 对超参数敏感 \\
+探索充分（通过随机策略） & 可能收敛到局部最优 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Actor-Critic方法：结合价值函数}
+
+\subsection{Actor-Critic基本思想}
+
+REINFORCE算法使用蒙特卡洛方法估计回报$G_t$，虽然无偏但方差大。Actor-Critic方法引入价值函数（Critic）来估计优势函数，从而降低方差。
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{picture/4.png}
+\caption{Actor-Critic框架示意图}
+\end{figure}
+
+Actor-Critic方法包含两个组件：
+\begin{itemize}
+    \item \textbf{Actor（演员）}：策略网络$\pi_\theta(a|s)$，负责选择动作
+    \item \textbf{Critic（评论家）}：价值网络$V_\phi(s)$，负责评估状态的价值
+\end{itemize}
+
+\subsection{优势函数（Advantage Function）}
+
+在Actor-Critic中，我们使用优势函数$A(s_t, a_t)$替代回报$G_t$：
+
+\[
+A(s_t, a_t) = Q(s_t, a_t) - V(s_t)
+\]
+
+其中$Q(s_t, a_t)$是动作价值函数，$V(s_t)$是状态价值函数。优势函数表示在状态$s_t$下执行动作$a_t$相对于平均水平的优势。
+
+在实际中，我们使用时序差分（TD）误差来估计优势函数：
+
+\[
+A(s_t, a_t) \approx r_{t+1} + \gamma V(s_{t+1}) - V(s_t)
+\]
+
+\subsection{Actor-Critic算法}
+
+\begin{algorithm}[H]
+\caption{Actor-Critic算法}
+\begin{algorithmic}[1]
+\REQUIRE 策略参数$\theta$，价值参数$\phi$，学习率$\alpha_\theta, \alpha_\phi$，折扣因子$\gamma$
+\STATE 初始化策略参数$\theta$和价值参数$\phi$
+\FOR{每个时间步}
+    \STATE 在状态$s_t$，根据策略$\pi_\theta(\cdot|s_t)$选择动作$a_t$
+    \STATE 执行动作$a_t$，获得奖励$r_{t+1}$，转移到新状态$s_{t+1}$
+    \STATE 计算TD误差：$\delta_t = r_{t+1} + \gamma V_\phi(s_{t+1}) - V_\phi(s_t)$
+    \STATE 更新Critic：$\phi \leftarrow \phi + \alpha_\phi \delta_t \nabla_\phi V_\phi(s_t)$
+    \STATE 更新Actor：$\theta \leftarrow \theta + \alpha_\theta \nabla_\theta \log \pi_\theta(a_t|s_t) \delta_t$
+\ENDFOR
+\end{algorithmic}
+\end{algorithm}
+
+\subsection{Actor-Critic的优缺点}
+
+\begin{table}[H]
+\centering
+\caption{Actor-Critic算法的优缺点}
+\begin{tabular}{p{0.45\textwidth}p{0.45\textwidth}}
+\toprule
+\textbf{优点} & \textbf{缺点} \\
+\midrule
+方差低，训练稳定 & 有偏差（依赖价值函数估计） \\
+样本效率高（单步更新） & 需要同时训练两个网络 \\
+可以处理连续任务 & 可能不稳定（两个网络相互影响） \\
+更新频率高（每一步更新） & 超参数更多（两个学习率） \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{A2C和A3C：并行化Actor-Critic}
+
+\subsection{优势Actor-Critic（A2C）}
+
+A2C（Advantage Actor-Critic）是Actor-Critic的改进版本，主要改进包括：
+
+\begin{enumerate}
+    \item \textbf{明确使用优势函数}：使用$A(s_t, a_t) = r_{t+1} + \gamma V(s_{t+1}) - V(s_t)$
+    \item \textbf{多步回报}：使用n步回报来估计优势函数
+    \item \textbf{并行训练}：多个环境并行收集数据
+\end{enumerate}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.25\textwidth]{picture/A2C.png}
+\caption{A2C架构示意图：多个Worker并行收集数据，同步更新}
+\end{figure}
+
+\subsection{A2C算法}
+
+\begin{algorithm}[H]
+\caption{A2C算法}
+\begin{algorithmic}[1]
+\REQUIRE 全局策略参数$\theta$，全局价值参数$\phi$，学习率$\alpha_\theta, \alpha_\phi$，折扣因子$\gamma$，Worker数量$N$
+\STATE 初始化全局参数$\theta, \phi$
+\REPEAT
+    \STATE 重置所有Worker的梯度：$d\theta \leftarrow 0$, $d\phi \leftarrow 0$
+    \STATE 同步所有Worker参数：$\theta_i \leftarrow \theta$, $\phi_i \leftarrow \phi$
+    \FOR{每个Worker $i = 1$ 到 $N$}
+        \STATE Worker $i$运行策略$\pi_{\theta_i}$收集轨迹数据
+        \STATE 计算优势估计$A_t$（可以使用n步回报或GAE）
+        \STATE 计算策略梯度：$d\theta_i = \sum_t \nabla_{\theta_i} \log \pi_{\theta_i}(a_t|s_t) A_t$
+        \STATE 计算价值梯度：$d\phi_i = \sum_t \nabla_{\phi_i} (V_{\phi_i}(s_t) - R_t)^2$
+    \ENDFOR
+    \STATE 汇总梯度：$d\theta = \frac{1}{N} \sum_i d\theta_i$, $d\phi = \frac{1}{N} \sum_i d\phi_i$
+    \STATE 更新全局参数：$\theta \leftarrow \theta + \alpha_\theta d\theta$, $\phi \leftarrow \phi + \alpha_\phi d\phi$
+\UNTIL{收敛}
+\end{algorithmic}
+\end{algorithm}
+
+\subsection{异步优势Actor-Critic（A3C）}
+
+A3C（Asynchronous Advantage Actor-Critic）是A2C的异步版本。在A3C中，每个Worker异步地更新全局网络参数，不需要等待其他Worker。
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.6\textwidth]{picture/A3C.png}
+\caption{A3C架构示意图：多个Worker异步更新全局网络}
+\end{figure}
+
+A3C的关键特点：
+\begin{itemize}
+    \item \textbf{异步更新}：Worker独立运行，不需要同步
+    \item \textbf{探索多样性}：不同Worker可能处于不同状态，增加探索
+    \item \textbf{硬件效率}：充分利用多核CPU
+\end{itemize}
+
+\subsection{A2C vs A3C比较}
+
+\begin{table}[H]
+\centering
+\caption{A2C与A3C比较}
+\begin{tabular}{p{0.3\textwidth}p{0.3\textwidth}p{0.3\textwidth}}
+\toprule
+\textbf{特性} & \textbf{A2C} & \textbf{A3C} \\
+\midrule
+\textbf{更新方式} & 同步 & 异步 \\
+\textbf{通信开销} & 高（需要同步） & 低（异步） \\
+\textbf{实现复杂度} & 较低 & 较高 \\
+\textbf{收敛速度} & 稳定但可能较慢 & 可能更快但波动大 \\
+\textbf{硬件利用} & 需要同步，效率较低 & 充分利用多核，效率高 \\
+\textbf{探索多样性} & 一般 & 好（不同Worker不同状态） \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{TRPO：置信域策略优化}
+
+\subsection{TRPO的基本思想}
+
+TRPO（Trust Region Policy Optimization）的核心思想是：在策略更新时，限制新策略与旧策略的差异，确保每次更新都在一个"可信赖"的区域内，从而保证策略性能单调提升。
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.7\textwidth]{picture/5.png}
+\caption{TRPO的置信域优化：限制策略更新幅度}
+\end{figure}
+
+\subsection{TRPO的数学形式}
+
+TRPO将策略优化问题形式化为带约束的优化问题：
+
+\begin{align*}
+\max_{\theta} & \quad \mathbb{E}_{s \sim \rho_{\theta_{\text{old}}}, a \sim \pi_{\theta_{\text{old}}}} \left[ \frac{\pi_\theta(a|s)}{\pi_{\theta_{\text{old}}}(a|s)} A_{\theta_{\text{old}}}(s, a) \right] \\
+\text{s.t.} & \quad \mathbb{E}_{s \sim \rho_{\theta_{\text{old}}}} \left[ D_{\text{KL}}(\pi_{\theta_{\text{old}}}(\cdot|s) \| \pi_\theta(\cdot|s)) \right] \leq \delta
+\end{align*}
+
+其中：
+\begin{itemize}
+    \item $\rho_{\theta_{\text{old}}}$是旧策略下的状态分布
+    \item $D_{\text{KL}}$是KL散度，度量两个策略的差异
+    \item $\delta$是置信域半径，限制策略更新的幅度
+\end{itemize}
+
+\subsection{重要性采样（Importance Sampling）}
+
+TRPO使用重要性采样来利用旧策略收集的数据评估新策略：
+
+\[
+\mathbb{E}_{a \sim \pi_\theta(\cdot|s)} [A(s,a)] = \mathbb{E}_{a \sim \pi_{\theta_{\text{old}}}(\cdot|s)} \left[ \frac{\pi_\theta(a|s)}{\pi_{\theta_{\text{old}}}(a|s)} A(s,a) \right]
+\]
+
+重要性采样比率$\frac{\pi_\theta(a|s)}{\pi_{\theta_{\text{old}}}(a|s)}$衡量了新策略与旧策略在动作选择上的差异。
+
+\subsection{代理目标函数（Surrogate Objective）}
+
+TRPO优化的是代理目标函数：
+
+\[
+L(\theta) = \mathbb{E}_{s \sim \rho_{\theta_{\text{old}}}, a \sim \pi_{\theta_{\text{old}}}} \left[ \frac{\pi_\theta(a|s)}{\pi_{\theta_{\text{old}}}(a|s)} A_{\theta_{\text{old}}}(s,a) \right]
+\]
+
+这个代理目标函数是原始目标函数$J(\theta)$的一阶近似。
+
+\subsection{TRPO的求解}
+
+TRPO的约束优化问题通过以下步骤求解：
+
+\begin{enumerate}
+    \item 线性化目标函数：$L(\theta) \approx g^T (\theta - \theta_{\text{old}})$
+    \item 二次化约束：$\frac{1}{2} (\theta - \theta_{\text{old}})^T H (\theta - \theta_{\text{old}}) \leq \delta$
+    \item 求解约束优化问题：$\theta^* = \theta_{\text{old}} + \sqrt{\frac{2\delta}{g^T H^{-1} g}} H^{-1} g$
+\end{enumerate}
+
+其中$g = \nabla_\theta L(\theta)|_{\theta=\theta_{\text{old}}}$是梯度，$H$是KL散度的Hessian矩阵（Fisher信息矩阵）。
+
+在实际实现中，使用共轭梯度法计算$H^{-1} g$，避免直接计算和存储$H^{-1}$。
+
+\subsection{TRPO算法}
+
+\begin{algorithm}[H]
+\caption{TRPO算法}
+\begin{algorithmic}[1]
+\REQUIRE 初始策略参数$\theta_0$，置信域半径$\delta$，回溯系数$\alpha$
+\FOR{$k = 0, 1, 2, \dots$}
+    \STATE 使用策略$\pi_{\theta_k}$收集轨迹数据
+    \STATE 估计优势函数$A_{\theta_k}(s,a)$
+    \STATE 计算代理目标$L(\theta)$和其梯度$g$
+    \STATE 使用共轭梯度法计算更新方向$v \approx H^{-1} g$
+    \STATE 计算步长$\beta = \sqrt{\frac{2\delta}{v^T H v}}$
+    \STATE 候选参数：$\theta_{\text{candidate}} = \theta_k + \beta v$
+    \STATE 回溯线性搜索：找到最大的$\alpha^j$使得$L(\theta_k + \alpha^j \beta v) \geq L(\theta_k)$且满足KL约束
+    \STATE 更新参数：$\theta_{k+1} = \theta_k + \alpha^j \beta v$
+\ENDFOR
+\end{algorithmic}
+\end{algorithm}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.5\textwidth]{picture/trpo.png}
+\caption{TRPO的置信域优化过程}
+\end{figure}
+
+\subsection{TRPO的优缺点}
+
+\begin{table}[H]
+\centering
+\caption{TRPO算法的优缺点}
+\begin{tabular}{p{0.25\textwidth}p{0.45\textwidth}}
+\toprule
+\textbf{优点} & \textbf{缺点} \\
+\midrule
+理论保证单调提升 & 计算复杂，需要二阶优化 \\
+更新稳定，避免策略崩溃 & 实现难度大 \\
+适用于复杂任务 & 与某些网络结构不兼容（如dropout） \\
+样本效率较高 & 超参数敏感（置信域半径$\delta$） \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{PPO：近端策略优化}
+
+\subsection{PPO的基本思想}
+
+PPO（Proximal Policy Optimization）是TRPO的简化版本，通过修改目标函数来实现策略更新的约束，避免了TRPO中复杂的二阶优化。
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.3\textwidth]{picture/6.png}
+\caption{PPO的裁剪机制：限制重要性采样比率}
+\end{figure}
+
+\subsection{PPO-Clip目标函数}
+
+PPO-Clip通过裁剪重要性采样比率来限制策略更新：
+
+\[
+L^{\text{CLIP}}(\theta) = \mathbb{E}_{t} \left[ \min\left( r_t(\theta) A_t, \text{clip}(r_t(\theta), 1-\epsilon, 1+\epsilon) A_t \right) \right]
+\]
+
+其中：
+\begin{itemize}
+    \item $r_t(\theta) = \frac{\pi_\theta(a_t|s_t)}{\pi_{\theta_{\text{old}}}(a_t|s_t)}$是重要性采样比率
+    \item $A_t$是优势函数估计
+    \item $\epsilon$是裁剪参数，通常取0.1或0.2
+    \item $\text{clip}(x, a, b)$将$x$限制在$[a, b]$区间内
+\end{itemize}
+
+\subsection{PPO-Clip的直观理解}
+
+\begin{itemize}
+    \item 当$A_t > 0$时，动作$a_t$优于平均水平，我们希望增加其概率
+    \begin{itemize}
+        \item 如果$r_t(\theta) < 1+\epsilon$，使用$r_t(\theta)A_t$
+        \item 如果$r_t(\theta) \geq 1+\epsilon$，使用$(1+\epsilon)A_t$，限制更新幅度
+    \end{itemize}
+    \item 当$A_t < 0$时，动作$a_t$劣于平均水平，我们希望减少其概率
+    \begin{itemize}
+        \item 如果$r_t(\theta) > 1-\epsilon$，使用$r_t(\theta)A_t$
+        \item 如果$r_t(\theta) \leq 1-\epsilon$，使用$(1-\epsilon)A_t$，限制更新幅度
+    \end{itemize}
+\end{itemize}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.3\textwidth]{picture/7.png}
+\caption{PPO-Clip目标函数的两种情况}
+\end{figure}
+
+\subsection{PPO-Penalty目标函数}
+
+PPO-Penalty通过在目标函数中添加KL散度惩罚项来约束策略更新：
+
+\[
+L^{\text{KL}}(\theta) = \mathbb{E}_{t} \left[ r_t(\theta) A_t - \beta D_{\text{KL}}(\pi_{\theta_{\text{old}}}(\cdot|s_t) \| \pi_\theta(\cdot|s_t)) \right]
+\]
+
+其中$\beta$是自适应参数，根据KL散度的大小调整。
+
+\subsection{广义优势估计（GAE）}
+
+GAE（Generalized Advantage Estimation）是一种权衡偏差和方差的优势估计方法：
+
+\[
+\hat{A}_t^{\text{GAE}(\gamma, \lambda)} = \sum_{l=0}^{\infty} (\gamma \lambda)^l \delta_{t+l}
+\]
+
+其中$\delta_t = r_t + \gamma V(s_{t+1}) - V(s_t)$是TD误差。
+
+GAE的参数$\lambda$控制偏差-方差权衡：
+\begin{itemize}
+    \item $\lambda = 0$：$\hat{A}_t = \delta_t$，方差小但偏差大
+    \item $\lambda = 1$：$\hat{A}_t = \sum_{l=0}^{\infty} \gamma^l \delta_{t+l}$，偏差小但方差大
+    \item 通常取$\lambda = 0.95$或$0.97$，平衡偏差和方差
+\end{itemize}
+
+\subsection{PPO算法}
+
+\begin{algorithm}[H]
+\caption{PPO-Clip算法}
+\begin{algorithmic}[1]
+\REQUIRE 初始策略参数$\theta_0$，初始价值参数$\phi_0$，裁剪参数$\epsilon$，学习率$\alpha$
+\FOR{$k = 0, 1, 2, \dots$}
+    \STATE 使用策略$\pi_{\theta_k}$收集轨迹数据$\mathcal{D}_k$
+    \STATE 计算优势估计$\hat{A}_t$（使用GAE）
+    \STATE 计算目标价值$\hat{V}_t = \hat{A}_t + V_{\phi_k}(s_t)$
+    \STATE 优化PPO-Clip目标函数（多个epoch）：
+    \[
+    \theta_{k+1} = \arg\max_{\theta} \frac{1}{|\mathcal{D}_k|T} \sum_{\tau \in \mathcal{D}_k} \sum_{t=0}^{T} \min\left( r_t(\theta) \hat{A}_t, \text{clip}(r_t(\theta), 1-\epsilon, 1+\epsilon) \hat{A}_t \right)
+    \]
+    \STATE 优化价值函数（多个epoch）：
+    \[
+    \phi_{k+1} = \arg\min_{\phi} \frac{1}{|\mathcal{D}_k|T} \sum_{\tau \in \mathcal{D}_k} \sum_{t=0}^{T} \left( V_\phi(s_t) - \hat{V}_t \right)^2
+    \]
+\ENDFOR
+\end{algorithmic}
+\end{algorithm}
+
+\subsection{联合损失函数}
+
+在实际实现中，PPO通常使用联合损失函数，同时优化策略和价值函数：
+
+\[
+L(\theta, \phi) = L^{\text{CLIP}}(\theta) - c_1 L^{\text{VF}}(\phi) + c_2 S[\pi_\theta](s_t)
+\]
+
+其中：
+\begin{itemize}
+    \item $L^{\text{CLIP}}(\theta)$是PPO-Clip策略损失
+    \item $L^{\text{VF}}(\phi) = (V_\phi(s_t) - V_t^{\text{target}})^2$是价值函数损失
+    \item $S[\pi_\theta](s_t)$是策略熵，鼓励探索
+    \item $c_1, c_2$是系数，平衡不同项
+\end{itemize}
+
+\subsection{PPO的优缺点}
+
+\begin{table}[H]
+\centering
+\caption{PPO算法的优缺点}
+\begin{tabular}{p{0.45\textwidth}p{0.45\textwidth}}
+\toprule
+\textbf{优点} & \textbf{缺点} \\
+\midrule
+实现简单，计算效率高 & 理论保证较弱 \\
+性能稳定，适用于多种任务 & 超参数较多（$\epsilon, c_1, c_2, \lambda$等） \\
+样本效率高 & 对超参数敏感 \\
+与多种网络结构兼容 & 可能收敛到局部最优 \\
+支持连续和离散动作空间 & 需要调整学习率调度 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{策略学习方法的比较与应用}
+
+\subsection{方法对比}
+
+\begin{table}[H]
+\centering
+\caption{策略学习方法对比}
+\begin{tabular}{p{0.15\textwidth}p{0.2\textwidth}p{0.2\textwidth}p{0.2\textwidth}p{0.2\textwidth}}
+\toprule
+\textbf{方法} & \textbf{核心思想} & \textbf{优点} & \textbf{缺点} & \textbf{适用场景} \\
+\midrule
+REINFORCE & 蒙特卡洛策略梯度 & 简单，无偏 & 高方差，低效 & 简单任务，探索算法 \\
+Actor-Critic & 价值函数引导 & 方差低，高效 & 有偏差，不稳定 & 中等复杂度任务 \\
+A2C/A3C & 并行化AC & 稳定，高效 & 实现复杂 & 需要并行化的任务 \\
+TRPO & 置信域优化 & 理论保证，稳定 & 计算复杂 & 高精度控制任务 \\
+PPO & 裁剪目标函数 & 简单高效，稳定 & 超参数多 & 通用强化学习任务 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{选择指南}
+
+\begin{enumerate}
+    \item \textbf{简单任务}：可以从REINFORCE或Actor-Critic开始
+    \item \textbf{中等复杂度任务}：推荐使用A2C或PPO
+    \item \textbf{复杂控制任务}：考虑TRPO或PPO
+    \item \textbf{需要高样本效率}：使用PPO with GAE
+    \item \textbf{计算资源有限}：使用PPO（实现简单）
+    \item \textbf{需要理论保证}：使用TRPO
+\end{enumerate}
+
+\subsection{实际应用建议}
+
+\begin{itemize}
+    \item \textbf{网络架构}：
+    \begin{itemize}
+        \item 使用共享主干网络提取特征
+        \item 策略头输出动作分布参数
+        \item 价值头输出状态价值
+        \item 适当使用归一化技术
+    \end{itemize}
+    \item \textbf{超参数调优}：
+    \begin{itemize}
+        \item 学习率：通常$10^{-4}$到$10^{-3}$
+        \item 折扣因子$\gamma$：0.99（长期任务）或0.95（短期任务）
+        \item PPO裁剪参数$\epsilon$：0.1到0.3
+        \item GAE参数$\lambda$：0.9到0.99
+        \item 批量大小：128到2048
+    \end{itemize}
+    \item \textbf{训练技巧}：
+    \begin{itemize}
+        \item 使用多个环境并行收集数据
+        \item 适当增加熵奖励鼓励探索
+        \item 使用学习率衰减
+        \item 监控KL散度避免策略崩溃
+    \end{itemize}
+\end{itemize}
+
+\section{总结与展望}
+
+\subsection{策略学习的发展历程}
+
+策略学习方法经历了从简单到复杂的发展过程：
+
+\begin{itemize}
+    \item \textbf{早期}：REINFORCE算法提出策略梯度基本思想
+    \item \textbf{发展}：Actor-Critic方法引入价值函数降低方差
+    \item \textbf{成熟}：TRPO提供理论保证的稳定优化
+    \item \textbf{普及}：PPO简化实现，成为实际应用标准
+    \item \textbf{前沿}：分布策略梯度，元策略学习等
+\end{itemize}
+
+\subsection{关键技术创新}
+
+\begin{enumerate}
+    \item \textbf{重要性采样}：允许重用旧数据，提高样本效率
+    \item \textbf{优势函数}：降低梯度方差，提高训练稳定性
+    \item \textbf{置信域方法}：限制策略更新幅度，避免策略崩溃
+    \item \textbf{裁剪技术}：简化置信域约束，提高计算效率
+    \item \textbf{并行化}：提高数据收集效率，加速训练
+    \item \textbf{熵奖励}：鼓励探索，防止过早收敛
+\end{enumerate}
+
+\subsection{未来发展方向}
+
+\begin{enumerate}
+    \item \textbf{样本效率提升}：结合模型学习，元学习
+    \item \textbf{探索策略改进}：好奇心驱动，内在动机
+    \item \textbf{多任务学习}：共享表示，迁移学习
+    \item \textbf{分层策略}：技能学习，选项发现
+    \item \textbf{安全约束}：约束策略优化，安全探索
+    \item \textbf{分布式训练}：大规模并行，分布式优化
+\end{enumerate}
+
+\subsection{学习建议}
+
+\begin{enumerate}
+    \item \textbf{理论基础}：深入理解策略梯度定理，重要性采样
+    \item \textbf{实践能力}：实现基本算法，调试超参数
+    \item \textbf{工具掌握}：熟练使用RL框架（如Stable Baselines3）
+    \item \textbf{代码阅读}：学习开源实现，理解细节
+    \item \textbf{论文跟踪}：关注最新进展，学习新方法
+\end{enumerate}
+
+策略学习作为强化学习的核心方法之一，已经在游戏、机器人控制、自然语言处理等领域取得了显著成功。理解策略学习的原理和方法，掌握PPO等现代算法，对于解决实际强化学习问题具有重要意义。
+

@@ -1,0 +1,1169 @@
+\chapter{神经网络与深度学习基础}
+
+\section{启发性思考}
+深度学习的核心思想是模仿人脑处理信息的方式。人脑中约有860亿个神经元，每个神经元通过树突接收信号，在细胞体整合，若超过某个阈值则通过轴突释放信号（电脉冲）至其他神经元。这一“全有或全无”的激发模式启发了最早的数学模型——\textbf{人工神经元}（或称感知器）。
+
+本章将系统学习：
+\begin{itemize}
+    \item 人工神经元的基本组成：\textbf{权重}、\textbf{偏置}、\textbf{激活函数}
+    \item 几种经典激活函数（Sigmoid, tanh, ReLU）的特性与对比
+    \item \textbf{前馈神经网络}的结构与矩阵表示
+    \item \textbf{Softmax函数}及其温度系数的妙用
+    \item 神经网络训练的完整流程：\textbf{前向传播}、\textbf{损失函数}、\textbf{梯度下降}与核心算法——\textbf{反向传播（Backpropagation, BP）}
+\end{itemize}
+
+\section{神经元：深度学习的基石}
+
+\subsection{数学模型}
+一个神经元接收 $n$ 个输入 $x_1, x_2, \ldots, x_n$，每个输入对应一个权重 $w_i$，并有一个偏置 $b$。神经元首先计算加权和（称为\textbf{预激活值}）：
+\[
+z = \sum_{i=1}^{n} w_i x_i + b
+\]
+然后将 $z$ 送入一个非线性函数 $f$，得到该神经元的\textbf{激活输出}：
+\[
+a = f(z)
+\]
+
+\subsection{关键组件详解}
+
+\begin{definition}[权重（Weight）]
+权重 $w_i$ 衡量第 $i$ 个输入对神经元输出的\textbf{重要性}或\textbf{贡献度}。在训练过程中，权重会被不断调整，以学习输入与输出之间的映射关系。
+\begin{itemize}
+    \item \textbf{理性理解}：权重是线性变换的参数，决定了输入空间到输出空间的投影方向与尺度。
+    \item \textbf{感性理解}：好比人际交往中，不同朋友说的话对你决策的影响程度不同，权重就是这种“信任度”或“影响力”的量化。
+\end{itemize}
+\end{definition}
+
+\begin{definition}[偏置（Bias）]
+偏置 $b$ 是一个常数项，它\textbf{平移}了激活函数的阈值。即使所有输入为零，神经元也可能被激活（若 $b > 0$）。
+\begin{itemize}
+    \item \textbf{理性理解}：偏置提供了模型的平移自由度，使决策边界不必通过原点，增强了模型的表达能力。
+    \item \textbf{感性理解}：可以理解为一个人的“先天倾向”或“初始立场”。例如，即使没有任何外部信息（输入为零），一个人也可能因为内在性格（偏置）而倾向于做出某个决定。
+\end{itemize}
+\end{definition}
+
+\begin{definition}[激活函数（Activation Function）]
+激活函数 $f$ 引入了\textbf{非线性}。如果没有非线性，无论堆叠多少层，整个网络仍然等价于一个线性模型，无法学习复杂的模式。
+\begin{itemize}
+    \item \textbf{理性理解}：非线性变换是神经网络能够成为“通用函数逼近器”的关键。
+    \item \textbf{感性理解}：就像人脑神经元对输入信号的响应不是简单的线性叠加，而是有一个“激发”或“抑制”的非线性过程。
+\end{itemize}
+\end{definition}
+
+\section{激活函数：从Sigmoid到ReLU}
+
+\subsection{经典激活函数}
+
+\subsubsection{Sigmoid函数}
+\[
+\sigma(z) = \frac{1}{1 + e^{-z}} \in (0, 1)
+\]
+\begin{itemize}
+    \item \textbf{优点}：输出平滑、连续，导数易于计算 $\sigma'(z) = \sigma(z)(1-\sigma(z))$。输出范围 $(0,1)$ 适合表示概率。
+    \item \textbf{缺点}：
+    \begin{enumerate}
+        \item \textbf{梯度消失（Vanishing Gradient）}：当 $|z|$ 很大时，导数接近0。在深层网络中，梯度反向传播时连乘会导致前面层的梯度极小，参数更新缓慢甚至停滞。
+        \item 输出不是零中心的（均值>0），可能导致后续层的输入发生偏移，影响梯度下降效率。
+        \item 计算涉及指数，相对较慢。
+    \end{enumerate}
+    \item \textbf{用途}：二分类问题的输出层（表示概率）。
+\end{itemize}
+
+\subsubsection{双曲正切函数（tanh）}
+\[
+\tanh(z) = \frac{e^{z} - e^{-z}}{e^{z} + e^{-z}} \in (-1, 1)
+\]
+\begin{itemize}
+    \item \textbf{优点}：输出是\textbf{零中心}的（均值为0），这通常有助于加速收敛。同样平滑连续。
+    \item \textbf{缺点}：同样存在梯度消失问题。
+    \item \textbf{用途}：适合需要输出有界且零中心的场景，如RNN的隐藏状态。
+\end{itemize}
+
+\subsubsection{线性整流单元（ReLU）}
+\[
+\text{ReLU}(z) = \max(0, z)
+\]
+\begin{itemize}
+    \item \textbf{优点}：
+    \begin{enumerate}
+        \item \textbf{计算高效}：只需比较和取最大值。
+        \item \textbf{缓解梯度消失}：在正半轴导数为1，梯度可以无衰减地反向传播。
+        \item 在实践中，ReLU网络通常比Sigmoid/tanh网络\textbf{收敛快得多}。
+    \end{enumerate}
+    \item \textbf{缺点}：
+    \begin{enumerate}
+        \item \textbf{死亡ReLU问题（Dying ReLU）}：一旦输入落入负半轴（例如，由于大的负偏置或激烈的权重更新），输出和梯度都为零，神经元“死亡”，不再参与后续学习。
+        \item 输出非零中心，且无上界，可能导致梯度爆炸（需配合适当初始化与归一化）。
+    \end{enumerate}
+\end{itemize}
+
+\subsection{激活函数对比与进阶选择}
+
+\begin{table}[h]
+\centering
+\caption{激活函数对比}
+\begin{tabular}{ccccc}
+\textbf{函数} & \textbf{输出范围} & \textbf{零中心} & \textbf{梯度消失} & \textbf{计算速度} \\
+Sigmoid & (0,1) & 否 & 严重 & 慢 \\
+tanh & (-1,1) & \textbf{是} & 严重 & 慢 \\
+ReLU & [0, $\infty$) & 否 & \textbf{缓解} & \textbf{极快} \\
+\end{tabular}
+\end{table}
+
+\subsubsection{ReLU的改进变体}
+\begin{itemize}
+    \item \textbf{Leaky ReLU}：$f(z) = \max(\alpha z, z)$，其中 $\alpha$ 是一个小的正数（如0.01）。在负半轴保留一个微小斜率，避免神经元完全死亡。
+    \item \textbf{PReLU（Parametric ReLU）}：将 $\alpha$ 作为可学习参数，让网络自行决定负半轴的斜率。
+    \item \textbf{ELU（Exponential Linear Unit）}：$f(z) = \begin{cases} z, & z>0 \\ \alpha(e^z-1), & z \leq 0 \end{cases}$。负半轴平滑渐近，输出接近零中心。
+    \item \textbf{GELU / SiLU（Sigmoid Linear Unit）}：$f(z) = z \cdot \sigma(z)$。这是一种平滑的非单调激活函数，被BERT、GPT等Transformer模型采用，性能优异。
+\end{itemize}
+
+\textbf{实践建议}：现代深度网络中，ReLU及其变体（尤其是GELU）已成为隐藏层的默认选择。Sigmoid多用于输出层（二分类概率），tanh在特定架构（如LSTM）中仍有应用。
+
+\section{前馈神经网络：层叠的威力}
+
+\subsection{网络结构}
+前馈神经网络（Feed-forward Neural Network）由多层神经元组成，信息\textbf{单向流动}：从输入层，经过若干隐藏层，到达输出层。
+\begin{itemize}
+    \item \textbf{不存在循环或反馈}（有循环的模型是循环神经网络RNN）。
+    \item 每一层的神经元接收前一层所有神经元的输出作为输入，并输出给下一层所有神经元（全连接）。
+\end{itemize}
+
+\subsection{优雅高效的矩阵表示}
+设网络共 $L$ 层（输入层为第0层，输出层为第 $L$ 层）。第 $l$ 层有 $d^{(l)}$ 个神经元。
+\begin{itemize}
+    \item 第 $l$ 层的\textbf{权重矩阵} $W^{(l)} \in \mathbb{R}^{d^{(l)} \times d^{(l-1)}}$：$W_{ij}^{(l)}$ 表示第 $l-1$ 层第 $j$ 个神经元到第 $l$ 层第 $i$ 个神经元的连接权重。
+    \item 第 $l$ 层的\textbf{偏置向量} $b^{(l)} \in \mathbb{R}^{d^{(l)}}$。
+    \item 第 $l$ 层的\textbf{输入}（即前一层的激活输出）记为 $a^{(l-1)} \in \mathbb{R}^{d^{(l-1)}}$。
+\end{itemize}
+则第 $l$ 层的\textbf{预激活值} $z^{(l)}$ 和\textbf{激活输出} $a^{(l)}$ 为：
+\[
+z^{(l)} = W^{(l)} a^{(l-1)} + b^{(l)}, \quad a^{(l)} = f^{(l)}(z^{(l)})
+\]
+其中 $f^{(l)}$ 是第 $l$ 层的激活函数。这种矩阵形式极其适合GPU并行计算。
+
+\subsection{Softmax函数：多分类的“裁判”}
+
+\subsubsection{标准Softmax}
+对于 $K$ 类的分类问题，输出层通常有 $K$ 个神经元，输出一个未经归一化的得分向量（logits）$z \in \mathbb{R}^K$。Softmax将其转换为一个合法的概率分布：
+\[
+\text{Softmax}(z)_i = \frac{e^{z_i}}{\sum_{j=1}^{K} e^{z_j}}, \quad i=1,\ldots,K
+\]
+\begin{itemize}
+    \item \textbf{指数作用}：将实数映射到正数，并\textbf{放大分数差距}（高分更高，低分更低）。
+    \item \textbf{归一化}：确保所有输出之和为1，符合概率公理。
+    \item \textbf{用途}：多分类任务的输出层，常与交叉熵损失函数搭配。
+\end{itemize}
+
+\subsubsection{温度系数（Temperature）}
+引入温度系数 $T>0$，控制概率分布的“软硬”程度：
+\[
+\text{Softmax}(z, T)_i = \frac{e^{z_i / T}}{\sum_{j=1}^{K} e^{z_j / T}}
+\]
+\begin{itemize}
+    \item $T=1$：标准Softmax。
+    \item $T>1$（高温）：概率分布更“平坦”，模型对各类别的不确定性增加。常用于\textbf{知识蒸馏}（Teacher模型使用高温度产生软标签，Student模型学习之）。
+    \item $T<1$（低温）：概率分布更“尖锐”，模型置信度更高。当 $T \to 0^+$ 时，Softmax退化为argmax（即one-hot向量）。
+\end{itemize}
+
+\section{神经网络的训练：让模型学会思考}
+
+训练神经网络本质是寻找一组参数（所有权重和偏置），使模型在训练数据上的预测损失最小。这是一个典型的优化问题。
+
+\subsection{步骤一：定义网络结构}
+\begin{itemize}
+    \item \textbf{输入层维度}：由数据特征决定。
+    \item \textbf{隐藏层数量与宽度}：决定模型容量。层数越多、每层神经元越多，模型拟合复杂函数的能力越强，但也更容易过拟合、计算成本更高。
+    \item \textbf{输出层维度}：由任务决定（如二分类为1，多分类为类别数，回归为1）。
+\end{itemize}
+\textbf{数据预处理}：通常将输入特征标准化（均值0，方差1）或归一化到 $[0,1]$，以加速收敛、提升性能。
+
+\subsection{步骤二：定义损失函数（Loss Function）}
+损失函数量化模型预测 $\hat{y}$ 与真实标签 $y$ 之间的差距。
+\begin{itemize}
+    \item \textbf{均方误差（MSE）}：用于回归任务。
+    \[
+    J(W,b) = \frac{1}{2m} \sum_{i=1}^{m} (h_{W,b}(x^{(i)}) - y^{(i)})^2
+    \]
+    其中 $m$ 是样本数，乘以 $\frac{1}{2}$ 是为了后续求导方便（与平方项的导数2抵消）。
+    \item \textbf{交叉熵损失（Cross-Entropy）}：用于分类任务，尤其是与Softmax输出层结合。
+    \[
+    J(W,b) = -\frac{1}{m} \sum_{i=1}^{m} \sum_{k=1}^{K} y_k^{(i)} \log(\hat{y}_k^{(i)})
+    \]
+    其中 $K$ 是类别数，$y_k^{(i)}$ 是样本 $i$ 的真实标签（one-hot向量），$\hat{y}_k^{(i)}$ 是模型预测的概率。
+    \begin{remark}
+        交叉熵衡量两个概率分布之间的“距离”。当预测分布与真实分布完全一致时，交叉熵最小（等于真实分布的熵）。
+    \end{remark}
+\end{itemize}
+
+\subsection{步骤三：梯度下降优化}
+目标：最小化 $J(W,b)$。梯度下降（Gradient Descent）是核心优化算法。
+\[
+W^{(l)} := W^{(l)} - \alpha \frac{\partial J}{\partial W^{(l)}}, \quad b^{(l)} := b^{(l)} - \alpha \frac{\partial J}{\partial b^{(l)}}
+\]
+其中 $\alpha$ 是\textbf{学习率（Learning Rate）}，控制更新步长。
+\begin{itemize}
+    \item \textbf{理性}：沿着损失函数梯度的反方向（最速下降方向）更新参数。
+    \item \textbf{感性}：好比在山区蒙眼下山，用脚试探周围最陡的下坡方向，然后迈一小步，重复此过程。
+\end{itemize}
+\textbf{核心挑战}：如何高效计算所有参数的梯度 $\frac{\partial J}{\partial W^{(l)}}$ 和 $\frac{\partial J}{\partial b^{(l)}}$？这正是反向传播要解决的。
+
+\section{反向传播：深度学习的引擎}
+
+反向传播（Backpropagation, BP）不是独立的优化算法，而是\textbf{利用链式法则高效计算梯度}的方法。它是神经网络训练的核心。
+
+\subsection{误差项（Error Term）的定义}
+对于第 $l$ 层的第 $i$ 个神经元，定义其误差项 $\delta_i^{(l)}$ 为损失函数对该神经元预激活值 $z_i^{(l)}$ 的偏导数：
+\[
+\delta_i^{(l)} = \frac{\partial J}{\partial z_i^{(l)}}
+\]
+误差项衡量了该神经元对最终损失的“责任”大小。
+
+\subsection{反向传播的四步流程}
+
+\subsubsection{1. 前向传播}
+给定输入 $x$，依次计算并保存每一层的 $z^{(l)}$ 和 $a^{(l)}$（$a^{(0)} = x$）。
+
+\subsubsection{2. 计算输出层误差}
+\[
+\delta^{(L)} = \nabla_{a^{(L)}} J \odot f'(z^{(L)})
+\]
+其中 $\nabla_{a^{(L)}} J$ 是损失对输出层激活的梯度，$\odot$ 表示逐元素乘法（Hadamard积）。
+\begin{itemize}
+    \item 对于MSE损失和线性输出：$\nabla_{a^{(L)}} J = a^{(L)} - y$。
+    \item 对于交叉熵损失和Softmax输出：$\nabla_{a^{(L)}} J = a^{(L)} - y$（这是一个美妙的巧合，简化了计算）。
+\end{itemize}
+
+\subsubsection{3. 反向传播误差（关键递推公式）}
+从 $l = L-1$ 到 $l=1$，逐层计算：
+\[
+\boxed{\delta^{(l)} = \left( (W^{(l+1)})^{\top} \delta^{(l+1)} \right) \odot f'(z^{(l)}) }
+\]
+\begin{itemize}
+    \item \textbf{理性解释}：后一层的误差 $\delta^{(l+1)}$ 通过权重矩阵的转置 $(W^{(l+1)})^{\top}$ 传播回前一层，再乘以当前层激活函数的导数，进行调制。
+    \item \textbf{感性解释}：将最终错误（损失）归咎于每一层神经元的“失误”。高层神经元的错误分摊给其输入连接的底层神经元，分摊比例就是连接的权重，同时还要考虑该底层神经元当时是否处于“敏感”状态（由 $f'(z^{(l)})$ 体现）。
+\end{itemize}
+
+\subsubsection{4. 计算参数梯度}
+一旦得到 $\delta^{(l+1)}$，第 $l$ 层参数的梯度就非常简洁：
+\[
+\boxed{\frac{\partial J}{\partial W^{(l)}} = \delta^{(l+1)} (a^{(l)})^{\top}}, \quad \boxed{\frac{\partial J}{\partial b^{(l)}} = \delta^{(l+1)}}
+\]
+\begin{itemize}
+    \item \textbf{权重梯度}：等于后一层的误差 $\delta^{(l+1)}$ 与前一层的激活 $a^{(l)}$ 的外积。
+    \item \textbf{偏置梯度}：就是后一层的误差 $\delta^{(l+1)}$ 本身。
+\end{itemize}
+
+\subsubsection{5. 更新参数}
+使用梯度下降（或其变体如Adam）更新所有参数：
+\[
+W^{(l)} \leftarrow W^{(l)} - \alpha \frac{\partial J}{\partial W^{(l)}}, \quad b^{(l)} \leftarrow b^{(l)} - \alpha \frac{\partial J}{\partial b^{(l)}}
+\]
+
+\subsubsection{6. 批处理与梯度累加}
+实际中我们使用小批量（mini-batch）数据计算梯度。步骤4中计算出的梯度通常是该批次内所有样本梯度的\textbf{平均值}。这既利用了向量化计算的效率，又引入了噪声，有助于逃离局部极小点。
+
+\subsection{反向传播推导（选读）}
+理解推导有助于深入掌握BP本质。核心是链式法则。我们欲求 $\frac{\partial J}{\partial W_{ij}^{(l)}}$。注意 $J$ 通过 $z_i^{(l+1)}$ 依赖于 $W_{ij}^{(l)}$。
+\begin{align*}
+\frac{\partial J}{\partial W_{ij}^{(l)}} &= \frac{\partial J}{\partial z_i^{(l+1)}} \cdot \frac{\partial z_i^{(l+1)}}{\partial W_{ij}^{(l)}} \\
+&= \delta_i^{(l+1)} \cdot \frac{\partial}{\partial W_{ij}^{(l)}} \left( \sum_k W_{ik}^{(l)} a_k^{(l)} + b_i^{(l)} \right) \\
+&= \delta_i^{(l+1)} \cdot a_j^{(l)}
+\end{align*}
+这正是 $\frac{\partial J}{\partial W^{(l)}} = \delta^{(l+1)} (a^{(l)})^{\top}$ 的第 $(i, j)$ 个元素。
+
+误差反向传播公式的推导类似，考虑 $J$ 通过所有 $z_j^{(l+1)}$ 依赖于 $z_i^{(l)}$：
+\begin{align*}
+\delta_i^{(l)} = \frac{\partial J}{\partial z_i^{(l)}} &= \sum_j \frac{\partial J}{\partial z_j^{(l+1)}} \cdot \frac{\partial z_j^{(l+1)}}{\partial z_i^{(l)}} \\
+&= \sum_j \delta_j^{(l+1)} \cdot \frac{\partial}{\partial z_i^{(l)}} \left( \sum_k W_{jk}^{(l+1)} f(z_k^{(l)}) + b_j^{(l+1)} \right) \\
+&= \sum_j \delta_j^{(l+1)} \cdot W_{ji}^{(l+1)} \cdot f'(z_i^{(l)}) \\
+&= \left( \sum_j W_{ji}^{(l+1)} \delta_j^{(l+1)} \right) f'(z_i^{(l)})
+\end{align*}
+括号内即为 $( (W^{(l+1)})^{\top} \delta^{(l+1)} )_i$，因此有 $\delta^{(l)} = ((W^{(l+1)})^{\top} \delta^{(l+1)}) \odot f'(z^{(l)})$。
+
+\section{引言：从拟合数据到泛化世界}
+
+深度学习的核心目标是构建能够在\textbf{未见过的数据}上表现良好的模型。这就像学生在期末考试中遇到新题时能灵活运用所学知识，而不是只会做练习题。本章将系统学习如何评估模型性能、诊断常见问题、优化模型泛化能力，并探索深度学习从神经网络到现代架构的发展历程。
+
+\section{模型性能评估：不只是看分数}
+
+\subsection{数据集划分的艺术}
+
+为了模拟模型在真实世界中的表现，我们需要将数据划分为三个互斥的部分：
+\begin{itemize}
+    \item \textbf{训练集（Training Set）}：模型的"教科书"，用于学习参数（权重和偏置）。
+    \item \textbf{验证集（Validation Set）}：模型的"模拟考试"，用于：
+    \begin{enumerate}
+        \item \textbf{超参数调优}：选择学习率、网络层数、神经元数量等。
+        \item \textbf{模型选择}：比较不同架构的性能。
+        \item \textbf{早停法（Early Stopping）}的参考依据。
+    \end{enumerate}
+    \item \textbf{测试集（Test Set）}：模型的"期末考试"，在整个训练和调优过程中只使用一次，用于给出模型性能的\textbf{无偏估计}。
+\end{itemize}
+
+\textbf{黄金法则}：测试集必须与训练/验证集完全隔离，在整个流程的最后才使用一次。任何基于测试集结果的模型调整都会导致对泛化能力的\textbf{乐观估计}。
+
+\subsection{K-折交叉验证：小数据集的救星}
+
+当数据量有限时，简单的单次划分可能因随机性导致评估结果不稳定。K-折交叉验证提供了更稳健的解决方案。
+
+\textbf{算法流程}：
+\begin{enumerate}
+    \item 将训练数据（不包含测试集）随机划分为K个大小相似的互斥子集（"折"），通常K=5或10。
+    \item 进行K次循环，在第i次迭代中：
+    \begin{itemize}
+        \item 使用第i折作为验证集
+        \item 使用其余K-1折作为训练集
+    \end{itemize}
+    \item 将K次迭代得到的性能指标取平均值，作为模型性能的最终评估。
+\end{enumerate}
+
+\begin{remark}
+    \textbf{优点}：
+    \begin{itemize}
+        \item 充分利用有限数据：每个样本都既当过训练数据也当过验证数据。
+        \item 减少评估结果的随机性：基于多次评估的平均结果更可靠。
+    \end{itemize}
+    \textbf{缺点}：计算成本是单次划分的K倍。
+\end{remark}
+
+\section{诊断模型问题：欠拟合与过拟合}
+
+模型性能不佳通常源于两个根本问题：
+
+\begin{figure}[h]
+\centering
+\begin{subfigure}{0.45\textwidth}
+\centering
+\begin{tikzpicture}[scale=0.8]
+\draw[->] (0,0) -- (4,0) node[right] {模型复杂度};
+\draw[->] (0,0) -- (0,3) node[above] {误差};
+\draw[blue, thick] plot[smooth] coordinates {(0.2,2.5) (2,0.8) (3.8,2.3)};
+\draw[red, thick] plot[smooth] coordinates {(0.2,0.7) (1.5,0.4) (3.8,1.8)};
+\node[blue] at (3.5,2.5) {训练误差};
+\node[red] at (3.5,1.3) {测试误差};
+\draw[dashed] (2,0) -- (2,3);
+\node at (2, -0.3) {最佳复杂度};
+\end{tikzpicture}
+\caption{误差随模型复杂度的变化}
+\end{subfigure}
+\hfill
+\begin{subfigure}{0.45\textwidth}
+\centering
+\begin{tikzpicture}[scale=0.8]
+\draw[->] (0,0) -- (4,0) node[right] {训练轮数};
+\draw[->] (0,0) -- (0,3) node[above] {误差};
+\draw[blue, thick] plot[smooth] coordinates {(0.2,2.2) (1,1.5) (2,1.2) (3,0.9) (3.8,0.8)};
+\draw[red, thick] plot[smooth] coordinates {(0.2,2.3) (1,1.7) (1.5,1.5) (2,1.6) (2.5,1.9) (3.8,2.4)};
+\draw[dashed] (1.5,0) -- (1.5,3);
+\node[blue] at (3.2,1.1) {训练误差};
+\node[red] at (3.2,2.1) {测试误差};
+\node at (1.5, -0.3) {早停点};
+\end{tikzpicture}
+\caption{早停法的原理}
+\end{subfigure}
+\caption{欠拟合与过拟合的图示}
+\end{figure}
+
+\subsection{欠拟合（Underfitting）}
+\begin{itemize}
+    \item \textbf{表现}：训练误差和测试误差都很高。
+    \item \textbf{原因}：模型太简单，无法捕捉数据中的基本规律。
+    \item \textbf{类比}：用线性方程去拟合抛物线数据。
+    \item \textbf{解决方案}：
+    \begin{enumerate}
+        \item 增加模型复杂度（更多层、更多神经元）。
+        \item 使用更强大的特征。
+        \item 减少正则化强度。
+        \item 延长训练时间。
+    \end{enumerate}
+\end{itemize}
+
+\subsection{过拟合（Overfitting）}
+\begin{itemize}
+    \item \textbf{表现}：训练误差很低，但测试误差很高。
+    \item \textbf{原因}：模型过于复杂，记住了训练数据中的噪声和偶然性。
+    \item \textbf{类比}：死记硬背所有例题，但遇到新题不会做。
+    \item \textbf{解决方案}：
+    \begin{enumerate}
+        \item 获取更多训练数据（最有效但成本高）。
+        \item 使用正则化技术。
+        \item 简化模型结构。
+        \item 早停法。
+        \item Dropout（仅限神经网络）。
+    \end{enumerate}
+\end{itemize}
+
+\subsection{偏差-方差权衡：统计学习理论的视角}
+
+泛化误差可以分解为三个部分：
+\[
+\underbrace{\mathbb{E}[(y - \hat{f}(x))^2]}_{\text{泛化误差}} = \underbrace{[\text{Bias}(\hat{f}(x))]^2}_{\text{偏差}} + \underbrace{\text{Var}(\hat{f}(x))}_{\text{方差}} + \underbrace{\sigma^2}_{\text{不可约减误差}}
+\]
+
+\begin{itemize}
+    \item \textbf{偏差（Bias）}：模型预测的期望值与真实值之间的差距，反映了模型的\textbf{系统性错误}。
+    \begin{itemize}
+        \item 高偏差：模型过于简单，无法拟合数据的基本模式（欠拟合）。
+        \item \textbf{感性理解}：就像用直尺测量曲面，无论测多少次都有系统误差。
+    \end{itemize}
+    
+    \item \textbf{方差（Variance）}：模型对训练数据变化的敏感度，反映了模型的\textbf{不稳定性}。
+    \begin{itemize}
+        \item 高方差：模型过于复杂，对训练数据中的随机噪声敏感（过拟合）。
+        \item \textbf{感性理解}：就像用过于灵敏的天平，每次读数都因微小扰动而不同。
+    \end{itemize}
+    
+    \item \textbf{不可约减误差（Irreducible Error）}：数据本身的噪声，任何模型都无法消除。
+\end{itemize}
+
+\textbf{权衡}：增加模型复杂度通常降低偏差但增加方差，减少模型复杂度则相反。理想的模型需要在两者之间找到平衡点。
+
+\section{正则化技术：防止过拟合的利器}
+
+正则化通过在损失函数中添加\textbf{惩罚项}来约束模型复杂度，防止过拟合。
+
+\subsection{L1和L2正则化}
+
+在损失函数中添加参数的惩罚项：
+\[
+J_{\text{reg}}(W, b) = J(W, b) + \lambda \cdot R(W)
+\]
+其中$\lambda > 0$是正则化强度超参数。
+
+\begin{table}[h]
+\centering
+\caption{L1 vs L2正则化对比}
+\begin{tabular}{lccc}
+\textbf{类型} & \textbf{惩罚项} $R(W)$ & \textbf{数学形式} & \textbf{效果} \\
+L1正则化（Lasso） & $\lambda \sum_{i=1}^n |w_i|$ & 绝对值之和 & \textbf{稀疏化}：将不重要特征的权重压缩到0 \\
+L2正则化（Ridge） & $\frac{\lambda}{2} \sum_{i=1}^n w_i^2$ & 平方和 & \textbf{权重衰减}：使所有权重更小、更平均 \\
+\end{tabular}
+\end{table}
+
+\subsubsection{几何解释}
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}[scale=0.8]
+% L1正则化
+\begin{scope}[shift={(0,0)}]
+\draw[->] (-2,0) -- (2,0) node[right] {$w_1$};
+\draw[->] (0,-2) -- (0,2) node[above] {$w_2$};
+\draw[blue, thick] plot[smooth] coordinates {(-1.5,-0.8) (-0.5,0.2) (0.5,0.8) (1.5,1.5)};
+\draw[red, thick] (-1.5,-1.5) -- (1.5,1.5) node[right] {$|w_1|+|w_2|=C$};
+\draw[red, thick] (1.5,-1.5) -- (-1.5,1.5);
+\fill[red] (0.5,0.8) circle (2pt);
+\node at (0,-2.5) {L1正则化（菱形约束）};
+\end{scope}
+
+% L2正则化
+\begin{scope}[shift={(5,0)}]
+\draw[->] (-2,0) -- (2,0) node[right] {$w_1$};
+\draw[->] (0,-2) -- (0,2) node[above] {$w_2$};
+\draw[blue, thick] plot[smooth] coordinates {(-1.5,-0.8) (-0.5,0.2) (0.5,0.8) (1.5,1.5)};
+\draw[red, thick] (0,0) circle (1.2);
+\fill[red] (0.7,0.7) circle (2pt);
+\node at (0,-2.5) {L2正则化（圆形约束）};
+\end{scope}
+\end{tikzpicture}
+\caption{L1和L2正则化的几何解释}
+\end{figure}
+
+L1正则化的约束区域是菱形，最优解往往在角点上（某些权重为0），从而实现特征选择。L2正则化的约束区域是圆形，最优解使所有权重都较小且分布均匀。
+
+\subsection{Dropout：训练时随机丢弃神经元}
+
+Dropout是一种在\textbf{训练阶段}使用的正则化技术：
+\begin{itemize}
+    \item 每个训练步骤中，以概率$p$随机"丢弃"（设为0）每个神经元的输出。
+    \item 迫使网络不依赖于任何单个神经元，学习更鲁棒的特征。
+    \item 测试阶段使用所有神经元，但输出要乘以$1-p$（或训练时缩放）。
+\end{itemize}
+
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}[
+    neuron/.style={circle, draw, minimum size=0.8cm},
+    dropout/.style={circle, draw, minimum size=0.8cm, fill=red!20}
+]
+% 原始网络
+\begin{scope}[shift={(0,0)}]
+\foreach \i in {1,...,4} {
+    \node[neuron] (in\i) at (0,-\i*1.2) {};
+    \node[neuron] (out\i) at (2,-\i*1.2) {};
+    \draw[->] (in\i) -- (out\i);
+}
+\node at (1,-6) {标准网络};
+\end{scope}
+
+% Dropout网络
+\begin{scope}[shift={(4,0)}]
+\foreach \i in {1,...,4} {
+    \ifnum\i=2
+        \node[dropout] (in\i) at (0,-\i*1.2) {};
+    \else
+        \node[neuron] (in\i) at (0,-\i*1.2) {};
+    \fi
+    \ifnum\i=3
+        \node[dropout] (out\i) at (2,-\i*1.2) {};
+    \else
+        \node[neuron] (out\i) at (2,-\i*1.2) {};
+    \fi
+    \ifnum\i=2
+        \draw[dashed, gray] (in\i) -- (out\i);
+    \else
+        \draw[->] (in\i) -- (out\i);
+    \fi
+}
+\node at (1,-6) {Dropout（训练时）};
+\node[red] at (0,-2.4) {×};
+\node[red] at (2,-3.6) {×};
+\end{scope}
+\end{tikzpicture}
+\caption{Dropout示意图}
+\end{figure}
+
+\subsection{早停法（Early Stopping）}
+
+监控验证集误差，当验证误差连续多个epoch不再下降（甚至上升）时停止训练。
+\begin{itemize}
+    \item \textbf{优点}：简单有效，不需要改变模型结构。
+    \item \textbf{缺点}：需要额外的验证集，停止时机不易确定。
+\end{itemize}
+
+\section{从神经网络到深度学习：历史脉络}
+
+\subsection{发展历程}
+
+\subsubsection{早期探索（1940s-1980s）}
+\begin{itemize}
+    \item 1943年：McCulloch和Pitts提出M-P神经元模型，模拟生物神经元。
+    \item 1958年：Rosenblatt提出感知机（Perceptron），可视为单层神经网络。
+    \item 1969年：Minsky和Papert出版《Perceptrons》，指出单层感知机无法解决XOR等非线性问题，导致神经网络研究进入寒冬。
+\end{itemize}
+
+\subsubsection{复兴前夜（1980s-2006）}
+\begin{itemize}
+    \item 1986年：Rumelhart等人提出反向传播算法，解决了多层网络训练问题。
+    \item 但仍受限于：数据不足、计算力有限、优化困难（梯度消失/爆炸）。
+\end{itemize}
+
+\subsubsection{复兴之年（2006）}
+\begin{itemize}
+    \item Hinton等人发表《A Fast Learning Algorithm for Deep Belief Nets》，提出：
+    \begin{enumerate}
+        \item \textbf{逐层贪婪预训练}：逐层训练受限玻尔兹曼机（RBM）。
+        \item \textbf{微调}：用反向传播微调整个网络。
+    \end{enumerate}
+    \item 解决了深度网络训练难题，开启了深度学习新时代。
+\end{itemize}
+
+\subsubsection{爆发之年（2012）}
+\begin{itemize}
+    \item AlexNet在ImageNet竞赛中夺冠，将Top-5错误率从26\%降至15\%。
+    \item 关键创新：使用ReLU、Dropout、GPU加速。
+    \item 证明学习到的特征可超越手工设计特征。
+\end{itemize}
+
+\subsection{深度学习的四大支柱}
+
+\begin{table}[h]
+\centering
+\caption{深度学习的四大支柱}
+\begin{tabular}{p{0.22\textwidth}p{0.35\textwidth}p{0.35\textwidth}}
+\toprule
+\textbf{支柱} & \textbf{内容} & \textbf{意义} \\
+\midrule
+\textbf{数据} & 
+大规模标注数据（ImageNet等），互联网产生海量数据 &
+燃料，数据量决定模型性能上限 \\
+\textbf{算力} &GPU并行计算，TPU专用芯片，云计算平台
+ &
+引擎，使训练深层网络成为可能 \\
+\textbf{算法} &
+新激活函数（ReLU），正则化（Dropout），优化器（Adam），新架构（ResNet）
+ &
+智慧，提升模型性能与训练稳定性 \\
+\textbf{开源生态} &TensorFlow, PyTorch &
+土壤，加速研究与应用普及 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{为什么叫"深度学习"？}
+
+\textbf{深}指网络层数多（通常>3层）。与传统机器学习相比：
+
+\begin{table}[h]
+\centering
+\caption{传统机器学习 vs 深度学习}
+\begin{tabular}{p{0.45\textwidth}p{0.45\textwidth}}
+\toprule
+\textbf{传统机器学习} & \textbf{深度学习} \\
+\midrule
+\textbf{特征工程}：人工设计特征 & \textbf{特征学习}：自动从数据中学习特征 \\
+\textbf{流水线式}：多个独立步骤 & \textbf{端到端}：单个模型完成所有任务 \\
+\textbf{浅层模型}：1-2层 & \textbf{深层模型}：数十至数百层 \\
+\textbf{可解释性强} & \textbf{可解释性弱}（黑盒） \\
+\textbf{数据需求少} & \textbf{数据需求大} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{深度学习的关键优势}：通过多层非线性变换，自动学习\textbf{层次化特征表示}：
+\begin{itemize}
+    \item 浅层：边缘、纹理、颜色
+    \item 中层：部件、形状
+    \item 深层：语义概念、对象
+\end{itemize}
+
+\section{关键模型架构}
+
+\subsection{自编码器（Autoencoders, AEs）}
+
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}[
+    node distance=1cm,
+    encoder/.style={rectangle, draw, minimum width=1.5cm, minimum height=0.8cm},
+    decoder/.style={rectangle, draw, minimum width=1.5cm, minimum height=0.8cm},
+    latent/.style={rectangle, draw, minimum width=1cm, minimum height=0.6cm, fill=gray!20}
+]
+% 输入
+\node[encoder] (input) {输入 $x$};
+\node[encoder, below=of input] (enc1) {编码器};
+\node[latent, below=of enc1] (latent) {潜在表示 $z$};
+\node[decoder, below=of latent] (dec1) {解码器};
+\node[decoder, below=of dec1] (output) {重建 $\hat{x}$};
+
+\draw[->] (input) -- (enc1);
+\draw[->] (enc1) -- (latent);
+\draw[->] (latent) -- (dec1);
+\draw[->] (dec1) -- (output);
+\draw[->, dashed] (output.south) -- ++(0,-0.5) -| ++(-2,0) |- (input.north) node[pos=0.25, above] {};
+
+\node[left=0.5cm of latent] {瓶颈层};
+\end{tikzpicture}
+\caption{自编码器结构示意图}
+\end{figure}
+
+\textbf{核心思想}：学习数据的压缩表示（编码），然后重建输入。
+\[
+\begin{aligned}
+\text{编码器：} & z = f(x) = \sigma(Wx + b) \\
+\text{解码器：} & \hat{x} = g(z) = \sigma(W'z + b') \\
+\text{损失函数：} & L(x, \hat{x}) = \|x - \hat{x}\|^2
+\end{aligned}
+\]
+
+\textbf{变体与应用}：
+\begin{itemize}
+    \item \textbf{稀疏自编码器}：在损失函数中添加稀疏约束。
+    \item \textbf{去噪自编码器}：输入加噪声，要求重建原始干净数据。
+    \item \textbf{变分自编码器（VAE）}：学习数据的概率分布，可生成新样本。
+\end{itemize}
+
+\subsection{卷积神经网络（CNN）}
+
+专门处理网格状数据（如图像），核心思想：\textbf{局部连接}、\textbf{权重共享}、\textbf{平移不变性}。
+
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}[scale=0.7]
+% 输入图像
+\draw[fill=blue!20] (0,0) rectangle (3,3);
+\foreach \i in {0,...,2} {
+    \foreach \j in {0,...,2} {
+        \draw (\i,\j) rectangle (\i+1,\j+1);
+    }
+}
+\node at (1.5, -0.5) {输入图像};
+
+% 卷积核
+\draw[fill=red!20] (4,1) rectangle (6,3);
+\foreach \i in {0,...,1} {
+    \foreach \j in {0,...,1} {
+        \draw (4+\i,1+\j) rectangle (4+\i+1,1+\j+1);
+    }
+}
+\node at (5, 0.5) {卷积核};
+
+% 卷积操作
+\draw[->] (3.5,1.5) -- (4,1.5);
+\node at (3.75, 2) {卷积};
+
+% 特征图
+\draw[fill=green!20] (7,0) rectangle (9,2);
+\foreach \i in {0,...,1} {
+    \foreach \j in {0,...,1} {
+        \draw (7+\i,\j) rectangle (7+\i+1,\j+1);
+    }
+}
+\node at (8, -0.5) {特征图};
+
+% 池化
+\draw[->] (9.5,1) -- (10,1);
+\draw[fill=yellow!20] (10.5,0) rectangle (11.5,1);
+\draw (10.5,0) rectangle (11.5,1);
+\node at (11, -0.5) {池化};
+\end{tikzpicture}
+\caption{CNN基本操作：卷积与池化}
+\end{figure}
+
+\subsubsection{核心组件}
+\begin{enumerate}
+    \item \textbf{卷积层}：使用卷积核在输入上滑动，计算局部加权和。
+    \[
+    (I * K)_{i,j} = \sum_{m} \sum_{n} I_{i+m, j+n} \cdot K_{m,n}
+    \]
+    
+    \item \textbf{池化层}：下采样，减少参数量，增加平移不变性。
+    \begin{itemize}
+        \item 最大池化：$ \text{MaxPool}(x)_{i,j} = \max(x_{2i:2i+1, 2j:2j+1}) $
+        \item 平均池化：$ \text{AvgPool}(x)_{i,j} = \text{mean}(x_{2i:2i+1, 2j:2j+1}) $
+    \end{itemize}
+    
+    \item \textbf{全连接层}：将特征图展平后分类。
+\end{enumerate}
+
+\subsubsection{经典架构}
+\begin{itemize}
+    \item \textbf{AlexNet}（2012）：首次使用ReLU、Dropout、GPU训练。
+    \item \textbf{VGG}（2014）：使用3×3小卷积核堆叠深层网络。
+    \item \textbf{ResNet}（2015）：残差连接解决梯度消失，训练极深网络（152层）。
+\end{itemize}
+
+\subsection{循环神经网络（RNN）与LSTM}
+
+专门处理序列数据，具有\textbf{记忆能力}。
+
+\subsubsection{标准RNN}
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}[
+    node distance=1.2cm,
+    neuron/.style={circle, draw, minimum size=0.8cm},
+    unfold/.style={rectangle, draw, minimum width=1cm, minimum height=0.8cm}
+]
+% 折叠表示
+\node[neuron] (A) at (0,0) {A};
+\node[left=0.5cm of A] {$x_t$};
+\node[above=0.2cm of A] {$h_{t-1}$};
+\node[right=0.5cm of A] {$h_t$};
+\draw[->] (-0.8,0) -- (A);
+\draw[->] (0,0.8) -- (A);
+\draw[->] (A) -- (0.8,0);
+\draw[->] (A) edge[loop below] node[below] {循环} (A);
+
+\end{tikzpicture}
+\caption{RNN的表示}
+\end{figure}
+
+RNN的状态更新公式：
+\[
+h_t = \tanh(W_{hh}h_{t-1} + W_{xh}x_t + b_h)
+\]
+
+\textbf{问题}：标准RNN使用tanh激活函数，虽然能缓解梯度爆炸，但仍有梯度消失问题，难以学习长期依赖。
+
+\subsubsection{LSTM：长短期记忆网络}
+
+LSTM通过门控机制解决长期依赖问题。
+
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}[
+    node distance=0.8cm,
+    gate/.style={rectangle, draw, minimum width=1.2cm, minimum height=0.6cm},
+    point/.style={circle, fill=black, inner sep=1.5pt},
+    op/.style={circle, draw, minimum size=0.6cm}
+]
+% 细胞状态线
+\draw[thick] (0,0) -- (10,0) node[right] {$C_t$};
+
+% 门结构
+\node[gate] (forget) at (2,1.5) {遗忘门 $f_t$};
+\node[gate] (input) at (2,0.5) {输入门 $i_t$};
+\node[gate] (output) at (2,-0.5) {输出门 $o_t$};
+\node[op] (tanh) at (4,0.5) {$\tanh$};
+
+% 输入
+\node[point] (x) at (0,2) {};
+\node[left=0.2cm of x] {$x_t$};
+\node[point] (h) at (0,1) {};
+\node[left=0.2cm of h] {$h_{t-1}$};
+
+% 连接
+\draw[->] (x) -- (0,2) |- (forget);
+\draw[->] (x) -- (0,2) |- (input);
+\draw[->] (x) -- (0,2) |- (output);
+\draw[->] (h) -- (0,1) |- (forget);
+\draw[->] (h) -- (0,1) |- (input);
+\draw[->] (h) -- (0,1) |- (output);
+
+% 乘法点
+\node[op] (mult1) at (6,1) {$\times$};
+\node[op] (mult2) at (6,-1) {$\times$};
+\node[op] (mult3) at (8,0) {$\times$};
+
+% 连接门输出
+\draw[->] (forget) -- (4,1.5) -- (4,1.2) -- (mult1);
+\draw[->] (input) -- (tanh);
+\draw[->] (tanh) -- (5,0.5) -- (5,-0.8) -- (mult2);
+\draw[->] (output) -- (4,-0.5) -- (4,-0.8) -- (mult3);
+
+% 细胞状态更新
+\draw[->] (0,0) -- (mult1);
+\draw[->] (mult1) -- (7,0) -- (7,-1) -- (mult2);
+\draw[->] (mult2) -- (8,-1) -- (8,-0.2) -- (mult3);
+\draw[->] (mult3) -- (9,0) -- (10,0);
+
+% 输出
+\node[point] (ht) at (10,-1) {};
+\draw[->] (9,0) -- (9,-1) -- (ht);
+\node[right=0.2cm of ht] {$h_t$};
+\end{tikzpicture}
+\caption{LSTM单元结构}
+\end{figure}
+
+\textbf{LSTM的三个门}：
+\begin{enumerate}
+    \item \textbf{遗忘门}：决定从细胞状态中丢弃什么信息
+    \[
+    f_t = \sigma(W_f \cdot [h_{t-1}, x_t] + b_f)
+    \]
+    
+    \item \textbf{输入门}：决定将哪些新信息存入细胞状态
+    \[
+    \begin{aligned}
+    i_t &= \sigma(W_i \cdot [h_{t-1}, x_t] + b_i) \\
+    \tilde{C}_t &= \tanh(W_C \cdot [h_{t-1}, x_t] + b_C)
+    \end{aligned}
+    \]
+    
+    \item \textbf{输出门}：决定输出什么信息
+    \[
+    \begin{aligned}
+    o_t &= \sigma(W_o \cdot [h_{t-1}, x_t] + b_o) \\
+    h_t &= o_t \odot \tanh(C_t)
+    \end{aligned}
+    \]
+\end{enumerate}
+
+\textbf{细胞状态更新}：
+\[
+C_t = f_t \odot C_{t-1} + i_t \odot \tilde{C}_t
+\]
+
+\begin{remark}
+    \textbf{为什么LSTM能解决长期依赖？}
+    \begin{itemize}
+        \item 细胞状态$C_t$像一条"传送带"，信息可以几乎不变地流过。
+        \item 门控机制选择性地让信息通过。
+        \item 梯度在细胞状态上可以稳定传播，不易消失。
+    \end{itemize}
+\end{remark}
+
+\subsection{生成对抗网络（GANs）}
+
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}[
+    node distance=1.5cm,
+    gen/.style={rectangle, draw, rounded corners, fill=blue!20, minimum width=2cm, minimum height=1cm},
+    disc/.style={rectangle, draw, rounded corners, fill=red!20, minimum width=2cm, minimum height=1cm},
+    data/.style={rectangle, draw, fill=green!20, minimum width=1.5cm, minimum height=0.8cm}
+]
+\node[gen] (generator) at (0,0) {生成器 $G$};
+\node[disc] (discriminator) at (5,0) {判别器 $D$};
+\node[data] (real) at (5,2) {真实数据};
+\node[data] (fake) at (0,-1.5) {生成数据};
+
+% 噪声输入
+\draw[<-] (generator.west) -- ++(-1.5,0) node[left] {随机噪声 $z$};
+
+% 生成过程
+\draw[->] (generator.east) -- node[above] {$G(z)$} (discriminator.west);
+
+% 判别过程
+\draw[->] (real.south) -- (discriminator.north);
+\draw[->] (generator.south) -- (fake.north);
+
+% 对抗训练
+\draw[<->, thick, red] (generator.north) to[bend left] node[above] {对抗训练} (discriminator.north);
+
+% 输出
+\draw[->] (discriminator.east) -- ++(1.5,0) node[right] {真/假概率};
+\end{tikzpicture}
+\caption{GAN的基本结构}
+\end{figure}
+
+\textbf{核心思想}：两个神经网络相互博弈
+\begin{itemize}
+    \item \textbf{生成器 $G$}：学习真实数据分布，生成以假乱真的样本。
+    \item \textbf{判别器 $D$}：区分真实数据与生成数据。
+\end{itemize}
+
+\textbf{目标函数（极小极大博弈）}：
+\[
+\min_G \max_D V(D, G) = \mathbb{E}_{x \sim p_{\text{data}}(x)}[\log D(x)] + \mathbb{E}_{z \sim p_z(z)}[\log(1 - D(G(z)))]
+\]
+
+\textbf{训练过程}：
+\begin{enumerate}
+    \item 固定$G$，训练$D$：最大化区分真实与假数据的能力。
+    \item 固定$D$，训练$G$：最小化$\log(1 - D(G(z)))$，即让生成数据更易骗过$D$。
+\end{enumerate}
+
+\subsection{扩散模型（Diffusion Models）}
+
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}[
+    node distance=1.2cm,
+    box/.style={rectangle, draw, minimum width=2.5cm, minimum height=1cm},
+    arrow/.style={->, >=stealth, thick}
+]
+% 前向过程
+\node[box, fill=blue!10] (x0) at (0,0) {$x_0$ (真实数据)};
+\node[box, fill=blue!10] (xt) at (4,0) {$x_t$};
+\node[box, fill=blue!10] (xT) at (8,0) {$x_T$ (纯噪声)};
+
+\draw[arrow] (x0) -- node[above] {加噪} (xt);
+\draw[arrow] (xt) -- node[above] {加噪} (xT);
+
+\node[below=0.3cm of xt] {前向过程（固定）};
+
+% 反向过程
+\node[box, fill=red!10] (x0hat) at (0,-3) {$\hat{x}_0$ (生成数据)};
+\node[box, fill=red!10] (xthat) at (4,-3) {$\hat{x}_t$};
+\node[box, fill=red!10] (xThat) at (8,-3) {$x_T \sim \mathcal{N}(0, I)$};
+
+\draw[arrow] (xThat) -- node[above] {去噪} (xthat);
+\draw[arrow] (xthat) -- node[above] {去噪} (x0hat);
+
+\node[below=0.3cm of xthat] {反向过程（学习）};
+
+% 连接
+\draw[arrow, dashed] (xT.south) -- (xThat.north);
+\end{tikzpicture}
+\caption{扩散模型的前向与反向过程}
+\end{figure}
+
+\textbf{核心思想}：
+\begin{enumerate}
+    \item \textbf{前向过程}：逐步向数据添加高斯噪声，直到变成纯噪声。
+    \[
+    q(x_t | x_{t-1}) = \mathcal{N}(x_t; \sqrt{1-\beta_t}x_{t-1}, \beta_t I)
+    \]
+    
+    \item \textbf{反向过程}：学习去噪过程，从噪声中重建数据。
+    \[
+    p_\theta(x_{t-1} | x_t) = \mathcal{N}(x_{t-1}; \mu_\theta(x_t, t), \Sigma_\theta(x_t, t))
+    \]
+\end{enumerate}
+
+\textbf{优势}：生成质量高，训练稳定，无需对抗训练。
+
+\section{Transformer：注意力就是全部}
+
+\subsection{自注意力机制（Self-Attention）}
+
+传统RNN/LSTM的问题是顺序处理、难以并行、长距离依赖衰减。Transformer的解决方案：完全基于注意力。
+
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}[
+    node distance=0.8cm,
+    token/.style={rectangle, draw, minimum width=1.2cm, minimum height=0.6cm},
+    vector/.style={rectangle, draw, fill=blue!10, minimum width=1cm, minimum height=0.5cm}
+]
+% 输入
+\node[token] (x1) at (0,4) {猫};
+\node[token] (x2) at (0,3) {喜欢};
+\node[token] (x3) at (0,2) {吃};
+\node[token] (x4) at (0,1) {鱼};
+
+% 线性变换
+\foreach \i in {1,...,4} {
+    \node[vector] (q\i) at (2,4.5-\i) {$q_\i$};
+    \node[vector] (k\i) at (3.5,4.5-\i) {$k_\i$};
+    \node[vector] (v\i) at (5,4.5-\i) {$v_\i$};
+    \draw[->] (x\i.east) -- (q\i.west);
+    \draw[->] (x\i.east) -- (k\i.west);
+    \draw[->] (x\i.east) -- (v\i.west);
+}
+
+% 注意力计算
+\node at (7.5,4) {注意力得分：};
+\node at (8,3.5) {$\alpha_{ij}  $};
+
+\node at (11,3.5) {= $0.8v_1 + 0.1v_2 + 0.1v_3 + 0.0v_4$};
+\node at (11,2.5) {= $0.2v_1 + 0.6v_2 + 0.1v_3 + 0.1v_4$};
+\node at (11,1.5) {= $0.1v_1 + 0.2v_2 + 0.6v_3 + 0.1v_4$};
+\node at (11,0.5) {= $0.0v_1 + 0.1v_2 + 0.1v_3 + 0.8v_4$};
+
+\draw[->, blue, thick] (q1.east) to[bend left] (k1.east);
+\draw[->, red, thick] (q1.east) to[bend left] (k3.east);
+\end{tikzpicture}
+\caption{自注意力机制示例："吃"与"鱼"有强关联}
+\end{figure}
+
+\textbf{Query, Key, Value概念}：
+\begin{itemize}
+    \item \textbf{Query（查询）}：当前要计算注意力的位置。
+    \item \textbf{Key（键）}：所有位置，用于与Query计算相关性。
+    \item \textbf{Value（值）}：所有位置的实际信息。
+\end{itemize}
+
+\textbf{计算过程}：
+\begin{enumerate}
+    \item 对每个输入$x_i$，通过可学习权重矩阵计算$q_i = W^Q x_i$, $k_i = W^K x_i$, $v_i = W^V x_i$。
+    \item 计算注意力分数：$\alpha_{ij} = \text{softmax}\left(\frac{q_i \cdot k_j}{\sqrt{d_k}}\right)$，其中$d_k$是Key的维度（缩放因子防止梯度消失）。
+    \item 加权求和：$c_i = \sum_j \alpha_{ij} v_j$。
+\end{enumerate}
+
+\textbf{矩阵形式}：
+\[
+\text{Attention}(Q, K, V) = \text{softmax}\left(\frac{QK^\top}{\sqrt{d_k}}\right)V
+\]
+
+\subsection{多头注意力（Multi-Head Attention）}
+
+单一注意力机制可能只关注特定类型的模式。多头注意力允许模型同时关注不同子空间的信息。
+
+\[
+\begin{aligned}
+\text{MultiHead}(Q, K, V) &= \text{Concat}(\text{head}_1, \ldots, \text{head}_h)W^O \\
+\text{head}_i &= \text{Attention}(QW_i^Q, KW_i^K, VW_i^V)
+\end{aligned}
+\]
+
+\subsection{Transformer架构}
+
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}[
+    block/.style={rectangle, draw, minimum width=3cm, minimum height=1cm},
+    layer/.style={rectangle, draw, dashed, minimum width=3.5cm, minimum height=2cm}
+]
+% 编码器
+\node[layer, fill=blue!5] (encoder) at (0,-1) {编码器};
+\node[block] (enc1) at (0,1.5) {自注意力 + 前馈网络};
+\node[block] (enc2) at (0,0) {自注意力 + 前馈网络};
+\node[block] (enc3) at (0,-1.5) {自注意力 + 前馈网络};
+
+% 解码器
+\node[layer, fill=red!5] (decoder) at (5,0) {解码器};
+\node[block] (dec1) at (5,2.5) {掩码自注意力 + 前馈网络};
+\node[block] (dec2) at (5,1) {交叉注意力 + 前馈网络};
+\node[block] (dec3) at (5,-0.5) {交叉注意力 + 前馈网络};
+
+% 输入输出
+\node[left=0.5cm of enc3] {输入序列};
+\draw[->] (-1.5,-1.5) -- (enc3);
+\node[right=0.5cm of dec3] {输出序列};
+\draw[->] (dec3) -- (6.5,-0.5);
+
+% 编码器-解码器注意力
+\draw[->, dashed] (enc1.east) -- (dec2.west);
+\draw[->, dashed] (enc2.east) -- (dec2.west);
+\draw[->, dashed] (enc3.east) -- (dec2.west);
+
+% 位置编码
+\node[above=0.2cm of enc1] {位置编码};
+\end{tikzpicture}
+\caption{Transformer架构}
+\end{figure}
+
+\subsubsection{编码器（Encoder）}
+\begin{itemize}
+    \item 由N个相同层堆叠。
+    \item 每层包含：多头自注意力 + 前馈神经网络 + 残差连接 + 层归一化。
+\end{itemize}
+
+\subsubsection{解码器（Decoder）}
+\begin{itemize}
+    \item 也由N个相同层堆叠。
+    \item 每层包含：
+    \begin{enumerate}
+        \item \textbf{掩码多头自注意力}：防止当前位置看到未来信息（因果掩码）。
+        \item \textbf{多头交叉注意力}：Query来自解码器，Key/Value来自编码器。
+        \item 前馈神经网络 + 残差连接 + 层归一化。
+    \end{enumerate}
+\end{itemize}
+
+\subsection{位置编码（Positional Encoding）}
+
+自注意力机制本身不包含位置信息，需要额外注入位置编码：
+\[
+\begin{aligned}
+PE_{(pos, 2i)} &= \sin(pos / 10000^{2i/d_{\text{model}}}) \\
+PE_{(pos, 2i+1)} &= \cos(pos / 10000^{2i/d_{\text{model}}})
+\end{aligned}
+\]
+
+其中$pos$是位置，$i$是维度索引。这种正弦编码能够捕捉相对位置关系。
+
+\subsection{Transformer vs RNN/LSTM}
+
+\begin{table}[h]
+\centering
+\caption{Transformer与RNN/LSTM对比}
+\begin{tabular}{p{0.3\textwidth}p{0.3\textwidth}p{0.3\textwidth}}
+\textbf{特性} & \textbf{Transformer} & \textbf{RNN/LSTM} \\
+\textbf{核心机制} & 自注意力（全局依赖） & 循环结构（顺序依赖） \\
+\textbf{并行能力} & \textbf{高}（所有位置并行计算） & \textbf{低}（必须顺序计算） \\
+\textbf{长距离依赖} & \textbf{O(1)}路径长度 & \textbf{O(n)}路径长度，易梯度消失 \\
+\textbf{计算复杂度} & $O(L^2 \cdot d)$，$L$为序列长度 & $O(L \cdot d^2)$ \\
+\textbf{显存占用} & 高（需存储注意力矩阵） & 低 \\
+\textbf{可解释性} & \textbf{高}（注意力权重可视化） & 低（隐藏状态难解释） \\
+\textbf{位置信息} & 需显式添加位置编码 & 天然包含位置信息 \\
+\end{tabular}
+\end{table}
+
+\section{为什么Transformer能够"通吃"？}
+
+\subsection{从专家模型到通用模型}
+
+\begin{itemize}
+    \item \textbf{旧范式}：各司其职的专家模型
+    \begin{itemize}
+        \item 图像：CNN（卷积核捕捉局部特征）
+        \item 序列：RNN/LSTM（循环结构捕捉时序）
+        \item 归纳偏置强，但领域受限。
+    \end{itemize}
+    
+    \item \textbf{新范式}：万物皆序列的通用模型
+    \begin{itemize}
+        \item 文本：词序列 $[w_1, w_2, \ldots, w_n]$
+        \item 图像：切分为patch序列
+        \item 音频：帧序列
+        \item 视频：帧序列的序列
+    \end{itemize}
+    
+    \item \textbf{统一处理}：所有数据都转化为标记序列，用Transformer处理。
+\end{itemize}
+
+\subsection{Transformer的核心优势}
+
+\begin{enumerate}
+    \item \textbf{全局依赖建模}：自注意力直接建立任意两个位置的联系。
+    \item \textbf{并行计算}：极大加速训练。
+    \item \textbf{可扩展性}：模型规模（参数量、数据量、计算量）增加带来稳定性能提升。
+    \item \textbf{多模态统一}：相同的架构处理不同模态数据。
+\end{enumerate}
+
+\section{总结与思考}
+
+本章从模型评估和优化出发，探讨了深度学习的关键问题：
+\begin{itemize}
+    \item \textbf{评估}：通过数据集划分和交叉验证获得可靠的性能估计。
+    \item \textbf{诊断}：识别欠拟合和过拟合，理解偏差-方差权衡。
+    \item \textbf{优化}：使用正则化、Dropout、早停法提升泛化能力。
+    \item \textbf{发展}：从简单神经网络到深度学习的演进，四大支柱的支撑。
+    \item \textbf{架构}：CNN、RNN/LSTM、GAN、扩散模型、Transformer等各有所长。
+    \item \textbf{未来}：Transformer展示了通用人工智能架构的潜力，大模型时代已经到来。
+\end{itemize}
+
+\textbf{思考}：深度学习的发展不仅是算法的进步，更是数据、算力、算法和开源生态协同发展的结果。理解这些基础原理，才能更好地应用和创新。
