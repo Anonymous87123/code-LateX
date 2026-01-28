@@ -1,219 +1,619 @@
-\contentsline {chapter}{\numberline {第一章\hspace {.3em}}神经网络与深度学习基础}{6}{chapter.1}%
-\contentsline {section}{\numberline {1.1}启发性思考}{6}{section.1.1}%
-\contentsline {section}{\numberline {1.2}神经元：深度学习的基石}{6}{section.1.2}%
-\contentsline {subsection}{\numberline {1.2.1}数学模型}{6}{subsection.1.2.1}%
-\contentsline {subsection}{\numberline {1.2.2}关键组件详解}{6}{subsection.1.2.2}%
-\contentsline {section}{\numberline {1.3}激活函数：从Sigmoid到ReLU}{7}{section.1.3}%
-\contentsline {subsection}{\numberline {1.3.1}经典激活函数}{7}{subsection.1.3.1}%
-\contentsline {subsubsection}{Sigmoid函数}{7}{subsubsection*.2}%
-\contentsline {subsubsection}{双曲正切函数（tanh）}{7}{subsubsection*.3}%
-\contentsline {subsubsection}{线性整流单元（ReLU）}{8}{subsubsection*.4}%
-\contentsline {subsection}{\numberline {1.3.2}激活函数对比与进阶选择}{8}{subsection.1.3.2}%
-\contentsline {subsubsection}{ReLU的改进变体}{8}{subsubsection*.6}%
-\contentsline {section}{\numberline {1.4}前馈神经网络：层叠的威力}{9}{section.1.4}%
-\contentsline {subsection}{\numberline {1.4.1}网络结构}{9}{subsection.1.4.1}%
-\contentsline {subsection}{\numberline {1.4.2}优雅高效的矩阵表示}{9}{subsection.1.4.2}%
-\contentsline {subsection}{\numberline {1.4.3}Softmax函数：多分类的“裁判”}{9}{subsection.1.4.3}%
-\contentsline {subsubsection}{标准Softmax}{9}{subsubsection*.7}%
-\contentsline {subsubsection}{温度系数（Temperature）}{9}{subsubsection*.8}%
-\contentsline {section}{\numberline {1.5}神经网络的训练：让模型学会思考}{10}{section.1.5}%
-\contentsline {subsection}{\numberline {1.5.1}步骤一：定义网络结构}{10}{subsection.1.5.1}%
-\contentsline {subsection}{\numberline {1.5.2}步骤二：定义损失函数（Loss Function）}{10}{subsection.1.5.2}%
-\contentsline {subsection}{\numberline {1.5.3}步骤三：梯度下降优化}{11}{subsection.1.5.3}%
-\contentsline {section}{\numberline {1.6}反向传播：深度学习的引擎}{11}{section.1.6}%
-\contentsline {subsection}{\numberline {1.6.1}误差项（Error Term）的定义}{11}{subsection.1.6.1}%
-\contentsline {subsection}{\numberline {1.6.2}反向传播的四步流程}{11}{subsection.1.6.2}%
-\contentsline {subsubsection}{1. 前向传播}{11}{subsubsection*.9}%
-\contentsline {subsubsection}{2. 计算输出层误差}{11}{subsubsection*.10}%
-\contentsline {subsubsection}{3. 反向传播误差（关键递推公式）}{12}{subsubsection*.11}%
-\contentsline {subsubsection}{4. 计算参数梯度}{12}{subsubsection*.12}%
-\contentsline {subsubsection}{5. 更新参数}{12}{subsubsection*.13}%
-\contentsline {subsubsection}{6. 批处理与梯度累加}{12}{subsubsection*.14}%
-\contentsline {subsection}{\numberline {1.6.3}反向传播推导（选读）}{12}{subsection.1.6.3}%
-\contentsline {section}{\numberline {1.7}引言：从拟合数据到泛化世界}{13}{section.1.7}%
-\contentsline {section}{\numberline {1.8}模型性能评估：不只是看分数}{13}{section.1.8}%
-\contentsline {subsection}{\numberline {1.8.1}数据集划分的艺术}{13}{subsection.1.8.1}%
-\contentsline {subsection}{\numberline {1.8.2}K-折交叉验证：小数据集的救星}{14}{subsection.1.8.2}%
-\contentsline {section}{\numberline {1.9}诊断模型问题：欠拟合与过拟合}{14}{section.1.9}%
-\contentsline {subsection}{\numberline {1.9.1}欠拟合（Underfitting）}{14}{subsection.1.9.1}%
-\contentsline {subsection}{\numberline {1.9.2}过拟合（Overfitting）}{15}{subsection.1.9.2}%
-\contentsline {subsection}{\numberline {1.9.3}偏差-方差权衡：统计学习理论的视角}{15}{subsection.1.9.3}%
-\contentsline {section}{\numberline {1.10}正则化技术：防止过拟合的利器}{15}{section.1.10}%
-\contentsline {subsection}{\numberline {1.10.1}L1和L2正则化}{15}{subsection.1.10.1}%
-\contentsline {subsubsection}{几何解释}{16}{subsubsection*.17}%
-\contentsline {subsection}{\numberline {1.10.2}Dropout：训练时随机丢弃神经元}{16}{subsection.1.10.2}%
-\contentsline {subsection}{\numberline {1.10.3}早停法（Early Stopping）}{16}{subsection.1.10.3}%
-\contentsline {section}{\numberline {1.11}从神经网络到深度学习：历史脉络}{17}{section.1.11}%
-\contentsline {subsection}{\numberline {1.11.1}发展历程}{17}{subsection.1.11.1}%
-\contentsline {subsubsection}{早期探索（1940s-1980s）}{17}{subsubsection*.20}%
-\contentsline {subsubsection}{复兴前夜（1980s-2006）}{17}{subsubsection*.21}%
-\contentsline {subsubsection}{复兴之年（2006）}{17}{subsubsection*.22}%
-\contentsline {subsubsection}{爆发之年（2012）}{17}{subsubsection*.23}%
-\contentsline {subsection}{\numberline {1.11.2}深度学习的四大支柱}{18}{subsection.1.11.2}%
-\contentsline {subsection}{\numberline {1.11.3}为什么叫"深度学习"？}{18}{subsection.1.11.3}%
-\contentsline {section}{\numberline {1.12}关键模型架构}{19}{section.1.12}%
-\contentsline {subsection}{\numberline {1.12.1}自编码器（Autoencoders, AEs）}{19}{subsection.1.12.1}%
-\contentsline {subsection}{\numberline {1.12.2}卷积神经网络（CNN）}{19}{subsection.1.12.2}%
-\contentsline {subsubsection}{核心组件}{19}{subsubsection*.28}%
-\contentsline {subsubsection}{经典架构}{20}{subsubsection*.29}%
-\contentsline {subsection}{\numberline {1.12.3}循环神经网络（RNN）与LSTM}{20}{subsection.1.12.3}%
-\contentsline {subsubsection}{标准RNN}{20}{subsubsection*.30}%
-\contentsline {subsubsection}{LSTM：长短期记忆网络}{20}{subsubsection*.32}%
-\contentsline {subsection}{\numberline {1.12.4}生成对抗网络（GANs）}{21}{subsection.1.12.4}%
-\contentsline {subsection}{\numberline {1.12.5}扩散模型（Diffusion Models）}{22}{subsection.1.12.5}%
-\contentsline {section}{\numberline {1.13}Transformer：注意力就是全部}{22}{section.1.13}%
-\contentsline {subsection}{\numberline {1.13.1}自注意力机制（Self-Attention）}{22}{subsection.1.13.1}%
-\contentsline {subsection}{\numberline {1.13.2}多头注意力（Multi-Head Attention）}{23}{subsection.1.13.2}%
-\contentsline {subsection}{\numberline {1.13.3}Transformer架构}{23}{subsection.1.13.3}%
-\contentsline {subsubsection}{编码器（Encoder）}{23}{subsubsection*.38}%
-\contentsline {subsubsection}{解码器（Decoder）}{23}{subsubsection*.39}%
-\contentsline {subsection}{\numberline {1.13.4}位置编码（Positional Encoding）}{24}{subsection.1.13.4}%
-\contentsline {subsection}{\numberline {1.13.5}Transformer vs RNN/LSTM}{24}{subsection.1.13.5}%
-\contentsline {section}{\numberline {1.14}为什么Transformer能够"通吃"？}{25}{section.1.14}%
-\contentsline {subsection}{\numberline {1.14.1}从专家模型到通用模型}{25}{subsection.1.14.1}%
-\contentsline {subsection}{\numberline {1.14.2}Transformer的核心优势}{25}{subsection.1.14.2}%
-\contentsline {section}{\numberline {1.15}总结与思考}{25}{section.1.15}%
-\contentsline {chapter}{\numberline {第二章\hspace {.3em}}深度强化学习之基础}{26}{chapter.2}%
-\contentsline {section}{\numberline {2.1}引言：从有答案的学习到探索的学习}{26}{section.2.1}%
-\contentsline {subsection}{\numberline {2.1.1}监督学习的辉煌与局限}{26}{subsection.2.1.1}%
-\contentsline {subsubsection}{监督学习的核心思想}{26}{subsubsection*.41}%
-\contentsline {subsubsection}{监督学习的成功案例}{26}{subsubsection*.42}%
-\contentsline {subsubsection}{监督学习的局限性}{26}{subsubsection*.43}%
-\contentsline {subsection}{\numberline {2.1.2}强化学习：一种新的学习范式}{27}{subsection.2.1.2}%
-\contentsline {subsubsection}{从"知道答案"到"探索答案"}{27}{subsubsection*.45}%
-\contentsline {subsubsection}{人类学习与强化学习的类比}{28}{subsubsection*.47}%
-\contentsline {section}{\numberline {2.2}马尔可夫决策过程：强化学习的数学基础}{28}{section.2.2}%
-\contentsline {subsection}{\numberline {2.2.1}马尔可夫决策过程的基本概念}{28}{subsection.2.2.1}%
-\contentsline {subsubsection}{MDP的五个核心要素}{28}{subsubsection*.50}%
-\contentsline {subsection}{\numberline {2.2.2}MDP的核心概念}{29}{subsection.2.2.2}%
-\contentsline {subsubsection}{策略函数 $\pi $}{29}{subsubsection*.51}%
-\contentsline {subsubsection}{轨迹与回报}{30}{subsubsection*.52}%
-\contentsline {subsubsection}{Rollout（或轨迹采样）}{30}{subsubsection*.53}%
-\contentsline {section}{\numberline {2.3}价值函数：评估策略的优劣}{30}{section.2.3}%
-\contentsline {subsection}{\numberline {2.3.1}价值函数的定义与意义}{30}{subsection.2.3.1}%
-\contentsline {subsubsection}{状态价值函数 $V_\pi (s)$}{30}{subsubsection*.54}%
-\contentsline {subsubsection}{动作价值函数 $Q_\pi (s, a)$}{31}{subsubsection*.55}%
-\contentsline {subsection}{\numberline {2.3.2}价值函数的关系}{31}{subsection.2.3.2}%
-\contentsline {subsubsection}{从 $Q_\pi $ 到 $V_\pi $}{31}{subsubsection*.56}%
-\contentsline {subsubsection}{从 $V_\pi $ 到 $Q_\pi $}{31}{subsubsection*.57}%
-\contentsline {subsection}{\numberline {2.3.3}最优价值函数}{31}{subsection.2.3.3}%
-\contentsline {subsubsection}{最优状态价值函数}{32}{subsubsection*.58}%
-\contentsline {subsubsection}{最优动作价值函数}{32}{subsubsection*.59}%
-\contentsline {subsubsection}{最优价值函数的关系}{32}{subsubsection*.60}%
-\contentsline {section}{\numberline {2.4}贝尔曼方程：动态规划的核心}{32}{section.2.4}%
-\contentsline {subsection}{\numberline {2.4.1}贝尔曼期望方程}{32}{subsection.2.4.1}%
-\contentsline {subsubsection}{状态价值函数的贝尔曼方程}{33}{subsubsection*.61}%
-\contentsline {subsubsection}{动作价值函数的贝尔曼方程}{33}{subsubsection*.62}%
-\contentsline {subsection}{\numberline {2.4.2}贝尔曼最优方程}{33}{subsection.2.4.2}%
-\contentsline {subsubsection}{状态价值函数的最优贝尔曼方程}{33}{subsubsection*.63}%
-\contentsline {subsubsection}{动作价值函数的最优贝尔曼方程}{34}{subsubsection*.64}%
-\contentsline {subsection}{\numberline {2.4.3}贝尔曼方程的矩阵形式}{34}{subsection.2.4.3}%
-\contentsline {subsubsection}{状态价值函数的矩阵形式}{34}{subsubsection*.65}%
-\contentsline {subsubsection}{解析解与迭代解}{34}{subsubsection*.66}%
-\contentsline {section}{\numberline {2.5}强化学习算法分类}{34}{section.2.5}%
-\contentsline {subsection}{\numberline {2.5.1}有模型 vs 无模型}{35}{subsection.2.5.1}%
-\contentsline {subsubsection}{有模型方法的进一步分类}{35}{subsubsection*.68}%
-\contentsline {subsection}{\numberline {2.5.2}基于价值 vs 基于策略}{36}{subsection.2.5.2}%
-\contentsline {subsubsection}{基于价值方法的策略推导}{36}{subsubsection*.70}%
-\contentsline {subsubsection}{基于策略方法的目标函数}{37}{subsubsection*.71}%
-\contentsline {subsection}{\numberline {2.5.3}蒙特卡洛 vs 时序差分}{37}{subsection.2.5.3}%
-\contentsline {subsubsection}{蒙特卡洛方法的偏差与方差分析}{37}{subsubsection*.73}%
-\contentsline {subsubsection}{时序差分方法的偏差与方差分析}{38}{subsubsection*.74}%
-\contentsline {subsection}{\numberline {2.5.4}在线策略 vs 离线策略}{38}{subsection.2.5.4}%
-\contentsline {subsubsection}{SARSA：在线策略TD控制算法}{38}{subsubsection*.76}%
-\contentsline {subsubsection}{Q-learning：离线策略TD控制算法}{39}{subsubsection*.77}%
-\contentsline {subsubsection}{经验回放（Experience Replay）}{39}{subsubsection*.78}%
-\contentsline {section}{\numberline {2.6}Actor-Critic方法：价值与策略的结合}{39}{section.2.6}%
-\contentsline {subsection}{\numberline {2.6.1}Actor-Critic框架}{39}{subsection.2.6.1}%
-\contentsline {subsection}{\numberline {2.6.2}优势函数（Advantage Function）}{40}{subsection.2.6.2}%
-\contentsline {subsection}{\numberline {2.6.3}策略梯度与Actor-Critic}{40}{subsection.2.6.3}%
-\contentsline {subsection}{\numberline {2.6.4}现代Actor-Critic算法}{40}{subsection.2.6.4}%
-\contentsline {subsubsection}{优势Actor-Critic（A2C/A3C）}{40}{subsubsection*.80}%
-\contentsline {subsubsection}{近端策略优化（PPO）}{41}{subsubsection*.81}%
-\contentsline {subsubsection}{深度确定性策略梯度（DDPG）}{41}{subsubsection*.82}%
-\contentsline {section}{\numberline {2.7}总结与展望}{41}{section.2.7}%
-\contentsline {subsection}{\numberline {2.7.1}强化学习算法分类总结}{41}{subsection.2.7.1}%
-\contentsline {subsection}{\numberline {2.7.2}强化学习的挑战与前沿}{42}{subsection.2.7.2}%
-\contentsline {subsubsection}{主要挑战}{42}{subsubsection*.84}%
-\contentsline {subsubsection}{前沿方向}{42}{subsubsection*.85}%
-\contentsline {chapter}{\numberline {第三章\hspace {.3em}}深度强化学习之价值学习}{43}{chapter.3}%
-\contentsline {section}{\numberline {3.1}价值学习：从评估到决策}{43}{section.3.1}%
-\contentsline {subsection}{\numberline {3.1.1}价值学习的核心思想}{43}{subsection.3.1.1}%
-\contentsline {section}{\numberline {3.2}Q-Learning：经典的价值学习算法}{44}{section.3.2}%
-\contentsline {subsection}{\numberline {3.2.1}算法原理}{44}{subsection.3.2.1}%
-\contentsline {subsection}{\numberline {3.2.2}表格Q-Learning}{44}{subsection.3.2.2}%
-\contentsline {subsection}{\numberline {3.2.3}探索与利用的平衡：$\epsilon $-贪婪策略}{45}{subsection.3.2.3}%
-\contentsline {subsection}{\numberline {3.2.4}Q-Learning与SARSA的比较}{46}{subsection.3.2.4}%
-\contentsline {section}{\numberline {3.3}深度Q网络：当Q-Learning遇见深度学习}{46}{section.3.3}%
-\contentsline {subsection}{\numberline {3.3.1}表格方法的局限性}{46}{subsection.3.3.1}%
-\contentsline {subsection}{\numberline {3.3.2}深度Q网络的基本思想}{46}{subsection.3.3.2}%
-\contentsline {subsection}{\numberline {3.3.3}DQN的训练目标与损失函数}{47}{subsection.3.3.3}%
-\contentsline {subsection}{\numberline {3.3.4}DQN的训练流程}{48}{subsection.3.3.4}%
-\contentsline {section}{\numberline {3.4}DQN的核心技术}{48}{section.3.4}%
-\contentsline {subsection}{\numberline {3.4.1}经验回放（Experience Replay）}{48}{subsection.3.4.1}%
-\contentsline {subsection}{\numberline {3.4.2}目标网络（Target Network）}{49}{subsection.3.4.2}%
-\contentsline {section}{\numberline {3.5}DQN的改进与扩展}{51}{section.3.5}%
-\contentsline {subsection}{\numberline {3.5.1}优先经验回放（Prioritized Experience Replay）}{51}{subsection.3.5.1}%
-\contentsline {subsection}{\numberline {3.5.2}Double DQN}{51}{subsection.3.5.2}%
-\contentsline {subsection}{\numberline {3.5.3}Dueling DQN}{52}{subsection.3.5.3}%
-\contentsline {subsection}{\numberline {3.5.4}Multi-Step DQN}{53}{subsection.3.5.4}%
-\contentsline {subsection}{\numberline {3.5.5}Noisy DQN}{54}{subsection.3.5.5}%
-\contentsline {subsection}{\numberline {3.5.6}Distributional DQN}{54}{subsection.3.5.6}%
-\contentsline {subsubsection}{C51算法}{55}{subsubsection*.95}%
-\contentsline {subsubsection}{QR-DQN和IQN}{56}{subsubsection*.96}%
-\contentsline {section}{\numberline {3.6}Rainbow：集成多种改进}{56}{section.3.6}%
-\contentsline {section}{\numberline {3.7}总结与比较}{57}{section.3.7}%
-\contentsline {subsection}{\numberline {3.7.1}DQN变种对比}{57}{subsection.3.7.1}%
-\contentsline {subsection}{\numberline {3.7.2}实际应用建议}{57}{subsection.3.7.2}%
-\contentsline {subsection}{\numberline {3.7.3}未来方向}{57}{subsection.3.7.3}%
-\contentsline {chapter}{\numberline {第四章\hspace {.3em}}深度强化学习之策略学习}{59}{chapter.4}%
-\contentsline {section}{\numberline {4.1}引言：为什么需要策略学习？}{59}{section.4.1}%
-\contentsline {subsection}{\numberline {4.1.1}价值学习方法的局限性}{59}{subsection.4.1.1}%
-\contentsline {subsection}{\numberline {4.1.2}策略学习的优势}{60}{subsection.4.1.2}%
-\contentsline {subsection}{\numberline {4.1.3}策略学习的基本框架}{61}{subsection.4.1.3}%
-\contentsline {section}{\numberline {4.2}策略梯度定理：理论基础}{61}{section.4.2}%
-\contentsline {subsection}{\numberline {4.2.1}目标函数的定义}{61}{subsection.4.2.1}%
-\contentsline {subsection}{\numberline {4.2.2}轨迹概率的分解}{61}{subsection.4.2.2}%
-\contentsline {subsection}{\numberline {4.2.3}策略梯度推导}{62}{subsection.4.2.3}%
-\contentsline {subsection}{\numberline {4.2.4}直观理解}{63}{subsection.4.2.4}%
-\contentsline {section}{\numberline {4.3}REINFORCE算法：蒙特卡洛策略梯度}{63}{section.4.3}%
-\contentsline {subsection}{\numberline {4.3.1}基本REINFORCE算法}{63}{subsection.4.3.1}%
-\contentsline {subsection}{\numberline {4.3.2}REINFORCE的改进：因果关系修正}{63}{subsection.4.3.2}%
-\contentsline {subsection}{\numberline {4.3.3}REINFORCE的改进：引入基线}{64}{subsection.4.3.3}%
-\contentsline {subsection}{\numberline {4.3.4}REINFORCE的优缺点}{65}{subsection.4.3.4}%
-\contentsline {section}{\numberline {4.4}Actor-Critic方法：结合价值函数}{66}{section.4.4}%
-\contentsline {subsection}{\numberline {4.4.1}Actor-Critic基本思想}{66}{subsection.4.4.1}%
-\contentsline {subsection}{\numberline {4.4.2}优势函数（Advantage Function）}{66}{subsection.4.4.2}%
-\contentsline {subsection}{\numberline {4.4.3}Actor-Critic算法}{67}{subsection.4.4.3}%
-\contentsline {subsection}{\numberline {4.4.4}Actor-Critic的优缺点}{67}{subsection.4.4.4}%
-\contentsline {section}{\numberline {4.5}A2C和A3C：并行化Actor-Critic}{67}{section.4.5}%
-\contentsline {subsection}{\numberline {4.5.1}优势Actor-Critic（A2C）}{67}{subsection.4.5.1}%
-\contentsline {subsection}{\numberline {4.5.2}A2C算法}{68}{subsection.4.5.2}%
-\contentsline {subsection}{\numberline {4.5.3}异步优势Actor-Critic（A3C）}{68}{subsection.4.5.3}%
-\contentsline {subsection}{\numberline {4.5.4}A2C vs A3C比较}{69}{subsection.4.5.4}%
-\contentsline {section}{\numberline {4.6}TRPO：置信域策略优化}{70}{section.4.6}%
-\contentsline {subsection}{\numberline {4.6.1}TRPO的基本思想}{70}{subsection.4.6.1}%
-\contentsline {subsection}{\numberline {4.6.2}TRPO的数学形式}{70}{subsection.4.6.2}%
-\contentsline {subsection}{\numberline {4.6.3}重要性采样（Importance Sampling）}{70}{subsection.4.6.3}%
-\contentsline {subsection}{\numberline {4.6.4}代理目标函数（Surrogate Objective）}{71}{subsection.4.6.4}%
-\contentsline {subsection}{\numberline {4.6.5}TRPO的求解}{71}{subsection.4.6.5}%
-\contentsline {subsection}{\numberline {4.6.6}TRPO算法}{71}{subsection.4.6.6}%
-\contentsline {subsection}{\numberline {4.6.7}TRPO的优缺点}{72}{subsection.4.6.7}%
-\contentsline {section}{\numberline {4.7}PPO：近端策略优化}{72}{section.4.7}%
-\contentsline {subsection}{\numberline {4.7.1}PPO的基本思想}{72}{subsection.4.7.1}%
-\contentsline {subsection}{\numberline {4.7.2}PPO-Clip目标函数}{73}{subsection.4.7.2}%
-\contentsline {subsection}{\numberline {4.7.3}PPO-Clip的直观理解}{73}{subsection.4.7.3}%
-\contentsline {subsection}{\numberline {4.7.4}PPO-Penalty目标函数}{74}{subsection.4.7.4}%
-\contentsline {subsection}{\numberline {4.7.5}广义优势估计（GAE）}{74}{subsection.4.7.5}%
-\contentsline {subsection}{\numberline {4.7.6}PPO算法}{75}{subsection.4.7.6}%
-\contentsline {subsection}{\numberline {4.7.7}联合损失函数}{75}{subsection.4.7.7}%
-\contentsline {subsection}{\numberline {4.7.8}PPO的优缺点}{76}{subsection.4.7.8}%
-\contentsline {section}{\numberline {4.8}策略学习方法的比较与应用}{76}{section.4.8}%
-\contentsline {subsection}{\numberline {4.8.1}方法对比}{76}{subsection.4.8.1}%
-\contentsline {subsection}{\numberline {4.8.2}选择指南}{76}{subsection.4.8.2}%
-\contentsline {subsection}{\numberline {4.8.3}实际应用建议}{76}{subsection.4.8.3}%
-\contentsline {section}{\numberline {4.9}总结与展望}{77}{section.4.9}%
-\contentsline {subsection}{\numberline {4.9.1}策略学习的发展历程}{77}{subsection.4.9.1}%
-\contentsline {subsection}{\numberline {4.9.2}关键技术创新}{77}{subsection.4.9.2}%
-\contentsline {subsection}{\numberline {4.9.3}未来发展方向}{78}{subsection.4.9.3}%
-\contentsline {subsection}{\numberline {4.9.4}学习建议}{78}{subsection.4.9.4}%
+\contentsline {chapter}{\numberline {第一章\hspace {.3em}}神经网络与深度学习基础}{12}{chapter.1}%
+\contentsline {section}{\numberline {1.1}启发性思考}{12}{section.1.1}%
+\contentsline {section}{\numberline {1.2}神经元：深度学习的基石}{12}{section.1.2}%
+\contentsline {subsection}{\numberline {1.2.1}数学模型}{12}{subsection.1.2.1}%
+\contentsline {subsection}{\numberline {1.2.2}关键组件详解}{12}{subsection.1.2.2}%
+\contentsline {section}{\numberline {1.3}激活函数：从Sigmoid到ReLU}{13}{section.1.3}%
+\contentsline {subsection}{\numberline {1.3.1}经典激活函数}{13}{subsection.1.3.1}%
+\contentsline {subsubsection}{Sigmoid函数}{13}{subsubsection*.2}%
+\contentsline {subsubsection}{双曲正切函数（tanh）}{13}{subsubsection*.3}%
+\contentsline {subsubsection}{线性整流单元（ReLU）}{14}{subsubsection*.4}%
+\contentsline {subsection}{\numberline {1.3.2}激活函数对比与进阶选择}{14}{subsection.1.3.2}%
+\contentsline {subsubsection}{ReLU的改进变体}{14}{subsubsection*.6}%
+\contentsline {section}{\numberline {1.4}前馈神经网络：层叠的威力}{15}{section.1.4}%
+\contentsline {subsection}{\numberline {1.4.1}网络结构}{15}{subsection.1.4.1}%
+\contentsline {subsection}{\numberline {1.4.2}优雅高效的矩阵表示}{15}{subsection.1.4.2}%
+\contentsline {subsection}{\numberline {1.4.3}Softmax函数：多分类的“裁判”}{15}{subsection.1.4.3}%
+\contentsline {subsubsection}{标准Softmax}{15}{subsubsection*.7}%
+\contentsline {subsubsection}{温度系数（Temperature）}{15}{subsubsection*.8}%
+\contentsline {section}{\numberline {1.5}神经网络的训练：让模型学会思考}{16}{section.1.5}%
+\contentsline {subsection}{\numberline {1.5.1}步骤一：定义网络结构}{16}{subsection.1.5.1}%
+\contentsline {subsection}{\numberline {1.5.2}步骤二：定义损失函数（Loss Function）}{16}{subsection.1.5.2}%
+\contentsline {subsection}{\numberline {1.5.3}步骤三：梯度下降优化}{17}{subsection.1.5.3}%
+\contentsline {section}{\numberline {1.6}反向传播：深度学习的引擎}{17}{section.1.6}%
+\contentsline {subsection}{\numberline {1.6.1}误差项（Error Term）的定义}{17}{subsection.1.6.1}%
+\contentsline {subsection}{\numberline {1.6.2}反向传播的四步流程}{17}{subsection.1.6.2}%
+\contentsline {subsubsection}{1. 前向传播}{17}{subsubsection*.9}%
+\contentsline {subsubsection}{2. 计算输出层误差}{17}{subsubsection*.10}%
+\contentsline {subsubsection}{3. 反向传播误差（关键递推公式）}{18}{subsubsection*.11}%
+\contentsline {subsubsection}{4. 计算参数梯度}{18}{subsubsection*.12}%
+\contentsline {subsubsection}{5. 更新参数}{18}{subsubsection*.13}%
+\contentsline {subsubsection}{6. 批处理与梯度累加}{18}{subsubsection*.14}%
+\contentsline {subsection}{\numberline {1.6.3}反向传播推导（选读）}{18}{subsection.1.6.3}%
+\contentsline {section}{\numberline {1.7}引言：从拟合数据到泛化世界}{19}{section.1.7}%
+\contentsline {section}{\numberline {1.8}模型性能评估：不只是看分数}{19}{section.1.8}%
+\contentsline {subsection}{\numberline {1.8.1}数据集划分的艺术}{19}{subsection.1.8.1}%
+\contentsline {subsection}{\numberline {1.8.2}K-折交叉验证：小数据集的救星}{20}{subsection.1.8.2}%
+\contentsline {section}{\numberline {1.9}诊断模型问题：欠拟合与过拟合}{20}{section.1.9}%
+\contentsline {subsection}{\numberline {1.9.1}欠拟合（Underfitting）}{20}{subsection.1.9.1}%
+\contentsline {subsection}{\numberline {1.9.2}过拟合（Overfitting）}{21}{subsection.1.9.2}%
+\contentsline {subsection}{\numberline {1.9.3}偏差-方差权衡：统计学习理论的视角}{21}{subsection.1.9.3}%
+\contentsline {section}{\numberline {1.10}正则化技术：防止过拟合的利器}{21}{section.1.10}%
+\contentsline {subsection}{\numberline {1.10.1}L1和L2正则化}{21}{subsection.1.10.1}%
+\contentsline {subsubsection}{几何解释}{22}{subsubsection*.17}%
+\contentsline {subsection}{\numberline {1.10.2}Dropout：训练时随机丢弃神经元}{22}{subsection.1.10.2}%
+\contentsline {subsection}{\numberline {1.10.3}早停法（Early Stopping）}{22}{subsection.1.10.3}%
+\contentsline {section}{\numberline {1.11}从神经网络到深度学习：历史脉络}{23}{section.1.11}%
+\contentsline {subsection}{\numberline {1.11.1}发展历程}{23}{subsection.1.11.1}%
+\contentsline {subsubsection}{早期探索（1940s-1980s）}{23}{subsubsection*.20}%
+\contentsline {subsubsection}{复兴前夜（1980s-2006）}{23}{subsubsection*.21}%
+\contentsline {subsubsection}{复兴之年（2006）}{23}{subsubsection*.22}%
+\contentsline {subsubsection}{爆发之年（2012）}{23}{subsubsection*.23}%
+\contentsline {subsection}{\numberline {1.11.2}深度学习的四大支柱}{24}{subsection.1.11.2}%
+\contentsline {subsection}{\numberline {1.11.3}为什么叫"深度学习"？}{24}{subsection.1.11.3}%
+\contentsline {section}{\numberline {1.12}关键模型架构}{25}{section.1.12}%
+\contentsline {subsection}{\numberline {1.12.1}自编码器（Autoencoders, AEs）}{25}{subsection.1.12.1}%
+\contentsline {subsection}{\numberline {1.12.2}卷积神经网络（CNN）}{25}{subsection.1.12.2}%
+\contentsline {subsubsection}{核心组件}{25}{subsubsection*.28}%
+\contentsline {subsubsection}{经典架构}{26}{subsubsection*.29}%
+\contentsline {subsection}{\numberline {1.12.3}循环神经网络（RNN）与LSTM}{26}{subsection.1.12.3}%
+\contentsline {subsubsection}{标准RNN}{26}{subsubsection*.30}%
+\contentsline {subsubsection}{LSTM：长短期记忆网络}{26}{subsubsection*.32}%
+\contentsline {subsection}{\numberline {1.12.4}生成对抗网络（GANs）}{27}{subsection.1.12.4}%
+\contentsline {subsection}{\numberline {1.12.5}扩散模型（Diffusion Models）}{28}{subsection.1.12.5}%
+\contentsline {section}{\numberline {1.13}Transformer：注意力就是全部}{28}{section.1.13}%
+\contentsline {subsection}{\numberline {1.13.1}自注意力机制（Self-Attention）}{28}{subsection.1.13.1}%
+\contentsline {subsection}{\numberline {1.13.2}多头注意力（Multi-Head Attention）}{29}{subsection.1.13.2}%
+\contentsline {subsection}{\numberline {1.13.3}Transformer架构}{29}{subsection.1.13.3}%
+\contentsline {subsubsection}{编码器（Encoder）}{29}{subsubsection*.38}%
+\contentsline {subsubsection}{解码器（Decoder）}{29}{subsubsection*.39}%
+\contentsline {subsection}{\numberline {1.13.4}位置编码（Positional Encoding）}{30}{subsection.1.13.4}%
+\contentsline {subsection}{\numberline {1.13.5}Transformer vs RNN/LSTM}{30}{subsection.1.13.5}%
+\contentsline {section}{\numberline {1.14}为什么Transformer能够"通吃"？}{31}{section.1.14}%
+\contentsline {subsection}{\numberline {1.14.1}从专家模型到通用模型}{31}{subsection.1.14.1}%
+\contentsline {subsection}{\numberline {1.14.2}Transformer的核心优势}{31}{subsection.1.14.2}%
+\contentsline {section}{\numberline {1.15}总结与思考}{31}{section.1.15}%
+\contentsline {chapter}{\numberline {第二章\hspace {.3em}}深度强化学习之基础}{32}{chapter.2}%
+\contentsline {section}{\numberline {2.1}引言：从有答案的学习到探索的学习}{32}{section.2.1}%
+\contentsline {subsection}{\numberline {2.1.1}监督学习的辉煌与局限}{32}{subsection.2.1.1}%
+\contentsline {subsubsection}{监督学习的核心思想}{32}{subsubsection*.41}%
+\contentsline {subsubsection}{监督学习的成功案例}{32}{subsubsection*.42}%
+\contentsline {subsubsection}{监督学习的局限性}{32}{subsubsection*.43}%
+\contentsline {subsection}{\numberline {2.1.2}强化学习：一种新的学习范式}{33}{subsection.2.1.2}%
+\contentsline {subsubsection}{从"知道答案"到"探索答案"}{33}{subsubsection*.45}%
+\contentsline {subsubsection}{人类学习与强化学习的类比}{34}{subsubsection*.47}%
+\contentsline {section}{\numberline {2.2}马尔可夫决策过程：强化学习的数学基础}{34}{section.2.2}%
+\contentsline {subsection}{\numberline {2.2.1}马尔可夫决策过程的基本概念}{34}{subsection.2.2.1}%
+\contentsline {subsubsection}{MDP的五个核心要素}{34}{subsubsection*.50}%
+\contentsline {subsection}{\numberline {2.2.2}MDP的核心概念}{35}{subsection.2.2.2}%
+\contentsline {subsubsection}{策略函数 $\pi $}{35}{subsubsection*.51}%
+\contentsline {subsubsection}{轨迹与回报}{36}{subsubsection*.52}%
+\contentsline {subsubsection}{Rollout（或轨迹采样）}{36}{subsubsection*.53}%
+\contentsline {section}{\numberline {2.3}价值函数：评估策略的优劣}{36}{section.2.3}%
+\contentsline {subsection}{\numberline {2.3.1}价值函数的定义与意义}{36}{subsection.2.3.1}%
+\contentsline {subsubsection}{状态价值函数 $V_\pi (s)$}{36}{subsubsection*.54}%
+\contentsline {subsubsection}{动作价值函数 $Q_\pi (s, a)$}{37}{subsubsection*.55}%
+\contentsline {subsection}{\numberline {2.3.2}价值函数的关系}{37}{subsection.2.3.2}%
+\contentsline {subsubsection}{从 $Q_\pi $ 到 $V_\pi $}{37}{subsubsection*.56}%
+\contentsline {subsubsection}{从 $V_\pi $ 到 $Q_\pi $}{37}{subsubsection*.57}%
+\contentsline {subsection}{\numberline {2.3.3}最优价值函数}{37}{subsection.2.3.3}%
+\contentsline {subsubsection}{最优状态价值函数}{38}{subsubsection*.58}%
+\contentsline {subsubsection}{最优动作价值函数}{38}{subsubsection*.59}%
+\contentsline {subsubsection}{最优价值函数的关系}{38}{subsubsection*.60}%
+\contentsline {section}{\numberline {2.4}贝尔曼方程：动态规划的核心}{38}{section.2.4}%
+\contentsline {subsection}{\numberline {2.4.1}贝尔曼期望方程}{38}{subsection.2.4.1}%
+\contentsline {subsubsection}{状态价值函数的贝尔曼方程}{39}{subsubsection*.61}%
+\contentsline {subsubsection}{动作价值函数的贝尔曼方程}{39}{subsubsection*.62}%
+\contentsline {subsection}{\numberline {2.4.2}贝尔曼最优方程}{39}{subsection.2.4.2}%
+\contentsline {subsubsection}{状态价值函数的最优贝尔曼方程}{39}{subsubsection*.63}%
+\contentsline {subsubsection}{动作价值函数的最优贝尔曼方程}{40}{subsubsection*.64}%
+\contentsline {subsection}{\numberline {2.4.3}贝尔曼方程的矩阵形式}{40}{subsection.2.4.3}%
+\contentsline {subsubsection}{状态价值函数的矩阵形式}{40}{subsubsection*.65}%
+\contentsline {subsubsection}{解析解与迭代解}{40}{subsubsection*.66}%
+\contentsline {section}{\numberline {2.5}强化学习算法分类}{40}{section.2.5}%
+\contentsline {subsection}{\numberline {2.5.1}有模型 vs 无模型}{41}{subsection.2.5.1}%
+\contentsline {subsubsection}{有模型方法的进一步分类}{41}{subsubsection*.68}%
+\contentsline {subsection}{\numberline {2.5.2}基于价值 vs 基于策略}{42}{subsection.2.5.2}%
+\contentsline {subsubsection}{基于价值方法的策略推导}{42}{subsubsection*.70}%
+\contentsline {subsubsection}{基于策略方法的目标函数}{43}{subsubsection*.71}%
+\contentsline {subsection}{\numberline {2.5.3}蒙特卡洛 vs 时序差分}{43}{subsection.2.5.3}%
+\contentsline {subsubsection}{蒙特卡洛方法的偏差与方差分析}{43}{subsubsection*.73}%
+\contentsline {subsubsection}{时序差分方法的偏差与方差分析}{44}{subsubsection*.74}%
+\contentsline {subsection}{\numberline {2.5.4}在线策略 vs 离线策略}{44}{subsection.2.5.4}%
+\contentsline {subsubsection}{SARSA：在线策略TD控制算法}{44}{subsubsection*.76}%
+\contentsline {subsubsection}{Q-learning：离线策略TD控制算法}{45}{subsubsection*.77}%
+\contentsline {subsubsection}{经验回放（Experience Replay）}{45}{subsubsection*.78}%
+\contentsline {section}{\numberline {2.6}Actor-Critic方法：价值与策略的结合}{45}{section.2.6}%
+\contentsline {subsection}{\numberline {2.6.1}Actor-Critic框架}{45}{subsection.2.6.1}%
+\contentsline {subsection}{\numberline {2.6.2}优势函数（Advantage Function）}{46}{subsection.2.6.2}%
+\contentsline {subsection}{\numberline {2.6.3}策略梯度与Actor-Critic}{46}{subsection.2.6.3}%
+\contentsline {subsection}{\numberline {2.6.4}现代Actor-Critic算法}{46}{subsection.2.6.4}%
+\contentsline {subsubsection}{优势Actor-Critic（A2C/A3C）}{46}{subsubsection*.80}%
+\contentsline {subsubsection}{近端策略优化（PPO）}{47}{subsubsection*.81}%
+\contentsline {subsubsection}{深度确定性策略梯度（DDPG）}{47}{subsubsection*.82}%
+\contentsline {section}{\numberline {2.7}总结与展望}{47}{section.2.7}%
+\contentsline {subsection}{\numberline {2.7.1}强化学习算法分类总结}{47}{subsection.2.7.1}%
+\contentsline {subsection}{\numberline {2.7.2}强化学习的挑战与前沿}{48}{subsection.2.7.2}%
+\contentsline {subsubsection}{主要挑战}{48}{subsubsection*.84}%
+\contentsline {subsubsection}{前沿方向}{48}{subsubsection*.85}%
+\contentsline {chapter}{\numberline {第三章\hspace {.3em}}深度强化学习之价值学习}{49}{chapter.3}%
+\contentsline {section}{\numberline {3.1}价值学习：从评估到决策}{49}{section.3.1}%
+\contentsline {subsection}{\numberline {3.1.1}价值学习的核心思想}{49}{subsection.3.1.1}%
+\contentsline {section}{\numberline {3.2}Q-Learning：经典的价值学习算法}{50}{section.3.2}%
+\contentsline {subsection}{\numberline {3.2.1}算法原理}{50}{subsection.3.2.1}%
+\contentsline {subsection}{\numberline {3.2.2}表格Q-Learning}{50}{subsection.3.2.2}%
+\contentsline {subsection}{\numberline {3.2.3}探索与利用的平衡：$\epsilon $-贪婪策略}{51}{subsection.3.2.3}%
+\contentsline {subsection}{\numberline {3.2.4}Q-Learning与SARSA的比较}{52}{subsection.3.2.4}%
+\contentsline {section}{\numberline {3.3}深度Q网络：当Q-Learning遇见深度学习}{52}{section.3.3}%
+\contentsline {subsection}{\numberline {3.3.1}表格方法的局限性}{52}{subsection.3.3.1}%
+\contentsline {subsection}{\numberline {3.3.2}深度Q网络的基本思想}{52}{subsection.3.3.2}%
+\contentsline {subsection}{\numberline {3.3.3}DQN的训练目标与损失函数}{53}{subsection.3.3.3}%
+\contentsline {subsection}{\numberline {3.3.4}DQN的训练流程}{54}{subsection.3.3.4}%
+\contentsline {section}{\numberline {3.4}DQN的核心技术}{54}{section.3.4}%
+\contentsline {subsection}{\numberline {3.4.1}经验回放（Experience Replay）}{54}{subsection.3.4.1}%
+\contentsline {subsection}{\numberline {3.4.2}目标网络（Target Network）}{55}{subsection.3.4.2}%
+\contentsline {section}{\numberline {3.5}DQN的改进与扩展}{57}{section.3.5}%
+\contentsline {subsection}{\numberline {3.5.1}优先经验回放（Prioritized Experience Replay）}{57}{subsection.3.5.1}%
+\contentsline {subsection}{\numberline {3.5.2}Double DQN}{57}{subsection.3.5.2}%
+\contentsline {subsection}{\numberline {3.5.3}Dueling DQN}{58}{subsection.3.5.3}%
+\contentsline {subsection}{\numberline {3.5.4}Multi-Step DQN}{59}{subsection.3.5.4}%
+\contentsline {subsection}{\numberline {3.5.5}Noisy DQN}{60}{subsection.3.5.5}%
+\contentsline {subsection}{\numberline {3.5.6}Distributional DQN}{60}{subsection.3.5.6}%
+\contentsline {subsubsection}{C51算法}{61}{subsubsection*.95}%
+\contentsline {subsubsection}{QR-DQN和IQN}{62}{subsubsection*.96}%
+\contentsline {section}{\numberline {3.6}Rainbow：集成多种改进}{62}{section.3.6}%
+\contentsline {section}{\numberline {3.7}总结与比较}{63}{section.3.7}%
+\contentsline {subsection}{\numberline {3.7.1}DQN变种对比}{63}{subsection.3.7.1}%
+\contentsline {subsection}{\numberline {3.7.2}实际应用建议}{63}{subsection.3.7.2}%
+\contentsline {subsection}{\numberline {3.7.3}未来方向}{63}{subsection.3.7.3}%
+\contentsline {chapter}{\numberline {第四章\hspace {.3em}}深度强化学习之策略学习}{65}{chapter.4}%
+\contentsline {section}{\numberline {4.1}引言：为什么需要策略学习？}{65}{section.4.1}%
+\contentsline {subsection}{\numberline {4.1.1}价值学习方法的局限性}{65}{subsection.4.1.1}%
+\contentsline {subsection}{\numberline {4.1.2}策略学习的优势}{66}{subsection.4.1.2}%
+\contentsline {subsection}{\numberline {4.1.3}策略学习的基本框架}{67}{subsection.4.1.3}%
+\contentsline {section}{\numberline {4.2}策略梯度定理：理论基础}{67}{section.4.2}%
+\contentsline {subsection}{\numberline {4.2.1}目标函数的定义}{67}{subsection.4.2.1}%
+\contentsline {subsection}{\numberline {4.2.2}轨迹概率的分解}{67}{subsection.4.2.2}%
+\contentsline {subsection}{\numberline {4.2.3}策略梯度推导}{68}{subsection.4.2.3}%
+\contentsline {subsection}{\numberline {4.2.4}直观理解}{69}{subsection.4.2.4}%
+\contentsline {section}{\numberline {4.3}REINFORCE算法：蒙特卡洛策略梯度}{69}{section.4.3}%
+\contentsline {subsection}{\numberline {4.3.1}基本REINFORCE算法}{69}{subsection.4.3.1}%
+\contentsline {subsection}{\numberline {4.3.2}REINFORCE的改进：因果关系修正}{69}{subsection.4.3.2}%
+\contentsline {subsection}{\numberline {4.3.3}REINFORCE的改进：引入基线}{70}{subsection.4.3.3}%
+\contentsline {subsection}{\numberline {4.3.4}REINFORCE的优缺点}{71}{subsection.4.3.4}%
+\contentsline {section}{\numberline {4.4}Actor-Critic方法：结合价值函数}{72}{section.4.4}%
+\contentsline {subsection}{\numberline {4.4.1}Actor-Critic基本思想}{72}{subsection.4.4.1}%
+\contentsline {subsection}{\numberline {4.4.2}优势函数（Advantage Function）}{72}{subsection.4.4.2}%
+\contentsline {subsection}{\numberline {4.4.3}Actor-Critic算法}{73}{subsection.4.4.3}%
+\contentsline {subsection}{\numberline {4.4.4}Actor-Critic的优缺点}{73}{subsection.4.4.4}%
+\contentsline {section}{\numberline {4.5}A2C和A3C：并行化Actor-Critic}{73}{section.4.5}%
+\contentsline {subsection}{\numberline {4.5.1}优势Actor-Critic（A2C）}{73}{subsection.4.5.1}%
+\contentsline {subsection}{\numberline {4.5.2}A2C算法}{74}{subsection.4.5.2}%
+\contentsline {subsection}{\numberline {4.5.3}异步优势Actor-Critic（A3C）}{74}{subsection.4.5.3}%
+\contentsline {subsection}{\numberline {4.5.4}A2C vs A3C比较}{75}{subsection.4.5.4}%
+\contentsline {section}{\numberline {4.6}TRPO：置信域策略优化}{76}{section.4.6}%
+\contentsline {subsection}{\numberline {4.6.1}TRPO的基本思想}{76}{subsection.4.6.1}%
+\contentsline {subsection}{\numberline {4.6.2}TRPO的数学形式}{76}{subsection.4.6.2}%
+\contentsline {subsection}{\numberline {4.6.3}重要性采样（Importance Sampling）}{76}{subsection.4.6.3}%
+\contentsline {subsection}{\numberline {4.6.4}代理目标函数（Surrogate Objective）}{77}{subsection.4.6.4}%
+\contentsline {subsection}{\numberline {4.6.5}TRPO的求解}{77}{subsection.4.6.5}%
+\contentsline {subsection}{\numberline {4.6.6}TRPO算法}{77}{subsection.4.6.6}%
+\contentsline {subsection}{\numberline {4.6.7}TRPO的优缺点}{78}{subsection.4.6.7}%
+\contentsline {section}{\numberline {4.7}PPO：近端策略优化}{78}{section.4.7}%
+\contentsline {subsection}{\numberline {4.7.1}PPO的基本思想}{78}{subsection.4.7.1}%
+\contentsline {subsection}{\numberline {4.7.2}PPO-Clip目标函数}{79}{subsection.4.7.2}%
+\contentsline {subsection}{\numberline {4.7.3}PPO-Clip的直观理解}{79}{subsection.4.7.3}%
+\contentsline {subsection}{\numberline {4.7.4}PPO-Penalty目标函数}{79}{subsection.4.7.4}%
+\contentsline {subsection}{\numberline {4.7.5}广义优势估计（GAE）}{80}{subsection.4.7.5}%
+\contentsline {subsection}{\numberline {4.7.6}PPO算法}{80}{subsection.4.7.6}%
+\contentsline {subsection}{\numberline {4.7.7}联合损失函数}{80}{subsection.4.7.7}%
+\contentsline {subsection}{\numberline {4.7.8}PPO的优缺点}{81}{subsection.4.7.8}%
+\contentsline {section}{\numberline {4.8}策略学习方法的比较与应用}{81}{section.4.8}%
+\contentsline {subsection}{\numberline {4.8.1}方法对比}{81}{subsection.4.8.1}%
+\contentsline {subsection}{\numberline {4.8.2}选择指南}{81}{subsection.4.8.2}%
+\contentsline {subsection}{\numberline {4.8.3}实际应用建议}{82}{subsection.4.8.3}%
+\contentsline {section}{\numberline {4.9}总结与展望}{82}{section.4.9}%
+\contentsline {subsection}{\numberline {4.9.1}策略学习的发展历程}{82}{subsection.4.9.1}%
+\contentsline {subsection}{\numberline {4.9.2}关键技术创新}{82}{subsection.4.9.2}%
+\contentsline {subsection}{\numberline {4.9.3}未来发展方向}{83}{subsection.4.9.3}%
+\contentsline {subsection}{\numberline {4.9.4}学习建议}{83}{subsection.4.9.4}%
+\contentsline {chapter}{\numberline {第五章\hspace {.3em}}深度强化学习之连续控制}{84}{chapter.5}%
+\contentsline {section}{\numberline {5.1}引言：连续控制问题的挑战}{84}{section.5.1}%
+\contentsline {subsection}{\numberline {5.1.1}离散动作空间 vs 连续动作空间}{84}{subsection.5.1.1}%
+\contentsline {subsection}{\numberline {5.1.2}连续控制问题的实例}{84}{subsection.5.1.2}%
+\contentsline {section}{\numberline {5.2}价值学习方法在连续动作空间中的困境}{85}{section.5.2}%
+\contentsline {subsection}{\numberline {5.2.1}Q-Learning/DQN的核心机制回顾}{85}{subsection.5.2.1}%
+\contentsline {subsection}{\numberline {5.2.2}连续动作空间中的挑战}{86}{subsection.5.2.2}%
+\contentsline {subsection}{\numberline {5.2.3}传统策略梯度方法的困境}{86}{subsection.5.2.3}%
+\contentsline {section}{\numberline {5.3}离散化方法：一种直观的解决方案}{86}{section.5.3}%
+\contentsline {subsection}{\numberline {5.3.1}离散化的基本思想}{86}{subsection.5.3.1}%
+\contentsline {subsection}{\numberline {5.3.2}一维离散化}{86}{subsection.5.3.2}%
+\contentsline {subsection}{\numberline {5.3.3}多维离散化}{87}{subsection.5.3.3}%
+\contentsline {subsection}{\numberline {5.3.4}离散化的数学表示}{87}{subsection.5.3.4}%
+\contentsline {subsection}{\numberline {5.3.5}离散化的困境与局限性}{87}{subsection.5.3.5}%
+\contentsline {subsection}{\numberline {5.3.6}离散化的适用场景}{88}{subsection.5.3.6}%
+\contentsline {section}{\numberline {5.4}随机策略梯度方法：参数化概率分布}{89}{section.5.4}%
+\contentsline {subsection}{\numberline {5.4.1}核心思想}{89}{subsection.5.4.1}%
+\contentsline {subsection}{\numberline {5.4.2}为什么选择高斯分布？}{89}{subsection.5.4.2}%
+\contentsline {subsection}{\numberline {5.4.3}单变量高斯分布}{89}{subsection.5.4.3}%
+\contentsline {subsection}{\numberline {5.4.4}多变量高斯分布与独立性假设}{90}{subsection.5.4.4}%
+\contentsline {subsection}{\numberline {5.4.5}策略网络的输出设计}{90}{subsection.5.4.5}%
+\contentsline {subsection}{\numberline {5.4.6}动作选择过程}{90}{subsection.5.4.6}%
+\contentsline {subsection}{\numberline {5.4.7}计算对数概率}{91}{subsection.5.4.7}%
+\contentsline {subsection}{\numberline {5.4.8}数值稳定性问题与解决方案}{91}{subsection.5.4.8}%
+\contentsline {subsection}{\numberline {5.4.9}PPO在连续动作空间中的实现}{91}{subsection.5.4.9}%
+\contentsline {section}{\numberline {5.5}确定性策略梯度方法}{92}{section.5.5}%
+\contentsline {subsection}{\numberline {5.5.1}确定性策略与随机策略的对比}{92}{subsection.5.5.1}%
+\contentsline {subsection}{\numberline {5.5.2}确定性策略梯度定理}{93}{subsection.5.5.2}%
+\contentsline {subsection}{\numberline {5.5.3}探索策略：手动添加噪声}{93}{subsection.5.5.3}%
+\contentsline {subsection}{\numberline {5.5.4}Critic指导Actor更新}{93}{subsection.5.5.4}%
+\contentsline {section}{\numberline {5.6}DDPG：深度确定性策略梯度}{94}{section.5.6}%
+\contentsline {subsection}{\numberline {5.6.1}DDPG算法框架}{94}{subsection.5.6.1}%
+\contentsline {subsection}{\numberline {5.6.2}DDPG算法流程}{95}{subsection.5.6.2}%
+\contentsline {subsection}{\numberline {5.6.3}DDPG的关键技术}{95}{subsection.5.6.3}%
+\contentsline {subsubsection}{目标网络（Target Networks）}{95}{subsubsection*.119}%
+\contentsline {subsubsection}{经验回放（Experience Replay）}{95}{subsubsection*.120}%
+\contentsline {subsubsection}{探索噪声}{96}{subsubsection*.121}%
+\contentsline {subsection}{\numberline {5.6.4}DDPG的改进：TD3}{96}{subsection.5.6.4}%
+\contentsline {subsection}{\numberline {5.6.5}DDPG的改进：SAC}{96}{subsection.5.6.5}%
+\contentsline {section}{\numberline {5.7}方法对比与总结}{97}{section.5.7}%
+\contentsline {subsection}{\numberline {5.7.1}三种方法全面对比}{97}{subsection.5.7.1}%
+\contentsline {subsection}{\numberline {5.7.2}选择指南}{97}{subsection.5.7.2}%
+\contentsline {subsection}{\numberline {5.7.3}实际应用建议}{97}{subsection.5.7.3}%
+\contentsline {subsubsection}{网络架构设计}{97}{subsubsection*.124}%
+\contentsline {subsubsection}{训练技巧}{98}{subsubsection*.125}%
+\contentsline {subsection}{\numberline {5.7.4}常见问题与解决方案}{98}{subsection.5.7.4}%
+\contentsline {section}{\numberline {5.8}前沿发展与未来方向}{98}{section.5.8}%
+\contentsline {subsection}{\numberline {5.8.1}当前研究趋势}{98}{subsection.5.8.1}%
+\contentsline {subsection}{\numberline {5.8.2}重要算法进展}{99}{subsection.5.8.2}%
+\contentsline {chapter}{\numberline {第六章\hspace {.3em}}进化计算之起源与遗传算法}{100}{chapter.6}%
+\contentsline {section}{\numberline {6.1}引言：两种哲学思想的碰撞}{100}{section.6.1}%
+\contentsline {subsection}{\numberline {6.1.1}理性主义与经验主义的对立}{100}{subsection.6.1.1}%
+\contentsline {subsection}{\numberline {6.1.2}数学优化与进化计算的哲学对应}{100}{subsection.6.1.2}%
+\contentsline {subsection}{\numberline {6.1.3}现实世界优化问题的复杂性}{101}{subsection.6.1.3}%
+\contentsline {subsubsection}{黑箱优化问题举例}{101}{subsubsection*.130}%
+\contentsline {section}{\numberline {6.2}遗传算法的提出}{102}{section.6.2}%
+\contentsline {subsection}{\numberline {6.2.1}自然进化的启示}{102}{subsection.6.2.1}%
+\contentsline {subsection}{\numberline {6.2.2}生物进化与遗传算法的类比}{102}{subsection.6.2.2}%
+\contentsline {section}{\numberline {6.3}遗传算法的总体流程}{103}{section.6.3}%
+\contentsline {section}{\numberline {6.4}遗传算法的关键组成部分}{103}{section.6.4}%
+\contentsline {subsection}{\numberline {6.4.1}编码策略（Encoding Strategy）}{103}{subsection.6.4.1}%
+\contentsline {subsubsection}{编码策略的选择原则}{104}{subsubsection*.136}%
+\contentsline {subsection}{\numberline {6.4.2}适应度函数（Fitness Function）}{104}{subsection.6.4.2}%
+\contentsline {subsubsection}{适应度函数的设计原则}{104}{subsubsection*.137}%
+\contentsline {subsubsection}{约束处理}{104}{subsubsection*.138}%
+\contentsline {subsection}{\numberline {6.4.3}选择算子（Selection Operator）}{105}{subsection.6.4.3}%
+\contentsline {subsubsection}{轮盘赌选择（Roulette Wheel Selection）}{105}{subsubsection*.139}%
+\contentsline {subsubsection}{锦标赛选择（Tournament Selection）}{105}{subsubsection*.140}%
+\contentsline {subsection}{\numberline {6.4.4}交叉算子（Crossover Operator）}{106}{subsection.6.4.4}%
+\contentsline {subsubsection}{单点交叉（One-Point Crossover）}{106}{subsubsection*.141}%
+\contentsline {subsubsection}{两点交叉（Two-Point Crossover）}{106}{subsubsection*.143}%
+\contentsline {subsubsection}{算术交叉（Arithmetic Crossover）}{107}{subsubsection*.145}%
+\contentsline {subsection}{\numberline {6.4.5}变异算子（Mutation Operator）}{107}{subsection.6.4.5}%
+\contentsline {subsubsection}{基本变异算子}{107}{subsubsection*.146}%
+\contentsline {subsubsection}{均匀变异（Uniform Mutation）}{107}{subsubsection*.147}%
+\contentsline {subsubsection}{高斯变异（Gaussian Mutation）}{107}{subsubsection*.148}%
+\contentsline {subsection}{\numberline {6.4.6}精英策略（Elitist Strategy）}{108}{subsection.6.4.6}%
+\contentsline {section}{\numberline {6.5}遗传算法的参数设置}{108}{section.6.5}%
+\contentsline {subsection}{\numberline {6.5.1}种群大小（Population Size, $N$）}{108}{subsection.6.5.1}%
+\contentsline {subsection}{\numberline {6.5.2}交叉概率（Crossover Probability, $P_c$）}{108}{subsection.6.5.2}%
+\contentsline {subsection}{\numberline {6.5.3}变异概率（Mutation Probability, $P_m$）}{109}{subsection.6.5.3}%
+\contentsline {section}{\numberline {6.6}遗传算法的特点}{109}{section.6.6}%
+\contentsline {section}{\numberline {6.7}应用1：函数优化（4D Rastrigin函数）}{109}{section.6.7}%
+\contentsline {subsection}{\numberline {6.7.1}问题定义}{109}{subsection.6.7.1}%
+\contentsline {subsection}{\numberline {6.7.2}实例演示}{110}{subsection.6.7.2}%
+\contentsline {subsubsection}{步骤1：初始化种群$P_0$及适应度评估}{110}{subsubsection*.151}%
+\contentsline {subsubsection}{步骤2：选择操作（轮盘赌选择）}{110}{subsubsection*.153}%
+\contentsline {subsubsection}{步骤3：交叉操作（算术交叉）}{110}{subsubsection*.155}%
+\contentsline {subsubsection}{步骤4：变异操作（高斯变异）}{111}{subsubsection*.156}%
+\contentsline {subsubsection}{步骤5：形成临时新种群并评估}{111}{subsubsection*.157}%
+\contentsline {subsubsection}{步骤6：执行精英策略}{111}{subsubsection*.159}%
+\contentsline {subsubsection}{步骤7：最终新一代种群$P_1$}{111}{subsubsection*.160}%
+\contentsline {section}{\numberline {6.8}应用2：旅行商问题（Traveling Salesman Problem, TSP）}{112}{section.6.8}%
+\contentsline {subsection}{\numberline {6.8.1}问题定义}{112}{subsection.6.8.1}%
+\contentsline {subsubsection}{数学形式化}{112}{subsubsection*.162}%
+\contentsline {subsubsection}{实例数据}{112}{subsubsection*.163}%
+\contentsline {subsection}{\numberline {6.8.2}编码策略：排列编码（Permutation Encoding）}{112}{subsection.6.8.2}%
+\contentsline {subsection}{\numberline {6.8.3}遗传算子设计}{112}{subsection.6.8.3}%
+\contentsline {subsubsection}{种群初始化}{112}{subsubsection*.164}%
+\contentsline {subsubsection}{适应度与锦标赛选择}{113}{subsubsection*.165}%
+\contentsline {subsubsection}{维持合法性的交叉算子：部分匹配交叉（PMX）}{113}{subsubsection*.166}%
+\contentsline {subsubsection}{维持合法性的变异算子}{114}{subsubsection*.168}%
+\contentsline {subsubsection}{局部搜索增强：2-Opt算法}{114}{subsubsection*.169}%
+\contentsline {subsection}{\numberline {6.8.4}GA求解TSP的整体流程}{116}{subsection.6.8.4}%
+\contentsline {section}{\numberline {6.9}总结}{116}{section.6.9}%
+\contentsline {chapter}{\numberline {第七章\hspace {.3em}}进化计算之连续优化三剑客}{118}{chapter.7}%
+\contentsline {section}{\numberline {7.1}引言：复杂优化问题的挑战与进化计算的意义}{118}{section.7.1}%
+\contentsline {subsection}{\numberline {7.1.1}优化问题的本质与分类}{118}{subsection.7.1.1}%
+\contentsline {subsection}{\numberline {7.1.2}传统优化方法的局限性}{118}{subsection.7.1.2}%
+\contentsline {subsection}{\numberline {7.1.3}进化计算的优势与哲学基础}{119}{subsection.7.1.3}%
+\contentsline {section}{\numberline {7.2}适应度地形图：理解优化问题的几何视角}{119}{section.7.2}%
+\contentsline {subsection}{\numberline {7.2.1}适应度地形图的基本概念}{119}{subsection.7.2.1}%
+\contentsline {subsection}{\numberline {7.2.2}地形特征对优化难度的影响}{120}{subsection.7.2.2}%
+\contentsline {subsubsection}{局部最优与全局最优}{120}{subsubsection*.172}%
+\contentsline {subsubsection}{早熟收敛现象}{120}{subsubsection*.173}%
+\contentsline {subsubsection}{停滞区：高原与平坦区}{120}{subsubsection*.174}%
+\contentsline {subsubsection}{深谷与悬崖}{121}{subsubsection*.175}%
+\contentsline {subsection}{\numberline {7.2.3}适应度地形图的量化分析}{121}{subsection.7.2.3}%
+\contentsline {subsubsection}{崎岖度（Ruggedness）}{121}{subsubsection*.176}%
+\contentsline {subsubsection}{中立性（Neutrality）}{121}{subsubsection*.178}%
+\contentsline {subsubsection}{欺骗性（Deceptiveness）}{121}{subsubsection*.179}%
+\contentsline {subsubsection}{上位性（Epistasis）}{122}{subsubsection*.181}%
+\contentsline {subsubsection}{维度灾难（Curse of Dimensionality）}{122}{subsubsection*.182}%
+\contentsline {subsection}{\numberline {7.2.4}探索与开发的平衡}{122}{subsection.7.2.4}%
+\contentsline {subsubsection}{探索与开发的数学形式化}{123}{subsubsection*.184}%
+\contentsline {subsubsection}{平衡策略}{123}{subsubsection*.185}%
+\contentsline {section}{\numberline {7.3}差分进化算法：基于向量差分的全局优化器}{123}{section.7.3}%
+\contentsline {subsection}{\numberline {7.3.1}差分进化的历史背景与基本原理}{123}{subsection.7.3.1}%
+\contentsline {subsubsection}{DE的基本流程}{124}{subsubsection*.186}%
+\contentsline {subsection}{\numberline {7.3.2}DE的变异策略详解}{124}{subsection.7.3.2}%
+\contentsline {subsubsection}{DE/rand/1}{124}{subsubsection*.187}%
+\contentsline {subsubsection}{DE/best/1}{124}{subsubsection*.188}%
+\contentsline {subsubsection}{DE/current-to-best/1}{125}{subsubsection*.189}%
+\contentsline {subsubsection}{DE/rand/2和DE/best/2}{125}{subsubsection*.190}%
+\contentsline {subsubsection}{变异策略的选择与适应度地形的匹配}{125}{subsubsection*.191}%
+\contentsline {subsection}{\numberline {7.3.3}DE的交叉算子}{125}{subsection.7.3.3}%
+\contentsline {subsubsection}{二项交叉（Binomial Crossover）}{125}{subsubsection*.193}%
+\contentsline {subsubsection}{指数交叉（Exponential Crossover）}{126}{subsubsection*.194}%
+\contentsline {subsection}{\numberline {7.3.4}DE的选择算子与精英保留}{126}{subsection.7.3.4}%
+\contentsline {subsection}{\numberline {7.3.5}DE的参数设置与调优}{126}{subsection.7.3.5}%
+\contentsline {subsubsection}{种群大小$NP$}{126}{subsubsection*.196}%
+\contentsline {subsubsection}{缩放因子$F$}{126}{subsubsection*.197}%
+\contentsline {subsubsection}{交叉概率$CR$}{127}{subsubsection*.198}%
+\contentsline {subsubsection}{自适应参数调整策略}{127}{subsubsection*.199}%
+\contentsline {subsection}{\numberline {7.3.6}DE的改进算法}{127}{subsection.7.3.6}%
+\contentsline {subsubsection}{SaDE：自适应差分进化}{127}{subsubsection*.200}%
+\contentsline {subsubsection}{JADE：带外部存档的自适应DE}{127}{subsubsection*.201}%
+\contentsline {subsubsection}{SHADE和L-SHADE}{128}{subsubsection*.203}%
+\contentsline {subsection}{\numberline {7.3.7}DE的收敛性分析}{128}{subsection.7.3.7}%
+\contentsline {subsection}{\numberline {7.3.8}DE的优缺点总结}{128}{subsection.7.3.8}%
+\contentsline {subsubsection}{优点}{128}{subsubsection*.204}%
+\contentsline {subsubsection}{缺点}{128}{subsubsection*.205}%
+\contentsline {section}{\numberline {7.4}粒子群优化算法：模拟群体智能的优化器}{128}{section.7.4}%
+\contentsline {subsection}{\numberline {7.4.1}粒子群优化的生物学基础}{128}{subsection.7.4.1}%
+\contentsline {subsection}{\numberline {7.4.2}标准PSO算法}{129}{subsection.7.4.2}%
+\contentsline {subsubsection}{粒子表示与初始化}{129}{subsubsection*.207}%
+\contentsline {subsubsection}{速度与位置更新公式}{129}{subsubsection*.208}%
+\contentsline {subsubsection}{算法流程}{130}{subsubsection*.209}%
+\contentsline {subsection}{\numberline {7.4.3}PSO的参数分析与设置}{131}{subsection.7.4.3}%
+\contentsline {subsubsection}{惯性权重$w$}{131}{subsubsection*.211}%
+\contentsline {subsubsection}{加速系数$c_1, c_2$}{131}{subsubsection*.212}%
+\contentsline {subsubsection}{最大速度$v_{\max }$}{132}{subsubsection*.213}%
+\contentsline {subsubsection}{种群大小$N$}{132}{subsubsection*.214}%
+\contentsline {subsection}{\numberline {7.4.4}PSO的拓扑结构}{132}{subsection.7.4.4}%
+\contentsline {subsubsection}{常见拓扑结构}{132}{subsubsection*.215}%
+\contentsline {subsubsection}{小世界网络的构建}{132}{subsubsection*.217}%
+\contentsline {subsection}{\numberline {7.4.5}PSO的变体算法}{133}{subsection.7.4.5}%
+\contentsline {subsubsection}{标准PSO的改进}{133}{subsubsection*.219}%
+\contentsline {subsubsection}{混合PSO算法}{134}{subsubsection*.220}%
+\contentsline {subsection}{\numberline {7.4.6}PSO的收敛性分析}{134}{subsection.7.4.6}%
+\contentsline {subsubsection}{简化PSO模型}{134}{subsubsection*.221}%
+\contentsline {subsubsection}{收敛条件}{134}{subsubsection*.222}%
+\contentsline {subsection}{\numberline {7.4.7}PSO的优缺点总结}{134}{subsection.7.4.7}%
+\contentsline {subsubsection}{优点}{134}{subsubsection*.223}%
+\contentsline {subsubsection}{缺点}{135}{subsubsection*.224}%
+\contentsline {section}{\numberline {7.5}协方差矩阵自适应进化策略：学习问题结构的优化器}{135}{section.7.5}%
+\contentsline {subsection}{\numberline {7.5.1}从简单进化策略到CMA-ES}{135}{subsection.7.5.1}%
+\contentsline {subsubsection}{简单进化策略}{135}{subsubsection*.225}%
+\contentsline {subsubsection}{CMA-ES的基本思想}{136}{subsubsection*.226}%
+\contentsline {subsection}{\numberline {7.5.2}CMA-ES的核心组件}{136}{subsection.7.5.2}%
+\contentsline {subsubsection}{采样新解}{136}{subsubsection*.227}%
+\contentsline {subsubsection}{选择与重组}{136}{subsubsection*.228}%
+\contentsline {subsubsection}{步长控制}{136}{subsubsection*.229}%
+\contentsline {subsubsection}{协方差矩阵自适应}{137}{subsubsection*.230}%
+\contentsline {subsection}{\numberline {7.5.3}CMA-ES的完整算法}{137}{subsection.7.5.3}%
+\contentsline {subsection}{\numberline {7.5.4}CMA-ES的参数设置}{138}{subsection.7.5.4}%
+\contentsline {subsubsection}{默认参数设置}{138}{subsubsection*.231}%
+\contentsline {subsubsection}{参数解释与调整}{138}{subsubsection*.232}%
+\contentsline {subsection}{\numberline {7.5.5}CMA-ES的变体与改进}{138}{subsection.7.5.5}%
+\contentsline {subsubsection}{Active-CMA-ES}{138}{subsubsection*.233}%
+\contentsline {subsubsection}{sep-CMA-ES}{138}{subsubsection*.234}%
+\contentsline {subsubsection}{BI-POP-CMA-ES}{138}{subsubsection*.235}%
+\contentsline {subsubsection}{CMA-ES with Margin}{138}{subsubsection*.236}%
+\contentsline {subsection}{\numberline {7.5.6}CMA-ES的理论性质}{139}{subsection.7.5.6}%
+\contentsline {subsubsection}{不变性}{139}{subsubsection*.237}%
+\contentsline {subsubsection}{收敛性分析}{139}{subsubsection*.238}%
+\contentsline {subsection}{\numberline {7.5.7}CMA-ES的优缺点总结}{139}{subsection.7.5.7}%
+\contentsline {subsubsection}{优点}{139}{subsubsection*.239}%
+\contentsline {subsubsection}{缺点}{139}{subsubsection*.240}%
+\contentsline {section}{\numberline {7.6}算法对比与综合应用}{140}{section.7.6}%
+\contentsline {subsection}{\numberline {7.6.1}三剑客对比分析}{140}{subsection.7.6.1}%
+\contentsline {subsection}{\numberline {7.6.2}性能基准测试}{140}{subsection.7.6.2}%
+\contentsline {subsubsection}{测试函数集}{140}{subsubsection*.242}%
+\contentsline {subsubsection}{实验结果}{141}{subsubsection*.243}%
+\contentsline {subsection}{\numberline {7.6.3}混合策略与自适应选择}{141}{subsection.7.6.3}%
+\contentsline {subsubsection}{算法选择器}{141}{subsubsection*.244}%
+\contentsline {subsubsection}{混合算法设计}{141}{subsubsection*.245}%
+\contentsline {subsection}{\numberline {7.6.4}实际应用案例}{141}{subsection.7.6.4}%
+\contentsline {subsubsection}{工程优化问题}{141}{subsubsection*.246}%
+\contentsline {subsubsection}{机器学习超参数优化}{141}{subsubsection*.247}%
+\contentsline {subsubsection}{金融优化}{142}{subsubsection*.248}%
+\contentsline {section}{\numberline {7.7}前沿方向与未来展望}{142}{section.7.7}%
+\contentsline {subsection}{\numberline {7.7.1}大规模优化}{142}{subsection.7.7.1}%
+\contentsline {subsection}{\numberline {7.7.2}多目标优化}{142}{subsection.7.7.2}%
+\contentsline {subsection}{\numberline {7.7.3}昂贵优化}{142}{subsection.7.7.3}%
+\contentsline {subsection}{\numberline {7.7.4}动态优化}{142}{subsection.7.7.4}%
+\contentsline {subsection}{\numberline {7.7.5}学习优化（Learning to Optimize）}{142}{subsection.7.7.5}%
+\contentsline {subsubsection}{L2O-RNN}{143}{subsubsection*.249}%
+\contentsline {subsubsection}{OPRO：通过提示进行优化}{143}{subsubsection*.251}%
+\contentsline {subsection}{\numberline {7.7.6}理论发展}{143}{subsection.7.7.6}%
+\contentsline {section}{\numberline {7.8}实践指南与经验总结}{144}{section.7.8}%
+\contentsline {subsection}{\numberline {7.8.1}算法选择流程}{144}{subsection.7.8.1}%
+\contentsline {subsection}{\numberline {7.8.2}参数调优建议}{144}{subsection.7.8.2}%
+\contentsline {subsubsection}{通用建议}{144}{subsubsection*.253}%
+\contentsline {subsubsection}{问题特定调优}{144}{subsubsection*.254}%
+\contentsline {subsection}{\numberline {7.8.3}常见陷阱与避免方法}{145}{subsection.7.8.3}%
+\contentsline {subsection}{\numberline {7.8.4}性能评估指标}{145}{subsection.7.8.4}%
+\contentsline {section}{\numberline {7.9}结论}{145}{section.7.9}%
+\contentsline {chapter}{\numberline {第八章\hspace {.3em}}进化计算之拓展篇}{146}{chapter.8}%
+\contentsline {section}{\numberline {8.1}引言：从连续优化到组合优化与程序生成}{146}{section.8.1}%
+\contentsline {subsection}{\numberline {8.1.1}连续优化与组合优化的区别}{146}{subsection.8.1.1}%
+\contentsline {subsection}{\numberline {8.1.2}自然启发的优化思想}{147}{subsection.8.1.2}%
+\contentsline {section}{\numberline {8.2}蚁群优化算法：模拟蚂蚁觅食的智能优化}{147}{section.8.2}%
+\contentsline {subsection}{\numberline {8.2.1}自然界的蚂蚁觅食行为}{147}{subsection.8.2.1}%
+\contentsline {subsubsection}{双桥实验}{147}{subsubsection*.257}%
+\contentsline {subsection}{\numberline {8.2.2}蚁群优化算法的提出}{147}{subsection.8.2.2}%
+\contentsline {subsection}{\numberline {8.2.3}基本蚁群系统（Ant System, AS）}{148}{subsection.8.2.3}%
+\contentsline {subsubsection}{AS算法的核心要素}{148}{subsubsection*.259}%
+\contentsline {subsubsection}{路径构建：随机比例规则}{148}{subsubsection*.260}%
+\contentsline {subsubsection}{信息素更新机制}{149}{subsubsection*.261}%
+\contentsline {subsubsection}{初始信息素设置}{149}{subsubsection*.262}%
+\contentsline {subsubsection}{AS算法流程}{150}{subsubsection*.263}%
+\contentsline {subsection}{\numberline {8.2.4}AS算法实例：四城市TSP问题}{152}{subsection.8.2.4}%
+\contentsline {subsubsection}{步骤1：初始化}{152}{subsubsection*.265}%
+\contentsline {subsubsection}{步骤2：路径构建（以蚂蚁1为例）}{152}{subsubsection*.266}%
+\contentsline {subsubsection}{步骤3：信息素更新}{153}{subsubsection*.267}%
+\contentsline {subsection}{\numberline {8.2.5}蚁群系统（Ant Colony System, ACS）的改进}{153}{subsection.8.2.5}%
+\contentsline {subsubsection}{ACS的三项改进}{153}{subsubsection*.268}%
+\contentsline {subsubsection}{伪随机比例规则}{153}{subsubsection*.269}%
+\contentsline {subsubsection}{局部信息素更新}{153}{subsubsection*.270}%
+\contentsline {subsubsection}{全局信息素更新}{154}{subsubsection*.271}%
+\contentsline {subsubsection}{信息素边界限制}{154}{subsubsection*.272}%
+\contentsline {subsubsection}{ACS算法流程}{155}{subsubsection*.273}%
+\contentsline {subsection}{\numberline {8.2.6}ACO参数设置与调优}{156}{subsection.8.2.6}%
+\contentsline {subsection}{\numberline {8.2.7}ACO与其他算法的对比}{156}{subsection.8.2.7}%
+\contentsline {subsubsection}{ACO vs GA}{156}{subsubsection*.275}%
+\contentsline {subsubsection}{ACO vs Q-Learning}{157}{subsubsection*.277}%
+\contentsline {subsection}{\numberline {8.2.8}ACO的应用领域}{157}{subsection.8.2.8}%
+\contentsline {section}{\numberline {8.3}遗传编程：自动程序生成的进化方法}{157}{section.8.3}%
+\contentsline {subsection}{\numberline {8.3.1}遗传编程的基本思想}{157}{subsection.8.3.1}%
+\contentsline {subsubsection}{核心思想}{157}{subsubsection*.279}%
+\contentsline {subsubsection}{与GA的关系}{158}{subsubsection*.280}%
+\contentsline {subsection}{\numberline {8.3.2}GP的个体表示：程序树}{158}{subsection.8.3.2}%
+\contentsline {subsubsection}{基元集（Primitive Set）}{158}{subsubsection*.281}%
+\contentsline {subsubsection}{基元集的设计原则}{158}{subsubsection*.282}%
+\contentsline {subsection}{\numberline {8.3.3}GP的基本步骤}{158}{subsection.8.3.3}%
+\contentsline {subsubsection}{种群初始化}{159}{subsubsection*.283}%
+\contentsline {subsubsection}{适应度评估}{159}{subsubsection*.284}%
+\contentsline {subsubsection}{选择操作}{160}{subsubsection*.285}%
+\contentsline {subsubsection}{交叉操作}{160}{subsubsection*.286}%
+\contentsline {subsubsection}{变异操作}{160}{subsubsection*.287}%
+\contentsline {subsubsection}{复制操作}{160}{subsubsection*.288}%
+\contentsline {subsection}{\numberline {8.3.4}GP的参数设置}{161}{subsection.8.3.4}%
+\contentsline {subsection}{\numberline {8.3.5}GP的应用案例：符号回归}{161}{subsection.8.3.5}%
+\contentsline {subsubsection}{问题描述}{161}{subsubsection*.290}%
+\contentsline {subsubsection}{GP设置}{161}{subsubsection*.291}%
+\contentsline {subsubsection}{GP求解过程}{162}{subsubsection*.292}%
+\contentsline {subsubsection}{不同回归方法对比}{163}{subsubsection*.294}%
+\contentsline {subsection}{\numberline {8.3.6}GP的优缺点与挑战}{163}{subsection.8.3.6}%
+\contentsline {subsubsection}{优点}{163}{subsubsection*.296}%
+\contentsline {subsubsection}{缺点与挑战}{163}{subsubsection*.297}%
+\contentsline {subsubsection}{膨胀现象的原因与对策}{163}{subsubsection*.298}%
+\contentsline {subsection}{\numberline {8.3.7}GP与其他算法的对比}{164}{subsection.8.3.7}%
+\contentsline {subsubsection}{GP vs 深度强化学习（DRL）}{164}{subsubsection*.299}%
+\contentsline {subsubsection}{作为策略的GP}{164}{subsubsection*.301}%
+\contentsline {subsection}{\numberline {8.3.8}GP的应用领域}{164}{subsection.8.3.8}%
+\contentsline {section}{\numberline {8.4}总结与展望}{165}{section.8.4}%
+\contentsline {subsection}{\numberline {8.4.1}算法对比总结}{165}{subsection.8.4.1}%
+\contentsline {subsection}{\numberline {8.4.2}选择指南}{165}{subsection.8.4.2}%
+\contentsline {subsection}{\numberline {8.4.3}未来发展方向}{165}{subsection.8.4.3}%
+\contentsline {subsection}{\numberline {8.4.4}实践建议}{166}{subsection.8.4.4}%
+\contentsline {chapter}{\numberline {第九章\hspace {.3em}}学习辅助的自动算法设计}{167}{chapter.9}%
+\contentsline {section}{\numberline {9.1}引言：优化算法的根本局限与自动算法设计的必要性}{167}{section.9.1}%
+\contentsline {subsection}{\numberline {9.1.1}没有免费的午餐定理：优化算法的根本局限性}{167}{subsection.9.1.1}%
+\contentsline {subsection}{\numberline {9.1.2}NFL定理的启示与自动算法设计的动机}{168}{subsection.9.1.2}%
+\contentsline {section}{\numberline {9.2}传统算法设计方法与元学习}{168}{section.9.2}%
+\contentsline {subsection}{\numberline {9.2.1}经验法则方法}{168}{subsection.9.2.1}%
+\contentsline {subsection}{\numberline {9.2.2}元学习方法}{169}{subsection.9.2.2}%
+\contentsline {section}{\numberline {9.3}学习辅助的优化：L2O与NCO}{170}{section.9.3}%
+\contentsline {subsection}{\numberline {9.3.1}L2O与NCO的提出背景}{170}{subsection.9.3.1}%
+\contentsline {subsection}{\numberline {9.3.2}神经组合优化（NCO）}{170}{subsection.9.3.2}%
+\contentsline {subsubsection}{NCO的基本架构}{171}{subsubsection*.304}%
+\contentsline {subsubsection}{NCO的训练方法}{171}{subsubsection*.306}%
+\contentsline {subsubsection}{NCO的优势与局限}{171}{subsubsection*.307}%
+\contentsline {subsection}{\numberline {9.3.3}基于学习的优化（L2O）}{172}{subsection.9.3.3}%
+\contentsline {subsubsection}{L2O的基本思想}{172}{subsubsection*.308}%
+\contentsline {subsubsection}{L2O的典型方法}{172}{subsubsection*.309}%
+\contentsline {section}{\numberline {9.4}元黑箱优化：自动算法设计的统一框架}{172}{section.9.4}%
+\contentsline {subsection}{\numberline {9.4.1}元黑箱优化的核心思想}{172}{subsection.9.4.1}%
+\contentsline {subsection}{\numberline {9.4.2}MetaBBO的数学形式化}{173}{subsection.9.4.2}%
+\contentsline {subsubsection}{状态-动作-奖励框架}{174}{subsubsection*.311}%
+\contentsline {subsection}{\numberline {9.4.3}MetaBBO的学习方式分类}{174}{subsection.9.4.3}%
+\contentsline {subsubsection}{强化学习方法}{174}{subsubsection*.312}%
+\contentsline {subsubsection}{监督学习方法}{174}{subsubsection*.313}%
+\contentsline {subsubsection}{进化学习方法}{175}{subsubsection*.314}%
+\contentsline {subsubsection}{上下文学习方法（大语言模型）}{175}{subsubsection*.315}%
+\contentsline {subsection}{\numberline {9.4.4}基于元层学习范式的分类}{176}{subsection.9.4.4}%
+\contentsline {subsubsection}{直接生成答案}{176}{subsubsection*.316}%
+\contentsline {subsubsection}{生成解题方法}{176}{subsubsection*.317}%
+\contentsline {section}{\numberline {9.5}自动算法设计的具体技术}{176}{section.9.5}%
+\contentsline {subsection}{\numberline {9.5.1}自动算法选择（Algorithm Selection, AS）}{176}{subsection.9.5.1}%
+\contentsline {subsubsection}{问题形式化}{176}{subsubsection*.318}%
+\contentsline {subsubsection}{关键技术}{177}{subsubsection*.319}%
+\contentsline {subsubsection}{典型方法}{177}{subsubsection*.320}%
+\contentsline {subsubsection}{评估指标}{177}{subsubsection*.321}%
+\contentsline {subsection}{\numberline {9.5.2}自动算法配置（Algorithm Configuration, AC）}{178}{subsection.9.5.2}%
+\contentsline {subsubsection}{问题形式化}{178}{subsubsection*.322}%
+\contentsline {subsubsection}{配置空间设计}{178}{subsubsection*.323}%
+\contentsline {subsubsection}{配置方法}{178}{subsubsection*.324}%
+\contentsline {subsubsection}{配置策略}{178}{subsubsection*.325}%
+\contentsline {subsubsection}{评估方法}{179}{subsubsection*.326}%
+\contentsline {subsection}{\numberline {9.5.3}自动算法生成（Algorithm Generation, AG）}{179}{subsection.9.5.3}%
+\contentsline {subsubsection}{生成空间}{179}{subsubsection*.327}%
+\contentsline {subsubsection}{生成方法}{179}{subsubsection*.328}%
+\contentsline {subsubsection}{评估与验证}{179}{subsubsection*.329}%
+\contentsline {subsubsection}{应用实例}{180}{subsubsection*.330}%
+\contentsline {section}{\numberline {9.6}MetaBBO的核心挑战与未来方向}{180}{section.9.6}%
+\contentsline {subsection}{\numberline {9.6.1}核心挑战}{180}{subsection.9.6.1}%
+\contentsline {subsubsection}{挑战1：增强算法设计Agent的泛化能力}{180}{subsubsection*.331}%
+\contentsline {subsubsection}{挑战2：建立公平鲁棒的评估体系}{180}{subsubsection*.332}%
+\contentsline {subsection}{\numberline {9.6.2}未来研究方向}{181}{subsection.9.6.2}%
+\contentsline {subsubsection}{理论方向}{181}{subsubsection*.333}%
+\contentsline {subsubsection}{方法方向}{181}{subsubsection*.334}%
+\contentsline {subsubsection}{应用方向}{182}{subsubsection*.335}%
+\contentsline {section}{\numberline {9.7}实践指南：如何应用自动算法设计}{182}{section.9.7}%
+\contentsline {subsection}{\numberline {9.7.1}问题分析与准备}{182}{subsection.9.7.1}%
+\contentsline {subsection}{\numberline {9.7.2}方法选择与实施}{183}{subsection.9.7.2}%
+\contentsline {subsection}{\numberline {9.7.3}评估与部署}{183}{subsection.9.7.3}%
+\contentsline {subsection}{\numberline {9.7.4}工具与资源}{183}{subsection.9.7.4}%
+\contentsline {section}{\numberline {9.8}总结与展望}{184}{section.9.8}%
+\contentsline {subsection}{\numberline {9.8.1}核心观点总结}{184}{subsection.9.8.1}%
+\contentsline {subsection}{\numberline {9.8.2}发展趋势}{184}{subsection.9.8.2}%
+\contentsline {subsection}{\numberline {9.8.3}对学习者的建议}{184}{subsection.9.8.3}%
+\contentsline {chapter}{\numberline {第十章\hspace {.3em}}提纲挈领}{185}{chapter.10}%
+\contentsline {section}{\numberline {10.1}学习与优化的宏大图景}{185}{section.10.1}%
+\contentsline {subsection}{\numberline {10.1.1}学习与优化的基本问题}{185}{subsection.10.1.1}%
+\contentsline {subsection}{\numberline {10.1.2}三大支柱的融合}{185}{subsection.10.1.2}%
+\contentsline {section}{\numberline {10.2}神经网络：深度学习的基石}{185}{section.10.2}%
+\contentsline {subsection}{\numberline {10.2.1}从生物神经元到人工神经网络}{185}{subsection.10.2.1}%
+\contentsline {subsection}{\numberline {10.2.2}激活函数：引入非线性的关键}{186}{subsection.10.2.2}%
+\contentsline {subsection}{\numberline {10.2.3}前馈网络：层叠的威力}{186}{subsection.10.2.3}%
+\contentsline {subsection}{\numberline {10.2.4}反向传播：深度学习的引擎}{186}{subsection.10.2.4}%
+\contentsline {subsection}{\numberline {10.2.5}过拟合与正则化}{186}{subsection.10.2.5}%
+\contentsline {section}{\numberline {10.3}强化学习：从交互中学习}{187}{section.10.3}%
+\contentsline {subsection}{\numberline {10.3.1}强化学习的基本框架}{187}{subsection.10.3.1}%
+\contentsline {subsection}{\numberline {10.3.2}马尔可夫决策过程（MDP）}{187}{subsection.10.3.2}%
+\contentsline {subsection}{\numberline {10.3.3}价值函数与贝尔曼方程}{187}{subsection.10.3.3}%
+\contentsline {subsection}{\numberline {10.3.4}强化学习算法分类}{187}{subsection.10.3.4}%
+\contentsline {subsubsection}{基于价值的方法}{187}{subsubsection*.337}%
+\contentsline {subsubsection}{基于策略的方法}{188}{subsubsection*.338}%
+\contentsline {subsubsection}{Actor-Critic方法}{188}{subsubsection*.339}%
+\contentsline {subsection}{\numberline {10.3.5}探索与利用的权衡}{188}{subsection.10.3.5}%
+\contentsline {section}{\numberline {10.4}进化计算：自然启发的优化}{188}{section.10.4}%
+\contentsline {subsection}{\numberline {10.4.1}进化计算的基本思想}{188}{subsection.10.4.1}%
+\contentsline {subsection}{\numberline {10.4.2}遗传算法（GA）}{188}{subsection.10.4.2}%
+\contentsline {subsection}{\numberline {10.4.3}差分进化（DE）}{189}{subsection.10.4.3}%
+\contentsline {subsection}{\numberline {10.4.4}粒子群优化（PSO）}{189}{subsection.10.4.4}%
+\contentsline {subsection}{\numberline {10.4.5}蚁群优化（ACO）}{189}{subsection.10.4.5}%
+\contentsline {subsection}{\numberline {10.4.6}协方差矩阵自适应进化策略（CMA-ES）}{189}{subsection.10.4.6}%
+\contentsline {section}{\numberline {10.5}自动算法设计：元学习的兴起}{190}{section.10.5}%
+\contentsline {subsection}{\numberline {10.5.1}没有免费的午餐定理（NFL）}{190}{subsection.10.5.1}%
+\contentsline {subsection}{\numberline {10.5.2}元学习：学会学习}{190}{subsection.10.5.2}%
+\contentsline {subsection}{\numberline {10.5.3}学习优化（L2O）}{190}{subsection.10.5.3}%
+\contentsline {subsection}{\numberline {10.5.4}神经组合优化（NCO）}{190}{subsection.10.5.4}%
+\contentsline {subsection}{\numberline {10.5.5}自动算法设计的方法论}{190}{subsection.10.5.5}%
+\contentsline {subsubsection}{自动算法选择（Algorithm Selection）}{190}{subsubsection*.340}%
+\contentsline {subsubsection}{自动算法配置（Algorithm Configuration）}{191}{subsubsection*.341}%
+\contentsline {subsubsection}{自动算法生成（Algorithm Generation）}{191}{subsubsection*.342}%
+\contentsline {subsection}{\numberline {10.5.6}元黑箱优化（MetaBBO）}{191}{subsection.10.5.6}%
+\contentsline {section}{\numberline {10.6}概念串联：学习与优化的统一视角}{191}{section.10.6}%
+\contentsline {subsection}{\numberline {10.6.1}从监督学习到元学习}{191}{subsection.10.6.1}%
+\contentsline {subsection}{\numberline {10.6.2}探索与利用→永恒主题}{191}{subsection.10.6.2}%
+\contentsline {subsection}{\numberline {10.6.3}表示学习的关键作用}{192}{subsection.10.6.3}%
+\contentsline {subsection}{\numberline {10.6.4}从手工设计到自动学习}{192}{subsection.10.6.4}%
+\contentsline {section}{\numberline {10.7}未来方向与挑战}{192}{section.10.7}%
+\contentsline {subsection}{\numberline {10.7.1}可解释性与可靠性}{192}{subsection.10.7.1}%
+\contentsline {subsection}{\numberline {10.7.2}数据效率与计算可持续性}{192}{subsection.10.7.2}%
+\contentsline {subsection}{\numberline {10.7.3}多模态与跨领域学习}{192}{subsection.10.7.3}%
+\contentsline {subsection}{\numberline {10.7.4}人机协作与社会影响}{193}{subsection.10.7.4}%
+\contentsline {section}{\numberline {10.8}结语}{193}{section.10.8}%

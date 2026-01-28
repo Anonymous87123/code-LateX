@@ -1,0 +1,839 @@
+\chapter{进化计算之起源与遗传算法}
+\section{引言：两种哲学思想的碰撞}
+
+\subsection{理性主义与经验主义的对立}
+
+在哲学史上，关于人类如何获取知识，存在两种根本对立的观点：理性主义（Rationalism）和经验主义（Empiricism）。
+
+\begin{table}[H]
+\centering
+\caption{理性主义与经验主义的对比}
+\begin{tabular}{p{0.45\textwidth}p{0.45\textwidth}}
+\toprule
+\textbf{理性主义（Rationalism）} & \textbf{经验主义（Empiricism）} \\
+\midrule
+\textbf{代表人物}：笛卡尔、斯宾诺莎、莱布尼茨 & \textbf{代表人物}：培根、洛克、牛顿 \\
+\hline
+\textbf{核心思想}：真正的知识来源于理性和逻辑推理，而非感官经验。存在不证自明的"公理"或"天赋观念"。 & \textbf{核心思想}：知识来源于感官经验。通过观察、实验、归纳总结形成知识。 \\
+\hline
+\textbf{方法论}：从公理出发，通过严密的演绎推理构建知识体系。 & \textbf{方法论}：通过观察现象，归纳总结出一般规律。 \\
+\hline
+\textbf{优点}：逻辑严谨，体系严密。 & \textbf{优点}：能够产生新知识，适用范围广，是现代科学的基石。 \\
+\hline
+\textbf{缺点}：如果公理错误，整个体系崩溃；适用范围有限。 & \textbf{缺点}：归纳法的结论不保证永远正确。 \\
+\hline
+\textbf{经典名言}：我思故我在（笛卡尔） & \textbf{经典名言}：知识就是力量（培根） \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{数学优化与进化计算的哲学对应}
+
+在优化理论中，我们同样可以看到这两种哲学思想的体现：
+
+\begin{table}[H]
+\centering
+\caption{数学优化与进化计算的哲学对应}
+\begin{tabular}{p{0.45\textwidth}p{0.45\textwidth}}
+\toprule
+\textbf{数学优化（对应理性主义）} & \textbf{进化计算（对应经验主义）} \\
+\midrule
+依赖于精确的数学模型（类似于"公理"） & 不依赖于精确的数学模型 \\
+\hline
+使用严格的数学推导和证明（演绎法） & 模仿自然界的"物竞天择，适者生存"（归纳法） \\
+\hline
+通过梯度下降、牛顿法等一步步找到最优解 & 通过"选择、交叉、变异"等随机操作，不断尝试和迭代 \\
+\hline
+\textbf{优点}：一旦模型建立，求解过程严谨，通常能保证找到最优解或近似最优解。 & \textbf{优点}：几乎可以应用于任何可以定义"好坏"（适应度）的优化问题，适用性极广。 \\
+\hline
+\textbf{缺点}：对问题要求高，很多现实问题难以建立精确的数学模型。 & \textbf{缺点}：无法从数学上证明一定能找到全局最优解，性能边界难以严格保证。 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{现实世界优化问题的复杂性}
+
+现实世界中，许多优化问题具有多个特性，使得传统数学优化方法难以应用：
+
+\begin{enumerate}
+    \item \textbf{非线性（Nonlinear）}：目标函数或约束条件不是线性的
+    \item \textbf{不可导/导数不连续（Non-differentiable/Discontinuous Gradient）}：目标函数在某些点不可导或导数不连续
+    \item \textbf{高维度（High dimensionality）}：决策变量数量很多
+    \item \textbf{非凸、大量的局部最优解（Non-convex, Numerous local optima）}：存在多个局部最优解
+    \item \textbf{黑箱优化（Black-Box Optimization, BBO）}：目标函数是黑箱，只能通过输入得到输出，无法获取内部信息
+\end{enumerate}
+
+\subsubsection{黑箱优化问题举例}
+
+\begin{itemize}
+    \item \textbf{交通流优化}：目标是最小化平均通勤时间。输入是交通信号灯时序方案。黑箱是通过SUMO等软件运行一次交通流仿真。
+    \item \textbf{计算流体力学（CFD）}：目标是找到阻力最小的飞机翼型。输入是翼型的几何参数。黑箱是运行一次昂贵的CFD仿真。
+    \item \textbf{药物/材料发现}：目标是找到性能最好的分子/合金。输入是化学结构/配方。黑箱是运行分子动力学模拟或真实的物理实验。
+\end{itemize}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.3\textwidth]{picture/bbo.png}
+\caption{黑箱优化问题示意图：只能通过输入得到输出，无法了解内部结构}
+\end{figure}
+
+\section{遗传算法的提出}
+
+\subsection{自然进化的启示}
+
+世界上最好的解决问题的工具是什么？
+
+\begin{enumerate}
+    \item \textbf{人类大脑}：创造了车轮、纽约和战争...（Douglas Adams）→ 神经计算（Neural Computation）
+    \item \textbf{进化机制}：创造了人类大脑...（Charles Robert Darwin）→ 进化计算（Evolutionary Computation）
+\end{enumerate}
+
+遗传算法（Genetic Algorithm, GA）是由美国密歇根大学的John Holland教授在20世纪60年代末到70年代初提出的一种概率性群体搜索算法。它以孟德尔的遗传学说和达尔文的生物进化论为基础，通过模拟生物的进化过程来求解优化问题。
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.3\textwidth]{picture/ga.png}
+\caption{生物进化过程与遗传算法的对应关系}
+\end{figure}
+
+\subsection{生物进化与遗传算法的类比}
+
+\begin{table}[H]
+\centering
+\caption{生物进化过程与遗传算法的对应关系}
+\begin{tabular}{p{0.3\textwidth}p{0.3\textwidth}p{0.3\textwidth}}
+\toprule
+\textbf{生物学术语} & \textbf{遗传算法术语} & \textbf{解释} \\
+\midrule
+基因（gene） & 决策变量/解的元素 & 问题的基本构成单元 \\
+\hline
+个体/染色体（individual/chromosome） & 候选解 & 待求解问题的一个可能解 \\
+\hline
+群体（population） & 候选解集合 & 一个候选解的有限集合 \\
+\hline
+适应度（fitness） & 适应值/质量评估值 & 候选解的质量评估值 \\
+\hline
+适者生存（survival of the fittest） & 选择操作 & 保留较好解，淘汰较差解 \\
+\hline
+交叉（crossover） & 交叉操作 & 两个个体交换基因信息产生新个体 \\
+\hline
+变异（mutation） & 变异操作 & 个体基因发生随机变化 \\
+\hline
+进化（evolution） & 迭代优化 & 种群逐代改进，逼近最优解 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{遗传算法的总体流程}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.9\textwidth]{picture/flow.png}
+\caption{遗传算法的总体流程}
+\end{figure}
+
+\begin{algorithm}[H]
+\caption{遗传算法基本流程}
+\begin{algorithmic}[1]
+\REQUIRE 种群大小$N$，交叉概率$P_c$，变异概率$P_m$，最大迭代次数$G_{\max}$
+\ENSURE 至今最优解
+\STATE 随机生成初始种群$P_0$，大小为$N$
+\STATE 评估$P_0$中每个个体的适应度
+\STATE 记录至今最优解
+\FOR{$g = 1$ to $G_{\max}$}
+    \STATE 选择操作：从当前种群中选择$N$个个体形成交配池
+    \STATE 交叉操作：以概率$P_c$对交配池中的个体进行交叉，产生新个体
+    \STATE 变异操作：以概率$P_m$对新个体进行变异
+    \STATE 评估新个体的适应度
+    \STATE 执行精英策略：用至今最优解替换当前最差解
+    \STATE 更新至今最优解
+\ENDFOR
+\RETURN 至今最优解
+\end{algorithmic}
+\end{algorithm}
+
+\section{遗传算法的关键组成部分}
+
+\subsection{编码策略（Encoding Strategy）}
+
+编码策略是指如何将问题的一个解映射为遗传算法中的个体（染色体）。编码策略的设计强调全面性和唯一性，与算法的性能密切相关。
+
+\begin{table}[H]
+\centering
+\caption{常见的编码策略}
+\begin{tabular}{p{0.25\textwidth}p{0.3\textwidth}p{0.35\textwidth}}
+\toprule
+\textbf{编码类型} & \textbf{表示方法} & \textbf{适用问题} \\
+\midrule
+二进制编码 & 每个决策变量用二进制数表示 & 离散优化问题，特别是0-1规划问题 \\
+\hline
+整数编码 & 每个决策变量用整数表示 & 离散优化问题，如调度问题 \\
+\hline
+实数编码 & 每个决策变量用实数表示 & 连续优化问题，如函数优化 \\
+\hline
+排列编码 & 将有限集合内的元素进行排列 & 组合优化问题，如TSP、调度问题 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsubsection{编码策略的选择原则}
+\begin{enumerate}
+    \item \textbf{合法性}：编码应能表示所有可能的合法解
+    \item \textbf{唯一性}：每个解应有唯一的编码表示
+    \item \textbf{完备性}：编码应包含问题的所有信息
+    \item \textbf{简洁性}：编码应尽量简洁，减少冗余
+    \item \textbf{可操作性}：编码应便于遗传操作（选择、交叉、变异）
+\end{enumerate}
+
+\subsection{适应度函数（Fitness Function）}
+
+适应度函数用于评价个体所对应解的优劣，是遗传算法选择的依据。
+
+\subsubsection{适应度函数的设计原则}
+\begin{enumerate}
+    \item 能直观反映解的质量
+    \item 能体现解质量的差异
+    \item 与遗传算子的特性相匹配
+\end{enumerate}
+
+\subsubsection{约束处理}
+对于约束优化问题，常用的方法是使用带惩罚项的适应度函数：
+\[
+f(\mathbf{x}) = \text{fitness}(\mathbf{x}) + \lambda \cdot \text{penalty}(\mathbf{x})
+\]
+其中：
+\begin{itemize}
+    \item $\text{fitness}(\mathbf{x})$是原始适应度
+    \item $\text{penalty}(\mathbf{x})$是惩罚项，反映解违反约束的程度
+    \item $\lambda$是惩罚系数
+\end{itemize}
+
+惩罚函数的设计应保证：最好不合法解的适应度值差于最差合法解的适应度值。
+
+\subsection{选择算子（Selection Operator）}
+
+选择算子体现生物进化过程中的"优胜劣汰"原则，适应度好的个体有较大的机会被选中。
+
+\subsubsection{轮盘赌选择（Roulette Wheel Selection）}
+
+轮盘赌选择是最经典的选择算子。每个个体的选择概率与其适应度成正比：
+
+\[
+P_i = \frac{f(\mathbf{x}_i)}{\sum_{j=1}^{N} f(\mathbf{x}_j)}
+\]
+
+其中$f(\mathbf{x}_i)$是个体$\mathbf{x}_i$的适应度。
+
+\textbf{问题}：
+\begin{enumerate}
+    \item 对适应度绝对值敏感
+    \item 出现"超级个体"会垄断种群
+    \item 无法直接处理负适应度值
+\end{enumerate}
+
+\textbf{改进方案}：使用Softmax函数计算选择概率：
+\[
+P_i = \frac{\exp(f(\mathbf{x}_i)/T)}{\sum_{j=1}^{N} \exp(f(\mathbf{x}_j)/T)}
+\]
+其中$T$是温度参数，控制选择压力。
+
+\textbf{优点}：
+\begin{enumerate}
+    \item 不受适应度尺度影响（平移不变性）
+    \item 可调节选择压力（通过温度参数$T$）
+    \item 天然兼容负适应度值
+\end{enumerate}
+
+\subsubsection{锦标赛选择（Tournament Selection）}
+
+锦标赛选择是另一种常用的选择算子：
+
+\begin{algorithm}[H]
+\caption{锦标赛选择}
+\begin{algorithmic}[1]
+\REQUIRE 种群$P$，种群大小$N$，锦标赛规模$K$
+\ENSURE 选择出的个体
+\STATE 初始化空列表$selected$
+\WHILE{$|selected| < N$}
+    \STATE 从种群中随机选择$K$个个体
+    \STATE 从这$K$个个体中选择适应度最高的个体
+    \STATE 将该个体加入$selected$列表
+\ENDWHILE
+\RETURN $selected$
+\end{algorithmic}
+\end{algorithm}
+
+\textbf{特点}：
+\begin{enumerate}
+    \item 选择概率与适应度的取值范围无关（只与排序相关）
+    \item 需要设置参数$K$（锦标赛规模）
+    \item 较差个体被选中的机会较小
+    \item 好个体可能会在种群中重复出现
+\end{enumerate}
+
+\subsection{交叉算子（Crossover Operator）}
+
+交叉算子将两个或多个个体重新组合，期望将优势基因"强强联合"，产生适应度更高的新个体。
+
+\subsubsection{单点交叉（One-Point Crossover）}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.5\textwidth]{picture/onepoint.png}
+\caption{单点交叉示意图：随机选择一个交叉点，交换两个父代个体交叉点后的部分}
+\end{figure}
+
+对于二进制编码，单点交叉的操作过程：
+\begin{enumerate}
+    \item 随机选择一个交叉点$k$（$1 \leq k < L$，$L$为染色体长度）
+    \item 父代1：$A = a_1 a_2 \dots a_k a_{k+1} \dots a_L$
+    \item 父代2：$B = b_1 b_2 \dots b_k b_{k+1} \dots b_L$
+    \item 子代1：$A' = a_1 a_2 \dots a_k b_{k+1} \dots b_L$
+    \item 子代2：$B' = b_1 b_2 \dots b_k a_{k+1} \dots a_L$
+\end{enumerate}
+
+\subsubsection{两点交叉（Two-Point Crossover）}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.5\textwidth]{picture/twopoint.png}
+\caption{两点交叉示意图：随机选择两个交叉点，交换两个父代个体交叉点间的部分}
+\end{figure}
+
+对于二进制编码，两点交叉的操作过程：
+\begin{enumerate}
+    \item 随机选择两个交叉点$k_1, k_2$（$1 \leq k_1 < k_2 < L$）
+    \item 父代1：$A = a_1 \dots a_{k_1} a_{k_1+1} \dots a_{k_2} a_{k_2+1} \dots a_L$
+    \item 父代2：$B = b_1 \dots b_{k_1} b_{k_1+1} \dots b_{k_2} b_{k_2+1} \dots b_L$
+    \item 子代1：$A' = a_1 \dots a_{k_1} b_{k_1+1} \dots b_{k_2} a_{k_2+1} \dots a_L$
+    \item 子代2：$B' = b_1 \dots b_{k_1} a_{k_1+1} \dots a_{k_2} b_{k_2+1} \dots b_L$
+\end{enumerate}
+
+\subsubsection{算术交叉（Arithmetic Crossover）}
+
+对于实数编码，常用的交叉算子是算术交叉：
+\[
+\begin{aligned}
+\text{子代1} &= \alpha \cdot \text{父代1} + (1-\alpha) \cdot \text{父代2} \\
+\text{子代2} &= (1-\alpha) \cdot \text{父代1} + \alpha \cdot \text{父代2}
+\end{aligned}
+\]
+其中$\alpha \in [0,1]$是随机数或固定值。
+
+\subsection{变异算子（Mutation Operator）}
+
+变异算子旨在为算法带来新的基因材料，增加种群的多样性，防止算法过早收敛。
+
+\subsubsection{基本变异算子}
+
+对于每个基因，以变异概率$P_m$决定是否进行变异：
+
+\begin{algorithm}[H]
+\caption{基本变异操作}
+\begin{algorithmic}[1]
+\FOR{每个个体$\mathbf{x} = (x_1, x_2, \dots, x_D)$}
+    \FOR{每个基因$i = 1$ to $D$}
+        \STATE 生成随机数$r \sim U(0,1)$
+        \IF{$r < P_m$}
+            \STATE 对$x_i$实施变异操作
+        \ENDIF
+    \ENDFOR
+\ENDFOR
+\end{algorithmic}
+\end{algorithm}
+
+\subsubsection{均匀变异（Uniform Mutation）}
+\[
+x_i' = \text{random}(l_i, u_i)
+\]
+其中$l_i$和$u_i$是基因$x_i$的下界和上界。
+
+\subsubsection{高斯变异（Gaussian Mutation）}
+\[
+x_i' = x_i + N(0, \sigma^2)
+\]
+其中$N(0, \sigma^2)$是均值为0、方差为$\sigma^2$的正态分布随机数。
+
+\subsection{精英策略（Elitist Strategy）}
+
+精英策略旨在将优势基因保存在群体中，避免交叉、变异操作导致优势基因流失。
+
+\begin{algorithm}[H]
+\caption{精英策略}
+\begin{algorithmic}[1]
+\REQUIRE 当前种群$P_g$，至今最优解$\mathbf{x}_{\text{best}}$
+\ENSURE 更新后的种群
+\STATE 找到当前种群中的最差解$\mathbf{x}_{\text{worst}}$
+\STATE 用至今最优解$\mathbf{x}_{\text{best}}$替换$\mathbf{x}_{\text{worst}}$
+\RETURN 更新后的种群
+\end{algorithmic}
+\end{algorithm}
+
+\section{遗传算法的参数设置}
+
+\subsection{种群大小（Population Size, $N$）}
+
+在固定的总计算预算（最大函数评估次数MaxFEs）下：
+\[
+\text{MaxFEs} = \text{种群大小}(N) \times \text{世代代数}(G)
+\]
+
+两种策略的权衡：
+
+\begin{table}[H]
+\centering
+\caption{种群大小设置的两种策略}
+\begin{tabular}{p{0.45\textwidth}p{0.45\textwidth}}
+\toprule
+\textbf{大种群策略（$N \uparrow$, $G \downarrow$）} & \textbf{小种群策略（$N \downarrow$, $G \uparrow$）} \\
+\midrule
+\textbf{思路}：广度优先，并行探索大量不同的解 & \textbf{思路}：深度优先，对少数解进行深度挖掘 \\
+\hline
+\textbf{优点}：多样性好，能覆盖更广的搜索空间，有效避免早熟 & \textbf{优点}：收敛速度快，能快速迭代优化 \\
+\hline
+\textbf{缺点}：进化不充分，可能来不及对优良个体进行精细优化 & \textbf{缺点}：多样性差，极易陷入局部最优且无法跳出 \\
+\hline
+\textbf{适用场景}：复杂、多峰问题，搜索空间大 & \textbf{适用场景}：相对简单、单峰问题，计算资源有限 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{设置建议}：常用范围为30-200。对于复杂问题，通常需要更大的$N$来保证足够的探索。
+
+\subsection{交叉概率（Crossover Probability, $P_c$）}
+
+交叉概率控制着个体间进行基因重组的频率。
+
+\begin{itemize}
+    \item \textbf{$P_c$过高（如$>0.95$）}：可能频繁破坏已有的优良基因组合，导致解的质量不稳定
+    \item \textbf{$P_c$过低（如$<0.5$）}：搜索停滞，产生新解的能力不足，探索效率低下
+\end{itemize}
+
+\textbf{设置建议}：通常设置一个较高的值，以保证算法有足够的探索能力。经验范围：0.5-0.95。
+
+\subsection{变异概率（Mutation Probability, $P_m$）}
+
+变异概率控制着个体发生随机变异的概率。
+
+\begin{itemize}
+    \item \textbf{$P_m$过高（如$>0.1$）}：算法退化为随机搜索，优良基因被持续破坏，难以收敛
+    \item \textbf{$P_m$过低（如$<0.005$）}：无法有效引入新基因，一旦陷入局部最优便难以逃脱
+\end{itemize}
+
+\textbf{设置建议}：必须设置一个很低的值，它应是一个辅助性的小概率事件。经验范围：0.005-0.1。
+
+一个常用的经验法则是$P_m$与染色体长度$D$成反比：$P_m \propto 1/D$。
+
+\section{遗传算法的特点}
+
+\begin{table}[H]
+\centering
+\caption{遗传算法的特点}
+\begin{tabular}{p{0.3\textwidth}p{0.65\textwidth}}
+\toprule
+\textbf{特点} & \textbf{详细说明} \\
+\midrule
+\textbf{群体性随机搜索} & 从点集开始，以点集结束，通过群体进行搜索 \\
+\hline
+\textbf{灵活性强} & 只在设计适应度函数和处理约束时需要先验知识 \\
+\hline
+\textbf{长于全局搜索} & 以适应度为导向，但不排斥接纳较差的新解，有助于跳出局部最优 \\
+\hline
+\textbf{隐含并行性} & 群体中每个个体的操作相似，易于并行实现 \\
+\hline
+\textbf{局部搜索能力弱} & 精度较低，通常需要与局部搜索算子相结合 \\
+\hline
+\textbf{实时性差} & 需要多次迭代，收敛速度可能较慢 \\
+\hline
+\textbf{参数敏感} & 需要设置控制参数且与问题相关性较大 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{应用1：函数优化（4D Rastrigin函数）}
+
+\subsection{问题定义}
+
+目标函数：4D Rastrigin函数
+\[
+f(x_1, x_2, x_3, x_4) = 40 + \sum_{i=1}^{4} [x_i^2 - 10 \cos(2\pi x_i)]
+\]
+约束条件：每个决策变量$x_i$的取值范围为$[-5.12, 5.12]$
+
+适应度函数：由于是求最小值，适应度与目标函数值成反比
+\[
+\text{Fitness} = \frac{1}{f(\mathbf{x})}
+\]
+
+\subsection{实例演示}
+
+\subsubsection{步骤1：初始化种群$P_0$及适应度评估}
+
+随机生成一个大小为4的初始种群，并评估其适应度：
+
+\begin{table}[H]
+\centering
+\caption{初始种群$P_0$}
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+编号 & 染色体$(x_1, x_2, x_3, x_4)$ & 目标函数值$f(\mathbf{x})$ & 适应度 \\
+\hline
+个体1 & $[4.11, -3.22, 2.55, -4.81]$ & 114.31 & 0.0087 \\
+\hline
+个体2 & $[0.10, -0.20, 0.15, -0.05]$ & 3.97 & 0.2519 \\
+\hline
+个体3 & $[-3.11, 3.88, -4.01, 1.23]$ & 108.80 & 0.0092 \\
+\hline
+个体4 & $[1.10, 0.80, -1.20, -0.90]$ & 19.98 & 0.0500 \\
+\hline
+\end{tabular}
+\end{table}
+
+\textbf{观察}：个体2表现最优，其适应度（0.2519）远超其他个体。记录至今最优解（精英）：个体2，其解为$[0.10, -0.20, 0.15, -0.05]$。
+
+\subsubsection{步骤2：选择操作（轮盘赌选择）}
+
+计算总适应度：$F_{\text{total}} = 0.0087 + 0.2519 + 0.0092 + 0.0500 = 0.3198$
+
+计算每个个体的选择概率和累积概率：
+
+\begin{table}[H]
+\centering
+\caption{选择概率计算}
+\begin{tabular}{|c|c|c|c|}
+\hline
+编号 & 适应度 & 选择概率 & 累积概率 \\
+\hline
+个体1 & 0.0087 & 0.027 & 0.027 \\
+\hline
+个体2 & 0.2519 & 0.788 & 0.815 \\
+\hline
+个体3 & 0.0092 & 0.029 & 0.844 \\
+\hline
+个体4 & 0.0500 & 0.156 & 1.000 \\
+\hline
+\end{tabular}
+\end{table}
+
+通过轮盘赌选择，假设选中的个体为：个体2、个体4、个体2、个体1。
+
+\subsubsection{步骤3：交叉操作（算术交叉）}
+
+设定交叉概率$P_c = 0.9$。
+
+\begin{enumerate}
+    \item 配对1：（个体2，个体4）。生成随机数$r=0.85<0.9$，执行交叉。
+    
+    设随机数$\alpha = 0.8$：
+    \[
+    \begin{aligned}
+    \text{后代1} &= 0.8 \cdot \text{个体2} + 0.2 \cdot \text{个体4} = [0.30, 0.00, -0.21, -0.25] \\
+    \text{后代2} &= 0.2 \cdot \text{个体2} + 0.8 \cdot \text{个体4} = [0.90, 0.60, -0.93, -0.73]
+    \end{aligned}
+    \]
+    
+    \item 配对2：（个体2，个体1）。生成随机数$r=0.75<0.9$，执行交叉。
+    
+    设随机数$\alpha = 0.9$：
+    \[
+    \begin{aligned}
+    \text{后代3} &= 0.9 \cdot \text{个体2} + 0.1 \cdot \text{个体1} = [0.50, -0.50, 0.39, -0.53] \\
+    \text{后代4} &= 0.1 \cdot \text{个体2} + 0.9 \cdot \text{个体1} = [3.71, -2.92, 2.31, -4.33]
+    \end{aligned}
+    \]
+\end{enumerate}
+
+\subsubsection{步骤4：变异操作（高斯变异）}
+
+设定变异概率$P_m = 0.1$，变异强度$\sigma = 0.1$。
+
+遍历4个后代的共16个基因，假设只有一个随机数小于$P_m$，且该事件发生在后代2的第4个基因$x_4$上：
+\[
+x_4' = -0.73 + N(0, 0.1^2) = -0.73 + 0.08 = -0.65
+\]
+最终后代2'：$[0.90, 0.60, -0.93, -0.65]$
+
+\subsubsection{步骤5：形成临时新种群并评估}
+
+\begin{table}[H]
+\centering
+\caption{临时新种群}
+\begin{tabular}{|c|c|c|c|}
+\hline
+编号 & 染色体$(x_1, x_2, x_3, x_4)$ & 目标函数值$f(\mathbf{x})$ & 适应度 \\
+\hline
+后代1 & $[0.30, 0.00, -0.21, -0.25]$ & 2.03 & 0.4926 \\
+\hline
+后代2' & $[0.90, 0.60, -0.93, -0.65]$ & 12.01 & 0.0833 \\
+\hline
+后代3 & $[0.50, -0.50, 0.39, -0.53]$ & 8.85 & 0.1130 \\
+\hline
+后代4 & $[3.71, -2.92, 2.31, -4.33]$ & 100.25 & 0.0100 \\
+\hline
+\end{tabular}
+\end{table}
+
+\subsubsection{步骤6：执行精英策略}
+
+\begin{enumerate}
+    \item 找到当代最差解：后代4（适应度0.0100）
+    \item 获取至今最优解：个体2（来自$P_0$，适应度0.2519）
+    \item 执行替换：后代4被个体2替换
+\end{enumerate}
+
+\subsubsection{步骤7：最终新一代种群$P_1$}
+
+\begin{table}[H]
+\centering
+\caption{新一代种群$P_1$}
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+编号 & 染色体$(x_1, x_2, x_3, x_4)$ & 来源 & 目标函数值$f(\mathbf{x})$ & 适应度 \\
+\hline
+新个体1 & $[0.30, 0.00, -0.21, -0.25]$ & 后代1 & 2.03 & 0.4926 \\
+\hline
+新个体2 & $[0.90, 0.60, -0.93, -0.65]$ & 后代2' & 12.01 & 0.0833 \\
+\hline
+新个体3 & $[0.50, -0.50, 0.39, -0.53]$ & 后代3 & 8.85 & 0.1130 \\
+\hline
+新个体4 & $[0.10, -0.20, 0.15, -0.05]$ & 精英替换 & 3.97 & 0.2519 \\
+\hline
+\end{tabular}
+\end{table}
+
+\textbf{观察}：新一代种群的最优适应度从0.2519提升到0.4926，说明算法在向更好的方向进化。
+
+\section{应用2：旅行商问题（Traveling Salesman Problem, TSP）}
+
+\subsection{问题定义}
+
+旅行商问题：给定一个城市集合，找到一条访问每个城市一次且仅一次，并最终返回出发点的最短回路。
+
+\begin{itemize}
+    \item 城市可以代表：客户、传感器、DNA片段、焊接点等
+    \item 距离可以表示：时间、成本、相似性度量等
+\end{itemize}
+
+\subsubsection{数学形式化}
+
+设城市集合为$C = \{1, 2, \dots, n\}$，距离矩阵为$D = (d_{ij})_{n \times n}$。目标是找到城市的一个排列$\pi = (\pi(1), \pi(2), \dots, \pi(n))$，最小化总路径长度：
+\[
+\text{Minimize } Z = \sum_{i=1}^{n-1} d_{\pi(i), \pi(i+1)} + d_{\pi(n), \pi(1)}
+\]
+
+\subsubsection{实例数据}
+
+距离矩阵：
+\[
+D = \begin{bmatrix}
+\infty & 20 & 42 & 35 \\
+20 & \infty & 30 & 34 \\
+42 & 30 & \infty & 12 \\
+35 & 34 & 12 & \infty
+\end{bmatrix}
+\]
+
+\subsection{编码策略：排列编码（Permutation Encoding）}
+
+对于TSP，最有效的编码方式是排列编码：
+\begin{itemize}
+    \item 染色体是一个长度为$n$的数组，包含从1到$n$的所有城市ID，每个ID只出现一次
+    \item 数组的顺序代表旅行的顺序
+    \item 示例：染色体$[1, 4, 3, 2]$代表路径$1 \to 4 \to 3 \to 2 \to 1$
+\end{itemize}
+
+这种编码方式天然满足TSP"访问每个城市一次且仅一次"的核心约束。
+
+\subsection{遗传算子设计}
+
+\subsubsection{种群初始化}
+
+\begin{enumerate}
+    \item \textbf{随机初始化}：多次随机打乱一个包含所有城市ID的数组
+    \begin{itemize}
+        \item 创建有序数组，如$[1, 2, 3, 4]$
+        \item 对该数组执行随机置换算法，得到随机排列，如$[3, 1, 4, 2]$
+        \item 重复此过程，直到生成足够数量的初始个体
+    \end{itemize}
+    
+    \item \textbf{贪心初始化}：提高初始种群的平均质量
+    \begin{itemize}
+        \item 从一个随机城市出发
+        \item 每一步都选择前往所有未访问城市中最近的一个
+        \item 直到所有城市都被访问
+    \end{itemize}
+    
+    示例（从城市1出发）：
+    \begin{enumerate}
+        \item 路径：$[1]$
+        \item 下一站（距1最近）：2 $\to$ 路径：$[1, 2]$
+        \item 下一站（距2最近且未访问）：3 $\to$ 路径：$[1, 2, 3]$
+        \item 下一站（只剩4）：4 $\to$ 路径：$[1, 2, 3, 4]$
+        \item 总距离：$d_{12} + d_{23} + d_{34} + d_{41} = 20 + 30 + 12 + 35 = 97$
+    \end{enumerate}
+\end{enumerate}
+
+最终种群可以由1个贪心解和多个随机解组成，以兼顾开局优势和种群多样性。
+
+\subsubsection{适应度与锦标赛选择}
+
+\begin{itemize}
+    \item \textbf{适应度}：在TSP中，目标是最小化距离，因此个体的"适应性"与距离成反比
+    \item \textbf{锦标赛选择}：这种选择策略只关心个体间的优劣排序，不需要将距离转换为适应度值
+\end{itemize}
+
+锦标赛选择流程（以锦标赛大小$K=2$为例）：
+\begin{enumerate}
+    \item 从当前种群中随机选出2个个体
+    \item 直接比较这两个个体的总旅行距离
+    \item 总距离更短的那个个体"获胜"，被复制到下一代的交配池中
+    \item 重复以上步骤，直到交配池满员
+\end{enumerate}
+
+\subsubsection{维持合法性的交叉算子：部分匹配交叉（PMX）}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.4\textwidth]{picture/pmx.png}
+\caption{部分匹配交叉（PMX）示意图}
+\end{figure}
+
+PMX操作步骤：
+\begin{enumerate}
+    \item 随机选择两个交叉点
+    \item 交换两个父代个体交叉点间的片段
+    \item 根据映射关系修复冲突，确保每个城市只出现一次
+\end{enumerate}
+
+示例：
+\begin{itemize}
+    \item 父代1：$[1, 2, 3, 4, 5, 6, 7, 8, 9]$
+    \item 父代2：$[4, 5, 2, 1, 8, 7, 6, 9, 3]$
+    \item 交叉点：3和6
+    \item 交换中间片段：
+    \begin{itemize}
+        \item 子代1中间：$[1, 8, 7, 6]$
+        \item 子代2中间：$[3, 4, 5, 6]$
+    \end{itemize}
+    \item 修复冲突，得到合法子代
+\end{itemize}
+
+\subsubsection{维持合法性的变异算子}
+
+\begin{enumerate}
+    \item \textbf{交换变异（Swap Mutation）}：随机选择染色体上的两个位置，并交换这两个位置上的城市
+    \[
+    1\ 2\ 3\ 4\ 5\ 6\ 7\ 8\ 9\ 0 \to 1\ 6\ 3\ 4\ 5\ 2\ 7\ 8\ 9\ 0
+    \]
+    
+    \item \textbf{乱序变异（Scramble Mutation）}：随机选择染色体的一个子集，然后将这个子集中的城市进行随机打乱
+    \[
+    0\ 1\ 2\ 2\ 3\ 4\ 5\ 6\ 7\ 8\ 9 \to 0\ 1\ 3\ 6\ 2\ 4\ 5\ 7\ 8\ 9
+    \]
+    
+    \item \textbf{倒置变异（Inversion Mutation）}：随机选择染色体中的一个子段，然后将其完全逆序
+    \[
+    0\ 1\ 2\ 3\ 4\ 5\ 6\ 7\ 8\ 9 \to 0\ 1\ 6\ 5\ 4\ 3\ 2\ 7\ 8\ 9
+    \]
+\end{enumerate}
+
+\subsubsection{局部搜索增强：2-Opt算法}
+
+为了结合GA的全局探索能力和局部搜索的精细挖掘能力，可以引入2-Opt算法：
+
+\begin{algorithm}[H]
+\caption{2-Opt局部搜索}
+\begin{algorithmic}[1]
+\REQUIRE 当前路径$\pi$
+\ENSURE 改进后的路径
+\STATE 设置$improved \gets \text{True}$
+\WHILE{$improved$}
+    \STATE $improved \gets \text{False}$
+    \FOR{$i = 1$ to $n-2$}
+        \FOR{$j = i+2$ to $n$}
+            \STATE 计算当前边$(i, i+1)$和$(j, j+1)$的长度$d_1$
+            \STATE 计算交换后边$(i, j)$和$(i+1, j+1)$的长度$d_2$
+            \IF{$d_2 < d_1$}
+                \STATE 交换路径中$i+1$到$j$之间的城市顺序
+                \STATE $improved \gets \text{True}$
+            \ENDIF
+        \ENDFOR
+    \ENDFOR
+\ENDWHILE
+\RETURN 改进后的路径
+\end{algorithmic}
+\end{algorithm}
+
+2-Opt操作：随机移除两条不相交的边，用唯一可能的方式重连，若路径变短则接受新路径。
+
+\subsection{GA求解TSP的整体流程}
+
+\begin{algorithm}[H]
+\caption{GA for TSP with Local Search}
+\begin{algorithmic}[1]
+\REQUIRE 城市数量$n$，距离矩阵$D$，种群大小$N$，最大迭代次数$G_{\max}$
+\ENSURE 至今最优路径
+\STATE 初始化种群$P_0$（包含随机解和贪心解）
+\STATE 评估$P_0$中每个个体的路径长度
+\STATE 记录至今最优解
+\FOR{$g = 1$ to $G_{\max}$}
+    \STATE 锦标赛选择：从当前种群中选择$N$个个体形成交配池
+    \STATE PMX交叉：以概率$P_c$对交配池中的个体进行交叉
+    \STATE 变异操作：以概率$P_m$对新个体进行变异（交换、倒置等）
+    \STATE 评估新个体的路径长度
+    \STATE 执行精英策略：用至今最优解替换当前最差解
+    \STATE 局部搜索：对本代最优解执行2-Opt优化
+    \STATE 更新至今最优解
+\ENDFOR
+\RETURN 至今最优解
+\end{algorithmic}
+\end{algorithm}
+
+\section{总结}
+
+遗传算法作为一种基于自然选择和遗传机制的优化算法，具有以下特点：
+
+\begin{enumerate}
+    \item \textbf{哲学基础}：体现了经验主义的哲学思想，通过"尝试-评估-选择"的迭代过程逼近最优解
+    
+    \item \textbf{算法特点}：
+    \begin{itemize}
+        \item 群体性搜索，避免陷入局部最优
+        \item 适用于黑箱优化、非凸、不可导等复杂问题
+        \item 灵活性强，只需定义适应度函数
+        \item 隐含并行性，易于并行实现
+    \end{itemize}
+    
+    \item \textbf{关键组件}：
+    \begin{itemize}
+        \item 编码策略：将问题解映射为染色体
+        \item 适应度函数：评价解的质量
+        \item 遗传算子：选择、交叉、变异
+        \item 精英策略：保留历史最优解
+    \end{itemize}
+    
+    \item \textbf{参数设置}：
+    \begin{itemize}
+        \item 种群大小$N$：权衡探索广度与深度
+        \item 交叉概率$P_c$：控制基因重组频率
+        \item 变异概率$P_m$：控制引入新基因的概率
+    \end{itemize}
+    
+    \item \textbf{应用领域}：
+    \begin{itemize}
+        \item 函数优化：连续、离散、混合优化问题
+        \item 组合优化：TSP、调度、布局等问题
+        \item 机器学习：特征选择、参数调优
+        \item 工程设计：结构优化、电路设计等
+    \end{itemize}
+    
+    \item \textbf{改进方向}：
+    \begin{itemize}
+        \item 自适应参数调整
+        \item 多种群协同进化
+        \item 与局部搜索结合（模因算法）
+        \item 并行化实现
+    \end{itemize}
+\end{enumerate}
+
+遗传算法虽然不能保证找到全局最优解，但在许多复杂优化问题上表现出了良好的性能。它的成功验证了自然进化机制作为一种优化策略的有效性，也为解决复杂优化问题提供了新的思路和方法。

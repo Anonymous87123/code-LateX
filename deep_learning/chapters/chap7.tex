@@ -1,0 +1,1257 @@
+\chapter{进化计算之连续优化三剑客}
+\section{引言：复杂优化问题的挑战与进化计算的意义}
+
+\subsection{优化问题的本质与分类}
+
+优化是数学和工程领域的核心问题之一，其本质是在给定的约束条件下，寻找使目标函数达到最优（最大或最小）的决策变量值。优化问题可以形式化地表示为：
+
+\begin{align*}
+\min_{x \in \mathcal{X}} &\quad f(x) \\
+\text{s.t.} &\quad g_i(x) \leq 0, \quad i = 1, \dots, m \\
+&\quad h_j(x) = 0, \quad j = 1, \dots, p
+\end{align*}
+
+其中，$x$是决策变量，$\mathcal{X}$是决策空间，$f(x)$是目标函数，$g_i(x)$和$h_j(x)$分别是不等式约束和等式约束。
+
+根据决策变量的性质，优化问题可分为：
+\begin{itemize}
+    \item \textbf{连续优化}：决策变量在连续空间取值
+    \item \textbf{离散优化}：决策变量在离散集合取值
+    \item \textbf{混合整数优化}：同时包含连续和离散变量
+\end{itemize}
+
+根据目标函数和约束的性质，优化问题可分为：
+\begin{itemize}
+    \item \textbf{线性规划}：目标函数和约束均为线性
+    \item \textbf{非线性规划}：目标函数或约束至少有一个非线性
+    \item \textbf{凸优化}：目标函数为凸函数，约束为凸集
+    \item \textbf{非凸优化}：目标函数或约束非凸
+\end{itemize}
+
+\subsection{传统优化方法的局限性}
+
+传统优化方法如梯度下降法、牛顿法、内点法等在解决凸优化、光滑问题时表现出色，但在面对现实世界中的复杂优化问题时，往往面临以下挑战：
+
+\begin{table}[H]
+\centering
+\caption{传统优化方法的局限性}
+\begin{tabular}{p{0.3\textwidth}p{0.65\textwidth}}
+\toprule
+\textbf{挑战类型} & \textbf{具体表现与影响} \\
+\midrule
+\textbf{非凸性} & 目标函数存在多个局部最优解，传统方法容易陷入局部最优 \\
+\hline
+\textbf{不可微性} & 目标函数或约束不可导，无法使用基于梯度的方法 \\
+\hline
+\textbf{高维度} & 决策变量数量多，搜索空间呈指数增长，出现"维度灾难" \\
+\hline
+\textbf{计算昂贵} & 目标函数评估成本高（如一次仿真需要数小时） \\
+\hline
+\textbf{黑箱问题} & 目标函数形式未知，仅能通过输入输出进行评估 \\
+\hline
+\textbf{多峰性} & 存在多个局部最优解，需要全局搜索能力 \\
+\hline
+\textbf{噪声} & 目标函数值包含随机噪声，影响梯度估计 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{进化计算的优势与哲学基础}
+
+进化计算（Evolutionary Computation, EC）是一类受生物进化过程启发的随机优化算法。与传统的基于梯度的方法不同，进化计算具有以下优势：
+
+\begin{itemize}
+    \item \textbf{无需梯度信息}：仅需目标函数值，不要求可微性
+    \item \textbf{全局搜索能力}：通过种群多样性避免陷入局部最优
+    \item \textbf{鲁棒性强}：对问题形式、噪声等不敏感
+    \item \textbf{并行性}：种群中的个体可以并行评估
+    \item \textbf{通用性}：适用于连续、离散、混合优化问题
+\end{itemize}
+
+从哲学角度看，进化计算体现了"经验主义"的思想：不依赖于问题的精确数学模型，而是通过"试错-选择"的迭代过程，从经验中学习，逐步逼近最优解。这与基于"理性主义"的传统优化方法形成鲜明对比。
+
+\section{适应度地形图：理解优化问题的几何视角}
+
+\subsection{适应度地形图的基本概念}
+
+适应度地形图（Fitness Landscape）是理解优化问题复杂性的重要工具。它将解空间映射为一个地形表面，其中：
+
+\begin{itemize}
+    \item \textbf{位置}：表示一个候选解
+    \item \textbf{高度}：表示该解的适应度（目标函数值）
+    \item \textbf{地形特征}：反映了问题的搜索特性
+\end{itemize}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.5\textwidth]{picture/9.png}
+\caption{适应度地形图的三维可视化：将优化问题转化为在地形中寻找最高峰的问题}
+\end{figure}
+
+\subsection{地形特征对优化难度的影响}
+
+\subsubsection{局部最优与全局最优}
+
+\begin{definition}[局部最优解]
+对于最小化问题，点$x^*$是局部最优解，如果存在$\delta > 0$，使得对于所有满足$\|x - x^*\| < \delta$的$x$，都有$f(x^*) \leq f(x)$。
+\end{definition}
+
+\begin{definition}[全局最优解]
+对于最小化问题，点$x^{**}$是全局最优解，如果对于所有$x \in \mathcal{X}$，都有$f(x^{**}) \leq f(x)$。
+\end{definition}
+
+地形中可能包含多个局部最优点（山峰），但只有一个全局最优点（最高峰）。局部最优点的数量越多，问题越难求解。
+
+\subsubsection{早熟收敛现象}
+
+\textbf{早熟收敛}（Premature Convergence）是指优化算法过早陷入局部最优，无法找到全局最优的现象。这通常发生在：
+\begin{itemize}
+    \item 种群多样性不足
+    \item 选择压力过大
+    \item 变异率过低
+\end{itemize}
+
+\subsubsection{停滞区：高原与平坦区}
+
+\begin{definition}[高原区域]
+在适应度地形图中，如果存在一个区域$R$，对于任意$x, y \in R$，都有$|f(x) - f(y)| < \epsilon$（$\epsilon$很小），则称$R$为高原区域。
+\end{definition}
+
+高原区域对优化算法的挑战：
+\begin{itemize}
+    \item 梯度信息几乎为零
+    \item 缺乏搜索方向指引
+    \item 算法可能随机游走，效率低下
+\end{itemize}
+
+\subsubsection{深谷与悬崖}
+
+深谷（窄而深的山谷）和悬崖（适应度急剧变化）会阻碍算法的搜索：
+\begin{itemize}
+    \item 深谷可能导致算法陷入
+    \item 悬崖可能导致算法"跳过"有希望的区域
+\end{itemize}
+
+\subsection{适应度地形图的量化分析}
+
+\subsubsection{崎岖度（Ruggedness）}
+
+崎岖度量化了地形的波动程度。可以通过自相关函数计算：
+
+\[
+\rho(k) = \frac{\mathbb{E}[(f(x_t) - \mu)(f(x_{t+k}) - \mu)]}{\sigma^2}
+\]
+
+其中，$x_t$是随机游走路径上的点，$\mu$和$\sigma^2$是适应度的均值和方差。自相关长度$\tau$定义为$\rho(\tau) = 1/e$，$\tau$越小，地形越崎岖。
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.85\textwidth]{picture/10.png}
+\caption{不同崎岖度的适应度地形：(a)平滑地形，(b)中等崎岖地形，(c)高度崎岖地形}
+\end{figure}
+
+\subsubsection{中立性（Neutrality）}
+
+中立性指存在大量适应度相同或相近的解。中立网络（Neutral Network）是适应度相等的解构成的连通集合。
+
+中立性的影响：
+\begin{itemize}
+    \item 允许算法在不降低适应度的情况下探索
+    \item 可能延缓收敛速度
+    \item 有助于维持种群多样性
+\end{itemize}
+
+\subsubsection{欺骗性（Deceptiveness）}
+
+欺骗性地形会误导搜索方向，使算法远离全局最优。形式化定义为：
+
+\begin{definition}[欺骗性问题]
+如果对于全局最优解$x^{**}$和某个局部最优解$x^*$，在$x^{**}$的某些邻域内，平均适应度低于在$x^*$的相应邻域内的平均适应度，则称该问题是欺骗性的。
+\end{definition}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.85\textwidth]{picture/11.png}
+\caption{欺骗性地形示意图：局部最优区域（右侧）的平均适应度高于全局最优区域（左侧），容易误导搜索方向}
+\end{figure}
+
+\subsubsection{上位性（Epistasis）}
+
+上位性指基因（决策变量）间的相互作用。在高上位性问题中，一个变量的最优值依赖于其他变量的取值。
+
+上位性的数学表达：
+\[
+\text{Epistasis} = \frac{\text{Var}(f) - \sum_{i=1}^n \text{Var}(f_i)}{\text{Var}(f)}
+\]
+其中，$f_i$是仅改变第$i$个变量时的适应度变化。
+
+上位性对算法设计的影响：
+\begin{itemize}
+    \item 简单突变算子效果差
+    \item 需要能够捕获变量交互的算子
+    \item 增加问题难度
+\end{itemize}
+
+\subsubsection{维度灾难（Curse of Dimensionality）}
+
+随着问题维度$d$的增加：
+\begin{itemize}
+    \item 搜索空间体积呈指数增长：$V \propto r^d$
+    \item 采样密度急剧下降：$n$个点在$d$维空间中的平均距离为$O(n^{-1/d})$
+    \item 距离集中现象：高维空间中任意两点间的距离趋于相似
+\end{itemize}
+
+\subsection{探索与开发的平衡}
+
+探索（Exploration）与开发（Exploitation）的平衡是进化计算的核心问题：
+
+\begin{definition}[探索与开发]
+\begin{itemize}
+    \item \textbf{探索}：在搜索空间中广泛搜索，发现新的有希望区域
+    \item \textbf{开发}：在已知的有希望区域内精细搜索，提高解的质量
+\end{itemize}
+\end{definition}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.85\textwidth]{picture/exploitationvsexploration.png}
+\caption{探索与开发的权衡：过度探索导致收敛慢，过度开发导致早熟收敛}
+\end{figure}
+
+\subsubsection{探索与开发的数学形式化}
+
+设$P_t$为第$t$代的种群，$S$为选择算子，$V$为变异算子，$C$为交叉算子，则进化算法可表示为：
+\[
+P_{t+1} = S(V(C(P_t)))
+\]
+
+探索程度可用种群多样性度量：
+\[
+\text{Diversity}(P) = \frac{1}{N(N-1)} \sum_{i=1}^N \sum_{j\neq i}^N d(x_i, x_j)
+\]
+其中$d(\cdot,\cdot)$是距离度量。
+
+开发程度可用种群平均适应度的改善度量：
+\[
+\text{Exploitation}(t) = \frac{f_{\text{avg}}(t) - f_{\text{avg}}(t-1)}{f_{\text{avg}}(t-1)}
+\]
+
+\subsubsection{平衡策略}
+
+\begin{itemize}
+    \item \textbf{自适应参数调整}：根据搜索进度动态调整探索与开发
+    \item \textbf{多种群策略}：不同种群侧重不同的探索开发平衡
+    \item \textbf{混合算法}：结合全局搜索和局部搜索算法
+    \item \textbf{记忆机制}：保存历史信息指导搜索方向
+\end{itemize}
+
+\section{差分进化算法：基于向量差分的全局优化器}
+
+\subsection{差分进化的历史背景与基本原理}
+
+差分进化（Differential Evolution, DE）由Rainer Storn和Kenneth Price于1995年提出，是一种简单而高效的连续优化算法。DE的核心思想是利用种群中个体间的差异来生成新个体。
+
+\subsubsection{DE的基本流程}
+
+DE算法遵循进化计算的一般框架，但具有独特的变异机制：
+
+\begin{algorithm}[H]
+\caption{标准差分进化算法}
+\begin{algorithmic}[1]
+\REQUIRE 目标函数$f: \mathbb{R}^D \rightarrow \mathbb{R}$, 搜索边界$[x_{\min}, x_{\max}]$
+\ENSURE 最优解$x_{\text{best}}$和最优值$f_{\text{best}}$
+\STATE 初始化参数：种群大小$NP$，缩放因子$F$，交叉概率$CR$
+\STATE 随机初始化种群$P_0 = \{x_{i,0} | i=1,\dots,NP\}$，其中$x_{i,0} \sim U(x_{\min}, x_{\max})$
+\STATE 评估初始种群适应度$f(x_{i,0})$
+\STATE 记录最优个体$x_{\text{best},0}$和最优值$f_{\text{best},0}$
+\FOR{$g = 1$ to $G_{\max}$}
+    \FOR{$i = 1$ to $NP$}
+        \STATE \textbf{变异}：根据变异策略生成变异向量$v_{i,g}$
+        \STATE \textbf{交叉}：生成试验向量$u_{i,g}$：$u_{j,i,g} = 
+        \begin{cases}
+        v_{j,i,g}, & \text{if } \text{rand} \leq CR \text{ or } j = j_{\text{rand}} \\
+        x_{j,i,g}, & \text{otherwise}
+        \end{cases}$
+        \STATE \textbf{边界处理}：修复越界的试验向量
+        \STATE \textbf{选择}：$x_{i,g+1} = 
+        \begin{cases}
+        u_{i,g}, & \text{if } f(u_{i,g}) \leq f(x_{i,g}) \\
+        x_{i,g}, & \text{otherwise}
+        \end{cases}$
+    \ENDFOR
+    \STATE 更新最优解$x_{\text{best},g+1}$和$f_{\text{best},g+1}$
+\ENDFOR
+\RETURN $x_{\text{best}}$, $f_{\text{best}}$
+\end{algorithmic}
+\end{algorithm}
+
+\subsection{DE的变异策略详解}
+
+变异是DE算法的核心，通过差分向量引导搜索方向。常见的变异策略有：
+
+\subsubsection{DE/rand/1}
+
+最基本的变异策略，使用三个随机个体：
+\[
+v_{i,g} = x_{r_1,g} + F \cdot (x_{r_2,g} - x_{r_3,g})
+\]
+其中$r_1, r_2, r_3$是互不相同的随机索引，且$r_i \neq i$。
+
+\subsubsection{DE/best/1}
+
+利用当前最优个体引导搜索：
+\[
+v_{i,g} = x_{\text{best},g} + F \cdot (x_{r_1,g} - x_{r_2,g})
+\]
+
+\subsubsection{DE/current-to-best/1}
+
+结合当前个体和最优个体的信息：
+\[
+v_{i,g} = x_{i,g} + F \cdot (x_{\text{best},g} - x_{i,g}) + F \cdot (x_{r_1,g} - x_{r_2,g})
+\]
+
+\subsubsection{DE/rand/2和DE/best/2}
+
+使用两个差分向量增强探索能力：
+\begin{align*}
+\text{DE/rand/2}:&\quad v_{i,g} = x_{r_1,g} + F \cdot (x_{r_2,g} - x_{r_3,g}) + F \cdot (x_{r_4,g} - x_{r_5,g}) \\
+\text{DE/best/2}:&\quad v_{i,g} = x_{\text{best},g} + F \cdot (x_{r_1,g} - x_{r_2,g}) + F \cdot (x_{r_3,g} - x_{r_4,g})
+\end{align*}
+
+\subsubsection{变异策略的选择与适应度地形的匹配}
+
+\begin{table}[H]
+\centering
+\caption{不同变异策略的特点与适用场景}
+\begin{tabular}{p{0.25\textwidth}p{0.35\textwidth}p{0.3\textwidth}}
+\toprule
+\textbf{策略} & \textbf{特点} & \textbf{适用场景} \\
+\midrule
+DE/rand/1 & 探索能力强，收敛慢 & 多峰问题，全局搜索 \\
+DE/best/1 & 开发能力强，易早熟 & 单峰问题，快速收敛 \\
+DE/current-to-best/1 & 平衡探索与开发 & 一般问题 \\
+DE/rand/2 & 强探索，避免早熟 & 复杂多峰问题 \\
+DE/best/2 & 强开发，快速收敛 & 相对简单问题 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{DE的交叉算子}
+
+交叉算子将变异向量与原向量结合，产生试验向量。
+
+\subsubsection{二项交叉（Binomial Crossover）}
+
+最常用的交叉方式，每个维度独立决定来自变异向量还是原向量：
+\[
+u_{j,i,g} = 
+\begin{cases}
+v_{j,i,g}, & \text{if } \text{rand}_{j}(0,1) \leq CR \text{ or } j = j_{\text{rand}} \\
+x_{j,i,g}, & \text{otherwise}
+\end{cases}
+\]
+其中$j_{\text{rand}}$是随机选择的维度，确保试验向量至少有一维来自变异向量。
+
+\subsubsection{指数交叉（Exponential Crossover）}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.3\textwidth]{picture/ec.png}
+\caption{指数交叉示意图：连续选择来自变异向量的维度，直到随机数大于$CR$}
+\end{figure}
+
+指数交叉的算法步骤：
+\begin{enumerate}
+    \item 随机选择起始位置$n$
+    \item 设置$L = 0$
+    \item 当$\text{rand}(0,1) \leq CR$且$L < D$时：
+    \begin{itemize}
+        \item $u_{n,i,g} = v_{n,i,g}$
+        \item $n = (n+1) \mod D$
+        \item $L = L + 1$
+    \end{itemize}
+    \item 剩余维度从原向量复制
+\end{enumerate}
+
+\subsection{DE的选择算子与精英保留}
+
+DE采用贪婪选择策略：
+\[
+x_{i,g+1} = 
+\begin{cases}
+u_{i,g}, & \text{if } f(u_{i,g}) \leq f(x_{i,g}) \\
+x_{i,g}, & \text{otherwise}
+\end{cases}
+\]
+
+这种选择策略的优缺点：
+\begin{itemize}
+    \item \textbf{优点}：简单高效，保证种群质量不下降
+    \item \textbf{缺点}：可能过于贪婪，丢失多样性
+\end{itemize}
+
+\subsection{DE的参数设置与调优}
+
+\subsubsection{种群大小$NP$}
+
+\begin{itemize}
+    \item 通常设置为$5D$到$10D$，其中$D$是问题维度
+    \item 大种群：探索能力强，但计算成本高
+    \item 小种群：收敛快，但易早熟
+\end{itemize}
+
+\subsubsection{缩放因子$F$}
+
+控制差分向量的幅度：
+\begin{itemize}
+    \item 通常$F \in [0.4, 1.0]$
+    \item 大$F$：探索能力强，但可能振荡
+    \item 小$F$：开发能力强，但易陷入局部最优
+\end{itemize}
+
+经验公式：$F = 0.5 \times (1 + \text{rand}(0,1))$
+
+\subsubsection{交叉概率$CR$}
+
+控制来自变异向量的基因比例：
+\begin{itemize}
+    \item 通常$CR \in [0.1, 0.9]$
+    \item 大$CR$：更多新基因，探索能力强
+    \item 小$CR$：更多原基因，开发能力强
+\end{itemize}
+
+\subsubsection{自适应参数调整策略}
+
+\begin{enumerate}
+    \item \textbf{模糊自适应DE}：根据搜索状态动态调整参数
+    \item \textbf{自适应性DE}：每个个体有自己的参数，优秀个体的参数得以保留
+    \item \textbf{基于成功历史的自适应}：记录成功变异的参数，指导新参数生成
+\end{enumerate}
+
+\subsection{DE的改进算法}
+
+\subsubsection{SaDE：自适应差分进化}
+
+SaDE为每个个体分配独立的参数，并通过学习历史成功参数来调整：
+
+\begin{align*}
+F_i &\sim \mathcal{N}(0.5, 0.3) \\
+CR_i &\sim \mathcal{N}(CR_m, 0.1)
+\end{align*}
+
+其中$CR_m$是历史成功$CR$值的中位数。
+
+\subsubsection{JADE：带外部存档的自适应DE}
+
+JADE引入两个改进：
+\begin{enumerate}
+    \item 使用柯西分布生成$F$，增强探索能力
+    \item 维护外部存档保存历史信息
+\end{enumerate}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.3\textwidth]{picture/12.png}
+\caption{高斯分布与标准柯西分布对比：柯西分布具有更重的尾部，能产生更大的变异步长}
+\end{figure}
+
+\subsubsection{SHADE和L-SHADE}
+
+SHADE在JADE基础上引入历史记忆库，L-SHADE进一步加入线性种群缩减策略：
+\[
+NP_{g+1} = \text{round}\left(NP_{\min} + (NP_{\max} - NP_{\min}) \times \frac{\text{MaxFEs} - \text{FEs}}{\text{MaxFEs}}\right)
+\]
+
+\subsection{DE的收敛性分析}
+
+虽然DE缺乏严格的收敛性证明，但可以通过马尔可夫链分析其性质。设$P_g$为第$g$代种群，DE的更新可看作一个马尔可夫过程：
+\[
+P_{g+1} = T(P_g)
+\]
+其中$T$是转移算子。
+
+在适当条件下，DE算法以概率1收敛到全局最优：
+\[
+\lim_{g \to \infty} P(f(x_{\text{best},g}) = f^*) = 1
+\]
+
+\subsection{DE的优缺点总结}
+
+\subsubsection{优点}
+\begin{itemize}
+    \item 结构简单，易于实现
+    \item 参数少，调节相对容易
+    \item 全局搜索能力强
+    \item 对旋转不变性问题有一定鲁棒性
+    \item 无需梯度信息
+\end{itemize}
+
+\subsubsection{缺点}
+\begin{itemize}
+    \item 对高维问题可能收敛慢
+    \item 参数设置对性能影响大
+    \item 缺乏严格的收敛性证明
+    \item 对离散问题处理不佳
+\end{itemize}
+
+\section{粒子群优化算法：模拟群体智能的优化器}
+
+\subsection{粒子群优化的生物学基础}
+
+粒子群优化（Particle Swarm Optimization, PSO）由Kennedy和Eberhart于1995年提出，灵感来源于鸟群觅食行为。鸟群在寻找食物时，每只鸟会根据自身经验和群体经验调整飞行方向。
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.4\textwidth]{picture/pso.png}
+\caption{PSO算法示意图：粒子向个体历史最优和群体历史最优的加权方向移动}
+\end{figure}
+
+\subsection{标准PSO算法}
+
+\subsubsection{粒子表示与初始化}
+
+每个粒子$i$在$D$维空间中的状态表示为：
+\begin{itemize}
+    \item 位置：$x_i = (x_{i1}, x_{i2}, \dots, x_{iD})$
+    \item 速度：$v_i = (v_{i1}, v_{i2}, \dots, v_{iD})$
+    \item 个体历史最优位置：$p_i = (p_{i1}, p_{i2}, \dots, p_{iD})$
+    \item 个体历史最优值：$p_{\text{best},i}$
+\end{itemize}
+
+群体历史最优位置记为$g = (g_1, g_2, \dots, g_D)$，对应值为$g_{\text{best}}$。
+
+\subsubsection{速度与位置更新公式}
+
+标准PSO的更新公式为：
+\begin{align}
+v_{id}^{t+1} &= w v_{id}^t + c_1 r_1 (p_{id}^t - x_{id}^t) + c_2 r_2 (g_d^t - x_{id}^t) \\
+x_{id}^{t+1} &= x_{id}^t + v_{id}^{t+1}
+\end{align}
+
+其中：
+\begin{itemize}
+    \item $w$：惯性权重
+    \item $c_1, c_2$：加速系数
+    \item $r_1, r_2$：$[0,1]$均匀分布的随机数
+\end{itemize}
+
+\subsubsection{算法流程}
+
+\begin{algorithm}[H]
+\caption{标准粒子群优化算法}
+\begin{algorithmic}[1]
+\REQUIRE 目标函数$f(x)$, 种群大小$N$, 最大迭代次数$T_{\max}$
+\ENSURE 全局最优解$g$和最优值$g_{\text{best}}$
+\STATE 初始化粒子位置$x_i^0$和速度$v_i^0$，$i=1,\dots,N$
+\STATE 初始化$p_i^0 = x_i^0$，$p_{\text{best},i}^0 = f(x_i^0)$
+\STATE 初始化$g^0 = \arg\min_i p_{\text{best},i}^0$，$g_{\text{best}}^0 = \min_i p_{\text{best},i}^0$
+\FOR{$t = 0$ to $T_{\max}-1$}
+    \FOR{$i = 1$ to $N$}
+        \FOR{$d = 1$ to $D$}
+            \STATE 更新速度：$v_{id}^{t+1} = w v_{id}^t + c_1 r_1 (p_{id}^t - x_{id}^t) + c_2 r_2 (g_d^t - x_{id}^t)$
+            \STATE 限制速度：$v_{id}^{t+1} = \min(\max(v_{id}^{t+1}, -v_{\max}), v_{\max})$
+            \STATE 更新位置：$x_{id}^{t+1} = x_{id}^t + v_{id}^{t+1}$
+        \ENDFOR
+        \STATE 评估适应度：$f_i^{t+1} = f(x_i^{t+1})$
+        \IF{$f_i^{t+1} < p_{\text{best},i}^t$}
+            \STATE 更新个体最优：$p_i^{t+1} = x_i^{t+1}$，$p_{\text{best},i}^{t+1} = f_i^{t+1}$
+        \ELSE
+            \STATE $p_i^{t+1} = p_i^t$，$p_{\text{best},i}^{t+1} = p_{\text{best},i}^t$
+        \ENDIF
+    \ENDFOR
+    \STATE 更新全局最优：$g^{t+1} = \arg\min_i p_{\text{best},i}^{t+1}$，$g_{\text{best}}^{t+1} = \min_i p_{\text{best},i}^{t+1}$
+\ENDFOR
+\RETURN $g^{T_{\max}}$, $g_{\text{best}}^{T_{\max}}$
+\end{algorithmic}
+\end{algorithm}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.4\textwidth]{picture/renew.png}
+\caption{PSO速度更新示意图：粒子向个体历史最优和群体历史最优的加权组合方向移动}
+\end{figure}
+
+\subsection{PSO的参数分析与设置}
+
+\subsubsection{惯性权重$w$}
+
+惯性权重控制粒子保持原速度的程度：
+\begin{itemize}
+    \item 大$w$：探索能力强，适合全局搜索
+    \item 小$w$：开发能力强，适合局部搜索
+\end{itemize}
+
+常用策略：线性递减惯性权重
+\[
+w(t) = w_{\max} - (w_{\max} - w_{\min}) \times \frac{t}{T_{\max}}
+\]
+通常$w_{\max} = 0.9$，$w_{\min} = 0.4$。
+
+\subsubsection{加速系数$c_1, c_2$}
+
+加速系数控制个体认知和社会认知的权重：
+\begin{itemize}
+    \item $c_1$：个体学习因子，控制向个体历史最优的学习
+    \item $c_2$：社会学习因子，控制向群体历史最优的学习
+\end{itemize}
+
+经验设置：$c_1 = c_2 = 2.0$
+
+\subsubsection{最大速度$v_{\max}$}
+
+最大速度限制粒子的移动范围：
+\[
+v_{\max} = \delta \times (x_{\max} - x_{\min})
+\]
+其中$\delta \in [0.1, 0.5]$。
+
+\subsubsection{种群大小$N$}
+
+通常$N = 20 \sim 50$，复杂问题需要更大种群。
+
+\subsection{PSO的拓扑结构}
+
+拓扑结构定义粒子间的信息交流方式，影响算法的探索开发平衡。
+
+\subsubsection{常见拓扑结构}
+
+\begin{enumerate}
+    \item \textbf{全局拓扑（星型拓扑）}：所有粒子与全局最优粒子连接
+    \begin{itemize}
+        \item 收敛快，但易早熟
+    \end{itemize}
+    
+    \item \textbf{环形拓扑}：每个粒子只与左右邻居连接
+    \begin{itemize}
+        \item 收敛慢，但多样性好
+    \end{itemize}
+    
+    \item \textbf{冯·诺依曼拓扑}：粒子排列在网格上，与上下左右邻居连接
+    \begin{itemize}
+        \item 平衡收敛与多样性
+    \end{itemize}
+    
+    \item \textbf{小世界网络}：具有高集聚系数和短平均路径长度
+\end{enumerate}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.6\textwidth]{picture/13.png}
+\caption{PSO的不同拓扑结构：(a)全局拓扑，(b)环形拓扑，(c)冯·诺依曼拓扑，(d)小世界网络}
+\end{figure}
+
+\subsubsection{小世界网络的构建}
+
+小世界网络结合了规则网络的高集聚性和随机网络的短路径特性：
+
+\begin{algorithm}[H]
+\caption{小世界网络构建算法（Watts-Strogatz模型）}
+\begin{algorithmic}[1]
+\REQUIRE 节点数$N$，初始邻居数$K$，重连概率$p$
+\ENSURE 网络邻接矩阵$A$
+\STATE 构建环形网络：每个节点连接$K/2$个左侧邻居和$K/2$个右侧邻居
+\FOR{$i = 1$ to $N$}
+    \FOR{每个连接$(i,j)$，其中$j > i$}
+        \IF{rand$(0,1) < p$}
+            \STATE 断开连接$(i,j)$
+            \STATE 随机选择节点$k \neq i$，且不与$i$连接
+            \STATE 建立新连接$(i,k)$
+        \ENDIF
+    \ENDFOR
+\ENDFOR
+\end{algorithmic}
+\end{algorithm}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.85\textwidth]{picture/adv.png}
+\caption{小世界网络拓扑的优势：结合局部紧密连接和全局短路径，有利于信息传播和多样性保持}
+\end{figure}
+
+\subsection{PSO的变体算法}
+
+\subsubsection{标准PSO的改进}
+
+\begin{enumerate}
+    \item \textbf{带收缩因子的PSO}：
+    \[
+    v_{id}^{t+1} = \chi [v_{id}^t + c_1 r_1 (p_{id}^t - x_{id}^t) + c_2 r_2 (g_d^t - x_{id}^t)]
+    \]
+    其中$\chi = \frac{2}{|2-\varphi-\sqrt{\varphi^2-4\varphi}|}$，$\varphi = c_1 + c_2 > 4$。
+    
+    \item \textbf{自适应PSO}：动态调整参数
+    \begin{itemize}
+        \item 根据种群多样性调整惯性权重
+        \item 根据搜索进度调整加速系数
+    \end{itemize}
+    
+    \item \textbf{多目标PSO}：处理多目标优化问题
+    \begin{itemize}
+        \item 维护外部存档保存Pareto最优解
+        \item 使用拥挤距离保持多样性
+    \end{itemize}
+\end{enumerate}
+
+\subsubsection{混合PSO算法}
+
+\begin{enumerate}
+    \item \textbf{PSO-DE混合}：利用DE的变异增强PSO的探索能力
+    \item \textbf{PSO-局部搜索混合}：在PSO迭代中加入局部搜索
+    \item \textbf{量子PSO}：引入量子力学概念，增强全局搜索能力
+\end{enumerate}
+
+\subsection{PSO的收敛性分析}
+
+\subsubsection{简化PSO模型}
+
+考虑简化的一维PSO模型：
+\[
+v^{t+1} = w v^t + c_1 r_1 (p - x^t) + c_2 r_2 (g - x^t)
+\]
+\[
+x^{t+1} = x^t + v^{t+1}
+\]
+
+可以写成矩阵形式：
+\[
+\begin{bmatrix}
+x^{t+1} \\ v^{t+1}
+\end{bmatrix}
+=
+\begin{bmatrix}
+1 - \varphi & w \\
+-\varphi & w
+\end{bmatrix}
+\begin{bmatrix}
+x^t \\ v^t
+\end{bmatrix}
++
+\begin{bmatrix}
+c_1 r_1 p + c_2 r_2 g \\
+c_1 r_1 p + c_2 r_2 g
+\end{bmatrix}
+\]
+其中$\varphi = c_1 r_1 + c_2 r_2$。
+
+\subsubsection{收敛条件}
+
+系统稳定的充分条件是特征值的模小于1：
+\[
+|\lambda_{1,2}| < 1
+\]
+其中$\lambda_{1,2}$是系统矩阵的特征值。
+
+计算可得收敛条件为：
+\[
+w < 1, \quad \varphi > 0, \quad 2w - \varphi - 2 < 0
+\]
+
+\subsection{PSO的优缺点总结}
+
+\subsubsection{优点}
+\begin{itemize}
+    \item 概念直观，易于理解和实现
+    \item 参数较少，调节相对简单
+    \item 收敛速度快
+    \item 具有天然的并行性
+    \item 对连续优化问题表现良好
+\end{itemize}
+
+\subsubsection{缺点}
+\begin{itemize}
+    \item 易早熟收敛，陷入局部最优
+    \item 对高维复杂问题效果下降
+    \item 缺乏严格的全局收敛性证明
+    \item 对离散优化问题需要特殊处理
+\end{itemize}
+
+\section{协方差矩阵自适应进化策略：学习问题结构的优化器}
+
+\subsection{从简单进化策略到CMA-ES}
+
+进化策略（Evolution Strategies, ES）由Rechenberg和Schwefel在20世纪60年代提出，是最早的进化算法之一。简单ES使用高斯分布进行变异：
+
+\subsubsection{简单进化策略}
+
+$(1+1)$-ES算法：
+\begin{algorithm}[H]
+\caption{$(1+1)$-ES算法}
+\begin{algorithmic}[1]
+\REQUIRE 初始解$x$，初始步长$\sigma$，目标函数$f$
+\STATE 设置成功计数器$s = 0$
+\FOR{$t = 1$ to $T_{\max}$}
+    \STATE 生成试验解：$x' = x + \sigma \cdot N(0, I)$
+    \IF{$f(x') < f(x)$} 
+        \STATE 接受试验解：$x = x'$
+        \STATE 增加成功计数器：$s = s + 1$
+    \ENDIF
+    \IF{$t \mod n = 0$} 
+        \IF{$s/n < 1/5$}
+            \STATE 减小步长：$\sigma = \sigma \cdot c_d$  \COMMENT{$c_d < 1$}
+        \ELSIF{$s/n > 1/5$}
+            \STATE 增大步长：$\sigma = \sigma \cdot c_i$  \COMMENT{$c_i > 1$}
+        \ENDIF
+        \STATE 重置计数器：$s = 0$
+    \ENDIF
+\ENDFOR
+\end{algorithmic}
+\end{algorithm}
+
+\subsubsection{CMA-ES的基本思想}
+
+协方差矩阵自适应进化策略（Covariance Matrix Adaptation Evolution Strategy, CMA-ES）由Hansen和Ostermeier在1996年提出。与简单ES使用各向同性高斯分布不同，CMA-ES使用完整的多元高斯分布：
+\[
+x \sim \mathcal{N}(m, \sigma^2 C)
+\]
+其中：
+\begin{itemize}
+    \item $m$：分布均值
+    \item $\sigma$：全局步长
+    \item $C$：协方差矩阵，描述变量间的相关性和尺度
+\end{itemize}
+
+\subsection{CMA-ES的核心组件}
+
+\subsubsection{采样新解}
+
+在第$g$代，从当前分布采样$\lambda$个子代：
+\[
+x_k^{(g+1)} = m^{(g)} + \sigma^{(g)} y_k, \quad y_k \sim \mathcal{N}(0, C^{(g)}), \quad k=1,\dots,\lambda
+\]
+
+\subsubsection{选择与重组}
+
+选择$\mu$个最优个体进行加权重组：
+\[
+m^{(g+1)} = \sum_{i=1}^{\mu} w_i x_{i:\lambda}^{(g+1)}
+\]
+其中$x_{i:\lambda}$是第$i$个最优个体，$w_i$是权重，满足$\sum_{i=1}^{\mu} w_i = 1$，通常$w_1 \geq w_2 \geq \dots \geq w_\mu > 0$。
+
+\subsubsection{步长控制}
+
+CMA-ES通过累积路径（evolution path）控制步长：
+\[
+p_\sigma^{(g+1)} = (1 - c_\sigma) p_\sigma^{(g)} + \sqrt{c_\sigma(2 - c_\sigma)\mu_{\text{eff}}} C^{(g)^{-1/2}} \frac{m^{(g+1)} - m^{(g)}}{\sigma^{(g)}}
+\]
+其中：
+\begin{itemize}
+    \item $c_\sigma$：学习率
+    \item $\mu_{\text{eff}} = 1/\sum_{i=1}^{\mu} w_i^2$：有效选择质量
+\end{itemize}
+
+步长更新：
+\[
+\sigma^{(g+1)} = \sigma^{(g)} \exp\left(\frac{c_\sigma}{d_\sigma} \left(\frac{\|p_\sigma^{(g+1)}\|}{\mathbb{E}\|\mathcal{N}(0,I)\|} - 1\right)\right)
+\]
+其中$d_\sigma$是阻尼系数，$\mathbb{E}\|\mathcal{N}(0,I)\| \approx \sqrt{n} + O(1/n)$是$n$维标准正态分布随机向量的期望范数。
+
+\subsubsection{协方差矩阵自适应}
+
+CMA-ES通过两种方式更新协方差矩阵：
+
+1. \textbf{秩$\mu$更新}：利用当前代的信息
+\[
+C_{\mu}^{(g+1)} = \sum_{i=1}^{\mu} w_i y_{i:\lambda}^{(g+1)} (y_{i:\lambda}^{(g+1)})^\top
+\]
+
+2. \textbf{秩1更新}：利用进化路径的信息
+\[
+p_c^{(g+1)} = (1 - c_c) p_c^{(g)} + \sqrt{c_c(2 - c_c)\mu_{\text{eff}}} \frac{m^{(g+1)} - m^{(g)}}{\sigma^{(g)}}
+\]
+\[
+C_1^{(g+1)} = p_c^{(g+1)} (p_c^{(g+1)})^\top
+\]
+
+综合更新：
+\[
+C^{(g+1)} = (1 - c_1 - c_\mu) C^{(g)} + c_1 C_1^{(g+1)} + c_\mu C_{\mu}^{(g+1)}
+\]
+其中$c_1$和$c_\mu$是学习率。
+
+\subsection{CMA-ES的完整算法}
+
+\begin{algorithm}[H]
+\caption{协方差矩阵自适应进化策略（CMA-ES）}
+\begin{algorithmic}[1]
+\REQUIRE 初始解$m$，初始步长$\sigma$，种群大小$\lambda$
+\STATE 设置参数：$c_\sigma, d_\sigma, c_c, c_1, c_\mu$，权重$w_i$
+\STATE 初始化：$C = I$，$p_\sigma = 0$，$p_c = 0$
+\STATE 计算$\mu_{\text{eff}} = 1/\sum_{i=1}^{\mu} w_i^2$
+\FOR{$g = 0$ to $G_{\max}-1$}
+    \STATE 采样：$x_k = m + \sigma \cdot y_k$，$y_k \sim \mathcal{N}(0, C)$，$k=1,\dots,\lambda$
+    \STATE 评估适应度并排序：$f(x_{1:\lambda}) \leq \dots \leq f(x_{\lambda:\lambda})$
+    \STATE 重组：$m' = \sum_{i=1}^{\mu} w_i x_{i:\lambda}$
+    \STATE 更新进化路径：
+    \STATE \quad $p_\sigma = (1-c_\sigma)p_\sigma + \sqrt{c_\sigma(2-c_\sigma)\mu_{\text{eff}}} C^{-1/2} \frac{m'-m}{\sigma}$
+    \STATE \quad $p_c = (1-c_c)p_c + \sqrt{c_c(2-c_c)\mu_{\text{eff}}} \frac{m'-m}{\sigma}$
+    \STATE 更新步长：$\sigma = \sigma \cdot \exp\left(\frac{c_\sigma}{d_\sigma}(\|p_\sigma\|/\mathbb{E}\|\mathcal{N}(0,I)\| - 1)\right)$
+    \STATE 更新协方差矩阵：
+    \STATE \quad $C = (1-c_1-c_\mu)C + c_1 p_c p_c^\top + c_\mu \sum_{i=1}^{\mu} w_i y_{i:\lambda} y_{i:\lambda}^\top$
+    \STATE 更新均值：$m = m'$
+\ENDFOR
+\end{algorithmic}
+\end{algorithm}
+
+\subsection{CMA-ES的参数设置}
+
+\subsubsection{默认参数设置}
+
+Hansen建议的默认参数设置：
+\begin{itemize}
+    \item 种群大小：$\lambda = 4 + \lfloor 3\ln n \rfloor$
+    \item 父代数量：$\mu = \lfloor \lambda/2 \rfloor$
+    \item 重组权重：$w_i = \frac{\ln(\mu+0.5) - \ln i}{\sum_{j=1}^{\mu} (\ln(\mu+0.5) - \ln j)}$
+    \item 步长学习率：$c_\sigma = \frac{\mu_{\text{eff}}+2}{n+\mu_{\text{eff}}+5}$
+    \item 阻尼系数：$d_\sigma = 1 + 2\max(0, \sqrt{\frac{\mu_{\text{eff}}-1}{n+1}}-1) + c_\sigma$
+    \item 协方差路径学习率：$c_c = \frac{4+\mu_{\text{eff}}/n}{n+4+2\mu_{\text{eff}}/n}$
+    \item 协方差秩1学习率：$c_1 = \frac{2}{(n+1.3)^2+\mu_{\text{eff}}}$
+    \item 协方差秩$\mu$学习率：$c_\mu = \min(1-c_1, \frac{2(\mu_{\text{eff}}-2+1/\mu_{\text{eff}})}{(n+2)^2+\mu_{\text{eff}}})$
+\end{itemize}
+
+\subsubsection{参数解释与调整}
+
+\begin{itemize}
+    \item \textbf{种群大小$\lambda$}：影响探索能力，大$\lambda$增强全局搜索
+    \item \textbf{学习率$c_1, c_\mu$}：控制协方差更新速度，小值稳定，大值快速适应
+    \item \textbf{有效样本数$\mu_{\text{eff}}$}：衡量选择强度，影响参数更新
+\end{itemize}
+
+\subsection{CMA-ES的变体与改进}
+
+\subsubsection{Active-CMA-ES}
+
+利用不成功的搜索方向更新协方差矩阵：
+\[
+C^{(g+1)} = (1 - c_1 - c_\mu - c_\alpha) C^{(g)} + c_1 C_1^{(g+1)} + c_\mu C_\mu^{(g+1)} - c_\alpha C_\alpha^{(g+1)}
+\]
+其中$C_\alpha$来自最差个体的信息。
+
+\subsubsection{sep-CMA-ES}
+
+使用对角协方差矩阵的简化版本，计算复杂度从$O(n^2)$降到$O(n)$，适用于高维问题。
+
+\subsubsection{BI-POP-CMA-ES}
+
+使用两个种群：一个用小$\lambda$快速收敛，一个用大$\lambda$增强探索。
+
+\subsubsection{CMA-ES with Margin}
+
+防止在边界问题中过早收敛到边界。
+
+\subsection{CMA-ES的理论性质}
+
+\subsubsection{不变性}
+
+CMA-ES具有以下不变性：
+\begin{itemize}
+    \item \textbf{平移不变性}：$f(x)$和$f(x+c)$难度相同
+    \item \textbf{旋转不变性}：$f(x)$和$f(Rx)$难度相同，$R$是正交矩阵
+    \item \textbf{缩放不变性}：$f(x)$和$af(x)$难度相同
+\end{itemize}
+
+\subsubsection{收敛性分析}
+
+在适当条件下，CMA-ES以概率1收敛到全局最优：
+\[
+\lim_{g \to \infty} P(f(m^{(g)}) = f^*) = 1
+\]
+
+收敛速度：在球面函数上，CMA-ES达到线性收敛：
+\[
+\mathbb{E}[\ln(\sigma^{(g+1)}/\sigma^{(g)})] = -\frac{c_\sigma}{d_\sigma} \cdot \frac{\mu_{\text{eff}}}{n}
+\]
+
+\subsection{CMA-ES的优缺点总结}
+
+\subsubsection{优点}
+\begin{itemize}
+    \item 强大的局部搜索能力
+    \item 自适应学习问题结构
+    \item 旋转不变性，对旋转问题表现优异
+    \item 理论分析较为完善
+    \item 参数设置有系统方法
+\end{itemize}
+
+\subsubsection{缺点}
+\begin{itemize}
+    \item 计算复杂度高，$O(n^2)$内存，$O(n^3)$计算
+    \item 对高维问题（$n>100$）效率下降
+    \item 需要相对较大的种群
+    \item 实现较为复杂
+\end{itemize}
+
+\section{算法对比与综合应用}
+
+\subsection{三剑客对比分析}
+
+\begin{table}[H]
+\centering
+\caption{DE、PSO、CMA-ES算法全面对比}
+\begin{tabular}{p{0.2\textwidth}p{0.25\textwidth}p{0.25\textwidth}p{0.25\textwidth}}
+\toprule
+\textbf{特性} & \textbf{差分进化（DE）} & \textbf{粒子群优化（PSO）} & \textbf{CMA-ES} \\
+\midrule
+\textbf{提出时间} & 1995年 & 1995年 & 1996年 \\
+\textbf{灵感来源} & 生物进化 & 鸟群觅食 & 自然进化 \\
+\textbf{核心机制} & 向量差分变异 & 个体-社会学习 & 协方差自适应 \\
+\textbf{搜索分布} & 基于差分向量 & 基于速度位置 & 多元高斯分布 \\
+\textbf{参数数量} & 少（3个） & 少（3-4个） & 多（10+个） \\
+\textbf{实现难度} & 简单 & 简单 & 复杂 \\
+\textbf{计算复杂度} & $O(NP \cdot D)$ & $O(N \cdot D)$ & $O(D^2)$内存，$O(D^3)$计算 \\
+\textbf{收敛速度} & 中等 & 快 & 慢但精确 \\
+\textbf{全局搜索} & 强 & 中等 & 中等 \\
+\textbf{局部搜索} & 中等 & 强 & 很强 \\
+\textbf{旋转不变性} & 无 & 无 & 有 \\
+\textbf{理论分析} & 较少 & 中等 & 丰富 \\
+\textbf{适应自相关} & 中等 & 弱 & 强 \\
+\textbf{高维性能} & 好 & 中等 & 差（$D>100$） \\
+\textbf{噪声鲁棒性} & 好 & 中等 & 好 \\
+\textbf{约束处理} & 中等 & 中等 & 困难 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{性能基准测试}
+
+\subsubsection{测试函数集}
+
+常用的基准测试函数：
+\begin{enumerate}
+    \item \textbf{单峰函数}：评估局部搜索能力
+    \begin{itemize}
+        \item Sphere函数：$f_1(x) = \sum_{i=1}^n x_i^2$
+        \item Ellipsoid函数：$f_2(x) = \sum_{i=1}^n 10^{6\frac{i-1}{n-1}} x_i^2$
+    \end{itemize}
+    
+    \item \textbf{多峰函数}：评估全局搜索能力
+    \begin{itemize}
+        \item Rastrigin函数：$f_3(x) = 10n + \sum_{i=1}^n [x_i^2 - 10\cos(2\pi x_i)]$
+        \item Schwefel函数：$f_4(x) = 418.9829n - \sum_{i=1}^n x_i \sin(\sqrt{|x_i|})$
+    \end{itemize}
+    
+    \item \textbf{旋转函数}：评估旋转不变性
+    \begin{itemize}
+        \item 旋转Ellipsoid函数：$f_5(x) = f_2(Rx)$，$R$是随机旋转矩阵
+    \end{itemize}
+\end{enumerate}
+
+\subsubsection{实验结果}
+
+在CEC（Congress on Evolutionary Computation）基准测试上的典型结果：
+\begin{itemize}
+    \item \textbf{低维问题}（$D \leq 30$）：CMA-ES通常最优
+    \item \textbf{中维问题}（$30 < D \leq 100$）：DE和CMA-ES竞争
+    \item \textbf{高维问题}（$D > 100$）：DE通常最优
+    \item \textbf{多峰问题}：DE表现优异
+    \item \textbf{噪声问题}：PSO和DE表现较好
+\end{itemize}
+
+\subsection{混合策略与自适应选择}
+
+\subsubsection{算法选择器}
+
+根据问题特征自动选择算法：
+\begin{itemize}
+    \item \textbf{维度}：高维选DE，低维选CMA-ES
+    \item \textbf{多峰性}：多峰选DE，单峰选CMA-ES
+    \item \textbf{计算预算}：预算少选PSO，预算多选CMA-ES
+    \item \textbf{旋转性}：旋转问题选CMA-ES
+\end{itemize}
+
+\subsubsection{混合算法设计}
+
+\begin{enumerate}
+    \item \textbf{DE-CMA-ES混合}：用DE进行全局探索，用CMA-ES进行局部开发
+    \item \textbf{PSO-DE混合}：用PSO快速收敛，用DE增强多样性
+    \item \textbf{层次混合}：不同层次使用不同算法
+\end{enumerate}
+
+\subsection{实际应用案例}
+
+\subsubsection{工程优化问题}
+
+\begin{itemize}
+    \item \textbf{航空航天}：机翼形状优化，使用CMA-ES
+    \item \textbf{汽车工业}：发动机参数优化，使用DE
+    \item \textbf{电力系统}：电网调度优化，使用PSO
+    \item \textbf{化学工程}：反应器设计优化，使用DE
+\end{itemize}
+
+\subsubsection{机器学习超参数优化}
+
+\begin{itemize}
+    \item \textbf{神经网络}：结构优化，使用CMA-ES
+    \item \textbf{支持向量机}：参数优化，使用DE
+    \item \textbf{集成学习}：权重优化，使用PSO
+\end{itemize}
+
+\subsubsection{金融优化}
+
+\begin{itemize}
+    \item \textbf{投资组合}：资产配置优化，使用PSO
+    \item \textbf{风险管理}：VaR优化，使用DE
+    \item \textbf{交易策略}：参数优化，使用CMA-ES
+\end{itemize}
+
+\section{前沿方向与未来展望}
+
+\subsection{大规模优化}
+
+处理$D > 1000$维的问题：
+\begin{itemize}
+    \item \textbf{协方差矩阵压缩}：低秩近似，减少计算量
+    \item \textbf{变量分组}：利用问题结构，分而治之
+    \item \textbf{随机子空间}：在随机子空间中优化
+\end{itemize}
+
+\subsection{多目标优化}
+
+同时优化多个目标：
+\begin{itemize}
+    \item \textbf{多目标DE}：NSDE，GDE3
+    \item \textbf{多目标PSO}：MOPSO，SMPSO
+    \item \textbf{多目标CMA-ES}：MO-CMA-ES
+\end{itemize}
+
+\subsection{昂贵优化}
+
+目标函数评估成本高：
+\begin{itemize}
+    \item \textbf{代理模型}：用廉价模型近似目标函数
+    \item \textbf{贝叶斯优化}：结合代理模型和获取函数
+    \item \textbf{进化算法+代理模型}：EA作为全局优化器
+\end{itemize}
+
+\subsection{动态优化}
+
+优化问题随时间变化：
+\begin{itemize}
+    \item \textbf{变化检测}：检测问题变化
+    \item \textbf{响应策略}：重启，多样性注入，记忆利用
+    \item \textbf{预测模型}：预测变化趋势
+\end{itemize}
+
+\subsection{学习优化（Learning to Optimize）}
+
+使用机器学习改进优化算法：
+
+\subsubsection{L2O-RNN}
+
+用循环神经网络学习优化器的更新规则：
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.9\textwidth]{picture/L2O.png}
+\caption{L2O-RNN框架：使用RNN学习优化器的更新规则，可以泛化到不同问题}
+\end{figure}
+
+\subsubsection{OPRO：通过提示进行优化}
+
+利用大语言模型的推理能力进行优化：
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.9\textwidth]{picture/opro.png}
+\caption{OPRO框架：通过自然语言提示指导大语言模型进行优化，展示了AI在优化问题中的新应用}
+\end{figure}
+
+\subsection{理论发展}
+
+\begin{itemize}
+    \item \textbf{收敛性理论}：建立更严格的理论基础
+    \item \textbf{复杂度分析}：分析算法的计算复杂度
+    \item \textbf{No-Free-Lunch定理}：理解算法的根本限制
+\end{itemize}
+
+\section{实践指南与经验总结}
+
+\subsection{算法选择流程}
+
+\begin{algorithm}[H]
+\caption{进化算法选择流程}
+\begin{algorithmic}[1]
+\REQUIRE 优化问题特征
+\ENSURE 推荐算法
+\IF{维度$D > 100$}
+    \RETURN DE \COMMENT{高维问题首选DE}
+\ELSIF{计算预算有限}
+    \RETURN PSO \COMMENT{快速收敛}
+\ELSIF{问题旋转不变}
+    \RETURN CMA-ES \COMMENT{旋转问题首选CMA-ES}
+\ELSIF{多峰性强}
+    \RETURN DE \COMMENT{多峰问题首选DE}
+\ELSIF{需要高精度解}
+    \RETURN CMA-ES \COMMENT{局部搜索能力强}
+\ELSE
+    \RETURN DE \COMMENT{默认选择}
+\ENDIF
+\end{algorithmic}
+\end{algorithm}
+
+\subsection{参数调优建议}
+
+\subsubsection{通用建议}
+
+\begin{itemize}
+    \item \textbf{种群大小}：从经验规则开始，逐步调整
+    \item \textbf{多次运行}：至少运行30次，统计结果
+    \item \textbf{记录日志}：记录搜索过程，便于分析
+    \item \textbf{可视化}：可视化搜索过程，直观理解
+\end{itemize}
+
+\subsubsection{问题特定调优}
+
+\begin{enumerate}
+    \item \textbf{分析问题特征}：维度，多峰性，可微性，约束等
+    \item \textbf{选择合适算法}：根据特征选择算法
+    \item \textbf{设置初始参数}：使用经验值
+    \item \textbf{小规模试验}：在小规模问题上调参
+    \item \textbf{逐步调整}：根据结果微调参数
+\end{enumerate}
+
+\subsection{常见陷阱与避免方法}
+
+\begin{table}[H]
+\centering
+\caption{进化算法常见陷阱与解决方案}
+\begin{tabular}{p{0.3\textwidth}p{0.3\textwidth}p{0.3\textwidth}}
+\toprule
+\textbf{问题} & \textbf{表现} & \textbf{解决方案} \\
+\midrule
+早熟收敛 & 种群多样性迅速下降，陷入局部最优 & 增加种群大小，增加变异率，使用多种群 \\
+\hline
+收敛过慢 & 多代无显著改进 & 减小种群大小，增加选择压力，使用局部搜索 \\
+\hline
+参数敏感 & 不同参数结果差异大 & 使用自适应参数，多次试验取平均 \\
+\hline
+维度灾难 & 高维性能急剧下降 & 使用降维技术，变量分组，问题分解 \\
+\hline
+计算昂贵 & 评估次数过多 & 使用代理模型，提前终止，并行计算 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{性能评估指标}
+
+\begin{itemize}
+    \item \textbf{解质量}：最优值，平均值，标准差
+    \item \textbf{收敛速度}：达到特定精度所需评估次数
+    \item \textbf{鲁棒性}：多次运行结果的一致性
+    \item \textbf{成功率}：达到全局最优的概率
+    \item \textbf{计算效率}：时间复杂度和空间复杂度
+\end{itemize}
+
+\section{结论}
+
+进化计算作为一类受自然启发的优化算法，在解决复杂优化问题中展现出强大能力。DE、PSO和CMA-ES作为连续优化领域的三大代表性算法，各有特色：
+
+\begin{itemize}
+    \item \textbf{DE}：以简洁的差分变异机制实现强大的全局搜索，适合高维、多峰问题
+    \item \textbf{PSO}：通过个体与群体经验的平衡实现快速收敛，适合中等维度、快速求解
+    \item \textbf{CMA-ES}：通过协方差矩阵自适应学习问题结构，实现精确的局部搜索，适合低维、精确求解
+\end{itemize}
+
+在实际应用中，应根据问题特征选择合适的算法，必要时可以结合多种算法的优势。随着计算技术的发展和新理论的提出，进化计算将继续在科学和工程领域发挥重要作用。
+
+未来，进化计算将与机器学习、高性能计算、自动调参等技术深度融合，向着更智能、更高效、更自适应的方向发展。理解这些算法的原理、特性和应用场景，对于解决实际优化问题具有重要意义。

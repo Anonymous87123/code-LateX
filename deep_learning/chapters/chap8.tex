@@ -1,0 +1,968 @@
+\chapter{进化计算之拓展篇}
+\section{引言：从连续优化到组合优化与程序生成}
+
+在前面的学习中，我们深入探讨了进化计算在连续优化问题上的应用，特别是差分进化（DE）、粒子群优化（PSO）和协方差矩阵自适应进化策略（CMA-ES）这三种经典算法。然而，现实世界中的优化问题不仅仅局限于连续空间，还存在大量的组合优化问题，如旅行商问题（TSP）、调度问题、路径规划等。同时，我们也不仅仅满足于优化参数，有时我们希望自动生成解决问题的程序或策略。本章将介绍进化计算的两个重要拓展方向：蚁群优化（Ant Colony Optimization, ACO）和遗传编程（Genetic Programming, GP）。
+
+\subsection{连续优化与组合优化的区别}
+
+\begin{table}[H]
+\centering
+\caption{连续优化与组合优化的对比}
+\begin{tabular}{p{0.3\textwidth}p{0.3\textwidth}p{0.3\textwidth}}
+\toprule
+\textbf{特征} & \textbf{连续优化} & \textbf{组合优化} \\
+\midrule
+决策变量 & 连续实数 & 离散取值（整数、排列、集合等） \\
+\hline
+搜索空间 & 无限、连续、通常有界 & 有限、离散、通常规模巨大 \\
+\hline
+典型问题 & 函数优化、参数调优 & TSP、调度、装箱、图着色 \\
+\hline
+算法特点 & 基于梯度或随机搜索 & 基于启发式、局部搜索、元启发式 \\
+\hline
+解的质量评估 & 目标函数值 & 目标函数值，但可能涉及约束满足 \\
+\hline
+挑战 & 局部最优、高维度、多峰性 & 组合爆炸、约束复杂、NP难 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+组合优化问题通常具有以下特点：
+\begin{itemize}
+    \item \textbf{有限但巨大的搜索空间}：虽然理论上解的数量有限，但实际中往往无法枚举
+    \item \textbf{NP难问题}：大多数有实际意义的组合优化问题都是NP难的
+    \item \textbf{约束复杂}：通常包含多种类型的约束条件
+    \item \textbf{离散结构}：解通常具有组合结构，如排列、划分、匹配等
+\end{itemize}
+
+\subsection{自然启发的优化思想}
+
+进化计算的核心思想是受自然现象启发，通过模拟自然界的智能行为来解决复杂的优化问题。我们已经学习了模拟生物进化的遗传算法（GA）、模拟鸟群觅食的粒子群优化（PSO）等。本章将介绍另外两种受自然启发的算法：
+
+\begin{itemize}
+    \item \textbf{蚁群优化（ACO）}：模拟蚂蚁群体觅食行为，通过信息素的正反馈机制寻找最优路径
+    \item \textbf{遗传编程（GP）}：模拟生物进化过程，自动生成计算机程序
+\end{itemize}
+
+这两种算法分别针对不同类型的优化问题：ACO主要解决组合优化问题，GP则用于自动程序设计。
+
+\section{蚁群优化算法：模拟蚂蚁觅食的智能优化}
+
+\subsection{自然界的蚂蚁觅食行为}
+
+在自然界中，蚂蚁群体展现出令人惊叹的集体智能。尽管单个蚂蚁的能力有限，但蚁群却能高效地找到从巢穴到食物源的最短路径。这种能力主要依赖于一种称为\textbf{信息素（Pheromone）}的化学物质。
+
+\subsubsection{双桥实验}
+
+著名的双桥实验揭示了蚂蚁觅食的智能行为：
+
+\textbf{实验过程}：
+\begin{enumerate}
+    \item 在蚁巢和食物源之间设置两条不同长度的路径
+    \item 初始时，蚂蚁随机选择路径
+    \item 由于短路径上的往返时间更短，信息素积累更快
+    \item 随着时间推移，短路径上的信息素浓度越来越高
+    \item 最终，大多数蚂蚁都选择短路径
+\end{enumerate}
+
+\textbf{关键机制}：
+\begin{itemize}
+    \item \textbf{正反馈}：更多的蚂蚁选择信息素浓度高的路径
+    \item \textbf{自组织}：没有中央控制，通过局部相互作用形成全局模式
+    \item \textbf{随机性}：蚂蚁的选择有一定随机性，避免陷入局部最优
+\end{itemize}
+
+\subsection{蚁群优化算法的提出}
+
+蚁群优化算法由Marco Dorigo于1992年在其博士论文中首次提出，随后在1996年完善并正式发表。ACO是群体智能（Swarm Intelligence）的代表性算法之一。
+
+\begin{table}[H]
+\centering
+\caption{自然界蚂蚁觅食行为与ACO算法的对应关系}
+\begin{tabular}{p{0.3\textwidth}p{0.3\textwidth}p{0.3\textwidth}}
+\toprule
+\textbf{自然现象} & \textbf{ACO算法概念} & \textbf{数学表示/解释} \\
+\midrule
+觅食空间 & 问题的搜索空间 & 所有可能解的集合 \\
+\hline
+蚂蚁 & 搜索代理 & 算法中的个体，负责构建解 \\
+\hline
+蚂蚁构建的路径 & 一个候选解 & 如TSP中的城市访问序列 \\
+\hline
+信息素 & 人工信息素 & 记录路径优劣的数值，通常表示为矩阵 \\
+\hline
+信息素挥发 & 信息素更新机制 & 避免算法早熟，保持探索能力 \\
+\hline
+正反馈 & 强化学习机制 & 优秀解的信息素增强，吸引更多蚂蚁 \\
+\hline
+最优路径 & 问题的最优解 & 算法找到的最佳解 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{基本蚁群系统（Ant System, AS）}
+
+基本蚁群系统是最早的ACO算法，以TSP（旅行商问题）为典型应用场景。TSP问题可以形式化描述为：
+
+给定$n$个城市和城市间的距离矩阵$D = (d_{ij})_{n \times n}$，寻找一条访问每个城市恰好一次并回到起点的最短回路。
+
+\subsubsection{AS算法的核心要素}
+
+\begin{enumerate}
+    \item \textbf{信息素矩阵$\tau$}：$\tau_{ij}$表示边$(i,j)$上的信息素浓度
+    \item \textbf{启发式信息$\eta$}：$\eta_{ij} = 1/d_{ij}$，表示从城市$i$到$j$的启发式吸引力
+    \item \textbf{蚂蚁的路径构建}：每只蚂蚁按照概率选择下一个城市
+    \item \textbf{信息素更新}：包括挥发和增强两个过程
+\end{enumerate}
+
+\subsubsection{路径构建：随机比例规则}
+
+蚂蚁$k$在城市$i$选择下一个城市$j$的概率为：
+
+\[
+p_k(i,j) = 
+\begin{cases}
+\dfrac{[\tau(i,j)]^\alpha [\eta(i,j)]^\beta}{\sum\limits_{u \in J_k(i)} [\tau(i,u)]^\alpha [\eta(i,u)]^\beta}, & \text{if } j \in J_k(i) \\
+0, & \text{otherwise}
+\end{cases}
+\]
+
+其中：
+\begin{itemize}
+    \item $J_k(i)$：蚂蚁$k$在城市$i$可以访问的、且未访问过的城市集合
+    \item $\alpha$：信息素重要程度参数，控制信息素的影响
+    \item $\beta$：启发式信息重要程度参数，控制启发式信息的影响
+    \item $\tau(i,j)$：边$(i,j)$上的信息素浓度
+    \item $\eta(i,j)$：启发式信息，通常$\eta(i,j) = 1/d_{ij}$
+\end{itemize}
+
+\textbf{参数$\alpha$和$\beta$的作用}：
+\begin{itemize}
+    \item $\alpha = 0$：算法退化为贪心算法，只考虑距离因素
+    \item $\beta = 0$：算法只依赖信息素，可能陷入局部最优
+    \item 通常设置：$\alpha = 1$，$\beta = 2 \sim 5$
+\end{itemize}
+
+\subsubsection{信息素更新机制}
+
+信息素更新包括两个过程：挥发和增强。
+
+\begin{enumerate}
+    \item \textbf{信息素挥发}：所有边上的信息素按一定比例挥发
+    \[
+    \tau(i,j) \leftarrow (1 - \rho) \cdot \tau(i,j)
+    \]
+    其中$\rho \in (0,1]$是挥发系数，通常$\rho = 0.5$。
+    
+    \item \textbf{信息素增强}：蚂蚁在其经过的边上释放信息素
+    \[
+    \tau(i,j) \leftarrow \tau(i,j) + \sum_{k=1}^m \Delta \tau_k(i,j)
+    \]
+    其中$m$是蚂蚁数量，$\Delta \tau_k(i,j)$是蚂蚁$k$在边$(i,j)$上释放的信息素量：
+    \[
+    \Delta \tau_k(i,j) = 
+    \begin{cases}
+    Q / L_k, & \text{if 蚂蚁}k\text{经过边}(i,j) \\
+    0, & \text{otherwise}
+    \end{cases}
+    \]
+    其中$Q$是常数，$L_k$是蚂蚁$k$构建路径的长度。
+\end{enumerate}
+
+\subsubsection{初始信息素设置}
+
+初始信息素浓度$\tau_0$的设置对算法性能有重要影响：
+\[
+\tau_0 = \frac{m}{L_{\text{nn}}}
+\]
+其中$L_{\text{nn}}$是使用最近邻贪心算法得到的路径长度。
+
+\textbf{设置原理}：
+\begin{itemize}
+    \item 与问题规模相关：$L_{\text{nn}}$反映了问题难度
+    \item 与蚂蚁数量相关：$m$越大，初始信息素相对越小
+    \item 量纲一致性：与信息素增强公式中的$Q/L_k$量纲一致
+\end{itemize}
+
+\subsubsection{AS算法流程}
+
+\begin{algorithm}[H]
+\caption{基本蚁群系统（Ant System, AS）算法}
+\begin{algorithmic}[1]
+\REQUIRE TSP实例，蚂蚁数量$m$，参数$\alpha, \beta, \rho, Q$，最大迭代次数$T_{\max}$
+\ENSURE 最优路径$T^*$和其长度$L^*$
+\STATE 初始化：计算启发式信息$\eta_{ij} = 1/d_{ij}$，初始化信息素$\tau_{ij} = \tau_0$
+\STATE 计算最近邻路径长度$L_{\text{nn}}$，设置$\tau_0 = m/L_{\text{nn}}$
+\STATE 设置最优路径$T^* = \emptyset$，$L^* = \infty$
+\FOR{$t = 1$ to $T_{\max}$}
+    \FOR{$k = 1$ to $m$}
+        \STATE 随机选择起始城市$s_k$
+        \STATE 初始化已访问城市列表$visited_k = \{s_k\}$
+        \STATE 当前城市$c = s_k$
+        \WHILE{$|visited_k| < n$}
+            \STATE 根据公式计算选择每个未访问城市的概率$p_k(c,j)$
+            \STATE 使用轮盘赌选择下一个城市$j$
+            \STATE 将$j$加入$visited_k$，更新当前城市$c = j$
+        \ENDWHILE
+        \STATE 计算路径长度$L_k$，包括返回起点的距离
+        \IF{$L_k < L^*$}
+            \STATE 更新$L^* = L_k$，$T^* = visited_k$
+        \ENDIF
+    \ENDFOR
+    \STATE 信息素挥发：$\tau_{ij} = (1-\rho)\tau_{ij}$，对所有$i,j$
+    \STATE 信息素增强：对每只蚂蚁$k$，对其路径上的每条边$(i,j)$，$\tau_{ij} = \tau_{ij} + Q/L_k$
+\ENDFOR
+\RETURN $T^*, L^*$
+\end{algorithmic}
+\end{algorithm}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.85\textwidth]{picture/as.png}
+\caption{AS算法流程示意图：包括路径构建和信息素更新两个主要阶段}
+\end{figure}
+
+\subsection{AS算法实例：四城市TSP问题}
+
+\begin{example}[四城市TSP问题]
+距离矩阵为：
+\[
+D = \begin{bmatrix}
+\infty & 3 & 1 & 2 \\
+3 & \infty & 5 & 4 \\
+1 & 5 & \infty & 2 \\
+2 & 4 & 2 & \infty
+\end{bmatrix}
+\]
+
+参数设置：$m=3$，$\alpha=1$，$\beta=2$，$\rho=0.5$，$Q=1$。
+\end{example}
+
+\subsubsection{步骤1：初始化}
+
+\begin{enumerate}
+    \item 计算最近邻路径：从A出发，最近邻为C(1)，然后D(2)，然后B(4)，返回A(3)，总长$L_{\text{nn}}=10$
+    \item 初始信息素：$\tau_0 = m/L_{\text{nn}} = 3/10 = 0.3$
+    \item 信息素矩阵：
+    \[
+    \tau^{(0)} = \begin{bmatrix}
+    0 & 0.3 & 0.3 & 0.3 \\
+    0.3 & 0 & 0.3 & 0.3 \\
+    0.3 & 0.3 & 0 & 0.3 \\
+    0.3 & 0.3 & 0.3 & 0
+    \end{bmatrix}
+    \]
+    \item 启发式信息矩阵：
+    \[
+    \eta = \begin{bmatrix}
+    0 & 1/3 & 1 & 1/2 \\
+    1/3 & 0 & 1/5 & 1/4 \\
+    1 & 1/5 & 0 & 1/2 \\
+    1/2 & 1/4 & 1/2 & 0
+    \end{bmatrix}
+    \]
+\end{enumerate}
+
+\subsubsection{步骤2：路径构建（以蚂蚁1为例）}
+
+假设蚂蚁1从城市A出发：
+\begin{enumerate}
+    \item 当前在城市A，可访问城市：B, C, D
+    \item 计算选择概率：
+    \begin{align*}
+    p(A,B) &= \frac{0.3^1 \times (1/3)^2}{0.3^1 \times (1/3)^2 + 0.3^1 \times 1^2 + 0.3^1 \times (1/2)^2} = \frac{0.0333}{0.4083} = 0.0815 \\
+    p(A,C) &= \frac{0.3}{0.4083} = 0.7348 \\
+    p(A,D) &= \frac{0.075}{0.4083} = 0.1837
+    \end{align*}
+    \item 轮盘赌选择：假设随机数0.05，选择城市B
+    \item 以此类推，最终得到路径A→B→D→C→A，长度$L_1=3+4+2+1=10$
+\end{enumerate}
+
+\subsubsection{步骤3：信息素更新}
+
+\begin{enumerate}
+    \item 信息素挥发：$\tau_{ij} = 0.5 \times \tau_{ij}$
+    \item 信息素增强：假设三只蚂蚁的路径长度分别为10, 10, 12
+    \begin{itemize}
+        \item 蚂蚁1在边(A,B)上增强：$\Delta \tau_1(A,B) = 1/10 = 0.1$
+        \item 蚂蚁2在边(A,B)上增强：$\Delta \tau_2(A,B) = 0.1$
+        \item 蚂蚁3未经过边(A,B)
+    \end{itemize}
+    \item 边(A,B)更新后：$\tau_{AB} = 0.5\times0.3 + 0.1 + 0.1 = 0.35$
+\end{enumerate}
+
+\subsection{蚁群系统（Ant Colony System, ACS）的改进}
+
+基本AS算法存在收敛速度慢、易陷入局部最优等问题。Dorigo和Gambardella于1997年提出了改进的蚁群系统（ACS）。
+
+\subsubsection{ACS的三项改进}
+
+\begin{enumerate}
+    \item \textbf{伪随机比例规则}：平衡探索与开发
+    \item \textbf{局部信息素更新}：增加探索能力
+    \item \textbf{全局信息素更新}：只更新最优路径
+\end{enumerate}
+
+\subsubsection{伪随机比例规则}
+
+蚂蚁$k$在城市$i$选择下一个城市$j$的规则：
+\[
+j = 
+\begin{cases}
+\arg\max_{u \in J_k(i)} \{[\tau(i,u)]^\alpha [\eta(i,u)]^\beta\}, & \text{if } q \leq q_0 \\
+S, & \text{otherwise}
+\end{cases}
+\]
+其中：
+\begin{itemize}
+    \item $q$是$[0,1]$均匀分布的随机数
+    \item $q_0$是参数，控制开发与探索的平衡
+    \item $S$是按照AS的概率分布随机选择的结果
+\end{itemize}
+
+\textbf{物理意义}：
+\begin{itemize}
+    \item 以概率$q_0$选择当前最优的边（开发）
+    \item 以概率$1-q_0$按照概率分布随机选择（探索）
+    \item 通常$q_0 = 0.7 \sim 0.99$
+\end{itemize}
+
+\subsubsection{局部信息素更新}
+
+蚂蚁在构建路径的过程中，每经过一条边$(i,j)$，立即进行局部更新：
+\[
+\tau(i,j) = (1 - \xi) \cdot \tau(i,j) + \xi \cdot \tau_0
+\]
+其中$\xi \in (0,1)$是局部挥发系数，通常$\xi = 0.1$。
+
+\textbf{作用}：
+\begin{itemize}
+    \item 降低已访问边的信息素，鼓励探索新路径
+    \item 避免算法过早收敛
+    \item 增加解的多样性
+\end{itemize}
+
+\subsubsection{全局信息素更新}
+
+在每轮迭代结束后，只对全局最优路径$T_{\text{gb}}$进行更新：
+\[
+\tau(i,j) = (1 - \rho) \cdot \tau(i,j) + \rho \cdot \Delta \tau(i,j), \quad \forall (i,j) \in T_{\text{gb}}
+\]
+其中$\Delta \tau(i,j) = 1/L_{\text{gb}}$，$L_{\text{gb}}$是全局最优路径长度。
+
+\textbf{与AS的区别}：
+\begin{itemize}
+    \item AS更新所有蚂蚁经过的边
+    \item ACS只更新全局最优路径上的边
+    \item 计算复杂度从$O(n^2)$降到$O(n)$
+\end{itemize}
+
+\subsubsection{信息素边界限制}
+
+ACS中信息素被限制在$[\tau_{\min}, \tau_{\max}]$范围内：
+\begin{itemize}
+    \item $\tau_{\min} = \tau_0$，通常$\tau_0 = 1/(nL_{\text{nn}})$
+    \item $\tau_{\max} = 1/(\rho L_{\text{gb}})$
+\end{itemize}
+
+\textbf{作用}：
+\begin{itemize}
+    \item 避免某些边的信息素过高导致早熟
+    \item 保证所有边都有被选择的机会
+\end{itemize}
+
+\subsubsection{ACS算法流程}
+
+\begin{algorithm}[H]
+\caption{蚁群系统（Ant Colony System, ACS）算法}
+\begin{algorithmic}[1]
+\REQUIRE TSP实例，蚂蚁数量$m$，参数$\alpha, \beta, \rho, \xi, q_0$，最大迭代次数$T_{\max}$
+\ENSURE 最优路径$T_{\text{gb}}$和其长度$L_{\text{gb}}$
+\STATE 初始化：计算启发式信息$\eta_{ij} = 1/d_{ij}$，初始化信息素$\tau_{ij} = \tau_0$
+\STATE 计算最近邻路径长度$L_{\text{nn}}$，设置$\tau_0 = 1/(nL_{\text{nn}})$
+\STATE 设置全局最优路径$T_{\text{gb}} = \emptyset$，$L_{\text{gb}} = \infty$
+\FOR{$t = 1$ to $T_{\max}$}
+    \STATE 初始化每只蚂蚁的起始城市
+    \FOR{$k = 1$ to $m$}
+        \STATE 当前城市$i$ = 起始城市
+        \STATE 初始化已访问城市列表$visited_k = \{i\}$
+        \WHILE{$|visited_k| < n$}
+            \STATE 按照伪随机比例规则选择下一个城市$j$
+            \STATE 局部信息素更新：$\tau(i,j) = (1-\xi)\tau(i,j) + \xi\tau_0$
+            \STATE 将$j$加入$visited_k$，更新当前城市$i = j$
+        \ENDWHILE
+        \STATE 计算路径长度$L_k$
+        \IF{$L_k < L_{\text{gb}}$}
+            \STATE 更新$L_{\text{gb}} = L_k$，$T_{\text{gb}} = visited_k$
+        \ENDIF
+    \ENDFOR
+    \STATE 全局信息素更新：对$T_{\text{gb}}$上的每条边$(i,j)$，$\tau(i,j) = (1-\rho)\tau(i,j) + \rho/L_{\text{gb}}$
+    \STATE 限制信息素范围：$\tau(i,j) = \max(\tau_{\min}, \min(\tau_{\max}, \tau(i,j)))$
+\ENDFOR
+\RETURN $T_{\text{gb}}, L_{\text{gb}}$
+\end{algorithmic}
+\end{algorithm}
+
+\subsection{ACO参数设置与调优}
+
+\begin{table}[H]
+\centering
+\caption{ACO算法参数设置指南}
+\begin{tabular}{p{0.2\textwidth}p{0.2\textwidth}p{0.25\textwidth}p{0.25\textwidth}}
+\toprule
+\textbf{参数} & \textbf{符号} & \textbf{推荐范围} & \textbf{影响} \\
+\midrule
+蚂蚁数量 & $m$ & $n$（城市数） & 探索能力，计算成本 \\
+\hline
+信息素重要性 & $\alpha$ & 1 & 信息素的影响程度 \\
+\hline
+启发式重要性 & $\beta$ & 2-5 & 启发式信息的影响程度 \\
+\hline
+全局挥发率 & $\rho$ & AS: 0.5, ACS: 0.1 & 信息素挥发速度，影响收敛 \\
+\hline
+局部挥发率 & $\xi$ & ACS: 0.1 & 增加探索，防止早熟 \\
+\hline
+开发概率 & $q_0$ & ACS: 0.7-0.99 & 控制开发与探索平衡 \\
+\hline
+初始信息素 & $\tau_0$ & AS: $m/L_{\text{nn}}$, ACS: $1/(nL_{\text{nn}})$ & 影响初期搜索行为 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{调优建议}：
+\begin{enumerate}
+    \item 从默认参数开始
+    \item 根据问题规模调整蚂蚁数量
+    \item 通过实验调整$\alpha$和$\beta$的平衡
+    \item 收敛过快时减小$q_0$或增加$\xi$
+    \item 收敛过慢时增加$q_0$或减小$\xi$
+\end{enumerate}
+
+\subsection{ACO与其他算法的对比}
+
+\subsubsection{ACO vs GA}
+
+\begin{table}[H]
+\centering
+\caption{ACO与GA的对比}
+\begin{tabular}{p{0.3\textwidth}p{0.3\textwidth}p{0.3\textwidth}}
+\toprule
+\textbf{维度} & \textbf{蚁群优化（ACO）} & \textbf{遗传算法（GA）} \\
+\midrule
+灵感来源 & 蚂蚁群体觅食行为 & 生物进化理论 \\
+\hline
+解生成方式 & 逐步构建（自回归） & 全局重构（非自回归） \\
+\hline
+约束处理 & 预防式：构建时避免违反 & 修复式：生成后修复或惩罚 \\
+\hline
+信息共享 & 间接共享：通过信息素 & 直接混合：通过交叉操作 \\
+\hline
+环境适应性 & 适应动态环境 & 静态优化为主 \\
+\hline
+计算特点 & 正反馈、分布式 & 选择、交叉、变异 \\
+\hline
+适用问题 & 路径规划、调度、分配 & 函数优化、参数调优、组合优化 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsubsection{ACO vs Q-Learning}
+
+\begin{table}[H]
+\centering
+\caption{ACO与Q-Learning的对比}
+\begin{tabular}{p{0.3\textwidth}p{0.3\textwidth}p{0.3\textwidth}}
+\toprule
+\textbf{维度} & \textbf{蚁群优化（ACO）} & \textbf{Q-Learning} \\
+\midrule
+抽象本质 & 基于经验的迭代优化 & 基于经验的迭代优化 \\
+\hline
+主体性质 & 群体经验的分布式存储 & 单智能体的价值函数 \\
+\hline
+适应环境 & 调整信息素矩阵 & 调整Q-table \\
+\hline
+更新触发 & 一轮迭代后全局更新 & 单步动作后立即更新 \\
+\hline
+核心数学 & 正反馈+挥发衰减 & 贝尔曼方程+时序差分 \\
+\hline
+决策依据 & 启发式信息+群体经验 & 纯价值函数 \\
+\hline
+探索控制 & 随机比例规则+挥发率 & $\epsilon$-greedy或Boltzmann \\
+\hline
+优化侧重 & 全局优化效果好 & 局部决策灵敏度高 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{ACO的应用领域}
+
+ACO算法已在多个领域成功应用：
+
+\begin{enumerate}
+    \item \textbf{旅行商问题（TSP）及变种}：车辆路径问题、带时间窗的VRP
+    \item \textbf{调度问题}：作业车间调度、流水车间调度
+    \item \textbf{网络路由}：通信网络路由、无线传感器网络
+    \item \textbf{数据挖掘}：聚类分析、特征选择
+    \item \textbf{图像处理}：边缘检测、图像分割
+\end{enumerate}
+
+\section{遗传编程：自动程序生成的进化方法}
+
+\subsection{遗传编程的基本思想}
+
+遗传编程由John Koza于1992年提出，是遗传算法的自然扩展。与GA优化参数不同，GP优化的是计算机程序的结构。
+
+\subsubsection{核心思想}
+
+通过模拟自然选择过程，自动生成解决特定问题的计算机程序：
+\begin{itemize}
+    \item 程序表示为树状结构
+    \item 通过适应度评估程序的性能
+    \item 使用遗传操作（选择、交叉、变异）进化程序种群
+    \item 最终得到高性能的程序
+\end{itemize}
+
+\subsubsection{与GA的关系}
+
+\begin{itemize}
+    \item \textbf{共同点}：都基于进化计算框架，使用选择、交叉、变异操作
+    \item \textbf{不同点}：
+    \begin{itemize}
+        \item GA优化固定长度的字符串（参数）
+        \item GP优化可变大小的树结构（程序）
+        \item GA的交叉是等位基因交换
+        \item GP的交叉是子树交换
+    \end{itemize}
+\end{itemize}
+
+\subsection{GP的个体表示：程序树}
+
+GP使用树状结构表示程序，称为程序树（Program Tree）或语法树（Syntax Tree）。
+
+\subsubsection{基元集（Primitive Set）}
+
+基元集是GP可用的基本构建块，包括：
+
+\begin{enumerate}
+    \item \textbf{函数集（Function Set）}：内部节点，有子节点
+    \begin{itemize}
+        \item 算术运算：+, -, *, /, sin, cos, exp, log
+        \item 布尔运算：AND, OR, NOT
+        \item 条件运算：IF-THEN-ELSE
+        \item 循环运算：WHILE, FOR
+        \item 其他函数：取决于具体问题
+    \end{itemize}
+    
+    \item \textbf{终止符集（Terminal Set）}：叶节点，无子节点
+    \begin{itemize}
+        \item 变量：x, y, z
+        \item 常量：1, 2, 3.14, true, false
+        \item 零参数函数：rand(), time()
+    \end{itemize}
+\end{enumerate}
+
+\subsubsection{基元集的设计原则}
+
+\begin{enumerate}
+    \item \textbf{充分性}：基元集应能表达解空间中的所有可能解
+    \item \textbf{封闭性}：任何函数节点的返回值类型应与子节点类型匹配
+    \item \textbf{适当性}：基元集应与问题相关，不过大也不过小
+    \item \textbf{效率性}：避免不必要的基元，减少搜索空间
+\end{enumerate}
+
+\subsection{GP的基本步骤}
+
+GP遵循进化计算的基本框架，但操作针对树结构：
+
+\begin{algorithm}[H]
+\caption{遗传编程基本流程}
+\begin{algorithmic}[1]
+\REQUIRE 问题描述，适应度函数，基元集，参数设置
+\ENSURE 最优程序
+\STATE 初始化：生成初始种群（随机程序树）
+\STATE 评估：计算每个个体的适应度
+\WHILE{未满足终止条件}
+    \STATE 选择：根据适应度选择父代
+    \STATE 繁殖：对父代应用遗传操作生成子代
+    \begin{itemize}
+        \item 交叉：交换两个父代的子树
+        \item 变异：替换父代的子树
+        \item 复制：直接复制父代
+    \end{itemize}
+    \STATE 评估：计算子代的适应度
+    \STATE 替换：用子代替换部分或全部父代
+\ENDWHILE
+\RETURN 最优程序
+\end{algorithmic}
+\end{algorithm}
+
+\subsubsection{种群初始化}
+
+有三种常用的初始化方法：
+
+\begin{enumerate}
+    \item \textbf{增长法（Grow Method）}
+    \begin{itemize}
+        \item 从函数集随机选择根节点
+        \item 对每个参数位置，从整个基元集随机选择
+        \item 如果选择终止符，则该分支停止生长
+        \item 如果选择函数，则继续生长
+        \item 达到最大深度时，必须选择终止符
+    \end{itemize}
+    
+    \item \textbf{完全法（Full Method）}
+    \begin{itemize}
+        \item 从函数集随机选择根节点
+        \item 直到深度$d_{\max}-1$，都从函数集选择
+        \item 在深度$d_{\max}$，从终止符集选择
+        \item 生成的都是深度为$d_{\max}$的完整树
+    \end{itemize}
+    
+    \item \textbf{分层对半分法（Ramped Half-and-Half）}
+    \begin{itemize}
+        \item 将种群按深度分层
+        \item 每层中，50\%用增长法，50\%用完全法
+        \item 结合两种方法的优点，增加多样性
+    \end{itemize}
+\end{enumerate}
+
+\subsubsection{适应度评估}
+
+适应度函数衡量程序解决目标问题的能力：
+
+\begin{itemize}
+    \item \textbf{符号回归}：预测值与真实值的误差
+    \item \textbf{分类问题}：分类准确率
+    \item \textbf{控制问题}：控制性能指标
+    \item \textbf{程序生成}：通过测试用例的比例
+\end{itemize}
+
+常用适应度度量：
+\[
+\text{MSE} = \frac{1}{n} \sum_{i=1}^n (y_i - f(x_i))^2
+\]
+\[
+\text{准确率} = \frac{\text{正确分类数}}{\text{总样本数}}
+\]
+
+\subsubsection{选择操作}
+
+与GA类似，常用选择方法：
+\begin{itemize}
+    \item \textbf{轮盘赌选择}：按适应度比例选择
+    \item \textbf{锦标赛选择}：随机选择$k$个个体，选择最优的
+    \item \textbf{精英选择}：保留最优个体直接进入下一代
+\end{itemize}
+
+\subsubsection{交叉操作}
+
+GP交叉是子树交换：
+\begin{enumerate}
+    \item 随机选择两个父代个体
+    \item 在每个父代中随机选择一个交叉点
+    \item 交换以交叉点为根的子树
+    \item 生成两个子代个体
+\end{enumerate}
+
+
+\subsubsection{变异操作}
+
+两种主要变异方式：
+\begin{enumerate}
+    \item \textbf{子树变异（Subtree Mutation）}
+    \begin{itemize}
+        \item 随机选择变异点
+        \item 删除以该点为根的子树
+        \item 用随机生成的子树替换
+    \end{itemize}
+    
+    \item \textbf{单点变异（Point Mutation）}
+    \begin{itemize}
+        \item 随机选择变异点
+        \item 用同类型的基元替换
+        \item 保持树结构不变
+    \end{itemize}
+\end{enumerate}
+
+\subsubsection{复制操作}
+
+以一定概率直接复制父代到子代，保留优秀个体。
+
+\subsection{GP的参数设置}
+
+\begin{table}[H]
+\centering
+\caption{GP算法参数设置指南}
+\begin{tabular}{p{0.25\textwidth}p{0.25\textwidth}p{0.4\textwidth}}
+\toprule
+\textbf{参数} & \textbf{推荐范围} & \textbf{说明} \\
+\midrule
+种群大小 & 500-5000 & 越大探索能力越强，计算成本越高 \\
+\hline
+最大深度 & 3-10 & 控制程序复杂度，防止膨胀 \\
+\hline
+交叉率 & 0.8-0.95 & 主要搜索操作，促进多样性 \\
+\hline
+变异率 & 0.01-0.1 & 引入新基因，防止早熟 \\
+\hline
+复制率 & 0-0.1 & 保留优秀个体 \\
+\hline
+选择方法 & 锦标赛 & 常用锦标赛大小$k=7$ \\
+\hline
+精英数量 & 1-5 & 保留最优个体 \\
+\hline
+最大代数 & 50-1000 & 根据问题复杂度调整 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{GP的应用案例：符号回归}
+
+符号回归是GP的经典应用，目标是发现数据背后的数学表达式。
+
+\subsubsection{问题描述}
+
+给定数据集$\{(x_i, y_i)\}_{i=1}^n$，寻找数学表达式$f(x)$，使得$f(x_i) \approx y_i$。
+
+\begin{example}[二次多项式回归]
+目标函数：$f(x) = x^2 + x + 1$
+数据范围：$x \in [-1, 1]$
+采样点：$x = -1.0, -0.9, \dots, 0.9, 1.0$
+\end{example}
+
+\subsubsection{GP设置}
+
+\begin{enumerate}
+    \item \textbf{终止符集}：$T = \{x, \mathbb{R}\}$，其中$\mathbb{R}$是随机常数
+    \item \textbf{函数集}：$F = \{+, -, \times, \%\}$，其中\%是保护除法（除0返回1）
+    \item \textbf{适应度函数}：MSE
+    \[
+    \text{MSE} = \frac{1}{n} \sum_{i=1}^n (y_i - f(x_i))^2
+    \]
+    \item \textbf{参数设置}：种群大小4，最大深度2，交叉率0.5，变异率0.25，复制率0.25
+    \item \textbf{终止条件}：MSE < 0.1
+\end{enumerate}
+
+\subsubsection{GP求解过程}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.9\textwidth]{picture/14.png}
+\caption{GP求解符号回归问题的完整过程：从初始化到找到最优解}
+\end{figure}
+
+\textbf{第1代}：
+\begin{itemize}
+    \item 个体1: $x+1$，MSE=7.7
+    \item 个体2: $x^2+1$，MSE=11.00
+    \item 个体3: 2，MSE=17.98
+    \item 个体4: $x$，MSE=28.70
+\end{itemize}
+
+\textbf{遗传操作}：
+\begin{itemize}
+    \item 复制：个体1直接复制
+    \item 变异：个体3变异为$x\%x$（即1）
+    \item 交叉1：个体1和4交叉，得到$x$和$x+1$
+    \item 交叉2：个体1和2交叉，得到$x^2+x+1$
+\end{itemize}
+
+\textbf{第2代}：
+\begin{itemize}
+    \item 个体1: $x+1$，MSE=7.7
+    \item 个体2: 1，MSE=11.00
+    \item 个体3: $x$，MSE=28.70
+    \item 个体4: $x^2+x+1$，MSE=0.0
+\end{itemize}
+
+找到最优解$f(x) = x^2 + x + 1$，终止。
+
+\subsubsection{不同回归方法对比}
+
+
+\begin{table}[H]
+\centering
+\caption{不同回归方法的对比}
+\begin{tabular}{p{0.2\textwidth}p{0.25\textwidth}p{0.25\textwidth}p{0.2\textwidth}}
+\toprule
+\textbf{方法} & \textbf{模型形式} & \textbf{优点} & \textbf{缺点} \\
+\midrule
+线性回归 & $y = \beta_0 + \beta_1 x$ & 简单、可解释 & 只能拟合线性关系 \\
+\hline
+多项式回归 & $y = \sum_{i=0}^k \beta_i x^i$ & 可拟合非线性 & 阶数选择困难，易过拟合 \\
+\hline
+神经网络 & $y = f(Wx+b)$ & 强大拟合能力 & 黑箱、需大量数据、易过拟合 \\
+\hline
+符号回归 & 任意表达式 & 可解释、自动发现 & 计算复杂、可能膨胀 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{GP的优缺点与挑战}
+
+\subsubsection{优点}
+\begin{itemize}
+    \item \textbf{自动程序设计}：无需预先指定程序结构
+    \item \textbf{可解释性}：生成的程序易于理解
+    \item \textbf{灵活性}：适用于多种问题类型
+    \item \textbf{创造性}：可能发现人类未想到的解决方案
+\end{itemize}
+
+\subsubsection{缺点与挑战}
+\begin{enumerate}
+    \item \textbf{计算复杂度高}：程序评估和进化成本高
+    \item \textbf{膨胀现象（Bloat）}：程序无意义地增长
+    \item \textbf{过拟合}：在训练集上表现好，测试集差
+    \item \textbf{参数敏感}：需要仔细调参
+    \item \textbf{局部最优}：可能陷入局部最优解
+\end{enumerate}
+
+\subsubsection{膨胀现象的原因与对策}
+
+\textbf{膨胀原因}：
+\begin{itemize}
+    \item 搜索偏差：大程序有更多交叉点
+    \item 无用代码：不影响适应度的代码不被淘汰
+    \item 适应度地形：大程序可能在小邻域内有更好解
+\end{itemize}
+
+\textbf{对策}：
+\begin{itemize}
+    \item 深度限制：限制程序最大深度
+    \item 大小限制：限制程序节点数
+    \item 简化操作：定期简化程序
+    \item 适应度惩罚：对复杂程序进行惩罚
+\end{itemize}
+
+\subsection{GP与其他算法的对比}
+
+\subsubsection{GP vs 深度强化学习（DRL）}
+
+\begin{table}[H]
+\centering
+\caption{GP与DRL的对比}
+\begin{tabular}{p{0.3\textwidth}p{0.3\textwidth}p{0.3\textwidth}}
+\toprule
+\textbf{维度} & \textbf{遗传编程（GP）} & \textbf{深度强化学习（DRL）} \\
+\midrule
+策略表示 & 树结构（符号表达式） & 神经网络（数值函数） \\
+\hline
+可微性 & 不可微 & 可微 \\
+\hline
+训练方式 & 进化算法（选择、交叉、变异） & 梯度下降（反向传播） \\
+\hline
+先验知识 & 不依赖，从基元集构建 & 依赖网络结构设计 \\
+\hline
+可解释性 & 强，符号表达式易于理解 & 弱，黑箱模型难以解释 \\
+\hline
+探索机制 & 通过变异和交叉探索 & 通过动作随机性探索 \\
+\hline
+样本效率 & 通常较低 & 可以较高（有重用机制） \\
+\hline
+计算需求 & 大量程序评估 & 大量环境交互 \\
+\hline
+适用问题 & 符号回归、程序生成、控制 & 游戏、机器人控制、决策 \\
+\hline
+优势 & 可解释、无需梯度、创造性 & 强大表示能力、端到端学习 \\
+\hline
+劣势 & 计算昂贵、易膨胀、参数敏感 & 需要大量数据、不稳定、难调参 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsubsection{作为策略的GP}
+
+GP可以视为一种策略表示方法：
+\[
+\pi(s) = \text{GP-Program}(s)
+\]
+其中程序以状态$s$为输入，输出动作$a$。
+
+\textbf{增强GP处理序列决策}：
+\begin{itemize}
+    \item 引入状态变量作为终止符
+    \item 添加记忆机制
+    \item 使用迭代或递归结构
+\end{itemize}
+
+\subsection{GP的应用领域}
+
+\begin{enumerate}
+    \item \textbf{符号回归}：发现数据背后的数学规律
+    \item \textbf{程序生成}：自动生成算法、函数
+    \item \textbf{控制器设计}：机器人控制、过程控制
+    \item \textbf{电路设计}：数字电路、模拟电路
+    \item \textbf{游戏AI}：游戏策略、NPC行为
+    \item \textbf{数据挖掘}：特征构建、模式发现
+    \item \textbf{图像处理}：滤波器设计、特征提取
+\end{enumerate}
+
+\section{总结与展望}
+
+\subsection{算法对比总结}
+
+\begin{table}[H]
+\centering
+\caption{进化计算算法综合对比}
+\begin{tabular}{p{0.15\textwidth}p{0.2\textwidth}p{0.2\textwidth}p{0.2\textwidth}p{0.15\textwidth}}
+\toprule
+\textbf{算法} & \textbf{灵感来源} & \textbf{表示方式} & \textbf{适用问题} & \textbf{特点} \\
+\midrule
+GA & 生物进化 & 固定长度字符串 & 优化、搜索 & 通用、易实现 \\
+\hline
+DE & 向量差分 & 实数向量 & 连续优化 & 简单、高效 \\
+\hline
+PSO & 鸟群觅食 & 位置速度 & 连续优化 & 收敛快、参数少 \\
+\hline
+CMA-ES & 自然进化 & 高斯分布 & 连续优化 & 自适应、旋转不变 \\
+\hline
+ACO & 蚂蚁觅食 & 路径/排列 & 组合优化 & 正反馈、分布式 \\
+\hline
+GP & 生物进化 & 树结构 & 程序生成 & 自动设计、可解释 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{选择指南}
+
+\begin{itemize}
+    \item \textbf{连续参数优化}：DE、PSO、CMA-ES
+    \item \textbf{组合优化}：ACO、GA
+    \item \textbf{自动程序设计}：GP
+    \item \textbf{需要可解释性}：GP、符号回归
+    \item \textbf{动态环境}：ACO、PSO
+    \item \textbf{高维问题}：DE、CMA-ES
+    \item \textbf{计算资源有限}：PSO、简单GA
+\end{itemize}
+
+\subsection{未来发展方向}
+
+\begin{enumerate}
+    \item \textbf{混合算法}：结合不同算法的优势
+    \begin{itemize}
+        \item ACO+局部搜索：增强局部搜索能力
+        \item GP+神经网络：结合符号和连接主义
+        \item 进化+强化学习：进化神经网络结构
+    \end{itemize}
+    
+    \item \textbf{大规模并行}：利用GPU、分布式计算加速
+    \item \textbf{自适应机制}：自动调整参数和策略
+    \item \textbf{理论分析}：深入理解算法收敛性和复杂性
+    \item \textbf{新应用领域}：量子计算、生物信息、金融科技
+    \item \textbf{可解释AI}：GP在可解释机器学习中的应用
+    \item \textbf{自动机器学习（AutoML）}：自动选择算法、调参
+\end{enumerate}
+
+\subsection{实践建议}
+
+\begin{enumerate}
+    \item \textbf{理解问题本质}：分析问题特点，选择合适算法
+    \item \textbf{从简单开始}：先尝试简单算法和默认参数
+    \item \textbf{逐步优化}：根据结果调整参数和策略
+    \item \textbf{多次运行}：统计多次运行结果，评估稳定性
+    \item \textbf{可视化分析}：可视化搜索过程，理解算法行为
+    \item \textbf{记录实验}：详细记录实验设置和结果
+    \item \textbf{理论结合实践}：理解算法原理，指导实践应用
+\end{enumerate}
+
+进化计算作为一类受自然启发的优化方法，在解决复杂问题中展现出强大能力。ACO和GP分别针对组合优化和程序生成问题，扩展了进化计算的应用范围。理解这些算法的原理、特点和应用场景，对于解决实际问题具有重要意义。随着计算技术的进步和理论的发展，进化计算将继续在科学和工程领域发挥重要作用。

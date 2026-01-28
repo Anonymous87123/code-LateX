@@ -1,39 +1,774 @@
 \chapter{深度强化学习之连续控制}
-离散动作空间 (Discrete Action Space)：动作是有限的、可数的集合。
-- Atari 游戏中的“上、下、左、右”（4选1），
-- 棋类游戏中的落子位置（从N个位置中选1个）。
-连续动作空间 (Continuous Action Space)：动作是在一个或多个维度上取值的连续实数。
-- 自动驾驶：我们需要同时控制方向盘和油门/刹车。
-  - 动作可以是一个二维向量：$a = [\text{方向盘转角}, \text{加速度}]$，例如，$a = [-15.5, 0.75]$ 表示方向盘向左转 15.5 度，同时施加 75% 的油门。
-- 机器人控制：一个拥有6个关节的机械臂（6自由度），需要同时控制每个关节的目标角度或力矩。
-  - 动作就是一个六维向量：$a = [\theta_1, \theta_2, \theta_3, \theta_4, \theta_5, \theta_6]$
-价值学习方法的困境
-像 Q-Learning 或 DQN 这类算法的核心是计算在状态 $s$ 下，所有可能动作 $a$ 的价值 $Q(s,a)$，然后通过取最大值来选择最优动作：
-$$a^* = \arg\max_a Q(s,a)$$
 
-在离散空间中，我们可以为有限的几个动作分别计算 Q 值，然后比较大小。但在连续空间中，动作 $a$ 是无限的！我们无法遍历所有可能的动作来找到那个使 Q 值最大的动作。因此，执行 $\arg\max$ 操作变得不可行。
+\section{引言：连续控制问题的挑战}
 
-传统策略梯度方法的困境
+\subsection{离散动作空间 vs 连续动作空间}
 
-对于离散动作，策略网络 $\pi(a|s)$ 的输出层通常是一个 Softmax 函数。它输出一个概率分布，对应每个可行动作被选择的概率。例如，对于 4 个动作，输出可能是 $[0.1, 0.7, 0.1, 0.1]$。
+在强化学习中，动作空间（Action Space）是智能体（Agent）可以执行的所有可能动作的集合。根据动作的性质，我们可以将动作空间分为两大类：
 
-这种方法的本质是为每一个动作都赋予一个概率。当动作是无限多个时，这个思路显然也无法实现。我们不可能设计一个能输出无穷多个概率的神经网络。
-离散化 (Discretization)
-一个最直观、最简单的想法是离散化 (Discretization)，试图将无限的连续空间改造为有限的离散空间。
-1. 单维划分：将一个连续的动作维度切分成有限个“档位”或“区间”。
-○ 例子：对于自动驾驶中的方向盘转角 (范围 $[-90^\circ, +90^\circ]$)，我们可以将其粗略地离散化为5个固定动作：$\{-45^\circ, -15^\circ, 0^\circ, +15^\circ, +45^\circ\}$。
-2. 多维组合：当动作是多维时，最终的离散动作集是所有维度离散点集合的笛卡尔积 (Cartesian Product)。这意味着总动作数是每个维度离散点数量的乘积。
-○ 维度1 (方向盘)：离散化为5个档位 $D_1 = \{-45^\circ, -15^\circ, 0^\circ, +15^\circ, +45^\circ\}$。
-○ 维度2 (油门/刹车)：离散化为3个档位 $D_2 = \{\text{全力加速}, \text{保持速度}, \text{紧急刹车}\}$。
-○ 最终动作集：最终的离散动作空间 $A$ 是 $D_1$ 和 $D_2$ 的所有可能组合。总动作数量为 $|A| = |D_1| \times |D_2| = 5 \times 3 = 15$。
-■ 这15个动作包括：$(-45^\circ, \text{全力加速})$、$(-45^\circ, \text{保持速度})$、$(-45^\circ, \text{紧急刹车})$、$(-15^\circ, \text{全力加速})$ 等
-离散化的困境
-1. 维度灾难 (Curse of Dimensionality)
-随着动作维度的增加，离散动作的总数会呈指数级爆炸式增长。
-○ 一个常见的6自由度机械臂，需要同时控制6个关节。如果我们仅将每个关节的力矩粗略地划分为10个级别，那么总的离散动作数量将是：
-$$Total\ Actions = 10 \times 10 \times 10 \times 10 \times 10 \times 10 = 10^6 = 1,000,000$$
-让一个算法从一百万个动作中学习并选择最优动作，在计算上是极其低效甚至不可行的。
-2. 精度损失
-离散化本质上是一种“粗暴”的近似，它使得智能体失去了在“档位”之间进行精细微调的能力。
-○ 也许最优的转向角度是 $-17.3^\circ$，但在我们上面5档位的设定中，智能体只能在 $-15^\circ$ 和 $-45^\circ$ 之间选择一个，永远无法达到真正的最优解。这不仅导致策略的次优性，还可能让智能体在两个离散点之间来回震荡，无法稳定。
-离散化是一种“治标不治本”的思路，它回避了问题的核心。这种方法仅在动作维度极低（通常1-2维）且对控制精度要求不高的极少数场景下或许可用。
+\begin{definition}[离散动作空间（Discrete Action Space）]
+离散动作空间由有限个、可数的动作组成。智能体在每个时间步从这些动作中选择一个执行。
+\begin{itemize}
+    \item \textbf{特点}：动作数量有限，可以枚举
+    \item \textbf{示例}：
+    \begin{itemize}
+        \item Atari游戏：上、下、左、右（4个动作）
+        \item 棋类游戏：棋盘上的合法落子位置（几十到几百个动作）
+        \item 导航问题：前进、后退、左转、右转、停止
+    \end{itemize}
+    \item \textbf{数学表示}：$\mathcal{A} = \{a_1, a_2, \dots, a_n\}$，其中$n$是有限正整数
+\end{itemize}
+\end{definition}
+
+\begin{definition}[连续动作空间（Continuous Action Space）]
+连续动作空间中的动作是在一个或多个维度上取值的连续实数。智能体在每个时间步需要指定每个动作维度的具体数值。
+\begin{itemize}
+    \item \textbf{特点}：动作是连续的，不可枚举
+    \item \textbf{示例}：
+    \begin{itemize}
+        \item 自动驾驶：方向盘转角（-90°到+90°的连续值）、油门/刹车（0到1的连续值）
+        \item 机器人控制：机械臂的6个关节角度，每个关节在特定范围内连续变化
+        \item 无人机控制：三个方向的推力大小，每个推力是连续值
+    \end{itemize}
+    \item \textbf{数学表示}：$\mathcal{A} \subseteq \mathbb{R}^d$，其中$d$是动作维度
+\end{itemize}
+\end{definition}
+
+\subsection{连续控制问题的实例}
+
+为了更直观地理解连续控制问题，让我们看几个具体例子：
+
+\begin{example}[自动驾驶]
+自动驾驶汽车需要同时控制多个连续变量：
+\[
+a = \begin{bmatrix}
+\text{方向盘转角} \\ \text{加速度}
+\end{bmatrix} = \begin{bmatrix}
+-15.5^\circ \\ 0.75
+\end{bmatrix}
+\]
+其中：
+\begin{itemize}
+    \item 方向盘转角：通常在$[-90^\circ, +90^\circ]$范围内连续变化
+    \item 加速度：在$[-1, 1]$范围内连续变化，负值表示刹车
+\end{itemize}
+这是一个2维连续动作空间。
+\end{example}
+
+\begin{example}[6自由度机械臂控制]
+工业机器人需要精确控制每个关节的角度或力矩：
+\[
+a = \begin{bmatrix}
+\theta_1 \\ \theta_2 \\ \theta_3 \\ \theta_4 \\ \theta_5 \\ \theta_6
+\end{bmatrix} = \begin{bmatrix}
+0.5 \text{ rad} \\ 1.2 \text{ rad} \\ -0.3 \text{ rad} \\ 0.8 \text{ rad} \\ 0.1 \text{ rad} \\ -0.5 \text{ rad}
+\end{bmatrix}
+\]
+其中每个$\theta_i$表示第$i$个关节的角度，这是一个6维连续动作空间。
+\end{example}
+
+\begin{example}[人形机器人行走]
+人形机器人需要控制多个关节的力矩来实现稳定行走：
+\[
+a = \begin{bmatrix}
+\tau_1 \\ \tau_2 \\ \vdots \\ \tau_{12}
+\end{bmatrix}
+\]
+其中$\tau_i$表示第$i$个关节的力矩，通常有12-20个关节需要控制。
+\end{example}
+
+\section{价值学习方法在连续动作空间中的困境}
+
+\subsection{Q-Learning/DQN的核心机制回顾}
+
+在离散动作空间中，Q-Learning和DQN等价值学习方法的核心是计算状态-动作价值函数$Q(s,a)$，然后通过最大化操作选择最优动作：
+
+\[
+a^* = \arg\max_{a \in \mathcal{A}} Q(s,a)
+\]
+
+这个机制在离散动作空间中运行良好，因为：
+\begin{enumerate}
+    \item 可以枚举所有动作$a \in \mathcal{A}$
+    \item 为每个动作计算$Q(s,a)$
+    \item 比较所有$Q(s,a)$值，选择最大的
+\end{enumerate}
+
+\subsection{连续动作空间中的挑战}
+
+在连续动作空间中，$\arg\max$操作面临根本性困难：
+
+\begin{enumerate}
+    \item \textbf{无限动作数量}：动作空间是无限的，无法枚举所有可能的动作
+    \item \textbf{连续优化问题}：$\arg\max_{a \in \mathbb{R}^d} Q(s,a)$是一个连续优化问题
+    \item \textbf{计算复杂度}：每次选择动作都需要解决一个优化问题，计算代价高昂
+    \item \textbf{局部最优}：$Q(s,a)$函数可能非凸，难以找到全局最优
+\end{enumerate}
+
+\textbf{具体分析}：
+假设$Q(s,a)$是一个关于$a$的复杂非线性函数，找到使$Q(s,a)$最大的$a$需要：
+\[
+\nabla_a Q(s,a) = 0
+\]
+然后检查二阶条件$\nabla_a^2 Q(s,a) \prec 0$（负定）。这在实际中几乎不可能实时完成。
+
+\subsection{传统策略梯度方法的困境}
+
+对于离散动作空间，策略网络$\pi_\theta(a|s)$通常使用Softmax输出层，为每个离散动作输出一个概率：
+
+\[
+\pi_\theta(a|s) = \frac{\exp(f_\theta(s,a))}{\sum_{a' \in \mathcal{A}} \exp(f_\theta(s,a'))}
+\]
+
+其中$f_\theta(s,a)$是网络为动作$a$计算的得分。
+
+在连续动作空间中，这种方法失效，因为：
+\begin{enumerate}
+    \item 无法计算分母中的归一化常数（需要对无限动作积分）
+    \item 无法为无限个动作分别计算得分
+\end{enumerate}
+
+\section{离散化方法：一种直观的解决方案}
+
+\subsection{离散化的基本思想}
+
+面对连续动作空间的挑战，一个最直观的想法是\textbf{离散化}（Discretization）：将连续的无限动作空间转化为离散的有限动作空间，然后应用已有的离散动作算法。
+
+\begin{definition}[离散化]
+离散化是将连续动作空间$\mathcal{A} \subseteq \mathbb{R}^d$划分为有限个离散区域，每个区域用一个代表性动作（通常是中心点）表示的过程。
+\end{definition}
+
+\subsection{一维离散化}
+
+对于一维连续动作，离散化过程很简单：
+
+\begin{example}[方向盘转角离散化]
+假设方向盘转角范围是$[-90^\circ, +90^\circ]$，我们可以将其离散化为5个档位：
+\[
+\mathcal{A}_{\text{disc}} = \{-45^\circ, -15^\circ, 0^\circ, +15^\circ, +45^\circ\}
+\]
+智能体只能选择这5个角度之一。
+\end{example}
+
+\subsection{多维离散化}
+
+对于多维连续动作，离散化需要更复杂的处理：
+
+\begin{example}[自动驾驶的二维动作离散化]
+考虑自动驾驶的两个连续动作维度：
+\begin{itemize}
+    \item 方向盘转角$D_1$：离散化为5个档位：$\{-45^\circ, -15^\circ, 0^\circ, +15^\circ, +45^\circ\}$
+    \item 油门/刹车$D_2$：离散化为3个档位：$\{\text{全力加速}, \text{保持速度}, \text{紧急刹车}\}$
+\end{itemize}
+
+总动作空间是这两个维度的笛卡尔积：
+\[
+\mathcal{A}_{\text{disc}} = D_1 \times D_2
+\]
+总动作数为$5 \times 3 = 15$，包括$(-45^\circ, \text{全力加速})$、$(-45^\circ, \text{保持速度})$等所有组合。
+\end{example}
+
+\subsection{离散化的数学表示}
+
+更一般地，对于$d$维连续动作空间，将每个维度$i$离散化为$k_i$个档位，则总动作数为：
+\[
+|\mathcal{A}_{\text{disc}}| = \prod_{i=1}^{d} k_i
+\]
+
+这是一个组合爆炸问题：随着维度增加，动作数量呈指数增长。
+
+\subsection{离散化的困境与局限性}
+
+尽管离散化方法直观简单，但它面临严重问题：
+
+\begin{table}[H]
+\centering
+\caption{离散化方法的局限性}
+\begin{tabular}{p{0.3\textwidth}p{0.65\textwidth}}
+\toprule
+\textbf{问题} & \textbf{详细分析} \\
+\midrule
+\textbf{维度灾难（Curse of Dimensionality）} & 
+\begin{itemize}
+    \item 动作数量随维度指数增长：$k^d$
+    \item 例如：6自由度机械臂，每个维度离散化为10个级别
+    \[
+    |\mathcal{A}_{\text{disc}}| = 10^6 = 1,000,000
+    \]
+    \item 从一百万个动作中选择最优动作计算量巨大
+    \item 存储$Q(s,a)$表需要大量内存
+\end{itemize} \\
+\hline
+\textbf{精度损失} & 
+\begin{itemize}
+    \item 离散化丢失了连续控制能力
+    \item 真正的最优动作可能在两个离散点之间
+    \item 例如：最优转向角可能是$-17.3^\circ$，但离散化后只能选择$-15^\circ$或$-45^\circ$
+    \item 导致策略次优，控制抖动
+\end{itemize} \\
+\hline
+\textbf{探索效率低} & 
+\begin{itemize}
+    \item 离散动作之间的跳跃导致探索不连续
+    \item 难以学习平滑的控制策略
+    \item 在边界附近可能产生振荡
+\end{itemize} \\
+\hline
+\textbf{不适用于高精度控制} & 
+\begin{itemize}
+    \item 机器人手术、精密加工等需要高精度连续控制
+    \item 离散化无法满足精度要求
+    \item 可能导致系统不稳定
+\end{itemize} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{离散化的适用场景}
+
+尽管有诸多限制，离散化在特定情况下仍有价值：
+\begin{itemize}
+    \item 动作维度很低（1-2维）
+    \item 控制精度要求不高
+    \item 快速原型验证
+    \item 与现有离散算法兼容
+\end{itemize}
+
+但对于大多数实际连续控制问题，我们需要更优雅的解决方案。
+
+\section{随机策略梯度方法：参数化概率分布}
+
+\subsection{核心思想}
+
+随机策略梯度（Stochastic Policy Gradient）方法的核心理念是：策略网络不直接输出动作，而是输出一个概率分布的参数，然后从这个分布中采样得到动作。
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.7\textwidth]{picture/strategy.png}
+\caption{随机策略网络：输出概率分布参数，从中采样动作}
+\end{figure}
+
+\subsection{为什么选择高斯分布？}
+
+高斯分布（正态分布）是连续动作空间中最常用的概率分布，原因如下：
+
+\begin{enumerate}
+    \item \textbf{参数简单}：只需均值和标准差两个参数
+    \begin{itemize}
+        \item 均值$\mu$：策略认为"最优"的动作
+        \item 标准差$\sigma$：探索的程度
+    \end{itemize}
+    
+    \item \textbf{数学性质良好}：
+    \begin{itemize}
+        \item 中心极限定理保证许多随机变量的和近似服从高斯分布
+        \item 具有最大熵性质，是最"随机"的分布
+    \end{itemize}
+    
+    \item \textbf{计算方便}：
+    \begin{itemize}
+        \item 概率密度函数有解析表达式
+        \item 采样、计算对数概率都很简单
+    \end{itemize}
+    
+    \item \textbf{物理意义明确}：
+    \begin{itemize}
+        \item 许多物理系统的噪声是高斯分布
+        \item 符合"大部分情况下接近均值，偶尔有较大偏差"的直觉
+    \end{itemize}
+\end{enumerate}
+
+\subsection{单变量高斯分布}
+
+对于一维连续动作，策略网络输出均值和标准差：
+
+\[
+a \sim \mathcal{N}(\mu_\theta(s), \sigma_\theta(s)^2)
+\]
+
+其中：
+\begin{itemize}
+    \item $\mu_\theta(s)$：策略网络在状态$s$下输出的均值
+    \item $\sigma_\theta(s)$：策略网络在状态$s$下输出的标准差（必须为正）
+\end{itemize}
+
+概率密度函数为：
+\[
+\pi_\theta(a|s) = \frac{1}{\sigma_\theta(s)\sqrt{2\pi}} \exp\left(-\frac{(a - \mu_\theta(s))^2}{2\sigma_\theta(s)^2}\right)
+\]
+
+\subsection{多变量高斯分布与独立性假设}
+
+对于$d$维连续动作，理论上应该使用多元高斯分布：
+\[
+a \sim \mathcal{N}(\mu_\theta(s), \Sigma_\theta(s))
+\]
+其中$\Sigma_\theta(s)$是$d \times d$的协方差矩阵。
+
+但实际中通常做\textbf{独立性假设}：各动作维度相互独立。此时协方差矩阵是对角矩阵：
+\[
+\Sigma_\theta(s) = \text{diag}(\sigma_1^2, \sigma_2^2, \dots, \sigma_d^2)
+\]
+
+概率密度函数简化为各维度概率密度的乘积：
+\[
+\pi_\theta(a|s) = \prod_{i=1}^{d} \frac{1}{\sigma_i\sqrt{2\pi}} \exp\left(-\frac{(a_i - \mu_i)^2}{2\sigma_i^2}\right)
+\]
+
+\subsection{策略网络的输出设计}
+
+在实现中，策略网络需要输出概率分布的参数：
+
+\begin{enumerate}
+    \item \textbf{均值$\mu_\theta(s)$}：网络直接输出$d$维向量
+    \item \textbf{标准差$\sigma_\theta(s)$}：两种常见设计
+    \begin{itemize}
+        \item \textbf{状态相关}：网络输出另一个$d$维向量，通过$\exp$函数确保正性
+        \item \textbf{状态无关}：$\sigma$作为可学习参数，不依赖状态
+    \end{itemize}
+\end{enumerate}
+
+为了保证标准差为正，通常输出$\log\sigma$，然后通过指数函数转换：
+\[
+\sigma = \exp(\log\sigma)
+\]
+
+\subsection{动作选择过程}
+
+在状态$s_t$下，策略网络输出参数后，动作选择过程为：
+
+\begin{algorithm}[H]
+\caption{随机策略的动作选择}
+\begin{algorithmic}[1]
+\REQUIRE 状态$s_t$，策略网络参数$\theta$
+\ENSURE 动作$a_t$
+\STATE 前向传播：$[\mu_\theta(s_t), \log\sigma_\theta(s_t)] = \text{PolicyNetwork}(s_t)$
+\STATE 计算标准差：$\sigma_\theta(s_t) = \exp(\log\sigma_\theta(s_t))$
+\STATE 从标准正态分布采样：$\epsilon \sim \mathcal{N}(0, I)$
+\STATE 计算动作：$a_t = \mu_\theta(s_t) + \sigma_\theta(s_t) \odot \epsilon$，其中$\odot$是逐元素乘法
+\STATE 执行动作$a_t$，获得奖励$r_{t+1}$和下一状态$s_{t+1}$
+\end{algorithmic}
+\end{algorithm}
+
+这个过程称为"重参数化技巧"（Reparameterization Trick），它使采样过程可微分，便于梯度传播。
+
+\subsection{计算对数概率}
+
+在策略梯度方法中，需要计算$\log \pi_\theta(a|s)$及其梯度。对于单变量高斯分布：
+
+\begin{align*}
+\log \pi_\theta(a|s) &= \log\left(\frac{1}{\sigma\sqrt{2\pi}} \exp\left(-\frac{(a - \mu)^2}{2\sigma^2}\right)\right) \\
+&= -\frac{(a - \mu)^2}{2\sigma^2} - \log\sigma - \log\sqrt{2\pi}
+\end{align*}
+
+对于$d$维独立高斯分布：
+\begin{align*}
+\log \pi_\theta(a|s) &= \log\left(\prod_{i=1}^{d} \pi_\theta(a_i|s)\right) \\
+&= \sum_{i=1}^{d} \log \pi_\theta(a_i|s) \\
+&= -\frac{1}{2}\sum_{i=1}^{d}\left(\frac{(a_i - \mu_i)^2}{\sigma_i^2} + 2\log\sigma_i + \log(2\pi)\right)
+\end{align*}
+
+\subsection{数值稳定性问题与解决方案}
+
+计算概率时可能遇到数值下溢问题：多个小概率相乘结果趋近于0。解决方案是在对数空间计算：
+
+\textbf{问题}：
+\[
+\pi_\theta(a|s) = \prod_{i=1}^{d} \pi_\theta(a_i|s) \to 0 \quad \text{当$d$很大时}
+\]
+
+\textbf{解决方案}：使用对数概率
+\[
+\log \pi_\theta(a|s) = \sum_{i=1}^{d} \log \pi_\theta(a_i|s)
+\]
+
+在PPO中计算重要性采样比率时：
+\[
+r_t(\theta) = \frac{\pi_\theta(a_t|s_t)}{\pi_{\theta_k}(a_t|s_t)} = \exp\left(\log \pi_\theta(a_t|s_t) - \log \pi_{\theta_k}(a_t|s_t)\right)
+\]
+
+\subsection{PPO在连续动作空间中的实现}
+
+将上述技术整合到PPO框架中：
+
+\begin{algorithm}[H]
+\caption{PPO for Continuous Control}
+\begin{algorithmic}[1]
+\REQUIRE 初始化策略参数$\theta$，价值参数$\phi$，裁剪参数$\epsilon$，学习率$\alpha$
+\FOR{迭代$k=0,1,2,\dots$}
+    \STATE 使用当前策略$\pi_{\theta_k}$收集轨迹数据$\mathcal{D}_k$
+    \STATE 计算优势估计$\hat{A}_t$（使用GAE）
+    \FOR{epoch $=1$ to $M$}
+        \STATE 从$\mathcal{D}_k$中采样小批量数据
+        \STATE 计算对数概率：$\log \pi_\theta(a_t|s_t)$和$\log \pi_{\theta_k}(a_t|s_t)$
+        \STATE 计算重要性采样比率：$r_t(\theta) = \exp(\log \pi_\theta(a_t|s_t) - \log \pi_{\theta_k}(a_t|s_t))$
+        \STATE 计算裁剪目标函数：
+        \[
+        L^{\text{CLIP}}(\theta) = \mathbb{E}_t\left[\min\left(r_t(\theta)\hat{A}_t, \text{clip}(r_t(\theta), 1-\epsilon, 1+\epsilon)\hat{A}_t\right)\right]
+        \]
+        \STATE 更新策略参数：$\theta \leftarrow \theta + \alpha \nabla_\theta L^{\text{CLIP}}(\theta)$
+    \ENDFOR
+\ENDFOR
+\end{algorithmic}
+\end{algorithm}
+
+\section{确定性策略梯度方法}
+
+\subsection{确定性策略与随机策略的对比}
+
+\begin{table}[H]
+\centering
+\caption{随机策略 vs 确定性策略}
+\begin{tabular}{p{0.45\textwidth}p{0.45\textwidth}}
+\toprule
+\textbf{随机策略（Stochastic Policy）} & \textbf{确定性策略（Deterministic Policy）} \\
+\midrule
+输出动作的概率分布$\pi_\theta(a|s)$ & 直接输出动作$a = \mu_\theta(s)$ \\
+从分布中采样得到动作 & 动作被唯一确定 \\
+自带探索能力 & 需要手动添加噪声探索 \\
+通常用于在线策略算法 & 天然适合离线策略算法 \\
+示例：PPO、TRPO、A3C & 示例：DPG、DDPG、TD3 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.7\textwidth]{picture/dpg.png}
+\caption{确定性策略：直接输出动作值}
+\end{figure}
+
+\subsection{确定性策略梯度定理}
+
+\begin{theorem}[确定性策略梯度定理]
+对于确定性策略$a = \mu_\theta(s)$，目标函数$J(\theta) = \mathbb{E}_{s \sim \rho^\mu}[Q^\mu(s, \mu_\theta(s))]$的梯度为：
+\[
+\nabla_\theta J(\theta) = \mathbb{E}_{s \sim \rho^\mu}[\nabla_\theta \mu_\theta(s) \nabla_a Q^\mu(s, a)|_{a=\mu_\theta(s)}]
+\]
+其中$\rho^\mu$是策略$\mu$下的状态分布。
+\end{theorem}
+
+\textbf{直观理解}：
+\begin{itemize}
+    \item $\nabla_a Q^\mu(s, a)$：Critic告诉Actor动作应该如何变化以提高Q值
+    \item $\nabla_\theta \mu_\theta(s)$：Actor的参数如何影响输出动作
+    \item 两者结合：通过链式法则，确定如何更新Actor参数以提高Q值
+\end{itemize}
+
+\subsection{探索策略：手动添加噪声}
+
+确定性策略本身没有探索能力，需要在训练时手动添加噪声：
+
+\begin{algorithm}[H]
+\caption{确定性策略的探索}
+\begin{algorithmic}[1]
+\REQUIRE 状态$s_t$，确定性策略$\mu_\theta$，探索噪声$\mathcal{N}$
+\ENSURE 动作$a_t$
+\STATE 计算确定性动作：$a_{\text{det}} = \mu_\theta(s_t)$
+\STATE 添加探索噪声：$a_t = a_{\text{det}} + \mathcal{N}$
+\STATE 执行动作$a_t$，收集经验存入回放缓冲区
+\end{algorithmic}
+\end{algorithm}
+
+常用的噪声类型：
+\begin{itemize}
+    \item 高斯噪声：$\mathcal{N} \sim \mathcal{N}(0, \sigma^2)$
+    \item Ornstein-Uhlenbeck过程：具有时间相关性的噪声，适合物理系统
+    \item 参数空间噪声：在策略参数中添加噪声
+\end{itemize}
+
+\subsection{Critic指导Actor更新}
+
+在确定性策略梯度中，Critic网络$Q_\phi(s,a)$指导Actor更新：
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{picture/8.png}
+\caption{Critic指导Actor更新：通过Q函数对动作的梯度}
+\end{figure}
+
+更新过程：
+\begin{enumerate}
+    \item Actor输出动作：$a = \mu_\theta(s)$
+    \item Critic评估动作：$Q = Q_\phi(s, a)$
+    \item 计算Q对动作的梯度：$\nabla_a Q_\phi(s, a)$
+    \item 通过链式法则更新Actor：
+    \[
+    \nabla_\theta J(\theta) = \mathbb{E}[\nabla_\theta \mu_\theta(s) \nabla_a Q_\phi(s, a)]
+    \]
+\end{enumerate}
+
+\section{DDPG：深度确定性策略梯度}
+
+\subsection{DDPG算法框架}
+
+DDPG（Deep Deterministic Policy Gradient）结合了DQN和DPG的优点：
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[scale=0.8]
+\node[draw, rectangle, rounded corners, fill=blue!20, minimum width=3cm, minimum height=1cm] (actor) at (0,2) {Actor $\mu_\theta(s)$};
+\node[draw, rectangle, rounded corners, fill=red!20, minimum width=3cm, minimum height=1cm] (critic) at (0,0) {Critic $Q_\phi(s,a)$};
+\node[draw, rectangle, rounded corners, fill=blue!10, minimum width=3cm, minimum height=1cm] (target_actor) at (5,2) {Target Actor $\mu_{\theta^-}(s)$};
+\node[draw, rectangle, rounded corners, fill=red!10, minimum width=3cm, minimum height=1cm] (target_critic) at (5,0) {Target Critic $Q_{\phi^-}(s,a)$};
+\node[draw, rectangle, fill=green!20, minimum width=4cm, minimum height=1.5cm] (replay) at (2.5,-2) {经验回放缓冲区};
+
+\draw[->, thick] (actor) -- node[right] {动作$a$} (critic);
+\draw[->, thick] (critic.north) -- node[left] {Q值} (actor.south);
+\draw[<->, thick, dashed] (actor) -- node[above] {软更新} (target_actor);
+\draw[<->, thick, dashed] (critic) -- node[above] {软更新} (target_critic);
+\draw[->] (replay.north) -- (critic.south);
+\draw[->] (replay.north) -- (target_critic.south);
+\end{tikzpicture}
+\caption{DDPG算法框架：Actor-Critic结构+目标网络+经验回放}
+\end{figure}
+
+\subsection{DDPG算法流程}
+
+\begin{algorithm}[H]
+\caption{DDPG算法}
+\begin{algorithmic}[1]
+\REQUIRE 学习率$\alpha_\theta, \alpha_\phi$，软更新系数$\tau$，折扣因子$\gamma$，探索噪声$\mathcal{N}$，批量大小$N$
+\STATE 随机初始化Actor网络$\mu_\theta(s)$和Critic网络$Q_\phi(s,a)$的参数
+\STATE 初始化目标网络：$\theta^- \leftarrow \theta$，$\phi^- \leftarrow \phi$
+\STATE 初始化经验回放缓冲区$\mathcal{D}$
+\FOR{回合$=1$ to $M$}
+    \STATE 初始化环境，获得初始状态$s_1$
+    \FOR{时间步$t=1$ to $T$}
+        \STATE 选择动作：$a_t = \mu_\theta(s_t) + \mathcal{N}_t$，其中$\mathcal{N}_t$是探索噪声
+        \STATE 执行动作$a_t$，获得奖励$r_t$和下一状态$s_{t+1}$
+        \STATE 存储转移$(s_t, a_t, r_t, s_{t+1})$到$\mathcal{D}$
+        \STATE 从$\mathcal{D}$中采样$N$个转移的批量$\{(s_i, a_i, r_i, s_{i+1})\}$
+        
+        \STATE 计算目标Q值：$y_i = r_i + \gamma Q_{\phi^-}(s_{i+1}, \mu_{\theta^-}(s_{i+1}))$
+        \STATE 更新Critic：最小化损失$L = \frac{1}{N}\sum_i (y_i - Q_\phi(s_i, a_i))^2$
+        \STATE 更新Actor：使用确定性策略梯度
+        \[
+        \nabla_\theta J \approx \frac{1}{N}\sum_i \nabla_a Q_\phi(s_i, a)|_{a=\mu_\theta(s_i)} \nabla_\theta \mu_\theta(s_i)
+        \]
+        
+        \STATE 软更新目标网络：
+        \[
+        \theta^- \leftarrow \tau\theta + (1-\tau)\theta^-
+        \]
+        \[
+        \phi^- \leftarrow \tau\phi + (1-\tau)\phi^-
+        \]
+    \ENDFOR
+\ENDFOR
+\end{algorithmic}
+\end{algorithm}
+
+\subsection{DDPG的关键技术}
+
+\subsubsection{目标网络（Target Networks）}
+\begin{itemize}
+    \item 解决"追逐移动目标"问题
+    \item 使用软更新：$\theta^- \leftarrow \tau\theta + (1-\tau)\theta^-$
+    \item $\tau$通常很小（如0.001），使目标网络变化缓慢
+\end{itemize}
+
+\subsubsection{经验回放（Experience Replay）}
+\begin{itemize}
+    \item 打破数据相关性
+    \item 提高数据利用率
+    \item 支持离线策略学习
+\end{itemize}
+
+\subsubsection{探索噪声}
+\begin{itemize}
+    \item 时间相关噪声：Ornstein-Uhlenbeck过程
+    \[
+    d\mathcal{N}_t = \theta(\mu - \mathcal{N}_t)dt + \sigma dW_t
+    \]
+    \item 随时间衰减：训练后期减少探索
+\end{itemize}
+
+\subsection{DDPG的改进：TD3}
+
+TD3（Twin Delayed DDPG）解决了DDPG的三个问题：
+
+\begin{enumerate}
+    \item \textbf{过估计问题}：使用两个Critic网络，取最小值
+    \[
+    y = r + \gamma \min_{j=1,2} Q_{\phi_j^-}(s', \mu_{\theta^-}(s') + \epsilon)
+    \]
+    \item \textbf{方差累积}：添加目标策略平滑
+    \[
+    a' = \mu_{\theta^-}(s') + \text{clip}(\mathcal{N}(0, \sigma), -c, c)
+    \]
+    \item \textbf{策略更新延迟}：Critic更新多次后，Actor才更新一次
+\end{enumerate}
+
+\subsection{DDPG的改进：SAC}
+
+SAC（Soft Actor-Critic）结合了随机策略和离线策略学习的优点：
+
+\begin{itemize}
+    \item \textbf{最大化熵目标}：
+    \[
+    J(\theta) = \mathbb{E}\left[\sum_{t} r(s_t, a_t) + \alpha \mathcal{H}(\pi_\theta(\cdot|s_t))\right]
+    \]
+    \item \textbf{自动调整温度参数}：$\alpha$控制熵的重要性
+    \item \textbf{随机策略}：输出高斯分布参数
+    \item \textbf{离线策略}：使用经验回放
+    \item \textbf{双Q网络}：防止过估计
+\end{itemize}
+
+\section{方法对比与总结}
+
+\subsection{三种方法全面对比}
+
+\begin{table}[H]
+\centering
+\caption{连续控制方法全面对比}
+\begin{tabular}{p{0.25\textwidth}p{0.2\textwidth}p{0.2\textwidth}p{0.2\textwidth}}
+\toprule
+\textbf{特性} & \textbf{离散化方法} & \textbf{随机策略梯度} & \textbf{确定性策略梯度} \\
+\midrule
+\textbf{核心思想} & 连续空间离散化 & 学习概率分布 & 学习确定性映射 \\
+\textbf{策略输出} & 离散动作的Q值 & 分布参数$(\mu, \sigma)$ & 动作向量$a$ \\
+\textbf{动作选择} & $\arg\max Q(s,a)$ & 从分布中采样 & 直接输出+噪声 \\
+\textbf{探索机制} & $\epsilon$-greedy等 & 分布采样 & 手动添加噪声 \\
+\textbf{学习方式} & 价值学习 & 策略梯度 & 确定性策略梯度 \\
+\textbf{样本效率} & 中等 & 较低（在线） & 高（离线） \\
+\textbf{收敛速度} & 慢 & 中等 & 快 \\
+\textbf{稳定性} & 中等 & 高 & 较低 \\
+\textbf{实现难度} & 简单 & 中等 & 复杂 \\
+\textbf{代表算法} & DQN（离散化） & PPO, TRPO, A3C & DDPG, TD3, SAC \\
+\textbf{适用场景} & 低维简单控制 & 需要探索的任务 & 高维精确控制 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{选择指南}
+
+\begin{table}[H]
+\centering
+\caption{方法选择指南}
+\begin{tabular}{p{0.5\textwidth}p{0.5\textwidth}}
+\toprule
+\textbf{考虑因素} & \textbf{推荐方法} \\
+\midrule
+动作维度低（1-2维），精度要求不高 & 离散化方法 \\
+需要充分探索，环境随机性大 & 随机策略梯度（PPO） \\
+样本效率重要，有大量历史数据 & 确定性策略梯度（DDPG/TD3/SAC） \\
+控制精度要求高，需要平滑控制 & 确定性策略梯度 \\
+安全关键应用，需要稳定训练 & 随机策略梯度（PPO/TRPO） \\
+计算资源有限 & 离散化或PPO \\
+需要快速原型验证 & 离散化或PPO \\
+高维复杂控制（如人形机器人） & SAC或TD3 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{实际应用建议}
+
+\subsubsection{网络架构设计}
+\begin{itemize}
+    \item \textbf{输入归一化}：状态输入标准化到$[-1, 1]$
+    \item \textbf{输出缩放}：动作输出缩放到实际范围
+    \item \textbf{激活函数}：中间层使用ReLU，输出层使用tanh
+    \item \textbf{参数初始化}：最后一层小权重初始化
+\end{itemize}
+\subsubsection{训练技巧}
+\begin{enumerate}
+    \item \textbf{热身阶段}：开始时随机探索收集数据
+    \item \textbf{探索衰减}：训练后期减少探索噪声
+    \item \textbf{学习率衰减}：训练后期降低学习率
+    \item \textbf{监控指标}：
+    \begin{itemize}
+        \item 回合奖励
+        \item Q值范围
+        \item 策略熵
+        \item 梯度范数
+    \end{itemize}
+    \item \textbf{正则化}：
+    \begin{itemize}
+        \item 权重衰减
+        \item 梯度裁剪
+        \item 批归一化
+    \end{itemize}
+\end{enumerate}
+
+\subsection{常见问题与解决方案}
+
+\begin{table}[H]
+\centering
+\caption{常见问题与解决方案}
+\begin{tabular}{p{0.3\textwidth}p{0.65\textwidth}}
+\toprule
+\textbf{问题} & \textbf{解决方案} \\
+\midrule
+训练不稳定，奖励震荡 & 减小学习率，增加批量大小，使用目标网络 \\
+探索不足，陷入局部最优 & 增加探索噪声，提高熵奖励，重启探索 \\
+过拟合，泛化能力差 & 使用dropout，数据增强，早停法 \\
+梯度爆炸/消失 & 梯度裁剪，合适的初始化，批归一化 \\
+收敛速度慢 & 调整学习率，优化网络结构，并行收集数据 \\
+Q值过高估计 & 使用双Q学习，延迟更新，目标策略平滑 \\
+探索与利用不平衡 & 自适应探索策略，好奇心驱动探索 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{前沿发展与未来方向}
+
+\subsection{当前研究趋势}
+
+\begin{enumerate}
+    \item \textbf{样本效率提升}
+    \begin{itemize}
+        \item 模型基强化学习
+        \item 元学习
+        \item 模仿学习
+    \end{itemize}
+    
+    \item \textbf{探索策略改进}
+    \begin{itemize}
+        \item 好奇心驱动探索
+        \item 内在动机
+        \item 基于不确定性的探索
+    \end{itemize}
+    
+    \item \textbf{多任务与迁移学习}
+    \begin{itemize}
+        \item 共享表示学习
+        \item 渐进式网络
+        \item 蒸馏学习
+    \end{itemize}
+    
+    \item \textbf{安全与稳健性}
+    \begin{itemize}
+        \item 约束强化学习
+        \item 鲁棒强化学习
+        \item 安全探索
+    \end{itemize}
+    
+    \item \textbf{分布式与并行训练}
+    \begin{itemize}
+        \item 大规模分布式训练
+        \item 异步优化
+        \item 联邦强化学习
+    \end{itemize}
+\end{enumerate}
+
+\subsection{重要算法进展}
+
+\begin{table}[H]
+\centering
+\caption{近年重要连续控制算法}
+\begin{tabular}{p{0.2\textwidth}p{0.3\textwidth}p{0.4\textwidth}}
+\toprule
+\textbf{算法} & \textbf{年份} & \textbf{主要贡献} \\
+\midrule
+DDPG & 2015 & 深度确定性策略梯度，结合DQN和DPG \\
+PPO & 2017 & 简单高效的策略梯度算法，成为标准基准 \\
+TD3 & 2018 & 解决DDPG的过估计问题，更稳定 \\
+SAC & 2018 & 最大熵强化学习，随机策略+离线策略 \\
+MPO & 2018 & 相对熵策略搜索，更理论化方法 \\
+SAC-v2 & 2019 & 自动调整温度参数，更易使用 \\
+REDQ & 2021 & 随机集成双Q学习，高样本效率 \\
+DrQ & 2021 & 数据增强强化学习，改进样本效率 \\
+\bottomrule
+\end{tabular}
+\end{table}
