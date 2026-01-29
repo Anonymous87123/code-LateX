@@ -1,0 +1,206 @@
+\chapter{基于人类认知过程增强大语言模型在Text-to-SQL翻译中的框架}
+
+\section{引言}
+关系数据库存储大量数据，但用于从这些数据库检索数据的工具——结构化查询语言(SQL)传统上仅限于专家用户使用。将自然语言问题转换为SQL查询（称为Text-to-SQL）多年来一直是研究重点。这对于创建更用户友好的数据库接口至关重要。
+
+最近，卓越的大语言模型在问答和数学推理等各种任务中表现出色，也显著提升了Text-to-SQL任务的能力。直接指导LLM（无论是开源还是专有）已成为有利的范式。这种方法避免了昂贵的微调成本，易于在LLM产品间过渡，并受益于其性能升级。当前该领域的研究旨在改进对自然语言问题的理解或提升生成SQL的质量。例如，任务分解用于增强LLM对简单子任务的注意力；基于检索的少样本示范用于激发LLM的上下文学习能力；任务对齐用于减轻LLM在SQL生成中的幻觉；多智能体协作用于共同提升Text-to-SQL质量。虽然这些策略提升了性能，但它们通常集中于特定的细微方面。
+
+相比之下，人类以整体视角处理Text-to-SQL，使用跨多个方面的推理来实现准确可靠的翻译。这种认知范式涉及在不同步骤间建立联系和过渡以确保精确性和可靠性。
+
+人类应用过渡逻辑思维以集成方式将文本转换为SQL的三阶段认知过程：
+\begin{itemize}
+\item 准备阶段：识别基本概念，关注问题解决的关键部分，如相关数据库模式和语法关键词；
+\item 生成阶段：使用这些关键概念起草SQL，通过分解分析其结构，注意详细的SQL子句和子查询；
+\item 校正阶段：审查起草的SQL，考虑语法和与原始自然语言问题意图的一致性等方面，进行必要校正
+\end{itemize}
+
+这引出一个关键问题：LLM能否从人类认知过程中受益以提高Text-to-SQL准确性？因此，本文提出COGSQL框架，旨在模仿人类认知过程以增强LLM在Text-to-SQL中的表现。分为三个主要模块：
+\begin{itemize}
+\item SQL准备：识别相关数据库模式和语法关键词，类似于回忆关键概念；
+\item SQL生成：使LLM能够像人类一样解释自然语言问题，并通过概念增强的思维链提示精确构建SQL；
+\item SQL校正：指导LLM反思生成的SQL，校正语法错误并与自然语言问题意图对齐。
+\end{itemize}
+我们在五个大型具有挑战性的跨领域Text-to-SQL数据集上使用不同LLM进行实验，包括强大的专有模型和微调的开源模型。结果验证COGSQL有效增强了基于LLM的Text-to-SQL性能，并在各种LLM间具有良好的泛化能力。
+
+\section{相关工作}
+
+\subsection{Text-to-SQL进展}
+将自然语言问题转换为SQL长期以来一直是数据库和NLP研究的重点。早期方法依赖劳动密集的手工制定规则。神经网络的出现推广了编码器-解码器架构，其中编码器处理自然语言问题和数据库模式，解码器生成SQL查询。基于Transformer的架构和预训练语言模型进一步改进了Text-to-SQL性能。最近，LLM展示了卓越能力，仅推理方法提供了卓越的可转移性。
+
+\subsection{SQL准备}
+通过收集关键信息并执行自然语言问题-模式链接来增强LLM的生成过程。模式链接可以通过使用交叉编码器进行粗粒度链接，或通过示范和指令进行细粒度链接，提高翻译准确性。此外，示范选择通过选择自然语言问题-SQL示例来优化LLM的上下文学习至关重要。
+
+\subsection{SQL生成}
+SQL生成涉及基于SQL准备中的关键信息进行复杂推理。当有效提示时，LLM在这些任务中表现出色。思维链、分解和规划以及工具整合等技术极大地增强了LLM的生成能力。研究已将专门针对Text-to-SQL的思维链应用于实例。
+
+\subsection{SQL校正}
+通过自一致性、自校正和通过执行结果验证等技术实现生成SQL的错误校正以确保可靠性。不适当的自校正可能降低准确性，自一致性由于重复的LLM推理可能在计算上昂贵。
+
+\section{预备知识}
+
+\subsection{问题定义}
+设自然语言问题为 $\mathcal{Q}=\{q_{1},\ldots,q_{|\mathcal{Q}|}\}$，其中每个 $q_{i}$ 是词元，对应的数据库模式为 $\mathcal{D}=\langle\mathcal{T},\mathcal{C},\mathcal{R}\rangle$，其中：
+\begin{itemize}
+    \item $\mathcal{T}=\{t_{1},...,t_{n}\}$，每个 $t_{i}$ 代表数据库中的一个表
+    \item $\mathcal{C}=\{c_{1}^{1},\ldots,c_{1}^{|t_{1}|},c_{2}^{1},\ldots,c_{2}^{|t_{2}|},\cdots,c_{n}^{1},\cdots,c_{n}^{|t_{n}|}\}$，每个 $c_{i}^{j}$ 代表第i个表中的第j列
+    \item $\mathcal{R}=\{(c_{k}^{i},c_{h}^{j})\in\mathcal{C}^{2}\}$，每对 $(c_{k}^{i},c_{h}^{j})$ 表示列 $c^{i}_{k}$ 和 $c^{j}_{h}$ 之间的外键关系
+\end{itemize}
+
+Text-to-SQL的目标是将 $\mathcal{Q}$ 转换为在 $\mathcal{D}$ 上可执行的SQL语句以检索所需结果。
+
+\subsection{语法关键词分类}
+\begin{table}[h]
+    \centering
+    \caption{使用的语法关键词分类}
+    \label{tab:syntax_keywords}
+    \begin{tabular}{|l|l|}
+    \hline
+    \textbf{类别级别} & \textbf{语法关键词} \\
+    \hline
+    子句 & SELECT, FROM, WHERE, ORDER BY, GROUP BY, HAVING \\
+    \hline
+    聚合 & COUNT, SUM, AVG, MIN, MAX \\
+    \hline
+    字符串 & SUBSTR \\
+    \hline
+    日期 & STRFTIME \\
+    \hline
+    条件 & CASE WHEN, IIF \\
+    \hline
+    空值相关 & IS NULL, IS NOT NULL \\
+    \hline
+    比较 & IN, BETWEEN, LIKE \\
+    \hline
+    算术 & 除法('/') \\
+    \hline
+    其他关键词 & DISTINCT, CAST \\
+    \hline
+    \end{tabular}
+\end{table}
+
+\section{COGSQL方法}
+
+\subsection{框架概述}
+\textbf{图2说明}：COGSQL框架通过三个关键模块模仿人类认知过程增强基于LLM的Text-to-SQL：(I) 关键概念回忆：执行(1)由粗到精的模式链接和(2)语法关键词预测，从给定自然语言问题和模式中识别过滤后的模式和语法关键词；(II) 概念增强的CoT提示：采用两阶段提示方法，包含(3)自然语言问题解释和(4)SQL组合，在最终确定答案前制定分步计划；(III) 基于一致性的校正：基于(5)自然语言问题一致性和(6)结果一致性评估SQL答案并进行必要调整。
+
+COGSQL包含三个主要阶段：
+
+\subsubsection{关键概念回忆}
+回忆关键概念启动了人类对复杂推理任务的认知过程。在制定SQL之前，人类通常关注相关数据库项和语法关键词。相应地，我们提出由粗到精的模式链接和语法关键词预测。
+
+\paragraph{由粗到精的模式链接}
+现实世界数据库的模式通常包含大量表和列，由于长度限制可能使LLM不堪重负并阻碍SQL生成。模式链接旨在识别模式的子集。它应全面包含LLM制定SQL所需的所有必要数据库项，并简洁以避免可能误导LLM生成的额外表和列。
+
+当前基于LLM的Text-to-SQL研究主要使用两种策略：一种直接提示LLM选择相关表和列，另一种将模式链接视为分类任务：
+\begin{equation}
+\mathcal{Y}^{sl}=f\left(\operatorname{Enc}(\mathcal{Q},\mathcal{T},\mathcal{C});\theta^{sl}\right)
+\end{equation}
+
+其中编码器 $\operatorname{Enc}(\cdot)$ 将输入序列映射到基于Transformer架构的嵌入中，分类器 $f(\cdot;\theta)$ 输出每个数据库项的概率。
+
+COGSQL提出结合两者优势的由粗到精模式链接方法：首先使用分类器进行粗粒度模式链接过滤不必要的表和列，然后使用保留的模式提示LLM并通过从 $k_{1}$ 个表中选择子集（如 $k_{3}$ 个）进行细粒度模式链接。
+
+\paragraph{语法关键词预测}
+我们将语法关键词预测视为与公式(1)中粗粒度模式链接类似的分类任务：
+\begin{equation}
+\mathcal{Y}^{kw}=f(Enc(\mathcal{I},\mathcal{Q},\hat{\mathcal{T}},\hat{\mathcal{C}});\theta^{kw})
+\end{equation}
+
+语法关键词的不平衡分布可能阻碍分类器性能。为缓解此问题，我们提出以样本为中心的增强，利用LLM从原始训练样本合成高质量的自然语言问题-SQL对。
+
+\subsubsection{概念增强的CoT提示}
+为改进LLM的SQL生成，我们解决两个关键问题：解释自然语言问题意图和组合SQL查询。我们将解决方案纳入CoT提示过程，模仿人类在正式回应前心理排练关键概念的方式。
+
+\paragraph{自然语言问题解释}
+参考图1中的示例自然语言问题。看到此问题时，人类首先分析其内容以识别查询目标和返回数据。对于具有嵌套查询的复杂自然语言问题，决定是否需要此类查询也至关重要。
+
+\paragraph{SQL组合}
+回到人类认知过程：解释自然语言问题后，人类识别关键概念如何适应各种SQL子句，如识别WHERE子句的过滤条件。为复制此过程，我们专注于分解和生成SQL。
+
+\subsubsection{基于一致性的校正}
+LLM在生成中已知会出现错误和幻觉。具体来说，两个常见错误可能阻碍LLM的Text-to-SQL翻译：(1)自然语言问题误解：LLM可能误解自然语言问题的意图，导致语义不正确的SQL查询；(2)语法错误：LLM可能违反SQL语法规则，导致不可执行查询。
+
+\paragraph{自然语言问题一致性}
+某些自然语言问题包含细微的语义细节。忽略这些可能导致LLM的误解。COGSQL执行自然语言问题一致性校正来解决此问题。
+
+\paragraph{结果一致性}
+SQL语言具有复杂的语法规则，违反这些规则可能导致不可执行的SQL查询。COGSQL执行结果一致性校正以确保生成的SQL查询在语法上正确。此校正包括两个方面：首先建立校正规则，每个生成的SQL查询进行语法检查；其次，基于规则的校正后的SQL查询在数据库中执行，不可执行的查询将在执行期间触发异常，我们提示LLM使用相应的异常校正这些不可执行的SQL查询。
+
+\section{实验与评估}
+
+\subsection{实验设置}
+我们通过综合实验解决以下研究问题：
+\begin{itemize}
+    \item RQ1. COGSQL在不同LLM和数据集上的性能与现有方法相比如何？
+    \item RQ2. 每个COGSQL组件对最终Text-to-SQL翻译准确性的贡献是什么？
+    \item RQ3. COGSQL如何减轻LLM在Text-to-SQL翻译中容易犯的错误？
+\end{itemize}
+
+\subsubsection{数据集}
+我们使用公认的Text-to-SQL基准评估COGSQL：(1) Spider；(2) Spider的变体：Spider-DK, Spider-Realistic, Spider-Syn；(3) BIRD。
+
+\subsubsection{基线方法}
+我们将COGSQL与各种最先进方法比较，包括RESDSQL, CODES, DIN-SQL, MAC-SQL, TA-SQL, DAIL-SQL, DEA-SQL和SUPER-SQL。
+
+\subsubsection{评估指标}
+遵循先前研究，我们使用执行准确率和有效效率分数作为性能指标。
+
+\subsubsection{实现细节}
+我们对以样本为中心的增强使用温度0.7，COGSQL其他模块使用温度0。Spider和BIRD训练集中的每个样本增强一次，得到来自自然语言问题重写的1,390个样本和来自关键词添加的2,665个样本。使用两样本提示进行增强、概念增强CoT和自然语言问题一致性校正模块。
+
+\subsection{总体性能(RQ1)}
+
+COGSQL有效增强了GPT4基线在两个基准上的性能。即使使用GPT-4o-mini等适中模型，COGSQL仍保持竞争力，超过使用GPT4的强基线如DIN-SQL和DAIL-SQL。当配备更强的GPT-4o和GPT4时，COGSQL优于广泛微调的基线RESDSQL和CODES。
+
+\subsection{消融研究(RQ2)}
+
+\begin{table}[h]
+    \centering
+    \caption{COGSQL模块消融研究（执行准确率\%）}
+    \label{tab:ablation_study}
+    \begin{tabular}{lcc}
+    \toprule
+    \textbf{方法} & \textbf{Spider} & \textbf{BIRD} \\
+    \midrule
+    COGSQL+GPT-4o-mini & 84.20 & 56.26 \\
+    - 无由粗到精模式链接 & 82.40 & 55.74 \\
+    - 无语法关键词预测 & 83.50 & 55.02 \\
+    - 无概念增强CoT提示 & 83.50 & 52.41 \\
+    - 无自然语言问题一致性 & 83.70 & 55.93 \\
+    - 无结果一致性 & 83.60 & 53.85 \\
+    \bottomrule
+    \end{tabular}
+\end{table}
+
+每个模块都对整体性能有贡献，任何移除都会导致下降。在Spider上，COGSQL表现出鲁棒性，即使移除单个模块也能保持稳定性能，除了由粗到精模式链接模块。在更复杂的BIRD上，概念增强CoT提示和结果一致性模块至关重要。
+
+\subsection{细粒度分析(RQ3)}
+
+\begin{table}[h]
+    \centering
+    \caption{GPT-4o-mini基线和COGSQL增强的GPT-4o-mini的错误分析}
+    \label{tab:error_analysis}
+    \begin{tabular}{lcc}
+    \toprule
+    \textbf{错误类别} & \textbf{GPT-4o-mini} & \textbf{GPT-4o-mini+COGSQL} \\
+    \midrule
+    模式误用 & 123 & 75(↓48) \\
+    关键词误用 & 46 & 35(↓11) \\
+    嵌套查询误用 & 47 & 39(↓8) \\
+    自然语言问题误解 & 35 & 22(↓13) \\
+    语法错误 & 11 & 2(↓9) \\
+    \midrule
+    总计 & 262 & 173(↓89) \\
+    \bottomrule
+    \end{tabular}
+\end{table}
+
+模式误用是最常见的错误，表明在复杂模式和自然语言问题中准确识别必要表和列的困难。COGSQL有效减少了所有类别的错误，证明了其遵循认知过程逐步解决Text-to-SQL的能力。
+
+\section{结论}
+
+大语言模型在各种自然语言处理任务中显著提升了性能，包括Text-to-SQL。当前基于LLM的Text-to-SQL方案主要集中于改进自然语言问题的理解或提升生成SQL的质量。虽然这些策略有效，但它们通常只针对特定的细微方面。
+
+相比之下，人类采用整体视角处理Text-to-SQL，在多个步骤中应用过渡逻辑推理来获得最终答案。我们相信LLM可以利用人类认知过程在Text-to-SQL中实现更高准确性。虽然LLM将Text-to-SQL性能提升到新水平，但如BIRD等复杂基准继续挑战即使最先进的LLM。本研究中，我们提出COGSQL，一个旨在模仿人类认知过程以增强LLM推理能力的新框架。COGSQL利用由粗到精的模式链接和语法关键词预测有效回忆关键概念，随后通过概念增强CoT提示进行精确SQL生成。基于自然语言问题和结果视角的一致性校正确保对最终输出的鲁棒可靠调整。跨多样化数据集和LLM的广泛实验验证了COGSQL的优越性，并确认了模仿人类认知的好处。
+
+本文提出COGSQL框架，该框架包含一套定制模型和策略，旨在复制人类认知过程以增强基于LLM的Text-to-SQL。COGSQL包含三个关键模块：(1) SQL准备：采用由粗到精的模式链接和语法关键词预测，类似于人类回忆和对齐关键概念以更好地理解；(2) SQL生成：引入概念增强的思维链提示，增强LLM的自然语言问题解释和SQL组合能力，类似于人类起草SQL查询；(3) SQL校正：开发自然语言问题一致性和结果一致性技术来校正各种错误，模仿人类评估和精炼推理的过程。我们在多样化基准和LLM上进行了广泛实验，结果和分析验证了COGSQL的有效性和泛化能力。
