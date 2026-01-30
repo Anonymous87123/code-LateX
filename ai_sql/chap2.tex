@@ -3,7 +3,9 @@
 \section{引言}
 关系数据库存储大量数据，但用于从这些数据库检索数据的工具——结构化查询语言(SQL)传统上仅限于专家用户使用。将自然语言问题转换为SQL查询（称为Text-to-SQL）多年来一直是研究重点。这对于创建更用户友好的数据库接口至关重要。
 
-最近，卓越的大语言模型在问答和数学推理等各种任务中表现出色，也显著提升了Text-to-SQL任务的能力。直接指导LLM（无论是开源还是专有）已成为有利的范式。这种方法避免了昂贵的微调成本，易于在LLM产品间过渡，并受益于其性能升级。当前该领域的研究旨在改进对自然语言问题的理解或提升生成SQL的质量。例如，任务分解用于增强LLM对简单子任务的注意力；基于检索的少样本示范用于激发LLM的上下文学习能力；任务对齐用于减轻LLM在SQL生成中的幻觉；多智能体协作用于共同提升Text-to-SQL质量。虽然这些策略提升了性能，但它们通常集中于特定的细微方面。
+最近，卓越的大语言模型在问答和数学推理等各种任务中表现出色，也显著提升了Text-to-SQL任务的能力。直接指导LLM（无论是开源还是专有）已成为有利的范式。这种方法避免了昂贵的微调成本，易于在LLM产品间过渡，并受益于其性能升级。当前该领域的研究旨在改进对自然语言问题的理解或提升生成SQL的质量。
+
+例如，任务分解用于增强LLM对简单子任务的注意力；基于检索的少样本示范用于激发LLM的上下文学习能力；任务对齐用于减轻LLM在SQL生成中的幻觉；多智能体协作用于共同提升Text-to-SQL质量。虽然这些策略提升了性能，但它们通常集中于特定的细微方面。
 
 相比之下，人类以整体视角处理Text-to-SQL，使用跨多个方面的推理来实现准确可靠的翻译。这种认知范式涉及在不同步骤间建立联系和过渡以确保精确性和可靠性。
 
@@ -47,36 +49,6 @@ SQL生成涉及基于SQL准备中的关键信息进行复杂推理。当有效�
 \end{itemize}
 
 Text-to-SQL的目标是将 $\mathcal{Q}$ 转换为在 $\mathcal{D}$ 上可执行的SQL语句以检索所需结果。
-
-\subsection{语法关键词分类}
-\begin{table}[h]
-    \centering
-    \caption{使用的语法关键词分类}
-    \label{tab:syntax_keywords}
-    \begin{tabular}{|l|l|}
-    \hline
-    \textbf{类别级别} & \textbf{语法关键词} \\
-    \hline
-    子句 & SELECT, FROM, WHERE, ORDER BY, GROUP BY, HAVING \\
-    \hline
-    聚合 & COUNT, SUM, AVG, MIN, MAX \\
-    \hline
-    字符串 & SUBSTR \\
-    \hline
-    日期 & STRFTIME \\
-    \hline
-    条件 & CASE WHEN, IIF \\
-    \hline
-    空值相关 & IS NULL, IS NOT NULL \\
-    \hline
-    比较 & IN, BETWEEN, LIKE \\
-    \hline
-    算术 & 除法('/') \\
-    \hline
-    其他关键词 & DISTINCT, CAST \\
-    \hline
-    \end{tabular}
-\end{table}
 
 \section{COGSQL方法}
 

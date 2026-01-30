@@ -1,33 +1,7 @@
-%%
-%% This is file `mcmthesis-demo.tex',
-%% generated with the docstrip utility.
-%%
-%% The original source files were:
-%%
-%% mcmthesis.dtx  (with options: `demo')
-%% 
-%% -----------------------------------
-%% This is a generated file.
-%% 
-%% Copyright (C) 2010 -- 2015 by latexstudio
-%%       2014 -- 2019 by Liam Huang
-%%       2019 -- present by latexstudio.net
-%% 
-%% This work may be distributed and/or modified under the
-%% conditions of the LaTeX Project Public License, either version 1.3
-%% of this license or (at your option) any later version.
-%% The latest version of this license is in
-%%   http://www.latex-project.org/lppl.txt
-%% and version 1.3 or later is part of all distributions of LaTeX
-%% version 2005/12/01 or later.
-%% 
-%% The Current Maintainer of this work is latexstudio.net.
-%% 
-%% !Mode:: "TeX:UTF-8"
 \documentclass{mcmthesis}
  %\documentclass[CTeX = true]{mcmthesis}  % 当使用 CTeX 套装时请注释上一行使用该行的设置
 \mcmsetup{tstyle = \color{red}\bfseries,  % 修改题号，队号的颜色和加粗显示，黑色可以修改为 black
-          tcn = 2616863, problem = E,     % 修改队号，参赛题号
+          tcn = 2616863, problem = A,     % 修改队号，参赛题号
           sheet = true, titleinsheet = true, keywordsinsheet = true,
           titlepage = false, abstract = true}
 
@@ -68,57 +42,18 @@
 \title{Veils of Uncertainty: Weaving Risk into the Tapestry of Preservation
 Under the Weather's Watch}
 
-% \author{\small \href{https://www.latexstudio.net/}
-%   {\includegraphics[width=7cm]{mcmthesis-logo}}}
-
 \date{\today}
 
 \begin{document}
 
 \begin{abstract}
-\par As the tapestry of nature weaves its unpredictable patterns, humanity’s quest for stability
-becomes ever more pressing. In the shadow of uncertainty, we find resilience, crafting shields
-against the tempests of fate.
+\par 
+Smartphones,a kind of indispensable tool in modern life,have a battery performance which usually appears somewhat unpredictable, but this is not the case in reality.In order to predict the time-to-empty of lithium-ion batteries in smartphones under different conditions, we developed a continuous-time mathematical model for smartphone batteries, and successfully transformed our research results into practical recommendations for mobile phone users.
 
-First, we establish a Risk Analysis model to comprehensively assess the Expected Annual
-Loss (EAL) from extreme weather in terms of population, building, and agriculture. The
-assessment for each aspect is calculated from three perspectives: natural hazard exposure, Historic
-Loss Ratio, and the likelihood risk factor of natural hazard annualized frequency. Community
-Risk Factor (CRF) is calculated from social vulnerability and community resilience.
-EAL and CRF are used to quantify the risk levels of various regions and rank them using the
-K-means algorithm, resulting in a risk level map of the United States.
-Second, we develop a Risk-incorporated Capital Asset Pricing Model (CAPM) to aid
-insurance companies in underwriting decisions. This model combines market return rates, the
-risk-free rate, and bankruptcy theory with a $10\%$ bankruptcy probability to set insurance rates.
-It evaluates if the region's residents can afford these premiums, providing decision-making advice
-for insurance companies.
-
-More specifically, we apply our Risk-incorporated Capital Asset Pricing Model in Los
-Angeles and Gorontalo. In Los Angeles, insurance companies see high profits and low risks.
-However, in Gorontalo, the required premium for $\$10,000$ coverage is $\$342.745$, beyond local
-affordability. We recommend insurance securitization and partnerships with local governments
-to reduce premiums. Consequently, Gorontalo residents could pay just $\$137.25$ annually,
-with companies projecting $\$245$ million in revenue.
-
-Third, we establish a Building Preservation Model, selecting seven secondary indicators
-such as the annual number of visitors and construction cost, and three primary indicators: cultural
-values and community influence, economy, and history. These are weighted using the
-Sperman-CRITIC algorithm and AHP method to calculate building value, combined with
-risk levels to determine the preservation level of buildings. Based on the preservation level, the
-community's investment and measures for building protection can be determined.
-Then our models inform investment and protection strategies for Tokyo Tower, acknowledging
-its value and the necessity of preservation in an earthquake zone. We communicate these
-findings and propose protection measures to the Tokyo Tower community.
-
-Finally, we analyze the sensitivity and robustness of our models, the models can change
-the insurance rate sensitively according to the change of the market predicted return and the
-slight error of the risk factor calculation will not affect the models’ result, which verifies the
-sensitivity and robustness of our models. In addition we analyze the strengths and weaknesses
-of the models.
+Initially,we started with the simplest and most reasonable description of battery power consumption, and then expanded it to incorporate factors such as screen usage, processor load, network connection, background applications, GPS usage, environmental factors, and others. We developed a model that returns the state of charge (SOC) as a function of time under actual usage conditions.
 
 \begin{keywords}
-Risk Analysis, Risk-Capital Asset Pricing Model, Sperman-CRITIC, AHP,
-Building Preservation Model
+smartphone,lithium battery,
 \end{keywords}
 
 \end{abstract}
@@ -139,58 +74,57 @@ Building Preservation Model
 \setlength{\itemsep}{0pt}
 \tableofcontents
 \endgroup
-
 \newpage
-
 \section{Introduction}
 \subsection{Problem Background}
 
-\subsubsection{Climate Change Impact}
-Climate change has significantly altered weather patterns worldwide:
+Smartphones have become integral to contemporary living, yet their battery performance remains highly inconsistent. A device might operate seamlessly for a full day under moderate use, but in other instances, it may deplete rapidly—even before midday. While many users attribute such variations to "frequent usage", the underlying causes of battery drain are far more complex. Key determinants include screen dimensions and brightness settings, computational load imposed by the processor, network-related activities, and background processes from applications that continue to consume power even when the phone appears idle. External conditions also exert considerable influence: certain batteries exhibit reduced efficiency in colder climates and are susceptible to overheating during sustained high-demand tasks. Moreover, the battery’s historical usage patterns and charging behaviors significantly shape its long-term performance and reliability.
+
+\begin{figure}[H]    % H表示强制固定在当前位置
+\small
+\centering
+\includegraphics[width=0.8\textwidth]{fig0.jpg}
+\caption{Diagram of mobile phone lithium battery} \label{fig1}
+\end{figure}
+
+\subsubsection{Usage Pattern Factors}
+Individual usage habits significantly impact battery performance:
 \begin{itemize}
-    \item Increased frequency of extreme weather events
-    \item Rising sea levels and coastal flooding
-    \item More intense hurricanes and tropical storms
-    \item Extended drought periods in certain regions
+\item Frequency and intensity of usage (moderate vs. heavy use)
+\item Historical battery usage patterns over time\cite{3}
+\item Charging behaviors and methods employed
 \end{itemize}
-
-\subsubsection{Economic Consequences}
-The economic impact is substantial. Extreme weather events are becoming more frequent due to climate change. As the economic
-costs of disasters rise, how should the insurance industry respond to losses? Extreme
-weather events cause untold human suffering but and ever-growing economic costs.
-
-Catastrophic risks consequently cause a variety of problems for insurers. First, because
-the losses arise from a small number of lumpy events, the insurer may not have sufficient resources
-to cover the losses. Less dramatically, the firm may suffer losses well in excess of the
-value of the premiums that it charged for the coverage. In the absence of adequate reinsurance,
-the firm may go bankrupt or may choose to exit a state in which there is a substantial exposure
-to such catastrophic risks. The unexpected catastrophes or blockbuster events maybe raise the
-rate that firms charge for insurance. Thus, for any given number of policies written, the total
-premiums will rise \cite{born2006}.
-
-The impact of natural disasters is equivalent to a $\$520$ billion loss in annual consumption,
-and forces some $26$ million people into poverty each year. Given the gradual increase in the
-number of extreme-weather events in the world, how to realize the sustainability of property
-insurance is a great challenge we need to address.
+\subsubsection{Hardware, Software and Configuration Factors}
+Device-specific characteristics and settings play a crucial role:
+\begin{itemize}
+\item Screen dimensions and physical size
+\item Brightness level settings configured by the user
+\item Computational load imposed by the processor during operation
+\end{itemize}
+Background processes and network activities contribute to power drain:
+\begin{itemize}
+\item Network-related activities and data transmission
+\item Background processes from applications running during idle states
+\item Persistent background application consumption even when phone appears inactive
+\end{itemize}
+\subsubsection{Environmental Conditions}
+External physical conditions exert a direct and sometimes significant influence on battery efficiency\cite{born2006}. On one hand, lithium-ion batteries commonly exhibit reduced operational efficiency and effective capacity when exposed to colder climates and low temperatures. At low temperatures, the internal resistance of the battery increases, the battery capacity significantly decreases, and the voltage may drop below the lowest allowable voltage, making it impossible for the battery to function properly\cite{2}.On the other hand, during periods of sustained high-demand processing tasks, these batteries are particularly susceptible to overheating, which can further degrade performance and long-term health. Finally, broader external temperature variations encountered during normal device operation consistently impact the rate of power drain and overall battery behavior.
 
 \subsection{Restatement of the Problem}
 
-Considering the background information and restricted conditions identified in the problem
-statement, we need to solve the following problems:
+Considering the background information and restricted conditions identified in the problem statement, the following problems we need to solve are listed as follows:
 \begin{itemize}
-\item {\bf Problem 1:} The property insurance industry faces a crisis from increased extreme
-weather events caused by climate change, leading to higher claims and premiums.
-\item {\bf roblem 2:} Insurance companies must decide on underwriting policies in weather-affected
-regions, balancing risk and long-term viability.
-\item {\bf Problem 3:} Participants are tasked with creating a model to assist in underwriting decisions
-and a preservation model for community leaders to protect significant buildings.
-\item {\bf Problem4:} The models should be applied to specific areas and a historic landmark, with
-recommendations for future insurance and preservation strategies.
+\item {\bf Problem 1:} Develop a model that uses continuous-time equations or systems of equations to represent the battery's state of charge, that is, establish a differential equation system that describes the change of state of charge (SOC) over time.
+\item {\bf Problem 2:} Use our model to calculate or approximate the emptying time for various initial battery charge levels and usage scenarios. Compare the predicted results with observed or reasonable behaviors, quantify the uncertainty, and determine in which aspects the model performs well or poorly.
+\item {\bf Problem 3:} Test the robustness of the model. This involves systematically altering the modeling assumptions, adjusting key parameters, and simulating different variations in usage patterns to analyze the extent to which these changes affect the final prediction results of the model.
+\item {\bf Problem 4:} Translate the research findings into practical operational suggestions for mobile users, and explore how the operating system can implement more proactive and effective dynamic power management strategies based on the core insights of the model. At the same time, analyze the feasibility and potential value of extending this modeling framework to other portable electronic devices.
 \end{itemize}
+\subsection{Literature Review}
+
 
 \subsection{Our work}
 
-In order to clearly illustrate our work, we draw the flowchart Figure \ref{fig1}.
+In order to clearly illustrate our work, we drew the flowchart Figure \ref{fig1}.
 
 \begin{figure}[H]    % H表示强制固定在当前位置
 \small
@@ -201,25 +135,18 @@ In order to clearly illustrate our work, we draw the flowchart Figure \ref{fig1}
 
 \section{Assumptions and Justifications}
 
-Considering those practical problems always contain many complex factors, first of all,
-we need to make reasonable assumptions to simplify the model, and each hypothesis is closely
-followed by its corresponding explanation:
+In addressing real-world problems that inherently involve numerous complex variables, our initial step involved formulating reasonable assumptions to simplify the modeling process, with each assumption accompanied by its corresponding justification.
 
 \begin{itemize}
+\item{\bf Assumption:}The smartphones use lithium-ion batteries.
+\item {\bf Justification:}The problem requires us to assume that smartphones use lithium-ion batteries.
 \item {\bf Assumption:} The data we use are accurate and valid.
-\item {\bf Justification:} Our data is collected from the World Bank and some other official web
-sites and research papers. it’s reasonable to assume the high quality of their data.
-\item {\bf Assumption:} The regions under study will remain peaceful and stable, with no significant
-events other than natural disasters occurring in the foreseeable future.
-\item {\bf Justification:} A stable capital market environment provides a predictable framework
-within which we can project our expected returns. It is important to note that this assumption
-does not negate the potential impact of natural disasters.
-\item {\bf Assumption:} The estimated figures for each region represent an average level of performance
-or condition for that area.
-\item {\bf Justification:} For the purposes of this study, treating each region as a cohesive entity
-allows for a more streamlined analysis. This methodological approach simplifies the
-complexity inherent in regional studies by focusing on aggregate data, thereby providing
-a generalized view of each area's performance or condition.
+\item {\bf Justification:} Our data is collected from official technical specifications from manufacturers like Apple, some other official web
+sites and research papers, so it’s reasonable to assume the high quality of their data.
+\item {\bf Assumption:} 
+\item {\bf Justification:} 
+\item {\bf Assumption:} 
+\item {\bf Justification:} 
 \end{itemize}
 
 \section{Notations}
@@ -227,22 +154,27 @@ a generalized view of each area's performance or condition.
 The key mathematical notations used in this paper are listed in Table \ref{tbl1}. 
 
 %% 三线表
-\begin{table}[H]     % H表示强制固定在当前位置
+\begin{table}[H]
 \small
-\centering           % 设置居中
-\caption{Notations}  % 表标题
-\label{tbl1}         % 设置表的引用标签
-\begin{tabular}{cl}  % 2列, c表示居中对齐, l和r表示左右对齐
-\toprule             % 画顶端横线
-{\bf Symbol}    &  {\bf Definition}     \\
-\midrule             % 画中间横线
-$EAL$  & Expected Annual Loss  \\
-$SV$   & Social Vulnerability  \\
-$CR$   & Community Resilience  \\
-$CRF$  & Community Risk Factor \\
-$HLR$  & Historic Loss Ratio   \\
-\bottomrule         % 画底部横线
+\centering
+\caption{Notations}
+\label{tbl1}
+\begin{tabular}{ c c l }
+\toprule
+\textbf{Symbol} & \textbf{Unit} & \textbf{Definition} \\
+\midrule
+$Q_{ref}$ & mAh & Typical capacity of modern flagship smartphones (approximately 14400 Coulombs) \\
+$V_{nom}$ & V & Standard operating voltage platform for lithium-ion batteries \\
+$V_{min}$ & V & Voltage at which the protection circuit cuts off the power (0\% State of Charge) \\
+$V_{max}$ & V & Voltage at 100\% State of Charge \\
+$R_{int}$ & Ω & Internal resistance, approximately 50mΩ, increases sharply with decreasing temperature \\
+$m_{bat}$ & kg & Battery mass, approximately 0.05 kg (50 grams), used for thermal capacity calculation \\
+$C_p$ & J/(kg·K) & Average specific heat capacity of lithium-ion battery materials \\
+$h_{eff}$ & W/K & Effective heat transfer coefficient representing the phone's overall heat dissipation capability (estimated value) \\
+$\eta$ & dimensionless & Coulombic efficiency, typically close to 1, but decreases with aging or at low temperatures \\
+\bottomrule
 \end{tabular}
+\end{table}
 \vspace{2pt} % 稍微调整间距
 \begin{flushleft} \small
 $^{*}$ There are some variables that are not listed here and will be discussed in detail in each
