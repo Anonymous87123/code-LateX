@@ -39,8 +39,7 @@
 \setcounter{tocdepth}{2}  % 设置目录到二级标题, 将目录控制在1页
                           % 若可接受目录2页, 注释掉该句, 将到三级标题
                           
-\title{Veils of Uncertainty: Weaving Risk into the Tapestry of Preservation
-Under the Weather's Watch}
+\title{Modeling and Predicting the Time-To-Empty of Lithium-ion Batteries in Smartphones}
 
 \date{\today}
 
@@ -84,7 +83,7 @@ Smartphones have become integral to contemporary living, yet their battery perfo
 \small
 \centering
 \includegraphics[width=0.8\textwidth]{fig0.jpg}
-\caption{Diagram of mobile phone lithium battery} \label{fig1}
+\caption{Diagram of mobile phone lithium battery} \label{fig0}
 \end{figure}
 
 \subsubsection{Usage Pattern Factors}
@@ -119,37 +118,49 @@ Considering the background information and restricted conditions identified in t
 \item {\bf Problem 3:} Test the robustness of the model. This involves systematically altering the modeling assumptions, adjusting key parameters, and simulating different variations in usage patterns to analyze the extent to which these changes affect the final prediction results of the model.
 \item {\bf Problem 4:} Translate the research findings into practical operational suggestions for mobile users, and explore how the operating system can implement more proactive and effective dynamic power management strategies based on the core insights of the model. At the same time, analyze the feasibility and potential value of extending this modeling framework to other portable electronic devices.
 \end{itemize}
+
 \subsection{Literature Review}
 
-
-\subsection{Our work}
-
-In order to clearly illustrate our work, we drew the flowchart Figure \ref{fig1}.
-
+This issue focuses on the complex and seemingly unpredictable nature of smartphone battery drain. In recent years, research on power consumption models for portable devices has focused on both the underlying physical principles of lithium-ion batteries and the development of suitable continuous-time mathematical frameworks.
+\begin{itemize}
+\item During the use or storage of lithium batteries, certain degrees of failure may occur, including capacity reduction, short cycle life, increased internal resistance, abnormal voltage,and lithium precipitation, which significantly reduce the performance, consistency, reliability, and safety of lithium batteries\cite{4}.Some researchers also studied the changes in capacity and temperature rise of NCM pouch-type lithium-ion batteries under different operating temperature conditions\cite{5}.Based on previous studies, it was found that at low temperatures, lithium-ion batteries would exhibit phenomena such as lithium precipitation and increased impedance, which significantly affected the performance of lithium-ion batteries. 
+\item Some simple continuous-time models, such as Enhanced Coulomb Counting, were used to analysed similar problems. However, its weakness will be exposed when we introduce nonlinear factors and consider the influence of internal resistance and temperature on the capacity of lithium-ion batteries, which is what Problem A specifically requires us to do\cite{6}.Deterministic scenario simulation is often used to predict the time when power runs out. However, in reality, user behavior is not constant, and this kind of prediction is overly idealized.Local sensitivity analysis is often used to observe how much the "time-to-empty" changes when only one parameter is altered.Unfortunately,factors that affect the performance of lithium batteries in smartphones may interact with each other, and this method is unable to study such interactions\cite{7}.
+\end{itemize}
+The advantages and disadvantages of the three basic models are shown below in \ref{fig1}.
 \begin{figure}[H]    % H表示强制固定在当前位置
 \small
 \centering
-\includegraphics[width=0.8\textwidth]{fig1.jpg}
-\caption{Our work} \label{fig1}
+\includegraphics[width=0.8\textwidth]{fig1.png}
+\caption{Literature Review} \label{fig1}
 \end{figure}
 
-\section{Assumptions and Justifications}
+\subsection{Our work}
+
+
+
+
+\section{Model Preparation}
+\subsection{Assumptions and Justifications}
 
 In addressing real-world problems that inherently involve numerous complex variables, our initial step involved formulating reasonable assumptions to simplify the modeling process, with each assumption accompanied by its corresponding justification.
 
 \begin{itemize}
-\item{\bf Assumption:}The smartphones use lithium-ion batteries.
-\item {\bf Justification:}The problem requires us to assume that smartphones use lithium-ion batteries.
+\item{\bf Assumption:} The smartphones use lithium-ion batteries.
+\item {\bf Justification:} The problem requires us to assume that smartphones use lithium-ion batteries.
 \item {\bf Assumption:} The data we use are accurate and valid.
-\item {\bf Justification:} Our data is collected from official technical specifications from manufacturers like Apple, some other official web
-sites and research papers, so it’s reasonable to assume the high quality of their data.
-\item {\bf Assumption:} 
-\item {\bf Justification:} 
-\item {\bf Assumption:} 
-\item {\bf Justification:} 
+\item {\bf Justification:} Our data is collected from official technical specifications from manufacturers like Apple, some other official web sites and research papers, so it’s reasonable to assume the high quality of their data.
+\item {\bf Assumption:}Differential equations can be used to describe the process of how the battery's state changes over time.
+\item {\bf Justification:}Differential equations are ideal for modeling continuous battery dynamics, as they capture real-time rate changes based on physical laws like energy conservation, aligning with the problem's requirement for a continuous-time approach.
+\item{\bf Assumption:} The battery's internal resistance and effective capacity vary linearly with temperature within typical operating ranges (e.g., 10°C to 25°C).
+\item {\bf Justification:} Empirical studies on lithium-ion batteries show that temperature effects on internal resistance and capacity can be approximated linearly for short-term predictions, balancing model accuracy and simplicity.
+\item{\bf Assumption:} Power consumption from individual components (e.g., screen, CPU) is additive and can be modeled as a linear function of their operating states (e.g., brightness, load).
+\item {\bf Justification:} This simplifies the integration of multiple power sources into a total system power consumption, supported by the superposition principle in circuit theory, and aligns with the continuous-time equation framework required by the problem.
+\item {\bf Assumption:} Background application power consumption remains constant during idle periods unless explicitly changed by user activity.
+\item {\bf Justification:} This reflects typical smartphone behavior where background tasks (e.g., push notifications) maintain a steady low-level energy draw, as noted in Document 1's discussion of "background applications that continue drawing energy."
+\item {\bf Assumption:} Battery aging effects are negligible over the short-term simulations (e.g., a single day) but follow an exponential decay model for long-term analysis.
+\item {\bf Justification:} Aging primarily impacts capacity over many charge cycles; ignoring it for daily use simplifies the model without significant loss of accuracy, while incorporating it via an exponential function ensures scalability for extended studies.
 \end{itemize}
-
-\section{Notations}
+\subsection{Notations}
 
 The key mathematical notations used in this paper are listed in Table \ref{tbl1}. 
 
@@ -163,35 +174,68 @@ The key mathematical notations used in this paper are listed in Table \ref{tbl1}
 \toprule
 \textbf{Symbol} & \textbf{Unit} & \textbf{Definition} \\
 \midrule
-$Q_{ref}$ & mAh & Typical capacity of modern flagship smartphones (approximately 14400 Coulombs) \\
+$Q_{ref}$ & mAh & Typical capacity of modern flagship smartphones \\
+$Q_{eff}$ & mAh & The effective available capacity of the battery\\
 $V_{nom}$ & V & Standard operating voltage platform for lithium-ion batteries \\
-$V_{min}$ & V & Voltage at which the protection circuit cuts off the power (0\% State of Charge) \\
+$V_{min}$ & V & Voltage at which the protection circuit cuts off the power  \\
 $V_{max}$ & V & Voltage at 100\% State of Charge \\
 $R_{int}$ & Ω & Internal resistance, approximately 50mΩ, increases sharply with decreasing temperature \\
 $m_{bat}$ & kg & Battery mass, approximately 0.05 kg (50 grams), used for thermal capacity calculation \\
 $C_p$ & J/(kg·K) & Average specific heat capacity of lithium-ion battery materials \\
-$h_{eff}$ & W/K & Effective heat transfer coefficient representing the phone's overall heat dissipation capability (estimated value) \\
+$h_{eff}$ & W/K & Effective heat transfer coefficient representing the phone's overall heat dissipation capability \\
 $\eta$ & dimensionless & Coulombic efficiency, typically close to 1, but decreases with aging or at low temperatures \\
 \bottomrule
 \end{tabular}
-\end{table}
 \vspace{2pt} % 稍微调整间距
 \begin{flushleft} \small
-$^{*}$ There are some variables that are not listed here and will be discussed in detail in each
-section.
+$^{*}$ There are some variables that are not listed here and will be discussed in detail in each section.
 \end{flushleft}
 \end{table}
 
-\section{Insurance Pricing and Decision Model}
+Table \ref{tbl2} lists the corresponding abbreviations for the basic concepts, which will frequently appear in this article.
 
-\subsection{Data Collection}
+\begin{table}[H]
+\small
+\centering
+\caption{Abbreviations (Supplement)}
+\label{tbl2}
+\begin{tabular}{ll}
+\toprule
+\textbf{Full Name} & \textbf{Abbreviation} \\
+\midrule
+Open Circuit Voltage & OCV \\
+Time to Empty &  TTE \\
+State of Charge & SOC\\
+Equivalent Circuit Model & ECM \\
+Power Management Integrated Circuit & PMIC \\
+Graphics Processing Unit & GPU \\
+Image Signal Processor & ISP \\
+Radio Resource Control (State) & RRC \\
+Dynamic Power Management & DPM \\
+State of Health & SOH \\
+Central Processing Unit & CPU \\
+Global Positioning System & GPS \\
+Thermal Management System & TMS \\
+\bottomrule
+\end{tabular}
+\vspace{2pt}
+\begin{flushleft} \small
+$^{*}$ This list extends the core notations. Additional model-specific abbreviations will be defined upon their first appearance in the respective sections.
+\end{flushleft}
+\end{table}
 
+\subsection{Data Collection and Visualization}
+
+It has been discovered that it is difficult to inversely determine the coefficients of a continuous differential equation from discrete data through parameter estimation, because the data obtained is usually discrete.
+
+
+\ref{tbl3}
 %% 三线表
 \begin{table}[H]     % H表示强制固定在当前位置
 \small
 \centering           % 设置居中
 \caption{Notations}  % 表标题
-\label{tbl2}         % 设置表的引用标签
+\label{tbl3}         % 设置表的引用标签
 \begin{tabular}{ll}  % 2列, c表示居中对齐, l和r表示左右对齐
 \toprule             % 画顶端横线
 {\bf Database Names}     &  {\bf Database Websites}     \\
@@ -218,36 +262,18 @@ World Bank               & \url{https://data.worldbank.org/}  \\
 % The proof of theorem.
 % \end{proof}
 
-\subsection{Risk Analysis}
+\section{Model I:A differential equation system}
 
-\subsubsection{Expected Annual Loss (EAL)}
+\subsection{Construct an equivalent circuit model（ECM）}
 
-The $EAL$ value are in units of dollars, representing the community’s average economic
-loss from natural hazards each year. $EAL$ is calculated using a multiplicative equation that
-considers the consequence risk factors of natural hazard exposure, $HLR$ (Historic Loss Ratio),
-and the likelihood risk factor of natural hazard annualized frequency. The $EAL$ value for each
-consequence type is calculated by multiplying the exposure value of an area by the estimated
-annualized frequency and the $HLR$.
+Based on the relevant literature, we firstly defined the battery state（State of Charge,SOC）as the presentage of the current remaining capacity relative to the rated capacity:
+\[SOC(t)=\frac{Q(t)}{C}\times 100\%\]
+Here,$Q(t)$represents the remaining battery power at time $t$,and $C$ is the battery capacity（measured in mAh）.This provides a standardized starting point for modeling battery discharge under various conditions, ensuring consistency in time-to-empty predictions and simplifying initial value problems in differential equations.
 
-\begin{equation}
-EAL = Exposure \times Annualized~Frequency \times HLR
-\end{equation}
 
-The total $EAL$ value for each hazard type is the sum of three different types of consequences:
-population (P), building (B), and agriculture (A).
+\subsection{}
 
-\begin{equation}
-EAL_{hazard type} = EAL_{hazard type(P)} + EAL_{hazard type(B)}
- + EAL_{hazard type(A)}
-\end{equation}
-
-We add up the $EAL$ values for $18$ types of hazards to obtain the composite $EAL$ value.
-
-\begin{equation}
-EAL_{composite} = \sum_{i=1}^{18} EAL_{hazard type}
-\end{equation}
-
-In order to describe our process of calculating the value of EAL more clearly. We draw
+In order to describe our process of calculating the value of ? more clearly. We draw
 the flowchart Figure \ref{fig2} below.
 
 \begin{figure}[H]    % H表示强制固定在当前位置
@@ -257,59 +283,9 @@ the flowchart Figure \ref{fig2} below.
 \caption{Calculation procedure for EAL} \label{fig2}
 \end{figure}
 
-A national ranking is computed for the composite $EAL$ value of each community. The
-resulting values are then converted into national percentiles to produce an $EAL$ score for each
-community. The $EAL$ scores are very helpful for the risk calculation in the following text.
 
-\begin{equation}
-EAL_{rank} = \mathrm{rank}(EAL_{composite})
-\end{equation}
+\subsubsection{}
 
-\begin{equation}
-EAL_{score} = \frac{EAL_{composite} - \min(EAL_{composite})}{\max(EAL_{composite}) 
-- \min(EAL_{composite})} \times 100\%
-\end{equation}
-
-\subsubsection{Community Risk Factor (CRF)}
-
-To generate a Community Risk Factor CRF (CRF) value for a community, its Social Vulnerability
-(SV) value is divided by its Community Resilience (CR) value.
-
-\begin{equation}
-CRF = f\Big( \frac{SV}{CR} \Big)
-\end{equation}
-
-\noindent where $f\Big( \frac{SV}{CR} \Big)$ is a triangular distribution with minimum $0.5$, maximum $2$, and mode $1$.
-The selection process for the CRF involved evaluating various shapes, ranges, and modes.
-
-Considering its ability to highlight communities at both ends of the distribution without attributing
-extreme values to a select few, we use the triangular distribution. It also takes into account
-the $EAL$ as the primary driver of risk, thereby making a mode of 1 the most appropriate choice
-for the $CRF$.
-
-The $SV$ values correspond to SOVI values, while the $CR$ values represent HVRI BRIC
-index for the community, as provided by the source data sets.
-
-\subsubsection{Risk Calculation}
-
-In the most general terms, natural hazard risk is often defined as the likelihood (or probability)
-of a natural hazard event happening multiplied by the expected consequence if a natural
-hazard event occurs.
-
-\begin{equation}
-Risk = Likelihood \times consequence
-\end{equation}
-
-To make the level of risk more concrete and exemplified, we estimate risk from two aspects:
-risk value and risk score.
-
-\begin{equation} 
-R_{value} = EAL_{value} \times CRF  \label{eq8}
-\end{equation} 
-
-\begin{equation} 
-R_{score} = EAL_{score} \times CRF  \label{eq9}
-\end{equation} 
 
 \noindent where $R$ represents $Risk$.
 
