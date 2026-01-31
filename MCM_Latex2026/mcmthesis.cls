@@ -176,19 +176,24 @@
   \long\def\abstract{\bgroup\global\setbox\@abstract\vbox\bgroup\hsize\textwidth\leftskip0.5cm\rightskip0.5cm}%
   \def\endabstract{\egroup\egroup}%
   \def\make@abstract{%
+    \vspace{-0.5\baselineskip}%
     \begin{center}%
       \textbf{\abstractname}%
     \end{center}%
+    \vspace{-0.3\baselineskip}%
     \usebox\@abstract\par
+    \vspace{0.3\baselineskip}%
   }
 \else
   \RenewEnviron{abstract}{\xdef\@abstract{\expandonce\BODY}}
   \def\make@abstract{%
+    \vspace{-0.5\baselineskip}%
     \begin{center}%
       \textbf{\abstractname}%
     \end{center}%
+    \vspace{-0.3\baselineskip}%
     \@abstract\par
-    \vspace{\baselineskip}%    
+    \vspace{0.3\baselineskip}%
   }
 \fi
 \newenvironment{letter}[1]{%
