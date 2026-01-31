@@ -173,7 +173,7 @@
 \ifMCM@opt@CTeX
   \newbox\@abstract
   \setbox\@abstract\hbox{}%
-  \long\def\abstract{\bgroup\global\setbox\@abstract\vbox\bgroup\hsize\textwidth\leftskip1cm\rightskip1cm}%
+  \long\def\abstract{\bgroup\global\setbox\@abstract\vbox\bgroup\hsize\textwidth\leftskip0.5cm\rightskip0.5cm}%
   \def\endabstract{\egroup\egroup}%
   \def\make@abstract{%
     \begin{center}%
@@ -188,7 +188,7 @@
       \textbf{\abstractname}%
     \end{center}%
     \@abstract\par
-    \vspace{\baselineskip}%     % ĺ˘ĺ 1ä¸ŞçŠşčĄ?
+    \vspace{\baselineskip}%    
   }
 \fi
 \newenvironment{letter}[1]{%
