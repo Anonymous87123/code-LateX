@@ -1,13 +1,321 @@
-在原模板mcmthesis-6.3.3的基础上做了如下改动：
+我已经修改得差不多了，请你按照《免费思路》里面所提到的，同时参考其他上传的几篇文章中的解题思路（可能在问题2的解决部分）
 
-1. 让页码包含摘要页，目录从第2页开始编页码，以符合官方要求
-2. 目录深度到二级标题，减小竖直间距，将目录控制在一页
-3. 摘要与关键词之间空一行
-4. 减小图、表标题字号，增加表标题与横线的竖直间距
-5. 微调页眉空间，修复fancyhdr警告
-6. 改为bib格式参考文献，让格式更规范，可轻松切换数字风格、APA风格
-7. 变成名副其实的模板，完整展示一篇O奖论文（E2400860），包含：
-    - 各种数学公式
-    - 并排子图、并排多图
-    - 三线表、复杂表格（合并单元格）、带颜色表格
-    - 各种交叉引用
+1.《免费思路》建议加入“参数扰动实验”和“方差分解”，我加了，但是里面有一些图片的引用而对应的实际图片却并不存在，
+
+2.如果完工，我接下来要写模型的敏感性分析，以及可能的拓展方向了，这些虽然也有在tex中出现，但是比较零散，逻辑混乱，亟待我的修改。
+
+2.我同时也发现了有些公式重复出现，有些语句表意重复，同时也存在逻辑顺承问题，你参考所有上传的文件，帮我找一找可以改进的地方
+
+请注意这是美国数学建模大赛，你是数学建模方面的专家，论文要求全英文。你在提建议的时候用中文回复，输出代码块修改我的tex的时候，要求英文回顾问答历史，我需进一步细化，需要你协助修改具体代码段落，告诉我在哪里改，改成什么，提供保姆级别的建议（具体到问题在第几行，具体到哪一小节，你要注意我的tex中分节级别有3级，注意区分section,subsection,和subsubsection，之前让你生出来好几次回答，居然编造出来不存在的节数）所以你应该mcmthesis-demo的tex形式和pdf形式比对着看，
+
+
+
+
+
+你是精通数学建模分析的教授，你的学生正在参加美国数学建模大赛，也就是我。回顾之前历史所有对话，你应该对我的论文很了解了，我知道自己论文的敏感性分析，模型评估，可能性拓展写的非常的屎，所以现在我要先把这一块内容拆出来：
+
+\subsection{Model Validation and Performance Assessment}
+
+
+
+
+\subsubsection{Comparison with Empirical Data}
+
+
+
+
+We validate our model against empirical battery life data from literature and the results of our models. Table~\ref{tbl:validation} shows excellent agreement, with mean absolute error less than 5\% across all scenarios.
+
+
+
+
+\begin{table}[H]
+
+\small
+
+\centering
+
+\caption{Model validation against empirical data (TTE in hours)}
+
+\label{tbl:validation}
+
+\begin{tabular}{lccc}
+
+\toprule
+
+\textbf{Scenario} & \textbf{Predicted TTE} & \textbf{Empirical TTE} & \textbf{Error (\%)} \\
+
+\midrule
+
+Standby          & 12.81 & 12.5 & 2.5 \\
+
+Browsing         & 10.28 & 10.0 & 2.8 \\
+
+Video Streaming  & 9.27  & 9.5  & 2.4 \\
+
+Gaming           & 8.17  & 8.0  & 2.1 \\
+
+Navigation       & 9.20  & 9.0  & 2.2 \\
+
+\bottomrule
+
+\end{tabular}
+
+\end{table}
+
+
+
+
+\subsubsection{Model Strengths and Limitations}
+
+
+
+
+The model demonstrates several strengths:
+
+\begin{itemize}
+
+\item \textbf{High physical fidelity}: Captures essential battery electrochemistry and thermodynamics.
+
+\item \textbf{Comprehensive scenario coverage}: Handles diverse usage patterns through component-based power modeling.
+
+\item \textbf{Quantified uncertainty}: Provides confidence intervals for predictions.
+
+\item \textbf{Computational efficiency}: Solves in reasonable time for practical application.
+
+\end{itemize}
+
+
+
+
+Key limitations include:
+
+\begin{itemize}
+
+\item \textbf{Deterministic power profiles}: Assumes constant usage patterns within scenarios.
+
+\item \textbf{Simplified thermal model}: Neglects spatial temperature gradients.
+
+\item \textbf{Fixed parameter values}: Does not account for manufacturing variability.
+
+\end{itemize}
+
+
+
+
+
+
+
+\subsection{Sensitivity and Uncertainty Quantification}
+
+
+
+
+\subsubsection{Local Sensitivity Analysis}
+
+
+
+
+We conduct a comprehensive sensitivity analysis following the methodology in Document 2 (Section 4.2.2). The normalized sensitivity index for each parameter is computed as:
+
+
+
+
+\begin{equation}
+
+S_i = \left| \frac{\theta_i}{TTE} \cdot \frac{\partial TTE}{\partial \theta_i} \right|
+
+\end{equation}
+
+
+
+
+where $\theta_i$ represents model parameters including battery capacity ($Q_n$), internal resistance ($R_0$), power coefficients ($k_d$, $k_c$), and thermal parameters.
+
+
+
+
+\subsubsection{Uncertainty Propagation via Monte Carlo Simulation}
+
+
+
+
+To quantify prediction uncertainty, we perform Monte Carlo simulation with $N = 1000$ samples for the Gaming scenario at 100\% initial SOC. Key parameters are perturbed according to their estimated uncertainties:
+
+\begin{align*}
+
+Q_n &\sim \mathcal{N}(\mu_{Q_n}, 0.05\mu_{Q_n}) \\
+
+R_0 &\sim \mathcal{N}(\mu_{R_0}, 0.08\mu_{R_0}) \\
+
+k_d &\sim \mathcal{N}(\mu_{k_d}, 0.10\mu_{k_d}) \\
+
+k_c &\sim \mathcal{N}(\mu_{k_c}, 0.12\mu_{k_c})
+
+\end{align*}
+
+
+
+
+\subsubsection*{Variance-Based Global Sensitivity Analysis via Sobol Indices}
+
+
+
+
+To quantify the contribution of each parameter to the output variance, we compute first-order and total-order Sobol indices. For a model \( Y = f(X_1, X_2, \ldots, X_k) \), the first-order Sobol index \( S_i \) measures the fraction of variance attributed to \( X_i \) alone:
+
+\begin{equation}
+
+S_i = \frac{\mathbb{V}[\mathbb{E}[Y | X_i]]}{\mathbb{V}[Y]}
+
+\label{eq:sobol-first}
+
+\end{equation}
+
+The total-order index \( S_{Ti} \) includes interactions with other parameters:
+
+\begin{equation}
+
+S_{Ti} = 1 - \frac{\mathbb{V}[\mathbb{E}[Y | X_{\sim i}]]}{\mathbb{V}[Y]}
+
+\label{eq:sobol-total}
+
+\end{equation}
+
+We compute these indices using Saltelli’s sampling method with \( N = 1000 \) samples per parameter. The results (Table \ref{tbl:sobol-results}) show that \( Q_n \) dominates the variance (67\%), while \( R_0 \) contributes 18\%.
+
+
+
+
+\begin{table}[H]
+
+\centering
+
+\caption{Global sensitivity analysis results (Sobol indices) for TTE predictions}
+
+\label{tbl:sobol-results}
+
+\begin{tabular}{lcc}
+
+\toprule
+
+\textbf{Parameter} & \textbf{First-Order Index } \( S_i \) & \textbf{Total-Order Index } \( S_{Ti} \) \\
+
+\midrule
+
+Capacity \( Q_n \) & 0.67 & 0.72 \\
+
+Internal Resistance \( R_0 \) & 0.18 & 0.23 \\
+
+Screen Power Coefficient \( k_d \) & 0.05 & 0.08 \\
+
+CPU Power Coefficient \( k_c \) & 0.04 & 0.07 \\
+
+Network Power Coefficient \( k_n \) & 0.02 & 0.04 \\
+
+Thermal/Polarization Parameters & 0.03 & 0.05 \\
+
+Other Background Parameters & 0.01 & 0.02 \\
+
+\bottomrule
+
+\end{tabular}
+
+\vspace{0.2cm}
+
+\small
+
+\begin{flushright}
+
+\textsuperscript{*}Sobol indices computed via Saltelli’s method (N=1000 samples per parameter). Sum of first-order indices may be less than 1 due to unresolved interactions, while total-order indices include interaction effects.
+
+\end{flushright}
+
+\end{table}
+
+
+
+
+
+
+
+\subsubsection{Global Sensitivity Analysis with Stochastic Factors}
+
+
+
+
+We compute Sobol indices to quantify the contribution of each uncertainty source to TTE variance:
+
+
+
+
+\begin{equation}
+
+S_i^{(1)} = \frac{\mathbb{V}[\mathbb{E}[\TTE|\theta_i]]}{\mathbb{V}[\TTE]}, \quad S_T^{(1)} = \frac{\mathbb{V}[\mathbb{E}[\TTE|\text{random usage}]]}{\mathbb{V}[\TTE]}
+
+\end{equation}
+
+
+
+
+Results show stochastic usage patterns contribute 45\% of total variance, while battery parameters contribute: $Q_n$: 30\%, $R_0$: 15\%, others: 10\%. This highlights that user behavior uncertainty dominates prediction variance, not parameter measurement error.
+
+% === 修改建议：新增拓展方向子节 ===
+
+\subsection{Model Extensions and Future Work}
+
+\label{subsec:extensions}
+
+
+
+
+The proposed framework can be extended in several directions to enhance practicality:
+
+
+
+
+\subsubsection*{Incorporating Battery Aging Dynamics}
+
+Introduce a health state variable \( SOH(t) \) to model capacity fade:
+
+\begin{equation}
+
+\frac{\dd SOH}{\dd t} = -\lambda_c \cdot I(t) - \lambda_t \cdot \exp\left(-\frac{E_a}{RT}\right)
+
+\end{equation}
+
+where \( \lambda_c \) and \( \lambda_t \) are cycling/calendar aging coefficients.
+
+
+
+
+\subsubsection*{Generalization to Other Portable Devices}
+
+The model structure is applicable to tablets, wearables, etc., by adapting power components. For example, in smartwatches, display power is reduced but sensor power dominates.
+
+
+
+
+\subsubsection*{Real-Time Adaptation with Machine Learning}
+
+Integrate online parameter estimation (e.g., via Kalman filters) to dynamically update parameters based on operational data.
+
+
+
+
+\subsection{Conclusion}
+
+
+
+
+Model II successfully implements a comprehensive framework for predicting smartphone battery Time-to-Empty under various usage scenarios. The integration of continuous-time ODE solving with multi-component power decomposition enables accurate TTE estimation across a wide range of conditions. The sensitivity and uncertainty analyses provide crucial insights into prediction reliability and identify battery capacity as the most influential parameter.
+
+
+
+
+The HTML reports from our team provide valuable visualizations that enhance result interpretation and validation. The model achieves its primary objective of delivering physically-meaningful, uncertainty-aware predictions that fulfill Problem 2 requirements while maintaining the mechanistic rigor demanded by the contest.
+
+
+
+
+This framework can be readily extended to incorporate additional factors such as battery aging, dynamic workload patterns, and advanced thermal effects for even more realistic predictions in future work.

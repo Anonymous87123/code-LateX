@@ -64,9 +64,9 @@
 \RequirePackage{ifthen}
 \RequirePackage{listings}
 \RequirePackage[toc, page, title, titletoc, header]{appendix}
-\RequirePackage{paralist}
 \RequirePackage{amsthm, amsfonts}
 \RequirePackage{amsmath, bm}
+\RequirePackage{enumitem}
 \RequirePackage{amssymb, mathrsfs}
 \RequirePackage{latexsym}
 \RequirePackage{longtable, multirow, hhline, tabularx, array}
@@ -76,7 +76,7 @@
 \RequirePackage{geometry}
 \RequirePackage[T1]{fontenc}
 \RequirePackage[scaled]{berasans}
-\RequirePackage{hyperref}
+\RequirePackage{algorithm,algorithmic}
 \RequirePackage{ifpdf, ifxetex}
 \ifMCM@opt@CTeX
 \else
@@ -94,15 +94,6 @@
   \fi
 \fi
 \RequirePackage[svgnames]{xcolor}
-\ifpdf
-  \hypersetup{hidelinks}
-\else
-  \ifxetex
-    \hypersetup{hidelinks}
-  \else
-    \hypersetup{dvipdfm, hidelinks}
-  \fi
-\fi
 \geometry{letterpaper, margin = 1in}
 \fancypagestyle{main}{
 \fancyhf{}
@@ -116,18 +107,11 @@
 \lhead{\small\sffamily \team}
 \rhead{\small\sffamily Page \thepage }
 }
-\setlength{\parskip}{.15\baselineskip}   % ????????????
-\setcounter{tocdepth}{3}   
-\let\olditemize\itemize
-\renewcommand{\itemize}{%
-  \setlength{\parskip}{-8pt}%  % ?itemize??????????????setlength??par?
-  \let\old@item\item
-  \def\item{%
-    \setlength{\itemsep}{-4pt}%
-    \old@item
-  }%
-  \olditemize
-}
+\setlength{\parskip}{.15\baselineskip}
+\setcounter{tocdepth}{2}
+
+\setlist[itemize]{nosep}
+\setlist[enumerate]{nosep}
 \renewcommand\tableofcontents{%
     \centerline{\normalfont\Large\bfseries\sffamily\contentsname
         \@mkboth{%
@@ -160,13 +144,13 @@
 %   \newpage
 % }
 \def\maketitle{%
-  \setcounter{page}{1}   % ç§ťĺ°ćĺé˘
-  \pagestyle{fancy}      % ĺĺŻç¨éĄľçéĄľč?
+  \setcounter{page}{1}   
+  \pagestyle{fancy}   
   \ifMCM@opt@sheet
     \makesheet
   \fi
-  \thispagestyle{empty}  % éčćčŚéĄľéĄľç ?
-  \pagestyle{fancy}      % ĺçť­éĄľć˘ĺ¤?fancy
+  \thispagestyle{empty}  
+  \pagestyle{fancy}    
   \newpage
 }
 \def\abstractname{Summary}
@@ -177,10 +161,6 @@
   \def\endabstract{\egroup\egroup}%
   \def\make@abstract{%
     \vspace{-0.5\baselineskip}%
-    \begin{center}%
-      \textbf{\abstractname}%
-    \end{center}%
-    \vspace{-0.3\baselineskip}%
     \usebox\@abstract\par
     \vspace{0.3\baselineskip}%
   }
@@ -188,10 +168,6 @@
   \RenewEnviron{abstract}{\xdef\@abstract{\expandonce\BODY}}
   \def\make@abstract{%
     \vspace{-0.5\baselineskip}%
-    \begin{center}%
-      \textbf{\abstractname}%
-    \end{center}%
-    \vspace{-0.3\baselineskip}%
     \@abstract\par
     \vspace{0.3\baselineskip}%
   }
@@ -412,6 +388,18 @@
      {\def\@noitemerr
         {\@latex@warning{Empty `thebibliography' environment}}%
         \endlist}
+\AtBeginDocument{
+  \RequirePackage{hyperref}
+  \ifpdf
+    \hypersetup{hidelinks}
+  \else
+    \ifxetex
+      \hypersetup{hidelinks}
+    \else
+      \hypersetup{dvipdfm, hidelinks}
+    \fi
+  \fi
+}
 \def\AImatter{\label{LastPage}\clearpage\pagestyle{aimain}}
 \endinput
 %%

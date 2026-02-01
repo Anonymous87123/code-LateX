@@ -1,0 +1,119 @@
+
+
+\subsubsection*{Results and Interpretation}
+
+
+
+
+
+
+
+
+\subsection{Sensitivity and Uncertainty Quantification}
+\label{subsec:sensitivity}
+
+To comprehensively evaluate the model robustness, we conduct both local and global sensitivity analyses. The former identifies parameters with the largest impact on TTE, while the latter quantifies interaction effects using variance-based methods.
+
+
+
+
+
+\subsubsection*{Uncertainty Quantification via Monte Carlo Simulation}
+We propagate parameter uncertainties (e.g., \(Q_n \sim \mathcal{N}(\mu_{Q_n}, 0.05\mu_{Q_n})\)) through the model using Monte Carlo simulation (N=1000). The 95\% confidence interval for TTE is derived from the empirical distribution (Figure \ref{fig:tte_uncertainty}), demonstrating the prediction reliability.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.85\textwidth]{TTE Uncertainty Quantification via Monte Carlo Simulation(N=1000).pdf}
+\caption{Empirical distribution of TTE from Monte Carlo simulation (N=1000). The shaded area represents the 95\% confidence interval [6.92, 9.42] hours, demonstrating a relative uncertainty of ±15.3\% around the mean TTE of 8.17 hours. The distribution shows approximately normal characteristics, validating the uncertainty propagation approach.}
+\label{fig:tte_uncertainty}
+\end{figure}
+
+
+This analysis validates the model’s robustness (Problem 3) by demonstrating systematic responses to different input patterns. The results provide actionable insights for users and OS developers, highlighting that TTE uncertainty is dominated by usage randomness rather than parameter variations.
+
+\subsubsection*{Statistical Summary of Probabilistic Predictions}
+
+Table \ref{tbl:probabilistic-results} summarizes the key statistics, highlighting the prediction uncertainty introduced by usage randomness.
+
+\begin{table}[H]
+\centering
+\caption{Probabilistic TTE predictions with 95\% confidence intervals}
+\label{tbl:probabilistic-results}
+\begin{tabular}{lcccc}
+\toprule
+\textbf{Scenario Type} & \textbf{Mean TTE (h)} & \textbf{Std Dev (h)} & \textbf{95\% CI} & \textbf{Voltage Cutoff \%} \\
+\midrule
+Stochastic Mixed & 8.9 & 1.2 & [7.8, 10.1] & 23.5\% \\
+Pure Gaming & 8.2 & 0.3 & [7.9, 8.5] & 41.2\% \\
+Pure Browsing & 10.3 & 0.5 & [9.8, 10.8] & 5.1\% \\
+Deterministic (Original) & 8.17 & - & - & 0\% \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+
+
+
+
+
+% ====== 修改建议：新增 5.6 节拓展方向，整合零散内容 ======
+\subsection{Model Extensions and Future Work}
+\label{subsec:extensions}
+
+The proposed framework can be extended in several directions to enhance practicality:
+
+\subsubsection{Incorporating Battery Aging Dynamics}
+Introduce a health state variable \(SOH(t)\) to model capacity fade:
+\begin{equation}
+\frac{\dd SOH}{\dd t} = -\lambda_c \cdot I(t) - \lambda_t \cdot \exp\left(-\frac{E_a}{RT}\right)
+\end{equation}
+where \(\lambda_c\) and \(\lambda_t\) are cycling/calendar aging coefficients. This allows predicting TTE under long-term degradation.
+
+\subsubsection{Generalization to Other Portable Devices}
+The model structure is applicable to tablets, wearables, etc., by adapting power components. For example, in smartwatches, the display power \(P_{\text{screen}}\) is reduced, but sensor power dominates.
+
+\subsubsection*{Key Findings}
+Table \ref{tbl:sobol_results} summarizes the results. Capacity $Q_n$ accounts for $67\%$ of variance, while internal resistance $R_0$ contributes $18\%$. This decomposition prioritizes parameters for uncertainty reduction.
+
+
+
+\subsection{Results and Analysis}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\begin{figure}[H]    % H表示强制固定在当前位置
+\small
+\begin{subfigure}{0.45\textwidth}
+\centering
+\includegraphics[width=\linewidth]{figures/tte_distribution.pdf}
+\caption{Figure 4a}
+\label{fig:tte-overall-distribution}
+\end{subfigure}
+\begin{subfigure}{0.45\textwidth}
+\centering
+\includegraphics[width=\linewidth]{figures/tte_scenario_comparison.pdf}
+\caption{Figure 4b} 
+\label{fig:tte-scenario-comparison}
+\end{subfigure}
+\end{figure}
