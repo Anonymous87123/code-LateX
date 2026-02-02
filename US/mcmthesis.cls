@@ -67,6 +67,11 @@
 \RequirePackage{paralist}
 \RequirePackage{enumitem}
 \setlist{nosep}
+\RequirePackage{tocloft}
+\setlength{\cftbeforesecskip}{0pt}
+\setlength{\cftbeforesubsecskip}{0pt}
+\setlength{\cftbeforesubsubsecskip}{0pt}
+\setlength{\cftparskip}{0pt}
 \RequirePackage{amsthm, amsfonts}
 \RequirePackage{amsmath, bm}
 \RequirePackage{amssymb, mathrsfs}
@@ -170,19 +175,12 @@
   \long\def\abstract{\bgroup\global\setbox\@abstract\vbox\bgroup\hsize\textwidth\leftskip1cm\rightskip1cm}%
   \def\endabstract{\egroup\egroup}%
   \def\make@abstract{%
-    \begin{center}%
-      \textbf{\abstractname}%
-    \end{center}%
     \usebox\@abstract\par
   }
 \else
   \RenewEnviron{abstract}{\xdef\@abstract{\expandonce\BODY}}
   \def\make@abstract{%
-    \begin{center}%
-      \textbf{\abstractname}%
-    \end{center}%
     \@abstract\par
-    \vspace{\baselineskip}%     % 增加1个空行
   }
 \fi
 \newenvironment{letter}[1]{%
@@ -214,7 +212,7 @@
 \def\makesheet{%
   \thispagestyle{empty}%
   \null%
-  \vspace*{-5pc}%
+  \vspace*{-6pc}%
   \begin{center}
   \begingroup
   \setlength{\parindent}{0pt}
@@ -236,7 +234,7 @@
   \endgroup
   \vskip 5pt%
   \ifMCM@opt@titleinsheet
-    \normalfont \LARGE \@title \par
+    \normalfont \Large \@title \par
   \fi
   \end{center}
 \ifMCM@opt@keywordsinsheet
@@ -246,12 +244,12 @@
   \make@abstract
 \fi}
 \newcommand{\MCM@maketitle}{%
-  %\let\thepage\saved@thepage
-  %\setcounter{page}{1}
-  \begin{center}%
-  \let \footnote \thanks%
-  \pagestyle{fancy}%
-    {\LARGE \@title \par}%
+   %\let\thepage\saved@thepage
+   %\setcounter{page}{1}
+   \begin{center}%
+   \let \footnote \thanks%
+   \pagestyle{fancy}%
+     {\Large \@title \par}%
     \vskip 1.5em%
     {\large
       \lineskip .5em%
@@ -382,26 +380,30 @@
 
 \providecommand\@AIlabel[1]{#1.~}
 
+\newcommand{\AIintrotext}[1]{%
+  \item[]#1%
+}
+
 \newenvironment{ReportAiUse}[1]
      {\centerline{\underline{\large\sffamily\bfseries\reportname}}%
-     \vspace*{-.2em}
-      \@mkboth{\MakeUppercase\refname}{\MakeUppercase\refname}%
-      \list{\@AIlabel{\@arabic\c@enumiv}}%
-           {\settowidth\labelwidth{\@AIlabel{#1}}%
-            \leftmargin\labelwidth
-            \advance\leftmargin\labelsep
-            \@openbib@code
-            \usecounter{enumiv}%
-            \let\p@enumiv\@empty
-            \renewcommand\theenumiv{\@arabic\c@enumiv}}%
-      \sloppy
-      \clubpenalty4000
-      \@clubpenalty \clubpenalty
-      \widowpenalty4000%
-      \sfcode`\.\@m}
+      \vspace*{-.2em}
+       \@mkboth{\MakeUppercase\refname}{\MakeUppercase\refname}%
+       \list{\@AIlabel{\@arabic\c@enumiv}}%
+            {\settowidth\labelwidth{\@AIlabel{#1}}%
+             \leftmargin\labelwidth
+             \advance\leftmargin\labelsep
+             \@openbib@code
+             \usecounter{enumiv}%
+             \let\p@enumiv\@empty
+             \renewcommand\theenumiv{\@arabic\c@enumiv}}%
+       \sloppy
+       \clubpenalty4000
+       \@clubpenalty \clubpenalty
+       \widowpenalty4000%
+       \sfcode`\.\@m}
      {\def\@noitemerr
        {\@latex@warning{Empty `thebibliography' environment}}%
-      \endlist}
+       \endlist}
 \def\AImatter{\label{LastPage}\clearpage\pagestyle{aimain}}
 \endinput
 %% 
