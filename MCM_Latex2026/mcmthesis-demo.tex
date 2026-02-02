@@ -111,7 +111,7 @@ Research on modeling smartphone battery drain has evolved along two primary traj
 \begin{figure}[H]    % H表示强制固定在当前位置
 \small
 \centering
-\includegraphics[width=0.8\textwidth]{figures/fig1.png}
+\includegraphics[width=0.8\textwidth]{figures/fig1.pdf}
 \caption{Literature Review} \label{fig1}
 \end{figure}
 
@@ -146,482 +146,66 @@ In addressing real-world problems that inherently involve numerous complex varia
 
 \subsection{Notations}
 
-The key mathematical notations used in this paper are listed in Table \ref{tbl1}. 
 
-%% 三线表
-\begin{table}[H]
-\small
-\centering
-\caption{Notations}
-\label{tbl1}
-\begin{tabular}{ c c l }
-\toprule
-\textbf{Symbol} & \textbf{Unit} & \textbf{Definition} \\
-\midrule
-$Q_{ref}$ & mAh & Typical capacity of modern flagship smartphones \\
-$Q_{eff}$ & mAh & The effective available capacity of the battery\\
-$V_{nom}$ & V & Standard operating voltage platform for lithium-ion batteries \\
-$V_{min}$ & V & Voltage at which the protection circuit cuts off the power  \\
-$V_{max}$ & V & Voltage at 100\% State of Charge \\
-$R_{int}$ & $\Omega $ & Internal resistance, increases sharply with decreasing temperature \\
-$m_{bat}$ & kg & Battery mass, used for thermal capacity calculation \\
-$C_p$ & J/(kg$\cdot$K) & Average specific heat capacity of lithium-ion battery materials \\
-$h_{eff}$ & W/K & Effective heat transfer coefficient representing heat dissipation capability \\
-$\eta$ & - & Coulombic efficiency, decreases with aging or at low temperatures \\
-\bottomrule
-\end{tabular}
-\vspace{2pt} % 稍微调整间距
-\begin{flushleft} \small
-$^{*}$ There are some variables that are not listed here and will be discussed in detail in each section.
-\end{flushleft}
-\end{table}
 
-\subsection{Data Collecting and Processing}
 
-To fulfill the problem's requirement of developing a physically consistent continuous-time model, our approach prioritizes data for "parameter estimation and validation", not as a substitute for mechanistic reasoning. All data utilized are from well-documented, openly licensed sources, ensuring reproducibility and transparency. This section details our data collection strategy and processing pipeline, which is designed to bridge the gap between device-level power consumption and fundamental battery electrochemistry.
 
-\subsubsection*{Data Sources and Rationale}
 
-Our modeling framework necessitates two primary categories of data, meticulously selected to satisfy the problem's dual focus on usage patterns and battery physics.
 
-\textbf{Source A: The AndroWatts Dataset (Zenodo)}:This dataset is instrumental in defining realistic, time-varying load currents \(I(t)\) for our differential equations, directly addressing the problem's emphasis on factors like screen usage, processor load, and network connections.
 
-\begin{itemize}
-    \item provides aggregated metrics from 1,000 stimulation tests on mobile devices. 
-    \item captures the dynamic interplay between device state variables (e.g., screen brightness, network activity, temperature, SOC, CPU/GPU frequency) and the power consumption of individual hardware components. 
-    \item source:https://zenodo.org/records/14314943
-    \item DOI:10.5281/zenodo.14314943
-    \item license:CC BY 4.0~(Creative Commons Attribution 4.0)
-\end{itemize}
 
-\textbf{Source B: The Battery Degradation Datasets (Mendeley Data)}: This directly supports the problem's requirement to consider how "battery aging reduces effective capacity".
 
-\begin{itemize}
-\item contains cycling data for two distinct lithium-ion battery types.
-\item provides the empirical foundation for extracting the Open-Circuit Voltage (OCV) vs. State of Charge (SOC) relationship, \(V_{ocv}(\SOC)\), and for analyzing the effects of aging (State of Health, SOH) on effective capacity \(Q_{eff}\) and internal resistance.
-\item source:https://data.mendeley.com/datasets/v8k6bsr6tf/1
-\item DOI:10.17632/v8k6bsr6tf.1
-\item license:CC BY 4.0
-\end{itemize}
 
-\subsubsection*{Data Preprocessing and Feature Engineering}
 
-A rigorous preprocessing pipeline was implemented to transform raw data into features compatible with our electro-thermal model.
 
-\textbf{AndroWatts Data Processing:}
-The core file was processed as follows:
 
-\begin{itemize}
-    \item \textbf{Unit Standardization:} Critical measurements were converted to standard scientific units (e.g., temperature from milliCelsius to Celsius, battery percentage to a fractional SOC).
-    \item \textbf{Load Current Derivation:} The discharge current \(I(t)\) was calculated from the provided battery discharge rate, serving as a direct input to the SOC state equation.
-    \item \textbf{Total Power Calculation:} Power consumption from all individual components (display, CPU, WiFi, etc.) was summed to obtain the total system power draw, \(P_{total}\).
-\end{itemize}
 
-\textbf{Battery Electrochemical Data Processing:}
-Data from the Excel files were processed to extract key battery parameters:
 
-\begin{itemize}
-    \item \textbf{Capacity and SOH Calculation:} For each charge-discharge cycle, the maximum capacity \(Q_{full}\) was identified. The State of Health (SOH) was calculated as the ratio of the current cycle's capacity to the initial capacity.
-    \item \textbf{Representative Aging States:} Six representative SOH levels were selected (from "New" to "End-of-Life") to model the impact of battery degradation over time.
-    \item \textbf{OCV-SOC Relationship Fitting:} For each representative battery state, the voltage-capacity data from the constant-current charging phase was used to fit a fifth-order polynomial, \(\displaystyle V_{ocv}(\SOC) = \sum_{i=0}^{5} c_i \SOC^i\), yielding the coefficients used in terminal voltage equation (5).
-\end{itemize}
 
-\subsection{Defining Speciﬁc Usage Scenarios}
 
-\subsubsection*{Rationale and Methodology for Scenario Definition}
 
-To derive realistic Time-to-Empty (TTE) predictions, we define a set of characteristic usage scenarios grounded in data from the AndroWatts dataset and established literature. Our methodology employs k-means clustering on key power metrics—screen, CPU, network, GPS, background processes, and total system power—to identify distinct behavioral patterns. For each cluster, we extract representative parameters for all power-consuming components and validate the resulting scenarios against published power profiling studies to ensure physical consistency. This data-driven approach ensures our scenarios are both empirically grounded and representative of real user behavior.
-
-Five scenarios are defined, ordered by increasing power demand:
-\begin{itemize}
-\item Standby Mode​ (screen off, minimal background activity);
-\item Web Browsing​ (moderate screen brightness, periodic network requests, medium CPU);
-\item Video Streaming​ (high brightness, continuous playback, display-dominated load); 
-\item Gaming​ (maximum CPU/GPU, high brightness, intensive 3D rendering);
-\item Navigation​ (continuous GPS, moderate screen and CPU usage)
-\end{itemize}
-Table \ref{tbl:scenario_power} provides the detailed power decomposition for each scenario under standard conditions (200 nits, 25$^{\circ}$C).
-
-\begin{table}[H]
-\small
-\centering
-\caption{Power consumption decomposition for characteristic usage scenarios (units: Watts)}
-\label{tbl:scenario_power}
-\begin{tabular}{lcccccc}
-\toprule
-\textbf{Scenario} & \textbf{Display} & \textbf{CPU/GPU} & \textbf{Network} & \textbf{GPS} & \textbf{Background} & \textbf{Total} \\
-\midrule
-Standby          & 0.00 & 0.05 & 0.02 & 0.00 & 0.08 & 0.15 \\
-Web Browsing     & 0.36 & 0.23 & 0.15 & 0.00 & 0.10 & 0.84 \\
-Video Streaming  & 0.64 & 0.50 & 0.25 & 0.00 & 0.10 & 1.49 \\
-Gaming          & 1.00 & 1.35 & 0.15 & 0.00 & 0.10 & 2.60 \\
-Navigation       & 0.49 & 0.30 & 0.35 & 0.30 & 0.10 & 1.54 \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-\subsubsection*{Scenario Integration with Battery Model}
-
-These scenario definitions translate discrete usage patterns into specific power consumption profiles $P_{\text{total}}(s, t)$ (where $s$ denotes the scenario type), which serve as direct input to our coupled ODE system. This approach enables the modeling of realistic, non-uniform workloads and facilitates several critical analyses. It allows for systematic comparative analysis of battery performance across activities and sensitivity analysis to isolate the impact of individual components (e.g., screen vs. CPU). Furthermore, the framework provides a foundation for personalized predictions by accommodating user-specific habit profiles.
-
-In simulations, each scenario is implemented with constant power characteristics for simplicity, though the model structure supports time-varying $P_{\text{total}}(t)$ for advanced studies. This methodology effectively bridges component-level power data with the electrochemical battery model, enabling realistic, scenario-specific predictions that meet the problem's requirement for multi-condition analysis.
-
-\section{Model I~:~A differential equation system}
-
-Lithium-ion batteries under dynamic loads exhibit complex electrochemical behaviors. The immediate voltage drop is governed by ohmic losses, while slower polarization dynamics arise from charge transfer limitations and ion diffusion. These processes are strongly temperature-dependent due to the Arrhenius kinetics of electrochemical reactions.
-
-Our modeling approach therefore recognizes that a battery's usable energy is determined not by State of Charge (SOC) alone, but by its complex interaction with internal resistance, temperature, and load current. To capture this, we employ an Equivalent Circuit Model (ECM) augmented with a thermal model. The ECM uses a resistor-capacitor (RC) network to represent the polarization dynamics, coupled with equations describing SOC evolution and heat transfer.
-
-This creates a critical feedback loop: high current increases temperature via Joule heating, which in turn alters internal resistance and effective capacity, thereby affecting voltage and available energy.Therefore, our integrated model comprises four key equations that form a system of coupled ordinary differential equations (ODEs), describing the evolution of :
-\begin{itemize}
-\item the battery's energy state (SOC).
-\item its internal transient voltage response (Polarization Voltage).
-\item its operating temperature.
-\item the Output Equation then synthesizes these states to determine the measurable terminal voltage, which dictates when the battery is considered "empty" (reaches the cutoff voltage).
-\end{itemize}
-
-\subsection{Construct an equivalent circuit model(ECM)}
-
-\subsubsection{\SOC ~State Equation: Fundamental Energy Balance}
-The \SOC represents the fundamental energy storage state of the battery, analogous to the fuel level in a tank. However, unlike a simple fuel gauge, the relationship between SOC and available energy is not linear due to voltage variations and internal losses.
-\begin{equation}
-\SOC(t)=\frac{Q(t)}{C}\times 100\% \label{eq1}
-\end{equation}
-The rate of SOC change is governed by the discharge current and Coulombic efficiency, which accounts for energy losses during charge transfer:
-\begin{equation}
-\frac{\dd \SOC(t)}{\dd t}=-\frac{\eta(T)}{Q_{\mathrm{total}}}I(t)\label{eq2}
-\end{equation}
-The temperature dependence of $\eta(T)$ reflects the Arrhenius behavior of electrochemical reaction rates, where lower temperatures reduce ion mobility and increase internal resistance.
-
-\subsubsection{Open-Circuit Voltage Modeling and Electrochemical Basis}
-
-The open-circuit voltage (OCV) is a fundamental electrochemical property of lithium-ion batteries, representing the equilibrium electrode potential when no external load is applied. It serves as a macroscopic manifestation of the battery's chemical potential and provides a direct correlation with the state of charge (SOC). The OCV-SOC relationship is intrinsically nonlinear due to the phase transition behavior of electrode materials and the thermodynamic properties of the electrochemical system.
-
-According to the Nernst equation and consistent with experimental data fitting, the functional relationship between OCV and SOC (denoted as $\xi \in [0,1]$) can be expressed as:
-\begin{equation}
-V_{\text{ocv}}(\xi) = \alpha_0 + \alpha_1 \xi + \alpha_2 \exp\left[\beta_1 (\xi - \xi_1)\right] - \alpha_3 \exp\left[-\beta_2 (\xi - \xi_2)\right]
-\label{eq:ocv_soc}
-\end{equation}
-where $\alpha_i$, $\beta_i$, and $\xi_i$ are fitting parameters determined by the specific battery chemistry. For a typical 18650 lithium-ion battery (e.g., LG HG2), the parameter values are approximately: $\alpha_0 = 3.2\text{V}$, $\alpha_1 = 0.6\text{V}$, $\alpha_2 = 0.1\text{V}$, $\beta_1 = 10$, and $\xi_1 = 0.1$. 
-
-The exponential terms in Equation \ref{eq:ocv_soc} capture the rapid voltage changes that occur when SOC approaches the extremes ($\xi \to 0$ or $\xi \to 1$), which corresponds to phase transformation processes in the electrode materials. This modeling approach provides a physiochemically consistent representation of the battery's equilibrium characteristics, forming the foundation for accurate terminal voltage prediction under load conditions.
-
-\subsubsection{Polarization Dynamics: Capturing Transient Response}
-The polarization voltage $V_p(t)$ captures the battery's transient response to load changes, representing the voltage deviation from equilibrium due to concentration polarization and activation polarization. This phenomenon is particularly important for understanding why battery voltage recovers after load removal.
-\begin{equation}
-\frac{\dd V_p(t)}{\dd t}=-\frac{V_p(t)}{R_pC_p}+\frac{I(t)}{C_p}\label{eq3}
-\end{equation}
-The time constant $\tau = R_pC_p$ characterizes how quickly the battery responds to load changes, with larger time constants indicating slower voltage recovery.
-
-\subsection{Thermal model (temperature change equation)}
-
-The temperature variation of the battery is determined by the balance between joule heating (generated by internal resistance) and heat dissipation (convection). 
-\begin{equation}
-m c_{p} \frac{\dd T(t)}{\dd t}=I(t)^{2} R_{\text {internal }}(\SOC, T)-h A\left(T(t)-T_{\text {amb }}\right)\label{eq4}
-\end{equation}
-\begin{itemize}
-\item  $m$ represents the mass of the battery (in units of kg).
-\item  $c_{p}$ is the specific heat capacity of the battery (in units of J/(kg$\cdot$K)), and the original symbol $C_{h}$ in the document has been standardized to the standard symbol $c_{p}$.
-\item $T(t)$ represents the temperature of the battery (in units of K or $^\circ$C).
-\item $R_{\text {internal }}(\SOC, T)$ is the internal resistance related to the state of charge (SOC) and temperature (in units of $\Omega$).
-\item  $h$ is the heat transfer coefficient (in units of W/(m$^2$$\cdot$K)).
-\item $A$ is the surface area of the battery (in units of m$^2$).
-\item $T_{\text {amb }}$ is the ambient temperature (in units of K).
-\end{itemize}
-
-\subsection{Terminal voltage output equation}
-The terminal voltage is the combination of open-circuit voltage, polarization voltage and ohmic voltage drop.
-\begin{equation}
-V_{\mathrm{term}}(t) = V_{ocv}(\SOC) - V_p(t) - I(t)R_0(T)\label{eq5}
-\end{equation}
-\begin{itemize}
-\item $V_{\mathrm{term}}(t)$ represents the terminal voltage at time $t$ (unit: V). 
-\item $V_{ocv}(SOC)$ represents the open-circuit voltage related to SOC (unit: V). 
-\item $V_p(t)$ represents the polarization voltage (in units of volts). 
-\item $R_0(T)$ represents the temperature-dependent ohmic internal resistance (unit: $\Omega$). 
-\item $I(t)$ represents the load current (in units of A).
-\end{itemize}
-
-The differential equation model (equivalent circuit model + thermal coupling model) for the power consumption of smartphone batteries has been established. Figure \ref{fig2} is a simple flowchart used to illustrate the calculation relationships of these physical quantities, and to clearly indicate which are known quantities, which are unknown quantities, and what the goal is.
 
 \begin{figure}[H]    % H表示强制固定在当前位置
 \small
+\begin{subfigure}{0.45\textwidth}
 \centering
-\includegraphics[width=1\textwidth]{figures/fig2.png}
-\caption{Calculation procedure} \label{fig2}
+\includegraphics[width=\linewidth]{figures/tte_distribution.pdf}
+\caption{Figure 4a}
+\label{fig:tte-overall-distribution}
+\end{subfigure}
+\begin{subfigure}{0.45\textwidth}
+\centering
+\includegraphics[width=\linewidth]{figures/tte_scenario_comparison.pdf}
+\caption{Figure 4b} 
+\label{fig:tte-scenario-comparison}
+\end{subfigure}
 \end{figure}
 
-\subsection{Model Solution Methodology}
-
-\subsubsection*{Analytical Solution Framework}
-
-Although the coupled system of equations (2)-(5) is nonlinear and cannot be solved in closed form for arbitrary input conditions, we can express the formal solution structure that guides our numerical implementation.
-
-The system can be written in vector form as:
-\begin{equation}
-\frac{\dd\bm{X}(t)}{\dd t} = \bm{F}(\bm{X}(t), I(t), T_{\text{amb}})
-\label{eq6}
-\end{equation}
-where $\bm{X}(t) = [\text{SOC}(t), V_p(t), T(t)]^{\bm{T}}$ is the state vector, and $\bm{F}$ represents the nonlinear coupling defined by equations (2)-(4).
-
-The formal solution can be expressed using the matrix exponential operator for the linear components and integral forms for the nonlinear couplings:
-\begin{equation}
-\bm{X}(t) = e^{\bm{A}t}\bm{X}(0) + \int_0^t e^{\bm{A}(t-\tau)}\bm{B}(I(\tau), T(\tau))\dd\tau
-\label{eq7}
-\end{equation}
-where $\bm{A}$ captures the linear dynamics and $\bm{B}$ contains the nonlinear and input-dependent terms.
-
-\subsubsection*{Numerical Solution Implementation}
-\label{rk}
-For practical computation, we employed the fourth-order Runge-Kutta method (RK4), which provides an excellent balance between accuracy and computational efficiency for stiff systems like battery dynamics. The numerical procedure is as follows:
-
-\begin{itemize}
-\item \textbf{Initialization}: Set initial conditions: $\text{SOC}(0) = \text{SOC}_0$, $V_p(0) = 0$, $T(0) = T_{\text{amb}}$
-\item \textbf{Time Discretization}: Choose time step $\Delta t$ (typically 1-10 seconds for smartphone battery simulations)
-\item \textbf{RK4 Iteration}: For each time step $t_n$:
-\begin{equation}
-\begin{aligned}
-k_1 &= \Delta t \cdot \bm{F}(\bm{X}_n, I(t_n), T_{\text{amb}}) \\
-k_2 &= \Delta t \cdot \bm{F}(\bm{X}_n + k_1/2, I(t_n + \Delta t/2), T_{\text{amb}}) \\
-k_3 &= \Delta t \cdot \bm{F}(\bm{X}_n + k_2/2, I(t_n + \Delta t/2), T_{\text{amb}}) \\
-k_4 &= \Delta t \cdot \bm{F}(\bm{X}_n + k_3, I(t_n + \Delta t), T_{\text{amb}}) \\
-\bm{X}_{n+1} &= \bm{X}_n + \frac{k_1 + 2k_2 + 2k_3 + k_4}{6}
-\end{aligned}
-\label{eq:rk4-full}
-\end{equation}
-\item \textbf{Terminal Voltage Calculation}: Compute $V_{\text{term}}(t_{n+1})$ using equation (5)
-\item \textbf{Stopping Criterion}: If $V_{\text{term}}(t_{n+1}) \leq V_{\min}$, record $t_{n+1}$ as Time-to-Empty (TTE)
-\end{itemize}
-
-\subsubsection*{Parameter Estimation and Validation}
-
-The model parameters are estimated using a combination of manufacturer specifications, experimental data, and literature values. Key parameter relationships include:
-
-\begin{itemize}
-\item \textbf{OCV-SOC Relationship}: $V_{ocv}(\text{SOC})$ is characterized by polynomial fitting of experimental data
-\item \textbf{Temperature Dependencies}: 
-\begin{align*}
-R_0(T) &= R_{0,ref} \cdot \exp\left[\alpha\left(\frac{1}{T} - \frac{1}{T_{ref}}\right)\right] \\
-\eta(T) &= \eta_{ref} \cdot \left[1 - \beta(T - T_{ref})^2\right]
-\end{align*}
-\item \textbf{Internal Resistance Model}: $R_{\text{internal}}(\text{SOC}, T)$ incorporates SOC and temperature effects
-\end{itemize}
-
-The model validation against experimental data shows a mean absolute error of less than 3\% in SOC prediction and 5\% in TTE estimation across various usage scenarios.
-
-\section{Model II~:~Time-to-Empty Prediction}
-
-\subsection{Theoretical Framework and Methodology}
-
-\subsubsection*{Problem Formulation and Mathematical Foundation}
-
-The Time-to-Empty (TTE) prediction problem requires solving the initial value problem defined by the coupled ODE system from Model I under specific usage scenarios. Formally, we define TTE as the earliest time at which either of two critical conditions is met: the State of Charge (SOC) drops below a cutoff threshold or the terminal voltage falls below the minimum operating voltage of the device. This dual-criterion termination condition is essential for modeling real-world battery depletion, including the "sudden shutdown" phenomenon under high loads.
-
-The mathematical definition of TTE is given by:
-\begin{equation}
-\text{TTE} = \inf\left\{t > 0 : \text{SOC}(t) \leq \text{SOC}_{\text{cutoff}} = 0.05 ~ \text{or} ~V_{\text{term}}(t) \leq V_{\min} = 3.0\text{V}\right\}
-\label{eq:tte_definition}
-\end{equation}
-
-The voltage cutoff condition \( V_{\text{term}}(t) \leq V_{\min} \) is critical for capturing scenarios where high current draws (e.g., during gaming or navigation) cause rapid Ohmic losses (\(I(t) R_0(T)\)) and polarization effects, leading to a terminal voltage drop below the power management IC's (PMIC) operational limit even at moderate SOC levels (e.g., 10–20\%). This ensures the model accurately reflects nonlinear battery behavior under heavy loads, beyond a simple SOC-based depletion model.
-
-\begin{itemize}
-\item \textbf{Physical Basis (Peukert Effect):} Under high-current loads (e.g., gaming, navigation), the terminal voltage can drop below the minimum operating voltage ($V_{\min}$) required by the smartphone's power management IC (PMIC) due to significant Ohmic losses ($I \times R_0$) and rapid polarization, even when the SOC is still appreciable (e.g., 10\%-20\%). This accurately models the "sudden shutdown" phenomenon experienced by users.
-
-\item \textbf{Device Protection Mechanism:} The value $V_{\min} = 3.0\text{V}$ represents the typical voltage threshold at which the device's protection circuit forcibly cuts off power to prevent over-discharge and irreversible damage to the battery, making it a more realistic and safety-aware endpoint than SOC alone.
-\end{itemize}
-According to Eq.\ref{eq6}, the SOC(t) in Eq.\ref{eq:tte_definition} is governed by the coupled system:
-\begin{equation}
-\frac{\dd\bm{X}(t)}{\dd t} = \bm{F}(\bm{X}(t), I(t), T_{\text{amb}}) ~~,~~\bm{X}(0) = [\text{SOC}_0, 0, T_{\text{amb}}]^{\bm{T}}
-\end{equation}
-
-\subsubsection{Multi-Scenario Power Decomposition Framework}
-
-We decompose the total power consumption into five hardware components based on the smartphone power model:
-\begin{equation}
-P_{\text{total}}(t) = P_{\text{screen}}(B) + P_{\text{CPU}}(f,u) + P_{\text{network}}(N) + P_{\text{GPS}}(G) + P_{\text{background}}
-\end{equation}
-where each component follows established physical relationships:
-
-\begin{itemize}
-\item Screen power: $P_{\text{screen}}(B) = P_{d,\max}(B/B_{\max})^\gamma$
-\item CPU power: $\displaystyle P_{\text{CPU}}(f,u) = k_c\left(\frac{f}{f_{\max}}\right)^2 u\left[1 + \alpha_T\left(T-T_{\text{ref}}\right)\right]$
-\item Network power: State-dependent model based on connection type
-\item GPS power: Binary on/off state
-\item Background power: Constant baseline consumption
-\end{itemize}
-
-However,real-world usage patterns are dynamic and unpredictable, not fixed scenarios. To capture this inherent randomness, we employed a Continuous-Time Markov Chain (CTMC) to model user behavior transitions between different power states.
-
-\paragraph{State Space Definition}
-We define three representative usage states based on power consumption levels:
-\begin{itemize}
-\item \textbf{State 1 (Idle)}: $P_{\text{total}} = 0.15\text{W}$ (screen off, baseline activity)
-\item \textbf{State 2 (Browsing)}: $P_{\text{total}} = 0.84\text{W}$ (medium load: web, social media)
-\item \textbf{State 3 (Gaming)}: $P_{\text{total}} = 2.60\text{W}$ (high load: intensive applications)
-\end{itemize}
-
-\textbf{Stochastic Power Process Generation}:For each Monte Carlo sample, we generate a state sequence $s(t)$ using the CTMC. The power consumption becomes a stochastic process:
-\begin{equation}
-P_{\text{total}}(t) = P_{\text{total}}(s(t)) + \varepsilon(t),  \varepsilon(t) \sim \mathcal{N}(0, \sigma^2)
-\label{eq:stochastic-power}
-\end{equation}
-where $\sigma = 0.1P_{\text{total}}(s(t))$ models random fluctuations in usage intensity.
-
-\textbf{Transition Rate Matrix}:The state transitions are governed by the intensity matrix as follows.
-\begin{equation}
-Q = \begin{bmatrix}
--0.8 & 0.5 & 0.3 \\
-0.4 & -1.2 & 0.8 \\ 
-0.2 & 0.3 & -0.5
-\end{bmatrix} \ \text{(hour}^{-1}\text{)}
-\label{eq:ctmc-matrix}
-\end{equation}
-where $Q_{ij}$ represents the transition rate from state $i$ to state $j$. For example, $Q_{12} = 0.5$ means from Idle to Browsing occurs with rate 0.5 per hour.
-
-\subsection{Monte Carlo Simulation with Stochastic Processes}
-
-Our Monte Carlo framework integrates two sources of uncertainty:
-
-\begin{itemize}
-\item parameter uncertainty (e.g., capacity and resistance variations)
-\item usage pattern uncertainty (via CTMC)
-\end{itemize}
-
-For each of the \( N = 1000 \) simulations, we first sample parameters from their distributions, then generate a stochastic power profile \( P_{\text{total}}(t) \) using the CTMC state sequence. This approach captures both physical and behavioral randomness, providing a comprehensive uncertainty quantification.
-
-\subsubsection*{Continuous-Time Markov Chain (CTMC) for Usage Patterns}
-To model the stochastic nature of user behavior, we employ a Continuous-Time Markov Chain (CTMC) with three states: Idle, Browsing, and Gaming. The state transitions are governed by the intensity matrix(\ref{eq:ctmc-matrix}), where \( Q_{ij} \) represents the transition rate from state \( i \) to state \( j \). The state sequence \( s(t) \) is generated using the Gillespie algorithm (Algorithm 2 in Appendix).
-
-The power consumption \( P_{\text{total}}(t) \) is then defined as \( P_{\text{total}}(s(t)) + \varepsilon(t) \), where \( \varepsilon(t) \sim \mathcal{N}(0, \sigma^2) \) models random fluctuations.
-
-\subsubsection*{Enhanced Simulation Framework}
-
-We implement a comprehensive Monte Carlo framework that integrates the CTMC usage model with the battery ODE system:
-\begin{algorithm}
-\caption{Monte Carlo Simulation for Battery Discharge}
-\label{alg:monte_carlo}
-\begin{algorithmic}[1]
-\STATE \textbf{Initialize:}
-\STATE Set number of simulations $N \gets 1000$
-\STATE Set initial system state $s(0) \gets \text{Idle}$
-\STATE Set initial state vector $\bm{X}_0 \gets [\mathrm{SOC}_0, 0, T_{\mathrm{amb}}]^T$
-\STATE Set maximum simulation time $T_{\max}$
-\STATE Set time step $\Delta t$
-\FOR{$k = 1$ to $N$}
-    \STATE Generate state sequence $s^{(k)}(t)$ using CTMC (Algorithm 2 in Appendix). 
-    \STATE Compute $P_{\text{total}}^{(k)}(t)$ from Eq. (13).
-    \STATE Initialize $t \gets 0$
-    \WHILE{$t \leq T_{\max}$}
-        \STATE Generate $s^{(k)}(t + \Delta t)$ from CTMC using transition rate matrix $Q$ and current state $s^{(k)}(t)$
-        \STATE $t \gets t + \Delta t$
-    \ENDWHILE
-    \STATE Apply Eq. \eqref{eq:stochastic-power} to compute $P_{\text{total}}^{(k)}(t)$ for all $t$
-    \STATE $t \gets 0$
-    \WHILE{$\mathrm{SOC}(t) > 0.05$ \AND $V_{\mathrm{term}}(t) > 3.0\text{V}$ \AND $t \leq T_{\max}$}
-        \STATE Solve for current $I^{(k)}(t)$ from implicit equation: $I = \dfrac{P_{\text{total}}^{(k)}(t)}{V_{\text{term}}(\bm{X}, I)}$
-        \STATE Advance state vector $\bm{X}$ using RK4 method (Eq. \eqref{eq:rk4-full})
-        \STATE $t \gets t + \Delta t$
-    \ENDWHILE
-    \STATE $TTE^{(k)} \gets \min\{t: \mathrm{SOC}(t) \leq 0.05 \ \mathbf{or} \ V_{\mathrm{term}}(t) \leq 3.0\mathrm{V} \ \mathbf{or} \ t > T_{\max}\}$
-\ENDFOR
-\STATE Compute mean TTE, confidence intervals, and other statistics from $\{TTE^{(k)}\}_{k=1}^N$
-\end{algorithmic}
-\end{algorithm}
-\subsubsection*{Implementation Details}
-
-The CTMC simulation uses the Gillespie algorithm for efficient state trajectory generation. The random number generation employs Mersenne Twister for reproducibility, with seeds stored for result verification.
-
-We employ adaptive time stepping: $\Delta t = 1\text{s}$ during rapid transitions (state changes or high current), increasing to $10\text{s}$ during quasi-steady states for computational efficiency.
-
-\subsection{Parameter Perturbation Experiments}
-
-\subsubsection*{Experimental Design}
-The parameters include battery capacity $Q_n$, internal resistance $R_0$, and power coefficients $k_d$, $k_c$. For each parameter $\theta_i$, we compute the normalized sensitivity index:
-\begin{equation}
-S_i = \frac{\theta_i}{TTE} \cdot \frac{\partial TTE}{\partial \theta_i}
-\end{equation}
-The perturbation is applied as $\theta_i' = \theta_i (1 + \delta)$, with $\delta = \pm 0.2$.
-
-\subsection{Variance Decomposition Analysis}
-
-To decompose the variance of TTE into contributions from each parameter, we employ Sobol indices. This global sensitivity analysis quantifies the main and interaction effects.
-
-\subsubsection*{Sobol Indices Calculation}
-
-The first-order Sobol index $S_i$ measures the fraction of variance attributed to parameter $X_i$:
-\begin{equation}
-S_i = \frac{\mathbb{V}[\mathbb{E}[TTE \mid X_i]]}{\mathbb{V}[TTE]}
-\end{equation}
-The total-order index $S_{Ti}$ includes interaction effects. We compute these indices using Saltelli's sampling method with $N=1000$ samples.
-
-We present TTE predictions under five scenarios (Table \ref{tbl:tte_results}). The results are consistent with empirical data, with a mean error of <5\%. The parameter perturbation and variance decomposition provide insights into uncertainty sources. The Gaming scenario shows the shortest TTE (8.17 hours), while Standby provides the longest duration (12.81 hours), consistent with expectations based on power consumption levels.
-
-\begin{table}[H]
-\small
-\centering
-\caption{Time-to-Empty (TTE) predictions for different scenarios and initial SOC levels (hours, 25$^{\circ}$C)}
-\label{tbl:tte_results}
-\begin{tabular}{lcccc}
-\toprule
-\textbf{Scenario} & \textbf{100\% SOC} & \textbf{75\% SOC} & \textbf{50\% SOC} & \textbf{25\% SOC} \\
-\midrule
-Standby          & 12.81 & 9.61 & 6.41 & 3.20 \\
-Browsing         & 10.28 & 7.71 & 5.14 & 2.57 \\
-Video Streaming  & 9.27  & 6.95 & 4.63 & 2.32 \\
-Gaming           & 8.17  & 6.13 & 4.09 & 2.04 \\
-Navigation       & 9.20  & 6.90 & 4.60 & 2.30 \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-\subsubsection*{TTE Distribution Analysis: Global and Scenario-wise Comparisons}
-
-Figure \ref{fig:tte-overall-distribution} presents the probability distribution of Time-to-Empty (TTE) from 1000 Monte Carlo simulations, characterizing the prediction uncertainty under stochastic usage patterns. The distribution is approximately normal (skewness = 0.32) with a mean TTE of 8.9 hours and a standard deviation of 1.2 hours. The 95\% confidence interval [7.8, 10.1] hours quantifies the inherent uncertainty, fulfilling Problem 2's requirement for probabilistic prediction.
-
-Figure \ref{fig:tte-scenario-comparison} compares TTE distributions across the five usage scenarios using violin plots. Key observations include:
-\begin{itemize}
-\item \textbf{Standby}: Narrow distribution (low variance) due to stable low power consumption.
-\item \textbf{Gaming}: Right-skewed distribution, reflecting intensive bursts that shorten battery life.
-\item \textbf{Navigation}: Wide distribution (high variance) due to mixed components (GPS, network, display).
-\end{itemize}
-The high-power scenarios (e.g., Gaming) exhibit smaller variance, making TTE more predictable, while low-power scenarios (e.g., Standby) show larger relative uncertainty.
 
 
 
-\subsubsection*{Uncertainty Quantification via Monte Carlo Simulation}
-We propagate parameter uncertainties (e.g., \(Q_n \sim \mathcal{N}(\mu_{Q_n}, 0.05\mu_{Q_n})\)) through the model using Monte Carlo simulation (N=1000). The 95\% confidence interval for TTE is derived from the empirical distribution (Figure \ref{fig:tte_uncertainty}), demonstrating the prediction reliability.
+
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.85\textwidth]{tte_uncertainty_quantification_monte_carlo.pdf}
-\caption{Empirical distribution of TTE from Monte Carlo simulation (N=1000). The shaded area represents the 95\% confidence interval [6.92, 9.42] hours, demonstrating a relative uncertainty of ±15.3\% around the mean TTE of 8.17 hours. The distribution shows approximately normal characteristics, validating the uncertainty propagation approach.}
-\label{fig:tte_uncertainty}
-\end{figure}
-
-
-This analysis validates the model’s robustness (Problem 3) by demonstrating systematic responses to different input patterns. The results provide actionable insights for users and OS developers, highlighting that TTE uncertainty is dominated by usage randomness rather than parameter variations.
-
-\subsubsection*{Statistical Summary of Probabilistic Predictions}
-
-Table \ref{tbl:probabilistic-results} summarizes the key statistics, highlighting the prediction uncertainty introduced by usage randomness.
-
-\begin{table}[H]
+% 左图：TTE分布
+\begin{minipage}{0.45\textwidth}
 \centering
-\caption{Probabilistic TTE predictions with 95\% confidence intervals}
-\label{tbl:probabilistic-results}
-\begin{tabular}{lcccc}
-\toprule
-\textbf{Scenario Type} & \textbf{Mean TTE (h)} & \textbf{Std Dev (h)} & \textbf{95\% CI} & \textbf{Voltage Cutoff \%} \\
-\midrule
-Stochastic Mixed & 8.9 & 1.2 & [7.8, 10.1] & 23.5\% \\
-Pure Gaming & 8.2 & 0.3 & [7.9, 8.5] & 41.2\% \\
-Pure Browsing & 10.3 & 0.5 & [9.8, 10.8] & 5.1\% \\
-Deterministic (Original) & 8.17 & - & - & 0\% \\
-\bottomrule
-\end{tabular}
-\end{table}
-
+\includegraphics[width=\linewidth]{figures/tte_distribution.pdf}
+\captionof{figure}{TTE distribution across all scenarios}
+\label{fig:tte-distribution}
+\end{minipage}
+\hfill
+% 右图：场景比较
+\begin{minipage}{0.45\textwidth}
+\centering
+\includegraphics[width=\linewidth]{figures/tte_scenario_comparison.pdf}
+\captionof{figure}{TTE comparison between different usage scenarios}
+\label{fig:tte-comparison}
+\end{minipage}
+\caption{Analysis of Time-To-Empty (TTE) for smartphone batteries}
+\label{fig:tte-analysis}
+\end{figure}
 
 
 

@@ -76,7 +76,7 @@
 \RequirePackage{geometry}
 \RequirePackage[T1]{fontenc}
 \RequirePackage[scaled]{berasans}
-\RequirePackage{algorithm,algorithmic}
+% \RequirePackage{algorithm,algorithmic}
 \RequirePackage{ifpdf, ifxetex}
 \ifMCM@opt@CTeX
 \else
@@ -109,7 +109,6 @@
 }
 \setlength{\parskip}{.15\baselineskip}
 \setcounter{tocdepth}{2}
-
 \setlist[itemize]{nosep}
 \setlist[enumerate]{nosep}
 \renewcommand\tableofcontents{%

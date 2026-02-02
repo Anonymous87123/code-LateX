@@ -1,6 +1,6 @@
 %%
 %% This is file `mcmthesis.cls',
-%% generated with docstrip utility.
+%% generated with the docstrip utility.
 %%
 %% The original source files were:
 %%
@@ -65,9 +65,13 @@
 \RequirePackage{listings}
 \RequirePackage[toc, page, title, titletoc, header]{appendix}
 \RequirePackage{paralist}
+\RequirePackage{enumitem}
+\setlist{nosep}
 \RequirePackage{amsthm, amsfonts}
 \RequirePackage{amsmath, bm}
 \RequirePackage{amssymb, mathrsfs}
+\RequirePackage{subcaption} 
+\RequirePackage{algorithm,algorithmic}
 \RequirePackage{latexsym}
 \RequirePackage{longtable, multirow, hhline, tabularx, array}
 \RequirePackage{flafter}
@@ -116,22 +120,12 @@
 \lhead{\small\sffamily \team}
 \rhead{\small\sffamily Page \thepage }
 }
-\setlength{\parskip}{.15\baselineskip}   % ????????????
-\setcounter{tocdepth}{3}   
-\let\olditemize\itemize
-\renewcommand{\itemize}{%
-  \setlength{\parskip}{-8pt}%  % ?itemize??????????????setlength??par?
-  \let\old@item\item
-  \def\item{%
-    \setlength{\itemsep}{-4pt}%
-    \old@item
-  }%
-  \olditemize
-}
+\setlength\parskip{.15\baselineskip}   % 修改紧凑目录
 \renewcommand\tableofcontents{%
     \centerline{\normalfont\Large\bfseries\sffamily\contentsname
         \@mkboth{%
            \MakeUppercase\contentsname}{\MakeUppercase\contentsname}}%
+    \vskip 5ex%               
     \@starttoc{toc}%
     }
 \setcounter{totalnumber}{4}
@@ -161,17 +155,17 @@
 % }
 \def\maketitle{%
   \setcounter{page}{1}   % 移到最前面
-  \pagestyle{fancy}      % 先启用页眉页�?
+  \pagestyle{fancy}      % 先启用页眉页脚
   \ifMCM@opt@sheet
     \makesheet
   \fi
-  \thispagestyle{empty}  % 隐藏摘要页页�?
-  \pagestyle{fancy}      % 后续页恢�?fancy
+  \thispagestyle{empty}  % 隐藏摘要页页码
+  \pagestyle{fancy}      % 后续页恢复 fancy
   \newpage
 }
 \def\abstractname{Summary}
 \ifMCM@opt@CTeX
-  \newbox\@abstract
+  \newbox\@abstract%
   \setbox\@abstract\hbox{}%
   \long\def\abstract{\bgroup\global\setbox\@abstract\vbox\bgroup\hsize\textwidth\leftskip1cm\rightskip1cm}%
   \def\endabstract{\egroup\egroup}%
@@ -188,7 +182,7 @@
       \textbf{\abstractname}%
     \end{center}%
     \@abstract\par
-    \vspace{\baselineskip}%     % 增加1个空�?
+    \vspace{\baselineskip}%     % 增加1个空行
   }
 \fi
 \newenvironment{letter}[1]{%
@@ -198,7 +192,7 @@
       \flushleft #1%
       \end{minipage}}
       {\egroup\smallskip}
- 
+
 \def\keywordsname{Keywords}
 \ifMCM@opt@CTeX
   \newbox\@keywords
@@ -263,7 +257,7 @@
       \lineskip .5em%
       \begin{tabular}[t]{c}%
         \@author
-        \end{tabular}\par}%
+      \end{tabular}\par}%
     \vskip 1em%
     {\large \@date}%
   \end{center}%
@@ -295,10 +289,10 @@
     \begin{minipage}[t]{\columnwidth}%
       \begin{flushright}
         \vspace{-0.2in}
-          \MCM@memologo
-          \vspace{0.5in}
-        \par\end{flushright}%
-      \end{minipage}%
+        \MCM@memologo
+        \vspace{0.5in}
+      \par\end{flushright}%
+    \end{minipage}%
   }
   \begin{center}
     \LARGE\bfseries\scshape
@@ -339,12 +333,11 @@
   {1ex \@plus1ex \@minus.2ex}%
   {-1em}%
   {\rmfamily\normalsize}}
- 
 
 \providecommand{\dif}{\mathop{}\!\mathrm{d}}
 \providecommand{\me}{\mathrm{e}}
 \providecommand{\mi}{\mathrm{i}}
- 
+
 \definecolor{grey}{rgb}{0.8,0.8,0.8}
 \definecolor{darkgreen}{rgb}{0,0.3,0}
 \definecolor{darkblue}{rgb}{0,0,0.3}
@@ -365,7 +358,7 @@
     postbreak=\mbox{\textcolor{red}{$\hookrightarrow$}\space}
 }
 \lstloadlanguages{C,C++,Java,Matlab,python,Mathematica}
- 
+
 
 \def\AIcite{\@newl@bel b}
 \let\citation\@gobble
@@ -375,13 +368,13 @@
   \let\@AIcitea\@empty
   \@AIcite{\@for\@AIciteb:=#2\do
     {\@AIcitea\def\@AIcitea{,\penalty\@m\ }%
-       \edef\@AIciteb{\expandafter\@firstoftwo\@AIciteb\@empty}%
-       \if@filesw\immediate\write\@auxout{\string\citation{\@AIciteb}}\fi
-       \@ifundefined{b@\@AIciteb}{\hbox{\reset@font\bfseries ?}%
-         \G@refundefinedtrue
-         \@latex@warning
-           {Citation `\@AIciteb' on page \thepage \space undefined}}%
-        {\@AIcite@ofmt{\csname b@\@AIciteb\endcsname}}}}{#1}}
+     \edef\@AIciteb{\expandafter\@firstofone\@AIciteb\@empty}%
+     \if@filesw\immediate\write\@auxout{\string\citation{\@AIciteb}}\fi
+     \@ifundefined{b@\@AIciteb}{\hbox{\reset@font\bfseries ?}%
+       \G@refundefinedtrue
+       \@latex@warning
+         {Citation `\@AIciteb' on page \thepage \space undefined}}%
+       {\@AIcite@ofmt{\csname b@\@AIciteb\endcsname}}}}{#1}}
 \def\@AIcite#1#2{[AI: {#1\if@tempswa , #2\fi}]}
 \let\@AIcite@ofmt\hbox
 
@@ -390,26 +383,28 @@
 \providecommand\@AIlabel[1]{#1.~}
 
 \newenvironment{ReportAiUse}[1]
-     {\@mkboth{\MakeUppercase\refname}{\MakeUppercase\refname}%
-        \list{\@AIlabel{\@arabic\c@enumiv}}%
-             {\settowidth\labelwidth{\@AIlabel{#1}}%
-              \leftmargin\labelwidth
-              \advance\leftmargin\labelsep
-              \@openbib@code
-              \usecounter{enumiv}%
-              \let\p@enumiv\@empty
-              \renewcommand\theenumiv{\@arabic\c@enumiv}}%
-        \sloppy
-        \clubpenalty4000
-        \@clubpenalty \clubpenalty
-        \widowpenalty4000%
-        \sfcode`.\@m}
+     {\centerline{\underline{\large\sffamily\bfseries\reportname}}%
+     \vspace*{-.2em}
+      \@mkboth{\MakeUppercase\refname}{\MakeUppercase\refname}%
+      \list{\@AIlabel{\@arabic\c@enumiv}}%
+           {\settowidth\labelwidth{\@AIlabel{#1}}%
+            \leftmargin\labelwidth
+            \advance\leftmargin\labelsep
+            \@openbib@code
+            \usecounter{enumiv}%
+            \let\p@enumiv\@empty
+            \renewcommand\theenumiv{\@arabic\c@enumiv}}%
+      \sloppy
+      \clubpenalty4000
+      \@clubpenalty \clubpenalty
+      \widowpenalty4000%
+      \sfcode`\.\@m}
      {\def\@noitemerr
-        {\@latex@warning{Empty `thebibliography' environment}}%
-        \endlist}
+       {\@latex@warning{Empty `thebibliography' environment}}%
+      \endlist}
 \def\AImatter{\label{LastPage}\clearpage\pagestyle{aimain}}
 \endinput
-%%
+%% 
 %% This work consists of these files mcmthesis.dtx,
 %%                                   figures/ and
 %%                                   code/,

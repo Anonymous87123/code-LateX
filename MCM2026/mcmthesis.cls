@@ -1,3 +1,28 @@
+%%
+%% This is file `mcmthesis.cls',
+%% generated with the docstrip utility.
+%%
+%% The original source files were:
+%%
+%% mcmthesis.dtx  (with options: `class')
+%% 
+%% -----------------------------------
+%% This is a generated file.
+%% 
+%% Copyright (C) 2010 -- 2015 by latexstudio
+%%       2014 -- 2019 by Liam Huang
+%%       2019 -- present by latexstudio.net
+%% 
+%% This work may be distributed and/or modified under the
+%% conditions of the LaTeX Project Public License, either version 1.3
+%% of this license or (at your option) any later version.
+%% The latest version of this license is in
+%%   http://www.latex-project.org/lppl.txt
+%% and version 1.3 or later is part of all distributions of LaTeX
+%% version 2005/12/01 or later.
+%% 
+%% The Current Maintainer of this work is latexstudio.net.
+%% 
 \NeedsTeXFormat{LaTeX2e}[1999/12/01]
 \ProvidesClass{mcmthesis}
   [2024/01/22 v6.3.3 The Thesis Template Designed For MCM/ICM]
@@ -43,6 +68,9 @@
 \RequirePackage{amsthm, amsfonts}
 \RequirePackage{amsmath, bm}
 \RequirePackage{amssymb, mathrsfs}
+% \RequirePackage{enumitem}
+% \setlist[itemize]{nosep}
+% \setlist[enumerate]{nosep}
 \RequirePackage{latexsym}
 \RequirePackage{longtable, multirow, hhline, tabularx, array}
 \RequirePackage{flafter}
@@ -51,6 +79,7 @@
 \RequirePackage{geometry}
 \RequirePackage[T1]{fontenc}
 \RequirePackage[scaled]{berasans}
+\RequirePackage{algorithm,algorithmic}
 \RequirePackage{hyperref}
 \RequirePackage{ifpdf, ifxetex}
 \ifMCM@opt@CTeX
@@ -96,12 +125,13 @@
     \centerline{\normalfont\Large\bfseries\sffamily\contentsname
         \@mkboth{%
            \MakeUppercase\contentsname}{\MakeUppercase\contentsname}}%
-    \vskip 0ex%               
+    \vskip 5ex%               
     \@starttoc{toc}%
     }
 \setcounter{totalnumber}{4}
 \setcounter{topnumber}{2}
 \setcounter{bottomnumber}{2}
+
 \renewcommand{\textfraction}{0.15}
 \renewcommand{\topfraction}{0.85}
 \renewcommand{\bottomfraction}{0.65}
