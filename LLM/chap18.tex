@@ -1,0 +1,397 @@
+
+\chapter{大模型(LLMs)RAG关键痛点及解决方案}
+
+\section{前言}
+
+受到Barnett等人的论文《Seven Failure Points When Engineering a Retrieval Augmented Generation System》的启发，本文将探讨论文中提到的七个痛点，以及在开发检索增强型生成(RAG)流程中常见的五个额外痛点。更为关键的是，我们将深入讨论这些RAG痛点的解决策略，使我们在日常RAG开发中能更好地应对这些挑战。
+
+\section{问题一：内容缺失问题}
+
+\subsection{内容缺失问题介绍}
+当实际答案不在知识库中时，RAG系统往往给出一个貌似合理却错误的答案，而不是承认无法给出答案。这导致用户接收到误导性信息，造成错误的引导。
+
+\subsection{内容缺失问题解决方案}
+\begin{enumerate}
+\item \textbf{优化数据源}："输入什么，输出什么。"如果源数据质量差，比如充斥着冲突信息，那么无论如何构建RAG流程，都不可能从杂乱无章的数据中得到有价值的结果。
+
+\item \textbf{改进提示方式}：在知识库缺乏信息，系统可能给出错误答案的情况下，改进提示方式可以起到显著帮助。例如，通过设置提示"如果你无法确定答案，请表明你不知道"可以鼓励模型认识到自己的局限并更透明地表达不确定性。虽然无法保证百分百准确，但在优化数据源之后，改进提示方式是我们能做的最好努力之一。
+\end{enumerate}
+
+\section{问题二：错过排名靠前的文档}
+
+\subsection{错过排名靠前的文档问题介绍}
+有时候系统在检索资料时，最关键的文件可能并没有出现在返回结果的最前面。这就导致了正确答案被忽略，系统因此无法给出精准的回答。即："问题的答案其实在某个文档里面，只是它没有获得足够高的排名以致于没能呈现给用户"。
+
+\subsection{错过排名靠前的文档问题解决方案}
+\begin{enumerate}
+\item \textbf{重新排名检索结果}：在将检索到的结果发送给大型语言模型(LLM)之前，对结果进行重新排名可以显著提升RAG的性能。
+
+\item \textbf{调整超参数}：chunk\_size和similarity\_top\_k都是用来调控RAG模型数据检索过程中效率和效果的参数。改动这些参数能够影响计算效率与信息检索质量之间的平衡。
+
+\begin{lstlisting}[language=Python]
+param_tuner = ParamTuner(
+    param_fn=objective_function_semantic_similarity,
+    param_dict=param_dict,
+    fixed_param_dict=fixed_param_dict,
+    show_progress=True,
+)
+
+# 包含需要调优的参数
+param_dict = {"chunk_size": [256, 512, 1024], "top_k": [1, 2, 5]}
+
+# 包含在调整过程的所有运行中保持固定的参数
+fixed_param_dict = {
+    "docs": documents,
+    "eval_qs": eval_qs,
+    "ref_response_strs": ref_response_strs,
+}
+
+def objective_function_semantic_similarity(params_dict):
+    chunk_size = params_dict["chunk_size"]
+    docs = params_dict["docs"]
+    top_k = params_dict["top_k"]
+    eval_qs = params_dict["eval_qs"]
+    ref_response_strs = params_dict["ref_response_strs"]
+    
+    # 建立索引
+    index = build_index(chunk_size, docs)
+    # 查询引擎
+    query_engine = index.as_query_engine(similarity_top_k=top_k)
+    # 获得预测响应
+    pred_response_objs = get_responses(eval_qs, query_engine, show_progress=True)
+    # 运行评估程序
+    eval_batch_runner = _get_eval_batch_runner_semantic_similarity()
+    eval_results = eval_batch_runner.evaluate_responses(
+        eval_qs, responses=pred_response_objs, reference=ref_response_strs
+    )
+    # 获取语义相似度度量
+    mean_score = np.array(
+        [r.score for r in eval_results["semantic_similarity"]]
+    ).mean()
+    return RunResult(score=mean_score, params=params_dict)
+\end{lstlisting}
+\end{enumerate}
+
+\section{问题三：脱离上下文—整合策略的限制}
+
+\subsection{脱离上下文问题介绍}
+论文中提到了这样一个问题："虽然数据库检索到了含有答案的文档，但这些文档并没有被用来生成答案。这种情况往往出现在数据库返回大量文档后，需要通过一个整合过程来找出答案"。
+
+\subsection{脱离上下文问题解决方案}
+\begin{enumerate}
+\item \textbf{优化检索策略}：提供从基础到高级的检索策略，包括从每个索引进行基础检索、高级检索和搜索、自动检索、知识图谱检索器、组合/分层检索器等。
+
+\item \textbf{微调嵌入模型}：如果使用开源嵌入模型，对其进行微调是提高检索准确性的有效方法。
+
+\begin{lstlisting}[language=Python]
+finetune_engine = SentenceTransformersFinetuneEngine(
+    train_dataset,
+    model_id="BAAI/bge-small-en",
+    model_output_path="test_model",
+    val_dataset=val_dataset,
+)
+
+finetune_engine.finetune()
+embed_model = finetune_engine.get_finetuned_model()
+\end{lstlisting}
+\end{enumerate}
+
+\section{问题四：未能提取答案}
+
+\subsection{未能提取答案问题介绍}
+当系统需要从提供的上下文中提取正确答案时，尤其是在信息量巨大时，系统往往会遇到困难。关键信息被遗漏，从而影响了回答的质量。论文中提到："这种情况通常是由于上下文中存在太多干扰信息或相互矛盾的信息"。
+
+\subsection{未能提取答案问题解决方案}
+\begin{enumerate}
+\item \textbf{清理数据}：必须再次强调，干净整洁的数据至关重要！在质疑RAG流程之前，务必先要清理数据。
+
+\item \textbf{提示压缩}：通过LongLLMLingua研究项目提出的提示压缩技术，在检索步骤之后压缩上下文，再将其输入大语言模型。
+
+\begin{lstlisting}[language=Python]
+from llama_index.query_engine import RetrieverQueryEngine
+from llama_index.response_synthesizers import CompactAndRefine
+from llama_index.postprocessor import LongLLMLinguaPostprocessor
+from llama_index.schema import QueryBundle
+
+node_postprocessor = LongLLMLinguaPostprocessor(
+    instruction_str="鉴于上下文，请回答最后一个问题",
+    target_token=300,
+    rank_method="longllmlingua",
+    additional_compress_kwargs={
+        "condition_compare": True,
+        "condition_in_question": "after",
+        "context_budget": "+100",
+        "reorder_context": "sort",  # 启用文档重新排序
+    },
+)
+
+retrieved_nodes = retriever.retrieve(query_str)
+synthesizer = CompactAndRefine()
+# 处理(压缩)、合成
+new_retrieved_nodes = node_postprocessor.postprocess_nodes(
+    retrieved_nodes, query_bundle=QueryBundle(query_str=query_str)
+)
+print("\n\n".join([n.get_content() for n in new_retrieved_nodes]))
+response = synthesizer.synthesize(query_str, new_retrieved_nodes)
+\end{lstlisting}
+
+\item \textbf{LongContextReorder}：研究发现当关键信息位于输入上下文的开始或结尾时，通常能得到最好的性能。LongContextReorder被设计用来重新排序检索到的节点，在需要大量top-k结果时特别有效。
+
+\begin{lstlisting}[language=Python]
+from llama_index.postprocessor import LongContextReorder
+reorder = LongContextReorder()
+reorder_engine = index.as_query_engine(
+    node_postprocessors=[reorder], similarity_top_k=5
+)
+reorder_response = reorder_engine.query("作者见过山姆·奥尔特曼吗?")
+\end{lstlisting}
+\end{enumerate}
+
+\section{问题五：格式错误}
+
+\subsection{格式错误问题介绍}
+当告诉计算机以某种特定格式（比如表格或清单）来整理信息，但大型语言模型(LLM)没能注意到时，就会出现格式错误。
+
+\subsection{格式错误问题解决方案}
+\begin{enumerate}
+\item \textbf{更精准的提示}：让指令更加明确、简化问题并突出关键词、提供示例、循环提问不断细化问题。
+
+\item \textbf{输出解析}：为任何查询提供格式化指南，对计算机的回答进行"解析"。支持与Guardrails和LangChain提供的输出解析模块集成。
+
+\begin{lstlisting}[language=Python]
+from llama_index import VectorStoreIndex, SimpleDirectoryReader
+from llama_index.output_parsers import LangchainOutputParser
+from llama_index.llms import OpenAI
+from langchain.output_parsers import StructuredOutputParser, ResponseSchema
+
+# 加载文档，构建索引
+documents = SimpleDirectoryReader("../paul_graham_essay/data").load_data()
+index = VectorStoreIndex.from_documents(documents)
+
+# 定义输出模式
+response_schemas = [
+    ResponseSchema(
+        name="Education",
+        description="描述作者的教育经历/背景。",
+    ),
+    ResponseSchema(
+        name="Work", 
+        description="描述作者的工作经验/背景。",
+    ),
+]
+
+# 定义输出解析器
+lc_output_parser = StructuredOutputParser.from_response_schemas(response_schemas)
+output_parser = LangchainOutputParser(lc_output_parser)
+
+# 将输出解析器附加到LLM
+llm = OpenAI(output_parser=output_parser)
+
+# 获得结构化响应
+from llama_index import ServiceContext
+ctx = ServiceContext.from_defaults(llm=llm)
+query_engine = index.as_query_engine(service_context=ctx)
+response = query_engine.query("作者成长过程中做了哪些事情?")
+print(str(response))
+\end{lstlisting}
+
+\item \textbf{Pydantic程序}：将输入文字串转换成结构化的Pydantic对象，包括LLM文本完成Pydantic程序、LLM函数调用Pydantic程序、预设的Pydantic程序。
+
+\item \textbf{OpenAI JSON模式}：设置response\_format为{"type": "json\_object"}，激活响应的JSON模式，确保生成能够被解析为有效JSON对象的字符串。
+\end{enumerate}
+
+\section{问题六：特异性错误}
+
+\subsection{特异性错误问题介绍}
+有时候得到的回答可能缺少必要的细节或特定性，需要进一步提问来获取清晰的信息。有些答案可能过于含糊或泛泛，不能有效地满足用户的实际需求。
+
+\subsection{特异性错误问题解决方案}
+采用更高级的检索技巧来改善答案的详细程度：
+\begin{itemize}
+\item 从细节到全局的检索
+\item 围绕特定句子进行的检索  
+\item 逐步深入的检索
+\end{itemize}
+
+\section{问题七：回答不全面}
+
+\subsection{回答不全面问题介绍}
+有时候得到的是部分答案，并不是错误的，但没有提供所有必要的细节，即便这些信息实际上是存在并且可以获取的。
+
+\subsection{回答不全面问题解决方案}
+\textbf{查询优化}：在简单的RAG模型中，比较性问题往往处理得不够好。加入查询理解层—在实际进行向量存储查询之前进行查询优化。四种查询优化方式：
+\begin{itemize}
+\item \textbf{路由优化}：保留原始查询内容，明确涉及的特定工具子集
+\item \textbf{查询改写}：保持选定工具不变，重新构思多种查询方式
+\item \textbf{细分问题}：将大问题拆分成几个小问题
+\item \textbf{ReAct Agent工具选择}：根据原始查询确定使用哪个工具
+\end{itemize}
+
+\begin{lstlisting}[language=Python]
+# 使用HyDE查询转换运行查询
+query_str = "what did paul graham do after going to RISD"
+hyde = HyDEQueryTransform(include_original=True)
+query_engine = index.as_query_engine()
+query_engine = TransformQueryEngine(query_engine, query_transform=hyde)
+response = query_engine.query(query_str)
+print(response)
+\end{lstlisting}
+
+\section{问题八：数据处理能力的挑战}
+
+\subsection{数据处理能力挑战介绍}
+在RAG技术流程中，处理大量数据时常会遇到系统若无法高效地管理和加工这些数据，就可能导致性能瓶颈甚至系统崩溃。这种处理能力上的挑战可能会让数据处理的时间大幅拉长，系统超负荷运转，数据质量下降，以及服务的可用性降低。
+
+\subsection{数据处理能力挑战解决方案}
+\textbf{并行技术}：推出数据处理的并行技术，能够使文档处理速度最多提升15倍。
+
+\begin{lstlisting}[language=Python]
+# 加载数据
+documents = SimpleDirectoryReader(input_dir="./data/source_files").load_data()
+
+# 创建带有转换的管道
+pipeline = IngestionPipeline(
+    transformations=[
+        SentenceSplitter(chunk_size=1024, chunk_overlap=20),
+        TitleExtractor(),
+        OpenAIEmbedding(),
+    ]
+)
+
+# 将num_workers设置为大于1的值将调用并行执行
+nodes = pipeline.run(documents=documents, num_workers=4)
+\end{lstlisting}
+
+\section{问题九：结构化数据查询的难题}
+
+\subsection{结构化数据查询难题介绍}
+用户在查询结构化数据时，精准地获取想要的信息是一项挑战，尤其是遇到复杂或含糊的查询条件时。当前的大语言模型在这方面还存在局限，例如无法灵活地将自然语言转换为SQL查询语句。
+
+\subsection{结构化数据查询难题解决方案}
+\begin{enumerate}
+\item \textbf{Chain-of-table Pack}：将链式思考与表格的转换和表述相结合，通过一系列规定的操作逐步变换表格，并在每一步向大语言模型展示新变化的表格。
+
+\item \textbf{Mix-Self-Consistency Pack}：通过自治机制（多数投票）聚合文本和符号推理的结果。
+
+\begin{lstlisting}[language=Python]
+download_llama_pack(
+    "MixSelfConsistencyPack",
+    "./mix_self_consistency_pack", 
+    skip_load=True,
+)
+
+query_engine = MixSelfConsistencyQueryEngine(
+    df=table,
+    llm=llm,
+    text_paths=5,      # 抽样5条文本推理路径
+    symbolic_paths=5,  # 抽样5个符号推理路径
+    aggregation_mode="self-consistency",  # 通过自治聚合结果
+    verbose=True,
+)
+
+response = await query_engine.aquery(example["utterance"])
+\end{lstlisting}
+\end{enumerate}
+
+\section{问题十：从复杂PDF文件中提取数据}
+
+\subsection{复杂PDF数据提取问题介绍}
+处理PDF文件时，需要从里面复杂的表格中提取出数据来回答问题，但简单的检索方法做不到这一点，需要更高效的技术。
+
+\subsection{复杂PDF数据提取问题解决方案}
+\textbf{嵌入式表格检索}：提供EmbeddedTablesUnstructuredRetrieverPack工具包，从HTML文档中解析出嵌入的表格，把它们组织成清晰的结构图，然后根据用户问题找出并获取相关表格的数据。
+
+\begin{lstlisting}[language=Python]
+# 下载和安装依赖项
+EmbeddedTablesUnstructuredRetrieverPack = download_llama_pack(
+    "EmbeddedTablesUnstructuredRetrieverPack",
+    "./embedded_tables_unstructured_pack",
+)
+
+# 创建包
+embedded_tables_unstructured_pack = EmbeddedTablesUnstructuredRetrieverPack(
+    "data/apple-10Q-Q2-2023.html",  # 接收html文件
+    nodes_save_path="apple-10-q.pkl"
+)
+
+# 运行包
+response = embedded_tables_unstructured_pack.run("总运营费用是多少?").response
+display(Markdown(f"{response}"))
+\end{lstlisting}
+
+\section{问题十一：备用模型}
+
+\subsection{备用模型问题介绍}
+在使用大型语言模型时，可能会担心如果模型出了问题怎么办，比如遇到了OpenAI模型的使用频率限制。这时候就需要一个或多个备用模型以防万一主模型出现故障。
+
+\subsection{备用模型问题解决方案}
+\begin{enumerate}
+\item \textbf{Neutrino路由器}：一个大语言模型的集合，把问题发送到这里，用预测模型判断哪个大语言模型最适合处理问题。
+
+\begin{lstlisting}[language=Python]
+from llama_index.llms import Neutrino
+from llama_index.llms import ChatMessage
+
+llm = Neutrino(
+    api_key="<your-Neutrino-api-key>",
+    router="test"  # 在Neutrino仪表板中配置的"测试"路由器
+)
+
+response = llm.complete("什么是大语言模型?")
+print(f"Optimal model: {response.raw['model']}")
+\end{lstlisting}
+
+\item \textbf{OpenRouter}：统一的接口，可以访问任何大语言模型，自动找到最便宜的模型，并在主服务器出现问题时提供备选方案。
+
+\begin{lstlisting}[language=Python]
+from llama_index.llms import OpenRouter
+from llama_index.llms import ChatMessage
+
+llm = OpenRouter(
+    api_key="<your-OpenRouter-api-key>",
+    max_tokens=256,
+    context_window=4096,
+    model="gryphe/mythomax-12-13b",
+)
+
+message = ChatMessage(role="user", content="Tell me a joke")
+resp = llm.chat([message])
+print(resp)
+\end{lstlisting}
+\end{enumerate}
+
+\section{问题十二：大语言模型(LLM)的安全挑战}
+
+\subsection{LLM安全挑战介绍}
+面对如何防止恶意输入操控、处理潜在的不安全输出和避免敏感信息泄露等问题，每位AI架构师和工程师都需要找到解决方案。
+
+\subsection{LLM安全挑战解决方案}
+\textbf{Llama Guard}：以7-B Llama 2为基础，旨在对大语言模型进行内容分类，通过对输入的提示进行分类和对输出的响应进行分类来工作。能够产生文本结果，判断特定的输入提示或输出响应是否安全。如果根据规则识别出内容不安全，还会指出违反的具体规则子类别。
+
+\section{总结}
+
+\begin{table}[h]
+\centering
+\caption{RAG痛点及解决方案总结}
+\begin{tabular}{@{}p{0.08\textwidth}p{0.3\textwidth}p{0.5\textwidth}@{}}
+\toprule
+\textbf{序号} & \textbf{痛点} & \textbf{解决方案} \\
+\midrule
+1 & 内容缺失 & 清洗数据\&改善提示方法 \\
+2 & 错过排名靠前的文档 & 超参数调优\&文档重新排序 \\
+3 & 上下文不连贯-综合策略限制 & 调整检索策略\&微调嵌入向量 \\
+4 & 未提取到信息 & 清洗数据,压缩提示,\&长上下文重排序 \\
+5 & 格式错误 & 改善提示方法,输出解析,pydantic程序设计,\& OpenAI的JSON模式 \\
+6 & 特异性错误 & 高级检索策略 \\
+7 & 响应不完整 & 查询优化 \\
+8 & 数据摄取的可扩展性 & 并行化摄取流程 \\
+9 & 结构化数据问答 & Chain-of-table Pack\& Mix-Self-Consistency Pack \\
+10 & 从复杂PDF文件中提取数据 & 嵌入式表格检索 \\
+11 & 后备模型 & Neutrino路由器\& OpenRouter \\
+12 & 大语言模型(LLM)安全性 & Llama Guard守护程序 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+我们讨论了开发RAG应用时的12个痛点（论文中的7个加上另外5个），并为它们每一个都提供了相应的解决方案。这些解决方案涵盖了从数据预处理到查询优化，从模型选择到安全防护的各个方面，为构建高质量的RAG系统提供了全面的指导。
+

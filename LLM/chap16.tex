@@ -1,0 +1,506 @@
+\chapter{大模型外挂知识库优化负样本挖掘篇}
+
+\section{引言：为什么需要构建负难样本？}
+
+在各类检索任务中，为训练好一个高质量的检索模型，往往需要从大量的候选样本集合中采样高质量的负例，配合正例一起进行训练。
+
+\section{负难样本构建方法}
+
+\subsection{随机采样策略（Random Sampling）方法}
+
+\subsubsection{方法描述}
+直接基于均匀分布从所有的候选Document中随机抽取Document作为负例。
+
+\subsubsection{存在问题}
+由于无法保证采样得到的负例的质量，故经常会采样得到过于简单的负例，其不仅无法给模型带来有用信息，还可能导致模型过拟合，进而无法区分某些较难的负例样本。
+
+\subsubsection{梯度影响分析}
+对于随机采样方法，由于其采样得到的负例往往过于简单，其会导致该分数接近于零：
+$$s_n(q,d) \longrightarrow 0$$
+进而导致其生成的梯度均值也接近于零：
+$$\bigtriangledown_{\theta}l(q,d) \longrightarrow 0,$$
+这样过于小的梯度均值会导致模型不易于收敛。
+
+\subsection{Top-K负例采样策略（Top-K Hard Negative Sampling）方法}
+
+\subsubsection{方法描述}
+基于稠密检索模型对所有候选Document与Query计算匹配分数，然后直接选择其中Top-K的候选Document作为负例。
+
+\subsubsection{优点}
+可以保证采样得到的负例是模型未能较好区分的较难负例。
+
+\subsubsection{存在问题}
+很可能将潜在的正例也误判为负例，即假负例（False Negative）。如果训练模型去将该部分假负例与正例区分开来，反而会导致模型无法准确衡量Query-Document的语义相似度。
+
+\subsubsection{梯度影响分析}
+由于其很容易采样得到语义与正例一致的假负例，其会导致正负样本的右项$\nabla_{\theta} s_{n}(q, d)$值相似，但是左项符号相反，这样会导致计算得到的梯度方差很大，同样导致模型训练不稳定。
+
+\subsection{困惑负样本采样方法SimANS方法}
+
+\subsubsection{动机}
+在所有负例候选中，与Query的语义相似度接近于正例的负例可以同时具有较大的梯度均值和较小的梯度方差，是更加高质量的困惑负样本。
+
+\subsubsection{方法}
+对与正例语义相似度接近的困惑负例样本进行采样。
+
+\subsubsection{采样方法特点}
+\begin{itemize}
+\item 与Query无关的Document应被赋予较低的相关分数，因其可提供的信息量不足
+\item 与Query很可能相关的Document应被赋予较低的相关分数，因其可能是假负例
+\item 与正例语义相似度接近的Document应该被赋予较高的相关分数，因其既需要被学习，同时是假负例的概率相对较低
+\end{itemize}
+
+\subsubsection{困惑样本采样分布}
+通过以上分析可得，在该采样分布中，随着Query与候选Document相关分数$s(q,d_i)$和与正例的相关分数$s(q,d^+)$的差值的缩小，该候选Document被采样作为负例的概率应该逐渐增大，故可将该差值作为输入，配合任意一单调递减函数$f(\cdot)$即可实现（如$e^{-x}$）。故可设计采样分布如下所示：
+$$p_{i} \propto \exp\left(-a\left(s\left(q, d_{i}\right)-s\left(q,\tilde{d}^{+}\right)-b\right)^{2}\right), \forall d_{i} \in \widetilde{\mathcal{D}}$$
+其中$a$为控制该分布密度的超参数，$b$为控制该分布极值点的超参数，$\tilde{d}^{+} \in \mathcal{D}^{+}$是一随机采样的正例样本，$\widetilde{\mathcal{D}}^{-}$是Top-K的负例。通过调节K的大小，我们可以控制该采样分布的计算开销。
+
+\subsubsection{SimANS算法伪代码}
+\begin{lstlisting}[language=Python]
+Algorithm 1: The algorithm of SimANS.
+Input: Queries and their positive documents $\{(q,\mathcal{D}^{+})\}$, document pool $\mathcal{D}$, pre-learned dense retrieval model M
+1  Build the ANN index on D using M.
+2  Retrieve the top-k ranked negatives $\widetilde{\mathcal{D}}^{-}$ for each query with their relevance scores $\{s(q,d_{i})\}$ from $\mathcal{D}$.
+3  Compute the relevance scores of each query and its positive documents $\{s(q,\mathcal{D}^{+})\}$.
+4  Generate the sampling probabilities of retrieved top-k negatives $\{p_i\}$ for each query using Eq.3.
+5  Construct new training data $\{(q,\mathcal{D}^{+},\widetilde{\mathcal{D}}^{-})\}$.
+6  while M has not converged do
+7      Sample a batch from $\{(q,\mathcal{D}^{+},\widetilde{\mathcal{D}}^{-})\}$.
+8      Sample ambiguous negatives for each instance from the batch according to $\{p_i\}$.
+9      Optimize parameters of M using the batch and sampled negatives.
+10 end
+\end{lstlisting}
+
+\subsection{利用对比学习微调方式构建负例方法}
+
+\subsubsection{对比学习目的}
+对比学习是优化向量化模型的常用训练方法，目的是优化向量化模型，使其向量化后的文本，相似的在向量空间距离近，不相似的在向量空间距离远。
+
+\subsubsection{文档召回场景}
+文档召回场景下，做对比学习（有监督）需要三元组（问题，文档正例，文档负例）。文档正例是和问题密切相关的文档片段，文档负例是和问题不相关的文档片段，可以是精挑细选的，也可以是随机出来的。
+
+\subsubsection{构建方法}
+如果是随机出来的话，完全可以用同一个batch里，其他问题的文档正例当作某一个问题的文档负例，如果想要效果好，还需要有比较大的batch size。
+
+\subsubsection{损失函数}
+损失函数是基于批内负样本的交叉熵损失，如下公式所示，$q$、$d$分别表示问题和文档正例对应的向量，$\tau$为温度系数，sim函数可以是cos相似度或者点积。
+
+论文：SimCSE: Simple Contrastive Learning of Sentence Embeddings
+$$\ell_{i} = -\log \frac{\text{e}^{\text{sim}\left(q_{i},\text{d}_{i}^{+}\right)/\tau}}{\sum_{j=1}^{N}\text{e}^{\text{sim}\left(q_{i},\text{d}_{j}^{+}\right)/\tau}}$$
+
+\subsubsection{实现方法}
+\begin{lstlisting}[language=Python]
+q_reps = self.encode(query)  # 问题矩阵维度(B1, d)
+d_reps = self.encode(doc)    # 文档矩阵维度(B2, d)
+score = torch.matmul(q_reps, d_reps.transpose(0,1))  # 计算相似度矩阵维度:(B1, B2)
+scores = scores / self.temperature
+target = torch.arange(scores.size(0), device=scores.device, dtype=torch.long)
+# 考虑文档负例不仅来自于batch内其他样本的文档正例，也可能人工的给每个样本构造一些文档负例
+target = target * (p_reps.size(0) // d_reps.size(0))
+loss = cross_entropy(scores, target)  # 交叉熵损失函数
+\end{lstlisting}
+
+注：BGE2论文里，做基于批内负样本的对比学习时同时考虑了多任务问题。之前也介绍了，不同任务加的prompt是不同的，如果把不同任务的样本放到一个batch里，模型训练时候就容易出现偷懒的情况，有时候会根据prompt的内容来区分正负例，降低任务难度，这是不利于对比学习效果的。因此，可以通过人为的规定，同一个batch里，只能出现同一种任务的样本缓解这个问题。（实际应用场景下，如果任务类别不是非常多的话，最好还是一个任务训练一个模型，毕竟向量化模型也不大，效果会好一些）
+
+\subsection{基于批内负采样的对比学习方法}
+
+\subsubsection{本质}
+随机选取文档负例，如果能有针对性的，找到和文档正例比较像的文档负例（模型更难区分这些文档负例），加到训练里，是有助于提高对比学习效果的。就好比我们只有不断的做难题才能更好的提高考试水平。
+
+\subsubsection{论文方法}
+在文档向量空间找到和文档正例最相近的文档片段当作文档负例，训练向量化模型。模型更新一段时间后，刷新文档向量，寻找新的文档负例，继续训练模型。
+
+参考论文：
+\begin{itemize}
+\item Approximate nearest neighbor negative contrastive learning for dense text retrieval
+\item Contrastive learning with hard negative samples
+\item Hard negative mixing for contrastive learning
+\item Optimizing dense retrieval model training with hard negatives
+\item SimANS: Simple Ambiguous Negatives Sampling for Dense Text Retrieval
+\end{itemize}
+
+\subsection{相同文章采样方法}
+
+\subsubsection{思路}
+文档正例所在的文章里，其他文档片段当作难负例，毕竟至少是属于同一主题的，和随机样本比起来比较难区分。
+
+\subsubsection{存在问题}
+实际应用场景下，如果你的数据比较脏，难例挖掘用处可能不大。
+
+\subsection{LLM辅助生成软标签及蒸馏}
+
+\subsubsection{方法}
+根据用户问题召回的相关文档片段最终是要为LLM回答问题服务的，因此LLM认为召回的文档是否比较好很重要，以下介绍的方法是BGE2提出的。对于向量化模型的训练，可以让LLM帮忙生成样本的辅助标签，引导向量化模型训练。辅助标签的生成可用如下公式表示。在已知LLM需要输出的标准答案下，分别将问题和各个文档片段$C$放入LLM的prompt中，看LLM生成标准答案的概率$r$大小，当作辅助标签。$r$越大，表示其对应的文档片段对生成正确答案的贡献越大，也就越重要。
+$$r_{C|O} = \prod_{i=1}^{|O|} LLM(o_i | C, O_{:i-1})$$
+
+\subsubsection{存在问题}
+\begin{itemize}
+\item 打标要求有点太高
+\item 很多实际应用场景，我们并没法拿到LLM回答的标准答案，同时对每个问题的候选文档片段都计算一个$r$，开销貌似有点大
+\end{itemize}
+
+\subsubsection{优化策略}
+利用以上LLM生成的标签以及KL散度（笔者认为论文里这个形式的公式不能叫做KL散度吧...），对模型进行优化。$\mathcal{P}$为某个问题$q$对应的候选文档片段$p$的集合，$e$表示向量，$\langle \cdot, \cdot \rangle$表示相似度操作，$w$是对所有候选文档$p$对应的辅助标签值$r$经过softmax变换后的值。本质是，如果LLM认为某个文档片段越重要，给它的优化权重越大。为了进一步稳定蒸馏效果，还可以对候选文档片段根据$r$进行排序，只用排名靠后的样本进行优化。
+$$\min \sum_{\mathcal{P}} -w_i * \log \frac{\exp(\langle e_q, e_p \rangle / \tau)}{\sum_{p' \in \mathcal{P}} \exp(\langle e_q, e_{p'} \rangle / \tau)}$$
+
+\section{辅助知识：梯度计算方法}
+
+\subsection{梯度计算公式}
+以稠密检索常用的BCE loss为例，正例与采样的负例在计算完语义相似度分数后，均会被softmax归一化，之后计算得到的梯度如下所示：
+$$\nabla_{\theta} l(q,d) = \begin{cases} 
+(s_n(q,d) - 1) \bigtriangledown_{\theta} s_n(q,d) & \text{if } d \in \mathcal{D}^{+} \\ 
+s_n(q,d) \bigtriangledown_{\theta} s_n(q,d) & \text{if } d \in \mathcal{D}^{-} 
+\end{cases}$$
+
+注：$s_n(q,d)$：经过softmax归一化后的语义相似度分数
+
+\section{方法总结与对比}
+
+\subsection{各方法优缺点对比}
+\begin{table}[h]
+\centering
+\caption{负样本挖掘方法对比分析}
+\begin{tabular}{@{}p{0.25\textwidth}p{0.3\textwidth}p{0.35\textwidth}@{}}
+\toprule
+\textbf{方法} & \textbf{优点} & \textbf{缺点} \\
+\midrule
+随机采样 & 实现简单，计算开销小 & 负例质量低，梯度均值小，收敛慢 \\
+Top-K采样 & 能获取难负例 & 可能引入假负例，梯度方差大 \\
+SimANS & 平衡梯度均值和方差 & 计算复杂度较高 \\
+对比学习 & 充分利用batch内信息 & 需要大batch size \\
+批内负采样 & 针对性强 & 需要频繁更新负例库 \\
+相同文章采样 & 语义相关性高 & 数据质量要求高 \\
+LLM辅助 & 利用LLM知识 & 计算开销大，需要标准答案 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{实践建议}
+\begin{itemize}
+\item \textbf{资源充足场景}：优先考虑SimANS或LLM辅助方法
+\item \textbf{一般应用场景}：推荐使用对比学习方法结合批内负采样
+\item \textbf{计算资源有限}：可选用Top-K采样但要注意假负例问题
+\item \textbf{数据质量高}：可尝试相同文章采样方法
+\item \textbf{实时训练}：随机采样结合动态难例挖掘
+\end{itemize}
+
+\subsection{未来发展方向}
+\begin{itemize}
+\item 更智能的负例质量评估机制
+\item 多模态负例挖掘技术
+\item 自监督的负例生成方法
+\item 计算效率的进一步优化
+\item 跨领域的负例迁移学习
+\end{itemize}
+
+
+
+\chapter{RAG(检索增强生成)评测面}
+
+\section{引言：为什么需要对RAG进行评测？}
+
+在探索和优化RAG(检索增强生成器)的过程中，如何有效评估其性能已经成为关键问题。
+
+\section{RAG测试集合成方法}
+
+\subsection{测试集构建需求}
+假设已经成功构建了一个RAG系统，并且想要评估其性能，需要包含以下列的评估数据集：
+\begin{itemize}
+\item \textbf{question(问题)}：想要评估的RAG的问题
+\item \textbf{ground\_truths(真实答案)}：问题的真实答案
+\item \textbf{answer(答案)}：RAG预测的答案
+\item \textbf{contexts(上下文)}：RAG用于生成答案的相关信息列表
+\end{itemize}
+
+前两列代表真实数据，最后两列代表RAG预测数据。
+
+\subsection{测试集生成流程}
+要创建这样的数据集，首先需要生成问题和答案的元组，然后在RAG上运行这些问题以获得预测结果。
+
+\subsubsection{生成问题和基准答案}
+\begin{enumerate}
+\item 准备RAG数据，拆分为块并嵌入向量数据库
+\item 指示LLM从指定主题中生成num\_questions个问题
+\item 得到问题和答案元组
+\end{enumerate}
+
+\subsubsection{具体操作步骤}
+\begin{enumerate}
+\item 选择一个随机块作为根上下文
+\item 从向量数据库中检索K个相似的上下文
+\item 将根上下文和其K个相邻上下文的文本连接起来构建更大的上下文
+\item 使用大上下文和num\_questions在提示模板中生成问题和答案
+\end{enumerate}
+
+\subsection{提示模板设计}
+\begin{lstlisting}[language=Python]
+Your task is to formulate exactly {num_questions} questions from given context and provide the answer to each one.
+End each question with a '?' character and then in a newline write the answer to that question using only the context provided.
+Separate each question/answer pair by "XXX"
+Each question must start with "question:".
+Each answer must start with "answer:".
+The question must satisfy the rules given below:
+1. The question should make sense to humans even when read without the given context.
+2. The question should be fully answered from the given context.
+3. The question should be framed from a part of context that contains important information. It can also be from tables, code, etc.
+4. The answer to the question should not contain any links.
+5. The question should be of moderate difficulty.
+6. The question must be reasonable and must be understood and responded by humans.
+7. Do no use phrases like 'provided context', etc in the question
+8. Avoid framing question using word "and" that can be decomposed into more than one question.
+9. The question should not contain more than 10 words, make of use of abbreviation wherever possible.
+context: {context}
+\end{lstlisting}
+
+\subsection{编码实现示例}
+\begin{lstlisting}[language=Python]
+# 1. 从Wikipedia加载数据
+from langchain.document_loaders import WikipediaLoader
+topic = "python programming"
+wikipedia_loader = WikipediaLoader(
+    query=topic,
+    load_max_docs=1,
+    doc_content_chars_max=100000
+)
+docs = wikipedia_loader.load()
+doc = docs[0]
+
+# 2. 数据分块
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+CHUNK_SIZE = 512
+CHUNK_OVERLAP = 128
+splitter = RecursiveCharacterTextSplitter(
+    chunk_size=CHUNK_SIZE,
+    chunk_overlap=CHUNK_OVERLAP,
+    separators=["\n\n", "\n", ".", " "]
+)
+splits = splitter.split_documents([doc])
+
+# 3. 在Pinecone中创建索引
+import pinecone
+import os
+pinecone.init(
+    api_key=os.environ.get("PINECONE_API_KEY"),
+    environment=os.environ.get("PINECONE_ENV")
+)
+index_name = topic.replace(" ", "-")
+if index_name in pinecone.list_indexes():
+    pinecone.delete_index(index_name)
+pinecone.create_index(index_name, dimension=768)
+
+# 4. 使用LangChain包装器索引分片嵌入
+from langchain.vectorstores import Pinecone
+docsearch = Pinecone.from_documents(
+    splits, 
+    embedding_model, 
+    index_name=index_name
+)
+
+# 5. 生成合成数据集
+from langchain.embeddings import VertexAIEmbeddings
+from langchain.llms import VertexAI
+from testset_generator import TestsetGenerator
+
+generator_llm = VertexAI(
+    location="europe-west3",
+    max_output_tokens=256,
+    max_retries=20
+)
+embedding_model = VertexAIEmbeddings()
+testset_generator = TestsetGenerator(
+    generator_llm=generator_llm,
+    documents=splits,
+    embedding_model=embedding_model,
+    index_name=index_name,
+    key="text"
+)
+
+# 6. 调用generate方法生成数据集
+synthetic_dataset = testset_generator.generate(
+    num_contexts=10,
+    num_questions_per_context=2
+)
+\end{lstlisting}
+
+\subsection{RAG预测收集}
+\begin{lstlisting}[language=Python]
+# 初始化RAG
+from rag import RAG
+rag = RAG(
+    index_name,
+    "text-bison", 
+    embedding_model,
+    "text"
+)
+
+# 迭代合成数据集收集预测
+rag_answers = []
+contexts = []
+for i, row in synthetic_dataset.iterrows():
+    question = row["question"]
+    prediction = rag.predict(question)
+    rag_answer = prediction["answer"]
+    rag_answers.append(rag_answer)
+    source_documents = prediction["source_documents"]
+    contexts.append([s.page_content for s in source_documents])
+
+synthetic_dataset_rag = synthetic_dataset.copy()
+synthetic_dataset_rag["answer"] = rag_answers
+synthetic_dataset_rag["contexts"] = contexts
+\end{lstlisting}
+
+\section{RAG评估方法分类}
+
+\subsection{评估方法概述}
+主要有两种方法来评估RAG的有效性：独立评估和端到端评估。
+
+\subsection{独立评估（Independent Evaluation）}
+
+\subsubsection{独立评估介绍}
+独立评估涉及对检索模块和生成模块（即阅读和合成信息）的评估。
+
+\subsubsection{独立评估模块}
+生成模块指的是将检索到的文档与查询相结合，形成增强或合成的输入。这与最终答案或响应的生成不同，后者通常采用端到端的评估方式。
+
+\subsubsection{独立评估指标}
+
+\paragraph{1. 答案相关性（Answer Relevancy）}
+\begin{itemize}
+\item \textbf{目标}：评估生成的答案与提供的问题提示之间的相关性
+\item \textbf{评估标准}：答案如果缺乏完整性或者包含冗余信息，得分将相对较低
+\item \textbf{计算方法}：通过问题和答案的结合来计算，评分范围0到1，高分代表更好的相关性
+\item \textbf{示例}：
+\begin{itemize}
+\item \textbf{问题}：健康饮食的主要特点是什么？
+\item \textbf{低相关性答案}：健康饮食对整体健康非常重要
+\item \textbf{高相关性答案}：健康饮食应包括各种水果、蔬菜、全麦食品、瘦肉和乳制品，为优化健康提供必要的营养素
+\end{itemize}
+\end{itemize}
+
+\paragraph{2. 忠实度（Faithfulness）}
+\begin{itemize}
+\item \textbf{目标}：检查生成的答案在给定上下文中的事实准确性
+\item \textbf{评估过程}：答案内容与其检索到的上下文之间的比对
+\item \textbf{评分范围}：0到1，更高的数值意味着答案与上下文的一致性更高
+\item \textbf{示例}：
+\begin{itemize}
+\item \textbf{问题}：居里夫人的主要成就是什么？
+\item \textbf{背景}：玛丽·居里(1867-1934年)是一位开创性的物理学家和化学家，她是第一位获得诺贝尔奖的女性，也是唯一一位在两个不同领域获得诺贝尔奖的女性
+\item \textbf{高忠实度答案}：玛丽·居里在物理和化学两个领域都获得了诺贝尔奖，使她成为第一位实现这一成就的女性
+\item \textbf{低忠实度答案}：玛丽·居里只在物理学领域获得了诺贝尔奖
+\end{itemize}
+\end{itemize}
+
+\paragraph{3. 上下文精确度（Context Precision）}
+\begin{itemize}
+\item \textbf{目标}：评估所有在给定上下文中与基准信息相关的条目是否被正确地排序
+\item \textbf{理想情况}：所有相关的内容应该出现在排序的前部
+\item \textbf{评分范围}：0到1，较高的得分反映更高的精确度
+\item \textbf{相关指标}：命中率(Hit Rate)、平均排名倒数(MRR)、归一化折扣累积增益(NDCG)、精确度(Precision)等
+\end{itemize}
+
+\paragraph{4. 答案正确性（Answer Correctness）}
+\begin{itemize}
+\item \textbf{目标}：测量生成的答案与实际基准答案之间的匹配程度
+\item \textbf{评估方法}：基准答案和生成答案的对比
+\item \textbf{评分范围}：0到1，较高的得分表明生成答案与实际答案的一致性更高
+\item \textbf{示例}：
+\begin{itemize}
+\item \textbf{基本事实}：埃菲尔铁塔于1889年在法国巴黎竣工
+\item \textbf{答案正确率高}：埃菲尔铁塔于1889年在法国巴黎竣工
+\item \textbf{答案正确率低}：埃菲尔铁塔于1889年竣工，矗立在英国伦敦
+\end{itemize}
+\end{itemize}
+
+\subsection{端到端评估（End-to-End Evaluation）}
+
+\subsubsection{端到端评估介绍}
+对RAG模型对特定输入生成的最终响应进行评估，涉及模型生成的答案与输入查询的相关性和一致性。
+
+\subsubsection{端到端评估模块}
+\begin{itemize}
+\item \textbf{无标签的内容评估}：
+\begin{itemize}
+\item 评价指标：答案的准确性、相关性和无害性
+\end{itemize}
+\item \textbf{有标签的内容评估}：
+\begin{itemize}
+\item 评价指标：准确率(Accuracy)和精确匹配(EM)
+\end{itemize}
+\end{itemize}
+
+\section{RAG关键指标和能力}
+
+\subsection{关键指标}
+评估RAG在不同下游任务和不同检索器中的应用可能会得到不同的结果，但关注以下三个关键指标：
+\begin{itemize}
+\item 答案的准确性（Answer Accuracy）
+\item 答案的相关性（Answer Relevancy） 
+\item 上下文的相关性（Context Relevancy）
+\end{itemize}
+
+\subsection{关键能力}
+RAG需要具备四项基本能力：
+\begin{itemize}
+\item \textbf{抗噪声能力}：在存在噪声数据的情况下仍能保持良好性能
+\item \textbf{拒绝无效回答能力}：能够识别并拒绝无法准确回答的问题
+\item \textbf{信息综合能力}：能够综合多个来源的信息生成完整答案
+\item \textbf{反事实稳健性}：对反事实或假设性问题的处理能力
+\end{itemize}
+
+\section{RAG评估框架}
+
+\subsection{RAGAS框架}
+
+\subsubsection{RAGAS介绍}
+RAGAS是一个基于简单手写提示的评估框架，通过这些提示全自动地衡量答案的准确性、相关性和上下文相关性。
+
+\subsubsection{RAGAS算法原理}
+\begin{enumerate}
+\item \textbf{答案忠实度评估}：利用LLM分解答案为多个陈述，检验每个陈述与上下文的一致性。根据支持的陈述数量与总陈述数量的比例计算"忠实度得分"
+
+\item \textbf{答案相关性评估}：使用LLM创造可能的问题，分析这些问题与原始问题的相似度。通过计算所有生成问题与原始问题相似度的平均值得出答案相关性得分
+
+\item \textbf{上下文相关性评估}：运用LLM筛选出直接与问题相关的句子，以这些句子占上下文总句子数量的比例确定上下文相关性得分
+\end{enumerate}
+
+\subsection{ARES框架}
+
+\subsubsection{ARES介绍}
+ARES的目标是自动化评价RAG系统在上下文相关性、答案忠实度和答案相关性三个方面的性能。ARES减少评估成本，通过使用少量的手动标注数据和合成数据，并应用预测驱动推理(PDR)提供统计置信区间，提高评估准确性。
+
+\subsubsection{ARES算法原理}
+\begin{enumerate}
+\item \textbf{生成合成数据集}：使用语言模型从目标语料库中的文档生成合成问题和答案，创建正负两种样本
+
+\item \textbf{训练LLM裁判}：对轻量级语言模型进行微调，利用合成数据集训练它们以评估上下文相关性、答案忠实度和答案相关性
+
+\item \textbf{基于置信区间对RAG系统排名}：使用裁判模型为RAG系统打分，结合手动标注的验证集，采用PPI方法生成置信区间，可靠地评估RAG系统性能
+\end{enumerate}
+
+\section{评估实践建议}
+
+\subsection{评估流程设计}
+\begin{enumerate}
+\item \textbf{测试集构建}：根据实际应用场景构建具有代表性的测试集
+\item \textbf{基准设定}：建立合理的性能基准和通过标准
+\item \textbf{多维度评估}：结合独立评估和端到端评估方法
+\item \textbf{结果分析}：深入分析失败案例，识别系统瓶颈
+\item \textbf{迭代优化}：基于评估结果进行系统优化和改进
+\end{enumerate}
+
+\subsection{常见挑战与解决方案}
+\begin{itemize}
+\item \textbf{数据质量问题}：确保测试集的质量和代表性
+\item \textbf{评估标准一致性}：建立统一的评估标准和流程
+\item \textbf{计算资源限制}：合理规划评估所需的计算资源
+\item \textbf{结果可解释性}：提供详细的评估报告和案例分析
+\end{itemize}
+
+\subsection{最佳实践}
+\begin{itemize}
+\item \textbf{定期评估}：建立定期的评估机制
+\item \textbf{多维度监控}：监控系统在不同维度上的表现
+\item \textbf{用户反馈集成}：将用户反馈纳入评估体系
+\item \textbf{持续改进}：基于评估结果持续优化系统
+\end{itemize}

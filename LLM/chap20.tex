@@ -1,0 +1,403 @@
+
+\chapter{基于知识图谱的大模型检索增强实现策略：Graph RAG}
+
+\section{引言：为什么需要Graph RAG？}
+
+虽然LlamaIndex能够利用摘要索引进行增强的方案，但这些方案都是利用非结构化文本来实现的。对于知识图谱，是否可以将其作为一种检索路径来提高检索的相关性，这就引出了Graph RAG的概念。
+
+知识图谱可以减少基于嵌入的语义搜索所导致的不准确性。例如："保温大棚"与"保温杯"，尽管在语义上两者存在相关性，但在大多数场景下，这种通用语义（Embedding）下的相关性很高，可能作为错误的上下文而引入"幻觉"。这时候，可以利用领域知识的知识图谱来缓解这种幻觉问题。
+
+\section{Graph RAG基本概念}
+
+\subsection{什么是Graph RAG？}
+Graph RAG（Retrieval-Augmented Generation）是一种基于知识图谱的检索增强技术。它通过构建图模型的知识表达，将实体和关系之间的联系用图的形式进行展示，然后利用大语言模型（LLM）进行检索增强。
+
+\subsection{Graph RAG的核心思路}
+Graph RAG将知识图谱等价于一个超大规模的词汇表，而实体和关系则对应于单词。通过这种方式，Graph RAG在检索时能够将实体和关系作为单元进行联合建模。
+
+Graph RAG的基本思想是：对用户输入的query提取实体，然后构造子图形成上下文，最后送入大模型完成生成。
+
+\section{Graph RAG技术架构}
+
+\subsection{整体工作流程}
+Graph RAG的工作流程包含三个主要步骤：
+
+\begin{enumerate}
+\item \textbf{实体提取}：使用LLM（或其他）模型从问题中提取关键实体
+\item \textbf{子图检索}：根据提取的实体检索相关子图，深入到一定的深度（如2度或更多）
+\item \textbf{答案生成}：利用获得的上下文利用LLM产生答案
+\end{enumerate}
+
+通过这种方式，知识图谱召回可以作为一路检索路径与传统的向量检索进行融合。
+
+\subsection{代码实现框架}
+
+\begin{lstlisting}[language=Python]
+class GraphRAGSystem:
+    def __init__(self, kg_store, llm, entity_extractor):
+        self.kg_store = kg_store  # 知识图谱存储
+        self.llm = llm            # 大语言模型
+        self.entity_extractor = entity_extractor  # 实体提取器
+    
+    def extract_entities(self, query):
+        """从查询中提取实体"""
+        # 使用LLM或实体识别模型提取实体
+        entities = self.entity_extractor.extract(query)
+        return entities
+    
+    def retrieve_subgraph(self, entities, max_depth=2):
+        """根据实体检索子图"""
+        subgraph = self.kg_store.get_subgraph(
+            entities=entities, 
+            max_depth=max_depth
+        )
+        return subgraph
+    
+    def generate_answer(self, query, subgraph):
+        """基于子图生成答案"""
+        # 将子图转换为文本上下文
+        context = self.subgraph_to_text(subgraph)
+        
+        # 构建提示
+        prompt = f"""
+        基于以下知识图谱信息回答问题：
+        
+        知识图谱上下文：
+        {context}
+        
+        问题：{query}
+        
+        请根据提供的知识图谱信息给出准确的回答。
+        """
+        
+        # 使用LLM生成答案
+        answer = self.llm.generate(prompt)
+        return answer
+    
+    def query(self, query, max_depth=2):
+        """完整的Graph RAG查询流程"""
+        # 1. 实体提取
+        entities = self.extract_entities(query)
+        print(f"提取的实体: {entities}")
+        
+        # 2. 子图检索
+        subgraph = self.retrieve_subgraph(entities, max_depth)
+        print(f"检索到的子图包含 {len(subgraph.nodes)} 个节点和 {len(subgraph.edges)} 条边")
+        
+        # 3. 答案生成
+        answer = self.generate_answer(query, subgraph)
+        return answer
+\end{lstlisting}
+
+\section{Graph RAG具体实现}
+
+\subsection{实体提取技术}
+
+实体提取是Graph RAG的第一步，需要从用户查询中准确识别出关键实体。常用的实体提取方法包括：
+
+\begin{lstlisting}[language=Python]
+import spacy
+import re
+from typing import List
+
+class EntityExtractor:
+    def __init__(self, model_name="zh_core_web_sm"):
+        self.nlp = spacy.load(model_name)
+    
+    def extract_with_llm(self, query: str) -> List[str]:
+        """使用LLM进行实体提取"""
+        prompt = f"""
+        从以下问题中提取关键实体（人名、地名、机构名、专业术语等）：
+        问题："{query}"
+        
+        请以JSON格式返回实体列表：
+        {{"entities": ["实体1", "实体2", ...]}}
+        """
+        
+        response = llm.generate(prompt)
+        # 解析JSON响应
+        entities = self._parse_llm_response(response)
+        return entities
+    
+    def extract_with_ner(self, query: str) -> List[str]:
+        """使用命名实体识别提取实体"""
+        doc = self.nlp(query)
+        entities = []
+        for ent in doc.ents:
+            if ent.label_ in ["PERSON", "ORG", "GPE", "PRODUCT", "EVENT"]:
+                entities.append(ent.text)
+        return entities
+    
+    def hybrid_extract(self, query: str) -> List[str]:
+        """混合实体提取方法"""
+        # 先用NER提取
+        ner_entities = self.extract_with_ner(query)
+        
+        # 如果NER提取结果不足，使用LLM补充
+        if len(ner_entities) < 2:
+            llm_entities = self.extract_with_llm(query)
+            # 去重合并
+            all_entities = list(set(ner_entities + llm_entities))
+            return all_entities
+        
+        return ner_entities
+\end{lstlisting}
+
+\subsection{子图检索策略}
+
+子图检索需要根据提取的实体在知识图谱中检索相关的子图结构：
+
+\begin{lstlisting}[language=Python]
+class KnowledgeGraphStore:
+    def __init__(self, graph_db_connection):
+        self.conn = graph_db_connection
+    
+    def get_subgraph(self, entities: List[str], max_depth: int = 2):
+        """检索包含实体的子图"""
+        # 构建Cypher查询
+        query = self._build_cypher_query(entities, max_depth)
+        
+        # 执行查询
+        result = self.conn.run(query)
+        subgraph = self._parse_cypher_result(result)
+        return subgraph
+    
+    def _build_cypher_query(self, entities: List[str], max_depth: int) -> str:
+        """构建Cypher查询语句"""
+        entity_conditions = " OR ".join([f"n.name = '{e}'" for e in entities])
+        
+        cypher_query = f"""
+        MATCH path = (start)-[*1..{max_depth}]-(end)
+        WHERE {entity_conditions}
+        WITH nodes(path) as nodes, relationships(path) as rels
+        RETURN nodes, rels
+        LIMIT 100
+        """
+        return cypher_query
+    
+    def _parse_cypher_result(self, result):
+        """解析Cypher查询结果"""
+        subgraph = {
+            "nodes": set(),
+            "edges": set()
+        }
+        
+        for record in result:
+            # 处理节点
+            for node in record["nodes"]:
+                node_id = node.id
+                node_props = dict(node)
+                subgraph["nodes"].add((node_id, node_props))
+            
+            # 处理关系
+            for rel in record["rels"]:
+                rel_id = rel.id
+                rel_type = rel.type
+                rel_props = dict(rel)
+                subgraph["edges"].add((
+                    rel.start_node.id, 
+                    rel.end_node.id, 
+                    rel_type, 
+                    rel_props
+                ))
+        
+        return subgraph
+\end{lstlisting}
+
+\section{Graph RAG应用示例}
+
+\subsection{示例1：人物信息查询}
+
+当用户输入"tell me about Peter Quill"时，Graph RAG的处理流程如下：
+
+\begin{enumerate}
+\item \textbf{实体提取}：识别关键词["Peter", "Quill"]
+\item \textbf{子图检索}：编写Cypher语句获得二跳结果
+\item \textbf{答案生成}：基于检索到的子图信息生成回答
+\end{enumerate}
+
+\subsection{示例2：机构事件查询}
+
+用户输入："Tell me events about NASA"
+
+\begin{lstlisting}
+> 提取的关键词：['NASA', 'events']
+> 召回的2度关系子图：
+Extracted relationships: The following are knowledge triplets in max depth 2 in the form of subject[predicate, object, predicate_next_hop, object_next_hop...]
+
+nasa['public release date', 'mid-2023']
+nasa['announces', 'future space telescope programs']
+nasa['publishes images of', 'debris disk'] 
+nasa['discovers', 'exoplanet lhs 475 b']
+\end{lstlisting}
+
+\subsection{完整示例代码}
+
+\begin{lstlisting}[language=Python]
+def graph_rag_demo():
+    """Graph RAG完整示例"""
+    # 初始化组件
+    kg_store = Neo4jGraphStore(uri="bolt://localhost:7687", 
+                              user="neo4j", 
+                              password="password")
+    llm = OpenAI(model="gpt-4")
+    entity_extractor = EntityExtractor()
+    
+    # 创建Graph RAG系统
+    graph_rag = GraphRAGSystem(kg_store, llm, entity_extractor)
+    
+    # 示例查询
+    queries = [
+        "Tell me about Peter Quill",
+        "Tell me events about NASA",
+        "莫妮卡·贝鲁奇的代表作是什么？"
+    ]
+    
+    for query in queries:
+        print(f"\n=== 查询: {query} ===")
+        
+        # 执行Graph RAG查询
+        result = graph_rag.query(query, max_depth=2)
+        
+        print(f"提取的实体: {graph_rag.entities}")
+        print(f"生成的答案: {result}")
+        
+        # 记录token使用情况
+        print("Token使用统计:")
+        print(f"LLM总token使用: 159 tokens")
+        print(f"Embedding总token使用: 0 tokens")
+
+# 运行示例
+if __name__ == "__main__":
+    graph_rag_demo()
+\end{lstlisting}
+
+\section{Graph RAG排序优化策略}
+
+基于知识图谱召回的方法可以和其他召回方法融合，但在图谱规模很大时，单纯的子图检索可能存在优化空间。
+
+\subsection{现有方法的局限性}
+
+\begin{itemize}
+\item \textbf{子图召回的多条路径中可能会出现不相关的路径}
+\item \textbf{实体识别阶段的精度有限}，采用关键词提取方法比较直接，效果有待提升
+\item \textbf{依赖于基础知识图谱库的质量}，如果数据量或覆盖范围不足，可能引入噪声
+\end{itemize}
+
+\subsection{两阶段排序优化}
+
+为了提升Graph RAG的效果，可以采用先粗排后精排的两阶段排序策略：
+
+\subsubsection{粗排阶段（LightGBM模型）}
+
+在粗排阶段，根据问题query和候选路径path的特征，使用LightGBM机器学习模型对候选路径进行初步排序，保留top N条路径。
+
+使用的特征包括：
+\begin{itemize}
+\item 字符重合数
+\item 词重合数  
+\item 编辑距离
+\item path跳数
+\item path长度
+\item 字符的Jaccard相似度
+\item 词语的Jaccard相似度
+\item path中的关系数
+\item path中的实体个数
+\item path中的答案个数
+\item 判断path的字符是否全在query中
+\item 判断query和path中是否都包含数字
+\item 获取数字的Jaccard相似度
+\end{itemize}
+
+\subsubsection{精排阶段（预训练语言模型）}
+
+在精排阶段，采用预训练语言模型计算query和粗排阶段path的语义匹配度，选择得分top 2-3的答案路径作为最终结果。
+
+\begin{lstlisting}[language=Python]
+class GraphRAGRanker:
+    def __init__(self, lightgbm_model, sentence_transformer):
+        self.lgb_model = lightgbm_model
+        self.st_model = sentence_transformer
+    
+    def coarse_ranking(self, candidate_paths, query, top_k=50):
+        """粗排阶段"""
+        features = self.extract_features(candidate_paths, query)
+        scores = self.lgb_model.predict(features)
+        
+        # 按分数排序并返回top K
+        ranked_indices = np.argsort(scores)[::-1][:top_k]
+        return [candidate_paths[i] for i in ranked_indices]
+    
+    def fine_ranking(self, coarse_paths, query, top_k=3):
+        """精排阶段"""
+        # 计算语义相似度
+        query_embedding = self.st_model.encode([query])
+        path_embeddings = self.st_model.encode([str(path) for path in coarse_paths])
+        
+        similarities = cosine_similarity(query_embedding, path_embeddings)[0]
+        
+        # 选择最相似的路径
+        top_indices = np.argsort(similarities)[::-1][:top_k]
+        return [coarse_paths[i] for i in top_indices]
+    
+    def extract_features(self, paths, query):
+        """提取排序特征"""
+        features = []
+        for path in paths:
+            feature_vector = []
+            
+            # 字符级别特征
+            path_str = str(path)
+            feature_vector.append(len(set(query) & set(path_str)))  # 字符重合数
+            feature_vector.append(editdistance.eval(query, path_str))  # 编辑距离
+            
+            # 词级别特征
+            query_words = set(query.split())
+            path_words = set(path_str.split())
+            feature_vector.append(len(query_words & path_words))  # 词重合数
+            feature_vector.append(jaccard_similarity(query_words, path_words))  # Jaccard相似度
+            
+            # 图结构特征
+            feature_vector.append(len(path.nodes))  # 实体个数
+            feature_vector.append(len(path.edges))  # 关系数
+            feature_vector.append(self.get_path_depth(path))  # 路径深度
+            
+            features.append(feature_vector)
+        
+        return np.array(features)
+\end{lstlisting}
+
+\section{Graph RAG的优势与挑战}
+
+\subsection{技术优势}
+\begin{itemize}
+\item \textbf{结构化知识利用}：能够充分利用知识图谱中的结构化信息
+\item \textbf{减少语义歧义}：通过实体关系明确语义，减少Embedding相似性带来的歧义
+\item \textbf{可解释性强}：检索路径清晰，结果可追溯
+\item \textbf{领域适应性好}：特别适合领域知识丰富的场景
+\end{itemize}
+
+\subsection{面临挑战}
+\begin{itemize}
+\item \textbf{知识图谱构建成本高}：需要高质量的知识图谱数据
+\item \textbf{实体识别精度依赖}：实体提取的准确性直接影响后续效果
+\item \textbf{子图检索效率}：大规模图谱上的子图检索需要优化
+\item \textbf{多源信息融合}：如何与文本检索等其他检索方式有效融合
+\end{itemize}
+
+\subsection{未来发展方向}
+\begin{itemize}
+\item \textbf{自动化知识图谱构建}：结合大语言模型自动构建和更新知识图谱
+\item \textbf{多模态Graph RAG}：支持文本、图像等多模态知识的图谱检索
+\item \textbf{动态图谱学习}：支持实时更新和增量学习的图谱系统
+\item \textbf{跨语言Graph RAG}：支持多语言知识图谱的检索增强
+\end{itemize}
+
+\section{总结}
+
+Graph RAG作为一种基于知识图谱的检索增强生成技术，通过将结构化的图谱知识与大语言模型相结合，为RAG系统提供了新的技术路径。它特别适合需要精确结构化知识支持的场景，能够有效减少单纯基于Embedding相似性检索带来的语义歧义问题。
+
+尽管Graph RAG在实体识别精度、图谱构建成本等方面仍面临挑战，但通过两阶段排序优化、多源检索融合等技术手段，可以显著提升其效果。随着知识图谱技术和大语言模型的不断发展，Graph RAG在专业领域问答、知识推理等场景中将发挥越来越重要的作用。
+
+未来的研究方向包括自动化知识图谱构建、多模态Graph RAG、动态图谱学习等，这些技术的发展将进一步拓展Graph RAG的应用边界和实用价值。
+

@@ -1,0 +1,291 @@
+
+\chapter{检索增强生成(RAG)优化策略篇}
+
+\section{RAG基础功能篇}
+
+\subsection{RAG工作流程}
+RAG的工作流程包含以下核心模块：文档块切分、文本嵌入模型、提示工程、大模型生成。从RAG的工作流程看，RAG模块有：文档块切分、文本嵌入模型、提示工程、大模型生成。
+
+\section{RAG各模块优化策略}
+
+\subsection{文档块切分优化策略}
+\begin{itemize}
+\item 设置适当的块间重叠
+\item 多粒度文档块切分
+\item 基于语义的文档切分
+\item 文档块摘要
+\end{itemize}
+
+\subsection{文本嵌入模型优化策略}
+\begin{itemize}
+\item 基于新语料微调嵌入模型
+\item 动态表征
+\end{itemize}
+
+\subsection{提示工程优化策略}
+\begin{itemize}
+\item 优化模板增加提示词约束
+\item 提示词改写
+\end{itemize}
+
+\subsection{大模型迭代优化策略}
+\begin{itemize}
+\item 基于正反馈微调模型
+\item 量化感知训练
+\item 提供大context window的推理模型
+\end{itemize}
+
+\subsection{查询召回后处理优化}
+\begin{itemize}
+\item 元数据过滤
+\item 重排序减少文档块数量
+\end{itemize}
+
+\section{RAG架构优化策略}
+
+\subsection{知识图谱(KG)上下文增强}
+
+\subsubsection{向量数据库上下文增强存在的问题}
+\begin{itemize}
+\item 无法获取长程关联知识
+\item 信息密度低（尤其当LLM context window较小时不友好）
+\end{itemize}
+
+\subsubsection{知识图谱增强策略}
+增加一路与向量库平行的KG（知识图谱）上下文增强策略。具体方式：对于用户query，通过利用NL2Cypher进行KG增强。
+
+优化策略：常用图采样技术来进行KG上下文增强。处理方式：根据query抽取实体，然后把实体作为种子节点对图进行采样（必要时，可把KG中节点和query中实体先向量化，通过向量相似度设置种子节点），然后把获取的子图转换成文本片段，从而达到上下文增强的效果。
+
+\subsection{Self-RAG：大模型对召回结果的筛选}
+
+\subsubsection{典型RAG架构中向量数据库的问题}
+经典的RAG架构中（包括KG进行上下文增强），对召回的上下文无差别地与query进行合并，然后访问大模型输出应答。但有时召回的上下文可能与query无关或者矛盾，此时就应舍弃这个上下文，尤其当大模型上下文窗口较小时非常必要（目前4k的窗口比较常见）。
+
+\subsubsection{Self-RAG核心思想}
+Self-RAG是更加主动和智能的实现方式，主要步骤概括如下：
+\begin{enumerate}
+\item 判断是否需要额外检索事实性信息（retrieve on demand），仅当有需要时才召回
+\item 平行处理每个片段：生产prompt + 一个片段的生成结果
+\item 使用反思字段，检查输出是否相关，选择最符合需要的片段
+\item 再重复检索
+\item 生成结果会引用相关片段，以及输出结果是否符合该片段，便于查证事实
+\end{enumerate}
+
+\subsubsection{Self-RAG的创新点：反思字符（Reflection Tokens）}
+Self-RAG的重要创新：Reflection tokens（反思字符）。通过生成反思字符这一特殊标记来检查输出。这些字符会分为Retrieve和Critique两种类型，会标示：检查是否有检索的必要，完成检索后检查输出的相关性、完整性、检索片段是否支持输出的观点。模型会基于原有词库和反思字段来生成下一个token。
+
+\begin{table}[h]
+\centering
+\caption{Self-RAG反思字符类型}
+\begin{tabular}{@{}llll@{}}
+\toprule
+\textbf{Type} & \textbf{Input} & \textbf{Output} & \textbf{Definitions} \\
+\midrule
+Retrieve & x / x,y & {yes, no, continue} & Decides when to retrieve with R \\
+ISREL & x,d & {relevant, irrelevant} & d provides useful information to solve x. \\
+ISSUP & x,d,y & {fully supported, partially supported, no support} & All verification-worthy statements in y supported by d. \\
+ISUSE & x,y & {5,4,3,2,1} & y is a useful response to x. \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsubsection{Self-RAG训练过程}
+对于训练，模型通过将反思字符集成到其词汇表中来学习生成带有反思字符的文本。它是在一个语料库上进行训练的，其中包含由Critic模型预测的检索到的段落和反思字符。该Critic模型评估检索到的段落和任务输出的质量。使用反思字符更新训练语料库，并训练最终模型以在推理过程中独立生成这些字符。
+
+为了训练Critic模型，手动标记反思字符的成本很高，于是使用GPT-4生成反思字符，然后将这些知识提炼到内部Critic模型中。不同的反思字符会通过少量演示来提示具体说明。
+
+\subsubsection{Self-RAG推理过程}
+Self-RAG使用反思字符来自我评估输出，使其在推理过程中具有适应性。根据任务的不同，可以定制模型，通过检索更多段落来优先考虑事实准确性，或强调开放式任务的创造力。该模型可以决定何时检索段落或使用设定的阈值来触发检索。
+
+当需要检索时，生成器同时处理多个段落，产生不同的候选。进行片段级beam search以获得最佳序列。每个细分的分数使用Critic分数进行更新，该分数是每个批评标记类型的归一化概率的加权和。
+
+\subsubsection{Self-RAG代码实战}
+\begin{lstlisting}[language=Python]
+from vllm import LLM, SamplingParams
+
+model = LLM("selfrag/selfrag_llama2_7b", 
+           download_dir="/gscratch/h21ab/akari/model_cache", dtype="half")
+sampling_params = SamplingParams(temperature=0.0, top_p=1.0, max_tokens=100, 
+                                skip_special_tokens=False)
+
+def format_prompt(input, paragraph=None):
+    prompt = "### Instruction: \n{0}\n\n### Response: \n".format(input)
+    if paragraph is not None:
+        prompt += "[Retrieval]<paragraph>{0}</paragraph>".format(paragraph)
+    return prompt
+
+query_1 = "Leave odd one out: twitter, instagram, whatsapp."
+query_2 = "What is China?"
+queries = [query_1, query_2]
+
+# 对于不需要检索的查询
+preds = model.generate([format_prompt(query) for query in queries], sampling_params)
+
+for pred in preds:
+    print("Model prediction: {0}".format(pred.outputs[0].text))
+\end{lstlisting}
+
+\subsection{多向量检索器多模态RAG}
+
+\subsubsection{多向量检索器核心思想}
+将文档（用于答案合成）和引用（用于检索）分离，这样可以针对不同的数据类型生成适合自然语言检索的摘要，同时保留原始的数据内容。它可以与多模态LLM结合，实现跨模态的RAG。
+
+\subsubsection{半结构化RAG支持（文本+表格）}
+\begin{enumerate}
+\item 将原始文档进行版面分析（基于Unstructured工具），生成原始文本和原始表格
+\item 原始文本和原始表格经summary LLM处理，生成文本summary和表格summary
+\item 用同一个embedding模型把文本summary和表格summary向量化，并存入多向量检索器
+\item 多向量检索器存入文本/表格embedding的同时，也会存入相应的summary和raw data
+\item 用户query向量化后，用ANN检索召回raw text和raw table
+\item 根据query + raw text + raw table构造完整prompt，访问LLM生成最终结果
+\end{enumerate}
+
+\subsubsection{多模态RAG支持（文本+表格+图片）}
+三种技术路线：
+\begin{itemize}
+\item \textbf{选项1}：对文本和表格生成summary，然后应用多模态embedding模型把文本/表格summary、原始图片转化成embedding存入多向量检索器
+\item \textbf{选项2}：首先应用多模态大模型（GPT4-V、LLaVA、FUYU-8b）生成图片summary，然后对文本/表格/图片summary进行向量化存入多向量检索器中
+\item \textbf{选项3}：前置阶段同选项2相同，对话时根据query召回原始文本/表格/图片，构造完整Prompt访问多模态大模型
+\end{itemize}
+
+\subsubsection{私有化多模态RAG支持}
+如果数据安全是重要考量，需要把RAG流水线进行本地部署。比如可用LLaVA-7b生成图片摘要，Chroma作为向量数据库，Nomic's GPT4All作为开源嵌入模型，多向量检索器，Ollama.ai中的LLaMA2-13b-chat用于生成应答。
+
+\subsection{RAG Fusion优化策略}
+检索增强这一块主要借鉴了RAGFusion技术，原理是当接收用户query时，让大模型生成5-10个相似的query，然后每个query去匹配5-10个文本块，接着对所有返回的文本块再做个倒序融合排序，如果有需求就再加个精排，最后取Top K个文本块拼接至prompt。
+
+优点：增加了相关文本块的召回率；对用户的query自动进行了文本纠错、分解长句等功能。
+
+缺点：无法从根本上解决理解用户意图的问题。
+
+\subsection{模块化RAG优化策略}
+打破了传统的"原始RAG"框架，提供了更广泛的多样性和更高的灵活性。模块包括：
+\begin{itemize}
+\item \textbf{搜索模块}：融合了直接在语料库中进行搜索的方法
+\item \textbf{记忆模块}：充分利用大语言模型本身的记忆功能来引导信息检索
+\item \textbf{额外生成模块}：通过大语言模型生成必要的上下文，而非直接从数据源进行检索
+\item \textbf{任务适应模块}：将RAG调整以适应各种下游任务
+\item \textbf{对齐模块}：在检索器中添加可训练的Adapter模块解决对齐问题
+\item \textbf{验证模块}：在检索文档后加入额外的验证模块评估检索到的文档与查询之间的相关性
+\end{itemize}
+
+\subsection{RAG新模式优化策略}
+RAG的组织方法具有高度灵活性，能够根据特定问题的上下文对RAG流程中的模块进行替换或重新配置。两种组织模式：
+\begin{itemize}
+\item \textbf{增加或替换模块}：保留原有的检索-阅读结构，加入新模块以增强特定功能
+\item \textbf{调整模块间的工作流程}：加强语言模型与检索模型之间的互动
+\end{itemize}
+
+\subsection{RAG结合SFT}
+RA-DIT方法策略：
+\begin{enumerate}
+\item 更新LLM以最大限度地提高在给定检索增强指令的情况下正确答案的概率
+\item 更新检索器以最大限度地减少文档与查询在语义上相似（相关）的程度
+\end{enumerate}
+
+优点：通过这种方式使LLM更好地利用相关背景知识，并训练LLM即使在检索错误块的情况下也能产生准确的预测，使模型能够依赖自己的知识。
+
+\subsection{查询转换（Query Transformations）}
+动机：用户的query可能出现表述不清、需求复杂、内容无关等问题。
+
+查询转换利用了大型语言模型（LLM）的强大能力，通过某种提示或方法将原始的用户问题转换或重写为更合适的、能够更准确地返回所需结果的查询。核心思想：用户的原始查询可能不总是最适合检索的，所以需要某种方式来改进或扩展它。
+
+\subsection{BERT在RAG中的应用}
+RAG中，对于一些传统任务（如分类、抽取等）用BERT效率会快很多，虽然会牺牲一点点效果，但是比起推理时间，前者更被容忍。而对于一些生成式任务（改写、摘要等），必须得用LLMs，原因：
+\begin{itemize}
+\item BERT窗口有限，只支持512个字符，对于生成任务远远不够
+\item LLMs生成能力比BERT系列要强很多，此时时间换性能就变得很有意义
+\end{itemize}
+
+\section{RAG索引优化策略}
+
+\subsection{嵌入优化策略}
+\begin{enumerate}
+\item \textbf{微调嵌入}
+\begin{itemize}
+\item 影响因素：影响到RAG的有效性
+\item 目的：让检索到的内容与查询之间的相关性更加紧密
+\item 作用：优化检索内容对最终输出的影响，特别是在处理专业领域
+\end{itemize}
+
+\item \textbf{动态嵌入（Dynamic Embedding）}
+\begin{itemize}
+\item 介绍：根据单词出现的上下文进行调整，为每个单词提供不同的向量表示
+\end{itemize}
+
+\item \textbf{检索后处理流程}
+\begin{itemize}
+\item 动机：一次性向大语言模型展示所有相关文档可能会超出上下文窗口限制
+\item 优化方法：重新排序、提示压缩、RAG管道优化、混合搜索、递归检索与查询引擎等
+\end{itemize}
+\end{enumerate}
+
+\subsection{检索召回率低解决方案}
+个人排查方式：
+\begin{enumerate}
+\item 知识库里面是否有对应答案？如果没有就是知识库覆盖不全问题
+\item 知识库有，但是没召回：
+\begin{itemize}
+\item 问题1：知识库知识是否被分割掉导致召回出错？解决方法：修改分割方式或利用BERT进行上下句预测保证知识点完整性
+\item 问题2：知识没有被召回？分析query和doc的特点，建议先用ES做召回，然后用模型做精排
+\end{itemize}
+\end{enumerate}
+
+\subsection{索引结构优化}
+构建RAG时，块大小是关键参数。找到最佳块大小是要找到正确的平衡。可以通过在测试集上运行评估并计算指标来找到最佳块大小。
+
+\subsection{混合检索提升效果}
+虽然向量搜索有助于检索语义相关块，但有时在匹配特定关键词方面缺乏精度。混合检索利用了矢量搜索和关键词搜索等不同检索技术的优势，将它们智能地结合起来。通过这种混合方法，可以匹配相关关键字，同时保持对查询意图的控制。
+
+\subsection{重新排名提升效果}
+当查询向量存储时，前K个结果不一定按最相关的方式排序。重新排名的简单概念是将最相关的信息重新定位到提示的边缘。例如，Diversity Ranker专注于根据文档的多样性进行重新排序，而LostInTheMiddleRanker在上下文窗口的开始和结束之间交替放置最佳文档。
+
+\section{RAG索引数据优化策略}
+
+\subsection{提升索引数据质量}
+索引的数据决定了RAG答案的质量。优化方法：
+\begin{itemize}
+\item 通过删除重复/冗余信息，识别不相关的文档，检查事实的准确性
+\item 添加机制来更新过时的文档
+\item 清理特殊字符、奇怪的编码、不必要的HTML标签来消除文本噪音
+\item 通过主题提取、降维技术和数据可视化发现与主题无关的文档
+\item 使用相似性度量删除冗余文档
+\end{itemize}
+
+\subsection{添加元数据提升效果}
+将元数据与索引向量结合使用有助于更好地构建它们，同时提高搜索相关性。元数据有用的情景：
+\begin{itemize}
+\item 时间维度：根据日期元数据进行排序
+\item 科学论文：将文章部分添加为每个块的元数据并进行过滤
+\end{itemize}
+
+\subsection{输入查询与文档对齐}
+通过将块与它们回答的问题一起索引，优化与底层问题的相似性而不是与文档的相似性。具体方法：计算输入查询与问题（而非文档）的相似性，从而提高搜索相关性。
+
+\subsection{提示压缩提升效果}
+在检索上下文中的噪声会对RAG性能产生不利影响。解决方案：在检索后再应用后处理步骤，以压缩无关上下文，突出重要段落，减少总体上下文长度。选择性上下文等方法和LLMLingua使用小型LLM来计算即时互信息或困惑度，从而估计元素重要性。
+
+\subsection{查询重写和扩展}
+当用户查询结果不理想时，在送到RAG之前先发送给LLM重写此查询。这可以通过添加中间LLM调用实现。
+
+\section{RAG未来发展方向}
+
+\subsection{垂直优化}
+\begin{itemize}
+\item RAG中长上下文的处理问题
+\item RAG的鲁棒性研究
+\item RAG与微调（Fine-tuning）的协同作用
+\item RAG的工程应用：提高检索效率和文档召回率，保障企业数据安全
+\end{itemize}
+
+\subsection{水平扩展}
+从最初的文本问答领域出发，RAG的应用逐渐拓展到更多模态数据，包括图像、代码、结构化知识、音视频等。
+
+\subsection{RAG生态系统}
+\begin{itemize}
+\item \textbf{下游任务和评估}：在开放式问题回答、事实验证等多种下游任务中表现优异
+\item \textbf{技术栈发展}：LangChain和LLamalndex提供丰富的RAG相关API，新型技术栈不断涌现
+\item \textbf{专业领域应用}：医学、法律和教育等专业领域的知识问答
+\item \textbf{评估体系完善}：开发更精准的评估指标和框架，增强模型可解释性
+\end{itemize}
+

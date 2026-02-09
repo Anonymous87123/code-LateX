@@ -1,0 +1,366 @@
+
+\chapter{提示学习(Prompting)技术详解}
+
+\section{引言：为什么需要提示学习？}
+
+\subsection{全量微调的挑战}
+在面对特定的下游任务时，如果进行全量微调（Full Fine-Tuning），即对预训练模型中的所有参数都进行微调，这种方法太过低效。而如果采用固定预训练模型的某些层，只微调接近下游任务的那几层参数，又难以达到较好的效果。
+
+\subsection{提示学习的优势}
+提示学习（Prompting）旨在通过最小化微调参数的数量和计算复杂度，来提高预训练模型在新任务上的性能，从而缓解大型预训练模型的训练成本。这样一来，即使计算资源受限，也可以利用预训练模型的知识来迅速适应新任务，实现高效的迁移学习。
+
+\section{提示学习基本概念}
+
+\subsection{什么是提示学习？}
+提示学习通过提供上下文和任务相关信息（即Prompt），帮助模型更好地理解要求并生成正确的输出。Prompt作为模型输入的引导信息，能够将下游任务重新表述为预训练任务的形式。
+
+\subsection{提示学习应用实例}
+\begin{itemize}
+\item \textbf{问答任务}：Prompt可能包含问题或话题的描述，以帮助模型生成正确的答案
+\item \textbf{情感分析任务}：在句子前面加入前缀"该句子的情感是"，将情感分类任务转换为"填空"任务
+\end{itemize}
+
+在训练过程中，模型可以学习到Prompt与任务输出之间的关联。例如，可以学习到"该句子的情感是积极的"和"该句子的情感是消极的"之间的差异。
+
+\section{提示学习的优点}
+
+\begin{itemize}
+\item \textbf{参数高效}：仅需微调少量参数，大幅降低计算资源需求
+\item \textbf{训练快速}：收敛速度快，适合资源受限的场景
+\item \textbf{知识保留}：保持预训练模型参数不变，避免灾难性遗忘
+\item \textbf{多任务适配}：同一模型可适配多个下游任务
+\item \textbf{迁移性强}：易于实现跨领域知识迁移
+\end{itemize}
+
+\section{提示学习方法综述}
+
+\subsection{方法分类}
+主要的提示学习方法包括：
+\begin{itemize}
+\item 前缀微调（Prefix-tuning）
+\item 指示微调（Prompt-tuning） 
+\item P-tuning
+\item P-tuning v2
+\end{itemize}
+
+\section{前缀微调（Prefix-tuning）}
+
+\subsection{为什么需要前缀微调？}
+\begin{itemize}
+\item \textbf{人工设计离散Prompts的缺点}：Prompts的变化对模型性能特别敏感，加一个词、少一个词或者变动位置都会造成较大变化
+\item \textbf{自动化搜索离散Prompts的缺点}：成本较高，且离散化的token搜索结果可能不是最优的
+\item \textbf{传统微调的问题}：对每个任务都要保存微调后的模型权重，耗时长且占用存储空间大
+\end{itemize}
+
+\subsection{前缀微调思路}
+\begin{enumerate}
+\item \textbf{Prefix构建}：在输入token之前构造一段任务相关的virtual tokens作为Prefix
+\item \textbf{参数冻结}：训练时只更新Prefix部分的参数，而Transformer中的其他参数固定
+\item \textbf{稳定化设计}：在Prefix层前面添加MLP结构，将Prefix分解为更小维度的Input与MLP的组合输出，防止直接更新Prefix参数导致训练不稳定
+\end{enumerate}
+
+\subsection{前缀微调优点}
+\begin{itemize}
+\item \textbf{vs 人工设计Prompts}：可以学习"隐式"的Prompts，而非依赖人工设计
+\item \textbf{批量处理能力}：可以在一个批次中处理来自多个用户/任务的样本
+\item \textbf{vs 全量微调}：只更新Prefix部分参数，大幅减少训练参数量
+\end{itemize}
+
+\subsection{前缀微调缺点}
+\begin{itemize}
+\item \textbf{序列长度占用}：占用序列长度，带来额外计算开销
+\item \textbf{架构改动较大}：在每层都添加prompt参数，模型结构改动较大
+\end{itemize}
+
+\section{指示微调（Prompt-tuning）}
+
+\subsection{为什么需要指示微调？}
+\begin{itemize}
+\item \textbf{全量微调问题}：对每个任务训练一个模型，开销和部署成本高
+\item \textbf{离散prompts问题}：人工设计prompts成本高，效果不稳定
+\item \textbf{前缀微调局限性}：占用序列长度，计算开销大，架构改动大
+\end{itemize}
+
+\subsection{指示微调思路}
+\begin{enumerate}
+\item \textbf{连续空间扩展}：将prompt扩展到连续空间，仅在输入层添加prompt连续向量
+\item \textbf{参数优化}：通过反向传播更新参数学习prompts，而非人工设计
+\item \textbf{模型冻结}：冻结模型原始权重，只训练prompts参数
+\item \textbf{关联建模}：使用LSTM建模prompt向量间关联性
+\end{enumerate}
+
+\subsection{指示微调优点}
+\begin{itemize}
+\item \textbf{架构简洁}：只在输入层加入prompt tokens，无需添加MLP调整
+\item \textbf{规模效应}：随着预训练模型参数量的增加，效果逼近全参数微调
+\item \textbf{集成效率}：支持prompt ensembling，在同一批次训练不同prompt
+\end{itemize}
+
+\subsection{指示微调缺点}
+\begin{itemize}
+\item \textbf{训练难度}：训练不稳定，省显存但不一定省时间
+\item \textbf{独立性假设}：多个prompt token之间相互独立，可能影响效果
+\item \textbf{小模型局限}：在正常大小的预训练模型上表现不佳
+\item \textbf{任务限制}：难以处理复杂的序列标注任务
+\end{itemize}
+
+\subsection{指示微调 vs 前缀微调}
+\begin{table}[h]
+\centering
+\caption{指示微调与前缀微调对比}
+\begin{tabular}{@{}lp{0.4\textwidth}p{0.4\textwidth}@{}}
+\toprule
+\textbf{特性} & \textbf{前缀微调（Prefix-tuning）} & \textbf{指示微调（Prompt-tuning）} \\
+\midrule
+适用任务 & 仅针对NLG任务有效，服务于GPT架构 & 考虑所有类型的语言模型 \\
+添加方式 & 限定在输入前面添加 & 可以在任意位置添加 \\
+参数添加 & 每一层都添加，保证效果 & 可以只在输入层添加 \\
+架构复杂度 & 相对复杂，每层都修改 & 相对简单，主要在输入层 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{指示微调 vs 全量微调}
+\begin{table}[h]
+\centering
+\caption{指示微调与全量微调对比}
+\begin{tabular}{@{}lp{0.45\textwidth}p{0.45\textwidth}@{}}
+\toprule
+\textbf{特性} & \textbf{全量微调（Fine-tuning）} & \textbf{指示微调（Prompt-tuning）} \\
+\midrule
+参数更新 & 需要改变预训练模型参数 & 不改变预训练模型参数 \\
+遗忘问题 & 可能带来灾难性遗忘 & 保持预训练知识完整性 \\
+训练成本 & 计算资源需求高 & 参数高效，资源需求低 \\
+多任务支持 & 需要为每个任务存储完整模型 & 共享基础模型，存储效率高 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{P-tuning方法}
+
+\subsection{为什么需要P-tuning？}
+\begin{itemize}
+\item \textbf{Prompt敏感性}：大模型的Prompt构造方式严重影响下游任务效果
+\item \textbf{GPT系列局限}：自回归建模在自然语言理解任务上效果不如BERT双向模型
+\item \textbf{人工设计问题}：人工设计的模板对变化特别敏感
+\item \textbf{自动化成本}：离散化token搜索成本高，结果可能非最优
+\end{itemize}
+
+\subsection{P-tuning思路}
+\begin{enumerate}
+\item \textbf{可学习Embedding层}：将Prompt转换为可学习的Embedding层
+\item \textbf{Prompt编码器}：使用Prompt编码器（双向LSTM+两层MLP）对Prompt Embedding进行处理
+\item \textbf{依赖建模}：建模伪token的相互依赖关系，提供更好的初始化
+\end{enumerate}
+
+\subsection{P-tuning优点}
+\begin{itemize}
+\item \textbf{依赖建模}：通过Prompt编码器建模token间依赖关系
+\item \textbf{更好初始化}：提供更合理的参数初始化策略
+\item \textbf{连续优化}：在连续空间优化prompt表示
+\end{itemize}
+
+\subsection{P-tuning缺点}
+\begin{itemize}
+\item \textbf{复杂性增加}：架构相对复杂，不太像传统prompt
+\item \textbf{连续性不一致}：伪token编码连续但与输入结合时可能不连续
+\item \textbf{插入问题}：中间可能会插入输入，影响连贯性
+\end{itemize}
+
+\subsection{P-tuning vs 传统微调}
+\begin{lstlisting}[language=Python]
+# 传统全量微调
+class TraditionalFineTuning:
+    def __init__(self, model):
+        self.model = model
+        # 所有参数可训练
+        for param in self.model.parameters():
+            param.requires_grad = True
+    
+    def train(self, data):
+        # 更新所有参数
+        return self.model.update_all_parameters(data)
+
+# P-tuning微调
+class PTuning:
+    def __init__(self, model, prompt_length=10):
+        self.model = model
+        self.prompt_length = prompt_length
+        # 只添加prompt相关参数
+        self.prompt_embeddings = nn.Parameter(
+            torch.randn(prompt_length, model.hidden_size)
+        )
+        # 冻结原模型参数
+        for param in self.model.parameters():
+            param.requires_grad = False
+    
+    def train(self, data):
+        # 只更新prompt参数
+        return self.update_prompt_parameters(data)
+\end{lstlisting}
+
+\section{P-tuning v2方法}
+
+\subsection{为什么需要P-tuning v2？}
+主要解决如何让Prompt Tuning在不同参数规模的预训练模型、针对不同下游任务的结果上都达到匹敌全量微调的效果。
+
+\subsection{P-tuning v2思路}
+\begin{enumerate}
+\item \textbf{深度提示编码}：采用Prefix-tuning做法，在输入前面的每层加入可微调的Prompts tokens
+\item \textbf{简化架构}：移除重参数化编码器（MLP/LSTM），提高训练速度和鲁棒性
+\item \textbf{动态提示长度}：针对不同任务采用不同的提示长度
+\item \textbf{多任务预训练}：先在多任务prompt上预训练，再适配下游任务
+\item \textbf{传统分类范式}：抛弃verbalizer，回归到CLS和token label分类范式
+\end{enumerate}
+
+\subsection{P-tuning v2优点}
+\begin{itemize}
+\item \textbf{参数规模适中}：可学习参数从0.01\%增加到0.1\%-3\%，平衡效率与效果
+\item \textbf{深度集成}：深层Prompt对预测产生更直接影响
+\item \textbf{小模型适配}：解决Prompt Tuning在小模型上效果差的问题
+\item \textbf{任务扩展}：可应用于NER等序列标注任务
+\item \textbf{训练稳定}：通过多任务预训练缓解优化困难
+\end{itemize}
+
+\subsection{P-tuning v2缺点}
+\begin{itemize}
+\item \textbf{Prompt特性弱化}：抛弃verbalizer一定程度上弱化了prompt的原始特性
+\item \textbf{架构复杂性}：深度集成增加了模型复杂度
+\item \textbf{超参数敏感}：提示长度等超参数需要仔细调优
+\end{itemize}
+
+\subsection{P-tuning v2架构实现}
+\begin{lstlisting}[language=Python]
+class PTuningV2(nn.Module):
+    def __init__(self, model, prompt_length=20, num_layers=12):
+        super().__init__()
+        self.model = model
+        self.prompt_length = prompt_length
+        self.num_layers = num_layers
+        
+        # 每层都添加prompt参数
+        self.layer_prompts = nn.ParameterList([
+            nn.Parameter(torch.randn(prompt_length, model.hidden_size))
+            for _ in range(num_layers)
+        ])
+        
+        # 冻结原始模型参数
+        for param in self.model.parameters():
+            param.requires_grad = False
+    
+    def forward(self, input_ids, attention_mask=None):
+        batch_size = input_ids.shape[0]
+        
+        # 原始输入embedding
+        input_embeds = self.model.embeddings(input_ids)
+        
+        # 为每层添加prompt
+        hidden_states = input_embeds
+        for i, layer in enumerate(self.model.encoder.layer):
+            # 添加该层的prompt
+            layer_prompt = self.layer_prompts[i].unsqueeze(0).expand(batch_size, -1, -1)
+            prompt_length = layer_prompt.shape[1]
+            
+            # 拼接prompt和输入
+            combined_embeds = torch.cat([layer_prompt, hidden_states], dim=1)
+            
+            # 调整attention mask
+            if attention_mask is not None:
+                prompt_mask = torch.ones(batch_size, prompt_length, 
+                                        device=attention_mask.device)
+                combined_mask = torch.cat([prompt_mask, attention_mask], dim=1)
+            else:
+                combined_mask = None
+            
+            # 通过transformer层
+            layer_output = layer(combined_embeds, attention_mask=combined_mask)
+            hidden_states = layer_output[0]
+        
+        return hidden_states
+\end{lstlisting}
+
+\section{方法对比与分析}
+
+\subsection{技术演进路径}
+\begin{table}[h]
+\centering
+\caption{提示学习技术演进对比}
+\begin{tabular}{@{}lp{0.25\textwidth}p{0.25\textwidth}p{0.25\textwidth}p{0.25\textwidth}@{}}
+\toprule
+\textbf{特性} & \textbf{Prefix-tuning} & \textbf{Prompt-tuning} & \textbf{P-tuning} & \textbf{P-tuning v2} \\
+\midrule
+提出时间 & 2021 & 2021 & 2021 & 2022 \\
+核心思想 & 每层添加可学习prefix & 输入层添加连续prompt & 引入prompt编码器 & 深度提示编码 \\
+参数位置 & 每层Transformer & 仅输入层 & 输入层+编码器 & 每层Transformer \\
+训练参数 & 0.1\%-1\% & 0.01\%-0.1\% & 0.1\%-1\% & 0.1\%-3\% \\
+主要优势 & 深度集成效果 & 架构简单高效 & 依赖建模能力强 & 小模型效果好 \\
+主要局限 & 计算开销大 & 小模型效果差 & 架构复杂 & 超参数敏感 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{适用场景建议}
+\begin{itemize}
+\item \textbf{资源极度受限}：优先考虑Prompt-tuning，架构最简单
+\item \textbf{效果优先}：选择P-tuning v2，效果最接近全量微调
+\item \textbf{序列生成任务}：Prefix-tuning在NLG任务上表现优异
+\item \textbf{快速实验}：Prompt-tuning实现快速，适合原型验证
+\item \textbf{生产部署}：P-tuning v2平衡效果与效率，适合生产环境
+\end{itemize}
+
+\section{实践建议与最佳实践}
+
+\subsection{参数配置建议}
+\begin{lstlisting}[language=Python]
+# 提示学习超参数配置示例
+prompt_config = {
+    'prompt_length': 20,      # 提示长度：10-50
+    'learning_rate': 1e-4,    # 学习率：通常1e-5到1e-3
+    'batch_size': 16,         # 批大小：根据显存调整
+    'num_epochs': 10,         # 训练轮数：通常5-20
+    'warmup_ratio': 0.1,      # 热身比例：0.1-0.2
+}
+
+# 不同模型规模的提示长度建议
+model_size_prompt_config = {
+    'small': {'prompt_length': 10, 'learning_rate': 1e-3},
+    'base': {'prompt_length': 20, 'learning_rate': 5e-4},
+    'large': {'prompt_length': 30, 'learning_rate': 1e-4},
+    'xl': {'prompt_length': 50, 'learning_rate': 5e-5},
+}
+\end{lstlisting}
+
+\subsection{训练技巧}
+\begin{enumerate}
+\item \textbf{渐进式训练}：先在小批量数据上训练，再扩展到全量数据
+\item \textbf{学习率调度}：使用warmup和cosine衰减策略
+\item \textbf{早停策略}：监控验证集性能，防止过拟合
+\item \textbf{提示初始化}：使用任务相关词汇初始化prompt embedding
+\item \textbf{多任务预训练}：先在相关任务上预训练prompt，再微调
+\end{enumerate}
+
+\section{挑战与未来方向}
+
+\subsection{当前挑战}
+\begin{itemize}
+\item \textbf{训练稳定性}：提示学习方法训练过程可能不稳定
+\item \textbf{超参数敏感}：对提示长度、学习率等超参数敏感
+\item \textbf{理论理解}：缺乏对提示学习工作原理的深入理论分析
+\item \textbf{多模态扩展}：如何扩展到视觉、语音等多模态任务
+\item \textbf{推理效率}：提示添加可能增加推理延迟
+\end{itemize}
+
+\subsection{未来研究方向}
+\begin{itemize}
+\item \textbf{自动化提示学习}：自动学习最优提示结构和内容
+\item \textbf{理论分析}：深入理解提示学习的表示学习机制
+\item \textbf{多模态提示}：开发跨模态的提示学习方法
+\item \textbf{动态提示}：根据输入动态调整提示内容
+\item \textbf{提示压缩}：研究更紧凑的提示表示方法
+\end{itemize}
+
+\section{总结}
+
+提示学习作为一种参数高效的微调方法，通过引入可学习的提示参数来引导预训练模型适应下游任务，在保持预训练知识的同时大幅减少训练成本。从Prefix-tuning到P-tuning v2，提示学习技术不断演进，在效果和效率之间寻求更好的平衡。
+
+随着大模型技术的快速发展，提示学习将在资源受限的应用场景中发挥越来越重要的作用，为更广泛的人群提供使用大模型的能力。未来的研究将着重于提高方法的稳定性、扩展性和理论可解释性，推动提示学习技术在更多领域的应用。

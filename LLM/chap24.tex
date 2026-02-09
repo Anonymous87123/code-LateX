@@ -1,0 +1,448 @@
+\chapter{PEFT库中LoRA使用详解}
+
+\section{前言}
+
+本文主要介绍使用PEFT库中的LoRA模块对大模型进行高效参数微调，涉及以下内容：
+
+\begin{itemize}
+\item PEFT库中LoRA模块的使用方法
+\item PEFT库中LoRA模块的代码实现原理
+\item 推理时权重合并与模型加载策略
+\end{itemize}
+
+\subsection{环境依赖配置}
+\begin{lstlisting}
+# 以下配置可能会随时间变化，建议根据实际情况调整
+accelerate
+appdirs
+loralib
+bitsandbytes
+black
+black[jupyter]
+datasets
+fire
+transformers>=4.28.0
+git+https://github.com/huggingface/peft.git
+sentencepiece
+gradio
+wandb
+cpm-kernel
+\end{lstlisting}
+
+\section{LoraConfig配置详解}
+
+\subsection{基本配置示例}
+\begin{lstlisting}[language=Python]
+# 设置超参数及配置
+LORA_R = 8
+LORA_ALPHA = 16
+LORA_DROPOUT = 0.05
+TARGET_MODULES = [
+    "q_proj",
+    "v_proj",
+]
+
+config = LoraConfig(
+    r=LORA_R,
+    lora_alpha=LORA_ALPHA,
+    target_modules=TARGET_MODULES,
+    lora_dropout=LORA_DROPOUT,
+    bias="none",
+    task_type="CAUSAL_LM",
+)
+\end{lstlisting}
+
+\subsection{参数说明}
+\begin{itemize}
+\item \textbf{r}：LoRA的秩，矩阵A和矩阵B相连的宽度，满足$r \ll d$
+\item \textbf{lora\_alpha}：归一化超参数，LoRA参数$\Delta Wx$被以$\alpha/r$归一化
+\item \textbf{target\_modules}：LoRA的目标应用位置
+\item \textbf{merge\_weights}：eval模式中是否将LoRA矩阵值加到原有$W_0$上
+\item \textbf{lora\_dropout}：LoRA层的dropout比率
+\item \textbf{fan\_in\_fan\_out}：仅应用于Conv1D层时设为True
+\item \textbf{bias}：偏置训练设置（none：均不训练；all：全训练；lora\_only：仅训练LoRA部分偏置）
+\item \textbf{task\_type}：任务类型设置
+\item \textbf{modules\_to\_save}：除LoRA外其他可训练并需要保存的层
+\end{itemize}
+
+注意：target\_modules中的目标名称在不同模型中可能不同，如ChatGLM中使用query\_key\_value。
+
+\section{模型加入PEFT策略}
+
+\subsection{模型加载策略}
+模型加载涉及两个重要的显存优化技巧：load\_in\_8bit和prepare\_model\_for\_int8\_training。
+
+\subsection{模型显存占用分析}
+\begin{itemize}
+\item \textbf{静态显存}：由模型参数量级决定
+\item \textbf{动态显存}：前向传播过程中每个样本的每个神经元计算的激活值存储，用于反向传播的梯度计算
+\end{itemize}
+
+\subsection{显存优化策略}
+
+\subsubsection{8bit量化优化}
+from\_pretrained中的load\_in\_8bit参数由bitsandbytes库提供，将加载的模型转换为混合8bit量化模型。
+
+\begin{lstlisting}[language=Python]
+# 8bit量化示例
+model = AutoModel.from_pretrained(
+    "THUDM/chatglm3-6b", 
+    load_in_8bit=True,
+    device_map='auto'
+)
+\end{lstlisting}
+
+量化原理：将FP32（4字节）压缩到INT8（1字节），实现1/4的显存占用。采用absolute-maximum或zero-point量化方案，其中absmax方案的基本原理：
+
+\begin{align*}
+\text{FP16 vector} &: [1.2, 0.5, -4.3, 1.2, -3.1, 0.8, 2.4, 5.4] \\
+\text{缩放因子} &= \frac{127}{\max(|\text{vector}|)} \\
+\text{量化结果} &= \text{round}\left(\text{vector} \times \text{缩放因子}\right)
+\end{align*}
+
+LLM.int8()实现对outlier进行优化，将outlier和非outlier矩阵分开计算再合并，降低精度损失。
+
+prepare\_model\_for\_int8\_training函数适配LLM.int8()以提高训练稳定性，主要包括：
+\begin{itemize}
+\item Layer norm层保持FP32精度
+\item 输出层保持FP32精度保证解码时随机采样的差异性
+\end{itemize}
+
+\subsubsection{梯度检查优化}
+设置gradient\_checkpointing=True实现时间换空间的优化：
+\begin{itemize}
+\item 前向传播使用torch.no\_grad()不存储中间激活值
+\item 反向传播时重新计算激活值用于梯度计算
+\item 前向传播计算两遍，增加训练时间但减少显存占用
+\end{itemize}
+
+\subsection{PEFT策略集成}
+\begin{lstlisting}[language=Python]
+# 加入PEFT策略
+model = get_peft_model(model, config)
+model = model.to(device)
+model.config.use_cache = False
+\end{lstlisting}
+
+注意：use\_cache设置为False是因为与gradient checkpoint存在冲突。use\_cache优化解码速度，在解码时存储每一步的hidden-state用于下一步输入，而gradient checkpoint不存储中间激活值。
+
+\section{PEFT库中LoRA模块代码实现}
+
+\subsection{整体架构设计}
+PEFT库中，peft\_model.py中的PeftModel类是总控类，继承transformers中的Mixin类，负责模型读取保存等功能。
+
+\begin{lstlisting}[language=Python]
+class LoraModel(torch.nn.Module):
+    def __init__(self, config, model):
+        super().__init__()
+        self.peft_config = config
+        self.model = model
+        self._find_and_replace()
+        mark_only_lora_as_trainable(self.model, self.peft_config.bias)
+        self.forward = self.model.forward
+\end{lstlisting}
+
+构造方法主要完成两个步骤：
+\begin{enumerate}
+\item \_find\_and\_replace()：找到需要加入LoRA策略的层并替换
+\item mark\_only\_lora\_as\_trainable()：固定非LoRA参数，仅训练LoRA部分
+\end{enumerate}
+
+\subsection{\_find\_and\_replace()实现}
+\begin{lstlisting}[language=Python]
+def _find_and_replace(self):
+    # 1. 找到目标层
+    target_module_found = re.fullmatch(self.peft_config.target_modules, key)
+    
+    # 2. 创建新的LoRA层
+    new_module = Linear(target.in_features, target.out_features, bias=bias, **kwargs)
+    
+    # 3. 替换原层
+    self._replace_module(parent, target_name, new_module, target)
+\end{lstlisting}
+
+替换方法实现：
+\begin{lstlisting}[language=Python]
+def _replace_module(self, parent_module, child_name, new_module, old_module):
+    setattr(parent_module, child_name, new_module)
+    new_module.weight = old_module.weight
+    if old_module.bias is not None:
+        new_module.bias = old_module.bias
+    if getattr(old_module, "state", None) is not None:
+        new_module.state = old_module.state
+    new_module.to(old_module.weight.device)
+    
+    # 分配到正确设备
+    for name, module in new_module.named_modules():
+        if "lora" in name:
+            module.to(old_module.weight.device)
+\end{lstlisting}
+
+\subsection{LoRA层实现细节}
+
+\subsubsection{基类LoraLayer}
+\begin{lstlisting}[language=Python]
+class LoraLayer:
+    def __init__(
+        self,
+        r: int,
+        lora_alpha: int,
+        lora_dropout: float,
+        merge_weights: bool,
+    ):
+        self.r = r
+        self.lora_alpha = lora_alpha
+        # 可选的dropout
+        if lora_dropout > 0.0:
+            self.lora_dropout = nn.Dropout(p=lora_dropout)
+        else:
+            self.lora_dropout = lambda x: x
+        # 标记权重未合并
+        self.merged = False
+        self.merge_weights = merge_weights
+        self.disable_adapters = False
+\end{lstlisting}
+
+\subsubsection{Linear层实现}
+Linear类同时继承nn.Linear和LoraLayer：
+
+\begin{lstlisting}[language=Python]
+class Linear(nn.Linear, LoraLayer):
+    # LoRA在dense层的实现
+    def __init__(
+        self,
+        in_features: int,
+        out_features: int,
+        r: int = 0,
+        lora_alpha: int = 1,
+        lora_dropout: float = 0.0,
+        fan_in_fan_out: bool = False,  # 替换层存储权重如(fan_in, fan_out)时设为True
+        **kwargs,
+    ):
+        nn.Linear.__init__(self, in_features, out_features, **kwargs)
+        LoraLayer.__init__(self, r=r, lora_alpha=lora_alpha,
+                          lora_dropout=lora_dropout, merge_weights=merge_weights)
+        self.fan_in_fan_out = fan_in_fan_out
+        
+        if self.r > 0:
+            self.weight.data -= (
+                transpose(self.lora_B.weight @ self.lora_A.weight,
+                         self.fan_in_fan_out) * self.scaling
+            )
+            self.merged = False
+\end{lstlisting}
+
+前向传播实现：
+\begin{lstlisting}[language=Python]
+def forward(self, x: torch.Tensor):
+    if self.disable_adapters:
+        if self.r > 0 and self.merged:
+            self.weight.data -= (
+                transpose(self.lora_B.weight @ self.lora_A.weight,
+                         self.fan_in_fan_out) * self.scaling
+            )
+            self.merged = False
+        return F.linear(x, transpose(self.weight, self.fan_in_fan_out), 
+                       bias=self.bias)
+    elif self.r > 0 and not self.merged:
+        result = F.linear(x, transpose(self.weight, self.fan_in_fan_out),
+                         bias=self.bias)
+        if self.r > 0:
+            result += self.lora_B(self.lora_A(self.lora_dropout(x))) * self.scaling
+        return result
+    else:
+        return F.linear(x, transpose(self.weight, self.fan_in_fan_out),
+                       bias=self.bias)
+\end{lstlisting}
+
+\section{LoRA微调存储策略}
+
+\subsection{存储实现}
+PeftModel重写了save\_pretrained函数，只存储LoRA层权重：
+
+\begin{lstlisting}[language=Python]
+# 重写Trainer的save_model，在checkpoint时只存LoRA权重
+class ModifiedTrainer(Trainer):
+    def save_model(self, output_dir=None, _internal_call=False):
+        from transformers.trainer import TRAINING_ARGS_NAME
+        os.makedirs(output_dir, exist_ok=True)
+        torch.save(self.args, os.path.join(output_dir, TRAINING_ARGS_NAME))
+        
+        saved_params = {
+            k: v.to("cpu") for k, v in self.model.named_parameters() 
+            if v.requires_grad
+        }
+        torch.save(saved_params, os.path.join(output_dir, "adapter_model.bin"))
+
+# 使用示例
+trainer = ModifiedTrainer(
+    model=model,
+    train_dataset=train_data,
+    args=transformers.TrainingArguments(
+        per_device_train_batch_size=8,
+        gradient_accumulation_steps=16,
+        num_train_epochs=10,
+        learning_rate=3e-4,
+        fp16=True,
+        logging_steps=10,
+        save_steps=200,
+        output_dir=output_dir
+    ),
+    data_collator=DataCollatorForSeq2Seq(
+        tokenizer, pad_to_multiple_of=8, return_tensors="pt", padding=True
+    ),
+)
+trainer.train()
+model.save_pretrained(train_args.output_dir)
+\end{lstlisting}
+
+\section{LoRA推理加载策略}
+
+\subsection{方案一：直接加载LoRA层}
+\begin{lstlisting}[language=Python]
+from peft import PeftModel
+from transformers import AutoModel, AutoTokenizer
+
+model = AutoModel.from_pretrained(
+    "THUDM/chatglm3-6b", 
+    trust_remote_code=True, 
+    load_in_8bit=True, 
+    device_map='auto'
+)
+tokenizer = AutoTokenizer.from_pretrained("THUDM/chatglm3-6b", 
+                                         trust_remote_code=True)
+model = PeftModel.from_pretrained(model, "./lora_ckpt")
+model.half().to(device)
+model.eval()
+\end{lstlisting}
+\textbf{缺点}：增加推理延迟，适合线下测评。
+
+\subsection{方案二：权重合并后加载}
+\begin{lstlisting}[language=Python]
+tokenizer = AutoTokenizer.from_pretrained("THUDM/chatglm3-6b", 
+                                         trust_remote_code=True)
+
+# 合并时禁用int8
+model = AutoModel.from_pretrained(
+    "THUDM/chatglm3-6b", 
+    load_in_8bit=False, 
+    torch_dtype=torch.float16,
+    trust_remote_code=True, 
+    device_map={"": "cpu"},
+)
+
+# 检查权重是否合并成功
+first_weight = model.base_model.layers[0].attention.query_key_value.weight
+first_weight_old = first_weight.clone()
+
+# 加载LoRA模型
+lora_model = PeftModel.from_pretrained(
+    model,
+    "./lora_ckpt",
+    device_map={"": "cpu"},
+    torch_dtype=torch.float16,
+)
+
+# 合并权重
+lora_model = lora_model.merge_and_unload()
+lora_model.train(False)
+
+# 验证合并
+assert not torch.allclose(first_weight_old, first_weight), 
+       'Weight Should Changes after Lora Merge'
+
+# 恢复原始key格式
+deloreanized_sd = {
+    k.replace("base_model.model.", ""): v
+    for k, v in lora_model.state_dict().items()
+    if "lora" not in k
+}
+
+# 保存合并后的权重
+lora_model.save_pretrained(output_dir, state_dict=deloreanized_sd)
+\end{lstlisting}
+
+\section{多LoRA适配器切换}
+
+\subsection{环境要求}
+\begin{lstlisting}
+peft >= 0.3.0
+\end{lstlisting}
+
+\subsection{使用方法}
+\begin{enumerate}
+\item \textbf{加载第一个适配器}：指定adapter\_name参数
+\begin{lstlisting}[language=Python]
+model = PeftModel.from_pretrained(model, "tloen/alpaca-lora-7b", 
+                                 adapter_name="eng_alpaca")
+\end{lstlisting}
+
+\item \textbf{加载其他适配器}：使用load\_adapter方法
+\begin{lstlisting}[language=Python]
+model.load_adapter(peft_model_path, adapter_name)
+\end{lstlisting}
+
+\item \textbf{切换适配器}：使用set\_adapter方法
+\begin{lstlisting}[language=Python]
+model.set_adapter(adapter_name)
+\end{lstlisting}
+
+\item \textbf{禁用适配器}：使用disable\_adapter上下文管理器
+\begin{lstlisting}[language=Python]
+with model.disable_adapter():
+    # 在此代码块内禁用适配器
+\end{lstlisting}
+
+\item \textbf{合并卸载适配器}：使用merge\_and\_unload方法
+\begin{lstlisting}[language=Python]
+model = model.merge_and_unload()
+\end{lstlisting}
+\end{enumerate}
+
+\subsection{实战案例}
+\begin{lstlisting}[language=Python]
+from peft import PeftModel
+from transformers import LlamaTokenizer, LlamaForCausalLM, GenerationConfig
+
+model_name = "decapoda-research/llama-7b-hf"
+tokenizer = LlamaTokenizer.from_pretrained(model_name)
+model = LlamaForCausalLM.from_pretrained(
+    model_name,
+    load_in_8bit=True,
+    device_map="auto",
+    use_auth_token=True
+)
+
+# 加载多个适配器
+model = PeftModel.from_pretrained(model, "tloen/alpaca-lora-7b",
+                                adapter_name="eng_alpaca")
+model.load_adapter("22h/cabrita-lora-v0-1", adapter_name="portuguese_alpaca")
+
+# 切换适配器
+model.set_adapter("eng_alpaca")
+instruction = "Tell me about alpacas."
+print(evaluate(instruction))
+
+model.set_adapter("portuguese_alpaca")
+instruction = "Invente uma desculpa criativa pra dizer que nao preciso ir a festa."
+print(evaluate(instruction))
+
+# 禁用适配器
+with model.disable_adapter():
+    instruction = "Invente uma desculpa criativa pra dizer que nao preciso ir festa."
+    print(evaluate(instruction))
+\end{lstlisting}
+
+\section{总结}
+
+本文详细介绍了PEFT库中LoRA模块的完整使用流程，从基础配置到高级功能，包括：
+
+\begin{itemize}
+\item \textbf{配置管理}：LoraConfig的参数详解和最佳实践
+\item \textbf{显存优化}：8bit量化和梯度检查等关键技术
+\item \textbf{代码实现}：PEFT库中LoRA的核心实现原理
+\item \textbf{存储策略}：训练和推理时的权重管理方案
+\item \textbf{多适配器}：支持多个LoRA适配器的动态加载和切换
+\end{itemize}
+
+通过这些技术，可以在资源受限的环境下高效地对大语言模型进行微调，并在推理时灵活地应用不同的适配器来适应多种任务场景。
