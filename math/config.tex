@@ -1,0 +1,410 @@
+% ========== 基本包加载 ==========
+% 1. 基础宏包
+\usepackage{geometry}
+\usepackage{fontspec}
+\usepackage{amsmath, amsthm, amssymb}
+\usepackage{bm}
+\allowdisplaybreaks
+\usepackage{mathrsfs}
+\usepackage{enumitem}
+\setlist{itemsep=-1pt}
+\setlist[enumerate]{itemsep=-1pt, parsep=-1pt, topsep=0pt}
+\usepackage{eso-pic}
+\usepackage{graphicx}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{array}
+\usepackage{ulem}
+\usepackage{caption}
+\usepackage{tocloft}
+% 2. 图形和颜色宏包
+\usepackage{xcolor}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{tikz}
+\usepackage{circuitikz}
+\usepackage{mathrsfs}
+\usetikzlibrary{arrows}
+\usetikzlibrary{shapes.geometric}
+\usetikzlibrary{circuits.logic.US, positioning}
+\usepackage[most]{tcolorbox}
+\tcbuselibrary{theorems}
+% 3. 页眉页脚宏包
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+% 4. 超链接和书签
+\usepackage{hyperref}
+\usepackage{bookmark}
+% 5. 智能引用
+\usepackage{cleveref}
+% ========================
+% \AddToShipoutPictureFG{%
+%   \begin{tikzpicture}[remember picture,overlay]
+%     \node[opacity=0.1] at (current page.center) {\includegraphics[width=0.5\paperwidth]{SCUT_emblem_single_RGB_unofficial_DevlinNul.eps}};
+%   \end{tikzpicture}%
+% }
+% 1. 页面布局设置（窄边距）
+\geometry{
+  a4paper,
+  top=15mm,
+  bottom=10mm,
+  left=15mm,
+  right=15mm,
+  headheight=25pt,
+  headsep=8mm,
+  footskip=15mm,
+  includehead,
+  includefoot
+}
+% 2. 字体设置（修改部分）
+% 设置全局英文字体
+\setmainfont{Times New Roman}
+\setsansfont{Arial}
+\setmonofont{Consolas}
+% 定义字体命令（保持不变）
+\newcommand{\kt}{\kaishu} % 楷体
+\newcommand{\st}{\songti} % 宋体
+\newcommand{\htbf}{\heiti\bfseries} % 黑体加粗
+\newcommand{\e}{\text{e}}
+\newcommand{\dd}{\text{d}}
+\newcommand{\nothing}{\ensuremath{\varnothing}}
+\definecolor{deepblue}{HTML}{003366}
+\definecolor{lightblue}{HTML}{E5F6FF}
+\definecolor{deepgreen}{HTML}{006633}
+\definecolor{lightgreen}{HTML}{E5F6E5}
+\definecolor{deeppurple}{HTML}{660066}
+\definecolor{lightpurple}{HTML}{F6E5F6}
+\definecolor{deepred}{HTML}{990000}
+\definecolor{lightred}{HTML}{FFE5E5}
+\definecolor{deeporange}{HTML}{CC6600}
+\definecolor{lightorange}{HTML}{FFF6E5}
+\definecolor{deepgray}{HTML}{333333}
+\definecolor{lightgray}{HTML}{F6F6F6}
+\definecolor{deepbrown}{HTML}{8B4513}
+\definecolor{lightbrown}{HTML}{FFE4B5}
+\definecolor{lightyellow}{HTML}{FFFFE0}
+\definecolor{darkyellow}{HTML}{CCCC00}
+\definecolor{lightcyan}{HTML}{E0FFFF}
+\definecolor{darkcyan}{HTML}{008B8B}
+\definecolor{lightpink}{HTML}{FFB6C1}
+\definecolor{darkpink}{HTML}{FF1493}
+\definecolor{lavender}{HTML}{E6E6FA}
+\definecolor{thistle}{HTML}{D8BFD8}
+\definecolor{lightblue}{HTML}{ADD8E6}
+\definecolor{darkblue}{HTML}{00008B}
+\definecolor{lightgray}{HTML}{D3D3D3}
+\definecolor{darkgray}{HTML}{A9A9A9}
+\newcounter{theoremcounter}[section]
+
+% ========== 只定义4个最常用的索引列表 ==========
+\newlistof{definitions}{lod}{定义索引}
+\newlistof{theorems}{loth}{定理索引}
+\newlistof{examples}{loex}{例题索引}
+\newlistof{properties}{lopr}{性质索引}
+
+% ========== 使用\NewDocumentEnvironment重新定义需要索引的环境 ==========
+
+% 1. 定义环境
+\newcounter{definition}[section]
+\renewcommand{\thedefinition}{\thesection.\arabic{definition}}
+
+\NewDocumentEnvironment{definition}{m m}{%
+  \refstepcounter{definition}%
+  \begin{tcolorbox}[
+    colback=lightred,
+    colframe=deepred,
+    colbacktitle=deepred,
+    coltitle=white,
+    fonttitle=\upshape\color{white},
+    fontupper=\rmfamily,
+    separator sign none,
+    top=8pt,
+    attach boxed title to top left={yshift=-2mm,xshift=5mm},
+    enhanced,
+    title={\thedefinition\ 定义: #1}
+  ]%
+  \phantomsection\addcontentsline{lod}{definitions}{%
+    \thedefinition\hspace{1em}#1}%
+  \label{def:\thedefinition}%
+}{%
+  \end{tcolorbox}%
+}
+
+% 2. 定理环境
+\newcounter{theorem}[section]
+\renewcommand{\thetheorem}{\thesection.\arabic{theorem}}
+
+\NewDocumentEnvironment{theorem}{m m}{%
+  \refstepcounter{theorem}%
+  \begin{tcolorbox}[
+    colback=lightgreen,
+    colframe=deepgreen,
+    colbacktitle=deepgreen,
+    coltitle=white,
+    fonttitle=\upshape\color{white},
+    fontupper=\rmfamily,
+    separator sign none,
+    top=8pt,
+    attach boxed title to top left={yshift=-2mm,xshift=5mm},
+    enhanced,
+    title={\thetheorem\ 定理: #1}
+  ]%
+  \phantomsection\addcontentsline{loth}{theorems}{%
+    \thetheorem\hspace{1em}#1}%
+  \label{thm:\thetheorem}%
+}{%
+  \end{tcolorbox}%
+}
+
+% 3. 例题环境
+\newcounter{example}[section]
+\renewcommand{\theexample}{\thesection.\arabic{example}}
+
+\NewDocumentEnvironment{example}{m m}{%
+  \refstepcounter{example}%
+  \begin{tcolorbox}[
+    colback=lightblue,
+    colframe=deepblue,
+    colbacktitle=deepblue,
+    coltitle=white,
+    fonttitle=\upshape\color{white},
+    fontupper=\rmfamily,
+    separator sign none,
+    top=8pt,
+    attach boxed title to top left={yshift=-2mm,xshift=5mm},
+    enhanced,
+    title={\theexample\ 例题: #1}
+  ]%
+  \phantomsection\addcontentsline{loex}{examples}{%
+    \theexample\hspace{1em}#1}%
+  \label{ex:\theexample}%
+}{%
+  \end{tcolorbox}%
+}
+
+% 4. 性质环境
+\newcounter{property}[section]
+\renewcommand{\theproperty}{\thesection.\arabic{property}}
+
+\NewDocumentEnvironment{property}{m m}{%
+  \refstepcounter{property}%
+  \begin{tcolorbox}[
+    colback=lightgray,
+    colframe=deepgray,
+    colbacktitle=deepgray,
+    coltitle=white,
+    fonttitle=\upshape\color{white},
+    fontupper=\rmfamily,
+    separator sign none,
+    top=8pt,
+    attach boxed title to top left={yshift=-2mm,xshift=5mm},
+    enhanced,
+    title={\theproperty\ 性质: #1}
+  ]%
+  \phantomsection\addcontentsline{lopr}{properties}{%
+    \theproperty\hspace{1em}#1}%
+  \label{prop:\theproperty}%
+}{%
+  \end{tcolorbox}%
+}
+
+% ========== 其他不需要索引的环境保持原样 ==========
+
+% 引理环境（暂不添加索引）
+\newtcbtheorem[use counter=theoremcounter,number within=section]{lemma}{引理}{
+    colback=lightpurple,
+    colframe=deeppurple,
+    colbacktitle=deeppurple,
+    coltitle=white,
+    fonttitle=\upshape\color{white},
+    fontupper=\rmfamily,
+    separator sign none,
+    top=8pt,
+    attach boxed title to top left={yshift=-2mm,xshift=5mm},
+    description delimiters={ }{ },
+    enhanced
+}{lem}
+
+% 结论环境（暂不添加索引）
+\newtcbtheorem[number within=section]{conclusion}{结论}{
+    colback=lightorange,
+    colframe=deeporange,
+    colbacktitle=deeporange,
+    coltitle=white,
+    fonttitle=\upshape\color{white},
+    fontupper=\rmfamily,
+    separator sign none,
+    top=8pt,
+    attach boxed title to top left={yshift=-2mm,xshift=5mm},
+    description delimiters={ }{ },
+    enhanced
+}{con}
+
+% 准则环境（暂不添加索引）
+\newtcbtheorem[number within=section]{criterion}{准则}{
+    colback=lightbrown,
+    colframe=deepbrown,
+    colbacktitle=deepbrown,
+    coltitle=white,
+    fonttitle=\upshape\color{white},
+    fontupper=\rmfamily,
+    separator sign none,
+    top=8pt,
+    attach boxed title to top left={yshift=-2mm,xshift=5mm},
+    description delimiters={ }{ },
+    enhanced
+}{crit}
+
+% 推论环境（暂不添加索引）
+\newtcbtheorem[use counter=theoremcounter,number within=section]{corollary}{推论}{
+    colback=lightcyan,
+    colframe=darkcyan,
+    colbacktitle=darkcyan,
+    coltitle=white,
+    fonttitle=\upshape\color{white},
+    fontupper=\rmfamily,
+    separator sign none,
+    top=8pt,
+    attach boxed title to top left={yshift=-2mm,xshift=5mm},
+    description delimiters={ }{ },
+    enhanced
+}{cor}
+
+% 传统样式环境（无背景色）
+\newtheoremstyle{plain-chinese}% 名称
+  {6pt}% 上方空白
+  {6pt}% 下方空白
+  {\st}% 正文字体（宋体）
+  {}% 缩进
+  {\heiti}% 标题字体（黑体加粗）
+  {.}% 标题后标点
+  { }% 标题后空白
+  {}% 标题说明
+\theoremstyle{plain-chinese}
+\newtheorem{solution}{解}[section] % 使用与例题相同的计数器
+\newtheorem{remark}{注}[section]
+
+% 4. 智能引用设置（保持不变）
+% ========================
+\crefname{theorem}{定理}{定理}
+\crefname{lemma}{引理}{引理}
+\crefname{definition}{定义}{定义}
+\crefname{example}{例题}{例题}
+\crefname{conclusion}{结论}{结论}
+\crefname{solution}{解}{解}
+\crefname{remark}{注}{注}
+\crefname{property}{性质}{性质}
+\crefname{criterion}{准则}{准则}
+\crefname{corollary}{推论}{推论}
+\crefname{proof}{证明}{证明}
+
+% 5. 数学字体设置（修改）
+% ========== 自定义命令（保持不变） ==========
+\newcommand{\R}{\mathbb{R}} % 实数集
+\newcommand{\C}{\mathbb{C}} % 复数集
+\newcommand{\Z}{\mathbb{Z}} % 整数集
+\newcommand{\N}{\mathbb{N}} % 自然数集
+
+% ========== 图形路径设置（保持不变） ==========
+\graphicspath{{./flg/}} % 图片路径
+
+% 6. 页眉页脚设置
+% ========================
+\usepackage{fancyhdr}
+\usepackage{lastpage} % 获取总页数
+\pagestyle{fancy}
+\fancyhf{} % 清除所有页眉页脚设置
+
+% 通用设置
+\fancyhead[L]{\small\kt 简单导数} % 左边：书名（楷体）
+\fancyhead[C]{\small\st 华南理工大学}
+\fancyhead[R]{\small\st 夏同} % 中间：声明（宋体）
+\fancyfoot[C]{\thepage} % 居中页码（自定义样式）
+
+% 正文部分设置
+\fancyhead[R]{\small\st\rightmark} % 右边：章节名称（宋体）
+
+% 前言部分设置（使用罗马数字页码）
+\fancypagestyle{frontmatter}{
+    \fancyhf{}
+    \fancyhead[L]{\small\kt 简单导数}
+    \fancyhead[C]{\small\st 前言}
+    \fancyhead[R]{} % 前言部分无章节名称
+    \fancyfoot[C]{\thepage}
+    \renewcommand{\headrulewidth}{0.4pt} % 页眉线
+    \renewcommand{\footrulewidth}{0pt} % 无页脚线
+    \pagenumbering{Roman} % 罗马数字页码
+}
+
+% 目录部分设置
+\fancypagestyle{tocmatter}{
+    \fancyhf{}
+    \fancyhead[L]{\small\kt 简单导数}
+    \fancyhead[C]{\small\st 目录} % 居中显示"目录"
+    \fancyhead[R]{\small\st 夏同} 
+    \fancyfoot[C]{\thepage}
+    \renewcommand{\headrulewidth}{0.4pt}
+    \renewcommand{\footrulewidth}{0pt}
+}
+
+% 索引部分设置
+\fancypagestyle{indexmatter}{
+    \fancyhf{}
+    \fancyhead[L]{\small\kt 简单导数}
+    \fancyhead[C]{\small\st 环境索引}
+    \fancyhead[R]{\small\st 夏同} 
+    \fancyfoot[C]{\thepage}
+    \renewcommand{\headrulewidth}{0.4pt}
+    \renewcommand{\footrulewidth}{0pt}
+}
+
+% 正文部分设置（使用阿拉伯数字页码）
+\fancypagestyle{mainmatter}{
+    \fancyhf{}
+    \fancyhead[L]{\small\kt 简单导数}
+    \fancyhead[C]{\small\st 计算机科学与工程学院~夏同}
+    \fancyhead[R]{\small\st\rightmark}
+    \fancyfoot[C]{\thepage}
+    \renewcommand{\headrulewidth}{0.4pt} % 页眉线
+    \renewcommand{\footrulewidth}{0pt} % 无页脚线
+    \pagenumbering{arabic} % 阿拉伯数字页码
+}
+% 设置章节标记格式
+\renewcommand{\chaptermark}[1]{\markboth{#1}{}}
+\renewcommand{\sectionmark}[1]{\markright{\thesection.\ #1}}
+
+% 8. 章节标题字体设置
+\ctexset{
+    chapter = {
+        format = \centering, % 整体居中
+        nameformat = \kaishu\LARGE, % 编号部分黑体加粗
+        titleformat = \songti\LARGE, % 标题部分宋体
+        aftername = \quad, % 编号和标题之间的间距
+        beforeskip = 30pt, % 标题前的垂直间距
+        afterskip = 20pt, % 标题后的垂直间距
+        name = {第,章}, % 中文章节编号格式
+        number = \chinese{chapter}, % 使用中文数字
+    },
+    section = {
+        format = \raggedright, % 左对齐
+        nameformat = \heiti\bfseries\large, % 编号部分黑体加粗
+        titleformat = \songti\large, % 标题部分宋体
+        aftername = \quad, % 编号和标题之间的间距
+        beforeskip = 15pt, % 标题前的垂直间距
+        afterskip = 6pt, % 标题后的垂直间距
+    },
+    subsection = {
+        format = \raggedright, % 左对齐
+        nameformat = \heiti\bfseries\normalsize, % 编号部分黑体加粗
+        titleformat = \songti\normalsize, % 标题部分宋体
+        aftername = \quad, % 编号和标题之间的间距
+        beforeskip = 6pt, % 标题前的垂直间距
+        afterskip = 3pt, % 标题后的垂直间距
+    }
+}
+
+% ========== 精简的环境索引命令 ==========
+\newcommand{\makeenvindex}{
+    \listofdefinitions
+    \listoftheorems
+    \listofexamples
+}

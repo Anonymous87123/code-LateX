@@ -1,0 +1,183 @@
+
+\chapter{大模型外挂知识库优化：利用大模型辅助召回}
+
+\section{引言：为什么需要大模型辅助召回？}
+
+我们可以通过向量召回的方式从文档库中召回和用户问题相关的文档片段，同时输入到LLM中，增强模型回答质量。
+
+常用的方式直接用用户的问题进行文档召回。但是很多时候，用户的问题是十分口语化的，描述的也比较模糊，这样会影响向量召回的质量，进而影响模型回答效果。
+
+\section{策略一：HYDE（Hypothetical Document Embeddings）}
+
+\subsection{HYDE 基本介绍}
+\begin{itemize}
+\item \textbf{论文}：《Precise Zero-Shot Dense Retrieval without Relevance Labels》
+\item \textbf{论文地址}：https://arxiv.org/pdf/2212.10496.pdf
+\end{itemize}
+
+\subsection{HYDE 思路详解}
+HYDE的核心思路分为四个步骤：
+
+\begin{enumerate}
+\item \textbf{生成假设答案}：用LLM根据用户query生成k个"假答案"。大模型生成答案采用sample模式，保证生成的k个答案不一样。此时的回答内容很可能是存在知识性错误，因为如果能回答正确，那就不需要召回补充额外知识了。不过不要紧，我们只是想通过大模型去理解用户的问题，生成一些"看起来"还不错的假答案。
+
+\item \textbf{向量化处理}：利用向量化模型，将生成的k个假答案和用户的query变成向量。
+
+\item \textbf{向量融合}：将k+1个向量取平均，其中$d_k$为第k个生成的答案，$q$为用户问题，$f$为向量化操作：
+\begin{equation*}
+\hat{v}_{q_{ij}} = \frac{1}{N+1} \left[ \sum_{k=1}^{N} f(\hat{d}_k) + f(q_{ij}) \right]
+\end{equation*}
+
+\item \textbf{召回答案}：利用融合向量$v$从文档库中召回答案。融合向量中既有用户问题的信息，也有想要答案的模式信息，可以增强召回效果。
+\end{enumerate}
+
+\subsection{HYDE 存在的问题与局限性}
+该方法在结合微调过的向量化模型时，效果就没那么好了，非常依赖打辅助的LLM的能力。
+
+原始的该模型并未在TREC DL19/20数据集上训练过。模型有上标FT指的是向量化模型在TREC DL相关的数据集上微调过的。
+
+\begin{table}[h]
+\centering
+\caption{HYDE方法在不同配置下的实验结果对比（NDCG@10）}
+\begin{tabular}{@{}lcc@{}}
+\toprule
+\textbf{Model} & \textbf{DL19} & \textbf{DL20} \\
+\midrule
+\textbf{Baseline Models} & & \\
+Contriever & 44.5 & 42.1 \\
+Contriever FT & 62.1 & 63.2 \\
+\midrule
+\textbf{HyDE with Contriever} & & \\
+w/ Flan-T5(11b) & 48.9 & 52.9 \\
+w/ Cohere(52b) & 53.8 & 53.8 \\
+w/ GPT(175b) & 61.3 & 57.9 \\
+\midrule
+\textbf{HyDE with Contriever FT} & & \\
+w/ Flan-T5(11b) & 60.2 & 62.1 \\
+w/ Cohere(52b) & 61.4 & 63.1 \\
+w/ GPT(175b) & 67.4 & 63.5 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+实验发现：
+\begin{itemize}
+\item 对于没有微调过的向量化模型（zero shot场景），HyDE还是非常有用的，并且随着使用的LLM模型的增大，效果不断变好（因为LLM的回答质量提高了）
+\item 对于微调过的向量化模型，如果使用比较小的LLM生成假答案（小于52B参数量），HyDE技术甚至会带来负面影响
+\end{itemize}
+
+\section{策略二：FLARE（Forward-Looking Active REtrieval）}
+
+\subsection{FLARE 基本介绍}
+\begin{itemize}
+\item \textbf{论文}：《Active REtrieval Augmented Generation》
+\item \textbf{论文地址}：https://arxiv.org/abs/2305.06983
+\end{itemize}
+
+\subsection{为什么需要 FLARE？}
+对于大模型外挂知识库，大家通常的做法是根据用户query一次召回文档片段，让模型生成答案。只进行一次文档召回在长文本生成的场景下效果往往不好，生成的文本过长，更有可能扩展出和query相关性较弱的内容，如果模型没有这部分知识，容易产生模型幻觉问题。
+
+一种解决思路是随着文本生成，多次从向量库中召回内容。
+
+\subsection{FLARE 召回策略}
+
+\subsubsection{传统多次召回方案}
+已有的多次召回方案比较被动：
+\begin{itemize}
+\item \textbf{固定token间隔}：每生成固定的n个token就召回一次
+\item \textbf{句子级别召回}：每生成一个完整的句子就召回一次  
+\item \textbf{子问题分解}：用户query一步步分解为子问题，需要解答当前子问题时候，就召回一次
+\end{itemize}
+
+这些策略并不能保证不需要召回的时候不召回，需要召回的时候触发召回。子问题分解方案需要设计特定的prompt工程，限制了其通用性。
+
+\subsection{FLARE 策略1：主动召回标识}
+
+\subsubsection{策略1思路}
+通过设计prompt以及提供示例的方式，让模型知道当遇到需要查询知识的时候，提出问题，并按照格式输出，和ToolFormer的模式类似。
+
+具体步骤：
+\begin{enumerate}
+\item \textbf{生成主动召回标识}：提出问题的格式为[Search("模型自动提出的问题")]（称其为主动召回标识）。利用模型生成的问题去召回答案。
+
+\item \textbf{答案整合}：召回出答案后，将答案放到用户query的前边，然后去掉主动召回标识之后，继续生成。
+
+\item \textbf{动态更新}：当下一次生成主动召回标识之后，将上一次召回出来的内容从prompt中去掉。
+\end{enumerate}
+
+\subsubsection{策略1缺陷与解决方案}
+\begin{itemize}
+\item \textbf{缺陷1}：LLM不愿意生成主动召回标识
+\begin{itemize}
+\item \textbf{解决方案}：对"["对应的logit乘2，增加生成"["的概率，"["为主动召回标识的第一个字，进而促进主动召回标识的生成
+\end{itemize}
+
+\item \textbf{缺陷2}：过于频繁的主动召回可能会影响生成质量
+\begin{itemize}
+\item \textbf{解决方案}：在刚生成一次主动召回标识、得到召回后的文档、去掉主动召回标识之后，接下来生成的几个token禁止生成"["
+\end{itemize}
+
+\item \textbf{缺陷3}：不微调该方案不太可靠，很难通过few shot的方式让模型生成这种输出模式
+\end{itemize}
+
+\subsection{FLARE 策略2：基于置信度的召回}
+
+\subsubsection{策略2思路}
+策略1存在的第3点缺陷比较知名，因此作者提出了另外一个策略。该策略基于一个假设：模型生成的词对应的概率能够表现生成内容的置信度。
+
+（传统的ChatGPT接口是用不了策略2的，因为得不到生成每个词的概率。）
+
+具体步骤：
+\begin{enumerate}
+\item \textbf{初始生成}：根据用户的query，进行第一次召回，让模型生成答案。
+
+\item \textbf{句子提取}：之后，每生成64个token，用NLTK工具包从64个token里边找到第一个完整句子，当作"假答案"，扔掉多余的token。
+
+\item \textbf{置信度检测与召回触发}：如果"假答案"里有任意一个token对应的概率，低于某一阈值，那么就利用这个句子进行向量召回。
+
+\item \textbf{错误处理}：触发召回的"假答案"很可能包含事实性错误，降低召回准确率。设计了两种方法解决这个问题：
+\begin{itemize}
+\item \textbf{方法1}：将"假答案"中生成概率低于某一阈值的token扔掉（低概率的token很有可能存在错误信息），然后再进行向量召回
+\item \textbf{方法2}：利用大模型能力，对"假答案"中置信度低的内容进行提问，生成一个问题，用生成的问题进行向量召回
+\end{itemize}
+
+\item \textbf{重新生成}：利用召回出来的文本，重新生成新的"真答案"，然后进行下一个句子的生成。
+\end{enumerate}
+
+\section{技术对比与总结}
+
+\subsection{方法优势比较}
+\begin{table}[h]
+\centering
+\caption{HYDE与FLARE方法对比}
+\begin{tabular}{@{}p{0.3\textwidth}p{0.3\textwidth}p{0.3\textwidth}@{}}
+\toprule
+\textbf{特性} & \textbf{HYDE} & \textbf{FLARE} \\
+\midrule
+\textbf{核心思想} & 通过生成假设答案来增强查询表示 & 基于生成置信度动态触发召回 \\
+\textbf{适用场景} & 零样本或少样本场景 & 长文本生成场景 \\
+\textbf{计算开销} & 相对较低 & 相对较高（多次召回） \\
+\textbf{实现复杂度} & 中等 & 较高 \\
+\textbf{效果稳定性} & 依赖辅助LLM质量 & 依赖token概率获取 \\
+\textbf{主要优势} & 简单有效，提升零样本效果 & 减少幻觉，提高长文本质量 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{实践建议}
+\begin{itemize}
+\item \textbf{资源充足场景}：优先考虑FLARE策略2，效果最优但需要能获取token概率
+\item \textbf{一般应用场景}：可以考虑HYDE方法，实现相对简单
+\item \textbf{实时性要求高}：FLARE策略1可能更合适，但需要精心设计prompt
+\item \textbf{模型选择}：大尺寸的辅助LLM通常能带来更好的效果提升
+\end{itemize}
+
+\subsection{未来发展方向}
+\begin{itemize}
+\item 更智能的召回触发机制
+\item 多模态信息的融合召回
+\item 端到端的训练优化
+\item 计算效率的进一步提升
+\end{itemize}
+
+

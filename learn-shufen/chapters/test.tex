@@ -1,0 +1,109 @@
+\documentclass{ctexart}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\begin{document}
+
+考虑函数
+\[
+g(x)=x^{2}-x\left(\frac{x-\ln x+\ln(x-\ln x)}{2}+\sqrt{2+\frac{\left(x-\ln x+\ln(x-\ln x)\right)^{2}}{4}}\right).
+\]
+令
+\[
+A = x - \ln x + \ln(x - \ln x).
+\]
+则
+\[
+g(x) = x^2 - \frac{x}{2}\left(A + \sqrt{A^2 + 8}\right).
+\]
+
+\section*{渐近展开：$x\to\infty$}
+
+首先展开 $A$。记 $t = \frac{\ln x}{x}$，则 $t\to 0$。我们有
+\[
+x - \ln x = x(1-t), \quad \ln(x-\ln x) = \ln x + \ln(1-t).
+\]
+所以
+\[
+A = x - \ln x + \ln x + \ln(1-t) = x + \ln(1-t).
+\]
+对 $\ln(1-t)$ 进行泰勒展开：
+\[
+\ln(1-t) = -t - \frac{t^2}{2} - \frac{t^3}{3} - \frac{t^4}{4} - \frac{t^5}{5} + O(t^6).
+\]
+代入 $t = \frac{\ln x}{x}$ 得
+\[
+A = x - \frac{\ln x}{x} - \frac{\ln^2 x}{2x^2} - \frac{\ln^3 x}{3x^3} - \frac{\ln^4 x}{4x^4} - \frac{\ln^5 x}{5x^5} + O\left(\frac{\ln^6 x}{x^5}\right).
+\]
+
+其次，展开 $\sqrt{A^2+8}$。由于 $A\sim x$，有
+\[
+\sqrt{A^2+8} = A\sqrt{1+\frac{8}{A^2}} = A\left(1 + \frac{4}{A^2} - \frac{8}{A^4} + \frac{32}{A^6} + O\left(\frac{1}{A^8}\right)\right) = A + \frac{4}{A} - \frac{8}{A^3} + \frac{32}{A^5} + O\left(\frac{1}{A^7}\right).
+\]
+因此
+\[
+A + \sqrt{A^2+8} = 2A + \frac{4}{A} - \frac{8}{A^3} + \frac{32}{A^5} + O\left(\frac{1}{A^7}\right).
+\]
+代入 $g(x)$：
+\[
+g(x) = x^2 - \frac{x}{2}\left(2A + \frac{4}{A} - \frac{8}{A^3} + \frac{32}{A^5} + \cdots\right) = x^2 - xA - \frac{2x}{A} + \frac{4x}{A^3} - \frac{16x}{A^5} + \cdots.
+\]
+
+现在逐项处理。
+
+\subsection*{1. 计算 $xA$}
+\[
+xA = x\left(x - \frac{\ln x}{x} - \frac{\ln^2 x}{2x^2} - \frac{\ln^3 x}{3x^3} - \frac{\ln^4 x}{4x^4} - \frac{\ln^5 x}{5x^5} + \cdots\right) = x^2 - \ln x - \frac{\ln^2 x}{2x} - \frac{\ln^3 x}{3x^2} - \frac{\ln^4 x}{4x^3} - \frac{\ln^5 x}{5x^4} + O\left(\frac{\ln^6 x}{x^3}\right).
+\]
+所以
+\[
+x^2 - xA = \ln x + \frac{\ln^2 x}{2x} + \frac{\ln^3 x}{3x^2} + \frac{\ln^4 x}{4x^3} + \frac{\ln^5 x}{5x^4} + O\left(\frac{\ln^6 x}{x^5}\right).
+\]
+
+\subsection*{2. 计算 $-\frac{2x}{A}$}
+令 $\delta = \frac{\ln x}{x} + \frac{\ln^2 x}{2x^2} + \frac{\ln^3 x}{3x^3} + \cdots$，则 $A = x - \delta$。于是
+\[
+\frac{1}{A} = \frac{1}{x - \delta} = \frac{1}{x}\cdot\frac{1}{1-\delta/x} = \frac{1}{x}\left(1 + \frac{\delta}{x} + \frac{\delta^2}{x^2} + \frac{\delta^3}{x^3} + \cdots\right).
+\]
+计算
+\[
+\frac{\delta}{x} = \frac{\ln x}{x^2} + \frac{\ln^2 x}{2x^3} + \frac{\ln^3 x}{3x^4} + \cdots, \quad \frac{\delta^2}{x^2} = \frac{\ln^2 x}{x^4} + O\left(\frac{\ln^3 x}{x^5}\right).
+\]
+因此
+\[
+-\frac{2x}{A} = -2\left(1 + \frac{\delta}{x} + \frac{\delta^2}{x^2} + \cdots\right) = -2 - \frac{2\ln x}{x^2} + O\left(\frac{\ln^2 x}{x^3}\right).
+\]
+
+\subsection*{3. 计算 $\frac{4x}{A^3}$}
+\[
+\frac{1}{A^3} = \frac{1}{x^3}\left(1 + 3\frac{\delta}{x} + 6\frac{\delta^2}{x^2} + \cdots\right),
+\]
+所以
+\[
+\frac{4x}{A^3} = \frac{4}{x^2}\left(1 + 3\frac{\delta}{x} + 6\frac{\delta^2}{x^2} + \cdots\right) = \frac{4}{x^2} + O\left(\frac{\ln x}{x^4}\right).
+\]
+
+\subsection*{4. 更高阶项}
+项 $-\frac{16x}{A^5}$ 及更高阶项至少为 $O(x^{-4})$，可忽略。
+
+\subsection*{5. 合并}
+将以上结果代入：
+\begin{align*}
+g(x) &= \left(\ln x + \frac{\ln^2 x}{2x} + \frac{\ln^3 x}{3x^2} + \frac{\ln^4 x}{4x^3} + \cdots\right) \\
+&\quad + \left(-2 - \frac{2\ln x}{x^2}\right) + \left(\frac{4}{x^2}\right) + O\left(\frac{\ln^4 x}{x^3}\right) \\
+&= \ln x - 2 + \frac{\ln^2 x}{2x} + \frac{\ln^3 x}{3x^2} - \frac{2\ln x}{x^2} + \frac{4}{x^2} + O\left(\frac{\ln^4 x}{x^3}\right).
+\end{align*}
+整理 $x^{-2}$ 项得
+\[
+g(x) = \ln x - 2 + \frac{\ln^2 x}{2x} + \frac{1}{x^2}\left(\frac{\ln^3 x}{3} - 2\ln x + 4\right) + O\left(\frac{\ln^4 x}{x^3}\right).
+\]
+
+因此，当 $x\to\infty$ 时，$g(x)$ 的渐近展开到 $O\left(\frac{\ln^3 x}{x^2}\right)$ 为
+\[
+\boxed{g(x) \sim \ln x - 2 + \frac{\ln^2 x}{2x} + \frac{\ln^3 x}{3x^2} - \frac{2\ln x}{x^2} + \frac{4}{x^2}}.
+\]
+或等价地，
+\[
+\boxed{g(x) = \ln x - 2 + \frac{\ln^2 x}{2x} + \frac{1}{x^2}\left(\frac{\ln^3 x}{3} - 2\ln x + 4\right) + O\left(\frac{\ln^4 x}{x^3}\right)}.
+\]
+
+\end{document}

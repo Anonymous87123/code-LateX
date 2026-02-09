@@ -1,0 +1,141 @@
+\chapter{大模型(LLMs)进阶面}
+
+\section{生成式大模型概述}
+\subsection{什么是生成式大模型？}
+生成式大模型(一般简称大模型LLMs)是指能用于创作新内容，例如文本、图片、音频以及视频的一类深度学习模型。相比普通深度学习模型，主要有两点不同：
+\begin{itemize}
+\item 模型参数量更大，参数量都在Billion级别
+\item 可通过条件或上下文引导，产生生成式的内容(所谓的prompt engineer就是由此而来)
+\end{itemize}
+
+\section{文本生成多样性机制}
+\subsection{大模型如何让生成的文本丰富而不单调？}
+\subsubsection{从训练角度来看}
+\begin{itemize}
+\item 基于Transformer的模型参数量巨大，有助于模型学习到多样化的语言模式与结构
+\item 各种模型微调技术的出现，例如P-Tuning、Lora，让大模型微调成本更低，也可以让模型在垂直领域有更强的生成能力
+\item 在训练过程中加入一些设计好的loss，也可以更好地抑制模型生成单调内容
+\end{itemize}
+
+\subsubsection{从推理角度来看}
+基于Transformer的模型可以通过引入各种参数与策略，例如temperature，nucleus sampler来改变每次生成的内容。
+
+\section{LLMs复读机问题}
+\subsection{什么是LLMs复读机问题？}
+\begin{itemize}
+\item \textbf{字符级别重复}：指大模型针对一个字或一个词重复不断的生成
+\item \textbf{语句级别重复}：大模型针对一句话重复不断的生成
+\item \textbf{章节级别重复}：多次相同的prompt输出完全相同或十分近似的内容，没有一点创新性的内容
+\item \textbf{信息熵偏低}：大模型针对不同的prompt也可能会生成类似的内容，且有效信息很少
+\end{itemize}
+
+\subsection{为什么会出现LLMs复读机问题？}
+\begin{itemize}
+\item 数据偏差：训练数据中存在大量的重复文本或者某些特定的句子或短语出现频率较高
+\item 训练目标的限制：自监督学习的目标可能使得模型更倾向于生成与输入相似的文本
+\item 缺乏多样性的训练数据：训练数据中缺乏多样性的语言表达和语境
+\item 模型结构和参数设置：注意力机制和生成策略可能导致模型更倾向于复制输入的文本
+\item induction head机制的影响：模型会倾向于从前面已经预测的word里面挑选最匹配的词
+\item 信息熵角度分析：某些文本类型（如电商标题）信息熵高，模型预测困难
+\end{itemize}
+
+\subsection{如何缓解LLMs复读机问题？}
+
+\subsubsection{Unlikelihood Training}
+思路：在训练中加入对重复词的抑制来减少重复输出
+
+计算公式：
+\begin{align*}
+\mathcal{L}_{\text{UL-token}}^{t}(p_{\theta}(\cdot|x_{<t}),\mathcal{C}^{t}) &= -\alpha\cdot\sum_{c\in\mathcal{C}^{t}}\log(1-p_{\theta}(c|x_{<t})) - \log p_{\theta}(x_{t}|x_{<t}) \\
+\mathcal{L}_{UL}^{t}\left(p_{\theta}\left(\cdot\mid x_{<t}\right),\mathcal{C}^{t}\right) &= -\sum_{c\in\mathcal{C}^{t}}\log\left(1-p_{\theta}\left(c\mid x_{<t}\right)\right)
+\end{align*}
+
+\subsubsection{引入噪声}
+在生成文本时，引入一些随机性或噪声，增加生成文本的多样性。
+
+\subsubsection{Repetition Penalty}
+思路：重复性惩罚方法通过在模型推理过程中加入重复惩罚因子，对原有softmax结果进行修正
+
+计算公式：
+$$p_{i}=\frac{\exp(x_{i}/(T\cdot I(i\in g))}{\sum_{j}\exp(x_{j}/(T\cdot I(j\in g))}\qquad I(c)=\theta\,\text{if}\,c\,\text{is}\,\text{True}\,\text{else}\,1$$
+
+\subsubsection{Contrastive Search}
+思路：对比loss以及对比搜索两个创新点，从模型训练和模型推理层面缓解生成式模型重复问题
+
+对比loss公式：
+$$\mathcal{L}_{CL}=\frac{1}{|x|\times(| x|-1)}\sum_{i=1}^{|x|}\sum_{j=1,j\neq i}^{|x|}\max\{0,\rho-s(h_{x_{i}},h_{x_{i}})+s(h_{x_{i}},h_{x_{j}})\}$$
+
+对比搜索公式：
+$$x_{t}=\underset{v\in V^{(k)}}{\arg\max}\,{\{}(1-\alpha)\times p_{\theta}(v|x_{<t})-\alpha\times(\max\{s(h_{v},h_{x_{j}}):1\leq j\leq t-1\}){\}}$$
+
+\subsubsection{Beam Search}
+思路：在每一个时间步，保留num\_beams个最优输出，而不是只保留1个
+
+\subsubsection{TopK sampling}
+通过对Softmax的输出结果logit中最大的K个token采样来选择输出的token
+
+\subsubsection{Nucleus sampler}
+不限制K的数目，而是通过Softmax后排序token的概率，当概率大于P时停止
+
+\subsubsection{Temperature}
+调整公式：
+$$p_{i}=\frac{\exp\left(x_{i}/(T\cdot I(i\in g))\right.}{\sum_{j}\exp\left(x_{j}/(T\cdot I(j\in g))\right.}\quad I(c)=\theta\text{ if} c\text{ is True else} 1$$
+
+\subsubsection{No repeat ngram size}
+通过限制设置的ngram不能出现重复，强制模型不生成重复的token
+
+\subsubsection{重复率指标检测}
+使用seq-rep-N，uniq-seq，rep，wrep等指标进行监测
+
+\subsubsection{后处理和过滤}
+对生成的文本进行后处理和过滤，去除重复的句子或短语
+
+\subsubsection{人工干预和控制}
+引入人工干预和控制机制，对生成的文本进行审查和筛选
+
+\section{LLaMA系列问题}
+\subsection{LLaMA输入句子长度理论上可以无限长吗？}
+\begin{itemize}
+\item 限制在训练数据。理论上rope的LLaMA可以处理无限长度，但实际上存在限制
+\item 计算资源：生成长句子需要更多的计算资源
+\item 模型训练和推理：处理长句子可能面临梯度消失或梯度爆炸的问题
+\item 上下文建模：需要能够捕捉长句子中的语义和语法结构
+\end{itemize}
+
+\section{模型选择指南}
+\subsection{什么情况用Bert模型，什么情况用LLaMA、ChatGLM类大模型？}
+\begin{itemize}
+\item \textbf{Bert模型}：110M参数，NLU任务效果很好，单卡GPU部署，速度快
+\item \textbf{大模型}：6B-7B参数，处理所有NLP任务，部署成本高，预测速度慢
+\item \textbf{建议}：
+    \begin{itemize}
+    \item NLU相关任务（实体识别、信息抽取、文本分类）用BERT模型
+    \item NLG任务，纯中文任务用ChatGLM-6B，中英文任务用chinese-alpaca-plus-7b-hf
+    \end{itemize}
+\end{itemize}
+
+\section{专业领域大模型需求}
+\subsection{各个专业领域是否需要各自的大模型来服务？}
+\begin{itemize}
+\item 领域特定知识：需要针对特定领域知识进行训练
+\item 语言风格和惯用语：不同领域有独特的语言特点
+\item 领域需求的差异：不同领域对文本处理的需求不同
+\item 数据稀缺性：某些领域数据相对较少
+\end{itemize}
+
+\section{长文本处理技术}
+\subsection{如何让大模型处理更长的文本？}
+\subsubsection{LongChat方法}
+\begin{itemize}
+\item 将新的长度压缩到原来长度上，复用原来的位置信息
+\item 用训练语料做微调，超过限定长度的文本被截断
+\end{itemize}
+
+\subsubsection{其他技术方向}
+\begin{itemize}
+\item position等比例缩放和ALiBi方法
+\item 商业模型的可能技术：稀疏化、MoE技术、Multi-Query Attention
+\item Linear Attention：将Attention复杂度从O(N²)降低为O(N)
+\item RWKV：结合RNN和Transformer的优点
+\end{itemize}
+

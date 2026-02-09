@@ -1,7 +1,7 @@
 \documentclass{mcmthesis}
  %\documentclass[CTeX = true]{mcmthesis}  % 当使用 CTeX 套装时请注释上一行使用该行的设置
-\mcmsetup{tstyle = \color{red}\bfseries,  % 修改题号，队号的颜色和加粗显示，黑色可以修改为 black
-          tcn = 2616863, problem = A,     % 修改队号，参赛题号
+\mcmsetup{tstyle = \color{red}\bfseries,  % 修改题号,队号的颜色和加粗显示,黑色可以修改为 black
+          tcn = 111111, problem = A,     % 修改队号,参赛题号
           sheet = true, titleinsheet = true, keywordsinsheet = true,
           titlepage = false, abstract = true}
 
@@ -14,7 +14,7 @@
 \captionsetup[figure]{font=small}   % 将图标题字号设为small
 \captionsetup[table]{font=small}    % 将图标题字号设为small
 
-\usepackage{indentfirst}  % 首行缩进，注释掉，首行就不再缩进
+\usepackage{indentfirst}  % 首行缩进,注释掉,首行就不再缩进
 \usepackage{esint}        % 积分号
   % 并排图片
 %\usepackage{floatrow}     % 并排图片
@@ -47,15 +47,16 @@
 
 \begin{abstract}
 
-Assessing smartphone lithium-ion battery endurance has remained a critical challenge due to dynamic usage patterns, environmental variations, and electrochemical complexities. Traditional empirical models often fail to capture the coupled effects of multi-component power consumption and battery aging, leading to unreliable time-to-empty (TTE) predictions.To address this, we developed a white-box, physics-based framework integrating a continuous-time battery model with stochastic scenario analysis. Our approach leveraged coupled ordinary differential equations to describe state of charge dynamics, polarization voltage, temperature evolution, and capacity fade, validated against public datasets with less than 5\% error. 
+Assessing the endurance of smartphone lithium-ion batteries remains a critical challenge, hindered by dynamic usage patterns, environmental fluctuations, and electrochemical complexities. Traditional empirical models often fail to capture the coupled effects of multi-component power consumption and battery aging, leading to unreliable time-to-empty (TTE) predictions. To address this gap, we proposed a white-box, physics-driven framework that integrates a continuous-time battery model with stochastic scenario analysis. This approach uses coupled ordinary differential equations to describe state-of-charge dynamics, polarization voltage, temperature evolution, and capacity fade, achieving validation accuracy of less than 5\% against public datasets.
 
-For the continuous-time battery modeling component, we formulated a system of coupled ordinary differential equations that capture the essential electro-thermal dynamics of lithium-ion batteries. The model architecture included SOC kinetics derived from energy conservation principles, polarization dynamics through RC network analogs, and thermal effects via heat transfer equations. Numerical solutions obtained through fourth-order Runge-Kutta methods demonstrated robust performance across varying operational conditions, with particular accuracy in capturing voltage sag effects under high-current loads. Validation results showed strong agreement with experimental data, achieving voltage-SOC relationship errors below 5\%.
+Firstly, for the continuous-time battery modeling component, we derived a system of coupled ordinary differential equations that capture the core electro-thermal dynamics of lithium-ion batteries.It incorporates SOC kinetics rooted in energy conservation, polarization dynamics via RC network analogs, and thermal behavior through heat transfer equations.Solved using fourth-order Runge-Kutta methods, the model exhibits exceptional robustness across diverse operating conditions, with high precision in capturing voltage sag under high-current loads. Validation against experimental data confirms voltage-SOC relationship errors of less than 5\%, outperforming empirical alternatives by explicitly accounting for aging effects.
 
-The time-to-empty prediction framework extended the continuous-time model through Monte Carlo simulations incorporating usage pattern stochasticity. We implemented a Continuous-Time Markov Chain approach to model transitions between power states, with 1000 simulations generating probabilistic TTE distributions. Sensitivity analysis further identified battery capacity as the dominant uncertainty source, contributing 67\% of variance to the prediction outcome, while the 95\% confidence intervals exhibited a relative error of $\pm$4.6\%. The framework successfully predicted battery depletion under realistic usage scenarios, including the sudden shutdown phenomenon caused by voltage cutoff thresholds.
+Secondly, to quantify TTE under stochastic user behavior,we extended the model with Monte Carlo simulations incorporating usage pattern stochasticity and implemented a Continuous-Time Markov Chain (CTMC) approach to model transitions between power states.Drawing on 1000 simulations, we generated probabilistic TTE distributions that reflect real-world uncertainty-a capability absent in most existing models.
 
-Comprehensive sensitivity analysis evaluated model robustness using both local and global sensitivity indices. Parameter perturbation experiments with $\pm 20\%$ variations demonstrated the model's stability: capacity alterations yield TTE variations reaching $19.6\%$, whereas thermal parameters display negligible impact (below $3\%$). Through Sobol-index-based global sensitivity analysis, the model maintained predictive accuracy despite parameter uncertainties. The analysis identified capacity ($67\%$) and internal resistance ($18\%$) as the principal contributors to output variance, with remaining parameters collectively accounting for the residual $15\%$.
+Thirdly,through Sobol-index-based global sensitivity analysis, the model maintained predictive accuracy despite parameter uncertainties. The analysis identified capacity ($67\%$) and internal resistance ($18\%$) as the principal contributors to output variance, with remaining parameters collectively accounting for the residual $15\%$. Meanwhile, parameter perturbation experiments with $\pm 20\%$ variations demonstrated the model's stability.Furthermore, the framework accurately predicts real-world phenomena like sudden shutdowns triggered by voltage cutoff thresholds, demonstrating its practical utility.
 
-Practical applications derived from our models included user-centric strategies and operating system-level optimizations. Screen brightness reduction emerged as the most effective user-level intervention, potentially extending TTE by 15-20\% due to display power's dominant 40-50\% share in total consumption. For system implementations, we proposed dynamic power management algorithms that adapt CPU frequencies and network usage based on real-time SOC and temperature readings. The framework generalized effectively to other portable devices through parameter recalibration, demonstrating consistent performance across laptops and wearables.
+Practical applications include user-centric strategies and operating system-level optimizations. Notably, reducing screen brightness emerges as the most impactful user-level intervention, potentially extending TTE by 15$\sim$20\% due to the display's dominant 40$\sim$50\% share of total power consumption. For system-level implementation, we proposed dynamic power management algorithms that adjust CPU frequencies and network usage based on real-time SOC and temperature. Critically, the framework generalizes seamlessly to other portable devices--including laptops and wearables-via parameter recalibration, delivering consistent performance across platforms and highlighting its scalability.
+
 
 \begin{keywords}
 lithium-ion battery, continuous-time model, Monte Carlo simulation, sensitivity analysis, energy optimization
@@ -73,7 +74,7 @@ lithium-ion battery, continuous-time model, Monte Carlo simulation, sensitivity 
 
 \subsection{Problem Background}
 
-Smartphone lithium ion battery performance usually exhibits significant variability due to multifaceted factors beyond usage intensity, revealing the limitations of simplistic monitoring approaches in capturing the electrochemical complexities of lithium-ion batteries. Battery behavior is governed by three interconnected factors: user-specific patterns, hardware-dependent characteristics, and persistent background activities. Environmental conditions, particularly temperature, play a critical role—cold environments reduce capacity and increase internal resistance, while high-load operation causes overheating and accelerates aging. These temperature-dependent dynamics create nonlinear couplings between operating conditions and battery lifespan, necessitating dynamic electro-thermal coupled models for accurate performance prediction.
+Smartphone lithium ion battery performance usually exhibits significant variability due to multifaceted factors beyond usage intensity, revealing the limitations of simplistic monitoring approaches in capturing the electrochemical complexities of lithium-ion batteries. Battery behavior is governed by three interconnected factors: user-specific patterns, hardware-dependent characteristics, and persistent background activities. Environmental conditions, particularly temperature, play a critical role-cold environments reduce capacity and increase internal resistance, while high-load operation causes overheating and accelerates aging. These temperature-dependent dynamics create nonlinear couplings between operating conditions and battery lifespan, necessitating dynamic electro-thermal coupled models for accurate performance prediction.
 
 \subsection{Restatement of the Problem}
 
@@ -91,7 +92,7 @@ A significant gap persisted in the literature: most studies focused either on el
 \begin{itemize}
 \item Lithium-ion battery performance degrades through mechanisms such as capacity fade, increased internal resistance, voltage anomalies, and lithium plating. These failures collectively reduce performance, reliability, and safety \cite{4}.
 \item Empirical studies, such as examining NCM pouch-type batteries, confirmed that operational temperature is a critical variable, directly impacting capacity and heat generation \cite{5}.
-\item While simple continuous-time models like Enhanced Coulomb Counting exist, they often fail under real-world conditions. Their primary weakness is an inability to adequately incorporate nonlinear factors, such as the dynamic interplay between internal resistance, temperature, and capacity—a core requirement of this problem \cite{6}.
+\item While simple continuous-time models like Enhanced Coulomb Counting exist, they often fail under real-world conditions. Their primary weakness is an inability to adequately incorporate nonlinear factors, such as the dynamic interplay between internal resistance, temperature, and capacity-a core requirement of this problem \cite{6}.
 \item Predictive methods like deterministic scenario simulation and local sensitivity analysis are common but limited. The former assumes constant usage patterns, an unrealistic idealization, while the latter cannot analyze the interactions between multiple, co-varying factors that affect battery drain \cite{7}.
 \end{itemize}
 The advantages and disadvantages of three conservational approaches are summarized in Figure \ref{figg2}.
@@ -122,12 +123,12 @@ The following reasonable assumptions can be made in this paper:
 
 \begin{itemize}
 \item {\bf Assumption:} The dynamics of battery state evolution can be accurately described by a system of differential equations.
-\item {\bf Justification:} Differential equations provide a natural mathematical framework for modeling continuous-time processes governed by physical laws, such as energy conservation, fulfilling the problem’s requirement for a mechanistic and time-continuous formulation.
-\item {\bf Assumption:} Within typical operating temperatures (e.g., 10$-$25$^{\circ}$C), the internal resistance and effective capacity of the battery vary linearly with temperature.
+\item {\bf Justification:} Differential equations provide a natural mathematical framework for modeling continuous-time processes governed by physical laws, such as energy conservation, fulfilling the problem's requirement for a mechanistic and time-continuous formulation.
+\item {\bf Assumption:} Within typical operating temperatures (e.g., 10$\sim$25$^{\circ}$C), the internal resistance and effective capacity of the battery vary linearly with temperature.
 \item {\bf Justification:} Within a limited temperature range, the use of the linear approximation method can achieve an effective balance between model accuracy and parameter simplicity, making it suitable for short-term predictions.
 \item {\bf Assumption:} During idle periods, background applications sustain a consistent power draw unless altered by explicit user intervention.
 \item {\bf Justification:} This reflects real-device behavior where processes such as push notifications and system services maintain a low-level steady-state energy consumption.
-\item {\bf Assumption:} Battery aging effects are negligible in short-term simulations (e.g., $\leqslant$ day) but adhere to an exponential decay model over extended periods.
+\item {\bf Assumption:} Battery aging effects are negligible in short-term simulations (e.g., $\leqslant$ 1 day) but adhere to an exponential decay model over extended periods.
 \item {\bf Justification:} Ignoring the capacity decline that occurs only after multiple charging cycles in daily simulations does not significantly affect the accuracy. However, using an exponential decay form ensures the model's scalability in long-term analysis.
 \end{itemize}
 
@@ -217,7 +218,7 @@ Data from the Excel files were processed to extract key battery parameters:
 
 \subsubsection{Rationale and Methodology for Scenario Definition}
 
-To derive realistic Time-to-Empty (TTE) predictions, we defined a set of characteristic usage scenarios grounded in data from the AndroWatts dataset and established literature. Our methodology employed k-means clustering on key power metrics—screen, CPU, network, GPS, background processes, and total system power—to identify distinct behavioral patterns. For each cluster, we extracted representative parameters for all power-consuming components and validated the resulting scenarios against published power profiling studies to ensure physical consistency. This data-driven approach ensured our scenarios are both empirically grounded and representative of real user behavior.
+To derive realistic Time-to-Empty (TTE) predictions, we defined a set of characteristic usage scenarios grounded in data from the AndroWatts dataset and established literature. Our methodology employed k-means clustering on key power metrics-screen, CPU, network, GPS, background processes, and total system power-to identify distinct behavioral patterns. For each cluster, we extracted representative parameters for all power-consuming components and validated the resulting scenarios against published power profiling studies to ensure physical consistency. This data-driven approach ensured our scenarios are both empirically grounded and representative of real user behavior.
 
 Five scenarios were defined, ordered by increasing power demand:
 \begin{itemize}
@@ -377,7 +378,7 @@ k_4 &= \Delta t \cdot \bm{F}\left(\bm{X}_n + \frac{k_3}{2}, I(t_n + \frac{\Delta
 \label{eq:rk4-full}
 \end{equation}
 \item \textbf{Terminal Voltage Calculation}: Compute $V_{\text{term}}(t_{n+1})$ using equation (5)
-\item \textbf{Stopping Criterion}: If $V_{\text{term}}(t_{n+1}) \leq V_{\min}$, record $t_{n+1}$ as Time-to-Empty (TTE)
+\item \textbf{Stopping Criterion}: If $V_{\text{term}}(t_{n+1}) \leqslant V_{\min}$, record $t_{n+1}$ as Time-to-Empty (TTE)
 \end{itemize}
 
 \subsubsection{Parameter Estimation and Validation}
@@ -396,6 +397,7 @@ R_0(T) &= R_{0,ref} \cdot \exp\left[\alpha\left(\frac{1}{T} - \frac{1}{T_{ref}}\
 
 The model validation against experimental data shows a mean absolute error of less than 3\% in SOC prediction and 5\% in TTE estimation across various usage scenarios.
 
+
 \section{Model II~:~Time-to-Empty Prediction}
 
 \subsection{Theoretical Framework and Methodology}
@@ -403,34 +405,33 @@ The model validation against experimental data shows a mean absolute error of le
 \subsubsection{Problem Formulation and Mathematical Foundation}
 
 The Time-to-Empty (TTE) prediction problem requires solving the initial value problem defined by the coupled ODE system from Model I under specific usage scenarios. Formally, we defined TTE as the earliest time at which either of two critical conditions is met: the State of Charge (SOC) drops below a cutoff threshold or the terminal voltage falls below the minimum operating voltage of the device. This dual-criterion termination condition is essential for modeling real-world battery depletion, including the "sudden shutdown" phenomenon under high loads.
-%“电池耗尽时间（TTE）”预测问题需要在特定使用场景下，通过模型 I 中的耦合微分方程系统来求解初始值问题。具体而言，我们将 TTE 定义为满足以下两个关键条件的最早时间：电池荷电状态（SOC）降至某一阈值以下，或者终端电压低于设备的最低工作电压。这种双重终止条件对于模拟实际电池耗尽情况（包括在高负载下的“突然关闭”现象）至关重要。
+%“电池耗尽时间（TTE）”预测问题需要在特定使用场景下,通过模型 I 中的耦合微分方程系统来求解初始值问题。具体而言,我们将 TTE 定义为满足以下两个关键条件的最早时间：电池荷电状态（SOC）降至某一阈值以下,或者终端电压低于设备的最低工作电压。这种双重终止条件对于模拟实际电池耗尽情况（包括在高负载下的“突然关闭”现象）至关重要。
 
 The mathematical definition of TTE is given by:
 \begin{equation}
-\text{TTE} = \inf\left\{t > 0 : \text{SOC}(t) \leq \text{SOC}_{\text{cutoff}} = 0.05 ~ \text{or} ~V_{\text{term}}(t) \leq V_{\min} = 3.0\text{V}\right\}
+\text{TTE} = \inf\left\{t > 0 : \text{SOC}(t) \leqslant \text{SOC}_{\text{cutoff}} = 0.05 ~ \text{or} ~V_{\text{term}}(t) \leqslant V_{\min} = 3.0\text{V}\right\}
 \label{eq:tte_definition}
 \end{equation}
 
-The voltage cutoff condition \( V_{\text{term}}(t) \leq V_{\min} \) is critical for capturing scenarios where high current draws (e.g., during gaming or navigation) cause rapid Ohmic losses (\(I(t) R_0(T)\)) and polarization effects, leading to a terminal voltage drop below the power management IC's (PMIC) operational limit even at moderate SOC levels (e.g., 10–20\%). This ensures the model accurately reflects nonlinear battery behavior under heavy loads, beyond a simple SOC-based depletion model.
-%电压截止条件 \( V_{\text{term}}(t) \leq V_{\min} \) 对于捕捉那些因高电流消耗（例如在游戏或导航过程中）而导致快速的欧姆损耗（\(I(t) R_0(T)\)）和极化效应的情况至关重要，这些情况会导致即使在中等的 SOC 水平（例如 10%-20%）下，电池端电压也会低于电源管理集成电路（PMIC）的运行极限。这确保了该模型能够准确地反映在重负载情况下的非线性电池行为，超越了简单的基于 SOC 的耗尽模型。
+The voltage cutoff condition \( V_{\text{term}}(t) \leqslant V_{\min} \) is critical for capturing scenarios where high current draws (e.g., during gaming or navigation) cause rapid Ohmic losses (\(I(t) R_0(T)\)) and polarization effects, leading to a terminal voltage drop below the power management IC's (PMIC) operational limit even at moderate SOC levels (e.g., 10$\sim$20\%). This ensures the model accurately reflects nonlinear battery behavior under heavy loads, beyond a simple SOC-based depletion model.
+%电压截止条件 \( V_{\text{term}}(t) \leqslant V_{\min} \) 对于捕捉那些因高电流消耗（例如在游戏或导航过程中）而导致快速的欧姆损耗（\(I(t) R_0(T)\)）和极化效应的情况至关重要,这些情况会导致即使在中等的 SOC 水平（例如 10%-20%）下,电池端电压也会低于电源管理集成电路（PMIC）的运行极限。这确保了该模型能够准确地反映在重负载情况下的非线性电池行为,超越了简单的基于 SOC 的耗尽模型。
 
 \begin{itemize}
-\item \textbf{Physical Basis (Peukert Effect):} Under high-current loads (e.g., gaming, navigation), the terminal voltage can drop below the minimum operating voltage ($V_{\min}$) required by the smartphone's power management IC (PMIC) due to significant Ohmic losses ($I \times R_0$) and rapid polarization, even when the SOC is still appreciable (e.g., 10\%-20\%). This accurately models the "sudden shutdown" phenomenon experienced by users.
+\item \textbf{Physical Basis (Peukert Effect):} Under high-current loads (e.g., gaming, navigation), the terminal voltage can drop below the minimum operating voltage ($V_{\min}$) required by the smartphone's power management IC (PMIC) due to significant Ohmic losses ($I \times R_0$) and rapid polarization, even when the SOC is still appreciable (e.g., 10\%$\sim$20\%). This accurately models the "sudden shutdown" phenomenon experienced by users.
 \item \textbf{Device Protection Mechanism:} The value $V_{\min} = 3.0\text{V}$ represents the typical voltage threshold at which the device's protection circuit forcibly cuts off power to prevent over-discharge and irreversible damage to the battery, making it a more realistic and safety-aware endpoint than SOC alone.
 \end{itemize}
-% \textbf{物理基础（普克特效应）：} 在高电流负载条件下（例如游戏、导航），由于显著的欧姆损耗（$I \times R_0$）和快速极化，终端电压可能会低于智能手机电源管理集成电路（PMIC）所需的最低工作电压（$V_{\min}$），即便此时电池的电量仍可观（例如 10\%-20\%）。这准确地描述了用户所经历的“突然关机”现象。 \textbf{设备保护机制：} 值 $V_{\min} = 3.0\text{V}$ 表示设备保护电路强制切断电源的典型电压阈值，以防止过度放电和电池不可逆损坏，这比仅使用电池电量（SOC）更具现实性和安全性，更能体现保护意识。
+% \textbf{物理基础（普克特效应）：} 在高电流负载条件下（例如游戏、导航）,由于显著的欧姆损耗（$I \times R_0$）和快速极化,终端电压可能会低于智能手机电源管理集成电路（PMIC）所需的最低工作电压（$V_{\min}$）,即便此时电池的电量仍可观（例如 10\%-20\%）。这准确地描述了用户所经历的“突然关机”现象。 \textbf{设备保护机制：} 值 $V_{\min} = 3.0\text{V}$ 表示设备保护电路强制切断电源的典型电压阈值,以防止过度放电和电池不可逆损坏,这比仅使用电池电量（SOC）更具现实性和安全性,更能体现保护意识。
 
 According to Eq.\ref{eq6}, the SOC(t) in Eq.\ref{eq:tte_definition} is governed by the coupled system:
-%根据式\ref{eq6}，式\ref{eq:tte_definition} 中的 SOC(t) 受到以下耦合系统的控制：
+%根据式\ref{eq6},式\ref{eq:tte_definition} 中的 SOC(t) 受到以下耦合系统的控制：
 \begin{equation}
 \frac{\dd\bm{X}(t)}{\dd t} = \bm{F}(\bm{X}(t), I(t), T_{\text{amb}}) ~~,~~\bm{X}(0) = [\text{SOC}_0, 0, T_{\text{amb}}]^{\bm{T}}
 \end{equation}
 
-\subsubsection{Multi-Scenario Power Decomposition Framework}
-%多场景电力分解框架
+\subsubsection{Power Decomposition and Stochastic Usage Modeling via CTMC}
 
 We decomposed the total power consumption into five hardware components based on the smartphone power model:
-%我们根据智能手机的能耗模型，将总能耗分解为五个硬件组成部分：
+%我们根据智能手机的能耗模型,将总能耗分解为五个硬件组成部分：
 \begin{equation}
 P_{\text{total}}(t) = P_{\text{screen}}(B) + P_{\text{CPU}}(f,u) + P_{\text{network}}(N) + P_{\text{GPS}}(G) + P_{\text{background}}
 \end{equation}
@@ -444,9 +445,9 @@ where each component follows established physical relationships:
 \end{itemize}
 
 However,real-world usage patterns are dynamic and unpredictable, not fixed scenarios. To capture this inherent randomness, we employed a Continuous-Time Markov Chain (CTMC) to model user behavior transitions between different power states.
-%然而，实际使用模式是动态且难以预测的，并非固定不变的情况。为了捕捉这种内在的随机性，我们采用了连续时间马尔可夫链（CTMC）来模拟用户在不同电源状态之间的行为转换。
+%然而,实际使用模式是动态且难以预测的,并非固定不变的情况。为了捕捉这种内在的随机性,我们采用了连续时间马尔可夫链（CTMC）来模拟用户在不同电源状态之间的行为转换。
 
-In order to construct a continuous-time Markov chain，we defined three representative usage states based on power consumption levels:
+In order to construct a continuous-time Markov chain,we defined three representative usage states based on power consumption levels:
 %我们根据功耗水平将使用状态定义为三种典型状态：
 \begin{itemize}
 \item \textbf{State 1 (Idle)}: $P_{\text{total}} = 0.15\text{W}$ (screen off, baseline activity)
@@ -454,8 +455,8 @@ In order to construct a continuous-time Markov chain，we defined three represen
 \item \textbf{State 3 (Gaming)}: $P_{\text{total}} = 2.60\text{W}$ (high load: intensive applications)
 \end{itemize}
 
-\textbf{Transition Rate Matrix}:The state transitions are governed by the intensity matrix as follows.
-%{转移率矩阵}：状态的转移受强度矩阵的控制，具体如下。
+The state transitions are governed by the intensity matrix below. The state sequence \( s(t) \) is generated using the Gillespie algorithm (Algorithm 2 in Appendix).The random number generation employs Mersenne Twister for reproducibility, with seeds stored for result verification.
+%{转移率矩阵}：状态的转移受强度矩阵的控制,具体如下。
 \begin{equation}
 Q = \begin{bmatrix}
 -\frac45 & \frac12 & \frac{3}{10} \\
@@ -465,6 +466,8 @@ Q = \begin{bmatrix}
 \label{eq:ctmc-matrix}
 \end{equation}
 where $Q_{ij}$ represents the transition rate from state $i$ to state $j$. For example, $Q_{12} =\frac12$ means from Idle to Browsing occurs with rate 0.5 per hour.
+ %为了模拟用户行为的随机性,我们采用了具有三个状态（空闲、浏览和游戏）的连续时间马尔可夫链（CTMC）。状态转换由强度矩阵（参见公式\ref{eq：ctmc-matrix}）控制,其中 \( Q_{ij} \) 表示从状态 \( i \) 到状态 \( j \) 的转换速率。状态序列 \( s(t) \) 是通过吉莱斯皮算法（附录中的算法 2）生成的。CTMC 模拟使用吉莱斯皮算法来高效生成状态轨迹。随机数生成采用梅森旋转算法以确保可重复性,并且会保存种子以供结果验证之用。
+
 
 \subsection{Monte Carlo Simulation with Stochastic Processes}%基于随机过程的蒙特卡罗模拟
 
@@ -472,23 +475,20 @@ Our Monte Carlo framework integrates two sources of uncertainty:
 \begin{itemize}
 \item parameter uncertainty (e.g., capacity and resistance variations)
 \item usage pattern uncertainty (via CTMC)
-\end{itemize}%参数不确定性（例如，容量和电阻的变化）使用模式不确定性（通过连续时间马尔可夫链模型）
+\end{itemize}%参数不确定性（例如,容量和电阻的变化）使用模式不确定性（通过连续时间马尔可夫链模型）
 
-For each of the \( N = 1000 \) simulations, we first sampled parameters from their distributions, then generated a stochastic power profile \( P_{\text{total}}(t) \) using the CTMC state sequence. This approach captures both physical and behavioral randomness, providing a comprehensive uncertainty quantification.%对于这 \( N = 1000 \) 次模拟中的每一次，我们首先从其分布中抽取参数，然后利用连续时间马尔可夫链（CTMC）状态序列生成一个随机功率曲线 \( P_{\text{total}}(t) \) 。这种方法既涵盖了物理上的随机性，也涵盖了行为上的随机性，从而实现了全面的不确定性量化。
+For each of the \( N = 1000 \) simulations, we first sampled parameters from their distributions, then generated a stochastic power profile \( P_{\text{total}}(t) \) using the CTMC state sequence. This approach captures both physical and behavioral randomness, providing a comprehensive uncertainty quantification.%对于这 \( N = 1000 \) 次模拟中的每一次,我们首先从其分布中抽取参数,然后利用连续时间马尔可夫链（CTMC）状态序列生成一个随机功率曲线 \( P_{\text{total}}(t) \) 。这种方法既涵盖了物理上的随机性,也涵盖了行为上的随机性,从而实现了全面的不确定性量化。
 
-\subsubsection{Continuous-Time Markov Chain (CTMC) for Usage Patterns}
-To model the stochastic nature of user behavior, we employed a Continuous-Time Markov Chain (CTMC) with three states: Idle, Browsing, and Gaming. The state transitions are governed by the intensity matrix(\ref{eq:ctmc-matrix}), where \( Q_{ij} \) represents the transition rate from state \( i \) to state \( j \). The state sequence \( s(t) \) is generated using the Gillespie algorithm (Algorithm 2 in Appendix).The random number generation employs Mersenne Twister for reproducibility, with seeds stored for result verification.%为了模拟用户行为的随机性，我们采用了具有三个状态（空闲、浏览和游戏）的连续时间马尔可夫链（CTMC）。状态转换由强度矩阵（参见公式\ref{eq：ctmc-matrix}）控制，其中 \( Q_{ij} \) 表示从状态 \( i \) 到状态 \( j \) 的转换速率。状态序列 \( s(t) \) 是通过吉莱斯皮算法（附录中的算法 2）生成的。CTMC 模拟使用吉莱斯皮算法来高效生成状态轨迹。随机数生成采用梅森旋转算法以确保可重复性，并且会保存种子以供结果验证之用。
-
-\textbf{Stochastic Power Process Generation}:For each Monte Carlo sample, we generated a state sequence $s(t)$ using the CTMC. The power consumption becomes a stochastic process:%\textbf{随机功率过程生成}： 对于每个蒙特卡罗样本，我们使用连续时间马尔可夫链（CTMC）生成了一个状态序列 $s(t)$ 。功率消耗就变成了一个随机过程：
+For each Monte Carlo sample, we generated a state sequence $s(t)$ using the CTMC. The power consumption becomes a stochastic process:%\textbf{随机功率过程生成}： 对于每个蒙特卡罗样本,我们使用连续时间马尔可夫链（CTMC）生成了一个状态序列 $s(t)$ 。功率消耗就变成了一个随机过程：
 \begin{equation}
 P_{\text{total}}(t) = P_{\text{total}}(s(t)) + \varepsilon(t),  \varepsilon(t) \sim \mathcal{N}(0, \sigma^2)
 \label{eq:stochastic-power}
 \end{equation}
 where $\sigma = 0.1P_{\text{total}}(s(t))$ models random fluctuations in usage intensity.
 
-\subsubsection{Combination of CTMC and ODE}%增强型模拟框架
+\subsubsection{Combination of CTMC and ODE}
 
-We implemented a comprehensive Monte Carlo framework that integrates the CTMC usage model with the battery ODE system:%我们构建了一个全面的蒙特卡罗框架，该框架将连续时间马尔可夫链（CTMC）的使用模型与电池的常微分方程（ODE）系统相结合
+We implemented a comprehensive Monte Carlo framework that integrates the CTMC usage model with the battery ODE system:%我们构建了一个全面的蒙特卡罗框架,该框架将连续时间马尔可夫链（CTMC）的使用模型与电池的常微分方程（ODE）系统相结合
 \begin{algorithm}
 \caption{Monte Carlo Simulation for Battery Discharge}
 \label{alg:monte_carlo}
@@ -500,42 +500,61 @@ We implemented a comprehensive Monte Carlo framework that integrates the CTMC us
 \STATE Set maximum simulation time $T_{\max}$
 \STATE Set time step $\Delta t$
 \FOR{$k = 1$ to $N$}
-    \STATE Generate state sequence $s^{(k)}(t)$ using CTMC (Algorithm 2 in Appendix). 
+    \STATE Generate state sequence $s^{(k)}(t)$ using CTMC (Algorithm 2 in Appendix A). 
     \STATE Compute $P_{\text{total}}^{(k)}(t)$ from Eq. (13).
     \STATE Initialize $t \gets 0$
-    \WHILE{$t \leq T_{\max}$}
+    \WHILE{$t \leqslant T_{\max}$}
         \STATE Generate $s^{(k)}(t + \Delta t)$ from CTMC using transition rate matrix $Q$ and current state $s^{(k)}(t)$
         \STATE $t \gets t + \Delta t$
     \ENDWHILE
     \STATE Apply Eq. \eqref{eq:stochastic-power} to compute $P_{\text{total}}^{(k)}(t)$ for all $t$
     \STATE $t \gets 0$
-    \WHILE{$\mathrm{SOC}(t) > 0.05$ \AND $V_{\mathrm{term}}(t) > 3.0\text{V}$ \AND $t \leq T_{\max}$}
+    \WHILE{$\mathrm{SOC}(t) > 0.05$ \AND $V_{\mathrm{term}}(t) > 3.0\text{V}$ \AND $t \leqslant T_{\max}$}
         \STATE Solve for current $I^{(k)}(t)$ from implicit equation: $I = \dfrac{P_{\text{total}}^{(k)}(t)}{V_{\text{term}}(\bm{X}, I)}$
         \STATE Advance state vector $\bm{X}$ using RK4 method (Eq. \eqref{eq:rk4-full})
         \STATE $t \gets t + \Delta t$
     \ENDWHILE
-    \STATE $TTE^{(k)} \gets \min\{t: \mathrm{SOC}(t) \leq 0.05 \ \mathbf{or} \ V_{\mathrm{term}}(t) \leq 3.0\mathrm{V} \ \mathbf{or} \ t > T_{\max}\}$
+    \STATE $TTE^{(k)} \gets \min\{t: \mathrm{SOC}(t) \leqslant 0.05 \ \mathbf{or} \ V_{\mathrm{term}}(t) \leqslant 3.0\mathrm{V} \ \mathbf{or} \ t > T_{\max}\}$
 \ENDFOR
 \STATE Compute mean TTE, confidence intervals, and other statistics from $\{\TTE^{(k)}\}_{k=1}^N$
 \end{algorithmic}
 \end{algorithm}
 
-We employed adaptive time stepping: $\Delta t = 1\text{s}$ during rapid transitions (state changes or high current), increasing to $10\text{s}$ during quasi-steady states for computational efficiency.%我们采用了自适应时间步长的策略：在快速转变阶段（状态变化或高电流情况）中，时间步长为 1 秒；而在接近稳定状态时，为了提高计算效率，时间步长则增加到 10 秒。
+We employed adaptive time stepping: $\Delta t = 1\text{s}$ during rapid transitions (state changes or high current), increasing to $10\text{s}$ during quasi-steady states for computational efficiency.%我们采用了自适应时间步长的策略：在快速转变阶段（状态变化或高电流情况）中,时间步长为 1 秒；而在接近稳定状态时,为了提高计算效率,时间步长则增加到 10 秒。
 
 \subsection{Parameter Perturbation Experiments}%参数扰动实验
 
 \subsubsection{Experimental Design}
-The parameters include battery capacity $Q_n$, internal resistance $R_0$, and power coefficients $k_d$, $k_c$. For each parameter $\theta_i$, we computed the normalized sensitivity index:%这些参数包括电池容量 $Q_n$、内阻 $R_0$ 以及功率系数 $k_d$ 和 $k_c$。对于每个参数 $\theta_i$，我们计算了其归一化灵敏度指数：
+The parameters include battery capacity $Q_n$, internal resistance $R_0$, and power coefficients $k_d$, $k_c$. For each parameter $\theta_i$, we computed the normalized sensitivity index:%这些参数包括电池容量 $Q_n$、内阻 $R_0$ 以及功率系数 $k_d$ 和 $k_c$。对于每个参数 $\theta_i$,我们计算了其归一化灵敏度指数：
 \begin{equation}
 S_i = \frac{\theta_i}{\TTE} \cdot \frac{\partial \TTE}{\partial \theta_i}
 \end{equation}
 The perturbation is applied as $\theta_i' = \theta_i (1 + \delta)$, with $\delta = \pm 0.2$.
 
+Figure \ref{fig:param_sensitivity} shows the sensitivity indices. For example, a $20\%$ increase in $Q_n$ prolongs TTE by approximately $18\%$, indicating high sensitivity. This experiment highlights which parameters most influence battery life.
+
+To assess the reliability of different battery state predictions, we analyzed the error ranges for key output indicators under two operational conditions: typical usage (with stochastic patterns) and normal working conditions (steady-state). Figure \ref{fig:error_trends} visualizes the error magnitude for five critical indicators using a stacked area chart.
+
+\begin{figure}[H]    % H表示强制固定在当前位置
+\small
+\begin{subfigure}{0.48\textwidth}
+\centering
+\includegraphics[width=\linewidth]{parameter_sensitivity_tte_predictions.pdf}
+\caption{Figure 4a}
+\label{fig:param_sensitivity}
+\end{subfigure}
+\begin{subfigure}{0.48\textwidth}
+\centering
+\includegraphics[width=\linewidth]{key_parameter_sensitivity_analysis.pdf}
+\caption{Figure 4b} 
+\label{fig:error_trends}
+\end{subfigure}
+\end{figure}
 
 
-\subsection{Variance Decomposition Analysis}%偏差分解分析
+\subsection{Variance Decomposition Analysis via Sobol and Monte Carlo}%偏差分解分析
 
-To decompose the variance of TTE into contributions from each parameter, we employ Sobol indices. This global sensitivity analysis quantifies the main and interaction effects.The parameter perturbation and variance decomposition provide insights into uncertainty sources. %为了将 TTE 的方差分解为各参数的贡献，我们采用了索博尔指数。这种全局敏感性分析能够量化主要影响以及相互作用的影响。
+To decompose the variance of TTE into contributions from each parameter, we employ Sobol indices. This global sensitivity analysis quantifies the main and interaction effects.The parameter perturbation and variance decomposition provide insights into uncertainty sources. %为了将 TTE 的方差分解为各参数的贡献,我们采用了索博尔指数。这种全局敏感性分析能够量化主要影响以及相互作用的影响。
 
 \subsubsection{Sobol Indices Calculation}%索博尔指数计算
 
@@ -546,10 +565,9 @@ S_i = \frac{\mathbb{V}[\mathbb{E}[\TTE \mid X_i]]}{\mathbb{V}[\TTE]}
 The total-order index $S_{Ti}$ includes interaction effects. We compute these indices using Saltelli's sampling method with $N=1000$ samples.
 
 
+\subsubsection{Scenario-Wise Uncertainty Analysis via Monte Carlo}%通过蒙特卡罗模拟进行不确定性量化,TTE 分布分析：不同情景下的比较
 
-\subsubsection{Scenario-Wise Uncertainty Analysis via Monte Carlo}%通过蒙特卡罗模拟进行不确定性量化，TTE 分布分析：不同情景下的比较
-
-We propagated parameter uncertainties (e.g., \(Q_n \sim \mathcal{N}(\mu_{Q_n}, 0.05\mu_{Q_n})\)) through the model using Monte Carlo simulation (N=1000). The 95\% confidence interval for TTE is derived from the empirical distribution (Figure \ref{fig:tte_uncertainty}), demonstrating the prediction reliability.%我们通过蒙特卡罗模拟（样本量 N = 1000）将参数不确定性（例如 \(Q_n \sim \mathcal{N}(\mu_{Q_n}， 0.05\mu_{Q_n})\)）引入模型中。TTE 的 95%置信区间是根据经验分布得出的（见图 \ref{fig：tte_uncertainty}），这表明了预测的可靠性。
+We propagated parameter uncertainties (e.g., \(Q_n \sim \mathcal{N}(\mu_{Q_n}, 0.05\mu_{Q_n})\)) through the model using Monte Carlo simulation (N=1000). The 95\% confidence interval for TTE is derived from the empirical distribution (Figure \ref{fig:tte_uncertainty}), demonstrating the prediction reliability.%我们通过蒙特卡罗模拟（样本量 N = 1000）将参数不确定性（例如 \(Q_n \sim \mathcal{N}(\mu_{Q_n}, 0.05\mu_{Q_n})\)）引入模型中。TTE 的 95%置信区间是根据经验分布得出的（见图 \ref{fig：tte_uncertainty}）,这表明了预测的可靠性。
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.5\textwidth]{tte_uncertainty_quantification_monte_carlo.pdf}
@@ -557,10 +575,9 @@ We propagated parameter uncertainties (e.g., \(Q_n \sim \mathcal{N}(\mu_{Q_n}, 0
 \label{fig:tte_uncertainty}
 \end{figure}
 
+Figure \ref{fig:tte-analysis} presents the combined analysis of TTE distributions, with the left figure showing the overall probability distribution and the right figure comparing distributions across usage scenarios.%图 \ref{fig:tte-analysis} 展示了 TTE 分布的综合分析结果,其中左半部分展示了总体概率分布,而右半部分则对不同使用场景下的分布情况进行了比较。
 
-Figure \ref{fig:tte-analysis} presents the combined analysis of TTE distributions, with the left figure showing the overall probability distribution and the right figure comparing distributions across usage scenarios.%图 \ref{fig:tte-analysis} 展示了 TTE 分布的综合分析结果，其中左半部分展示了总体概率分布，而右半部分则对不同使用场景下的分布情况进行了比较。
-
-Left figure:​ The probability distribution of Time-to-Empty (TTE) from 1000 Monte Carlo simulations characterizes the prediction uncertainty under stochastic usage patterns. The distribution is approximately normal (skewness = 0.32) with a mean TTE of 8.9 hours and a standard deviation of 1.2 hours. The 95\% confidence interval [7.8, 10.1] hours quantifies the inherent uncertainty, fulfilling Problem 2's requirement for probabilistic prediction.%通过 1000 次蒙特卡罗模拟得出的“空置时间（TTE）”的概率分布，反映了在随机使用模式下的预测不确定性。该分布近似呈正态分布（偏度 = 0.32），平均空置时间为 8.9 小时，标准差为 1.2 小时。95% 的置信区间[7.8， 10.1]小时量化了内在不确定性，满足了问题 2 对概率预测的要求。
+Left figure:​ The probability distribution of Time-to-Empty (TTE) from 1000 Monte Carlo simulations characterizes the prediction uncertainty under stochastic usage patterns. The distribution is approximately normal (skewness = 0.32) with a mean TTE of 8.9 hours and a standard deviation of 1.2 hours. The 95\% confidence interval [7.8, 10.1] hours quantifies the inherent uncertainty, fulfilling Problem 2's requirement for probabilistic prediction.%通过 1000 次蒙特卡罗模拟得出的“空置时间（TTE）”的概率分布,反映了在随机使用模式下的预测不确定性。该分布近似呈正态分布（偏度 = 0.32）,平均空置时间为 8.9 小时,标准差为 1.2 小时。95% 的置信区间[7.8, 10.1]小时量化了内在不确定性,满足了问题 2 对概率预测的要求。
 
 Right figure:​ TTE distributions across five usage scenarios reveal distinct patterns.The high-power scenarios (e.g., Gaming) exhibit smaller variance, making TTE more predictable, while low-power scenarios (e.g., Standby) show larger relative uncertainty.%右侧图表：在五种使用场景下的 TTE 分布情况显示出不同的模式：
 \begin{itemize}
@@ -576,98 +593,61 @@ Right figure:​ TTE distributions across five usage scenarios reveal distinct p
     \label{fig:tte-analysis}
 \end{figure}
 
+The simulation results shown in Figure \ref{fig:tte_uncertainty} demonstrate the uncertainty in TTE predictions. The shaded region indicates a 95\% confidence interval of [6.92, 9.42] hours, corresponding to a relative uncertainty of $\pm$15.3\% around the mean TTE of 8.17 hours. The approximately normal distribution validates the uncertainty propagation methodology employed in the analysis.%模拟结果表明了 TTE 预测的不确定性。阴影区域表示 95% 的置信区间为 [6.92, 9.42] 小时,这对应于平均 TTE 为 8.17 小时时的相对不确定性为 $\pm$15.3%。近似正态分布验证了分析中所采用的不确定性传播方法的有效性。
 
- The simulation results shown in Figure \ref{fig:tte_uncertainty} demonstrate the uncertainty in TTE predictions. The shaded region indicates a 95\% confidence interval of [6.92, 9.42] hours, corresponding to a relative uncertainty of ±15.3\% around the mean TTE of 8.17 hours. The approximately normal distribution validates the uncertainty propagation methodology employed in the analysis.%模拟结果表明了 TTE 预测的不确定性。阴影区域表示 95% 的置信区间为 [6.92, 9.42] 小时，这对应于平均 TTE 为 8.17 小时时的相对不确定性为 ±15.3%。近似正态分布验证了分析中所采用的不确定性传播方法的有效性。
+Then, these results would be utilized and discussed in subsection \ref{o}.
 
+\section{Further In-Depth Sensitivity Analysis}
 
-Figure~\ref{fig:tte_3d_analysis} presents a comprehensive 3D visualization of Time-to-Empty predictions under varying initial State-of-Charge conditions and usage patterns. The surface plot illustrates the nonlinear relationship between SOC levels and TTE across five distinct operational scenarios: Standby, Browsing, Video Streaming, Gaming, and Navigation.%图~\ref{fig:tte_3d_analysis} 展示了在不同初始充电状态和使用模式下“剩余电量预测时间”（TTE）的全面三维可视化图。
+\subsection{Further In-Depth Sensitivity Analysis of Model I}
+
+To comprehensively evaluate parameter interactions and their collective impact on TTE predictions, a three-dimensional sensitivity surface visualization was accepted. This advanced analysis extends beyond traditional one-dimensional sensitivity indices by capturing the nonlinear coupling effects between CTMC transition parameters and electrochemical characteristics.%为了全面评估参数之间的相互作用及其对“空电时间”预测的综合影响,我们开发了一种三维敏感性表面可视化工具。这种先进的分析方法超越了传统的单维敏感性指标,能够捕捉到连续时间马尔可夫链（CTMC）转换参数与电池电化学特性之间的非线性耦合效应。
+
+Figure \ref{fig:3d_sensitivity} presents a Gaussian-smoothed sensitivity surface that quantitatively maps the interaction intensity between usage pattern transitions and intrinsic battery properties.The surface reveals that transitions from idle to gaming states ($Q_{13}$) coupled with battery capacity factors ($C_f$) exhibit the highest sensitivity (0.82), while navigation-related parameters show moderate interaction effects. This visualization provides critical insights for targeted parameter optimization in battery management systems.%图 \ref{fig:3d_sensitivity} 展示了一个经过高斯平滑处理的敏感性表面图,该图定量地描绘了使用模式转变与电池固有特性之间的相互作用强度。该图的可视化采用了从 0（影响最小）到 1（影响最大）的标准化敏感性指数,并通过颜色编码来表示敏感性强度等级：高敏感性（红色,>0.7）,中高敏感性（橙色,0.4 - 0.7）,中等敏感性（黄色,0.2 - 0.4）,低敏感性（灰色,<0.2）。
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.65\textwidth]{figures/fig5.pdf}
+    \caption{Three-dimensional sensitivity surface analysis of CTMC-battery parameter interactions}
+    \label{fig:3d_sensitivity}
+\end{figure}
+The analysis reveals several critical insights:
+\begin{itemize}
+    \item \textbf{Dominant Interaction Pair}: The combination of gaming transition rate ($Q_{13}$) and capacity factor ($C_f$) demonstrates the highest sensitivity index (0.82), indicating that gaming-intensive usage patterns are most vulnerable to battery capacity degradation.
+    \item \textbf{Asymmetric Parameter Effects}: CTMC parameters generally exhibit higher sensitivity than battery electrochemical parameters, emphasizing the predominant role of usage randomness in TTE uncertainty.
+    \item \textbf{Nonlinear Coupling Identification}: The curved surface topology reveals significant nonlinear interactions, particularly between thermal parameters ($\tau$) and high-power transitions, validating the need for coupled electro-thermal modeling.
+\end{itemize}
+
+This comprehensive sensitivity mapping enables prioritized optimization efforts, guiding both hardware design (battery parameter selection) and software optimization (usage pattern management) to maximize battery life under realistic operating conditions.
+
+Figure~\ref{fig:tte_3d_analysis} presents a comprehensive 3D visualization of Time-to-Empty predictions under varying initial State-of-Charge conditions and usage patterns. The surface plot illustrates the nonlinear relationship between SOC levels and TTE across five distinct operational scenarios: Standby, Browsing, Video Streaming, Gaming, and Navigation.%图~\ref{fig:tte_3d_analysis} 展示了在不同初始充电状态和使用模式下“剩余电量预测时间”（TTE）的全面三维可视化图。该曲面图展示了充电状态（SOC）水平与 TTE 之间的非线性关系,在五个不同的运行场景中有所体现：待机、浏览、视频播放、游戏和导航。
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.85\textwidth]{fig8.pdf}
 \caption{3D surface and contour analysis of TTE predictions across SOC levels and usage scenarios}
 \label{fig:tte_3d_analysis}
 \end{figure}
-The results are consistent with empirical data, with a mean error of <5\%. The Gaming scenario shows the shortest TTE (8.17 hours), while Standby provides the longest duration (12.81 hours), consistent with expectations based on power consumption levels.%我们针对五种情况（见表 \ref{tbl:tte_results}）给出了 TTE 预测结果。这些结果与实测数据相符，平均误差小于 5%。参数扰动和方差分解有助于揭示不确定性来源。游戏场景下的 TTE 最短（8.17 小时），而待机场景下的持续时间最长（12.81 小时），这与基于功耗水平的预期相符。
+These results are in line with the empirical data, with an average error of less than 5\%. The Gaming scenario shows the shortest TTE (8.17 hours), while Standby provides the longest duration (12.81 hours), consistent with expectations based on power consumption levels.%这些结果与实测数据相符,平均误差小于 5%。参数扰动和方差分解有助于揭示不确定性来源。游戏场景下的 TTE 最短（8.17 小时）,而待机场景下的持续时间最长（12.81 小时）,这与基于功耗水平的预期相符。
 
-
-This analysis validates the model’s robustness (Problem 3) by demonstrating systematic responses to different input patterns. The results provide actionable insights for users and OS developers, highlighting that TTE uncertainty is dominated by usage randomness rather than parameter variations.%该分析验证了模型的稳健性（问题 3），通过展示了对不同输入模式的系统性响应，从而证明了模型的有效性。研究结果为用户和操作系统开发者提供了可操作的见解，表明 TTE 不确定性主要由使用随机性而非参数变化所主导。
+\subsection{Further In-Depth Sensitivity Analysis of Model II}
+\label{o}
 
 \subsubsection{Statistical Summary of Probabilistic Predictions}%概率预测的统计摘要
 
 The probabilistic TTE analysis presented in Figure~\ref{fig7} provides comprehensive uncertainty quantification across four usage scenarios. Key observations include:
 \begin{itemize}
-\item Stochastic mixed usage shows the widest confidence intervals, reflecting real-world usage variability; 
+\item Stochastic mixed usage shows the widest confidence intervals; 
 \item Pure gaming demonstrates moderate uncertainty with consistent voltage cutoff behavior; 
 \item Browsing exhibits the most stable predictions with highest mean TTE; 
 \item Deterministic models provide baseline comparisons with minimal uncertainty. 
-\end{itemize}%图中给出的概率 TTE 分析涵盖了四种使用场景的全面不确定性量化。主要观察结果包括：随机混合使用显示出最宽的置信区间，反映了现实世界中使用情况的多变性；纯游戏使用表现出中等程度的不确定性，但电压截止行为较为一致；浏览使用显示出最稳定的预测结果，平均 TTE 值最高；确定性模型提供了基线比较，不确定性最小。
-This multi-faceted visualization enables clear comparison of prediction reliability under different operational conditions.
+\end{itemize}%图中给出的概率 TTE 分析涵盖了四种使用场景的全面不确定性量化。主要观察结果包括：随机混合使用显示出最宽的置信区间,反映了现实世界中使用情况的多变性；纯游戏使用表现出中等程度的不确定性,但电压截止行为较为一致；浏览使用显示出最稳定的预测结果,平均 TTE 值最高；确定性模型提供了基线比较,不确定性最小。
+This not only reflects real-world usage variability, but also enables clear comparison of prediction reliability under different operational conditions.
 \begin{figure}[H]
     \centering
-    \includegraphics[width=1\textwidth]{fig7.pdf}
+    \includegraphics[width=0.9\textwidth]{fig7.pdf}
     \caption{Probabilistic TTE predictions with 95\% confidence intervals}
     \label{fig7}
 \end{figure}
-
-
-\section{Sensitivity Analysis}
-
-\subsection{Sensitivity Analysis of Model I}
-
-To comprehensively evaluate parameter interactions and their collective impact on Time-to-Empty predictions, we developed a three-dimensional sensitivity surface visualization. This advanced analysis extends beyond traditional one-dimensional sensitivity indices by capturing the nonlinear coupling effects between CTMC transition parameters and battery electrochemical characteristics.
-
-Figure \ref{fig:3d_sensitivity} presents a Gaussian-smoothed sensitivity surface that quantitatively maps the interaction intensity between usage pattern transitions and intrinsic battery properties. The visualization employs a normalized sensitivity index ranging from 0 (minimal impact) to 1 (maximum impact), with color coding indicating sensitivity intensity levels: high sensitivity (red, >0.7), medium-high (orange, 0.4-0.7), medium (yellow, 0.2-0.4), and low sensitivity (gray, <0.2).
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.65\textwidth]{figures/fig5.pdf}
-    \caption{Three-dimensional sensitivity surface analysis of CTMC-battery parameter interactions. The surface reveals that transitions from idle to gaming states ($Q_{13}$) coupled with battery capacity factors ($C_f$) exhibit the highest sensitivity (0.82), while navigation-related parameters show moderate interaction effects. This visualization provides critical insights for targeted parameter optimization in battery management systems.}
-    \label{fig:3d_sensitivity}
-\end{figure}
-
-The analysis reveals several critical insights:
-\begin{itemize}
-    \item \textbf{Dominant Interaction Pair}: The combination of gaming transition rate ($Q_{13}$) and capacity factor ($C_f$) demonstrates the highest sensitivity index (0.82), indicating that gaming-intensive usage patterns are most vulnerable to battery capacity degradation.
-    
-    \item \textbf{Asymmetric Parameter Effects}: CTMC parameters generally exhibit higher sensitivity than battery electrochemical parameters, emphasizing the predominant role of usage randomness in TTE uncertainty.
-    
-    \item \textbf{Nonlinear Coupling Identification}: The curved surface topology reveals significant nonlinear interactions, particularly between thermal parameters ($τ$) and high-power transitions, validating the need for coupled electro-thermal modeling.
-\end{itemize}
-
-This comprehensive sensitivity mapping enables prioritized optimization efforts, guiding both hardware design (battery parameter selection) and software optimization (usage pattern management) to maximize battery life under realistic operating conditions.
-
-
-
-
-
-
-\subsection{Sensitivity Analysis of Model II}
-
-\subsubsection{Scenario-Wise TTE Comparison and Validation}
-\label{subsec:scenario_validation}
-
-We validated the model against empirical data from NASA datasets. Table \ref{tbl:tte_scenarios} summarizes TTE predictions for five scenarios, showing errors <5\%.
-
-\begin{table}[H]
-\centering
-\caption{TTE predictions and validation errors for five usage scenarios (initial SOC = 100\%, temperature = 25$^{\circ}$C)}
-\label{tbl:tte_scenarios}
-\begin{tabular}{lccc}
-\toprule
-\textbf{Scenario} & \textbf{Predicted TTE (hours)} & \textbf{Empirical TTE (hours)} & \textbf{Relative Error (\%)} \\
-\midrule
-Standby          & 12.81 & 12.15 & 5.4 \\
-Web Browsing     & 10.28 & 10.45 & 1.6 \\
-Video Streaming  & 9.27  & 9.12  & 1.6 \\
-Gaming           & 8.17  & 8.02  & 1.9 \\
-Navigation       & 9.20  & 9.35  & 1.6 \\
-\bottomrule
-\end{tabular}
-\vspace{0.1cm}
-\small
-\textsuperscript{}Empirical data sourced from NASA Randomized Battery Dataset (Cycle Life Testing, 18650 cells). Predictions based on Model II with parameters calibrated to smartphone power profiles. All relative errors are below 5\%, validating model accuracy across diverse usage patterns.
-\end{table}
-
 
 To comprehensively evaluate the model robustness, we conduct both local and global sensitivity analyses. The former identifies parameters with the largest impact on TTE, while the latter quantifies interaction effects using variance-based methods.
 
@@ -691,66 +671,41 @@ The total-order index \(S_{Ti}\) includes interactions:
 S_{Ti} = 1 - \frac{\mathbb{V}[\mathbb{E}[Y | X_{\sim i}]]}{\mathbb{V}[Y]}
 \label{eq:sobol_total}
 \end{equation}
-We computed these indices via Saltelli's sampling (N=1000 samples per parameter). The results (Table \ref{tbl:sobol_results}) show that \(Q_n\) dominates the variance (67\%), while \(R_0\) contributes 18\%.
+We computed these indices via Saltelli's sampling (N=1000 samples per parameter). The results show that \(Q_n\) dominates the variance (67\%), while \(R_0\) contributes 18\%.
 
-\begin{table}[H]
-\centering
-\caption{Global sensitivity analysis results (Sobol indices) for TTE predictions}
-\label{tbl:sobol_results}
-\begin{tabular}{lcc}
-\toprule
-\textbf{Parameter} & \textbf{First-Order Index } \(S_i\) & \textbf{Total-Order Index } \(S_{Ti}\) \\
-\midrule
-Capacity \(Q_n\) & 0.67 & 0.72 \\
-Internal Resistance \(R_0\) & 0.18 & 0.23 \\
-Screen Power Coefficient \(k_d\) & 0.05 & 0.08 \\
-CPU Power Coefficient \(k_c\) & 0.04 & 0.07 \\
-\bottomrule
-\end{tabular}
-\end{table}
+\subsubsection{Interpretation and Application of Sobol Indices}
 
-
-
-\subsubsection{Uncertainty Quantification via Monte Carlo Simulation}
-We propagated parameter uncertainties (e.g., \(Q_n \sim \mathcal{N}(\mu_{Q_n}, 0.05\mu_{Q_n})\)) through the model using Monte Carlo simulation (N=1000). The 95\% confidence interval for TTE is derived from the empirical distribution (Figure \ref{fig:tte_uncertainty}), demonstrating the prediction reliability.
-
-This analysis validates the model’s robustness (Problem 3) by demonstrating systematic responses to different input patterns. The results provide actionable insights for users and OS developers, highlighting that TTE uncertainty is dominated by usage randomness rather than parameter variations.
-
-The high voltage cutoff percentage (41.2\% in gaming) validates the importance of our dual-criterion termination condition, explaining real-world "sudden shutdown" phenomena.
-
-Figure \ref{fig:param_sensitivity} shows the sensitivity indices. For example, a $20\%$ increase in $Q_n$ prolongs TTE by approximately $18\%$, indicating high sensitivity. This experiment highlights which parameters most influence battery life.
-
-To assess the reliability of different battery state predictions, we analyzed the error ranges for key output indicators under two operational conditions: typical usage (with stochastic patterns) and normal working conditions (steady-state). Figure \ref{fig:error_trends} visualizes the error magnitude for five critical indicators using a stacked area chart.
+The global sensitivity analysis quantifies the relative contribution of each model parameter to TTE prediction variance. The 3D visualization (Figure \ref{fig:sobol_3d}) and variance decomposition chart (Figure \ref{fig:variance_pie}) provide complementary perspectives on parameter importance and interaction effects.
 
 \begin{figure}[H]    % H表示强制固定在当前位置
 \small
-\begin{subfigure}{0.5\textwidth}
+\begin{subfigure}{0.48\textwidth}
 \centering
-\includegraphics[width=\linewidth]{parameter_sensitivity_tte_predictions.pdf}
-\caption{Figure a}
-\label{fig:param_sensitivity}
+\includegraphics[width=\linewidth]{fig9.pdf}
+\caption{3D Visualization of Sobol Indices}
+\label{fig:sobol_3d}
 \end{subfigure}
-\begin{subfigure}{0.5\textwidth}
+\begin{subfigure}{0.48\textwidth}
 \centering
-\includegraphics[width=\linewidth]{key_parameter_sensitivity_analysis.pdf}
-\caption{Figure b} 
-\label{fig:error_trends}
+\includegraphics[width=\linewidth]{fig10.pdf}
+\caption{Variance Contribution Pie Chart}
+\label{fig:variance_pie}
 \end{subfigure}
 \end{figure}
 
-Key insights from this analysis include:
+\textbf{Figure \ref{fig:sobol_3d}} presents a three-dimensional visualization of Sobol indices, depicting both first-order ($S_i$) and total-order ($S_{Ti}$) sensitivity measures. The vertical height of each bar corresponds to the sensitivity index magnitude, with distinct color coding for parameter types. Key observations from this visualization include:
+
 \begin{itemize}
-\item \textbf{TTE Prediction Dominates Uncertainty:} With a 10\% error range, TTE is the most uncertain output, reflecting the compounding effects of usage randomness, parameter variations, and model approximations on battery life prediction.
-\item \textbf{Voltage and SOC Show Moderate Reliability:} Terminal voltage and SOC predictions maintain 3-5\% error ranges, indicating relatively stable electrochemical state tracking despite varying conditions.
-\item \textbf{Thermal and Capacity Metrics Are Stable:} Battery temperature and effective capacity exhibit the lowest uncertainty (2-4\%), as these parameters are less sensitive to short-term usage fluctuations.
-\item \textbf{Implications for User Experience:} The high TTE uncertainty underscores the importance of probabilistic predictions rather than deterministic estimates, particularly for applications like gaming or navigation where battery drain is rapid and variable.
+\item \textbf{Dominant Role of Battery Capacity ($Q_n$)}: The 3D representation clearly shows that $Q_n$ towers over other parameters, with first-order index $S_i = 0.67$ and total-order index $S_{Ti} = 0.72$. This indicates that battery capacity alone explains 67\% of TTE prediction variance, and its interactions with other parameters contribute an additional 5\%.
+\item \textbf{Secondary Influence of Internal Resistance ($R_0$)}: Positioned as the second most influential parameter, $R_0$ contributes 18\% of variance through its independent effects ($S_i = 0.18$) and shows moderate interaction effects (increasing to $S_{Ti} = 0.23$). The height difference between $S_i$ and $S_{Ti}$ columns visually represents interaction strength.
+\item \textbf{Minimal Impact of Power Coefficients}: Screen ($k_d$) and CPU ($k_c$) power coefficients appear as relatively low bars, confirming their limited influence on TTE uncertainty (combined contribution less than 9\%). The small difference between their first-order and total-order indices suggests negligible interaction effects.
+\item \textbf{Interaction Effects Visualization}: The spatial arrangement allows direct comparison between $S_i$ (front bars) and $S_{Ti}$ (rear bars), with the gap representing interaction contributions. This perspective reveals that while $Q_n$ exhibits substantial interactions, power coefficients operate largely independently.
 \end{itemize}
 
+\subsubsection{Summary}
 
-
-
-While traditional box plots provide limited distribution information, our three-dimensional violin plot visualization (Figure \ref{fig:3d_violin}) offers a comprehensive probabilistic perspective on TTE predictions across usage scenarios. This innovative representation combines kernel density estimation, measurement uncertainty quantification, and statistical summary metrics in an integrated visualization framework.Each violin shape represents the probability density function of TTE predictions, while the surrounding error clouds quantify measurement and model uncertainties. The visualization captures distribution characteristics including multimodality, skewness, and tail behavior that are obscured in conventional plots.
-
+As a summary, our three-dimensional violin plot visualization (Figure \ref{fig:3d_violin}) offers a comprehensive probabilistic perspective on TTE predictions across usage scenarios. This innovative representation combines kernel density estimation, measurement uncertainty quantification, and statistical summary metrics in an integrated visualization framework.Each violin shape represents the probability density function of TTE predictions, while the surrounding error clouds quantify measurement and model uncertainties. The visualization captures distribution characteristics including multimodality, skewness, and tail behavior that are obscured in conventional plots.
+%虽然传统的箱线图只能提供有限的分布信息,但我们的三维小提琴图可视化方式（图 \ref{fig:3d_violin}）为不同使用场景下的 TTE 预测提供了全面的概率视角。这种创新的表示方法将核密度估计、测量不确定性量化以及统计汇总指标整合在一个综合的可视化框架中。每个小提琴形状代表 TTE 预测的概率密度函数,而周围的误差云则量化了测量和模型的不确定性。该可视化能够捕捉到传统图无法呈现的分布特征,如多峰性、偏度和尾部行为。
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.65\textwidth]{figures/fig6.pdf}
@@ -763,9 +718,7 @@ The 3D violin plot reveals several critical distribution patterns that inform bo
 \paragraph{Distribution Characteristics by Scenario}
 \begin{itemize}
     \item \textbf{Gaming Scenario}: Exhibits a left-skewed distribution (skewness = -0.32) with narrow interquartile range (IQR = 1.4h), indicating consistent but intensive power consumption patterns. The concentration of probability mass at lower TTE values (6.5-8.0h) reflects the deterministic nature of gaming workloads.
-    
     \item \textbf{Standby Scenario}: Demonstrates a right-skewed distribution (skewness = 0.45) with the widest dispersion (IQR = 2.1h), capturing the high variability in background process activity. The long right tail indicates occasional extended battery life during optimal idle conditions.
-    
     \item \textbf{Navigation Scenario}: Shows approximately normal distribution (skewness = 0.08) with moderate spread (IQR = 1.7h), reflecting the balanced combination of continuous GPS usage and intermittent display interaction.
 \end{itemize}
 
@@ -781,6 +734,13 @@ The error clouds surrounding each violin represent the combined effects of measu
 
 This advanced visualization framework enables direct comparison of distribution characteristics across scenarios, supporting the development of scenario-specific battery management strategies and providing a foundation for risk-aware TTE predictions in practical applications.
 
+Key insights from this analysis include:
+\begin{itemize}
+\item \textbf{TTE Prediction Dominates Uncertainty:} With a 10\% error range, TTE is the most uncertain output, reflecting the compounding effects of usage randomness, parameter variations, and model approximations on battery life prediction.
+\item \textbf{Voltage and SOC Show Moderate Reliability:} Terminal voltage and SOC predictions maintain 3$\sim$5\% error ranges, indicating relatively stable electrochemical state tracking despite varying conditions.
+\item \textbf{Thermal and Capacity Metrics Are Stable:} Battery temperature and effective capacity exhibit the lowest uncertainty (2$\sim$4\%), as these parameters are less sensitive to short-term usage fluctuations.
+\item \textbf{Implications for User Experience:} The high TTE uncertainty underscores the importance of probabilistic predictions rather than deterministic estimates, particularly for applications like gaming or navigation where battery drain is rapid and variable.
+\end{itemize}
 
 \section{Strengths and Weaknesses}
 
@@ -806,7 +766,7 @@ This advanced visualization framework enables direct comparison of distribution 
 \item Enhanced RC Network Structure: Extend the single RC branch to multiple RC branches with different time constants to capture both fast and slow polarization dynamics.
 \item Aging-Integrated SOC Estimation: Integrate capacity fade and resistance growth models into the SOC differential equation for real-time SOH correction.
 \item Hysteresis-Inclusive OCV-SOC Characterization: Extend the OCV-SOC relationship with differential terms to capture charge-discharge hysteresis effects.
-\item Concentration Polarization Integration: Incorporate Fick’s law-based diffusion equations to capture electrolyte concentration gradients at high discharge rates.
+\item Concentration Polarization Integration: Incorporate Fick's law-based diffusion equations to capture electrolyte concentration gradients at high discharge rates.
 \item 3D Thermal Field Modeling: Replace the lumped thermal model with finite element analysis to capture hot-spot formation and thermal runaway risks.
 \item Contact Resistance Inclusion: Extend the terminal voltage equation to include time-varying contact resistance between battery tabs and connectors.
 \item Adaptive Step-Size RK Methods: Implement embedded Runge-Kutta methods with automatic step-size control to handle stiffness during rapid load changes.
@@ -826,70 +786,37 @@ This advanced visualization framework enables direct comparison of distribution 
 
 \section{Our Suggestions}
 
-Drawing on prior modeling and analysis, we propose actionable battery-life-extending tips for smartphone users \& OS developers—grounded in the continuous-time electro-thermal model (capturing nonlinear battery-power-environment interactions). These prioritize maximizing "energy budget" use while cutting cumulative drain, balancing innovation and feasibility.
+Drawing on prior modeling and analysis, we propose actionable battery-life-extending tips for smartphone users \& OS developers-grounded in the continuous-time electro-thermal model (capturing nonlinear battery-power-environment interactions). These prioritize maximizing "energy budget" use while cutting cumulative drain, balancing innovation and feasibility.
 
 \subsection{User-Centric Recommendations}
-
-\subsubsection{Core Settings Optimization}
 \begin{itemize}
-    \item \textbf{Adaptive Brightness Control}: Enable auto-brightness or reduce manually in low-light conditions.
-    \item \textbf{Network Optimization}: Prefer Wi-Fi over cellular data; disable unused connections.
-    \item \textbf{Background App Management}: Restrict non-essential background activities.
+\item Adaptive Brightness Control: Enable auto-brightness or manually reduce brightness in low-light conditions to cut display power consumption.
+\item Network Optimization: Prefer Wi-Fi over cellular data and disable unused connections (e.g., Bluetooth) to minimize radio power drain.
+\item Smart Charging: Maintain State of Charge (SOC) between 20-80\% and avoid using the phone while charging to reduce battery degradation and thermal stress.
 \end{itemize}
-
-\subsubsection{Habit-Based Improvements}
-\begin{itemize}
-    \item \textbf{High-Load Management}: Avoid prolonged intensive usage; take regular breaks.
-    \item \textbf{Smart Charging}: Maintain SOC between 20-80\%; avoid using while charging.
-    \item \textbf{Feature Optimization}: Disable non-essential features like vibration and high refresh rates.
-\end{itemize}
-
 \subsection{Operating System-Level Strategies}
-
-\subsubsection{Intelligent Load Management}
 \begin{itemize}
-    \item \textbf{Dynamic Performance Scaling}: Implement MPC-based throttling in low-SOC/high-temp conditions.
-    \item \textbf{Load Scheduling}: Defer non-urgent tasks to charging periods.
+\item Dynamic Performance Scaling: Implement Model Predictive Control (MPC)-based throttling in low-SOC/high-temperature conditions to balance performance and energy efficiency.
+\item Load Scheduling: Defer non-urgent background tasks (e.g., app updates, backups) to charging periods to reduce active drain during battery use.
+\item Accurate SOC Display: Use voltage-based Open Circuit Voltage (OCV)-SOC estimation for more reliable state-of-charge readings, avoiding errors from simplified Coulomb counting.
 \end{itemize}
-
-\subsubsection{Power Management Refinement}
-\begin{itemize}
-    \item \textbf{Accurate SOC Display}: Use voltage-based OCV-SOC estimation.
-    \item \textbf{Temperature Adaptation}: Regulate currents in extreme temperatures.
-\end{itemize}
-
-\subsubsection{Battery Aging Adaptation}
-\begin{itemize}
-    \item \textbf{Dynamic Power Saving}: Adjust energy budgets based on SOH.
-    \item \textbf{Optimized Charging}: Modify charging curves for aged batteries.
-\end{itemize}
-
 \subsection{Extension to Other Portable Devices}
-
 \begin{itemize}
-    \item \textbf{Laptops}: Prioritize thermal management during intensive tasks.
-    \item \textbf{Wearables}: Optimize sensor sampling and communication protocols.
-    \item \textbf{Cross-Device Ecosystems}: Implement energy-aware task allocation.
+\item Laptops: Prioritize thermal management during intensive tasks (e.g., CPU/GPU workloads) to prevent temperature-induced capacity fade.
+\item Wearables: Optimize sensor sampling rates and low-power communication protocols (e.g., Bluetooth Low Energy, BLE) to extend battery life between charges.
+\item Cross-Device Ecosystems: Implement energy-aware task allocation to offload work to devices with more available battery capacity.
 \end{itemize}
 
 \subsection{Conclusion}
 
-These strategies, derived from our electro-thermal model, can extend battery life by 15-30\%. Future work should focus on real-time parameter estimation for personalized optimization.
-
-\noindent\textbf{Innovative Aspects}:
-\begin{itemize}
-    \item First-principles model ensuring physical consistency
-    \item Dual-criterion TTE (SOC + voltage cutoff) preventing sudden shutdowns
-    \item Real-time MPC-based load scheduling
-    \item Scalable framework for multi-device ecosystems
-\end{itemize}
+The proposed electro-thermal model and strategies can extend battery life by 15$\sim$30\% through a balance of "energy budget" utilization and cumulative drain minimization. Key innovations include a first-principles model ensuring physical consistency, dual-criterion Time to Empty (TTE) prediction, and a scalable framework for multi-device ecosystems. Future work should focus on real-time parameter estimation to enable personalized battery optimization.
 
 \printbibliography
 
 
 \begin{appendices}
 
-\section{First Appendix}
+\section{Gillespie algorithm}
 \begin{algorithm}
 \caption{Continuous-time Markov Chain Simulation}
 \begin{algorithmic}[1]
@@ -901,7 +828,71 @@ These strategies, derived from our electro-thermal model, can extend battery lif
 \ENDWHILE
 \end{algorithmic}
 \end{algorithm}
+
+\section{Adaptive Battery-Temperature-Aware Power Management Algorithm}
+This algorithm is a dedicated dynamic power management solution for embedded/edge devices. Based on dual-dimensional data of battery State of Charge (SOC) and real-time device temperature, it dynamically adjusts CPU operating frequency and network bandwidth limits to achieve intelligent balance between performance and power consumption. It effectively solves problems such as insufficient battery life at low power and device lag/damage due to high-temperature operation.
+
+Core Design Concept: Hierarchical Regulation, On-Demand Energy Saving. Divide 3 levels of power strategies according to the threshold ranges of SOC and temperature to avoid sudden performance drop caused by a single energy-saving strategy, and balance device operation efficiency and power consumption control.
+
+Algorithm Regulation Logic Flow
+\begin{itemize}
+\item Real-time Collection: Battery SOC (0$\sim$100\%) + Device Temperature ($^{\circ}$C)
+\item Threshold Judgment: Match low power/high temperature thresholds to determine power gear
+\item Parameter Delivery: Set corresponding CPU frequency + network bandwidth limit
+\item Cyclic Execution: Repeat collection-judgment-delivery process at fixed intervals
+\end{itemize}
+\begin{lstlisting}[language=Python]
+import time
+from collections import namedtuple
+PowerState = namedtuple('PowerState', ['cpu_freq', 'network_limit'])
+def read_battery_soc():
+    return 75
+def read_device_temp():
+    return 32
+def set_cpu_freq(freq):
+    print(f"[Hardware Delivery] Set CPU Operating Frequency $\to$ {freq} MHz")
+def set_network_limit(limit):
+    print(f"[Hardware Delivery] Set Network Bandwidth Limit $\to$ {limit} Mbps")
+def get_hardware_data():
+    soc = read_battery_soc()
+    temp = read_device_temp()
+    return soc, temp
+class PowerManager:
+    def __init__(self):
+        self.low_soc_threshold = 20
+        self.high_temp_threshold = 45
+        self.power_gear = {
+            'high': (1800, 100),
+            'mid': (1200, 50),
+            'low': (600, 10)
+        }
+    def adjust_power(self, soc, temp):
+        if temp >= self.high_temp_threshold or soc <= self.low_soc_threshold:
+            return PowerState(*self.power_gear['low'])
+        elif 30 <= soc < 80 or 35 <= temp < self.high_temp_threshold:
+            return PowerState(*self.power_gear['mid'])
+        else:
+            return PowerState(*self.power_gear['high'])
+if __name__ == "__main__":
+    pm = PowerManager()
+    cycle_limit = 5
+    current_cycle = 0
+    print(f"Regulation Parameters: Low SOC Threshold {pm.low_soc_threshold}% | High Temperature Threshold {pm.high_temp_threshold}$^{\circ}$C")
+    print(f"Cycle Count: {cycle_limit} times | Collection Interval: 1 second\n")
+    while current_cycle < cycle_limit:
+        soc, temp = get_hardware_data()
+        power_state = pm.adjust_power(soc, temp)
+        print(f"[Collection Data] SOC={soc}% | Device Temperature={temp}$^{\circ}$C")
+        print(f"[Regulation Result] CPU Frequency={power_state.cpu_freq}MHz | Network Limit={power_state.network_limit}Mbps")
+        set_cpu_freq(power_state.cpu_freq)
+        set_network_limit(power_state.network_limit)
+        time.sleep(1)
+        current_cycle += 1
+        print("-" * 60 + "\n")
+    print(f"Total Execution Times:{current_cycle}|Regulation Logic:Normal")
+\end{lstlisting}
 \end{appendices}
+
 
 
 \AImatter

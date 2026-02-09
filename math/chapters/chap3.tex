@@ -1,0 +1,1112 @@
+\chapter{集合与关系}
+\section{集合}
+\begin{definition}{空集，全集，有限集，无限集，元素个数}{}
+\textbf{空集}：不含任何元素的集合，记作$\nothing$或$\{x|x\ne x\}$，是任何集合的子集。空集是唯一的。\\
+\textbf{全集}：特定讨论中包含所有对象的集合，记作$U$。全集是相对的，取决于讨论的上下文。\\
+\textbf{有限集}：元素个数有限的集合。如果集合$A$有$n$个元素，其中$n$是非负整数，则$A$是有限集。\\
+\textbf{无限集}：不是有限集的集合，即元素个数无限多的集合。如自然数集$\mathbb{N}$、实数集$\mathbb{R}$等。\\
+\textbf{元素个数}：有限集$A$中元素的数目，记作$|A|$或$card(A)$。无限集的元素个数用基数概念描述，如可数无限集、不可数无限集等。
+\end{definition}
+\begin{definition}{集合的包含关系}{}
+    \textbf{子集}：如果集合$A$中的每个元素都是集合$B$中的元素，则称$A$是$B$的\textbf{子集}，记作$A \subseteq B$。空集是空集的子集\\
+    \textbf{真子集}：如果$A \subseteq B$且$A \neq B$，则称$A$是$B$的\textbf{真子集}，记作$A \subset B$。即\vspace{-10pt}
+    \[\forall x(A(x) \rightarrow B(x)) \land \exists x(B(x) \land \neg A(x))\]
+\end{definition}
+\begin{definition}{集合的基本运算}{}
+\textbf{交集}：集合$A$和$B$的交集是由所有既属于$A$又属于$B$的元素组成的集合，记作$A \cap B$。\vspace{-10pt}
+$$A \cap B = \{x \mid x \in A \land x \in B\}\vspace{-10pt}$$
+\textbf{并集}：集合$A$和$B$的并集是由所有属于$A$或属于$B$的元素组成的集合，记作$A \cup B$。\vspace{-10pt}
+$$A \cup B = \{x \mid x \in A \lor x \in B\}\vspace{-10pt}$$
+\textbf{补集}：集合$A$的补集是由全集中所有不属于$A$的元素组成的集合，记作$\sim  A$。\vspace{-10pt}
+$$\sim A = \{x \in U \mid x \notin A\}\vspace{-10pt}$$
+\textbf{差集}：集合$A$与$B$的差集是由所有属于$A$但不属于$B$的元素组成的集合：\vspace{-10pt}
+$$A-B = \{x \mid x \in A \land x \notin B\}\vspace{-10pt}$$
+\textbf{对称差}：$A$和$B$的对称差是由所有属于$A$或属于$B$但不同时属于两者的元素组成的集合\vspace{-10pt}
+$$A\oplus B = (A - B) \cup (B -A) = (A \cup B)- (A \cap B)\vspace{-10pt}$$
+\textbf{幂集}：集合$A$的幂集是由$A$的所有子集构成的集合，记作$P(A)$：\vspace{-10pt}
+$$P(A) = \{X \mid X \subseteq A\}$$
+\end{definition}
+\begin{theorem}{容斥原理}{}
+对于有限集合$A_1, A_2, \ldots, A_n$，有：
+\begin{align*}
+\left|\bigcup_{i=1}^n A_i\right| &= \sum_{i=1}^n |A_i| 
+                               - \sum_{1 \leq i < j \leq n} |A_i \cap A_j| + \sum_{1 \leq i < j < k \leq n} |A_i \cap A_j \cap A_k| \\
+                               &- \cdots + (-1)^{n-1} |A_1 \cap A_2 \cap \cdots \cap A_n|
+\end{align*}
+\end{theorem}
+然后主要写一些差集，对称差，幂集的性质。
+\begin{theorem}{差集的性质}{}
+分配律：$A - (B \cup C) = (A - B) \cap (A - C)=(A - B) - C$\quad$A - (B \cap C) = (A - B) \cup (A - C)$\\
+分配律：$(A \cup B) - C = (A - C) \cup (B - C)$\quad$(A \cap B) - C = (A - C) \cap (B - C)$\\
+去括号：$A - (B - C) = (A - B) \cup (A \cap C)$\\
+传递性：如果$A \subseteq B$，则$A - C \subseteq B - C$
+\end{theorem}
+第二条恒等变形就可以了比较简单，第四条也好理解，$x\in A\land x\notin C$显然蕴含$x\in B\land x\notin C$
+
+第一条和第三条有点难，一个很霸道的方式是，对于全集$U$内的元素$x$，考虑真值表
+\begin{center}
+\begin{tabular}{ccc|cccccc}
+$x \in A$ & $x \in B$ & $x \in C$ & $x \in (B \cup C)$ & $x \in (B - C)$ & $x \in A - B$ & $x \in A - C$ & $x \in A \cap C$ \\
+\hline
+0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+0 & 0 & 1 & 1 & 0 & 0 & 0 & 0 \\
+0 & 1 & 0 & 1 & 1 & 0 & 0 & 0 \\
+0 & 1 & 1 & 1 & 0 & 0 & 0 & 0 \\
+1 & 0 & 0 & 0 & 0 & 1 & 1 & 0 \\
+1 & 0 & 1 & 1 & 0 & 1 & 0 & 1 \\
+1 & 1 & 0 & 1 & 1 & 0 & 1 & 0 \\
+1 & 1 & 1 & 1 & 0 & 0 & 0 & 1 \\
+\end{tabular}
+\end{center}
+然后，目标表达式比较
+\begin{center}
+\begin{tabular}{ccc|ccc}
+$x \in A$ & $x \in B$ & $x \in C$ & $x \in A - (B \cup C)$ & $x \in (A - B) \cap (A - C)$ & $x \in (A - B) - C$ \\
+\hline
+0 & 0 & 0 & 0 & 0 & 0 \\
+0 & 0 & 1 & 0 & 0 & 0 \\
+0 & 1 & 0 & 0 & 0 & 0 \\
+0 & 1 & 1 & 0 & 0 & 0 \\
+1 & 0 & 0 & 1 & 1 & 1 \\
+1 & 0 & 1 & 0 & 0 & 0 \\
+1 & 1 & 0 & 0 & 0 & 0 \\
+1 & 1 & 1 & 0 & 0 & 0 \\
+\end{tabular}
+\end{center}
+从表2可以看出第4,5,6列的真值完全相同，因此：$A - (B \cup C) = (A - B) \cap (A - C) = (A - B) - C$
+\begin{center}
+\begin{tabular}{ccc|cc}
+$x \in A$ & $x \in B$ & $x \in C$ & $x \in A - (B - C)$ & $x \in (A - B) \cup (A \cap C)$ \\
+\hline
+0 & 0 & 0 & 0 & 0 \\
+0 & 0 & 1 & 0 & 0 \\
+0 & 1 & 0 & 0 & 0 \\
+0 & 1 & 1 & 0 & 0 \\
+1 & 0 & 0 & 1 & 1 \\
+1 & 0 & 1 & 1 & 1 \\
+1 & 1 & 0 & 0 & 0 \\
+1 & 1 & 1 & 1 & 1 \\
+\end{tabular}
+\end{center}
+从表3可以看出，第4列和第5列的真值完全相同，因此$A - (B - C) = (A - B) \cup (A \cap C)$
+\begin{theorem}{对称差的性质}{}
+    结合律：$(A \oplus B) \oplus C = A \oplus (B \oplus C)$\\
+    分配律：$A \cap (B \oplus C) = (A \cap B) \oplus (A \cap C)$\\
+    差形式：$A \oplus B = (A \cup B) - (A \cap B)$\\
+    取补集：$\sim(A \oplus B) = (\sim A \oplus B) = (A \oplus \sim B)$\\
+    常见等价关系：$A \oplus B = \varnothing$ 当且仅当 $A = B$，$A \oplus B = A \oplus C$ 当且仅当 $B = C$\\
+    消去律：$(A \oplus B) \oplus (B \oplus C) = A \oplus C$（可以推广）
+\end{theorem}
+证明：$(A \oplus B) \oplus C = A \oplus (B \oplus C)$
+\begin{center}
+\begin{tabular}{ccc|cccccc}
+$A$ & $B$ & $C$ & $A \oplus B$ & $(A \oplus B) \oplus C$ & $B \oplus C$ & $A \oplus (B \oplus C)$ & 是否相等 \\
+\hline
+0 & 0 & 0 & 0 & 0 & 0 & 0 & 是 \\
+0 & 0 & 1 & 0 & 1 & 1 & 1 & 是 \\
+0 & 1 & 0 & 1 & 1 & 1 & 1 & 是 \\
+0 & 1 & 1 & 1 & 0 & 0 & 0 & 是 \\
+1 & 0 & 0 & 1 & 1 & 0 & 1 & 是 \\
+1 & 0 & 1 & 1 & 0 & 1 & 0 & 是 \\
+1 & 1 & 0 & 0 & 0 & 1 & 0 & 是 \\
+1 & 1 & 1 & 0 & 1 & 0 & 1 & 是 \\
+\end{tabular}
+\end{center}
+如果要求必须使用等价变形，我们依然可以使用真值表写出两者的主析取范式，然后比较。两者的的主析取范式完全相同，因此：$(A \oplus B) \oplus C = A \oplus (B \oplus C)$，具体的解答过程则是先将左右两边化为交并补运算，真值表可以起到检查是否正确的作用。
+\begin{align*}
+(A \oplus B) \oplus C = & (\sim A \cap \sim B \cap C) \cup 
+                        (\sim A \cap B \cap \sim C) \cup (A \cap \sim B \cap \sim C) \cup 
+                        (A \cap B \cap C)\\
+A \oplus (B \oplus C) = & (\sim A \cap \sim B \cap C) \cup 
+                         (\sim A \cap B \cap \sim C) \cup 
+                         (A \cap \sim B \cap \sim C) \cup 
+                         (A \cap B \cap C)
+\end{align*}
+证明：$A \cap (B \oplus C) = (A \cap B) \oplus (A \cap C)$
+\begin{center}
+\begin{tabular}{ccc|cccccc}
+$A$ & $B$ & $C$ & $B \oplus C$ & $A \cap (B \oplus C)$ & $A \cap B$ & $A \cap C$ & $(A \cap B) \oplus (A \cap C)$ & 相等 \\
+\hline
+0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 是 \\
+0 & 0 & 1 & 1 & 0 & 0 & 0 & 0 & 是 \\
+0 & 1 & 0 & 1 & 0 & 0 & 0 & 0 & 是 \\
+0 & 1 & 1 & 0 & 0 & 0 & 0 & 0 & 是 \\
+1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 是 \\
+1 & 0 & 1 & 1 & 1 & 0 & 1 & 1 & 是 \\
+1 & 1 & 0 & 1 & 1 & 1 & 0 & 1 & 是 \\
+1 & 1 & 1 & 0 & 0 & 1 & 1 & 0 & 是 \\
+\end{tabular}
+\end{center}
+证明：$(A\cup B)\oplus(A\cup C)\subseteq A\cup(B\oplus C)$
+\begin{center}
+\begin{tabular}{ccc|cccccc}
+$A$ & $B$ & $C$ & $B \oplus C$ & $A \cup (B \oplus C)$ & $A \cup B$ & $A \cup C$ & $(A \cup B) \oplus (A \cup C)$ & 蕴含关系 \\
+\hline
+0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 相等 \\
+0 & 0 & 1 & 1 & 1 & 0 & 1 & 1 & 相等 \\
+0 & 1 & 0 & 1 & 1 & 1 & 0 & 1 & 相等 \\
+0 & 1 & 1 & 0 & 0 & 1 & 1 & 0 & 相等 \\
+1 & 0 & 0 & 0 & 1 & 1 & 1 & 0 & 左真右假 \\
+1 & 0 & 1 & 1 & 1 & 1 & 1 & 0 & 左真右假 \\
+1 & 1 & 0 & 1 & 1 & 1 & 1 & 0 & 左真右假 \\
+1 & 1 & 1 & 0 & 1 & 1 & 1 & 0 & 左真右假 \\
+\end{tabular}
+\end{center}
+可以发现，当全集内的某个元素$x$满足$x\in (A \cup B) \oplus (A \cup C)$时，$x$必然满足$x\in A\cup(B\oplus C)$\\
+证明：$(A \oplus B) \oplus (B \oplus C) = A \oplus C$
+\begin{center}
+\begin{tabular}{ccc|cccccc}
+$A$ & $B$ & $C$ & $A \oplus B$ & $B \oplus C$ & $(A \oplus B) \oplus (B \oplus C)$ & $A \oplus C$ & 是否相等 \\
+\hline
+0 & 0 & 0 & 0 & 0 & 0 & 0 & 是 \\
+0 & 0 & 1 & 0 & 1 & 1 & 1 & 是 \\
+0 & 1 & 0 & 1 & 1 & 0 & 0 & 是 \\
+0 & 1 & 1 & 1 & 0 & 1 & 1 & 是 \\
+1 & 0 & 0 & 1 & 0 & 1 & 1 & 是 \\
+1 & 0 & 1 & 1 & 1 & 0 & 0 & 是 \\
+1 & 1 & 0 & 0 & 1 & 1 & 1 & 是 \\
+1 & 1 & 1 & 0 & 0 & 0 & 0 & 是 \\
+\end{tabular}
+\end{center}
+然而，此题用真值表，是杀鸡用牛刀，其实最简单的方法是利用结合律：
+\begin{align*}
+(A_1 \oplus A_2) \oplus (A_2 \oplus A_3) = A_1 \oplus (A_2 \oplus A_2) \oplus A_3 = A_1 \oplus \varnothing \oplus A_3  = A_1 \oplus A_3 
+\end{align*}
+\begin{theorem}{对称差的代数结构}{}
+    对于任意集合序列 $A_1, A_2, \ldots, A_n$，有\vspace{-10pt}
+$$(A_1 \oplus A_2) \oplus (A_2 \oplus A_3) \oplus \cdots \oplus (A_{n-1} \oplus A_n) = A_1 \oplus A_n$$
+\end{theorem}
+对于任意形式的对称差链，只要每个中间项出现偶数次，就会相互抵消。例如：
+$$(A \oplus B \oplus C) \oplus (B \oplus C \oplus D) = A \oplus D$$
+因为通过结合律和交换律，$B$ 和 $C$ 实际上各出现两次，因此抵消。\\
+证明：$\sim(A \oplus B) = (\sim A \oplus B)$
+\begin{align*}
+      \sim(A \oplus B) &= \sim((A\cap \sim B) \cup (\sim A \cap B))=(\sim A\cup B)\cap (A\cup \sim B) \\
+      &=(\sim A\cap A)\cup(\sim A\cap\sim B)\cup(A\cap B)\cup(B\cap\sim B)\\
+      &=(\sim A\cap\sim B)\cup(A\cap B)= (\sim A \oplus B)
+\end{align*}
+\begin{theorem}{幂集的性质}{}
+设$X$是一个集合，$P(X)$表示$X$的幂集（即$X$的所有子集构成的集合）。幂集具有以下性质：
+1. 如果$|X| = n$（有限），则$|P(X)| = 2^n$，$P(\varnothing) = \{\varnothing\}$，有$1 = 2^0$个元素\\
+2. 单调性：如果$A \subseteq B$，则$P(A) \subseteq P(B)$\\
+3. $P(A) \cup P(B) \subseteq P(A \cup B)$，当且仅当 $A \subseteq B$ 或 $B \subseteq A$取等\\
+4. $P(A) \cap P(B) = P(A \cap B)$\\
+5. $ P(A - B) \subseteq (P(A) - P(B))\cup\{\varnothing\}$
+\end{theorem}
+性质3的证明比较简单：\vspace{-10pt}
+\[P(A) \cup P(B) \subseteq P(A \cup B)\cup P(A\cup B)=P(A\cup B)\vspace{-10pt}\]
+分别放缩左右两侧即可，而且这样的操作还有一个好处，就是可以看清蕴含关系变成等价关系时的特殊条件（当且仅当 $A \subseteq B$ 或 $B \subseteq A$取等）。我们不妨再看一个例子：
+
+证明或证伪：$A\subset B\land C\subset D\Rightarrow (A\cup C)\subset (B\cup D)$\\
+解：考虑$B=A\cup C,D=A\cup C$，则
+\vspace{-10pt}\[A\subset(A\cup C),C\subset(A\cup C)\Rightarrow (A\cup C)=(B\cup D)\vspace{-10pt}\]显然该命题错误，改成$A\subset B\land C\subset D\Rightarrow (A\cup C)\subseteq (B\cup D)$即可。
+
+证明或证伪：$A\subset B\land C\subset D\Rightarrow (A\cap C)\subset (B\cap D)$\\
+解：同样错误，考虑$A\cap C\subset A,C-A\ne\varnothing,B\cap D\subset B,D-B\ne\varnothing$，则转化为\vspace{-10pt}\[(A\cap C)\cap(B\cap D)=(A\cap B)\cap(C\cap D)\subset A\cap B\vspace{-10pt}\]
+显然，这里$(A\cap B)=(C\cap D)$完全是可能的，所以仍然需要改成$\subseteq$
+
+性质4显然，一个集合既是$A$的子集，又是$B$的子集，那么其元素都在$A,B$中，即在$A\cap B$中，反过来，一个集合的元素在$A\cap B$中，那么也在$A,B$中，故既是$A$的子集又是$B$的子集。
+
+下面证明性质5：$ P(A - B) \subseteq (P(A) - P(B))\cup\{\varnothing\}$
+\begin{align*}
+P(A - B) &= \{x|x\subseteq (A\cap\sim B)\}=\{x|x\subseteq A\land x\subseteq\sim B\}\\
+&\subseteq\{x|x\subseteq A\land x\not\subseteq B\}=(P(A)-P(B))\cup\{\varnothing\}
+\end{align*}
+需要说明的是，涉及到幂集的性质的有关证明不可以使用真值表，或者说用真值表比较麻烦，因为我们考虑集合之间的关系的时候，由于集合可能有不止一个元素，所以$x$中的元素全在$A$中的反面，不是“$x$中的元素全不在$A$中”，而是“$x$中的元素不全在$A$中”。这就导致了\vspace{-10pt}\[x\not\subseteq A\land x\not\subseteq B\Leftarrow x\not\subseteq A\cup B\vspace{-10pt}\]和之前的情形大不相同，此时要分多种情形讨论，复杂度明显升高。但是，真值表还是可以帮助我们进行集合的等价运算，如：
+\begin{example}{}{}
+\[(A\cap B\cap C)\cup(\sim A\cap B\cap C)\cup(A\cap B\cap\sim C)\]\end{example}
+\begin{solution}设全集为$U$，观察到三个并集中都有$B$，所以合并：
+    \begin{align*}
+& (A \cap B \cap C) \cup (\sim A \cap B \cap C) \cup (A \cap B \cap \sim C) \\
+&= [B \cap (A \cap C)] \cup [B \cap (\sim A \cap C)] \cup [B \cap (A \cap \sim C)] \quad \text{(结合律)} \\
+&= B \cap [(A \cap C) \cup (\sim A \cap C) \cup (A \cap \sim C)] \quad \text{(分配律)} \\
+&= B \cap \{[(A \cup \sim A) \cap C] \cup (A \cap \sim C)\} \quad \text{(分配律)} \\
+&= B \cap [(U \cap C) \cup (A \cap \sim C)] \quad \text{(补集律：$A \cup \sim A = U$)} \\
+&= B \cap [C \cup (A \cap \sim C)] \quad \text{(同一律：$U \cap C = C$)} \\
+&= B \cap [(C \cup A) \cap (C \cup \sim C)] \quad \text{(分配律)} \\
+&= B \cap [(A \cup C) \cap U] \quad \text{(交换律和补集律)} \\
+&= B \cap (A \cup C) \quad \text{(同一律)}
+\end{align*}
+另一种方式就是使用真值表：我们通过分析元素 $x$ 的属于关系来简化该表达式。定义真值表，其中 1 表示 $x$ 属于集合，0 表示 $x$ 不属于集合：
+\begin{center}
+\begin{tabular}{ccc|cccc}
+$x \in A$ & $x \in B$ & $x \in C$ & $x \in A \cap B \cap C$ & $x \in \sim A \cap B \cap C$ & $x \in A \cap B \cap \sim C$ & $x \in \text{整体表达式}$ \\
+\hline
+0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+0 & 0 & 1 & 0 & 0 & 0 & 0 \\
+0 & 1 & 0 & 0 & 0 & 0 & 0 \\
+0 & 1 & 1 & 0 & 1 & 0 & 1 \\
+1 & 0 & 0 & 0 & 0 & 0 & 0 \\
+1 & 0 & 1 & 0 & 0 & 0 & 0 \\
+1 & 1 & 0 & 0 & 0 & 1 & 1 \\
+1 & 1 & 1 & 1 & 0 & 0 & 1 \\
+\end{tabular}
+\end{center}
+从真值表可知，$x$ 属于整体表达式当且仅当满足以下条件：$x \in B$ 为真， 同时 $x \in A$ 或 $x \in C$ 为真，这等价于 $x \in B \cap (A \cup C)$。
+
+伪装的方式是：\\
+设$x$是全集中的任意元素，我们分析$x$属于该并集的条件。\\
+若$x \in A \cap B \cap C$，则$x \in A$，$x \in B$，$x \in C$\\
+若$x \in \sim A \cap B \cap C$，则$x \notin A$，$x \in B$，$x \in C$\\
+若$x \in A \cap B \cap \sim C$，则$x \in A$，$x \in B$，$x \notin C$\\
+综合三种情况，$x$属于该并集当且仅当同时满足：$x \in B$，$x \in A$ 或 $x \in C$（即$x \in A \cup C$），因此，$x$属于该并集当且仅当$x \in B \cap (A \cup C)$
+\end{solution}
+这种等价变形的题目比较简单，首先化成交并补，然后只需要观察重复出现的结构（有的时候还需要进行适当的换元）接着等价运算。题目一难或者看不出来了，就利用真值表来证明。
+\section{集合的笛卡尔积}
+\begin{definition}{集合的笛卡尔积}{}
+设$A$和$B$是两个集合，$A$与$B$的\textbf{笛卡尔积}（或称直积）定义为所有有序对$(a,b)$组成的集合，其中$a \in A$，$b \in B$，记作$A \times B$：\vspace{-10pt}
+$$A \times B = \{(a,b) \mid a \in A, b \in B\}\vspace{-10pt}$$
+\textbf{推广到$n$个集合}：对于$n$个集合$A_1, A_2, \ldots, A_n$，它们的笛卡尔积定义为所有$n$元有序组$(a_1, a_2, \ldots, a_n)$组成的集合，其中$a_i \in A_i$：
+\vspace{-10pt}$$A_1 \times A_2 \times \cdots \times A_n = \{(a_1, a_2, \ldots, a_n) \mid a_i \in A_i, i = 1,2,\ldots,n\}\vspace{-10pt}$$
+~~~~当$A = B$时，$A \times A$可简写为$A^2$，$n$个相同集合$A$的笛卡尔积可简写为$A^n$\\
+~~~~空集与任何集合的笛卡尔积为空集：$\varnothing \times A = A \times \varnothing = \varnothing$
+\end{definition}
+\begin{theorem}{笛卡尔积的性质}{}
+不交换：$(A\times B=B\times A)\Leftrightarrow (A=\varnothing)\lor(B=\varnothing)\lor(A=B)$\\
+分配律：$A\times(B\cup C)=(A\times B)\cup(A\times C)~~~~~(A\cup B)\times C=(A\times C)\cup(B\times C)$\\
+分配律：$A\times(B\cap C)=(A\times B)\cap(A\times C)~~~~~(A\cap B)\times C=(A\times C)\cap(B\times C)$\\
+分配律：$A\times(B-C)=(A\times B)-(A\times C)~~~~~(A-B)\times C=(A\times C)-(B\times C)$\\
+分配律：$(A\oplus B)\times C=(A\times C)\oplus(B\times C)~~~~~~A\times(B\oplus C)=(A\times B)\oplus(A\times C)$\\
+积的交等于交的积：$(A\times C)\cap(B\times D)=(A\cap B)\times(C\cap D)$\\
+积的并蕴含并的积：$(A\times C)\cup(B\times D)\subseteq(A\cup B)\times(C\cup D)$\\
+差的积蕴含积的差：$(A-B)\times(C-D)\subseteq (A\times C)-(B\times D)$（后者元素数量更多，基数更大）\\
+存在一个单射：$P(A) \times P(B)\to P(A \times B)$\\
+单调性：$A\subseteq C\land B\subseteq D\Rightarrow A\times B\subseteq C\times D$
+\end{theorem}
+注意到性质4可以分解为性质2和3，性质5可以分解为性质234，下面给出证明：\vspace{-10pt}
+\begin{align*}
+(x,y)\in A\times(B\cup C)&\Leftrightarrow x\in A\land y\in (B\cup C)\Leftrightarrow x\in A\land (y\in B\lor y\in C)\\
+&\Leftrightarrow (x\in A\land y\in B)\lor(x\in A\land y\in C)\\&\Leftrightarrow (x,y)\in A\times B\cup A\times C\\
+(x,y)\in A\times(B\cap C)&\Leftrightarrow x\in A\land y\in (B\cap C)\Leftrightarrow x\in A\land (y\in B\land y\in C)\\
+&\Leftrightarrow (x\in A\land y\in B\land y\in C)\\&\Leftrightarrow (x,y)\in A\times B\cap A\times C\\
+(x,y)\in A\times(B-C)&\Leftrightarrow x\in A\land y\in (B-C)\Leftrightarrow x\in A\land (y\in B\land y\not\in C)\\
+&\Leftrightarrow (x\in A\land y\in B\land y\not\in C)\\&\Leftrightarrow (x,y)\in A\times B-(A\times C)\\
+(x,y)\in (A\oplus B)\times C&\Leftrightarrow x\in (A\oplus B)\land y\in C\\
+&\Leftrightarrow (x\in A\land x\not\in B\land y\in C)\lor(x\in B\land x\not\in A\land y\in C)\\
+&\Leftrightarrow (x,y)\in(A\times C)\oplus(B\times C)\\
+(x,y) \in (A \times C) \cap (B \times D) &\Leftrightarrow (x,y) \in A \times C \land (x,y) \in B \times D \\
+&\Leftrightarrow (x \in A \land y \in C) \land (x \in B \land y \in D) \\
+&\Leftrightarrow (x \in A \land x \in B) \land (y \in C \land y \in D) \\
+&\Leftrightarrow x \in A \cap B \land y \in C \cap D \\
+&\Leftrightarrow (x,y) \in (A \cap B) \times (C \cap D)\\
+(x,y) \in (A \times C) \cup (B \times D) &\Leftrightarrow (x,y) \in A \times C \lor (x,y) \in B \times D \\
+&\Leftrightarrow (x \in A \land y \in C) \lor (x \in B \land y \in D) \\
+&\Leftrightarrow (x\in A\lor x\in B)\land(x\in A\lor y\in D)\\ &\land(y\in C\lor x\in B)\land(y\in C\lor y\in D)\\
+&\Rightarrow (x \in A \lor x \in B) \land (y \in C \lor y \in D)\\
+&\Leftrightarrow x \in A \cup B \land y \in C \cup D \\
+&\Leftrightarrow (x,y) \in (A \cup B) \times (C \cup D)\\
+(x,y) \in (A - B) \times (C - D) &\Leftrightarrow x \in A - B \land y \in C - D \\
+&\Leftrightarrow (x \in A \land x \notin B) \land (y \in C \land y \notin D) \\
+&\Leftrightarrow (x \in A \land y \in C) \land (x \notin B \land y \notin D) \\
+&\Rightarrow (x,y) \in A \times C \land (x,y) \notin B \times D \\
+&\Leftrightarrow (x,y) \in (A \times C) - (B \times D)
+\end{align*}
+最后一个蕴含符号是因为$(x \notin B \land y \notin D)\lor(x \in B \land y \notin D)\lor(x \notin B \land y \in D)\Leftrightarrow (x,y) \notin B \times D$\\
+最后一个性质当且仅当$A=B=\varnothing$或$A,B\ne\varnothing$时，等号成立。
+\section{关系}
+\begin{definition}{关系}{}
+在集合论中，一个\textbf{二元关系}是指元素都是有序对的非空集合，或者空集。二元关系也可以简称为关系。对于二元关系$R$，如果$(x,y)\in R$，则称$x,y$有$R$关系，反之，则称$x,y$没有$R$关系，写作$x\not Ry$，其中$A=\text{dom}~R,B=\text{ran}~R$，分别称作定义域和值域。\\
+\textbf{全域关系}：从$A$到$B$的\textbf{全域关系}是完整的笛卡尔积$A \times B$，即包含所有可能有序对的关系。\\
+\textbf{恒等关系}：在集合$A$上的\textbf{恒等关系}（或称对角线关系）是所有形如$(a,a)$的有序对组成的集合，其中$a \in A$\\
+\textbf{空关系}：从$A$到$B$的\textbf{空关系}是空集$\varnothing$，即不包含任何有序对的关系。记作$R = \varnothing$\\
+一个 $n$ 元关系是 $n$ 个集合 $A_1, A_2, \dots, A_n$ 的笛卡尔积的一个子集，即 $R \subseteq A_1 \times A_2 \times \dots \times A_n$。
+\end{definition}
+集合$A,B$，如果$|A|=n,|B|=m$，则$|A\times B|=nm$，子集有$2^{mn}$个，所以从$A$到$B$的关系个数为$2^{mn}$。$A$上有$2^{n^2}$个不同的二元关系。比如整除关系，$(2,6)$就属于自然数集上的整数关系。
+
+可以用列举法，描述法来写出集合表示二元关系，如$>=\{(x,y)|x,y\in\mathbb{R}\land x>y\}$
+\begin{definition}{关系图}{}
+    设$A$是一个有限集合，$R$是$A$上的二元关系（即$R \subseteq A \times A$）。$R$的\textbf{关系图}是一个有向图：\\
+\textbf{顶点集}：集合$A$中的每个元素对应图中的一个顶点\\
+\textbf{边集}：对于每个有序对$(a,b) \in R$，在图中添加一条从$a$指向$b$的有向边\\
+\textbf{自环}：如果$(a,a) \in R$，则在顶点$a$处添加一个自环\\
+\textbf{关系图的性质}\\
+如果$R$是自反关系，则每个顶点都有自环\\
+如果$R$是对称关系，则任意两个顶点之间要么没有边，要么有双向边\\
+如果$R$是反对称关系，则任意两个不同顶点之间最多只有一条有向边\\
+如果$R$是传递关系，则图中任意两条连续的有向边$a \to b$和$b \to c$都对应一条边$a \to c$
+\end{definition}
+\begin{definition}{二元关系的邻接矩阵}{}
+设 $A = \{a_1, a_2, \ldots, a_m\}$ 和 $B = \{b_1, b_2, \ldots, b_n\}$ 是有限集合，$R \subseteq A \times B$ 是一个从 $A$ 到 $B$ 的二元关系。$R$ 的\textbf{邻接矩阵}是一个 $m \times n$ 的矩阵 $M_R = [m_{ij}]$，其中元素定义为：\vspace{-10pt}
+\[m_{ij} = \begin{cases}1, & \text{如果 } (a_i, b_j) \in R \\0, & \text{如果 } (a_i, b_j) \notin R\end{cases}\vspace{-10pt}\]
+\textbf{特殊情况}：当 $A = B$ 时，邻接矩阵是方阵，当 $R$ 是空关系时，邻接矩阵是全零矩阵\\
+当 $R$ 是全域关系时，邻接矩阵是全一矩阵，当 $R$ 是恒等关系 $I_A$ 时，邻接矩阵是单位矩阵\\
+\textbf{性质}：关系的并、交、补运算对应矩阵的布尔运算，关系的复合运算对应矩阵的布尔乘法，关系的逆对应矩阵的转置
+\end{definition}
+\begin{definition}{关系的逆运算}{}
+设 \( R \) 是一个从集合 \( A \) 到集合 \( B \) 的二元关系，即 \( R \subseteq A \times B \)。关系 \( R \) 的\textbf{逆运算}定义为一个新关系 \( R^{-1} \)，它是从 \( B \) 到 \( A \) 的关系，用集合描述法表示为：\vspace{-10pt}
+\[R^{-1} = \{ (b, a) \mid (a, b) \in R \}\vspace{-10pt}\]
+其中，\( R^{-1} \subseteq B \times A \)。逆运算将原关系中的每个有序对的顺序反转。
+\end{definition}
+由于逆运算只是反转了有序对的顺序，所以有以下性质成立：
+\begin{theorem}{关系的逆运算的性质}{}
+设$R$和$S$是从集合$A$到集合$B$的二元关系，$Q$是从$B$到集合$C$的二元关系：\\
+\textbf{1. 双重逆定理}：$(R^{-1})^{-1} = R$\\
+\textbf{2. 并集的逆}：$(R \cup S)^{-1} = R^{-1} \cup S^{-1}$\\
+\textbf{3. 交集的逆}：$(R \cap S)^{-1} = R^{-1} \cap S^{-1}$\\
+\textbf{4. 差集的逆}：$(R - S)^{-1} = R^{-1} - S^{-1}$\\
+\textbf{5. 补集的逆}：$(\sim R)^{-1} = \sim (R^{-1})$，其中$\sim R = (A \times B) - R$是$R$的补集\\
+\textbf{6. 复合关系的逆}：$(Q \circ R)^{-1} = R^{-1} \circ Q^{-1}$，其中$Q \circ R$是关系复合运算\\
+\textbf{7. 包含关系的逆}：如果$R \subseteq S$，则$R^{-1} \subseteq S^{-1}$\\
+\textbf{8. 域和值域的关系}：$\text{dom}(R^{-1}) = \text{ran}(R)$，$\text{ran}(R^{-1}) = \text{dom}(R)$
+\end{theorem}
+\begin{definition}{关系的复合运算}{}
+设 $R$ 是从集合 $A$ 到集合 $B$ 的二元关系，$S$ 是从集合 $B$ 到集合 $C$ 的二元关系，即 $R \subseteq A \times B$，$S \subseteq B \times C$。$R$ 与 $S$ 的\textbf{复合关系}（或称合成关系）是一个从 $A$ 到 $C$ 的二元关系，记作 $S \circ R$\vspace{-10pt}
+\[
+S \circ R = \{(a, c)\in A \times C \mid \exists b \in B : (a, b) \in R \land (b, c) \in S\}
+\]
+\end{definition}
+如果使用关系图表示关系的复合运算，就是将两张关系图“合并”，\textbf{步骤1：绘制原始关系图}，绘制$R$的关系图：$A$中元素指向$B$中元素的有向边，绘制$S$的关系图：$B$中元素指向$C$中元素的有向边。\textbf{步骤2：寻找连接路径}：对于每个$a \in A$和$c \in C$，检查是否存在中间元素$b \in B$，如果存在路径$a \rightarrow b$（属于$R$）和$b \rightarrow c$（属于$S$），则在复合关系图中添加边$a \rightarrow c$。\textbf{步骤3：构建复合关系图}：复合关系图包含顶点集$A \cup C$（中间集合$B$的顶点不出现），边集由所有满足条件的$a \rightarrow c$组成，这相当于在原始图中寻找长度为2的路径并直接连接起点和终点。
+\begin{theorem}{关系的复合运算的性质}{}
+    $(S\cup P)\circ R=(S\circ R)\cup(P\circ R)\quad R\circ(S\cup P)=(R\circ S)\cup(R\circ P)$\\
+    $(S\cap P)\circ R\subseteq(S\circ R)\cap(P\circ R)\quad R\circ(S\cap P)\subseteq(R\circ S)\cap(R\circ P)$\\
+    $(Q \circ R)^{-1} = R^{-1} \circ Q^{-1}$
+\end{theorem}
+为什么一个相等，另一个只有包含关系？其实，是因为把复合运算用谓词逻辑表达后，量词是存在量词，辖域为整个公式，所以如果括号内部是析取，就可以直接等价（分配律），如果括号内部是合取，则需要弱化：$\exists x(P(x) \land Q(x))\Rightarrow \exists xP(x)\land \exists xQ(x)$，下面给出证明：
+\begin{align*}
+\forall (x,y)\in(S\cup P)\circ R &\Leftrightarrow \exists z((x,z)\in R\land(z,y)\in S\cup P)\\
+&\Leftrightarrow \exists z((x,z)\in R\land((z,y)\in S\lor (z,y)\in P))\\
+&\Leftrightarrow \exists z(((x,z)\in R\land(z,y)\in S)\lor((x,z)\in R\land(z,y)\in P))\\
+&\Leftrightarrow \exists z((x,z)\in R\land(z,y)\in S)\lor \exists z((x,z)\in R\land(z,y)\in P)\\
+&\Leftrightarrow (x,y)\in S\circ R\lor (x,y)\in P\circ R\\
+&\Leftrightarrow (x,y)\in (S\circ R)\cup(P\circ R)\\
+\forall (x,y)\in R\circ(S\cup P) &\Leftrightarrow \exists z((x,z)\in S\cup P\land(z,y)\in R)\\
+&\Leftrightarrow \exists z(((x,z)\in S\lor(x,z)\in P)\land(z,y)\in R)\\
+&\Leftrightarrow \exists z(((x,z)\in S\land(z,y)\in R)\lor((x,z)\in P\land(z,y)\in R))\\
+&\Leftrightarrow \exists z((x,z)\in S\land(z,y)\in R)\lor\exists z((x,z)\in P\land(z,y)\in R)\\
+&\Leftrightarrow (x,y)\in R\circ S\lor(x,y)\in R\circ P\\
+&\Leftrightarrow (x,y)\in (R\circ S)\cup(R\circ P)\\
+\forall (x,y)\in(S\cap P)\circ R &\Leftrightarrow \exists z((x,z)\in R\land(z,y)\in S\cap P)\\
+&\Leftrightarrow \exists z((x,z)\in R\land((z,y)\in S\land(z,y)\in P))\\
+&\Rightarrow \exists z((x,z)\in R\land(z,y)\in S)\land\exists z((x,z)\in R\land(z,y)\in P)\\
+&\Leftrightarrow (x,y)\in S\circ R\land(x,y)\in P\circ R\\
+&\Leftrightarrow (x,y)\in (S\circ R)\cap(P\circ R)\\
+\forall (x,y)\in R\circ(S\cap P) &\Leftrightarrow \exists z((x,z)\in S\cap P\land(z,y)\in R)\\
+&\Leftrightarrow \exists z(((x,z)\in S\land(x,z)\in P)\land(z,y)\in R)\\
+&\Rightarrow \exists z((x,z)\in S\land(z,y)\in R)\land\exists z((x,z)\in P\land(z,y)\in R)\\
+&\Leftrightarrow (x,y)\in R\circ S\land(x,y)\in R\circ P\\
+&\Leftrightarrow (x,y)\in (R\circ S)\cap(R\circ P)
+\end{align*}
+设 $R \subseteq A \times B$ 和 $Q \subseteq B \times C$ 是二元关系。证明 $(Q \circ R)^{-1} = R^{-1} \circ Q^{-1}$，对于任意有序对 $(c, a)$，有：
+\begin{align*}
+(c, a) \in (Q \circ R)^{-1} &\Leftrightarrow (a, c) \in Q \circ R \\
+&\Leftrightarrow \exists b \in B ((a, b) \in R \land (b, c) \in Q) \\
+&\Leftrightarrow \exists b \in B ((b, a) \in R^{-1} \land (c, b) \in Q^{-1}) \\
+&\Leftrightarrow (c, a) \in R^{-1} \circ Q^{-1}
+\end{align*}
+因此，$(Q \circ R)^{-1} = R^{-1} \circ Q^{-1}$ 成立。
+
+证明：设$A$是$R$上的关系，则$R\circ I_A=I_A\circ R=R$
+\begin{align*}
+(x, y) \in R \circ I_A &\Leftrightarrow \exists z \in A ,((x, z) \in I_A \land (z, y) \in R) \\
+&\Leftrightarrow \exists z  (z\in A\land x = z \land (z, y) \in R) \\
+&\Rightarrow (x, y) \in R\quad\text{存在量词的合取性质} \\
+(x,y)\in R&\Rightarrow (x,x)\in I_A\land(x,y)\in R\\
+&\Rightarrow (x,y)\in R
+\end{align*}
+\begin{definition}{关系的幂}{}
+设 \( R \) 是集合 \( A \) 上的二元关系（即 \( R \subseteq A \times A \)）。关系 \( R \) 的幂 \( R^n \)（其中 \( n \) 是非负整数）递归定义如下，其中 \( I_A = \{ (a, a) \mid a \in A \} \) 是 \( A \) 上的恒等关系，\( \circ \) 表示关系的复合运算。
+关系幂的性质包括：\( R^m \circ R^n = R^{m+n} \),\( (R^m)^n = R^{mn} \)：\vspace{-10pt}
+\begin{align*}
+R^0 &= I_A \quad \text{（恒等关系）} \\\vspace{-10pt}
+R^n &= R \circ R^{n-1} \quad \text{对于 } n \geq 1
+\end{align*}
+\end{definition}
+\textbf{性质1:} \( R^m \circ R^n = R^{m+n} \)，对 \( n \) 进行数学归纳法。\\
+\textbf{基础步骤:} 当 \( n = 0 \)时，$R^m \circ R^0 = R^m \circ I_A = R^m = R^{m+0}$\\
+\textbf{归纳假设:} 假设对于 \( n = k \) 有 \( R^m \circ R^k = R^{m+k} \)，当 \( n = k+1 \)时
+\begin{align*}
+R^m \circ R^{k+1} &= R^m \circ (R \circ R^k) \\
+&= (R^m \circ R) \circ R^k \quad \text{(复合运算结合律)} \\
+&= R^{m+1} \circ R^k \\
+&= R^{(m+1)+k} \quad \text{(归纳假设)} \\
+&= R^{m+(k+1)}
+\end{align*}
+因此，由数学归纳法，性质1成立。\\
+\textbf{性质2:} \( (R^m)^n = R^{mn} \)对 \( n \) 进行数学归纳法。\\
+\textbf{基础步骤:} 当 \( n = 0 \)，$(R^m)^0 = I_A = R^0 = R^{m \cdot 0}$\\
+\textbf{归纳假设:} 假设对于 \( n = k \) 有 \( (R^m)^k = R^{mk} \)，当 \( n = k+1 \)时
+\begin{align*}
+(R^m)^{k+1} &= (R^m)^k \circ R^m \\
+&= R^{mk} \circ R^m \quad \text{(归纳假设)} \\
+&= R^{mk + m} \quad \text{(性质1)} \\
+&= R^{m(k+1)}
+\end{align*}
+因此，由数学归纳法，性质2成立。
+\begin{theorem}{关系的幂的性质}{}
+设$R_1,R_2,R_3$是集合$A$上的二元关系，如果$R_1\subseteq R_2$那么：\\
+（1）$R_1\circ R_3\subseteq R_2\circ R_3$\\
+（2）$R_3\circ R_1\subseteq R_3\circ R_2$
+\end{theorem}
+\textbf{证明(1)}：
+设$(x,z)\in R_1\circ R_3$，则存在$y\in A$使得$(x,y)\in R_1$且$(y,z)\in R_3$。
+由于$R_1\subseteq R_2$，有$(x,y)\in R_2$，因此$(x,z)\in R_2\circ R_3$。
+故$R_1\circ R_3\subseteq R_2\circ R_3$。
+
+\textbf{证明(2)}：
+设$(x,z)\in R_3\circ R_1$，则存在$y\in A$使得$(x,y)\in R_3$且$(y,z)\in R_1$。
+由于$R_1\subseteq R_2$，有$(y,z)\in R_2$，因此$(x,z)\in R_3\circ R_2$。
+故$R_3\circ R_1\subseteq R_3\circ R_2$。
+\begin{theorem}{关系的幂的性质}{}
+    设\( R \) 是集合 \( A \) 上的二元关系（即 \( R \subseteq A \times A \)），且$|A|=n$，则存在自然数$s,t$，使得\\
+    （1）$R^s=R^t,\quad 0\leq s<t\leq 2^{n^2}$\quad（2）对任意$k\in\mathbb{N},R^{s+k}=R^{t+k}$
+\end{theorem}
+设 $|A| = n$，则 $A \times A$ 的子集个数为 $2^{n^2}$，即不同的二元关系最多有 $2^{n^2}$ 个。
+
+考虑序列 $R^0, R^1, R^2, \ldots, R^{2^{n^2}}$，共 $2^{n^2} + 1$ 个关系。由鸽巢原理，必存在 $0 \leq s < t \leq 2^{n^2}$ 使得 $R^s = R^t$，这就证明了性质(1)。对于性质(2)，对任意 $k \in \mathbb{N}$，有：
+\begin{align*}
+R^{s+k} &= R^s \circ R^k \quad \text{(幂的定义)} \\
+&= R^t \circ R^k \quad \text{(由 $R^s = R^t$)} \\
+&= R^{t+k} \quad \text{(幂的定义)}
+\end{align*}
+因此，$R^{s+k} = R^{t+k}$ 对任意 $k \in \mathbb{N}$ 成立。
+\begin{definition}{布尔加和布尔乘，用矩阵表示关系的复合}{}
+\textbf{布尔加（逻辑或运算）}：
+定义两个布尔值$a$和$b$的布尔加为：
+\[
+a \vee b = 
+\begin{cases}
+1, & \text{如果 } a = 1 \text{ 或 } b = 1 \\
+0, & \text{否则}
+\end{cases}
+\]
+布尔加对应逻辑或运算，满足交换律、结合律和幂等律。
+
+\textbf{布尔乘（逻辑与运算）}：
+定义两个布尔值$a$和$b$的布尔乘为：\vspace{-10pt}
+\[
+a \wedge b = 
+\begin{cases}
+1, & \text{如果 } a = 1 \text{ 且 } b = 1 \\
+0, & \text{否则}
+\end{cases}\vspace{-10pt}
+\]
+布尔乘对应逻辑与运算，满足交换律、结合律和分配律。
+
+\textbf{邻接矩阵布尔乘法}：
+设$A$和$B$是两个布尔矩阵，其乘积$C = A \cdot B$通过布尔运算定义：\vspace{-10pt}
+\[
+c_{ij} = \bigvee_{k=1}^{n} (a_{ik} \wedge b_{kj})\vspace{-10pt}
+\]
+其中：$\wedge$表示布尔乘（逻辑与），用于计算对应元素的乘积，$\vee$表示布尔加（逻辑或），用于累积部分结果，运算结果$c_{ij} = 1$当且仅当存在$k$使得$a_{ik} = 1$且$b_{kj} = 1$，这种布尔矩阵乘法正好对应关系复合的邻接矩阵计算：$M_{S \circ R} = M_R \cdot M_S$。
+\end{definition}
+翻译成人话，就是：确定$A,B$相乘之后的矩阵$C$的位于某一行某一列的元素，就需要把$A$的对应的行向量和$B$的对应的列向量（先转置，变成横的）抽出来做布尔点积（当我们定义了布尔加和布尔乘，布尔点积就被定义了）。考虑以下示例中使用的矩阵：
+\[
+A = \begin{bmatrix}
+1 & 0 & 1 \\
+0 & 1 & 0 \\
+1 & 1 & 0
+\end{bmatrix}, \quad
+B = \begin{bmatrix}
+1 & 0 \\
+0 & 1 \\
+1 & 1
+\end{bmatrix}, \quad
+AB = \begin{bmatrix}
+1 & 1 \\
+0 & 1 \\
+1 & 1
+\end{bmatrix}
+\]
+\[
+\begin{array}{c@{\hspace{-2pt}}c}
+ & 
+\begin{bmatrix}
+1 & 0 \\
+0 & 1 \\
+1 & 1
+\end{bmatrix} \\[8pt]
+\begin{bmatrix}
+1 & 0 & 1 \\
+0 & 1 & 0 \\
+1 & 1 & 0
+\end{bmatrix} & 
+\begin{bmatrix}
+1 & 1 \\
+0 & 1 \\
+1 & 1
+\end{bmatrix}
+\end{array}
+\]
+\section{自反，对称，传递关系，闭包}
+\begin{definition}{自反，对称，传递关系}{}
+设$R$是集合$A$上的二元关系（即$R \subseteq A \times A$）。
+
+\textbf{自反关系}：
+$R$是自反的当且仅当对于所有$a \in A$，都有$(a,a) \in R$。
+即：$\forall a \in A, (a,a) \in R$
+
+\textbf{对称关系}：
+$R$是对称的当且仅当对于所有$a,b \in A$，如果$(a,b) \in R$，则$(b,a) \in R$。
+即：$\forall a,b \in A, (a,b) \in R \Rightarrow (b,a) \in R$
+
+\textbf{传递关系}：
+$R$是传递的当且仅当对于所有$a,b,c \in A$，如果$(a,b) \in R$且$(b,c) \in R$，则$(a,c) \in R$。
+即：$\forall a,b,c \in A, [(a,b) \in R \land (b,c) \in R] \Rightarrow (a,c) \in R$
+
+\textbf{反自反关系}：
+$R$是反自反的当且仅当对于所有$a \in A$，都有$(a,a) \notin R$。
+即：$\forall a \in A, (a,a) \notin R$
+
+\textbf{反对称关系}：
+$R$是反对称的当且仅当对于所有$a,b \in A$，如果$(a,b) \in R$且$(b,a) \in R$，则$a = b$。
+即：$\forall a,b \in A, [(a,b) \in R \land (b,a) \in R] \Rightarrow a = b$
+\end{definition}
+引入关系图，那么自反关系当且仅当每一个结点都有环，反自反关系当且仅当每一个结点都没有环，对称关系当且仅当每两个结点之间要么有2条反向的有向边（可以视作无向边），要么没有边；反对称关系当且仅当每两个结点之间要么没有边，要么只可以有一条有向边。传递关系当且仅当在关系图中若存在结点$a$到$b$的有向边和结点$b$到$c$的有向边，则有结点$a$到$c$的有向边。
+
+如果引入邻接矩阵的话，自反关系对应矩阵的对角线元素全为1，反自反关系对应矩阵的对角线元素全为0，对称关系对应矩阵是对称矩阵，反对称关系对应矩阵是反对称矩阵，传递关系满足其矩阵的2次幂所对应的关系包含于1次幂所对应的关系。
+
+但是要注意：一个关系不可能同时是自反或者反自反关系，但是也可能既不是自反的，也不是反自反的。一个矩阵可以同时是对称的和反对称的（如空关系），但是也可能既不是对称的，也不是反对称的。
+
+空关系和单元素关系（只包含零个，一个有序对的关系）总是传递的，因为当一个命题的前提为假的时候，结论总为真。
+\begin{theorem}{自反对称传递关系的性质}{}
+（1）$R$是自反的当且仅当$I_A\subseteq R$，$R$是反自反的当且仅当$R-I_A=R$\\
+（2）$R$是对称的当且仅当$R=R^T$，$R$是反对称的当且仅当$R\cap R^T\subseteq I_A$\\
+（3）$R$是传递的当且仅当$R^2\subseteq R$
+\end{theorem}
+\begin{theorem}{关系运算对关系属性的保持性}{}
+设$R_1, R_2$是集合$A$上的二元关系。各种关系运算对关系属性的保持性如下：
+\begin{center}
+\begin{tabular}{|c|c|c|c|c|c|c|}
+\hline
+运算 & 自反性 & 反自反性 & 对称性 & 反对称性 & 传递性 & 等价性 \\
+\hline
+逆运算 $R^{-1}$ & 保持 & 保持 & 保持 & 保持 & 保持 & 保持 \\
+\hline
+交集 $R_1 \cap R_2$ & 保持 & 保持 & 保持 & 保持 & 保持 & 保持 \\
+\hline
+并集 $R_1 \cup R_2$ & 保持 & 保持 & 保持 & 不一定 & 不一定 & 不一定 \\
+\hline
+差集 $R_1 - R_2$ & 不一定 & 保持 & 保持 & 保持 & 保持 & 不一定 \\
+\hline
+对称差 $R_1 \oplus R_2$ & 不一定 & 保持 & 保持 & 不一定 & 不一定 & 不一定 \\
+\hline
+复合 $R_1 \circ R_2$ & 保持 & 不一定 & 不一定 & 不一定 & 不一定 & 不一定 \\
+\hline
+幂运算 $R^n$ & 保持 & 保持 & 不一定 & 不一定 & 保持 & 不一定 \\
+\hline
+\end{tabular}
+\end{center}
+\end{theorem}
+\textbf{详细说明与反例}：
+
+\textbf{自反性}：自反关系是否能维持，取决于每一个结点的自环有没有受到影响，显然，并集交集、逆、复合、幂运算保持自反性，差集不一定保持（注意不是一定不保持，因为我们可以让邻接矩阵的大小不同，做差后主对角线上还会有1）
+
+\textbf{反自反性}：和自反关系类似的是，并集交集、逆、幂运算保持反自反性，但是，差集、对称差、也会保持，这是因为两个集合中都没有形如$(x,x)$的有序对，所以不管怎么交怎么并怎么做差，都不会影响到反自反性。但是，复合不一定保持：如$R_1 = \{(1,2)\}$，$R_2 = \{(2,1)\}$，则$R_1 \circ R_2 = \{(1,1)\}$不是反自反的
+
+\textbf{对称性}：并集交集、逆、差集（显然，如果做差会消去元素的话，那一定是成对地消去有序对）、对称差（差集和并集保持，那么对称差保持）保持对称性，复合、幂运算不一定保持：如$A = \{1,2,3\}$，$R = \{(1,2),(2,1),(2,3)\}$对称，但$R^2 = \{(1,1),(1,3),(2,2)\}$不对称
+
+\textbf{反对称性}：交集、差集保持反对称性；并集、对称差、复合、幂运算不一定保持：如$A = \{1,2\}$，$R_1 = \{(1,2)\}$，$R_2 = \{(2,1)\}$都反对称，但$R_1 \cup R_2$不反对称，并集的情况很好理解，因为$R_1,R_2$两个矩阵合在一起，明显可能会导致有元素关于对角线对称。由此，对称差因为含有并集运算，所以也显然不一定维持，幂运算可能会出现$R_1 = \{(1,2),(3,2)\}$，$R_2 = \{(2,3),(2,1)\}$，则$R_1 \circ R_2 = \{(1,1),(1,3),(3,3),(3,1)\}$，不是反对称的
+
+\textbf{传递性}：交集、幂运算保持传递性，并集、对称差、复合不一定保持：如$A = \{1,2\}$，$R_1 = \{(1,2)\}$，$R_2 = \{(2,1)\}$都传递，但$R_1 \cup R_2$不传递，进而对称差也不一定维持，考虑集合 $A = \{1,2,3,4\}$，定义两个关系：$R = \{(1,2), (3,4)\} \quad S = \{(2,3), (4,1)\}$，计算复合关系 $R \circ S$：$R \circ S = \{(1,3), (3,1)\}$，因此，$R \circ S$ 不满足传递性。此反例证明传递关系的复合不一定传递。
+\begin{definition}{等价关系}{}
+设$R$是集合$A$上的二元关系（即$R \subseteq A \times A$）。如果$R$同时满足是自反的，对称的，传递的，则称$R$为\textbf{等价关系}。若$(x,y)$属于此集合中，记作$x\sim y$
+\end{definition}
+\begin{definition}{自反/对称/传递闭包}{}
+    设$R$是集合$A$上的二元关系。若$R'$满足$R' \subseteq R$且$R'$是自反/对称/传递的，且对$A$上任何包含$R$的关系$R''$，都有$R'\subseteq R''$，则称$R'$是$R$的自反/对称/传递闭包。
+
+\textbf{自反闭包}：
+$R$的自反闭包是包含$R$的最小自反关系，记作$r(R)$，定义为：\vspace{-10pt}
+$$r(R) = R \cup I_A\vspace{-10pt}$$
+其中$I_A = \{(a,a) \mid a \in A\}$是$A$上的恒等关系。
+
+\textbf{对称闭包}：
+$R$的对称闭包是包含$R$的最小对称关系，记作$s(R)$，定义为：\vspace{-10pt}
+$$s(R) = R \cup R^{-1}\vspace{-10pt}$$
+其中$R^{-1} = \{(b,a) \mid (a,b) \in R\}$是$R$的逆关系。
+
+\textbf{传递闭包}：
+$R$的传递闭包是包含$R$的最小传递关系，记作$t(R)$，定义为：\vspace{-10pt}
+$$t(R) = \bigcup_{n=1}^{\infty} R^n = R \cup R^2 \cup R^3 \cup \cdots\vspace{-10pt}$$
+其中$R^n$表示关系$R$的$n$次幂（关系的复合）。 对于元素个数为$n$的集合$A$来说，$A$上的关系$R$的传递闭包又可以写作：
+\vspace{-10pt}
+$$t(R) = \bigcup_{n=1}^{\infty} R^n = R \cup R^2 \cup R^3 \cup \cdots\cup R^{2^{n^2}}\vspace{-10pt}$$
+$R$的自反对称传递闭包写作$tsr(R)=t(s(r(R)))$.
+\end{definition}
+要证明 $\bigcup_{n=1}^{\infty} R^n = R \cup R^2 \cup R^3 \cup \cdots$ 是 $R$ 的传递闭包，需要证明3个性质：
+
+\textbf{1. 包含性}：$R \subseteq \bigcup_{n=1}^{\infty} R^n$，显然当 $n=1$ 时，$R^1 = R$，所以 $R \subseteq \bigcup_{n=1}^{\infty} R^n$。
+
+\textbf{2. 传递性}：$\bigcup_{n=1}^{\infty} R^n$ 是传递的，设 $(a,b) \in \bigcup_{n=1}^{\infty} R^n$ 且 $(b,c) \in \bigcup_{n=1}^{\infty} R^n$，则存在 $m,n \geq 1$ 使得：$(a,b) \in R^m ,(b,c) \in R^n$，由关系幂的性质，$(a,c) \in R^m \circ R^n = R^{m+n}$，而 $R^{m+n} \subseteq \bigcup_{n=1}^{\infty} R^n$，所以 $(a,c) \in \bigcup_{n=1}^{\infty} R^n$。
+
+\textbf{3. 最小性}：$\bigcup_{n=1}^{\infty} R^n$ 是最小的传递关系
+
+用数学归纳法证明：设 $T$ 是任意包含 $R$ 的传递关系，则对任意 $n \geq 1$，$R^n \subseteq T$。
+
+\textbf{基础情况}：$n=1$ 时，$R^1 = R \subseteq T$。
+
+\textbf{归纳假设}：假设 $R^k \subseteq T$ 对某个 $k \geq 1$ 成立。
+
+\textbf{归纳步骤}：对于 $R^{k+1} = R^k \circ R$，
+\begin{align*}
+(a,b) \in R^{k+1} &\Rightarrow \exists c \text{ 使得 } (a,c) \in R^k \text{ 且 } (c,b) \in R \\
+&\Rightarrow (a,c) \in T \text{ 且 } (c,b) \in T \quad \text{(归纳假设和 $R \subseteq T$)} \\
+&\Rightarrow (a,b) \in T \quad \text{(因为 $T$ 是传递的)}
+\end{align*}
+所以 $R^{k+1} \subseteq T$。
+
+由数学归纳法，对所有 $n \geq 1$，$R^n \subseteq T$，因此 $\bigcup_{n=1}^{\infty} R^n \subseteq T$。
+
+\textbf{结论}：$\bigcup_{n=1}^{\infty} R^n$ 是包含 $R$ 的最小传递关系，即传递闭包。
+\begin{theorem}{闭包的性质}{}
+设$R_1,R_2$是集合$A$上的二元关系，则：\\
+（1）$R_1\subseteq R_2\Rightarrow r(R_1)\subseteq r(R_2)$\\
+（2）$R_1\subseteq R_2\Rightarrow s(R_1)\subseteq s(R_2)$\\
+（3）$R_1\subseteq R_2\Rightarrow t(R_1)\subseteq t(R_2)$\\
+（4）$r(R_1)\cup r(R_2)=r(R_1\cup R_2)\quad r(R_1)\cap r(R_2)=r(R_1\cap R_2)$\\
+（5）$s(R_1)\cup s(R_2)=s(R_1\cup R_2)\quad s(R_1\cap R_2)\subseteq s(R_1)\cap s(R_2)$\\
+（6）$t(R_1)\cup t(R_2)\subseteq t(R_1\cup R_2)\quad t(R_1\cap R_2)\subseteq t(R_1)\cap t(R_2)$
+\end{theorem}
+性质1：由于$R_1 \subseteq R_2$，且$I_A \subseteq I_A$，故$r(R_1) = R_1 \cup I_A \subseteq R_2 \cup I_A = r(R_2)$。
+
+性质2：由于$R_1 \subseteq R_2$，则$R_1^{-1} \subseteq R_2^{-1}$，故$s(R_1) = R_1 \cup R_1^{-1} \subseteq R_2 \cup R_2^{-1} = s(R_2)$。
+
+性质3：由于$R_1 \subseteq R_2$，则对任意$n \geq 1$有$R_1^n \subseteq R_2^n$，故$t(R_1) = \bigcup_{n=1}^{\infty} R_1^n \subseteq \bigcup_{n=1}^{\infty} R_2^n = t(R_2)$。
+
+性质4：\vspace{-20pt}\begin{align*}
+r(R_1) \cup r(R_2) &= (R_1 \cup I_A) \cup (R_2 \cup I_A) = (R_1 \cup R_2) \cup I_A = r(R_1 \cup R_2) \\
+r(R_1) \cap r(R_2) &= (R_1 \cup I_A) \cap (R_2 \cup I_A) = (R_1 \cap R_2) \cup I_A = r(R_1 \cap R_2)
+\end{align*}
+性质5：
+由于$R_1 \cap R_2 \subseteq R_1$且$R_1 \cap R_2 \subseteq R_2$，由单调性得$s(R_1 \cap R_2) \subseteq s(R_1) \cap s(R_2)$。另外：\vspace{-10pt}
+\begin{align*}
+s(R_1) \cup s(R_2) &= (R_1 \cup R_1^{-1}) \cup (R_2 \cup R_2^{-1}) \\
+&= (R_1 \cup R_2) \cup (R_1^{-1} \cup R_2^{-1}) \\
+&= (R_1 \cup R_2) \cup (R_1 \cup R_2)^{-1} = s(R_1 \cup R_2)
+\end{align*}
+性质6：由单调性，$t(R_1) \subseteq t(R_1 \cup R_2)$且$t(R_2) \subseteq t(R_1 \cup R_2)$，故并集包含于右边。同理，由$R_1 \cap R_2 \subseteq R_1$和$R_1 \cap R_2 \subseteq R_2$，得$t(R_1 \cap R_2) \subseteq t(R_1) \cap t(R_2)$。
+\begin{theorem}{闭包运算的复合}{}
+（1）$s(r(R)) = r(s(R))$\quad（2）$r(t(R)) = t(r(R))$\quad（3）$s(t(R)) \subseteq t(s(R))$
+\end{theorem}
+（1）性质1证明如下：
+\begin{align*}
+s(r(R)) &= s(R \cup I_A) = (R \cup I_A) \cup (R \cup I_A)^{-1} \quad \text{(对称闭包定义)} \\
+&= R \cup I_A \cup R^{-1} \cup I_A^{-1} \quad \text{(逆运算分配律)} = R \cup R^{-1} \cup I_A \quad \text{(因为 $I_A^{-1} = I_A$)} \\
+r(s(R)) &= r(R \cup R^{-1}) = (R \cup R^{-1}) \cup I_A \quad \text{(自反闭包定义)} = R \cup R^{-1} \cup I_A
+\end{align*}
+（2）性质2证明如下：
+\begin{align*}
+r(t(R)) = t(R) \cup I_A \quad 
+t(r(R)) = t(R \cup I_A) 
+\end{align*}
+由于$R \cup I_A \subseteq t(R) \cup I_A$，且$t(R) \cup I_A$是传递的，所以$t(R \cup I_A) \subseteq t(R) \cup I_A$。由于$R \subseteq R \cup I_A \subseteq t(R \cup I_A)$且$I_A \subseteq t(R \cup I_A)$，所以$t(R) \subseteq t(R \cup I_A)$，故$t(R) \cup I_A \subseteq t(R \cup I_A)$\\
+（3）性质3证明如下：
+\[s(t(R)) = t(R) \cup t(R)^{-1} \quad
+t(s(R)) = t(R \cup R^{-1}) \]
+由于$t(R) \subseteq t(R \cup R^{-1}) = t(s(R))$，且$t(R)^{-1} = t(R^{-1}) \subseteq t(R^{-1} \cup R) = t(s(R))$（因为$R^{-1} \subseteq s(R)$），所以：
+\[
+s(t(R)) = t(R) \cup t(R)^{-1} \subseteq t(s(R)) \cup t(s(R)) = t(s(R))
+\]
+因此，$s(t(R)) \subseteq t(s(R))$。这个结论告诉我们；\textbf{传递关系的对称闭包可能会丢失传递性，但是对称关系的传递闭包不会丢失对称性}。比如关系$R=\{(1,2),(3,2)\}$是传递的，但是其对称闭包$s(R)=\{(1,2),(2,1),(2,3),(3,2)\}$并不是传递的.
+\begin{theorem}{自反传递对称闭包}
+    设$R$是非空集合上的二元关系，则$tsr(R)=t(s(r(R)))$是包含$R$的最小等价关系。
+\end{theorem}
+设$E = t(s(r(R)))$。需要证明以下三点：
+
+\textbf{1. 包含性}：
+由于$r(R) \supseteq R$，$s(r(R)) \supseteq r(R) \supseteq R$，且$t(s(r(R))) \supseteq s(r(R)) \supseteq R$，故$E \supseteq R$。
+
+\textbf{2. $E$是等价关系}：
+
+\textbf{自反性}：$r(R)$是自反的，$s(r(R))$保持自反性（对称闭包不破坏自反性），$t(s(r(R)))$也保持自反性（传递闭包不破坏自反性），故$E$是自反的。
+
+\textbf{对称性}：$s(r(R))$是对称的（因为对称闭包）。若$S$是对称关系，则$t(S)$也是对称的（因为若$(x,y) \in t(S)$，则存在路径$x=x_0,x_1,\ldots,x_n=y$使得$(x_i,x_{i+1}) \in S$；由对称性，路径反向$y=x_n,x_{n-1},\ldots,x_0=x$也在$S$中，故$(y,x) \in t(S)$）。因此$E$是对称的。
+
+\textbf{传递性}：由传递闭包的定义，$E$是传递的。
+
+\textbf{3. 最小性}：
+设$E'$是任意包含$R$的等价关系。由于$E'$是自反的，$E' \supseteq r(R)$；由于$E'$是对称的，$E' \supseteq s(r(R))$；由于$E'$是传递的，$E' \supseteq t(s(r(R))) = E$。故$E$是包含$R$的最小等价关系。
+\section{Warshell算法}
+设$A = \{1,2,3,4,5\}$，关系$R$的邻接矩阵为：
+\[
+M = \begin{bmatrix}
+0 & 1 & 0 & 0 & 0 \\
+0 & 0 & 1 & 0 & 0 \\
+0 & 0 & 0 & 1 & 0 \\
+0 & 0 & 0 & 0 & 1 \\
+1 & 0 & 0 & 0 & 0
+\end{bmatrix}
+\]
+这个关系表示一个有向环：$1 \to 2 \to 3 \to 4 \to 5 \to 1$。
+
+\textbf{应用Warshall算法}：
+
+\textbf{迭代1 ($k=1$)}：先关注第一列，因为我们需要关注是否存在某个有序对的后一个数是1，然后，再关注是否存在某个有序对前一个数是1，显然此时就要看第一行了。循环往复这个过程知道遍历完成。
+\begin{align*}
+M^*[5,1] \land M^*[1,2] &= 1 \land 1 = 1 \Rightarrow M^*[5,2] = 0 \lor 1 = 1 \\
+M^*[5,1] \land M^*[1,3] &= 1 \land 0 = 0 \Rightarrow M^*[5,3] = 0 \\
+M^*[5,1] \land M^*[1,4] &= 1 \land 0 = 0 \Rightarrow M^*[5,4] = 0 \\
+M^*[5,1] \land M^*[1,5] &= 1 \land 0 = 0 \Rightarrow M^*[5,5] = 0
+\end{align*}
+更新后矩阵：
+\[
+M^* = \begin{bmatrix}
+0 & 1 & 0 & 0 & 0 \\
+0 & 0 & 1 & 0 & 0 \\
+0 & 0 & 0 & 1 & 0 \\
+0 & 0 & 0 & 0 & 1 \\
+1 & 1 & 0 & 0 & 0
+\end{bmatrix}
+\]
+\textbf{迭代2 ($k=2$)}：先关注第二列，因为我们需要关注是否存在某个有序对的后一个数是2，然后，再关注是否存在某个有序对前一个数是2，显然此时就要看第二行了。循环往复这个过程知道遍历完成。
+\begin{align*}
+M^*[1,2] \land M^*[2,3] &= 1 \land 1 = 1 \Rightarrow M^*[1,3] = 0 \lor 1 = 1 \\
+M^*[5,2] \land M^*[2,3] &= 1 \land 1 = 1 \Rightarrow M^*[5,3] = 0 \lor 1 = 1 \\
+M^*[1,2] \land M^*[2,4] &= 1 \land 0 = 0 \Rightarrow M^*[1,4] = 0 \\
+M^*[1,2] \land M^*[2,5] &= 1 \land 0 = 0 \Rightarrow M^*[1,5] = 0
+\end{align*}
+更新后矩阵：
+\[
+M^* = \begin{bmatrix}
+0 & 1 & 1 & 0 & 0 \\
+0 & 0 & 1 & 0 & 0 \\
+0 & 0 & 0 & 1 & 0 \\
+0 & 0 & 0 & 0 & 1 \\
+1 & 1 & 1 & 0 & 0
+\end{bmatrix}
+\]
+\textbf{迭代3 ($k=3$)}：先关注第三列，因为我们需要关注是否存在某个有序对的后一个数是3，然后，再关注是否存在某个有序对前一个数是3，显然此时就要看第三行了。循环往复这个过程知道遍历完成。
+\begin{align*}
+M^*[1,3] \land M^*[3,4] &= 1 \land 1 = 1 \Rightarrow M^*[1,4] = 0 \lor 1 = 1 \\
+M^*[2,3] \land M^*[3,4] &= 1 \land 1 = 1 \Rightarrow M^*[2,4] = 0 \lor 1 = 1 \\
+M^*[5,3] \land M^*[3,4] &= 1 \land 1 = 1 \Rightarrow M^*[5,4] = 0 \lor 1 = 1
+\end{align*}
+更新后矩阵：
+\[
+M^* = \begin{bmatrix}
+0 & 1 & 1 & 1 & 0 \\
+0 & 0 & 1 & 1 & 0 \\
+0 & 0 & 0 & 1 & 0 \\
+0 & 0 & 0 & 0 & 1 \\
+1 & 1 & 1 & 1 & 0
+\end{bmatrix}
+\]
+\textbf{迭代4 ($k=4$)}：先关注第四列，因为我们需要关注是否存在某个有序对的后一个数是4，然后，再关注是否存在某个有序对前一个数是4，显然此时就要看第四行了。循环往复这个过程知道遍历完成。
+\begin{align*}
+M^*[1,4] \land M^*[4,5] &= 1 \land 1 = 1 \Rightarrow M^*[1,5] = 0 \lor 1 = 1 \\
+M^*[2,4] \land M^*[4,5] &= 1 \land 1 = 1 \Rightarrow M^*[2,5] = 0 \lor 1 = 1 \\
+M^*[3,4] \land M^*[4,5] &= 1 \land 1 = 1 \Rightarrow M^*[3,5] = 0 \lor 1 = 1 \\
+M^*[5,4] \land M^*[4,5] &= 1 \land 1 = 1 \Rightarrow M^*[5,5] = 0 \lor 1 = 1
+\end{align*}
+更新后矩阵：
+\[
+M^* = \begin{bmatrix}
+0 & 1 & 1 & 1 & 1 \\
+0 & 0 & 1 & 1 & 1 \\
+0 & 0 & 0 & 1 & 1 \\
+0 & 0 & 0 & 0 & 1 \\
+1 & 1 & 1 & 1 & 1
+\end{bmatrix}
+\]
+\textbf{迭代5 ($k=5$)}：先关注第五列，因为我们需要关注是否存在某个有序对的后一个数是5，然后，再关注是否存在某个有序对前一个数是5，显然此时就要看第五行了。循环往复这个过程知道遍历完成。
+\textbf{迭代5 ($k=5$)}：
+\begin{align*}
+M^*[1,5] \land M^*[5,1] &= 1 \land 1 = 1 \Rightarrow M^*[1,1] = 0 \lor 1 = 1 \\
+M^*[2,5] \land M^*[5,2] &= 1 \land 1 = 1 \Rightarrow M^*[2,2] = 0 \lor 1 = 1 \\
+M^*[3,5] \land M^*[5,3] &= 1 \land 1 = 1 \Rightarrow M^*[3,3] = 0 \lor 1 = 1 \\
+M^*[4,5] \land M^*[5,4] &= 1 \land 1 = 1 \Rightarrow M^*[4,4] = 0 \lor 1 = 1
+\end{align*}
+最终传递闭包矩阵：
+\[
+M^* = \begin{bmatrix}
+1 & 1 & 1 & 1 & 1 \\
+1 & 1 & 1 & 1 & 1 \\
+1 & 1 & 1 & 1 & 1 \\
+1 & 1 & 1 & 1 & 1 \\
+1 & 1 & 1 & 1 & 1
+\end{bmatrix}
+\]
+\textbf{结果分析}：由于原关系构成一个有向环，传递闭包是全关系，即任意两个顶点之间都存在路径。这个例子展示了Warshall算法如何处理复杂的有向图结构。
+\section{等价关系，等价类，覆盖和划分}
+\begin{definition}{等价类，商集，覆盖，划分，类，块}{}
+设$R$是集合$A$上的一个等价关系（即$R$满足自反性、对称性和传递性）。对于任意元素$a \in A$，$a$的\textbf{等价类}定义为：\vspace{-10pt}
+\[
+[a]_R = \{x \in A \mid (a,x) \in R\}
+\]
+\textbf{商集}：所有等价类构成的集合称为$A$关于$R$的商集，记作：\vspace{-5pt}
+\[
+A/R = \{[a]_R \mid a \in A\}\vspace{-5pt}
+\]
+设$A$是一个非空集合，$\mathcal{C} = \{A_1, A_2, \ldots, A_n\}$是$A$的一族\boxed{\textbf{非空}}子集。\\
+\textbf{覆盖}：如果$\mathcal{C}$满足$\bigcup_{i=1}^{n} A_i = A$，则称$\mathcal{C}$是$A$的一个\textbf{覆盖}。\\
+\textbf{划分}：如果$\mathcal{C}$满足以下两个条件：$\bigcup_{i=1}^{n} A_i = A$（覆盖性），对任意$i \neq j$，有$A_i \cap A_j = \varnothing$（互不相交性），则称$\mathcal{C}$是$A$的一个\textbf{划分}。此时$\mathcal{C} = \{A_1, A_2, \ldots, A_n\}$中的任意一个元素为$A$的一个类或划分的一个块。
+\end{definition}
+设集合 $A = \{1, 2, 3, 4, 5, 6, 7, 8\}$，定义等价关系 $R$ 为模三同余关系，即对于任意 $a, b \in A$，$a \, R \, b$ 当且仅当 $a \equiv b \pmod{3}$。则 $A$ 的等价类如下：余数为 $0$ 的等价类：$[3] = \{3, 6\}$，余数为 $1$ 的等价类：$[1] = \{1, 4, 7\}$，余数为 $2$ 的等价类：$[2] = \{2, 5, 8\}$。注意：等价类的代表元选择不唯一，例如 $[3] = [6]$，$[1] = [4] = [7]$，$[2] = [5] = [8]$。
+
+商集为：\vspace{-5pt}
+\[
+A/R = \{[1], [2], [3]\} = \{\{1,4,7\}, \{2,5,8\}, \{3,6\}\}\vspace{-5pt}
+\]
+
+\textbf{商集 $A/R$ 是 $A$ 的一个划分}，第一点是因为\textbf{覆盖性}：$[1] \cup [2] \cup [3] = \{1,4,7\} \cup \{2,5,8\} \cup \{3,6\} = A$；第二点是因为\textbf{互不相交性}：$[1] \cap [2] = \varnothing$，$[1] \cap [3] = \varnothing$，$[2] \cap [3] = \varnothing$。\\
+\textbf{覆盖但不构成划分的例子}：考虑 $\mathcal{C} = \{\{1,2,3\}, \{3,4,5\}, \{5,6,7\}, \{7,8,1\}\}$\\先看\textbf{覆盖性}：$\{1,2,3\} \cup \{3,4,5\} \cup \{5,6,7\} \cup \{7,8,1\} = A$，是覆盖
+\\但不构成划分，因为 $\{1,2,3\} \cap \{3,4,5\} = \{3\} \neq \varnothing$
+\begin{theorem}{等价类的性质}{}
+（1）$\forall x\in A,[x]_R\ne\varnothing$，且$[x]_R\subseteq A$。\\
+（2）$\forall x,y\in A,(x,y)\in R\Rightarrow [x]_R=[y]_R$。\\
+（3）$\forall x,y\in A,(x,y)\notin R\Rightarrow [x]_R\cap[y]_R=\varnothing$。\\
+（4）$\bigcup_{x\in A} [x]_R = A$。
+\end{theorem}
+\textbf{证明(1)}：
+由于$R$是自反的，对任意$x \in A$，有$(x,x) \in R$，所以$x \in [x]_R$，故$[x]_R \neq \varnothing$。
+由等价类的定义$[x]_R = \{y \in A \mid (x,y) \in R\}$，显然$[x]_R \subseteq A$。
+
+\textbf{证明(2)}：
+设$(x,y) \in R$。要证$[x]_R = [y]_R$。
+
+先证$[x]_R \subseteq [y]_R$：对任意$z \in [x]_R$，有$(x,z) \in R$。
+由对称性，$(y,x) \in R$，再由传递性，$(y,x) \in R$且$(x,z) \in R$推出$(y,z) \in R$，所以$z \in [y]_R$。
+
+再证$[y]_R \subseteq [x]_R$：对任意$z \in [y]_R$，有$(y,z) \in R$。
+由对称性，$(x,y) \in R$，再由传递性，$(x,y) \in R$且$(y,z) \in R$推出$(x,z) \in R$，所以$z \in [x]_R$。因此$[x]_R = [y]_R$。
+
+\textbf{证明(3)}：
+用反证法。假设存在$x,y \in A$满足$(x,y) \notin R$，但$[x]_R \cap [y]_R \neq \varnothing$，
+则存在$z \in [x]_R \cap [y]_R$，即$(x,z) \in R$且$(y,z) \in R$。由对称性，$(z,y) \in R$，再由传递性，$(x,z) \in R$且$(z,y) \in R$推出$(x,y) \in R$，与假设矛盾。故$[x]_R \cap [y]_R = \varnothing$。
+
+\textbf{证明(4)}：
+显然$\bigcup_{x\in A} [x]_R \subseteq A$。
+另一方面，对任意$a \in A$，有$a \in [a]_R \subseteq \bigcup_{x\in A} [x]_R$，所以$A \subseteq \bigcup_{x\in A} [x]_R$。因此$\bigcup_{x\in A} [x]_R = A$。
+\begin{theorem}{划分是等价关系的另一种描述}{}
+    假设$\{A_1, A_2, \ldots, A_n\}$是$A$的一个划分，则$R$是$A$上的关系，$R=\{(x,y) \mid x,y\in A_i,i=1,2,\ldots,n\}$，则$R$是等价关系。
+\end{theorem}
+要证明$R$是等价关系，需验证自反性、对称性和传递性。
+
+\textbf{1. 自反性}：对于任意$x \in A$，由于$\{A_1, A_2, \ldots, A_n\}$是$A$的划分，存在$i$使得$x \in A_i$。由$R$的定义，$(x, x) \in R$，故$R$是自反的。
+
+\textbf{2. 对称性}：对于任意$x, y \in A$，若$(x, y) \in R$，则存在$i$使得$x, y \in A_i$。因此$y, x \in A_i$，故$(y, x) \in R$，$R$是对称的。
+
+\textbf{3. 传递性}：对于任意$x, y, z \in A$，若$(x, y) \in R$且$(y, z) \in R$，则存在$i, j$使得$x, y \in A_i$且$y, z \in A_j$。由于$y \in A_i \cap A_j$，且划分中的集合互不相交，故$A_i = A_j$。因此$x, z \in A_i$，从而$(x, z) \in R$，$R$是传递的。
+
+综上，$R$是等价关系。
+\begin{theorem}{等价关系与划分的一一对应}{}
+设$A$是一个非空集合，$\{A_1, A_2, \ldots, A_m\}$是$A$的一个划分。则：
+
+划分的每一个划分块$A_i$（$i=1,2,\ldots,m$）中的任意两个元素都有关系$R$，因此每一个划分块都是$R$的一个等价类。
+    
+由此可见，集合$A$上的等价关系是对集合$A$中的元素做划分，使得同一划分块中的元素之间有等价关系。
+    
+反之，由一个划分可以确定唯一的一个等价关系，这个等价关系的等价类就是划分的划分块。也就是说，集合$A$上的等价关系与集合$A$的划分是一一对应的。
+    
+在非空集合$A$上给定一个划分，可以找出由该划分所唯一确定的$A$上的等价关系，方法如下：把$A$的划分$\{A_1, A_2, \ldots, A_m\}$的每一个划分块$A_i$，求笛卡儿积$A_i \times A_i$，然后求这些笛卡儿积的并集：
+    \[
+    R = (A_1 \times A_1) \cup (A_2 \times A_2) \cup \cdots \cup (A_m \times A_m)
+    \]
+这个并集$R$即为所求的等价关系。
+\end{theorem}
+给定一个等价关系$R$，它的等价类构成$A$的一个划分，给定$A$的一个划分，通过上述方法构造的关系$R$是一个等价关系，这两种构造是互逆的，建立了等价关系与划分之间的一一对应。
+
+设集合$A = \{1, 2, 3, 4, 5\}$，考虑$A$的一个划分：
+\[
+\mathcal{P} = \{\{1, 2, 3\}, \{4, 5\}\}
+\]
+按照定理中的方法，我们构造等价关系$R$：
+\begin{align*}
+R &= (A_1 \times A_1) \cup (A_2 \times A_2) \\
+  &= (\{1,2,3\} \times \{1,2,3\}) \cup (\{4,5\} \times \{4,5\}) \\
+  &= \{(1,1),(1,2),(1,3),(2,1),(2,2),(2,3),(3,1),(3,2),(3,3)\} \\
+  &\quad \cup \{(4,4),(4,5),(5,4),(5,5)\}
+\end{align*}
+如果从等价关系$R$出发，可以得到划分$A/R$，这个划分恰好就是原来的划分$\mathcal{P}$。
+\begin{example}{写出一个集合所有的等价关系}{}
+    求集合$A = \{1, 2, 3\}$的所有的等价关系及其对应的商集
+\end{example}
+集合$A$的等价关系与$A$的划分一一对应。$A$的划分共有5种，如下所示：
+\begin{enumerate}
+    \item \textbf{划分：} $\{\{1,2,3\}\}$ \\
+          \textbf{等价关系：} $R_1 = A \times A = \{(1,1),(1,2),(1,3),(2,1),(2,2),(2,3),(3,1),(3,2),(3,3)\}$ \\
+          \textbf{商集：} $A/R_1 = \{\{1,2,3\}\}$
+
+    \item \textbf{划分：} $\{\{1,2\}, \{3\}\}$ \\
+          \textbf{等价关系：} $R_2 = (\{1,2\} \times \{1,2\}) \cup (\{3\} \times \{3\}) = \{(1,1),(1,2),(2,1),(2,2),(3,3)\}$ \\
+          \textbf{商集：} $A/R_2 = \{\{1,2\}, \{3\}\}$
+
+    \item \textbf{划分：} $\{\{1,3\}, \{2\}\}$ \\
+          \textbf{等价关系：} $R_3 = (\{1,3\} \times \{1,3\}) \cup (\{2\} \times \{2\})= \{(1,1),(1,3),(3,1),(3,3),(2,2)\}$ \\
+          \textbf{商集：} $A/R_3 = \{\{1,3\}, \{2\}\}$
+
+    \item \textbf{划分：} $\{\{2,3\}, \{1\}\}$ \\
+          \textbf{等价关系：} $R_4 = (\{2,3\} \times \{2,3\}) \cup (\{1\} \times \{1\})= \{(2,2),(2,3),(3,2),(3,3),(1,1)\}$ \\
+          \textbf{商集：} $A/R_4 = \{\{2,3\}, \{1\}\}$
+
+    \item \textbf{划分：} $\{\{1\}, \{2\}, \{3\}\}$ \\
+          \textbf{等价关系：} $R_5 = (\{1\} \times \{1\}) \cup (\{2\} \times \{2\}) \cup (\{3\} \times \{3\})= \{(1,1),(2,2),(3,3)\}$ \\
+          \textbf{商集：} $A/R_5 = \{\{1\}, \{2\}, \{3\}\}$
+\end{enumerate}
+因此，集合$A$共有5个不同的等价关系，分别对应5种划分。
+\begin{theorem}{等价关系之间的关系等价于划分之间的关系}{}
+    设$R_1$和$R_2$是集合$A$上的两个等价关系，则以下两个条件等价：\\
+    （1）$R_1 \subseteq R_2$\\
+    （2）$R_1$的划分$C_1$的每一个等价类都是$R_2$的划分$C_2$的一个等价类
+\end{theorem}
+\textbf{(1) $\Rightarrow$ (2)}：
+假设$R_1 \subseteq R_2$。设$[x]_{R_1}$是$R_1$的任意一个等价类。对任意$y \in [x]_{R_1}$，有$(x,y) \in R_1$。由于$R_1 \subseteq R_2$，所以$(x,y) \in R_2$，即$y \in [x]_{R_2}$。因此$[x]_{R_1} \subseteq [x]_{R_2}$，即$R_1$的每个等价类都包含在$R_2$的某个等价类中。
+
+\textbf{(2) $\Rightarrow$ (1)}：
+假设$R_1$的每个等价类都是$R_2$的某个等价类的子集。设$(x,y) \in R_1$，则$x$和$y$属于$R_1$的同一个等价类$[x]_{R_1}$。由假设，存在$R_2$的等价类$C$使得$[x]_{R_1} \subseteq C$，所以$x,y \in C$，即$(x,y) \in R_2$。因此$R_1 \subseteq R_2$。
+
+综上，两个条件等价。
+\section{偏序关系，全序关系，良序关系}
+\begin{definition}{偏序关系，可比，覆盖，全序关系}{}
+设$R$是集合$A$上的二元关系。\\
+\textbf{偏序关系}：如果$R$满足自反性，反对称性，传递性，则称$R$为$A$上的偏序关系，通常用符号"$\preccurlyeq $"表示偏序关系，记作$(A, \preccurlyeq )$。若$(x,y)\in R$，记作$x \preccurlyeq  y$\\
+\textbf{可比}：设$(A, \preccurlyeq )$是偏序集，$x,y \in A$。如果$x \preccurlyeq  y$或$y \preccurlyeq  x$，则称$x$和$y$是\textbf{可比的}；否则称$x$和$y$是\textbf{不可比的}。\\
+\textbf{覆盖}：设$(A, \preccurlyeq )$是偏序集，$x,y \in A$且$x \neq y$。如果$x \preccurlyeq  y,x\neq y$（即$x\prec y$）且不存在$z \in A$使得$x \prec z\prec  y$，则称$y$ \textbf{覆盖} $x$（或称$x$是$y$的\textbf{直接前驱}，$y$是$x$的\textbf{直接后继}）。\\
+\textbf{全序关系}：设$(A, \preccurlyeq)$是偏序集。如果对于任意$x, y \in A$，$x$和$y$都是可比的，即$\forall x, y \in A, x \preccurlyeq y \quad \text{或} \quad y \preccurlyeq x$，则称$\preccurlyeq$是$A$上的\textbf{全序关系}（或称\textbf{线性序关系}），此时$(A, \preccurlyeq)$称为\textbf{全序集}。
+\end{definition}
+考虑集合 $A = \{1, 2, 3, 4, 5, 6\}$，定义整除关系 $\preccurlyeq$ 为：$
+x \preccurlyeq y \quad \text{当且仅当} \quad x \mid y \quad (\text{即 } x \text{ 整除 } y)$，则 $(A, \preccurlyeq)$ 构成一个偏序集，因为整除关系满足：
+
+\textbf{自反性}：$\forall x \in A, x \mid x$
+
+\textbf{反对称性}：若 $x \mid y$ 且 $y \mid x$，则 $x = y$
+
+\textbf{传递性}：若 $x \mid y$ 且 $y \mid z$，则 $x \mid z$
+
+\textbf{覆盖关系分析}：在偏序集中，$y$ \textbf{覆盖} $x$ 当且仅当$x \prec y$，且不存在 $z \in A$（$z \neq x, z \neq y$）使得 $x \prec z \prec y$，考虑元素 $1$ 和 $4$：$1 \preccurlyeq 4$ 成立，因为 $1 \mid 4$
+，但存在 $z = 2$，使得 $1 \preccurlyeq 2 \preccurlyeq 4$（即 $1 \mid 2$ 且 $2 \mid 4$），因此，$4$ 不覆盖 $1$，类似地，$4$ 覆盖 $2$，因为 $2 \mid 4$ 且不存在 $z$ 满足 $2 \prec z \prec 4$
+
+\textbf{在判断偏序关系时，自反性是容易被忽视的，比如小于和小于等于。}
+\begin{definition}{哈斯图}{}
+哈斯图（Hasse diagram）是有限偏序集的一种直观图示方法
+
+\textbf{顶点表示}：用平面上的点表示偏序集中的每个元素
+
+\textbf{位置安排}：如果$x \preccurlyeq y$，则将$x$放在$y$的下方（保持偏序的方向性）
+
+\textbf{边的关系}：仅当$y$覆盖$x$（即$y$是$x$的直接后继）时，才在$x$和$y$之间画一条线段
+
+\textbf{省略规则}：省略自反关系（不画自环），省略传递关系（如果$x \preccurlyeq y$且$y \preccurlyeq z$，但不画$x$到$z$的边），尽量避免边的交叉，保持图的清晰性
+\end{definition}
+\begin{figure}[!ht]
+\centering
+\resizebox{0.2\textwidth}{!}{%
+\begin{circuitikz}
+\tikzstyle{every node}=[font=\small]
+\draw (4.75,12.75) to[short, -o] (4.75,11.5) ;
+\draw (4.75,12.75) to[short, -o] (6,14) ;
+\draw (4.75,11.5) to[short, -o] (6,12.75) ;
+\draw (6,14) to[short, -o] (6,12.75) ;
+\draw (6,12.75) to[short, -o] (6,11.5) ;
+\draw (4.75,11.5) to[short, -o] (4.75,12.75) ;
+\node [font=\small, rotate around={-2:(0,0)}] at (6,14.5) {a};
+\node [font=\small, rotate around={-2:(0,0)}] at (6.5,12.75) {c};
+\node [font=\small, rotate around={-2:(0,0)}] at (6.5,11.75) {e};
+\node [font=\small, rotate around={-2:(0,0)}] at (4,11.75) {d};
+\node [font=\small, rotate around={-2:(0,0)}] at (4,12.75) {b};
+\end{circuitikz}
+}%
+\end{figure}
+如上图，集合$A=\{1,2,3,4,5\}$，集合$A$上的偏序关系\[(A,\preccurlyeq)=\{(d,b),(d,c),(d,a),(e,c),(e,a),(b,a),(c,a),(a,a),(b,b),(c,c),(d,d),(e,e)\}\]窍门是从下往上一个个地遍历所有结点，这样能保证不重不漏。
+
+以下给出$\{2,3,6,12,24,36\}$的整除关系的哈斯图：
+\begin{figure}[!ht]
+\centering
+\resizebox{0.15\textwidth}{!}{%
+\begin{circuitikz}
+\tikzstyle{every node}=[font=\normalsize]
+\draw (3.25,15.5) to[short, -o] (2.5,16.25) ;
+\draw (3.25,15.5) to[short, -o] (4,16.25) ;
+\draw (3.25,15.5) to[short, -o] (3.25,14.75) ;
+\draw (3.25,14.75) to[short, -o] (2.5,14) ;
+\draw (3.25,14.75) to[short, -o] (4,14) ;
+\draw (3.25,14.75) to[short, -o] (3.25,15.5) ;
+\node [font=\normalsize] at (2,16.75) {24};
+\node [font=\normalsize] at (4,16.75) {36};
+\node [font=\normalsize] at (2,13.75) {2};
+\node [font=\normalsize] at (4,13.75) {3};
+\node [font=\normalsize] at (2.5,14.75) {6};
+\node [font=\normalsize] at (3.5,15.25) {12};
+\end{circuitikz}
+}%
+\end{figure}
+\[
+R = \left\{
+\begin{aligned}
+& (2,2), (3,3), (6,6), (12,12), (24,24), (36,36), \\
+& (2,6), (2,12), (2,24), (2,36), \\
+& (3,6), (3,12), (3,24), (3,36), \\
+& (6,12), (6,24), (6,36), \\
+& (12,24), (12,36)
+\end{aligned}
+\right\}
+\]
+所以，哈斯图化边的时候，不需要用很多条边一个个地画出来所有的偏序关系。
+\begin{definition}{偏序集中的特殊元素}{}
+设$(S, \preccurlyeq)$是一个偏序集，$A \subseteq S$是一个非空子集。
+
+\textbf{最小元}：
+元素$a_0 \in A$称为$A$的\textbf{最小元}，如果对于所有$a \in A$，有$a_0 \preccurlyeq a$。
+
+\textbf{最大元}：
+元素$a_1 \in A$称为$A$的\textbf{最大元}，如果对于所有$a \in A$，有$a \preccurlyeq a_1$。
+
+\textbf{极小元}：
+元素$a_m \in A$称为$A$的\textbf{极小元}，如果不存在$a \in A$使得$a \prec a_m$（即不存在$a \in A$满足$a \preccurlyeq a_m$且$a \neq a_m$）。
+
+\textbf{极大元}：
+元素$a_M \in A$称为$A$的\textbf{极大元}，如果不存在$a \in A$使得$a_M \prec a$（即不存在$a \in A$满足$a_M \preccurlyeq a$且$a_M \neq a$）。
+
+\textbf{上界}：
+元素$s \in S$称为$A$的\textbf{上界}，如果对于所有$a \in A$，有$a \preccurlyeq s$。
+
+\textbf{下界}：
+元素$s \in S$称为$A$的\textbf{下界}，如果对于所有$a \in A$，有$s \preccurlyeq a$。
+
+\textbf{最小上界（上确界）}：
+$A$的\textbf{最小上界}是$A$的所有上界中的最小元，记作$\sup A$或$\bigvee A$。
+
+\textbf{最大下界（下确界）}：
+$A$的\textbf{最大下界}是$A$的所有下界中的最大元，记作$\inf A$或$\bigwedge A$。
+\end{definition}
+最小元和最大元如果存在则唯一，但极小元和极大元可以有多个，上界和下界不一定属于$A$，它们可以是$S$中的任意元素，最小上界和最大下界如果存在则唯一，符号$\prec$表示严格偏序：$x \prec y \Leftrightarrow (x \preccurlyeq y \land x \neq y)$，如下图是偏序关系$(A,R)$的哈斯图：
+\begin{figure}[!ht]
+\centering
+\resizebox{0.2\textwidth}{!}{%
+\begin{circuitikz}
+\tikzstyle{every node}=[font=\normalsize]
+\draw (3.5,16.5) to[short, -o] (3.5,14.5) ;
+\draw (5.5,16.5) to[short, -o] (5.5,14.5) ;
+\draw (3.5,14.5) to[short, -o] (5.5,16.5) ;
+\draw (3.5,14.5) to[short, -o] (3.5,16.5) ;
+\draw (3.5,16.5) to[short, -o] (4.5,17.5) ;
+\draw (4.5,17.5) to[short, -o] (5.5,16.5) ;
+\draw (3.5,14.5) to[short, -o] (4.5,13.5) ;
+\draw (5.5,14.5) to[short, -o] (4.5,13.5) ;
+\draw (5.5,14.5) to[short, -o] (6.5,13.5) ;
+\draw (3.5,14.5) to[short, -o] (2.5,13.5) ;
+\node [font=\normalsize] at (4.5,18.25) {h};
+\node [font=\normalsize] at (2.5,16.75) {f};
+\node [font=\normalsize] at (6,16.75) {g};
+\node [font=\normalsize] at (6,14.75) {e};
+\node [font=\normalsize] at (4.5,13.25) {b};
+\node [font=\normalsize] at (6.5,13.25) {c};
+\node [font=\normalsize] at (2,13.25) {a};
+\node [font=\normalsize] at (3,14.75) {d};
+\end{circuitikz}
+}%
+\end{figure}
+子集$\{a,b,c\}$的上界是$g,h$，最小上界是$g$，无下界和最大下界。子集$\{f,g,h\}$的上界是$h$，最小上界是$h$，下界是$a,b,d$，最大下界是$d$。子集$\{e,g\}$的上界是$g,h$，最小上界是$g$，下界是$b,c,e$，最大下界是$e$。偏序集
+\begin{align*}
+R = &(a,a), (b,b), (c,c), (d,d), (e,e), (f,f), (g,g), (h,h),\\
+&(a,d), (a,f), (a,g), (a,h),\\
+&(b,d), (b,e), (b,f), (b,g), (b,h),\\
+&(c,e), (c,g), (c,h),\\
+&(d,f), (d,g), (d,h),\\
+&(e,g), (e,h),\\
+&(f,h),\\
+&(g,h)\\
+\end{align*}
+\begin{definition}{良序集}{}
+设$(S, \preccurlyeq)$是一个全序集（即$\preccurlyeq$是$S$上的全序关系）。如果$S$的每个非空子集都有最小元，则称$(S, \preccurlyeq)$为\textbf{良序集}，$\preceq$称为$S$上的\textbf{良序关系}。
+\end{definition}
+$(S, \preccurlyeq)$是良序集当且仅当：$\preccurlyeq$是$S$上的全序关系；对$S$的任意非空子集$A \subseteq S$，存在$a_0 \in A$使得对所有的$a \in A$，有$a_0 \preccurlyeq a$。
+
+良序集一定是全序集，但全序集不一定是良序集，\textbf{有限全序集一定是良序集}，自然数集$(\mathbb{N}, \leq)$是良序集（良序原理），整数集$(\mathbb{Z}, \leq)$是全序集但不是良序集（因为负整数子集没有最小元），实数上的小于等于关系$(\mathbb{R}, \leq)$是全序集但不是良序集（因为开区间$(0,1)$没有最小元）。
+\begin{definition}{严格偏序关系}{}
+    反自反，反对称和传递关系，称作严格偏序关系。严格偏序关系和偏序关系有密切联系，区别仅在于$(x,x)$是否属于这个关系。
+\end{definition}
+比如实数集上的小于关系不是偏序关系，因为其不满足自反性，但是却是严格偏序关系。
+\begin{example}{}{}
+设$(A,R)$是偏序集，则$A$的极大元和极小元一定存在，可以不唯一？判断；
+\end{example}
+错误的，非空是前提。

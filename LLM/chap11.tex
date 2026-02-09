@@ -1,0 +1,236 @@
+
+\chapter{基于LLM+向量库的文档对话经验面}
+
+\section{基础理论}
+
+\subsection{为什么大模型需要外挂(向量)知识库？}
+如何将外部知识注入大模型，最直接的方法：利用外部知识对大模型进行微调
+
+\textbf{思路：}构建几十万量级的数据，然后利用这些数据对大模型进行微调，以将额外知识注入大模型
+
+\textbf{优点：}简单粗暴
+
+\textbf{缺点：}
+\begin{itemize}
+\item 这几十万量级的数据并不能很好的将额外知识注入大模型
+\item 训练成本昂贵。不仅需要多卡并行，还需要训练很多天
+\end{itemize}
+
+既然大模型微调不是将外部知识注入大模型的最优方案，那是否有其它可行方案？
+
+\subsection{基于LLM+向量库的文档对话思路}
+\begin{enumerate}
+\item 加载文件
+\item 读取文本
+\item 文本分割
+\item 文本向量化
+\item 问句向量化
+\item 在文本向量中匹配出与问句向量最相似的topk个
+\item 匹配出的文本作为上下文和问题一起添加到prompt中
+\item 提交给LLM生成回答
+\end{enumerate}
+
+\subsection{核心技术：Embedding}
+基于LLM+向量库的文档对话核心技术：embedding
+
+\textbf{思路：}将用户知识库内容经过embedding存入向量知识库，然后用户每一次提问也会经过embedding，利用向量相关性算法（例如余弦算法）找到最匹配的几个知识库片段，将这些知识库片段作为上下文，与用户问题一起作为prompt提交给LLM回答
+
+\subsection{Prompt模板构建}
+\begin{verbatim}
+已知信息：
+{context}
+
+根据上述已知信息，简洁和专业的来回答用户的问题。如果无法从中得到答案，请说
+"根据已知信息无法回答该问题"或"没有提供足够的相关信息"，不允许在答案中
+添加编造成分，答案请使用中文。
+
+问题是：{question}
+\end{verbatim}
+
+\section{优化问题与解决方案}
+
+\subsection{痛点1：文档切分粒度不好把控}
+\textbf{问题描述：}既担心噪声太多又担心语义信息丢失
+
+\textbf{问题1：}如何让LLM简要、准确回答细粒度知识？
+
+\textbf{问题2：}如何让LLM回答出全面的粗粒度（跨段落）知识？
+
+\textbf{解决方案思想：}
+基于LLM的文档对话架构分为两部分，先检索，后推理。重心在检索（推荐系统），推理交给LLM整合即可。
+
+检索部分要满足三点：
+\begin{itemize}
+\item 尽可能提高召回率
+\item 尽可能减少无关信息
+\item 速度快
+\end{itemize}
+
+将所有的文本组织成二级索引，第一级索引是[关键信息]，第二级是[原始文本]，二者一一映射。
+
+检索部分只对关键信息做embedding，参与相似度计算，把召回结果映射的原始文本交给LLM。
+
+\subsubsection{如何构建关键信息？}
+\textbf{文章的切分及关键信息抽取：}
+\begin{itemize}
+\item \textbf{关键信息：}为各语义段的关键信息集合，或者是各个子标题语义扩充之后的集合
+\item \textbf{语义切分方法1：}利用NLP的篇章分析工具，提取出段落之间的主要关系
+\item \textbf{语义切分方法2：}利用BERT等模型判断相邻段落相似度
+\end{itemize}
+
+\begin{lstlisting}[language=Python]
+def is_nextsent(sent, next_sent):
+    encoding = tokenizer(sent, next_sent, return_tensors="pt", 
+                        truncation=True, padding=False)
+    with torch.no_grad():
+        outputs = model(**encoding, labels=torch.LongTensor([1]))
+        logits = outputs.logits
+        probs = torch.softmax(logits/TEMPERATURE, dim=1)
+        next_sentence_prob = probs[:, 0].item()
+        if next_sentence_prob <= MERGE_RATIO:
+            return False
+        else:
+            return True
+\end{lstlisting}
+
+\textbf{语义段的切分及段落关键信息抽取：}
+\begin{itemize}
+\item \textbf{方法1：}利用成分句法分析工具和命名实体识别工具提取
+\item \textbf{方法2：}用语义角色标注分析句子的谓词论元结构
+\item \textbf{方法3：}关键词提取工具（HanLP、KeyBERT）
+\item \textbf{方法4：}训练生成关键词的模型（如ChatLaw的KeyLLM）
+\end{itemize}
+
+\subsection{痛点2：在垂直领域表现不佳}
+\textbf{解决方案：}模型微调
+\begin{itemize}
+\item 对embedding模型基于垂直领域的数据进行微调
+\item 对LLM模型基于垂直领域的数据进行微调
+\end{itemize}
+
+\subsection{痛点3：LangChain内置问答分句效果不佳}
+\textbf{文档加工方案：}
+\begin{itemize}
+\item 使用更好的文档拆分方式（如达摩院语义识别模型）
+\item 改进填充方式，仅添加相关度高的上下文句子
+\item 对每段分别进行总结，基于总结内容进行语义匹配
+\end{itemize}
+
+\subsection{痛点4：如何尽可能召回与query相关的Document}
+\textbf{解决方法：}
+\begin{itemize}
+\item 优化Document的长度、embedding质量和召回数量之间的平衡
+\item 使用Faiss搜索，基于本地知识对文本向量化工具进行Finetune
+\item 将ES搜索结果与Faiss结果相结合
+\end{itemize}
+
+\subsection{痛点5：如何让LLM基于query和context得到高质量的response}
+\textbf{解决方法：}
+\begin{itemize}
+\item 尝试多个prompt模板，选择最合适的
+\item 用与本地知识问答相关的语料对LLM进行Finetune
+\end{itemize}
+
+\subsection{痛点6：Embedding模型在表示text chunks时偏差太大}
+\textbf{问题描述：}
+\begin{itemize}
+\item 开源embedding模型效果一般，text chunk大时表示不准确
+\item 多语言对齐问题（英文内容，中文query）
+\end{itemize}
+
+\textbf{解决方法：}
+\begin{itemize}
+\item 使用更小的text chunk配合更大的topk
+\item 寻找更适合多语言的embedding模型
+\end{itemize}
+
+\subsection{痛点7：不同的prompt产生完全不同的效果}
+\textbf{问题描述：}prompt的提法不同会产生完全不同的效果，特别是输出格式要求
+
+\subsection{痛点8：LLM生成效果问题}
+\textbf{问题描述：}不同LLM在理解context和生成环节表现差异大
+
+\textbf{解决思路：}选择开源模型（如llama2、baichuan2），构造domain dataset进行微调
+
+\subsection{痛点9：如何更高质量地召回context喂给LLM}
+\textbf{问题描述：}召回内容与query相关性差
+
+\textbf{解决思路：}更细颗粒度的recall，针对性的pdf解析
+
+\section{工程实践与避坑指南}
+
+\subsection{本地知识库问答系统（Langchain-chatGLM）}
+
+\subsubsection{环境配置问题解决}
+\begin{lstlisting}[language=bash]
+# 解决持续网页loading问题
+$ pip install gradio==3.21.0
+
+# 解决detectron2安装问题
+$ cd detectron2
+$ pip install -e .
+$ pip install torch==2.0.0
+$ pip install protobuf==3.20.0
+\end{lstlisting}
+
+\subsubsection{PDF加载问题解决}
+\begin{itemize}
+\item 更新apt包：sudo apt update
+\item 安装依赖：sudo apt install libmagic-dev poppler-utils tesseract-ocr
+\item 配置中文识别包
+\end{itemize}
+
+\subsubsection{NLTK数据包问题解决}
+\begin{itemize}
+\item 手动解压punkt和tagger到指定目录
+\item 通过nltk.data.path查询存储路径
+\end{itemize}
+
+\subsubsection{PaddleOCR错误解决}
+\textbf{错误：}ModuleNotFoundError: No module named 'tools.infer'
+
+\textbf{解决：}将所有from tools.infer import改为from paddleocr.tools.infer import
+
+\subsubsection{MOSS模型加载错误解决}
+\textbf{错误：}get\_class\_from\_dynamic\_module() missing 2 required positional arguments
+
+\textbf{修改方案：}
+\begin{lstlisting}[language=Python]
+def auto_configure_device_map() -> Dict[str, int]:
+    cls = get_class_from_dynamic_module(
+        pretrained_model_name_or_path="fnlp/moss-moon-003-sft",
+        module_file="modeling_moss.py", 
+        class_name="MossForCausalLM"
+    )
+\end{lstlisting}
+
+\subsubsection{MOSS提问错误解决}
+\textbf{错误：}RuntimeError: probability tensor contains either inf, nan or element < 0
+
+\textbf{解决：}移除do\_sample=True参数
+
+\section{技术要点总结}
+
+\subsection{核心架构设计}
+\begin{itemize}
+\item \textbf{二级索引系统：}关键信息索引 + 原始文本映射
+\item \textbf{语义分割策略：}基于篇章分析和BERT相似度的混合方法
+\item \textbf{检索优化：}平衡召回率、准确性和效率
+\end{itemize}
+
+\subsection{关键优化建议}
+\begin{itemize}
+\item \textbf{文档预处理：}采用语义级别的分割而非简单的格式分割
+\item \textbf{Embedding选择：}根据语言和领域特点选择合适的模型
+\item \textbf{Prompt工程：}针对具体任务设计合适的模板
+\item \textbf{模型微调：}在垂直领域进行针对性的模型优化
+\end{itemize}
+
+\subsection{工程实践建议}
+\begin{itemize}
+\item \textbf{版本兼容性：}注意各组件版本匹配问题
+\item \textbf{错误处理：}建立完善的错误监控和处理机制
+\item \textbf{性能优化：}针对大规模文档建立分级索引系统
+\item \textbf{多语言支持：}考虑跨语言检索和生成的需求
+\end{itemize}
+

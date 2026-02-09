@@ -1,4 +1,81 @@
-\chapter{自用}
+\chapter{微分中值定理}
+\begin{example}{}{}
+    $x_1-\ln x_1=x_2-\ln x_2=m,x_1<x_2$,求证$x_1^{x_2}+x_2^{x_1}\sim 1+\dfrac{\ln m}{\e^m},m\to+\infty$.
+\end{example}
+\begin{solution}
+    首先估计$x_1,x_2$在无穷远处的渐进，首先观察$f(x)=x-\ln x$，在$x\to 0$的时候函数值由$-\ln x$决定，在$x\to+\infty$的时候函数值由$x$决定，先估计大根$x_2$，设$x_2=m+\ln x_2\sim m, m\to+\infty$，于是设$x_2=m+\delta$将这个结果代入得到$\delta=m+\ln(m+\delta)$，泰勒展开得到
+    \begin{align*}
+    \delta = \ln(m+\ln\delta)=\ln m+\ln\left(1+\frac{\ln \delta}{m}\right)=\ln m+\dfrac{\delta}{\ln m}+o\left(\dfrac{\delta}{\ln m }\right)\sim \ln m
+    \end{align*}
+    得到$x_2\sim m+\ln m$，再设$x_2=m+\ln m+\delta$，代入得到
+    \begin{align*}
+       & x_2=m+\ln x_2=m+\ln(m+\ln m+\delta)=m+\ln m+\ln\left(1+\frac{\ln m}{m}+\frac{\delta}{m}\right)\\
+       \Rightarrow & \delta = \ln\left(1+\frac{\ln m}{m}+\frac{\delta}{m}\right)=\frac{\ln m+\delta}{m}+o\left(\frac{\ln m+\delta}{m}\right)\sim \frac{\ln m+\delta}{m}
+    \end{align*}
+    解得$\delta\sim \dfrac{\ln m}{m-1}$，再设$x_2=m+\frac{m\ln m}{m-1}+\delta$，代入得到
+    \begin{align*}
+    & m+\frac{m\ln m}{m-1}+\delta=m+\ln\left(m+\frac{m\ln m}{m-1}+\delta\right)\\
+    \Rightarrow &\frac{m\ln m}{m-1}+\delta=\ln m+\ln\left(1+\frac{\ln m}{m-1}+\frac{\delta}{m}\right)=\frac{\ln m}{m-1}+\delta=\ln\left(1+\frac{\ln m}{m-1}+\frac{\delta}{m}\right)\\
+    \Rightarrow &\frac{m\ln m}{m-1}+\delta=\left(\frac{\ln m}{m-1}+\frac{\delta}{m}\right)-\frac12\left(\frac{\ln m}{m-1}+\frac{\delta}{m}\right)^2+o\left(\frac{\ln m}{m-1}+\frac{\delta}{m}\right)^2\\
+    \Rightarrow &\ln m +\delta\sim\frac{\delta}{m}-\frac12\frac{\ln^2m}{(m-1)^2}-\delta\frac{\ln m}{m(m-1)}\quad\text{舍掉平方项}\\
+    \Rightarrow &\delta\sim-\frac{\ln m+\frac12\frac{\ln^2m}{(m-1)^2}}{1-\frac1m+\frac{\ln m}{m(m-1)}}
+    \end{align*}
+\end{solution}
+\newpage
+
+\begin{example}{}{}
+设$f\in C[0,2]\cap D(0,2)$，满足$f(0)=f(2)=0,|f'(x)|\leqslant M,\forall x\in(0,2)$，证明\[\left|\int_0^2f(x)\dd x\right|\leqslant M\]
+\end{example}
+\begin{solution}
+    插$f(0),f(2)$，插值多项式1次（仅拉格朗日插值式，用不到导数修正）, 余项2阶,导数不够, 属于靠近哪边对哪边插模型。所以在$[0,1]$上插$f(0)$，在$[1,2]$上插$f(2)$，则写出两段插值式。
+    
+    当$x\in[0,1]$时，对$f(x)$的插值为：\[f(x)=f(0)+\frac{f'(\xi(x))}{1!}(x-0)=f'(\xi(x))x\]这是拉格朗日中值定理的直接应用，所以不用考场翻译。得到\[|f(x)|\leqslant |f'(\theta(x))|x\leqslant Mx\]
+    当$x\in[1,2]$时，对$f(x)$的插值为：\[f(x)=f(2)+\frac{f'(\eta(x))}{1!}(x-2)=f'(\eta(x))(x-2)\]同理，得到\[|f(x)|\leqslant |f'(\eta(x))||(x-2)|\leqslant M(2-x)\]
+    所以
+    \begin{align*}
+    \left|\int_0^2f(x)\dd x\right|&\leqslant\left|\int_0^1f(x)\dd x\right|+\left|\int_1^2f(x)\dd x\right|\\
+    &\leqslant \int_0^1|f(x)|\dd x+\int_1^2|f(x)|\dd x\\
+    &\leqslant \int_0^1Mx\dd x+\int_1^2M(2-x)\dd x=M
+    \end{align*}
+\end{solution}
+\newpage
+\begin{example}{}{}
+设$f\in D^2[0,1],f(0)=f(1)=0,|f''(x)|\leqslant M$，证明$\displaystyle \left|\int_0^1f(x)\dd x\right|\leqslant \dfrac{M}{12}$
+\end{example}
+\begin{solution}
+要拟合$f(0),f(1)$一共两个插值条件，无导数条件需要拟合，所以插值多项式为一次，也不用待定多项式$r$，余项到了2阶导数，符合题目所给条件，所以根据埃米特插值，存在$\theta(x)\in(0,1)$使得：
+\[f(x)=\frac{f''(\theta(x))}{2}x(x-1),\forall x\in[0,1]\]
+这个结论可以用k值法来证明，由\[f(x)-Kx(x-1)=0\]的条件（其中$K$与$x$有关），设
+\[F(y)=f(y)-Ky(y-1)\]则$F(0)=F(1)=F(x)=0$，罗尔得到$F'(\xi_1)=F'(\xi_2)=0,\xi_1,\xi_2\in(0,1)$，所以存在$\theta(x)\in(0,1)$使得$F''(\theta(x))=0$。对$F(x)$求二阶导数得到\[f''(\theta(x))-2K=0\Rightarrow K=\frac{f''(\theta(x))}{2}\]所以\[f(x)=\frac{f''(\theta(x))}{2}x(x-1)\]所以
+\begin{align*}
+    \left|\int_0^1f(x)\dd x\right|&=\left|\int_0^1\dfrac{f''(\theta(x))}{2}x(x-1)\dd x \right|\leqslant \int_0^1\left|\dfrac{f''(\theta(x))}{2}\right||x(x-1)|\dd x\\
+&\leqslant \dfrac{M}{2}\int_0^1 x(1-x)\dd x=\frac{M}{12}
+\end{align*}
+\end{solution}
+\newpage
+\begin{example}{}{}
+    设$f\in C^3[0,2]$满足\[f(0)=f'(0)=0,\int_0^2f(x)\dd x=8\int_0^1f(x)\dd x\]求证存在$\theta\in(0,2)$使得$f'''(\theta)=0$
+\end{example}
+\begin{solution}
+套路地，设$\displaystyle F(x)=\int_0^x f(y)\dd y$，$F(x)\in C^4[0,2]$，$F(0)=F'(0)=F''(0)=0$，且$F(2)=8F(1)$，这里我们使用插值法，就是找一个多项式去尽可能的拟合$f$的行为。注意到$F(0)=F'(0)=F''(0)=0$，所以可以考虑插值多项式为$p(x)=x^3(ax+b)$，代入$F(2)=8F(1)$得到$a=0$，所以$p(x)=bx^3$，再由$p(1)=F(1)$得到$b=F(1)$，所以\[p(x)=F(1)x^3\]于是构造出\[G(x)=F(x)-F(1)x^3\]这个$G(x)$满足\[G(0)=G(1)=G(2)=0,G'(0)=0,G''(0)=0\]
+所以由罗尔中值定理，存在$\xi_1\in(0,1)\xi_2\in(1,2)$，使得$G'(\xi_1)=G'(xi_2)=0$，搭配上$G'(0)=0$，所以又有罗尔中值定理，得知存在$\theta_1,\theta_2$，使得$G''(\theta_1)=G''(\theta_2)=0$，同样的，搭配上$G''(0)=0$，又有罗尔中值定理，得知存在$\eta_1\in(0,1),\eta_2\in(1,2)$使得\[G'''(\eta_1)=G'''(\eta_2)=0\]所以由罗尔中值定理，得到存在$\theta\in(0,2)$使得\[G''''(\theta)=0\]而求导易得\[G''''(x)=f'''(x)-p''''(x)=0\Rightarrow f'''(\theta)=0\]
+\end{solution}
+
+\begin{example}{}{}
+设$f\in C^1[a,b]\cap D^3(a,b)$，证明存在$\xi\in(a,b)$，使得\[\frac{f(b)-f(a)}{b-a}=\frac{f'(a)+f'(b)}{2}-\frac{f'''(\xi)}{12}(b-a)^2\]
+\end{example}
+\begin{solution}
+插$f(a),f(b),f'(a),f'(b)$，则插值多项式3次，余项4阶，但是条件只到3阶，属于$f'''=p'''$类型，插值：
+\[p(x)=\frac{x-b}{a-b}f(a)+\frac{x-a}{b-a}f(b)+(kx+m)(x-a)(x-b)\]
+此时自动保证$p(a)=f(a),p(b)=f(b)$，参数$k,m$待定，以期望$p'(a)=f'(a),p'(b)=f'(b)$，解出$k,m$.
+\begin{align*}
+p'(a)&=\frac{f(b)-f(a)}{b-a}+(ka+m)(a-b)=f'(a)\\
+p'(b)&=\frac{f(b)-f(a)}{b-a}+(kb+m)(a-b)=f'(b)
+\end{align*}
+相减得到\[k=\frac{f'(b)+f'(a)}{(b-a)^2}-\frac{2(f(b)-f(a))}{(b-a)^3}\]
+此时可以继续解方程得到$m$，但是没有必要了，我们假装$m$已知，设而不求就可以了
+设$G(x)=f(x)-p(x)$，则$G(a)=G(b)=0,G'(a)=G'(b)=0$，所以由罗尔中值定理，存在$\xi_1\in(a,b)$使得$G'(\xi_1)=0$，再由罗尔中值定理，存在$\xi_2,\xi_3$使得$G''(\xi_2)=0,G''(\xi_3)=0$，最后由罗尔中值定理，存在$\xi\in(a,b)$使得$G'''(\xi)=0$，所以\[f'''(\xi)=p'''(\xi)=6k=\frac{6(f'(b)+f'(a))}{(b-a)^2}-\frac{12(f(b)-f(a))}{(b-a)^3}\]
+\end{solution}
 \begin{example}{}{}
     $f(x)$在$[0,1]$可导，且$\displaystyle \int_0^1f(x)\dd x=\dfrac52,\int_0^1 xf(x)\dd x=\dfrac32$,求证在$(0,1)$存在$\xi$使$f'(\xi)=3$.
 \end{example}
@@ -8,6 +85,16 @@
 则问题转化为$F(x)$在$(0,1)$上二阶可导，且$F(0)=0,F(1)=\dfrac52,\int_0^1F(x)\dd x=\dfrac12$，求证存在$\xi\in(0,1)$使得$F''(\xi)=3$。又注意到$\displaystyle\int_0^1 x\dd x=\dfrac12$，所以考虑$\varphi(x)=F(x)-x$，则$\varphi(0)=0,\varphi(1)=\dfrac32,\int_0^1\varphi(x)\dd x=0$，求证存在$\xi\in(0,1)$使得$\varphi''(\xi)=3$
 要证$\varphi''(\xi)-3=0$，如果我们可以证明$\varphi'(x)-3x+C=0$
 \end{solution}
+
+\begin{example}{}{}
+$f(x)$在$[a,b]$上连续，在$(a,b)$上二次可微，证明存在$\xi\in(a,b)$使得
+\[f(a)+f(b)-2f\left(\frac{a+b}{2}\right)=\frac14(b-a)^2f''(\xi)\]
+\end{example}
+\begin{solution}
+拟合$f(a),f(b),f\left(\frac{a+b}{2}\right)$，设
+\[G(x)=f(x)-\left[\frac{(x-\frac{a+b}{2})(x-b)}{(a-\frac{a+b}{2})(a-b)}f(a)+\frac{(x-a)(x-\frac{a+b}{2})}{(b-a)(b-\frac{a+b}{2})}f(b)+\frac{(x-a)(x-b)}{(\frac{a+b}{2}-a)(\frac{a+b}{2}-b)}f\left(\frac{a+b}{2}\right)\right]\]
+\end{solution}
+
 
 \begin{theorem}{双元第一公式}{}
     若$x^2+y^2=a^2$，则

@@ -1,0 +1,183 @@
+\chapter{大模型(LLMs)微调面}
+
+\section{微调基础问题}
+
+\subsection{全参数微调显存需求}
+一般nB的模型，最低需要16-20nG的显存。(cpu offload基本不开的情况下)
+
+vicuna-7B为例，官方样例配置为4*A100 40G，测试了一下确实能占满显存。(global batch size 128，max length 2048)当然训练时用了FSDP、梯度累积、梯度检查点等方式降显存。
+
+\subsection{SFT后模型性能下降原因}
+\textbf{原版答案：}
+SFT的重点在于激发大模型的能力，SFT的数据量一般也就是万恶之源alpaca数据集的52k量级，相比于预训练的数据还是太少了。
+
+如果抱着灌注领域知识而不是激发能力的想法，去做SFT的话，可能确实容易把LLM弄傻。
+
+\textbf{新版答案：}
+指令微调是为了增强(或解锁)大语言模型的能力。
+
+其真正作用：指令微调后，大语言模型展现出泛化到未见过任务的卓越能力，即使在多语言场景下也能有不错表现。
+
+\section{数据构建与处理}
+
+\subsection{SFT指令微调数据构建原则}
+\begin{enumerate}
+\item 代表性。应该选择多个有代表性的任务；
+\item 数据量。每个任务实例数量不应太多(比如：数百个)否则可能会潜在地导致过拟合问题并影响模型性能；
+\item 不同任务数据量占比。应该平衡不同任务的比例，并且限制整个数据集的容量(通常几千或几万)，防止较大的数据集压倒整个分布。
+\end{enumerate}
+
+\subsection{领域模型Continue PreTrain数据选取}
+技术标准文档或领域相关数据是领域模型Continue PreTrain的关键。因为领域相关的网站和资讯重要性或者知识密度不如书籍和技术标准。
+
+\subsection{缓解模型遗忘通用能力}
+\textbf{动机：}仅仅使用领域数据集进行模型训练，模型很容易出现灾难性遗忘现象。
+
+\textbf{解决方法：}通常在领域训练的过程中加入通用数据集
+
+那么这个比例多少比较合适呢？
+
+目前还没有一个准确的答案。主要与领域数据量有关系，当数据量没有那么多时，一般领域数据与通用数据的比例在1:5到1:10之间是比较合适的。
+
+\subsection{Multi-Task Instruction PreTraining}
+领域模型Continue PreTrain时可以同步加入SFT数据，即MIP，Multi-Task Instruction PreTraining。
+
+预训练过程中，可以加下游SFT的数据，可以让模型在预训练过程中就学习到更多的知识。
+
+\section{模型选择与配置}
+
+\subsection{基座模型选择策略}
+仅用SFT做领域模型时，资源有限就用在Chat模型基础上训练，资源充足就在Base模型上训练。
+
+(资源=数据+显卡)
+
+资源充足时可以更好地拟合自己的数据，如果你只拥有小于10k数据，建议你选用Chat模型作为基座进行微调；如果你拥有100k的数据，建议你在Base模型上进行微调。
+
+\subsection{数据输入格式要求}
+在Chat模型上进行SFT时，请一定遵循Chat模型原有的系统指令\&数据输入格式。
+
+建议不采用全量参数训练，否则模型原始能力会遗忘较多。
+
+\subsection{领域评测集构建}
+领域评测集时必要内容，建议有两份，一份选择题形式自动评测、一份开放形式人工评测。
+
+选择题形式可以自动评测，方便模型进行初筛；开放形式人工评测比较浪费时间，可以用作精筛，并且任务形式更贴近真实场景。
+
+\subsection{词表扩增必要性}
+领域词表扩增真实解决的问题是解码效率的问题，给模型效果带来的提升可能不会有很大。
+
+\section{训练实践与经验}
+
+\subsection{训练自己的大模型步骤}
+如果我现在做一个sota的中文GPT大模型，会分2步走：1.基于中文文本数据在LLaMA-65B上二次预训练；2.加CoT和instruction数据，用FT+LoRA SFT。
+
+提炼下方法，一般分为两个阶段训练：
+
+\begin{itemize}
+\item 第一阶段：扩充领域词表，比如金融领域词表，在海量领域文档数据上二次预训练LLaMA模型；
+\item 第二阶段：构造指令微调数据集，在第一阶段的预训练模型基础上做指令精调。还可以把指令微调数据集拼起来成文档格式放第一阶段里面增量预训练，让模型先理解下游任务信息。
+\end{itemize}
+
+当然，有低成本方案，因为我们有LoRA利器，第一阶段和第二阶段都可以用LoRA训练，如果不用LoRA，就全参微调，大概7B模型需要8卡A100，用了LoRA后，只需要单卡3090就可以了。
+
+\subsection{多轮对话微调方法}
+\begin{verbatim}
+from transformers import AutoTokenizer, AutoModel
+>>> tokenizer = AutoTokenizer.from_pretrained("THUDM/chatglm-6b", 
+trust_remote_code=True)
+>>> model = AutoModel.from_pretrained("THUDM/chatglm-6b", 
+trust_remote_code=True).half().cuda()
+>>> model = model.eval()
+>>> response, history = model.chat(tokenizer, "你好", history=[])
+>>> print(f"response: {response}")
+>>> print(f"history: {history}")
+response: 你好!我是人工智能助手 ChatGLM-6B,很高兴见到你,欢迎问我任何问题。 
+history: ["你好", "你好 !我是人工智能助手 ChatGLM-6B,很高兴见到你,欢迎问我任
+何问题。"]
+\end{verbatim}
+
+\textbf{解决方法：}
+\begin{itemize}
+\item 对历史对话做一层文本摘要，取其精华去其糟粕
+\item 将历史对话做成一个embedding
+\item 如果是任务型对话，可以将用户意图和槽位作为上一轮信息传递给下一轮
+\end{itemize}
+
+\section{关键技术问题}
+
+\subsection{灾难性遗忘问题}
+所谓的灾难性遗忘：即学习了新的知识之后，几乎彻底遗忘掉之前习得的内容。这在微调ChatGLM-6B模型时，有同学提出来的问题，表现为原始ChatGLM-6B模型在知识问答如"失眠怎么办"的回答上是正确的，但引入特定任务(如拼写纠错CSC)数据集微调后，再让模型预测"失眠怎么办"的结果就答非所问了。
+
+应该是微调训练参数调整导致的，微调初始学习率不要设置太高，lr=2e-5或者更小，可以避免此问题，不要大于预训练时的学习率。
+
+\subsection{微调模型显存需求}
+\begin{table}[h]
+\centering
+\caption{微调模型显存需求对比}
+\begin{tabular}{@{}lllll@{}}
+\toprule
+\textbf{模型版本} & \textbf{7B} & \textbf{13B} & \textbf{33B} & \textbf{65B} \\
+\midrule
+原模型大小(FP16) & 13 GB & 24 GB & 60 GB & 120 GB \\
+量化后大小(8-bit) & 7.8 GB & 14.9 GB & - & - \\
+量化后大小(4-bit) & 3.9 GB & 7.8 GB & 19.5 GB & 38.5 GB \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{SFT学习内容}
+\begin{enumerate}
+\item 预训练 → 在大量无监督数据上进行预训练，得到基础模型 → 将预训练模型作为SFT和RLHF的起点。
+\item SFT → 在有监督的数据集上进行SFT训练，利用上下文信息等监督信号进一步优化模型 → 将SFT训练后的模型作为RLHF的起点。
+\item RLHF → 利用人类反馈进行强化学习，优化模型以更好地适应人类意图和偏好 → 将RLHF训练后的模型进行评估和验证，并进行必要的调整。
+\end{enumerate}
+
+\section{训练优化技术}
+
+\subsection{Batch Size设置问题}
+\textbf{Batch Size太小的问题：}
+当batch size较小时，更新方向(即对真实梯度的近似)会具有很高的方差，导致的梯度更新主要是噪声。
+
+\textbf{Batch Size太大的问题：}
+当batch size非常大时，我们从训练数据中抽样的任何两组数据都会非常相似(因为它们几乎完全匹配真实梯度)。因此，在这种情况下，增加batch size几乎不会改善性能。
+
+\textbf{最优步长公式：}
+$$\epsilon_{opt}(B)=argmin_{\epsilon}E[L(\theta-\epsilon G_{est})]=\frac{\epsilon_{\text{max}}}{1+\mathcal{B}_{\text{noise}}/B}$$
+
+\textbf{噪声尺度估计：}
+$$\mathcal{B}_{noise}=\frac{tr(H\Sigma)}{G^{T}HG}$$
+
+\subsection{优化器选择}
+除了Adam和AdamW，其他优化器如Sophia也值得研究，它使用梯度曲率而非方差进行归一化，可能提高训练效率和模型性能。
+
+\section{数据构建建议}
+
+\subsection{预训练数据集选择}
+通过分析发现现有的开源大模型进行预训练的过程中会加入书籍、论文等数据。主要是因为这些数据的数据质量较高，领域相关性比较强，知识覆盖率(密度)较大，可以让模型更适应考试。
+
+\subsection{微调数据集构建原则}
+\begin{enumerate}
+\item 选取的训练数据要干净、并具有代表性。
+\item 构建的prompt尽量多样化，提高模型的鲁棒性。
+\item 进行多任务同时进行训练的时候，要尽量使各个任务的数据量平衡。
+\end{enumerate}
+
+\section{Loss突刺问题分析}
+
+\subsection{Loss突刺现象}
+loss spike指的是预训练过程中，尤其容易在大模型(100B以上)预训练过程中出现的loss突然暴涨的情况。
+
+\subsection{Adam优化器与Loss突刺}
+Adam优化器更新公式：
+$$m_{t}=\frac{\beta_{1}}{1-\beta_{1}^{t}}m_{t-1}+\frac{1-\beta_{1}}{1-\beta_{1}^{t}}g_{t}$$
+$$v_{t}=\frac{\beta_{2}}{1-\beta_{2}^{t}}v_{t-1}+\frac{1-\beta_{2}}{1-\beta_{2}^{t}}g_{t}^{2}$$
+$$u_{t}=\frac{m_{t}}{\sqrt{v_{t}}+\varepsilon}$$
+$$\theta_{t+1}=\theta_{t}-\eta_{t}u_{t}$$
+
+\subsection{Loss突刺解决方案}
+\begin{enumerate}
+\item 出现loss spike后更换batch样本的方法
+\item 减小learning rate
+\item 减小$\varepsilon$大小，或者直接把$\varepsilon$设为0
+\item 使用Embedding Layer Gradient Shrink(EGS)技术
+\end{enumerate}

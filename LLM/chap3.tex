@@ -1,0 +1,122 @@
+\chapter{LLMs 激活函数篇}
+
+\section{FFN 块基础}
+
+\subsection{FFN 块计算公式}
+前馈神经网络（FFN）块的计算公式如下：
+$$FFN(x)=f(x W_{1}+b_{1})W_{2}+b_{2}$$
+
+\section{常见激活函数}
+
+\subsection{GeLU 激活函数}
+GeLU（高斯误差线性单元）激活函数的计算公式如下：
+$$ GeLU(x)\approx 0.5 x\left(1+\tanh\left(\sqrt{\frac{2}{\pi}}\left(x+0.044715 x^3\right)\right)\right)$$
+
+\subsection{Swish 激活函数}
+Swish 激活函数的计算公式如下：
+$$Swish_{\beta}(x)=x\cdot\sigma(\beta x)$$
+
+\section{GLU 线性门控单元}
+
+\subsection{基础 GLU 计算公式}
+使用 GLU（门控线性单元）的 FFN 块计算公式：
+\begin{align*}
+GU(x)&=\sigma(x W+b)\otimes x V\\
+FFN_{GLU}&=(f(x W_{1})\otimes x V) W_{2}
+\end{align*}
+
+\subsection{GeGLU 计算公式}
+使用 GeLU 的 GLU 块计算公式：
+$$GeGLU(x)=GeLU(xW)\otimes xV$$
+
+\subsection{SwiGLU 计算公式}
+使用 Swish 的 GLU 块计算公式：
+$$SwiGLU=Swish_{\beta}(xW)\otimes xV$$
+
+\subsection{参数规模说明}
+\begin{itemize}
+\item 传统 FFN：2个可训练权重矩阵，中间维度为 $4h$
+\item SwiGLU FFN：3个可训练权重矩阵，中间维度为 $4h \times 2/3$
+\end{itemize}
+
+维度计算示例：
+\begin{align*}
+4h &= 4 \times 4096 = 16384 \\
+\frac{2}{3} \times 4h &= 10022 \rightarrow 11008
+\end{align*}
+
+\section{各 LLMs 激活函数使用情况}
+
+\begin{table}[h]
+\centering
+\caption{各 LLMs 模型使用的激活函数对比}
+\begin{tabular}{@{}ll@{}}
+\toprule
+\textbf{模型} & \textbf{激活函数} \\
+\midrule
+GPT3 & GeLU \\
+LLaMA & SwiGLU \\
+LLaMA2 & SwiGLU \\
+baichuan & SwiGLU \\
+ChatGLM-6B & GeLU \\
+ChatGLM2-6B & SwiGLU \\
+Bloom & GeLU \\
+Falcon & GeLU \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{模型参数结构示例}
+
+\subsection{LLaMA 模型参数结构}
+\begin{table}[h]
+\centering
+\caption{LLaMA 模型参数结构示例}
+\begin{tabular}{@{}llll@{}}
+\toprule
+\makecell[l]{模块类型} & \makecell[l]{模块名称} & \makecell[l]{参数形状} & \makecell[l]{参数数量} \\
+\midrule
+\multirow{9}{*}{Embedding \& Layers} 
+& model.embed\_tokens.weight & [32000, 4096] & 131072000 \\
+& model.layers.0.self\_attn.q\_proj.weight & [4096, 4096] & 16777216 \\
+& model.layers.0.self\_attn.k\_proj.weight & [4096, 4096] & 16777216 \\
+& model.layers.0.self\_attn.v\_proj.weight & [4096, 4096] & 16777216 \\
+& model.layers.0.self\_attn.o\_proj.weight & [4096, 4096] & 16777216 \\
+& model.layers.0.mlp.gate\_proj.weight & [11008, 4096] & 45088768 \\
+& model.layers.0.mlp.down\_proj.weight & [4096, 11008] & 45088768 \\
+& model.layers.0.mlp.up\_proj.weight & [11008, 4096] & 45088768 \\
+& model.layers.0.input\_layernorm.weight & [4096] & 4096 \\
+& model.layers.0.post\_attention\_layernorm.weight & [4096] & 4096 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Bloom 模型参数结构}
+\begin{table}[h]
+\centering
+\caption{Bloom 模型参数结构示例}
+\begin{tabular}{@{}llll@{}}
+\toprule
+\makecell[l]{模块类型} & \makecell[l]{模块名称} & \makecell[l]{参数形状} & \makecell[l]{参数数量} \\
+\midrule
+\multirow{12}{*}{Embedding} 
+& transformer.word\_embeddings.weight & [250880, 4096] & 1027604480 \\
+& transformer.word\_embeddings\_layernorm.weight & [4096] & 4096 \\
+& transformer.word\_embeddings\_layernorm.bias & [4096] & 4096 \\
+& transformer.h.0.input\_layernorm.weight & [4096] & 4096 \\
+& transformer.h.0.input\_layernorm.bias & [4096] & 4096 \\
+& transformer.h.0.self\_attention.query\_key\_value.weight & [12288, 4096] & 50331648 \\
+& transformer.h.0.self\_attention.query\_key\_value.bias & [12288] & 12288 \\
+& transformer.h.0.self\_attention.dense.weight & [4096, 4096] & 16777216 \\
+& transformer.h.0.self\_attention.dense.bias & [4096] & 4096 \\
+& transformer.h.0.post\_attention\_layernorm.weight & [4096] & 4096 \\
+& transformer.h.0.post\_attention\_layernorm.bias & [4096] & 4096 \\
+& transformer.h.0.mlp.dense\_h\_to\_4h.weight & [16384, 4096] & 67108864 \\
+& transformer.h.0.mlp.dense\_h\_to\_4h.bias & [16384] & 16384 \\
+& transformer.h.0.mlp.dense\_4h\_to\_h.weight & [4096, 16384] & 67108864 \\
+& transformer.h.0.mlp.dense\_4h\_to\_h.bias & [4096] & 4096 \\
+\bottomrule
+\end{tabular}
+\end{table}
+\subsection{特殊说明}
+BLOOM 在 embedding 层后添加 layer normalization，有利于提升训练稳定性，但可能会带来很大的性能损失。

@@ -1,0 +1,108 @@
+\chapter{Attention 升级面}
+
+\section{传统 Attention 的问题}
+\begin{itemize}
+\item 传统 Attention 存在上下文长度约束问题
+\item 传统 Attention 速度慢，内存占用大
+\end{itemize}
+
+\section{Attention 优化方向}
+\begin{itemize}
+\item 提升上下文长度
+\item 加速、减少内存占用
+\end{itemize}
+
+\section{Attention 变体概述}
+\begin{itemize}
+\item \textbf{稀疏 Attention}：将稀疏偏差引入 attention 机制可以降低复杂性
+\item \textbf{线性化 Attention}：解开 attention 矩阵与内核特征图，然后以相反的顺序计算 attention 以实现线性复杂度
+\item \textbf{原型和内存压缩}：这类方法减少了查询或键值记忆对的数量，以减少注意力矩阵的大小
+\item \textbf{低阶 self-Attention}：这一系列工作捕获了 self-Attention 的低阶属性
+\item \textbf{Attention 与先验}：该研究探索了用先验 attention 分布来补充或替代标准 attention
+\item \textbf{改进多头机制}：该系列研究探索了不同的替代多头机制
+\end{itemize}
+
+\section{Multi-Query Attention}
+
+\subsection{Multi-head Attention 存在的问题}
+\begin{itemize}
+\item \textbf{训练过程}：不会显著影响训练过程，训练速度不变，会引起非常细微的模型效果损失
+\item \textbf{推理过程}：反复加载巨大的 KV cache，导致内存开销大，性能是内存受限
+\end{itemize}
+
+\subsection{Multi-Query Attention 介绍}
+Multi-Query Attention 在所有注意力头上共享 key 和 value。
+
+\subsection{Multi-head Attention 与 Multi-Query Attention 对比}
+\begin{itemize}
+\item \textbf{Multi-head Attention}：每个注意力头都有各自的 query、key 和 value
+\item \textbf{Multi-query Attention}：在所有的注意力头上共享 key 和 value
+\end{itemize}
+
+\subsection{各模型参数配置对比}
+\begin{table}[h]
+\centering
+\caption{各模型注意力机制参数配置对比}
+\begin{tabular}{@{}lllll@{}}
+\toprule
+\textbf{模型} & \textbf{n\_heads} & \textbf{head\_dim} & \textbf{FFN中间维度} & \textbf{维度 h} \\
+\midrule
+LLaMA & 32 & 128 & 11008 & 4096 \\
+baichuan & 32 & 128 & 11008 & 4096 \\
+ChatGLM-6B & 32 & 128 & 4h, 16384 & 4096 \\
+ChatGLM2-6B & 32 & 128 & 13696 & 4096 \\
+Bloom & 32 & 128 & 4h, 16384 & 4096 \\
+Falcon & 71 & 64 & 4h, 18176 & 4544 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Multi-Query Attention 的模型实现差异}
+Falcon、PaLM、ChatGLM2-6B 都使用了 Multi-query Attention，但有细微差别：
+\begin{itemize}
+\item \textbf{为了保持参数量一致}：
+\item \textbf{Falcon}：把隐藏维度从 4096 增大到了 4544。多余的参数量分给了 Attention 块和 FFN 块
+\item \textbf{ChatGLM2}：把 FFN 中间维度从 11008 增大到了 13696。多余的参数分给了 FFN 块
+\end{itemize}
+
+\subsection{Multi-Query Attention 的优势}
+减少 KV cache 的大小，减少显存占用，提升推理速度。
+
+\subsection{使用 Multi-Query Attention 的模型}
+代表模型：PaLM、ChatGLM2、Falcon 等
+
+\section{Grouped-query Attention}
+
+\subsection{Grouped-query Attention 定义}
+Grouped query attention：介于 multi head 和 multi query 之间，多个 key 和 value。
+
+\subsection{使用 Grouped-query Attention 的模型}
+ChatGLM2，LLaMA2-34B/70B 使用了 Grouped query attention。
+
+\section{FlashAttention}
+
+\subsection{FlashAttention 核心技术}
+\begin{itemize}
+\item \textbf{核心}：用分块 softmax 等价替代传统 softmax
+\item \textbf{关键词}：HBM、SRAM、分块 Softmax、重计算、Kernel 融合
+\end{itemize}
+
+\subsection{FlashAttention 优点}
+节约 HBM，高效利用 SRAM，省显存，提速度
+
+\subsection{使用 FlashAttention 的模型}
+Meta 推出的开源大模型 LLaMA，阿联酋推出的开源大模型 Falcon 都使用了 Flash Attention 来加速计算和节省显存
+
+\section{并行 Transformer Block}
+
+\subsection{并行 Transformer Block 原理}
+用并行公式替换了串行，提升了 15\% 的训练速度。
+
+\subsection{并行 Transformer Block 效果}
+\begin{itemize}
+\item 在 8B 参数量规模，会有轻微的模型效果损失
+\item 在 62B 参数量规模，就不会损失模型效果
+\end{itemize}
+
+\subsection{使用并行 Transformer Block 的模型}
+Falcon、PaLM 都使用了该技术来加速训练。

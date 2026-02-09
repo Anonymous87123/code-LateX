@@ -1,0 +1,358 @@
+\chapter{多轮对话中让AI保持长期记忆的8种优化方式篇}
+
+\section{前言}
+在基于大模型的Agent中，长期记忆的状态维护至关重要。在OpenAI AI应用研究主管博客《基于大模型的Agent构成》中，将记忆视为关键的组件之一。下面将结合LangChain中的代码，介绍8种不同的记忆维护方式在不同场景中的应用。
+
+\section{Agent获取上下文对话信息的8种方式}
+
+\subsection{获取全量历史对话}
+\textbf{应用场景：}以一般客服场景为例
+
+在电信公司的客服聊天机器人场景中，如果用户在对话中先是询问了账单问题，接着又谈到了网络连接问题，ConversationBufferMemory可以用来记住整个与用户的对话历史，可以帮助AI在回答网络问题时还记得账单问题的相关细节，从而提供更连贯的服务。
+
+\begin{lstlisting}[language=Python]
+from langchain.memory import ConversationBufferMemory
+memory = ConversationBufferMemory()
+memory.save_context({"input": "你好"}, {"output": "怎么了"})
+variables = memory.load_memory_variables({})
+\end{lstlisting}
+
+\subsection{滑动窗口获取最近部分对话内容}
+\textbf{应用场景：}以商品咨询场景为例
+
+在一个电商平台上，如果用户询问关于特定产品的问题（如手机的电池续航时间），然后又问到了配送方式，ConversationBufferWindowMemory可以帮助AI只专注于最近的一两个问题（如配送方式），而不是整个对话历史，以提供更快速和专注的答复。
+
+\begin{lstlisting}[language=Python]
+from langchain.memory import ConversationBufferWindowMemory
+# 只保留最后1次互动的记忆
+memory = ConversationBufferWindowMemory(k=1)
+\end{lstlisting}
+
+\subsection{获取历史对话中实体信息}
+\textbf{应用场景：}以法律咨询场景为例
+
+在法律咨询的场景中，客户可能会提到特定的案件名称、相关法律条款或个人信息（如"我在去年的交通事故中受了伤，想了解关于赔偿的法律建议"）。ConversationEntityMemory可以帮助AI记住这些关键实体和实体关系细节，从而在整个对话过程中提供更准确、更个性化的法律建议。
+
+\begin{lstlisting}[language=Python]
+llm = ChatOpenAI(model="gpt-3.5-turbo", temperature=0)
+memory = ConversationEntityMemory(llm=llm)
+_input = {"input": "公众号《LLM应用全栈开发》的作者是莫尔索"}
+memory.load_memory_variables(_input)
+memory.save_context(
+    _input,
+    {"output": "是吗，这个公众号是干嘛的"}
+)
+print(memory.load_memory_variables({"input": "莫尔索是谁?"}))
+# 输出，可以看到提取了实体关系
+# {'history': 'Human: 公众号《LLM应用全栈开发》的作者是莫尔索\nAI: 是吗，这个公众号是干嘛的',
+#  'entities': {'莫尔索': '《LLM应用全栈开发》的作者。'}}
+\end{lstlisting}
+
+\subsection{利用知识图谱获取历史对话中的实体及其联系}
+\textbf{应用场景：}以医疗咨询场景为例
+
+在医疗咨询中，一个病人可能会描述多个症状和过去的医疗历史（如"我有糖尿病史，最近觉得经常口渴和疲劳"）。ConversationKGMemory可以构建一个包含病人症状、疾病历史和可能的健康关联的知识图谱，从而帮助AI提供更全面和深入的医疗建议。
+
+\begin{lstlisting}[language=Python]
+from langchain.memory import ConversationKGMemory
+from langchain.llms import OpenAI
+llm = OpenAI(temperature=0)
+memory = ConversationKGMemory(llm=llm)
+memory.save_context({"input": "小李是程序员"}, {"output": "知道了,小李是程序员"})
+memory.save_context({"input": "莫尔索是小李的笔名"}, {"output": "明白,莫尔索是小李的笔名"})
+variables = memory.load_memory_variables({"input": "告诉我关于小李的信息"})
+print(variables)
+# 输出
+# {'history': 'On 小李: 小李 is 程序员. 小李 的笔名 莫尔索.'}
+\end{lstlisting}
+
+\subsection{对历史对话进行阶段性总结摘要}
+\textbf{应用场景：}以教育辅导场景为例
+
+在一系列的教育辅导对话中，学生可能会提出不同的数学问题或理解难题（如"我不太理解二次方程的求解方法"）。ConversationSummaryMemory可以帮助AI总结之前的辅导内容和学生的疑问点，以便在随后的辅导中提供更针对性的解释和练习。
+
+\subsection{需要获取最新对话，又要兼顾较早历史对话}
+\textbf{应用场景：}以技术支持场景为例
+
+在处理一个长期的技术问题时（如软件故障排查），用户可能会在多次对话中提供不同的错误信息和反馈。ConversationSummaryBufferMemory可以帮助AI保留最近几次交互的详细信息，同时提供历史问题处理的摘要，以便于更有效地识别和解决问题。
+
+\subsection{回溯最近和最关键的对话信息}
+\textbf{应用场景：}以金融咨询场景为例
+
+在金融咨询聊天机器人中，客户可能会提出多个问题，涉及投资、市场动态或个人财务规划（如"我想了解股市最近的趋势以及如何分配我的投资组合"）。ConversationTokenBufferMemory可以帮助AI聚焦于最近和最关键的几个问题，同时避免由于记忆过多而导致的信息混淆。
+
+\subsection{基于向量检索对话信息}
+\textbf{应用场景：}以了解最新新闻事件为例
+
+用户可能会对特定新闻事件提出问题，如"最近的经济峰会有什么重要决策？" VectorStoreRetrieverMemory能够快速从大量历史新闻数据中检索出与当前问题最相关的信息，即使这些信息在整个对话历史中不是最新的，也能提供及时准确的背景信息和详细报道。
+
+\begin{lstlisting}[language=Python]
+vectorstore = Chroma(embedding_function=OpenAIEmbeddings())
+retriever = vectorstore.as_retriever(search_kwargs=dict(k=1))
+memory = VectorStoreRetrieverMemory(retriever=retriever)
+
+memory.save_context({"input": "我喜欢吃火锅"}, {"output": "听起来很好吃"})
+memory.save_context({"input": "我不喜欢看摔跤比赛"}, {"output": "我也是"})
+
+PROMPT_TEMPLATE = """
+以下是人类和AI之间的友好对话。AI话语多且提供了许多来自其上下文的具体细节。如果AI不知道问题的答案，它会诚实地说不知道。
+
+以前对话的相关片段:
+{history}
+(如果不相关, 你不需要使用这些信息)
+
+当前对话:
+人类: {input}
+AI:
+"""
+
+prompt = PromptTemplate(input_variables=["history", "input"], template=PROMPT_TEMPLATE)
+conversation_with_summary = ConversationChain(
+    llm=llm,
+    prompt=prompt,
+    memory=memory,
+    verbose=True
+)
+
+print(conversation_with_summary.predict(input="你好，我是莫尔索，你叫什么"))
+print(conversation_with_summary.predict(input="我喜欢的食物是什么?"))
+print(conversation_with_summary.predict(input="我提到了哪些运动?"))
+\end{lstlisting}
+
+\section{总结}
+这8种记忆优化方式各有其适用的场景和特点：
+
+\begin{itemize}
+\item \textbf{全量历史对话}：适用于需要完整上下文记忆的客服场景
+\item \textbf{滑动窗口}：适用于关注最近对话的电商咨询场景
+\item \textbf{实体信息提取}：适用于需要记忆关键实体的法律咨询场景
+\item \textbf{知识图谱}：适用于复杂关系建模的医疗咨询场景
+\item \textbf{阶段性总结}：适用于长期教育辅导场景
+\item \textbf{摘要缓冲区}：适用于技术支持类长期问题跟踪
+\item \textbf{令牌缓冲区}：适用于金融咨询等需要关注关键信息的场景
+\item \textbf{向量检索}：适用于需要从大量历史数据中检索相关信息的新间查询场景
+\end{itemize}
+
+在实际应用中，可以根据具体的业务需求和对话特点选择合适的记忆策略，或者组合使用多种策略来达到最佳的记忆效果。
+
+
+\chapter{基于LangChain RAG问答应用实战}
+
+\section{前言}
+
+\subsection{项目介绍}
+本次选用百度百科藜藜麦数据(https://baike.baidu.com/item/藜藜麦/5843874)模拟人或企业私域数据，并基于LangChain开发框架，实现一种简单的RAG问答应用示例。
+
+\subsection{软件资源}
+\begin{itemize}
+\item CUDA 11.7
+\item Python 3.10
+\item PyTorch 1.13.1+cu117
+\item LangChain
+\end{itemize}
+
+\section{环境搭建}
+
+\subsection{环境配置}
+\begin{lstlisting}[language=bash]
+# 创建新环境
+$ conda create -n py310_chat python=3.10
+
+# 激活环境
+$ source activate py310_chat
+\end{lstlisting}
+
+\subsection{安装依赖}
+\begin{lstlisting}[language=bash]
+$ pip install datasets langchain sentence_transformers tqdm chromadb langchain_wenxin
+\end{lstlisting}
+
+\section{RAG问答应用实战}
+
+\subsection{数据构建}
+藜藜麦数据从百度百科获取并保存到藜藜.txt文件中。
+
+\subsection{本地数据加载}
+\begin{lstlisting}[language=Python]
+from langchain.document_loaders import TextLoader
+
+loader = TextLoader("./藜藜.txt")
+documents = loader.load()
+documents
+\end{lstlisting}
+
+\subsection{文档分割}
+采用固定字符长度分割，chunk\_size=128
+
+\begin{lstlisting}[language=Python]
+# 文档分割
+from langchain.text_splitter import CharacterTextSplitter
+
+# 创建拆分器
+text_splitter = CharacterTextSplitter(chunk_size=128, chunk_overlap=0)
+
+# 拆分文档
+documents = text_splitter.split_documents(documents)
+documents
+\end{lstlisting}
+
+分割后的文档示例：
+\begin{lstlisting}
+[Document(page_content='藜藜(读音li)麦(Chenopodium quinoa Willd.)是藜藜科藜藜属植物...', 
+          metadata={'source': './藜藜.txt'}),
+ Document(page_content='藜藜麦是印第安人的传统主食，几乎和水稻同时被驯服有着6000多年的种植和食用历史...', 
+          metadata={'source': './藜藜.txt'}),
+ Document(page_content='繁殖\n地块选择:应选择地势较高、阳光充足、通风条件好及肥力较好的地块种植...', 
+          metadata={'source': './藜藜.txt'})]
+\end{lstlisting}
+
+\subsection{向量化与数据入库}
+选用m3e-base作为embedding模型，向量数据库选用Chroma
+
+\begin{lstlisting}[language=Python]
+from langchain.embeddings import HuggingFaceBgeEmbeddings
+from langchain.vectorstores import Chroma
+
+# embedding model: m3e-base
+model_name = "moka-ai/m3e-base"
+model_kwargs = {'device': 'cpu'}
+encode_kwargs = {'normalize_embeddings': True}
+embedding = HuggingFaceBgeEmbeddings(
+    model_name=model_name,
+    model_kwargs=model_kwargs,
+    encode_kwargs=encode_kwargs,
+    query_instruction="为文本生成向量表示用于文本检索"
+)
+
+# load data to Chroma db
+db = Chroma.from_documents(documents, embedding)
+
+# similarity search
+db.similarity_search("藜藜一般在几月播种?")
+\end{lstlisting}
+
+\subsection{Prompt设计}
+\begin{lstlisting}[language=Python]
+template = '''
+[任务描述]
+请根据用户输入的上下文回答问题，并遵守回答要求。
+
+[背景知识]
+{{context}}
+
+[回答要求]
+- 你需要严格根据背景知识的内容回答，禁止根据常识和已知信息回答问题。
+- 对于不知道的信息，直接回答"未找到相关答案"
+
+{question}
+'''
+\end{lstlisting}
+
+\subsection{RetrievalQAChain构建}
+采用ConversationalRetrievalChain，提供历史聊天记录组件
+
+\begin{lstlisting}[language=Python]
+from langchain import LLMChain
+from langchain_wenxin.llms import Wenxin
+from langchain.prompts import PromptTemplate
+from langchain.memory import ConversationBufferMemory
+from langchain.chains import ConversationalRetrievalChain
+
+# LLM选型
+llm = Wenxin(model="ernie-bot", 
+             baidu_api_key="baidu_api_key",
+             baidu_secret_key="baidu_secret_key")
+
+retriever = db.as_retriever()
+memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
+
+qa = ConversationalRetrievalChain.from_llm(llm, retriever, memory=memory)
+qa({"question": "藜藜怎么防治虫害?"})
+\end{lstlisting}
+
+运行结果：
+\begin{lstlisting}
+{'question': '藜藜怎么防治虫害?',
+ 'chat_history': [HumanMessage(content='藜藜怎么防治虫害?'),
+                 AIMessage(content='藜藜麦常见虫害有象甲虫、金针虫、蝼蝼蛄蛄、黄条跳甲...')],
+ 'answer': '藜藜麦常见虫害有象甲虫、金针虫、蝼蝼蛄蛄、黄条跳甲、横纹菜蝽蝽...'}
+\end{lstlisting}
+
+\subsection{高级用法}
+针对多轮对话场景，增加question\_generator对历史对话记录进行压缩生成新的question，增加combine\_docs\_chain对检索得到的文本进一步融合
+
+\begin{lstlisting}[language=Python]
+from langchain import LLMChain
+from langchain.prompts import PromptTemplate
+from langchain.memory import ConversationBufferMemory
+from langchain.chains import ConversationalRetrievalChain, StuffDocumentsChain
+from langchain.chains.qa_with_sources import load_qa_with_sources_chain
+from langchain.prompts.chat import ChatPromptTemplate, SystemMessagePromptTemplate, HumanMessagePromptTemplate
+
+# 构建初始messages列表
+messages = [
+    SystemMessagePromptTemplate.from_template(qa_template),
+    HumanMessagePromptTemplate.from_template('{question}')
+]
+
+# 初始化prompt对象
+prompt = ChatPromptTemplate.from_messages(messages)
+
+llm_chain = LLMChain(llm=llm, prompt=prompt)
+
+combine_docs_chain = StuffDocumentsChain(
+    llm_chain=llm_chain,
+    document_separator="\n\n",
+    document_variable_name="context"
+)
+
+q_gen_chain = LLMChain(llm=llm)
+
+qa = ConversationalRetrievalChain(
+    combine_docs_chain=combine_docs_chain,
+    question_generator=q_gen_chain,
+    return_source_documents=True,
+    return_generated_question=True,
+    retriever=retriever
+)
+
+print(qa({'question': "藜藜麦怎么防治虫害?", "chat_history": []}))
+\end{lstlisting}
+
+高级用法运行结果：
+\begin{lstlisting}
+{'question': '藜藜怎么防治虫害?',
+ 'chat_history': [],
+ 'answer': '根据背景知识,藜藜麦常见虫害有象甲虫、金针虫、蝼蝼蛄蛄、黄条跳甲...',
+ 'source_documents': [Document(page_content='病害:主要防治叶斑病...', 
+                              metadata={'source': './藜藜.txt'})],
+ 'generated_question': '藜藜怎么防治虫害?'}
+\end{lstlisting}
+
+\section{技术要点总结}
+
+\subsection{核心组件}
+\begin{itemize}
+\item \textbf{文档加载器}：TextLoader用于加载本地文本文件
+\item \textbf{文本分割器}：CharacterTextSplitter用于将长文本分割为小块
+\item \textbf{嵌入模型}：HuggingFaceBgeEmbeddings用于生成文本向量表示
+\item \textbf{向量数据库}：Chroma用于存储和检索向量数据
+\item \textbf{对话链}：ConversationalRetrievalChain用于处理多轮对话
+\end{itemize}
+
+\subsection{优化建议}
+\begin{itemize}
+\item 根据具体业务场景调整chunk\_size和chunk\_overlap参数
+\item 选择合适的embedding模型以获得更好的检索效果
+\item 针对具体场景优化prompt模板
+\item 考虑使用更复杂的内存管理策略处理长对话历史
+\end{itemize}
+
+\subsection{扩展应用}
+\begin{itemize}
+\item 可以扩展到处理PDF、Word等格式的文档
+\item 可以集成多种向量数据库（如Pinecone、Weaviate等）
+\item 可以结合多种LLM提供商（如OpenAI、Claude等）
+\item 可以添加更复杂的检索策略（如混合检索、重排序等）
+\end{itemize}
+

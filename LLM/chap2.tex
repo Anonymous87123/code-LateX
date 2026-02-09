@@ -1,0 +1,104 @@
+\chapter{Layer Normalization 篇}
+
+\section{Layer Norm 基础}
+
+\subsection{Layer Norm 计算公式}
+Layer Normalization 的计算公式如下：
+
+\begin{align*}
+\mu &= E(X) = \frac{1}{H}\sum_{i=1}^{H}x_{i} \\
+\sigma &= \sqrt{Var(x)} = \sqrt{\frac{1}{H}\sum_{i=1}^{H}(x_{i}-\mu)^{2}+\epsilon} \\
+y &= \frac{x-E(x)}{\sqrt{Var(X)+\epsilon}}\cdot\gamma+\beta
+\end{align*}
+
+其中：
+\begin{itemize}
+\item $\gamma$: 可训练的再缩放参数
+\item $\beta$: 可训练的再偏移参数
+\end{itemize}
+
+\section{RMS Norm（均方根 Norm）}
+
+\subsection{RMS Norm 计算公式}
+RMS Norm 的计算公式如下：
+
+\begin{align*}
+RMS(x) &= \sqrt{\frac{1}{H}\sum_{i=1}^{H}x_{i}^{2}} \\
+x &= \frac{x}{RMS(x)}\cdot\gamma
+\end{align*}
+
+\subsection{RMS Norm 的特点}
+\begin{itemize}
+\item RMS Norm 简化了 Layer Norm，去除掉计算均值进行平移的部分
+\item 对比 LN，RMS Norm 的计算速度更快
+\item 效果基本相当，甚至略有提升
+\end{itemize}
+
+\section{Deep Norm}
+
+\subsection{Deep Norm 思路}
+Deep Norm 方法在执行 Layer Norm 之前，up-scale 了残差连接 ($\alpha>1$)；另外，在初始化阶段 down-scale 了模型参数 ($\beta<1$)。
+
+\subsection{Deep Norm 代码实现}
+\begin{verbatim}
+def deepnorm(x):
+    return LayerNorm(x*α + f(x))
+
+def deepnorm_init(w):
+    if w in ['ffn', 'v_proj', 'out_proj']:
+        nn.init.xavier_normal_(w, gain=β)
+    elif w in ['q_proj', 'k_proj']:
+        nn.init.xavier_normal_(w, gain=1)
+\end{verbatim}
+
+\subsection{Deep Norm 的优点}
+Deep Norm 可以缓解爆炸式模型更新的问题，把模型更新限制在常数，使得模型训练过程更稳定。
+
+\section{Layer Normalization 的位置设计}
+
+\subsection{LN 在 LLMs 中的不同位置}
+
+\subsubsection{Post LN}
+\begin{itemize}
+\item \textbf{位置}: Layer Norm 在残差链接之后
+\item \textbf{缺点}: Post LN 在深层的梯度范式逐渐增大，导致使用 post-LN 的深层 transformer 容易出现训练不稳定的问题
+\end{itemize}
+
+\subsubsection{Pre-LN}
+\begin{itemize}
+\item \textbf{位置}: Layer Norm 在残差链接中
+\item \textbf{优点}: 相比于 Post-LN，Pre LN 在深层的梯度范式近似相等，所以使用 Pre-LN 的深层 transformer 训练更稳定，可以缓解训练不稳定问题
+\item \textbf{缺点}: 相比于 Post-LN，Pre-LN 的模型效果略差
+\end{itemize}
+
+\subsubsection{Sandwich-LN}
+\begin{itemize}
+\item \textbf{位置}: 在 pre-LN 的基础上，额外插入了一个 layer norm
+\item \textbf{优点}: Cogview 用来避免值爆炸的问题
+\item \textbf{缺点}: 训练不稳定，可能会导致训练崩溃
+\end{itemize}
+
+\section{Layer Normalization 对比分析}
+
+\subsection{各模型使用的 Normalization 方法}
+
+\begin{table}[h]
+\centering
+\caption{LLMs 各模型使用的 Layer Normalization 方法对比}
+\begin{tabular}{@{}ll@{}}
+\toprule
+\textbf{模型} & \textbf{Normalization 方法} \\
+\midrule
+GPT3 & Pre Layer Norm \\
+LLaMA & Pre RMS Norm \\
+baichuan & Pre RMS Norm \\
+ChatGLM-6B & Post Deep Norm \\
+ChatGLM2-6B & Post RMS Norm \\
+Bloom & Pre Layer Norm \\
+Falcon & Pre Layer Norm \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{特殊说明}
+BLOOM 在 embedding 层后添加 layer normalization，有利于提升训练稳定性，但可能会带来很大的性能损失。
