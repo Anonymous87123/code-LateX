@@ -7,30 +7,22 @@
 \begin{verbatim}
 import torch 
 from transformers import BertModel, BertTokenizer
-
 # 这里我们调用bert-base模型,同时模型的词典经过小写处理
 model_name = 'bert-base-uncased'
-
 # 读取模型对应的tokenizer
 tokenizer = BertTokenizer.from_pretrained(model_name)
-
 # 载入模型
 model = BertModel.from_pretrained(model_name)
-
 # 输入文本
 input_text = "Here is some text to encode"
-
 # 通过tokenizer把文本变成token_id
 input_ids = tokenizer.encode(input_text, add_special_tokens=True)
 # input_ids: [101, 2182, 2003, 2070, 3793, 2000, 4372, 16044, 102]
-
 input_ids = torch.tensor([input_ids])
-
 # 获得BERT模型最后一个隐层结果
 with torch.no_grad():
     last_hidden_states = model(input_ids)[0]
     # Models outputs are now tuples
-
 """
 tensor([[[-0.0549,  0.1053, -0.1065, ..., -0.3550,  0.0686,  0.6506],
          [-0.5759, -0.3650, -0.1383, ..., -0.6782,  0.2092, -0.1639],
@@ -71,10 +63,8 @@ BERT模型输出包含以下几个部分：
 \begin{verbatim}
 ## 最后一层的所有token向量
 outputs.last_hidden_state
-
 ## cls向量
 outputs.pooler_output
-
 ## hidden_states, 包括13层, 第一层即索引0是输入embedding向量, 
 ## 后面1-12索引是每层的输出向量
 hidden_states = outputs.hidden_states

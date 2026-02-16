@@ -8,42 +8,206 @@ $$FFN(x)=f(x W_{1}+b_{1})W_{2}+b_{2}$$
 
 \section{常见激活函数}
 
-\subsection{GeLU 激活函数}
-GeLU（高斯误差线性单元）激活函数的计算公式如下：
+GeLU 激活函数:GeLU（高斯误差线性单元）激活函数的计算公式如下
 $$ GeLU(x)\approx 0.5 x\left(1+\tanh\left(\sqrt{\frac{2}{\pi}}\left(x+0.044715 x^3\right)\right)\right)$$
 
-\subsection{Swish 激活函数}
-Swish 激活函数的计算公式如下：
+Swish 激活函数:Swish 激活函数的计算公式如下
 $$Swish_{\beta}(x)=x\cdot\sigma(\beta x)$$
 
 \section{GLU 线性门控单元}
 
-\subsection{基础 GLU 计算公式}
-使用 GLU（门控线性单元）的 FFN 块计算公式：
-\begin{align*}
-GU(x)&=\sigma(x W+b)\otimes x V\\
-FFN_{GLU}&=(f(x W_{1})\otimes x V) W_{2}
-\end{align*}
+\subsection{什么是GLU？}
 
-\subsection{GeGLU 计算公式}
-使用 GeLU 的 GLU 块计算公式：
-$$GeGLU(x)=GeLU(xW)\otimes xV$$
+门控线性单元（Gated Linear Unit, GLU）是一种神经网络激活机制，由Dauphin等人在2017年提出。它的核心思想是使用一个\textbf{门控信号}来控制信息的流动，类似于LSTM中的门控机制，但应用于前馈网络。
 
-\subsection{SwiGLU 计算公式}
-使用 Swish 的 GLU 块计算公式：
-$$SwiGLU=Swish_{\beta}(xW)\otimes xV$$
-
-\subsection{参数规模说明}
+\subsubsection{工作原理}
 \begin{itemize}
-\item 传统 FFN：2个可训练权重矩阵，中间维度为 $4h$
-\item SwiGLU FFN：3个可训练权重矩阵，中间维度为 $4h \times 2/3$
+\item \textbf{输入} $x$ 经过两个不同的线性变换：$xW$ 和 $xV$
+\item 其中一个变换经过sigmoid函数，产生0到1之间的门控值
+\item 另一个变换与门控值进行元素级相乘（Hadamard积，记为$\otimes$）
+\item 门控值决定哪些信息应该被保留，哪些应该被抑制
 \end{itemize}
 
-维度计算示例：
+\subsection{基础GLU计算公式}
+
+传统的Transformer前馈网络（FFN）通常使用两层线性变换加激活函数：
+$$ FFN_{ReLU}(x) = \text{ReLU}(xW_1)W_2 $$
+
+而使用GLU的FFN块计算公式为：
 \begin{align*}
-4h &= 4 \times 4096 = 16384 \\
-\frac{2}{3} \times 4h &= 10022 \rightarrow 11008
+GU(x) &= \sigma(x W + b) \otimes (x V + c) \\
+FFN_{GLU}(x) &= \left(\sigma(x W_1) \otimes (x V)\right) W_2
 \end{align*}
+
+其中：
+\begin{itemize}
+\item $\sigma$ 是sigmoid函数：$\sigma(z) = \frac{1}{1+e^{-z}}$
+\item $\otimes$ 表示元素级乘法（逐元素相乘）
+\item $W, V, W_1, W_2$ 是可训练的权重矩阵
+\item 通常省略偏置项$b, c$以简化表示
+\end{itemize}
+
+\subsubsection{GLU的作用机理}
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+    node distance=1.5cm,
+    input/.style={rectangle, draw=blue!50, fill=blue!5, thick, minimum size=8mm},
+    transform/.style={rectangle, draw=green!50, fill=green!5, thick, minimum size=8mm},
+    gate/.style={ellipse, draw=red!50, fill=red!5, thick, minimum size=8mm},
+    output/.style={rectangle, draw=orange!50, fill=orange!5, thick, minimum size=8mm},
+    arrow/.style={-stealth, thick}
+]
+
+\node[input] (x) {$x$};
+\node[transform, above right=0.5cm and 1.5cm of x] (wx) {$xW$};
+\node[transform, below right=0.5cm and 1.5cm of x] (vx) {$xV$};
+\node[gate, right=1.5cm of wx] (sigma) {$\sigma$};
+\node[output, right=2.5cm of x] (mul) {$\otimes$};
+\node[output, right=1.5cm of mul] (result) {$GU(x)$};
+
+\draw[arrow] (x) -- ++(0:1) |- (wx);
+\draw[arrow] (x) -- ++(0:1) |- (vx);
+\draw[arrow] (wx) -- (sigma);
+\draw[arrow] (sigma) -- node[above] {门控信号} (mul);
+\draw[arrow] (vx) -- node[below] {原始信息} (mul);
+\draw[arrow] (mul) -- (result);
+
+\node[below=0.2cm of vx] {\small 线性变换$V$};
+\node[above=0.2cm of wx] {\small 线性变换$W$};
+\end{tikzpicture}
+\caption{GLU计算流程图：通过门控机制控制信息流动}
+\end{figure}
+
+\subsection{GeGLU：基于GELU的GLU变体}
+
+GeGLU将sigmoid函数替换为GELU（Gaussian Error Linear Unit）激活函数：
+
+$$ \text{GeGLU}(x) = \text{GELU}(xW) \otimes (xV) $$
+
+其中GELU函数的定义为：
+$$ \text{GELU}(x) = x \cdot \Phi(x) = x \cdot \frac{1}{2}\left[1 + \text{erf}\left(\frac{x}{\sqrt{2}}\right)\right] $$
+
+\subsubsection{GELU函数特点}
+\begin{itemize}
+\item \textbf{平滑性}：GELU处处可导，比ReLU更平滑
+\item \textbf{概率解释}：基于高斯分布的累积分布函数
+\item \textbf{性能优势}：在Transformer中通常比ReLU表现更好
+\item \textbf{计算复杂度}：需要计算误差函数erf，但现代硬件有优化实现
+\end{itemize}
+
+\subsection{SwiGLU：基于Swish的GLU变体}
+
+SwiGLU使用Swish激活函数（也称为SiLU）替换sigmoid：
+
+$$ \text{SwiGLU}(x) = \text{Swish}_\beta(xW) \otimes (xV) $$
+
+其中Swish函数定义为：
+$$ \text{Swish}_\beta(x) = x \cdot \sigma(\beta x) $$
+
+当$\beta=1$时，就是标准的Swish/SiLU函数：
+$$ \text{SiLU}(x) = x \cdot \sigma(x) = \frac{x}{1 + e^{-x}} $$
+
+\subsubsection{Swish函数特点}
+\begin{itemize}
+\item \textbf{自门控}：Swish本身就是$x$与sigmoid的乘积，具有自门控特性
+\item \textbf{无界性}：输出可以大于1，这有助于避免梯度消失
+\item \textbf{平滑性}：处处连续可导
+\item \textbf{实证优势}：在多个任务上优于ReLU和GELU
+\end{itemize}
+
+\subsection{参数规模分析}
+
+\subsubsection{传统FFN的参数规模}
+传统的Transformer FFN层包含两个线性变换：
+\begin{align*}
+\text{中间表示} &= \text{ReLU}(xW_1) \\
+\text{输出} &= (\text{中间表示})W_2
+\end{align*}
+
+其中：
+\begin{itemize}
+\item 输入维度：$d_{\text{model}} = h$
+\item 中间维度：通常为 $4h$（放大4倍）
+\item $W_1$ 形状：$h \times 4h$，参数量：$4h^2$
+\item $W_2$ 形状：$4h \times h$，参数量：$4h^2$
+\item 总参数量：$8h^2$
+\end{itemize}
+
+\subsubsection{SwiGLU FFN的参数规模}
+SwiGLU FFN包含三个线性变换：
+\begin{align*}
+\text{SwiGLU}(x) &= \text{Swish}(xW) \otimes (xV) \\
+\text{输出} &= (\text{SwiGLU}(x))U
+\end{align*}
+
+为了保持与原始FFN相似的参数总量，需要调整中间维度：
+\begin{itemize}
+\item 设原始中间维度为 $4h$，有2个矩阵
+\item SwiGLU有3个矩阵，为保持总参数量相近，每个矩阵应更小
+\item 设SwiGLU中间维度为 $d_{\text{ffn}}$
+\item 参数总量：$h \times d_{\text{ffn}} \times 3 = 3h \cdot d_{\text{ffn}}$
+\item 令其等于传统FFN参数量：$3h \cdot d_{\text{ffn}} \approx 8h^2$
+\item 解得：$d_{\text{ffn}} \approx \frac{8}{3}h = 2.666...h$
+\item 实际中取 $\frac{8}{3}h$ 的近似值
+\end{itemize}
+
+\subsubsection{维度计算示例}
+以LLaMA-7B为例，$h = 4096$：
+
+传统FFN中间维度：
+$$ 4h = 4 \times 4096 = 16384 $$
+
+SwiGLU的中间维度计算：
+\begin{align*}
+\frac{2}{3} \times 4h &= \frac{2}{3} \times 16384 = 10922.\overline{6} \\
+\text{取整到128的倍数} & \rightarrow 11008
+\end{align*}
+
+为什么是$\frac{2}{3}$？因为：
+\begin{itemize}
+\item 传统FFN：2个矩阵，每个维度$h \times 4h$
+\item 总参数：$2 \times (h \times 4h) = 8h^2$
+\item SwiGLU FFN：3个矩阵，每个维度$h \times d$
+\item 总参数：$3 \times (h \times d) = 3hd$
+\item 令$3hd = 8h^2$，则$d = \frac{8}{3}h = \frac{2}{3} \times 4h$
+\end{itemize}
+
+所以SwiGLU的中间维度是传统FFN中间维度$4h$的$\frac{2}{3}$倍。
+
+\subsection{为什么GLU有效？}
+
+\subsubsection{理论解释}
+\begin{enumerate}
+\item \textbf{梯度流改善}：门控机制提供了更丰富的梯度信号
+\item \textbf{信息控制}：允许网络学习哪些信息应该被传递
+\item \textbf{表达能力强}：GLU可以看作是条件仿射变换
+\item \textbf{避免梯度消失}：相比sigmoid/tanh，GLU的梯度更稳定
+\end{enumerate}
+
+\subsubsection{实证结果}
+\begin{itemize}
+\item 在多种自然语言处理任务中，GLU变体通常优于标准ReLU
+\item SwiGLU在PaLM、LLaMA等大型模型中被广泛采用
+\item 在相似的参数量下，SwiGLU通常能获得更好的性能
+\end{itemize}
+
+\subsection{不同GLU变体对比}
+
+\begin{table}[h]
+\centering
+\caption{GLU变体对比}
+\label{tab:glu_comparison}
+\begin{tabular}{lllll}
+\hline
+\textbf{类型} & \textbf{激活函数} & \textbf{公式} & \textbf{特点} & \textbf{应用模型} \\ 
+\textbf{GLU} & Sigmoid & $\sigma(xW) \otimes xV$ & 原始版本，门控值在[0,1] & 早期Transformer变体 \\ 
+\textbf{GeGLU} & GELU & $\text{GELU}(xW) \otimes xV$ & 更平滑，概率解释 & T5、部分BERT变体 \\ 
+\textbf{SwiGLU} & Swish/SiLU & $\text{Swish}(xW) \otimes xV$ & 自门控，无界输出 & LLaMA \\ 
+\textbf{ReGLU} & ReLU & $\text{ReLU}(xW) \otimes xV$ & 简单，稀疏激活 & 部分研究模型\\ 
+\end{tabular}
+\end{table}
+
 
 \section{各 LLMs 激活函数使用情况}
 
@@ -65,58 +229,3 @@ Falcon & GeLU \\
 \bottomrule
 \end{tabular}
 \end{table}
-
-\section{模型参数结构示例}
-
-\subsection{LLaMA 模型参数结构}
-\begin{table}[h]
-\centering
-\caption{LLaMA 模型参数结构示例}
-\begin{tabular}{@{}llll@{}}
-\toprule
-\makecell[l]{模块类型} & \makecell[l]{模块名称} & \makecell[l]{参数形状} & \makecell[l]{参数数量} \\
-\midrule
-\multirow{9}{*}{Embedding \& Layers} 
-& model.embed\_tokens.weight & [32000, 4096] & 131072000 \\
-& model.layers.0.self\_attn.q\_proj.weight & [4096, 4096] & 16777216 \\
-& model.layers.0.self\_attn.k\_proj.weight & [4096, 4096] & 16777216 \\
-& model.layers.0.self\_attn.v\_proj.weight & [4096, 4096] & 16777216 \\
-& model.layers.0.self\_attn.o\_proj.weight & [4096, 4096] & 16777216 \\
-& model.layers.0.mlp.gate\_proj.weight & [11008, 4096] & 45088768 \\
-& model.layers.0.mlp.down\_proj.weight & [4096, 11008] & 45088768 \\
-& model.layers.0.mlp.up\_proj.weight & [11008, 4096] & 45088768 \\
-& model.layers.0.input\_layernorm.weight & [4096] & 4096 \\
-& model.layers.0.post\_attention\_layernorm.weight & [4096] & 4096 \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-\subsection{Bloom 模型参数结构}
-\begin{table}[h]
-\centering
-\caption{Bloom 模型参数结构示例}
-\begin{tabular}{@{}llll@{}}
-\toprule
-\makecell[l]{模块类型} & \makecell[l]{模块名称} & \makecell[l]{参数形状} & \makecell[l]{参数数量} \\
-\midrule
-\multirow{12}{*}{Embedding} 
-& transformer.word\_embeddings.weight & [250880, 4096] & 1027604480 \\
-& transformer.word\_embeddings\_layernorm.weight & [4096] & 4096 \\
-& transformer.word\_embeddings\_layernorm.bias & [4096] & 4096 \\
-& transformer.h.0.input\_layernorm.weight & [4096] & 4096 \\
-& transformer.h.0.input\_layernorm.bias & [4096] & 4096 \\
-& transformer.h.0.self\_attention.query\_key\_value.weight & [12288, 4096] & 50331648 \\
-& transformer.h.0.self\_attention.query\_key\_value.bias & [12288] & 12288 \\
-& transformer.h.0.self\_attention.dense.weight & [4096, 4096] & 16777216 \\
-& transformer.h.0.self\_attention.dense.bias & [4096] & 4096 \\
-& transformer.h.0.post\_attention\_layernorm.weight & [4096] & 4096 \\
-& transformer.h.0.post\_attention\_layernorm.bias & [4096] & 4096 \\
-& transformer.h.0.mlp.dense\_h\_to\_4h.weight & [16384, 4096] & 67108864 \\
-& transformer.h.0.mlp.dense\_h\_to\_4h.bias & [16384] & 16384 \\
-& transformer.h.0.mlp.dense\_4h\_to\_h.weight & [4096, 16384] & 67108864 \\
-& transformer.h.0.mlp.dense\_4h\_to\_h.bias & [4096] & 4096 \\
-\bottomrule
-\end{tabular}
-\end{table}
-\subsection{特殊说明}
-BLOOM 在 embedding 层后添加 layer normalization，有利于提升训练稳定性，但可能会带来很大的性能损失。

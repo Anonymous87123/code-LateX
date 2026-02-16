@@ -1,16 +1,8 @@
 \chapter{Attention 升级面}
 
-\section{传统 Attention 的问题}
-\begin{itemize}
-\item 传统 Attention 存在上下文长度约束问题
-\item 传统 Attention 速度慢，内存占用大
-\end{itemize}
+传统 Attention 的问题：存在上下文长度约束问题，速度慢，内存占用大。
 
-\section{Attention 优化方向}
-\begin{itemize}
-\item 提升上下文长度
-\item 加速、减少内存占用
-\end{itemize}
+Attention 优化方向：提升上下文长度，加速、减少内存占用
 
 \section{Attention 变体概述}
 \begin{itemize}
@@ -24,22 +16,18 @@
 
 \section{Multi-Query Attention}
 
-\subsection{Multi-head Attention 存在的问题}
+Multi-head Attention 存在的问题：
 \begin{itemize}
 \item \textbf{训练过程}：不会显著影响训练过程，训练速度不变，会引起非常细微的模型效果损失
 \item \textbf{推理过程}：反复加载巨大的 KV cache，导致内存开销大，性能是内存受限
 \end{itemize}
 
-\subsection{Multi-Query Attention 介绍}
-Multi-Query Attention 在所有注意力头上共享 key 和 value。
-
-\subsection{Multi-head Attention 与 Multi-Query Attention 对比}
+Multi-head Attention 与 Multi-Query Attention 对比：
 \begin{itemize}
 \item \textbf{Multi-head Attention}：每个注意力头都有各自的 query、key 和 value
 \item \textbf{Multi-query Attention}：在所有的注意力头上共享 key 和 value
 \end{itemize}
 
-\subsection{各模型参数配置对比}
 \begin{table}[h]
 \centering
 \caption{各模型注意力机制参数配置对比}
@@ -65,44 +53,28 @@ Falcon、PaLM、ChatGLM2-6B 都使用了 Multi-query Attention，但有细微差
 \item \textbf{ChatGLM2}：把 FFN 中间维度从 11008 增大到了 13696。多余的参数分给了 FFN 块
 \end{itemize}
 
-\subsection{Multi-Query Attention 的优势}
-减少 KV cache 的大小，减少显存占用，提升推理速度。
-
-\subsection{使用 Multi-Query Attention 的模型}
-代表模型：PaLM、ChatGLM2、Falcon 等
+Multi-Query Attention 的优势：减少 KV cache 的大小，减少显存占用，提升推理速度。使用 Multi-Query Attention 的模型：PaLM、ChatGLM2、Falcon 等。
 
 \section{Grouped-query Attention}
 
-\subsection{Grouped-query Attention 定义}
-Grouped query attention：介于 multi head 和 multi query 之间，多个 key 和 value。
-
-\subsection{使用 Grouped-query Attention 的模型}
-ChatGLM2，LLaMA2-34B/70B 使用了 Grouped query attention。
+Grouped query attention：介于 multi head 和 multi query 之间，多个 key 和 value。ChatGLM2，LLaMA2-34B/70B 使用了 Grouped query attention。
 
 \section{FlashAttention}
 
-\subsection{FlashAttention 核心技术}
+FlashAttention 核心技术：
 \begin{itemize}
 \item \textbf{核心}：用分块 softmax 等价替代传统 softmax
 \item \textbf{关键词}：HBM、SRAM、分块 Softmax、重计算、Kernel 融合
 \end{itemize}
 
-\subsection{FlashAttention 优点}
-节约 HBM，高效利用 SRAM，省显存，提速度
+FlashAttention 优点：节约 HBM，高效利用 SRAM，省显存，提速度
 
-\subsection{使用 FlashAttention 的模型}
-Meta 推出的开源大模型 LLaMA，阿联酋推出的开源大模型 Falcon 都使用了 Flash Attention 来加速计算和节省显存
+使用 FlashAttention 的模型：Meta 推出的开源大模型 LLaMA，阿联酋推出的开源大模型 Falcon 都使用了 Flash Attention 来加速计算和节省显存
 
 \section{并行 Transformer Block}
 
-\subsection{并行 Transformer Block 原理}
-用并行公式替换了串行，提升了 15\% 的训练速度。
-
-\subsection{并行 Transformer Block 效果}
+原理：用并行公式替换了串行，提升了 15\% 的训练速度。Falcon、PaLM 都使用了该技术来加速训练。
 \begin{itemize}
 \item 在 8B 参数量规模，会有轻微的模型效果损失
 \item 在 62B 参数量规模，就不会损失模型效果
 \end{itemize}
-
-\subsection{使用并行 Transformer Block 的模型}
-Falcon、PaLM 都使用了该技术来加速训练。

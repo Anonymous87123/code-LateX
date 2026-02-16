@@ -1,0 +1,216 @@
+\chapter{SQLENS：文本到SQL语义错误检测与纠正的端到端框架}
+
+文本到SQL系统（text-to-SQL system）将自然语言问题转换为SQL查询，使得非技术用户能够与结构化数据交互。虽然大语言模型在文本到SQL任务上显示出有希望的结果，但它们经常产生语义错误但语法有效的查询，且对其可靠性缺乏深入理解。
+
+该论文提出SQLENS，一个用于细粒度检测和纠正LLM生成SQL中语义错误的端到端框架。SQLENS集成来自底层数据库和LLM的错误信号来识别SQL子句中的潜在语义错误，并进一步利用这些信号指导查询纠正。在两个公开基准测试上的实证结果表明，SQLENS在错误检测的F1分数上比最佳基于LLM的自评估方法高出25.78\%，并将现成文本到SQL系统的执行准确率提升高达20\%。
+
+\subsection{核心概念定义}
+\subsubsection{细粒度检测}
+在文本到SQL任务的上下文中，\textbf{细粒度检测} 特指对大型语言模型生成的SQL查询进行深入的结构化分析，旨在精准地定位和分类语义错误的精确位置与具体类型。与仅判断查询整体正确性的粗粒度评估不同，细粒度检测具备以下特征：
+
+\begin{itemize}
+    \item \textbf{分析粒度：} 以SQL查询的\textbf{子句}为基本分析单元（如\texttt{SELECT}、\texttt{FROM}、\texttt{WHERE}、\texttt{GROUP BY}、\texttt{JOIN ON}等），而非整个查询语句。
+    \item \textbf{错误类型：} 专门针对\textbf{语义错误}，即语法有效但逻辑与用户意图或数据库现实状态不符的查询。常见错误类型包括：
+    \begin{itemize}
+        \item \textbf{模式引用错误：} 引用不存在的表、列，或错误拼写。
+        \item \textbf{值域不匹配错误：} 谓词条件中的值不在目标列的值分布内（例如，查询“city = 北京”但该列仅有“上海”、“广州”）。
+        \item \textbf{聚合误用错误：} 错误地使用（或遗漏）聚合函数（如\texttt{COUNT}, \texttt{SUM}）。
+        \item \textbf{连接条件错误：} 多表连接时关联条件不正确，导致笛卡尔积或丢失关联。
+    \end{itemize}
+    \item \textbf{输出形式：} 产生结构化的错误信号，明确指出错误所在的子句及其错误类别，而非简单的二分类（正确/错误）结果。
+\end{itemize}
+
+\textbf{比喻：} 细粒度检测如同一位经验丰富的数据库管理员进行代码审查，不仅指出SQL无法运行，更精确标注出“\texttt{WHERE}子句中的列名拼写错误”或“\texttt{JOIN}条件遗漏了关键关联字段”。
+
+\subsubsection{端到端框架}
+在SQLENS的上下文中，\textbf{端到端框架} 指一个将\textbf{细粒度错误检测}与\textbf{基于反馈的查询纠正}两个核心阶段无缝集成的自动化系统。其“端到端”特性体现在：
+
+\begin{itemize}
+    \item \textbf{输入与输出：}
+    \begin{itemize}
+        \item \textbf{输入端：} 原始自然语言问题 $Q$ 和初始LLM生成的、可能包含错误的SQL查询 $S_{initial}$。
+        \item \textbf{输出端：} 经过检测与纠正后，语义正确性显著提升的最终SQL查询 $S_{corrected}$。
+    \end{itemize}
+    \item \textbf{内部工作流：} 框架内部形成一个自动化、信息闭环的处理流水线，无需人工干预：
+    \begin{enumerate}
+        \item \textbf{统一信号采集：} 同时利用\textbf{底层数据库}的元信息、值分布、约束，以及\textbf{LLM}自身的推理能力，对 $S_{initial}$ 进行细粒度分析，生成结构化错误诊断报告 $\mathcal{E}$。
+        \item \textbf{闭环引导式纠正：} 将错误报告 $\mathcal{E}$ 作为明确的、结构化的指导信号，输入到\textbf{纠正模块}（通常仍为LLM），引导其针对性地修正 $S_{initial}$ 中已识别的具体错误，生成 $S_{corrected}$。
+    \end{enumerate}
+    \item \textbf{关键特征：} 两个阶段共享内部状态与信号，纠正阶段直接利用检测阶段输出的精细化诊断信息，而非独立运作。
+\end{itemize}
+
+\textbf{比喻：} 该框架如同一条智能装配线，视觉检测单元（细粒度检测）发现特定螺丝未拧紧，立即将“位置A，螺丝松动”的指令发送给机械臂（纠正模块），机械臂精准地拧紧该螺丝，完成产品修正。整个过程自动连续，信息无损传递。
+
+\subsection{总结}
+在SQLENS框架中：
+\begin{itemize}
+    \item \textbf{细粒度检测} 代表了其\textbf{分析的深度与精度}，使其具备“精准诊断”的能力。
+    \item \textbf{端到端框架} 代表了其\textbf{系统架构的集成度与自动化水平}，实现了从“诊断”到“治疗”的连贯、自主闭环。
+\end{itemize}
+二者的结合，使SQLENS不仅能更准确地定位LLM生成SQL中的深层语义错误，还能高效地利用这些诊断信息驱动查询的自动纠正，从而系统性提升文本到SQL系统的可靠性。
+
+\section{引入}
+文本到SQL系统通过将自然语言问题转换为SQL查询，使非技术用户能够查询关系数据库并提取见解。大语言模型显著推进了这一任务，但LLM生成的查询仍然容易出错。文本到SQL系统的主要差距是缺乏细粒度、可解释的错误检测，特别是对于语义错误（查询执行但返回错误结果）。
+
+\subsection{目标}
+\begin{itemize}
+\item \textbf{挑战1}：在子句级别识别语义错误
+\item \textbf{挑战2}：使用噪声错误信号预测SQL查询的正确性
+\item \textbf{挑战3}：在没有正确性预言的情况下修复SQL查询
+\end{itemize}
+
+\subsection{相关工作}
+\subsubsection{文本到SQL}
+基于LLM的文本到SQL系统（如DIN-SQL、MAC-SQL）使用多智能体框架将任务分解为子任务。其他方法如MCS-SQL、CHESS和Chase-SQL遵循类似的工作流程。最近还探索了基于强化学习的文本到SQL推理模型。
+
+\subsubsection{文本到SQL中的错误检测与纠正}
+早期方法主要关注二元正确性分类，提供有限的错误性质洞察。基于LLM的文本到SQL系统通常依赖SQL执行反馈或LLM自反思来判断正确性。相比之下，SQLENS产生可解释的子句级错误信号，可以指导用户调试和下游学习框架。
+
+\section{方法论}
+\subsection{问题定义}
+\begin{itemize}
+\item \textbf{定义1（文本到SQL算法）}：算法$f$接受自然语言问题$Q$、数据库实例$D$和可选的外部知识$K$，生成SQL查询$q = f(Q, D, K)$
+\item \textbf{定义2（语义错误）}：语义错误$e$导致SQL查询$q$无法正确回答自然语言查询$Q$，形式化为$do(e) \Rightarrow O(q, D) \neq O(Q, D)$
+\end{itemize}
+
+\subsection{SQLENS错误检测}
+SQLENS的错误检测器结合来自数据库和LLM的信号来检测语义错误。常见的语义错误类别包括：
+
+\subsubsection{数据库错误信号}
+\begin{itemize}
+\item 异常结果信号：检测SQL输出是否异常
+\item 空谓词信号：检测SQL查询中是否产生空结果的谓词
+\item 子查询中错误过滤信号：检测子查询中的问题过滤条件
+\item 错误GROUP BY信号：检测错误使用的GROUP BY子句
+\item 错误连接谓词信号：检测无效的连接谓词
+\item 次优连接树信号：检测是否使用最优连接树
+\item 表相似性信号：检测潜在的表选择错误
+\item 不必要子查询信号：检测过度使用子查询
+\item 值歧义信号：检测值使用中的歧义
+\end{itemize}
+
+\subsubsection{LLM错误信号}
+\begin{itemize}
+\item 列歧义信号：识别数据库中与SQL查询中使用列相似的列
+\item 证据违反信号：识别生成的SQL查询是否违反问题中指定的证据
+\item 证据不足信号：评估可用证据是否足以确认SQL查询正确回答问题
+\item 错误问题子句链接信号：评估LLM对生成SQL子句的信心
+\item LLM自检信号：LLM对自身输出的整体评估
+\end{itemize}
+
+\subsection{信号聚合}
+SQLENS采用弱监督框架聚合这些噪声信号，将每个信号视为提供部分和噪声监督的标记函数。使用生成模型估计联合分布$p(\Lambda, Y)$，其中$Y$是未观察到的真实标签。
+
+\subsection{SQLENS错误纠正}
+SQLENS的错误纠正策略采用分解方法，逐步指导LLM修复查询：
+
+\subsubsection{错误报告}
+每个错误信号与包含以下内容的详细错误报告关联：
+\begin{itemize}
+\item 信号描述
+\item 修正指令
+\item 识别为潜在错误源的问题子句
+\item 基于错误检测权重的置信度分级
+\end{itemize}
+
+\subsubsection{纠正组件}
+\begin{itemize}
+\item \textbf{错误选择器}：使用LLM确定首先修复哪个错误
+\item \textbf{错误修复器}：应用针对性修正并使用SQL解析器验证修订后的查询
+\item \textbf{SQL审计器}：在原始版本和修订版本之间选择最佳查询
+\end{itemize}
+
+\begin{itemize}
+    \item \textbf{初始化步骤}：
+    \begin{itemize}
+        \item 调用 ErrorDetector 检测初始 SQL 查询 $q$ 中的所有语义错误，得到错误集合 $\mathcal{E}$
+        \item 初始化迭代计数器 $i \leftarrow 0$
+        \item 初始化修正后的查询 $q' \leftarrow q$
+    \end{itemize}
+    \item \textbf{迭代修正循环}：
+    \begin{itemize}
+        \item 循环条件：错误集合 $\mathcal{E}$ 非空且迭代次数 $i$ 小于最大迭代次数 $max\_iter$
+        \item 每次迭代执行：
+        \begin{itemize}
+            \item 调用 ErrorSelector 从当前错误集合 $\mathcal{E}$ 中选择优先级最高的错误 $e$
+            \item 调用 ErrorFixer 修复错误 $e$，生成修正后的查询 $q'$
+            \item 从错误信号集合 $\mathcal{S}$ 中移除已处理的错误信号 $e$
+            \item 调用 ErrorDetector 重新检测修正后查询 $q'$ 中的错误，更新错误集合 $\mathcal{E}$
+        \end{itemize}
+    \end{itemize}
+    \item \textbf{护栏信号检查}：
+    \begin{itemize}
+        \item 检查护栏信号 $e_g$ 是否触发（返回集合大小为 1）
+        \item 如果触发，调用 ErrorFixer 修复护栏信号对应的错误
+    \end{itemize}
+    \item \textbf{最终审计与返回}：
+    \begin{itemize}
+        \item 调用 SQLAuditor 审计修正后的查询 $q'$ 和原始查询 $q$
+        \item 返回最优的修正查询 $q'$
+    \end{itemize}
+\end{itemize}
+
+\section{实验评估}
+\subsection{实验设置}
+在BIRD和Spider两个标准文本到SQL基准测试的开发集上进行评估。使用四种最先进的文本到SQL系统生成SQL查询进行评估。
+
+\subsection{主要结果}
+SQLENS在所有现成的文本到SQL系统上一致提高了端到端准确率，并在BIRD上优于自反思和Fix-ALL。在现实环境中，SQLENS实现了最高的净改进，修复了更多查询并引入了更少的回归。
+
+\begin{table}[htbp]
+\centering
+\caption{BIRD上的端到端准确率提升}
+\begin{tabular}{lcccccc}
+\toprule
+方法 & $\triangle$Acc.(Nnet) & $\triangle$Acc.(Nfix) & Nnet & Nfix & Nbreak \\
+\midrule
+\multicolumn{6}{l}{Vanilla (初始准确率: 59.07\%)} \\
+Self-Reflection & 59.07(+0.00\%) & 60.6(+1.53\%) & 1 & 22 & 21 \\
+SQLENS w. Fix-ALL & 61.15(+2.08\%) & 62.34(+3.27\%) & 30 & 47 & 17 \\
+SQLENS & 62.54(+3.47\%) & 63.66(+4.59\%) & 50 & 66 & 16 \\
+\midrule
+\multicolumn{6}{l}{DIN-SQL (初始准确率: 39.49\%)} \\
+Self-Reflection & 54.63(+15.14\%) & 56.37(+16.88\%) & 209 & 233 & 24 \\
+SQLENS w. Fix-ALL & 58.11(+18.62\%) & 59.71(+20.22\%) & 257 & 279 & 22 \\
+SQLENS & 59.99(+20.50\%) & 61.45(+21.96\%) & 283 & 303 & 20 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{消融研究}
+\subsubsection{错误检测性能分析}
+SQLENS在预测语义正确性方面优于所有基线方法。对于DIN-SQL，SQLENS实现了78.88的F1分数，比最佳LLM自评估基线高出21.45点。
+
+\begin{table}[htbp]
+\centering
+\caption{BIRD上SQLENS错误检测效果}
+\begin{tabular}{lccccc}
+\toprule
+方法 & 准确率 & AUC & 精确率 & 召回率 & F1 \\
+\midrule
+\multicolumn{6}{l}{Vanilla} \\
+LLM Self-Eval.(Bool) & 60.53(±2.30) & X & 57.70(±18.90) & 10.02(±4.54) & 16.97(±7.35) \\
+SQLENS & 64.63(±1.97) & 61.90(±2.18) & 58.11(±2.80) & 48.74(±4.31) & 52.94(±3.24) \\
+\midrule
+\multicolumn{6}{l}{DIN-SQL} \\
+LLM Self-Eval.(Bool) & 61.52(±1.20) & X & 86.83(±2.18) & 42.99(±2.72) & 57.43(±2.20) \\
+SQLENS & 75.29(±2.33) & 81.49(±1.74) & 81.64(±2.17) & 76.41(±3.50) & 78.88(±2.19) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsubsection{SQL审计器和护栏信号的影响}
+SQL审计器有助于减少修正过程中破坏的SQL查询数量，但以修复较少查询为代价。护栏信号的使用通过增加修复总数同时减少回归总数来提高净改进。
+
+\subsection{个体信号的有效性}
+\subsubsection{错误检测中的个体信号}
+对于MAC-SQL，14个信号中有13个超过60\%的精确率。异常结果信号在识别40个错误时达到100\%精确率，次优连接树信号检测到最多错误（62\%精确率）。
+
+\subsubsection{错误纠正中的个体信号}
+在MAC-SQL生成的SQL查询上评估个体错误信号的纠正效果。在数据库信号中，次优连接树信号影响最强，空谓词信号也表现良好。在LLM信号中，证据违反信号产生最高的净增益。
+
+\section{结论}
+我们提出了SQLENS，一个利用数据库和基于LLM的错误信号进行文本到SQL中子句级语义错误检测和纠正的新框架。SQLENS使用弱监督聚合噪声信号，预测查询正确性，并应用LLM指导的迭代纠正。它在错误检测方面优于LLM自评估，并在不依赖正确性预言的情况下将现成文本到SQL系统的执行准确率提升高达20\%。
+
+\section{局限性}
+SQLENS在SQL错误检测和纠正中利用了LLM，因此继承了底层LLM的某些限制。SQLENS还产生了聚合多个信号和执行迭代纠正的计算开销，可能在实时环境中引入高延迟。然而，SQLENS旨在作为离线的通用SQL调试工具，设计为异步细化和验证生成的查询。

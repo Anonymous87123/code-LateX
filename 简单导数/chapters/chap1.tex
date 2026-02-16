@@ -1,0 +1,360 @@
+\chapter{微分中值定理}
+本章介绍微分中值定理的各种题型，主要介绍以埃米特插值为本质的高观点做题思路，同时以常数K值法为考场手段，辅以罗尔定理的多次使用，进行证明。首先介绍埃米特插值的基本形式和K值法的证明思路。
+
+题目会给定基本函数$f(x)$的某些性质，比如$f$的光滑性如何，$f$在某些点的函数值和导数值等，然后是要证明的结论，我们通常要先构造一个插值多项式$p(x)$，使得$p(x)$尽可能地拟合$f(x)$的行为，然后构造$G(x)=f(x)-p(x)$，多次循环地利用罗尔中值定理。
+
+先数一数原题给了多少条件，然后数一数要拟合什么点，拟合到多少阶，把所有点的要拟合阶数（包括0阶）相加，减去1，就是插值多项式的次数，余项比插值多项式的次数高1阶。然后根据余项的阶数和原函数的光滑性条件，判断是属于什么类型。
+\section{插值法}
+\newpage
+\begin{example}{K值法}{}
+$f(x)\in C^2[a,b]$，证明存在$\xi\in(a,b)$使得\[\int_a^bf\left(x\right)dx=\left(b-a\right)f\left(\frac{a+b}{2}\right)+\frac{1}{24}\left(b-a\right)^3f''\left(\xi\right)\]
+\end{example}
+\begin{solution}
+取$f(x)$的原函数$F(x)$，则$F(x)\in C^3[a,b]$，且$F'(x)=f(x)$，所以要证明的结论等价于证明:$F(x)\in C^3[a,b]$，则存在$\xi\in(a,b)$使得\[\frac{F(b)-F(a)}{b-a}=F'\left(\frac{a+b}{2}\right)+\frac{(b-a)^2F'''(\xi)}{24}\]
+插$F(a),F(b),F\left(\frac{a+b}{2}\right),F'\left(\frac{a+b}{2}\right)$，一共4个条件，余项4阶，插值多项式3次，导数不够，属于对$F^{'''}=p^{'''}$类型，先写出拉格朗日插值部分，然后根据本题最高只需拟合到1阶导数，而且只有1个点才需要拟合到1阶导数，待定$1-1=0$阶多项式$r$:
+\begin{align*}
+p(x)&=\frac{(x-\frac{a+b}{2})(x-b)}{(a-\frac{a+b}{2})(a-b)}F(a)+\frac{(x-\frac{a+b}{2})(x-a)}{(b-\frac{a+b}{2})(b-a)}F(b)+\frac{(x-a)(x-b)}{(\frac{a+b}{2}-a)(\frac{a+b}{2}-b)}F\left(\frac{a+b}{2}\right)\\&+c(x-a)(x-b)\left(x-\frac{a+b}2\right)
+\end{align*}
+这个式子自动满足$p(a)=p(b)=p\left(\frac{a+b}2\right)$求导数并令$p'(\frac{a+b}2)=F'\left(\frac{a+b}2\right)$：
+\begin{align*}
+p'(x)&=\frac{F(a)}{(a-\frac{a+b}{2})(a-b)}\left(x-\frac{a+b}{2}+x-b\right)+\frac{F(b)}{(b-\frac{a+b}{2})(b-a)}\left(x-\frac{a+b}{2}+x-a\right)\\&+\frac{F\left(\frac{a+b}{2}\right)}{(\frac{a+b}{2}-a)(\frac{a+b}{2}-b)}\left((x-a)+(x-b)\right)\\
+&+c(x-a)(x-b)\left(x-\frac{a+b}2\right)\left(\frac{1}{x-a}+\frac{1}{x-b}+\frac{1}{x-\frac{a+b}2}\right)\\
+&=\frac{F(a)}{(a-\frac{a+b}{2})(a-b)}\left(x-\frac{a+b}{2}+x-b\right)+\frac{F(b)}{(b-\frac{a+b}{2})(b-a)}\left(x-\frac{a+b}{2}+x-a\right)\\&+\frac{F\left(\frac{a+b}{2}\right)}{(\frac{a+b}{2}-a)(\frac{a+b}{2}-b)}\left(x-a+x-b\right)\\
+&+c\left((x-a)(x-b)+\left(x-\frac{a+b}{2}\right)(x-a)+\left(x-\frac{a+b}{2}\right)(x-b)\right)\\
+p'\left(\frac{a+b}2\right)&=\frac{F(a)}{a-b}+\frac{F(b)}{b-a}-\frac{c}{4}(b-a)^2=F'\left(\frac{a+b}2\right)\Rightarrow c=\frac{4\left(\frac{F(b)-F(a)}{b-a}-F'\left(\frac{a+b}2\right)\right)}{(b-a)^2}
+\end{align*}
+构造$G(x)=f(x)-p(x)$，则$G(a)=G(b)=G\left(\frac{a+b}2\right)=0$，由Rolle定理，存在$\xi_1\in(a,\frac{a+b}2)$使得$G'(\xi_1)=0$，存在$\xi_2\in(\frac{a+b}2,b)$使得$G'(\xi_2)=0$，加上$G'(\frac{a+b}2)=0$，由Rolle定理，存在$\xi_3\in(\xi_1,\frac{a+b}2)$使得$G''(\xi_3)=0$，存在$\xi_4\in(\frac{a+b}2,\xi_2)$使得$G''(\xi_4)=0$，由Rolle定理，存在$\xi\in(\xi_3,\xi_4)\subset(a,b)$使得$G'''(\xi)=0$，所以$F'''(\xi)=p'''(\xi)=6c$，即：
+\[F'''(\xi)=\frac{24}{(b-a)^3}(F(b)-F(a))-\frac{24}{(b-a)^2}F'\left(\frac{a+b}2\right)\]
+\end{solution}
+
+\begin{example}{}{}
+设$f\in C^1[a,b]\cap D^3(a,b)$，证明存在$\xi\in(a,b)$，使得\[\frac{f(b)-f(a)}{b-a}=\frac{f'(a)+f'(b)}{2}-\frac{f'''(\xi)}{12}(b-a)^2\]
+\end{example}
+\begin{solution}
+插$f(a),f(b),f'(a),f'(b)$，则插值多项式3次，余项4阶，但是条件只到3阶，属于$f'''=p'''$类型，插值：
+\[p(x)=\frac{x-b}{a-b}f(a)+\frac{x-a}{b-a}f(b)+(kx+m)(x-a)(x-b)\]
+此时自动保证$p(a)=f(a),p(b)=f(b)$，参数$k,m$待定，以期望$p'(a)=f'(a),p'(b)=f'(b)$，解出$k,m$.
+\begin{align*}
+p'(a)&=\frac{f(b)-f(a)}{b-a}+(ka+m)(a-b)=f'(a)\\
+p'(b)&=\frac{f(b)-f(a)}{b-a}+(kb+m)(a-b)=f'(b)
+\end{align*}
+相减得到\[k=\frac{f'(b)+f'(a)}{(b-a)^2}-\frac{2(f(b)-f(a))}{(b-a)^3}\]
+此时可以继续解方程得到$m$，但是没有必要了，我们假装$m$已知，设而不求就可以了
+设$G(x)=f(x)-p(x)$，则$G(a)=G(b)=0,G'(a)=G'(b)=0$，所以由罗尔中值定理，存在$\xi_1\in(a,b)$使得$G'(\xi_1)=0$，再由罗尔中值定理，存在$\xi_2,\xi_3$使得$G''(\xi_2)=0,G''(\xi_3)=0$，最后由罗尔中值定理，存在$\xi\in(a,b)$使得$G'''(\xi)=0$，所以\[f'''(\xi)=p'''(\xi)=6k=\frac{6(f'(b)+f'(a))}{(b-a)^2}-\frac{12(f(b)-f(a))}{(b-a)^3}\]
+\end{solution}
+\newpage
+\begin{example}{}{}
+设$f\in C[0,2]\cap D(0,2)$，满足$f(0)=f(2)=0,|f'(x)|\leqslant M,\forall x\in(0,2)$，证明\[\left|\int_0^2f(x)\dd x\right|\leqslant M\]
+\end{example}
+\begin{solution}
+    插$f(0),f(2)$，插值多项式1次（仅拉格朗日插值式，用不到导数修正）, 余项2阶,导数不够, 属于靠近哪边对哪边插模型。所以在$[0,1]$上插$f(0)$，在$[1,2]$上插$f(2)$，则写出两段插值式。
+    
+    当$x\in[0,1]$时，对$f(x)$的插值为：\[f(x)=f(0)+\frac{f'(\xi(x))}{1!}(x-0)=f'(\xi(x))x\]这是拉格朗日中值定理的直接应用，所以不用考场翻译。得到\[|f(x)|\leqslant |f'(\theta(x))|x\leqslant Mx\]
+    当$x\in[1,2]$时，对$f(x)$的插值为：\[f(x)=f(2)+\frac{f'(\eta(x))}{1!}(x-2)=f'(\eta(x))(x-2)\]同理，得到\[|f(x)|\leqslant |f'(\eta(x))||(x-2)|\leqslant M(2-x)\]
+    所以
+    \begin{align*}
+    \left|\int_0^2f(x)\dd x\right|&\leqslant\left|\int_0^1f(x)\dd x\right|+\left|\int_1^2f(x)\dd x\right|\\
+    &\leqslant \int_0^1|f(x)|\dd x+\int_1^2|f(x)|\dd x\\
+    &\leqslant \int_0^1Mx\dd x+\int_1^2M(2-x)\dd x=M
+    \end{align*}
+\end{solution}
+\newpage
+\begin{example}{}{}
+设$f\in D^2[0,1],f(0)=f(1)=0,|f''(x)|\leqslant M$，证明$\displaystyle \left|\int_0^1f(x)\dd x\right|\leqslant \dfrac{M}{12}$
+\end{example}
+\begin{solution}
+要拟合$f(0),f(1)$一共两个插值条件，无导数条件需要拟合，所以插值多项式为一次，也不用待定多项式$r$，余项到了2阶导数，符合题目所给条件，所以根据埃米特插值，存在$\theta(x)\in(0,1)$使得：
+\[f(x)=\frac{f''(\theta(x))}{2}x(x-1),\forall x\in[0,1]\]
+这个结论可以用k值法来证明，由\[f(x)-Kx(x-1)=0\]的条件（其中$K$与$x$有关），设
+\[F(y)=f(y)-Ky(y-1)\]则$F(0)=F(1)=F(x)=0$，罗尔得到$F'(\xi_1)=F'(\xi_2)=0,\xi_1,\xi_2\in(0,1)$，所以存在$\theta(x)\in(0,1)$使得$F''(\theta(x))=0$。对$F(x)$求二阶导数得到\[f''(\theta(x))-2K=0\Rightarrow K=\frac{f''(\theta(x))}{2}\]所以\[f(x)=\frac{f''(\theta(x))}{2}x(x-1)\]所以
+\begin{align*}
+    \left|\int_0^1f(x)\dd x\right|&=\left|\int_0^1\dfrac{f''(\theta(x))}{2}x(x-1)\dd x \right|\leqslant \int_0^1\left|\dfrac{f''(\theta(x))}{2}\right||x(x-1)|\dd x\\
+&\leqslant \dfrac{M}{2}\int_0^1 x(1-x)\dd x=\frac{M}{12}
+\end{align*}
+\end{solution}
+\newpage
+\begin{example}{}{}
+    设$f\in C^3[0,2]$满足\[f(0)=f'(0)=0,\int_0^2f(x)\dd x=8\int_0^1f(x)\dd x\]求证存在$\theta\in(0,2)$使得$f'''(\theta)=0$
+\end{example}
+\begin{solution}
+套路地，设$\displaystyle F(x)=\int_0^x f(y)\dd y$，$F(x)\in C^4[0,2]$，$F(0)=F'(0)=F''(0)=0$，且$F(2)=8F(1)$，这里我们使用插值法，就是找一个多项式去尽可能的拟合$f$的行为。注意到$F(0)=F'(0)=F''(0)=0$，所以可以考虑插值多项式为$p(x)=x^3(ax+b)$，代入$F(2)=8F(1)$得到$a=0$，所以$p(x)=bx^3$，再由$p(1)=F(1)$得到$b=F(1)$，所以\[p(x)=F(1)x^3\]于是构造出\[G(x)=F(x)-F(1)x^3\]这个$G(x)$满足\[G(0)=G(1)=G(2)=0,G'(0)=0,G''(0)=0\]
+所以由罗尔中值定理，存在$\xi_1\in(0,1)\xi_2\in(1,2)$，使得$G'(\xi_1)=G'(xi_2)=0$，搭配上$G'(0)=0$，所以又有罗尔中值定理，得知存在$\theta_1,\theta_2$，使得$G''(\theta_1)=G''(\theta_2)=0$，同样的，搭配上$G''(0)=0$，又有罗尔中值定理，得知存在$\eta_1\in(0,1),\eta_2\in(1,2)$使得\[G'''(\eta_1)=G'''(\eta_2)=0\]所以由罗尔中值定理，得到存在$\theta\in(0,2)$使得\[G''''(\theta)=0\]而求导易得\[G''''(x)=f'''(x)-p''''(x)=0\Rightarrow f'''(\theta)=0\]
+\end{solution}
+
+\newpage
+\begin{example}{}{}
+    $f(x)$在$[0,1]$可导，且$\displaystyle \int_0^1f(x)\dd x=\dfrac52,\int_0^1 xf(x)\dd x=\dfrac32$,求证在$(0,1)$存在$\xi$使$f'(\xi)=3$.
+\end{example}
+\begin{solution}
+套路式地，设\[F(x)=\displaystyle\int_0^xf(t)\dd t,G(x)=\displaystyle\int_0^xtf(t)\dd t\]则有\[F(0)=G(0)=0,F(1)=\dfrac52,G(1)=\dfrac32\]而问题要证明的结论似乎仅与$f(x)$（以及其导函数，原函数）有关，所以要从$G(x)$中分出$F(x)$或者$f(x)$来，考虑分部积分：
+\[\int_0^1xf(x)\dd x=\int_0^1x\dd F(x)=\left.xF(x)\right|_0^1-\int_0^1F(x)\dd x\Rightarrow \int_0^1F(x)\dd x=1\]
+则问题转化为$F(x)$在$(0,1)$上二阶可导，且$F(0)=0,F(1)=\dfrac52,\displaystyle\int_0^1F(x)\dd x=1$，求证存在$\xi\in(0,1)$使得$F''(\xi)=3$。
+再取$g(x)=\displaystyle \int_0^xF(x)\dd x$，则$g'(0)=0,g'(1)=\dfrac52$，且$g(0)=0,g(1)=1$，则问题转化为$g(x)$在$(0,1)$上三阶可导，求证存在$\xi\in(0,1)$使得$g'''(\xi)=3$。4个条件，余项4阶，插值多项式为3次，导数3阶不够，属于$g'''=p'''$类型，构造插值多项式：
+\[p(x)=\frac{x-0}{1-0}g(1)+\frac{x-1}{0-1}g(0)+(kx+m)x(x-1)=x+(kx+m)x(x-1)\]
+求导并令$p'(0)=g'(0),p'(1)=g'(1)$：
+\begin{align*}
+p'(x)&=1+(kx+m)(2x-1)+k x(x-1)\\
+p'(0)&=1- m = 0\Rightarrow m=1\\
+p'(1)&=1 + (k+1)(1)+0k=1 + k + 1 = 2 + k = \frac52\Rightarrow k=\frac12
+\end{align*}
+构造$W(x)=g(x)-p(x)$，则$W(0)=W(1)=W'(0)=W'(1)=0$，且$W(x)$在$(0,1)$上三阶可导，由罗尔中值定理，存在$\xi_1\in(0,1)$使得$G'(\xi_1)=0$，再由罗尔中值定理，存在$\xi_2\in(0,\xi_1)$使得$W''(\xi_2)=0$，存在$\xi_3\in(\xi_1,1)$使得$W''(\xi_3)=0$，再由罗尔中值定理，存在$\xi\in(\xi_2,\xi_3)\subset(0,1)$使得$W'''(\xi)=0$，所以\[g'''(\xi)=p'''(\xi)=6k=3\]
+\end{solution}
+\newpage
+\begin{example}{}{}
+$f(x)$在$[a,b]$上连续，在$(a,b)$上二次可微，证明存在$\xi\in(a,b)$使得
+\[f(a)+f(b)-2f\left(\frac{a+b}{2}\right)=\frac14(b-a)^2f''(\xi)\]
+\end{example}
+\begin{solution}
+拟合$f(a),f(b),f\left(\frac{a+b}{2}\right)$，设
+\[G(x)=f(x)-\left[\frac{(x-\frac{a+b}{2})(x-b)}{(a-\frac{a+b}{2})(a-b)}f(a)+\frac{(x-a)(x-\frac{a+b}{2})}{(b-a)(b-\frac{a+b}{2})}f(b)+\frac{(x-a)(x-b)}{(\frac{a+b}{2}-a)(\frac{a+b}{2}-b)}f\left(\frac{a+b}{2}\right)\right]\]
+则$G(a)=G(b)=G\left(\frac{a+b}{2}\right)=0$，由罗尔中值定理，存在$\xi_1\in(a,\frac{a+b}{2})$使得$G'(\xi_1)=0$，存在$\xi_2\in(\frac{a+b}{2},b)$使得$G'(\xi_2)=0$，存在$\xi\in(\xi_1,\xi_2)\subset(a,b)$使得$G''(\xi)=0$，所以$f''(\xi)=p''(\xi)$，求导：
+\begin{align*}
+    p''(x)=4\frac{f(a)}{(b-a)^2}+4\frac{f(b)}{(b-a)^2}-8\frac{f\left(\frac{a+b}{2}\right)}{(b-a)^2}=\frac{4}{(b-a)^2}\left(f(a)+f(b)-2f\left(\frac{a+b}{2}\right)\right)
+\end{align*}
+所以\[f(a)+f(b)-2f\left(\frac{a+b}{2}\right)=\frac14(b-a)^2f''(\xi)\]
+\end{solution}
+
+\begin{example}{}{}
+    设$f\in C^3[-1,1]$满足$f(-1)=0,f'(0)=0,f(1)=1$，证明存在$\xi\in(-1,1)$使得$f'''(\xi)=3$
+\end{example}
+\begin{solution}
+    插$f(-1),f(1),f(0),f'(0)$，则插值多项式为三次，余项四阶，导数三阶不够，属于$f'''=p'''$类型，构造插值多项式：
+\begin{align*}
+p(x)&=\frac{(x-0)(x+1)}{(1-0)(1+1)}f(1)+\frac{(x-1)(x-0)}{(-1-1)(-1-0)}f(-1)+\frac{(x-1)(x+1)}{(0-1)(0+1)}f(0)+cx(x-1)(x+1)\\
+&=\frac{x(x+1)}{2}-(x^2-1)f(0)+c(x-1)(x+1)x\\
+p'(x)=&\frac{2x+1}{2}-2xf(0)+c\left((x-1)(x+1)+x(x+1)+x(x-1)\right)\\
+p'(0)=&\frac12-c=0\Rightarrow c=\frac{1}{2}
+\end{align*}
+构造$G(x)=f(x)-p(x)$，则$G(-1)=G(0)=G(1)=0,G'(0)=0$，由罗尔中值定理，存在$\xi_1\in(-1,0)$使得$G'(\xi_1)=0$，存在$\xi_2\in(0,1)$使得$G'(\xi_2)=0$，加上$G'(0)=0$，再由罗尔中值定理，存在$\xi_3\in(\xi_1,0)\subset(-1,1)$使得$G''(\xi_3)=0$，存在$\xi_4\in(0,\xi_2)\subset(-1,1)$使得$G''(\xi_4)=0$，再由罗尔中值定理，存在$\xi\in(\xi_3,\xi_4)\subset(-1,1)$使得$G'''(\xi)=0$，所以\[f'''(\xi)=p'''(\xi)=6c=3\]
+\end{solution}
+\newpage
+\begin{example}{}{}
+    $f(x)\in C^4[0,1]$，三次多项式$p(x)$满足$p(0)=f(0),p(1)=f(1),p'(0)=f'(0),p'(1)=f'(1)$，证明\[|f(x)-p(x)|\leqslant \frac1{384}\max_{x\in[0,1]}\{f''''(x)\}\]
+\end{example}
+\begin{solution}
+构造$G(x)=f(x)-p(x)$，则$G(0)=G(1)=0,G'(0)=G'(1)=0$，由罗尔中值定理，存在$\xi_1\in(0,1)$使得$G'(\xi_1)=0$，再由罗尔中值定理，存在$\xi_2\in(0,\xi_1)$使得$G''(\xi_2)=0$，存在$\xi_3\in(\xi_1,1)$使得$G''(\xi_3)=0$，再由罗尔中值定理，存在$\xi\in(\xi_2,\xi_3)\subset(0,1)$使得$G'''(\xi)=0$，现在因为罗尔定理的迭代次数受零点个数限制。要得到四阶导数的信息，需引入额外零点。即证\[-\frac1{384}\max_{x\in[0,1]}\{f''''(x)\}\leqslant G(x)\leqslant \frac1{384}\max_{x\in[0,1]}\{f''''(x)\}\]
+使用K值法解决，假设存在与$x$有关的量$K$，使得$G(x)=K\dfrac{x^2(x-1)^2}{4!}$，再设函数$H(y)=G(y)-K\dfrac{y^2(y-1)^2}{4!}$，则$H(0)=H(1)=H(x)=0$，$H'(0)=H'(1)=0$，由罗尔中值定理，存在$\xi_1\in(0,x),\xi_2\in(x,1)$使得$H'(\xi_1)=H'(\xi_2)=0$，再由罗尔中值定理，存在$\xi_3\in(0,\xi_1),\xi_4\in(\xi_1,\xi_2),\xi_5\in(\xi_2,1)$使得$H''(\xi_3)=H''(\xi_4)=H''(\xi_5)=0$，再由罗尔中值定理，存在$\xi_6\in(\xi_3,\xi_4),\xi_7\in(\xi_4,\xi_5)$使得$H'''(\xi_6)=H'''(\xi_7)=0$，再由罗尔中值定理，存在$\xi\in(\xi_6,\xi_7)\subset(0,1)$使得$H^{(4)}(\xi)=0$，所以\[f''''(\xi)-p''''(\xi)=f''''(\xi)-0=f''''(\xi)=G''''(\xi)=K\frac{\dd^4}{\dd y^4}\left(\dfrac{y^2(y-1)^2}{4!}\right)\]
+而且$\frac{y^2(y-1)^2}{4!}$求4阶导数的值是1，所以$K=f''''(\xi)$，所以\[f(x)-p(x)=\dfrac{f''''(\xi)x^2(x-1)^2}{4!}\leqslant \frac{1}{384}f''''(\xi)\]
+取绝对值得到\[|f(x)-p(x)|\leqslant \frac1{384}\max_{x\in[0,1]}\{f''''(x)\}\]
+\end{solution}
+\newpage
+\begin{example}{}{}
+设$f\in C^4[0,1]$，且$\displaystyle \int_0^1f(x)\dd x+3f\left(\frac12\right)=8\int_{\frac14}^{\frac34}f(x)\dd x$，求证存在$\xi\in(0,1)$使得$f''''(\xi)=0$.
+\end{example}
+\begin{solution}
+取原函数$F(x)$，则$F(x)\in C^5[0,1]$，且$F'(x)=f(x)$，\[F(1)-F(0)+3F'\left(\frac12\right)=8\left(F\left(\frac34\right)-F\left(\frac14\right)\right)\]插$F(0),F(1),F\left(\frac12\right),F'\left(\frac12\right),F\left(\frac34\right),F\left(\frac14\right)$
+一共6个条件，余项6阶，插值多项式为5次，导数5阶不够，属于$F^{(5)}=p^{(5)}$类型，插值：
+\begin{align*}
+    L(x)=&\frac{(x-\frac34)(x-\frac14)(x-1)(x-\frac12)}{(0-\frac34)(0-\frac14)(0-1)(0-\frac12)}F(0)+\frac{(x-\frac34)(x-\frac14)(x-0)(x-\frac12)}{(1-\frac34)(1-\frac14)(1-0)(1-\frac12)}F(1)\\
+    &+\frac{(x-0)(x-1)(x-\frac34)(x-\frac14)}{\left(\frac12-0\right)\left(\frac12-1\right)\left(\frac12-\frac34\right)\left(\frac12-\frac14\right)}F\left(\frac12\right)+\frac{(x-0)(x-1)(x-\frac34)(x-\frac12)}{\left(\frac34-0\right)\left(\frac34-1\right)\left(\frac34-\frac12\right)\left(\frac34-\frac14\right)}F\left(\frac34\right)\\
+    &+\frac{(x-0)(x-1)(x-\frac14)(x-\frac12)}{\left(\frac14-0\right)\left(\frac14-1\right)\left(\frac14-\frac34\right)\left(\frac14-\frac12\right)}F\left(\frac14\right)\\
+    s(x)=&c(x-0)(x-1)(x-\frac34)(x-\frac14)(x-\frac12),s'(\frac12)=\frac1{64}\\
+p(x)=&L(x)+s(x)
+\end{align*}
+此时\[p(0)=F(0),p(1)=F(1),p\left(\frac12\right)=F\left(\frac12\right),p'\left(\frac12\right)=F'\left(\frac12\right),p\left(\frac34\right)=F\left(\frac34\right),p\left(\frac14\right)=F\left(\frac14\right)\]求导并令$p'\left(\frac12\right)=F'\left(\frac12\right)$，解得\[c=64\left[F'\left(\frac12\right)-L'\left(\frac12\right)\right]\]
+构造$G(x)=F(x)-p(x)$，则$G(0)=G\left(\frac14\right)=G\left(\frac12\right)=G\left(\frac34\right)=G(1)=0$，罗尔中值定理得到$G'(\xi_1)=G'(\xi_2)=G\left(\frac12\right)=G'(\xi_3)=G'(\xi_4)=0$，罗尔中值定理得到$G''(\xi_5)=G''(\xi_6)=G''(\xi_7)=G''(\xi_8)=0$，罗尔中值定理得到$G'''(\xi_9)=G'''(\xi_{10})=G'''(\xi_{11})=0$，罗尔中值定理得到$G''''(\xi_{12})=G''''(\xi_{13})=0$，罗尔中值定理得到存在$\xi\in(\xi_{12},\xi_{13})\subset(0,1)$使得\[G^{(5)}(\xi)=0\]所以\[F^{(5)}(\xi)=p^{(5)}(\xi)\]又因为$p(x)$为五次多项式，所以$p^{(5)}(x)\equiv0$，所以\[f''''(\xi)=F^{(5)}(\xi)=p^{(5)}(\xi)=0\]
+\end{solution}
+\newpage
+
+\begin{example}{}{}
+    设$f\in C^2[0,1]$，满足$f(0)=f(1)=0,\displaystyle\min_{x\in[0,1]}f(x)=-1$，证明$\displaystyle\max_{x\in[0,1]}f''(x)\geqslant8$
+\end{example}
+\begin{solution}
+为了利用最小值条件，假设$c\in(0,1)$使得$f(c)=-1$，则插值条件为$f(0)=f(1)=0,f(c)=-1,f'(c)=0$，插值式3次，余项4阶，导数4阶差2阶，属于靠近谁插谁的类型。
+
+在区间$[0,c]$上插$f(0),f(c),f'(c)$，构造插值多项式：
+\begin{align*}
+    p_1(x)&=\frac{x-c}{0-c}f(0)+\frac{x-0}{c-0}f(c)+k_1(x-0)(x-c)=-\frac{x}{c}+k_1x(x-c)\\
+    p_1'(x)&=-\frac1{c}+k_1(2x-c)\quad p_1'(c)=0\Rightarrow k_1=\frac1{c^2}
+\end{align*}
+构造$G_1(x)=f(x)-p_1(x)$，则$G_1(0)=G_1(c)=0,G_1'(c)=0$，由罗尔中值定理，存在$\xi_1\in(0,c)$使得$G_1'(\xi_1)=0$，再由罗尔中值定理，存在$\xi_2\in(\xi_1,c)$使得$G_1''(\xi_2)=0$，所以$f''(\xi_2)=p_1''(\xi_2)=\frac2{c^2}$.
+
+在区间$[c,1]$上插$f(1),f(c),f'(c)$，构造插值多项式：
+\begin{align*}
+    p_2(x)&=\frac{x-c}{1-c}f(1)+\frac{x-1}{c-1}f(c)+k_2(x-1)(x-c)=-\frac{x-1}{1-c}+k_2(x-1)(x-c)\\
+    p_2'(x)&=-\frac1{1-c}+k_2(2x-1-c)\quad p_2'(c)=0\Rightarrow k_2=\frac1{(1-c)^2}
+\end{align*}
+构造$G_2(x)=f(x)-p_2(x)$，则$G_2(1)=G_2(c)=0,G_2'(c)=0$，由罗尔中值定理，存在$\xi_3\in(c,1)$使得$G_2'(\xi_3)=0$，再由罗尔中值定理，存在$\xi_4\in(c,\xi_3)$使得$G_2''(\xi_4)=0$，所以$f''(\xi_4)=p_2''(\xi_4)=\frac2{(1-c)^2}$.
+
+综上所述，在区间$(0,c)$和$(c,1)$上分别找到$\xi_2,\xi_4$使得$f''(\xi_2)=\frac{2}{c^2},f''(\xi_4)=\frac{2}{(1-c)^2}$.下面说明$\max\left\{\frac{2}{c^2},\frac{2}{(1-c)^2}\right\}\geqslant8$.
+分类讨论即可：当$c\in(0,\frac12]$时，$\frac{2}{c^2}\geqslant8$；当$c\in(\frac12,1)$时，$\frac{2}{(1-c)^2}\geqslant8$。即证$\displaystyle\max_{x\in[0,1]}f''(x)\geqslant8$
+\end{solution}
+\newpage
+\begin{example}{}{}
+    设$f\in D^2\left[-a,a\right],a>0$满足
+\[f\left(-a\right)=-1,f\left(a\right)=1,f'\left(-a\right)=f'\left(a\right)=0,\left|f''\left(x\right)\right|\leqslant1\]
+证明$(1)~a\geqslant\sqrt2\quad (2)~a>\sqrt2.$
+\end{example}
+\begin{solution}
+    微分条件不足以插4个点, 靠近谁插谁模型. 但是没有其他约束条件，要找一个公共点能同时出现在两边插，只能是带入$x = 0$.
+
+在区间$[-a,0]$上插$f(-a),f(0),f'(-a)$，构造插值多项式：
+\begin{align*}
+    p_1(x)&=\frac{x-0}{-a-0}f(-a)+\frac{x+a}{0+a}f(0)+k_1(x+a)x=\frac{x}{a}+(\frac{x}{a}+1)f(0)+k_1(x+a)x\\
+    p_1'(x)&=\frac{1+f(0)}{a}+k_1(2x+a)\quad p_1'(-a)=0\Rightarrow k_1=\frac{1+f(0)}{a^2}\\
+    \Rightarrow p_1(x)&=\frac{x}{a}+(\frac{x}{a}+1)f(0)+\frac{1+f(0)}{a^2}(x+a)x
+\end{align*}
+构造$G_1(x)=f(x)-p_1(x)$，则$G_1(-a)=G_1(0)=0,G_1'(-a)=0$，由罗尔定理，存在$\xi_1\in(-a,0)$使得$G_1'(\xi_1)=0$，再由罗尔定理，存在$\xi_2\in(-a,\xi_1)$使得$G_1''(\xi_2)=0$，所以$f''(\xi_2)=p_1''(\xi_2)=\frac{2+2f(0)}{a^2}$.
+
+在区间$[0,a]$上插$f(a),f(0),f'(a)$，构造插值多项式：
+\begin{align*}
+    p_2(x)&=\frac{x-0}{a-0}f(a)+\frac{x-a}{0-a}f(0)+k_2(x-a)x=\frac{x}{a}+(\frac{x}{a}-1)f(0)+k_2(x-a)x\\
+    p_2'(x)&=\frac{1+f(0)}{a}+k_2(2x-a)\quad p_2'(a)=0\Rightarrow k_2=\frac{1+f(0)}{a^2}\\
+    \Rightarrow p_2(x)&=\frac{x}{a}+(\frac{x}{a}-1)f(0)+\frac{1+f(0)}{a^2}(x-a)x
+\end{align*}
+构造$G_2(x)=f(x)-p_2(x)$，则$G_2(a)=G_2(0)=0,G_2'(a)=0$，由罗尔定理，存在$\xi_3\in(0,a)$使得$G_2'(\xi_3)=0$，再由罗尔定理，存在$\xi_4\in(\xi_3,a)$使得$G_2''(\xi_4)=0$，所以$f''(\xi_4)=p_2''(\xi_4)=\frac{2+2f(0)}{a^2}$.
+
+由条件 $|f''(x)|\leqslant 1$ 得
+\[
+|1+f(0)|\le\frac{a^2}{2},|f(0)-1|\le\frac{a^2}{2}\Rightarrow 1-\frac{a^2}{2}\le f(0)\le -1+\frac{a^2}{2}
+\]
+两式同时成立要求 $1-\dfrac{a^2}{2}\le -1+\dfrac{a^2}{2}$，解得 $a^2\ge 2$，即 $a\ge\sqrt2$。
+
+若 $a=\sqrt2$，则 $0\le f(0)\le 0$，故 $f(0)=0$，且$f''(\xi_2)=1$，$f''(\xi_4)=-1$。考虑积分表示：
+\begin{align*}
+f(0)=f(-a)+f'(-a)(x+a)+\int_{-a}^0(0-t)f''(t)\dd t=-1-\int_{-a}^{0}t f''(t)\,\mathrm{d}t\\
+f(0)=f(a)+f'(a)(0-a)+\int_{a}^0(0-t)f''(t)\dd t=1-\int_{0}^{a}t f''(t)\,\mathrm{d}t.
+\end{align*}
+当 $t\le 0$ 时，由 $f''(t)\le 1$ 得 $t f''(t)\ge t$（因 $t\le 0$），故
+\[
+\int_{-a}^{0}t f''(t)\,\mathrm{d}t\ge\int_{-a}^{0}t\,\mathrm{d}t=-\frac{a^2}{2}=-1,
+\]
+从而 $f(0)\le -1-(-1)=0$，等号成立仅当在 $[-a,0]$ 上 $f''(t)\equiv 1$。类似地，当 $t\ge 0$ 时，由 $f''(t)\ge -1$ 得 $t f''(t)\ge -t$，故
+\[
+\int_{0}^{a}t f''(t)\,\mathrm{d}t\ge -\int_{0}^{a}t\,\mathrm{d}t=-\frac{a^2}{2}=-1,
+\]
+从而 $f(0)\le 1-(-1)=2$，此上界非紧。改用 $f''(t)\le 1$ 得 $t f''(t)\le t$，故
+\[
+\int_{0}^{a}t f''(t)\,\mathrm{d}t\le\int_{0}^{a}t\,\mathrm{d}t=\frac{a^2}{2}=1,
+\]
+从而 $f(0)\ge 1-1=0$，等号成立仅当在 $[0,a]$ 上 $f''(t)\equiv 1$。于是 $f(0)=0$ 要求 $f''\equiv 1$ 于 $[-a,0]$ 和 $[0,a]$，这与 $f''(\xi_4)=-1$ 矛盾。故 $a=\sqrt2$ 不可能。
+
+综上，必有 $a>\sqrt2$。
+\end{solution}
+\begin{theorem}{拉格朗日插值积分余项}{}
+设$f\in C^2[a,b]$，且$f''$在$[a,b]$上可积，则成立
+\[f(x)=\frac{x-b}{a-b}f(a)+\frac{x-a}{b-a}f(b)+\int_a^bf''(y)k(x,y)\dd y\]
+其中\[k(x,y)=\begin{cases}\frac{x-a}{b-a}(y-b),&b\geqslant y\geqslant x\geqslant a\\\frac{b-x}{b-a}(a-y),&b\geqslant x\geqslant y\geqslant a\end{cases}\]
+\end{theorem}
+考虑\[g(x)=f(x)-\left(\frac{x-b}{a-b}f(a)+\frac{x-a}{b-a}f(b)\right)\]
+那么$g(a)=g(b)=0,g''=f''$，拆分积分余项即可发现：
+\begin{align*}\int_a^bg^{\prime\prime}\left(y\right)k\left(x,y\right)dy&\begin{aligned}=\frac{b-x}{b-a}\int_{a}^{x}g^{\prime\prime}\left(y\right)\left(a-y\right)dy+\frac{x-a}{b-a}\int_{x}^{b}g^{\prime\prime}\left(y\right)\left(y-b\right)dy\end{aligned}\\&=\frac{b-x}{b-a}\left[\left(a-x\right)g^{\prime}\left(x\right)+\int_{a}^{x}g^{\prime}\left(y\right)dy\right]+\frac{x-a}{b-a}\left[-g^{\prime}\left(x\right)\left(x-b\right)-\int_{x}^{b}g^{\prime}\left(y\right)dy\right]\\&=\frac{b-x}{b-a}\left[\left(a-x\right)g^{\prime}\left(x\right)+g\left(x\right)\right]+\frac{x-a}{b-a}\left[-g^{\prime}\left(x\right)\left(x-b\right)+g\left(x\right)\right]\\&=g\left(x\right).\end{align*}
+\newpage
+\begin{example}{}{}
+    设$f\in C^2[a,b]$，且$f(a)=f(b)=0$，证明\[\int_a^b\left|\frac{f''(x)}{f(x)}\right|\dd x\geqslant \frac{4}{b-a}\]
+\end{example}
+\begin{solution}
+    由已知，$f\in C^2[a,b]$ 且 $f(a)=f(b)=0$。对任意 $x\in[a,b]$，利用分部积分可得
+    \begin{align*}
+        f(x) &= \frac{b-x}{b-a} f(x) + \frac{x-a}{b-a} f(x) \\
+             &= \frac{b-x}{b-a} \bigl[(a-x)f'(x)+f(x)\bigr] 
+                + \frac{x-a}{b-a} \bigl[(b-x)f'(x)+f(x)\bigr] \\
+             &= \frac{b-x}{b-a} \left[(a-x)f'(x)+\int_a^x f'(y)\dd y\right] 
+                + \frac{x-a}{b-a} \left[(b-x)f'(x)+\int_b^x f'(y)\dd y\right] \\
+             &= \frac{b-x}{b-a} \int_a^x (a-y)\dd f'(y) 
+                + \frac{x-a}{b-a} \int_b^x (b-y)\dd f'(y) \\
+             &= \frac{b-x}{b-a} \int_a^x (a-y)f''(y)\dd y 
+                + \frac{x-a}{b-a} \int_x^b (b-y)f''(y)\dd y.
+    \end{align*}
+    取绝对值，并利用 $\displaystyle |f''(y)| = \left|\frac{f''(y)}{f(y)}\right| |f(y)|$，得
+    \[
+    |f(x)| \le \frac{b-x}{b-a} \int_a^x (y-a) \left|\frac{f''(y)}{f(y)}\right| |f(y)| \dd y 
+           + \frac{x-a}{b-a} \int_x^b (b-y) \left|\frac{f''(y)}{f(y)}\right| |f(y)| \dd y.
+    \]
+    设 $\displaystyle M = \max_{x\in[a,b]} |f(x)|$，则 $M>0$（否则 $f\equiv0$，不等式显然成立）。取 $c\in(a,b)$ 使 $|f(c)|=M$。在上式中令 $x=c$，并注意到 $|f(y)|\le M$，$y-a\le c-a$（当 $y\in[a,c]$），$b-y\le b-c$（当 $y\in[c,b]$），故
+    \begin{align*}
+        M &\le \frac{b-c}{b-a} \int_a^c (c-a) \left|\frac{f''(y)}{f(y)}\right| M \dd y 
+           + \frac{c-a}{b-a} \int_c^b (b-c) \left|\frac{f''(y)}{f(y)}\right| M \dd y \\
+          &= M \cdot \frac{(b-c)(c-a)}{b-a} \int_a^b \left|\frac{f''(y)}{f(y)}\right| \dd y.
+    \end{align*}
+    因 $M>0$，两边消去 $M$ 得
+    \[
+    1 \le \frac{(b-c)(c-a)}{b-a} \int_a^b \left|\frac{f''(y)}{f(y)}\right| \dd y.
+    \]
+    由均值不等式，
+    \[
+    \frac{(b-c)(c-a)}{b-a} \le \frac{1}{b-a} \left( \frac{(b-c)+(c-a)}{2} \right)^2 = \frac{b-a}{4},
+    \]
+    代入上式即得
+    \[
+    \int_a^b \left|\frac{f''(y)}{f(y)}\right| \dd y \ge \frac{4}{b-a}.
+    \]
+    （等号成立条件可进一步讨论，此处略。）
+\end{solution}
+\newpage
+\begin{example}{}{}
+    （2004年全国II卷）函数$f(x)=x\ln x$，求证：对于$a>b>0$有
+    \[f(a)+f(b)-2f\left(\frac{a+b}{2}\right)<(a-b)\ln 2\]
+\end{example}
+\begin{solution}
+设\begin{align*}
+g(x)&=\frac{(x-a)(x-b)}{(\frac{a+b}{2}-a)(\frac{a+b}{2}-b)}f\left(\frac{a+b}{2}\right)+\frac{(x-\frac{a+b}{2})(x-b)}{(a-\frac{a+b}{2})(a-b)}f(a)+\frac{(x-a)(x-\frac{a+b}{2})}{(b-\frac{a+b}{2})(b-a)}f(b)\\
+&=\frac{(x-a)(x-b)}{-\frac{(a-b)^2}{4}}f\left(\frac{a+b}{2}\right)+\frac{(x-\frac{a+b}{2})(x-b)}{\frac{(a-b)^2}{2}}f(a)+\frac{(x-a)(x-\frac{a+b}{2})}{\frac{(a-b)^2}{2}}f(b)\\
+&=\frac{2}{(a-b)^2}\left((x-\frac{a+b}{2})(x-b)f(a)+(x-a)(x-\frac{a+b}{2})f(b)-2(x-a)(x-b)f\left(\frac{a+b}{2}\right)\right)
+\end{align*}
+构造$h(x)=f(x)-g(x)$，则$h(a)=h\left(\frac{a+b}{2}\right)=h(b)=0$，由罗尔中值定理得存在$\xi_1\in(a,\frac{a+b}2),\xi_2\in(\frac{a+b}2,b)$使得$h'(\xi_1)=h'(\xi_2)=0$，再由罗尔中值定理得存在$\xi\in(\xi_1,\xi_2)$使得$h''(\xi)=0$，所以\[f''(\xi)=g''(\xi)=\frac{4}{(a-b)^2}\left(f(a)+f(b)-2f\left(\frac{a+b}{2}\right)\right)\]问题转化为证明\[\frac{(a-b)^2}{4}f''(\xi)=\frac{(a-b)^2}{4\xi}<(a-b)\ln 2\Leftrightarrow\xi>\frac{a-b}{4\ln 2}\]
+\end{solution}
+
+
+
+
+\newpage
+\begin{example}{}{}
+    设$f\in D[a,b]$，且$|f'(x)|\leqslant M,\displaystyle \int_a^bf(x)\dd x=0$，令$\displaystyle |F(x)|=\left|\int_a^xf(t)\dd t\right|$，证明:\\
+    (1) $\displaystyle |F(x)|\leqslant \frac{M(b-a)^2}{8}$;\\
+    (2)若$f(a)=f(b)=0$，则$\displaystyle |F(x)|\leqslant \frac{M(b-a)^2}{16}$.
+\end{example}
+\begin{solution}
+(1) $F(x)$两阶可导，$|F''(x)|\leqslant M,F(b)=F(a)=0$，插左右端点，微分条件足够，用K值法：
+设$K$与$x$有关，使得$F(x)=K\frac{(x-a)(x-b)}{2!}$，构造$G(y)=F(y)-K\frac{(y-a)(y-b)}{2!}$，则$G(a)=G(b)=G(x)=0$，由罗尔中值定理，存在$\xi_1\in(a,x),\xi_2\in(x,b)$使得$G'(\xi_1)=G'(\xi_2)=0$，再由罗尔中值定理，存在$\theta(x)\in(a,b)$使得$G''(\theta(x))=0$，所以
+\begin{align*}
+    &f'(\theta(x))-K=0\Rightarrow K=f'(\theta(x))\Rightarrow F(x)=f'(\theta(x))\frac{(x-a)(x-b)}{2!}\\
+    &|F(x)|\leqslant \frac{M}{2}|(x-a)(x-b)|\leqslant \frac{M}{2}\left(\frac{b-a}{2}\right)^2=\frac{M(b-a)^2}{8}
+\end{align*}
+(2) $F(x)$两阶可导，$|F''(x)|\leqslant M,F(a)=F(b)=F'(a)=F'(b)=0$，插左右端点，微分条件远远不够，属于靠近谁插谁的类型，不直接插左右端点和导数，而是引入$x_0\in(a,b)$是$|F(x)|$的极大值点（若极值点是端点处，此时结论显然成立），在$(a,x_0)$和$(x_0,b)$区间构造插值多项式。在区间$[a,x_0]$上插$f(a),f'(a),f(x_0),f'(x_0)$，构造插值多项式：
+\begin{align*}
+    F(x)=F(a)+F'(a)(x-a)+\frac{(x-a)^2}{2!}F''(\xi_1)=\frac{(x-a)^2}{2!}F''(\xi_1)\\
+    F(x)=F(x_0)+F'(x_0)(x-x_0)+\frac{(x-x_0)^2}{2!}F''(\xi_2)=\frac{(x-x_0)^2}{2!}F''(\xi_2)
+\end{align*}
+相减得到\[F(x_0)=\frac{(x_0-a)^2}{2!}F''(\xi_1)-\frac{(x-x_0)^2}{2!}F''(\xi_2)\]绝对值不等式得到\[|F(x_0)|\leqslant \frac{1}{2!}\left(\frac{(x_0-a)^2}{2!}+\frac{(x-x_0)^2}{2!}\right)M=\frac{M}{4}\left((x_0-a)^2+(x-x_0)^2\right)\]
+由于$x\in(a,b)$，所以$(x_0-a)^2+(x-x_0)^2\leqslant \left(\frac{b-a}{2}\right)^2+\left(\frac{b-a}{2}\right)^2=\frac{(b-a)^2}{4}$，因此\[|F(x_0)|\leqslant \frac{M(b-a)^2}{16}\]
+最后提示一下，要看要证明的结论是什么，插值只是辅助手段，比如本题结论就是$F(x)$的上下界，那么先看余项够不够微分条件用完，如果刚好，就是（1），如果差远了，就是（2），（2）中引入了$F(x)$取到上下界时的自变量$x_0$，在两个区间分别插值，最后相减得到$F(x_0)$的表达式，绝对值不等式得到$F(x_0)$的上界，再利用$x\in(a,b)$得到最终结论。
+\end{solution}
+\newpage
+\begin{example}{}{}
+    设$f(x)\in C^3[-1,1]$满足$f(-1)=0,f'(0)=0,f(1)=1$，证明存在$\xi\in(-1,1)$使得\[f'''(\xi)=3+\xi\]
+\end{example}
+\begin{solution}
+    插$f(-1),f(1),f(0),f'(0)$，则插值多项式为三次，余项四阶，导数差1阶，所以是$f'''=p'''$模型，但是等号右边还有$\xi$，所以对$g(x)=f(x)-\frac{x^4}{24}$构造插值多项式，$g(-1)=-\frac{1}{24},g'(0)=0,g(0)=f(0),g(1)=1-\frac{1}{24}=\frac{23}{24}$，构造插值多项式$p(x)$：
+    \begin{align*}
+        p(x)&=\frac{(x-0)(x-1)}{(-1-0)(-1-1)}g(-1)+\frac{(x-1)(x-(-1))}{(0-1)(0-(-1))}g(0)+\frac{(x-0)(x+1)}{(1-0)(1+1)}g(1)+cx(x-1)(x+1)\\
+        &=\frac{(x-0)(x-1)}{2}\left(-\frac{1}{24}\right)+\frac{(x-1)(x+1)}{-1}g(0)+\frac{(x-0)(x+1)}{2}\left(\frac{23}{24}\right)+cx(x-1)(x+1)\\
+        &=\frac{-x^2+x}{48}-(x^2-1)g(0)+\frac{23x^2+23x}{48}+cx(x-1)(x+1)\\
+        p'(x)&=\frac{-2x+1}{48}+(-2x)g(0)+\frac{46x+23}{48}+c\left((x-1)(x+1)+x(x+1)+x(x-1)\right)\\
+        p'(0)&=\frac{1}{48}+0+\frac{23}{48}-c=0\Rightarrow c=\frac{24}{48}=\frac12
+    \end{align*}
+    构造$W(x)=g(x)-p(x)$，则$W(-1)=W(1)=W'(0)=W(0)=0$，且$W(x)$在$(-1,1)$上三阶可导，由罗尔中值定理，存在$\xi_1\in(-1,0)$使得$W'(\xi_1)=0$，存在$\xi_2\in(0,1)$使得$W'(\xi_2)=0$，加上$W'(0)=0$，再由罗尔中值定理，存在$\xi_3\in(\xi_1,0)\subset(-1,1)$使得$W''(\xi_3)=0$，存在$\xi_4\in(0,\xi_2)\subset(-1,1)$使得$W''(\xi_4)=0$，再由罗尔中值定理，存在$\xi\in(\xi_3,\xi_4)\subset(-1,1)$使得$W'''(\xi)=0$，所以\[g'''(\xi)=f'''(\xi)-\xi=p'''(\xi)=6c=3\Leftrightarrow f'''(\xi)=3+\xi\]
+\end{solution}
+\newpage
+\begin{example}{}{}
+设 $f\in C^1[0,1]$,证明存在 $\xi\in[0,1]$,使得$$f'\left(\xi\right)=\int_0^1\left(12x-6\right)f\left(x\right)\dd x$$
+\end{example}
+\begin{solution}
+上来就分部积分，将$f(x)$独立出来，总是不会错的。
+\begin{align*}
+    \int_0^1\left(12x-6\right)f\left(x\right)\dd x&=\int_0^1 f(x)\dd(6x^2-6x)\\
+    &=\left.f(x)(6x^2-6x)\right|_0^1-\int_0^1 (6x^2-6x)\dd f(x)\\
+    &=\left.f(x)(6x^2-6x)\right|_0^1-\int_0^1 (6x^2-6x)f'(x)\dd x\\
+    &=-6\int_0^1 (x^2-x)f'(x)\dd x
+\end{align*}
+即证存在 $\xi\in[0,1]$,使得\[f'(\xi)+6\int_0^1 (x^2-x)f'(x)\dd x=0\]
+由积分中值定理得：
+\begin{align*}
+    6\int_0^1 (x^2-x)f'(x)\dd x&=6f'(\xi)\int_0^1(x^2-x)\dd x=6f'(\xi)\left.\left(\frac{x^3}{3}-\frac{x^2}{2}\right)\right|_0^1\\
+    &=f'(\xi)\left.\left(2x^3-3x^2\right)\right|_0^1=-f'(\xi)
+\end{align*}
+于是命题得证
+\end{solution}
+
+
+

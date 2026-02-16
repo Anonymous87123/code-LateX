@@ -1,0 +1,203 @@
+\chapter{导数题}
+\section{偏移题}
+\begin{example}{}{}
+    （黎曼杯T18加强） $f(x) = \e^x-x\ln x - kx - 1$．若函数 $f(x)$ 有两个零点，将其分别记为 $a,b$．\\（1）试求 $k$ 的取值范围；\\（2）证明：\[k>a+\ln b+\frac{\sqrt2}{2}\]（3）证明：\[a+b>1-\frac{1}{\e^{k+1}}+\ln(k+1)\]
+\end{example}
+\begin{solution}
+\textbf{(1)} 令 $g(x)=\dfrac{\e^x}{x}-\ln x-\dfrac{1}{x}$，则原方程等价于 $g(x)=k$．求导得
+\[
+g'(x)=\frac{(x-1)(\e^x-1)}{x^2}.
+\]
+由于 $x>0$ 时 $\e^x-1>0$，故 $g'(x)$ 的符号由 $x-1$ 决定：当 $0<x<1$ 时 $g'(x)<0$，当 $x>1$ 时 $g'(x)>0$．因此 $g(x)$ 在 $(0,1)$ 上单调递减，在 $(1,+\infty)$ 上单调递增，在 $x=1$ 处取得最小值 $g(1)=\e-1$．又 $\lim\limits_{x\to0^+}g(x)=+\infty$，$\lim\limits_{x\to+\infty}g(x)=+\infty$，故对任意 $k>\e-1$，方程 $g(x)=k$ 恰有两个不同的实根；而当 $k\le \e-1$ 时，方程至多有一个实根．因此 $k$ 的取值范围是 $(\e-1,+\infty)$．
+
+\textbf{(2)} 设 $f(x)$ 的两个零点为 $\alpha,\beta$，且 $0<\alpha<1<\beta$．由 $f(\alpha)=0$ 得
+\[
+k=\frac{\e^\alpha}{\alpha}-\ln\alpha-\frac1\alpha.
+\]
+要证 $k>\alpha+\ln\beta+\dfrac{\sqrt2}{2}$，即证
+\[
+\frac{\e^\alpha}{\alpha}-\ln\alpha-\frac1\alpha>\alpha+\ln\beta+\frac{\sqrt2}{2},
+\]
+整理得
+\[
+\ln(\alpha\beta)<\frac{\e^\alpha}{\alpha}-\alpha-\frac1\alpha-\frac{\sqrt2}{2}.
+\]
+构造函数 $G(x)=\dfrac{\e^x}{x}-x-\dfrac1x-\dfrac{\sqrt2}{2}\quad(x>0)$，求导得
+\[
+G'(x)=\frac{(x-1)(\e^x-x-1)}{x^2}.
+\]
+由 $\e^x\ge x+1$（当且仅当 $x=0$ 取等），知当 $x>0$ 时 $\e^x-x-1>0$，故 $G'(x)$ 的符号由 $x-1$ 决定：$0<x<1$ 时 $G'(x)<0$，$x>1$ 时 $G'(x)>0$．因此 $G(x)$ 在 $(0,1)$ 上单调递减，在 $(1,+\infty)$ 上单调递增，最小值 $G(1)=\e-2-\dfrac{\sqrt2}{2}>0$，从而 $G(x)>0$ 恒成立．于是欲证原不等式，只需证 $\ln(\alpha\beta)<0$，即 $\alpha\beta<1$．
+
+下证 $\alpha\beta<1$．考虑函数 $F(x)=I(x)-I\!\left(\dfrac1x\right)$，其中 $I(x)=\e^x-x\ln x-kx-1$．对 $x\ge1$ 求导整理得
+\[
+F'(x)=\frac{(x-1)\bigl(\e^x-x\e^{1/x}+x-1\bigr)}{x^2}.
+\]
+令 $m(x)=\e^x-x\e^{1/x}+x-1$，则
+\[
+m'(x)=\e^x-\e^{1/x}+\frac{\e^{1/x}}{x^2}+1>0\quad(x>1),
+\]
+且 $m(1)=0$，故 $m(x)>0$ 对 $x>1$ 恒成立．因此 $F'(x)>0$（$x>1$），$F(x)$ 在 $[1,+\infty)$ 上单调递增，且 $F(1)=0$，从而 $F(x)\ge0$，即 $I(x)\ge I(1/x)$ 对 $x\ge1$ 成立．取 $x=\beta>1$，得 $I(\beta)\ge I(1/\beta)$．由 $I(\beta)=0$ 知 $I(1/\beta)\le0$．
+
+另一方面，由第(1)问定义的 $g(x)=\dfrac{\e^x}{x}-\ln x-\dfrac1x$ 在 $(0,1)$ 上单调递减，且 $g(\alpha)=k$，易知 $I(x)=x\bigl(g(x)-k\bigr)$．因为 $g(x)-k$ 在 $(0,1)$ 上严格递减且恰有一个零点 $x=\alpha$，所以当 $x\in(0,\alpha)$ 时 $g(x)-k>0$，$I(x)>0$；当 $x\in(\alpha,1)$ 时 $g(x)-k<0$，$I(x)<0$．于是由 $I(1/\beta)\le0$ 及 $1/\beta\in(0,1)$ 可得 $1/\beta\ge\alpha$，即 $\alpha\beta\le1$．若 $\alpha\beta=1$，则 $1/\beta=\alpha$，代入得 $I(\alpha)=I(\beta)=0$ 且 $\beta=1/\alpha$，但此时 $g(\alpha)=g(1/\alpha)$．容易验证 $g(x)\neq g(1/x)$ 对 $x\in(0,1)\cup(1,+\infty)$ 成立（例如由 $F(x)$ 的性质可推知），矛盾．因此 $\alpha\beta<1$．
+
+综上，$\ln(\alpha\beta)<0$，从而原不等式得证．
+\end{solution}
+\newpage
+\begin{example}{来自群友“港”}{}
+    曲线$\varGamma :x^2+\ln^2y=\left(\dfrac{\e}{\e+1}\right)^2$，$AB$为$\varGamma$的一条弦.\\
+    （1）求$\varGamma$的最高点$P$，最低点$Q$的坐标.\\
+    （2）若$AB$的斜率为0，求$S_{\triangle{PAB}}$的最大值.\\
+    （3）求$S_{\triangle{PAB}}$的最大值.
+\end{example}
+\begin{solution}
+记 $R = \frac{e}{e+1}$，则方程化为 $x^{2} + (\ln y)^{2} = R^{2}$。由此可得参数方程：
+$$\begin{cases}
+x = R \cos \theta, \\
+y = e^{R \sin \theta},
+\end{cases}
+\quad \theta \in [0, 2\pi).$$
+(1) 当$\sin\theta=1$时$y$ 取最大值$e^R$,此时 $x=0$;当$\sin\theta=-1$ 时 $y$ 取最小值$e^{-R}$，此时$x=0$。故最高点为$P(0,e^R)$,最低点为$Q(0,e^{-R})$,即
+$P\left(0,e^{{\frac{e}{e+1}}}\right),\quad Q\left(0,e^{{-\frac{e}{e+1}}}\right).$\\
+(2) 由于直线 $l$ 斜率为 $0$，即水平线，由曲线关于 $y$ 轴对称，可设 $A$ 在左半平面，$B$ 在右半平面，且 $A$ 与 $B$ 关于 $y$ 轴对称。设 $B$ 对应的参数为 $\theta$（$\cos\theta > 0$），则 $B(R\cos\theta, \mathrm{e}^{R\sin\theta})$，$A(-R\cos\theta, \mathrm{e}^{R\sin\theta})$。于是 $\triangle PAB$ 的底边长 $AB = 2R\cos\theta$，高为 $\mathrm{e}^{R} - \mathrm{e}^{R\sin\theta}$，面积
+\[
+S(\theta) = R\cos\theta\,(\mathrm{e}^{R} - \mathrm{e}^{R\sin\theta}),\quad \theta\in(-\tfrac{\pi}{2},\tfrac{\pi}{2}).
+\]
+令$t=R\sin\theta$，则
+\[
+S(t) = \sqrt{R^2-t^{2}}\,(\mathrm{e}^{R} - \mathrm{e}^{t}).
+\]
+为求最大值，考虑函数 $\varphi(t) = \ln S(t)$：
+\begin{align*}
+\varphi(t) &= \frac{1}{2}\ln(R^2 - t^2) + \ln(\mathrm{e}^{R} - \mathrm{e}^{t}),~~\varphi'(t) = -\frac{t}{R^2 - t^2} - \frac{\mathrm{e}^{t}}{\mathrm{e}^{R} - \mathrm{e}^{t}}\\
+\varphi'(t)=0&\Leftrightarrow t\e^R + \e^t(R^2 - t^2 - t) = 0\Leftrightarrow t\e^{\frac{\e}{\e+1}} + \e^t\left(\left(\frac{\e}{\e+1}\right)^2 - t^2 - t\right) = 0\\
+&\Leftrightarrow (\e^t-\e^{-\frac1{\e+1}})\left(\left(\frac{\e}{\e+1}\right)^2 - t^2 - t\right)+\e^{-\frac1{\e+1}}\left(t+\frac1{\e+1}\right)\left(\frac{\e^2}{\e+1}-t\right)=0
+\end{align*}
+得到驻点$t=-\frac{1}{\e+1}$，再求二阶导：
+\[
+\varphi''(t) = -\frac{(R^2 - t^2) - t(-2t)}{(R^2 - t^2)^2} - \frac{\mathrm{e}^{t}(\mathrm{e}^{R} - \mathrm{e}^{t}) - \mathrm{e}^{t}(-\mathrm{e}^{t})}{(\mathrm{e}^{R} - \mathrm{e}^{t})^2} = -\frac{R^2 + t^2}{(R^2 - t^2)^2} - \frac{\mathrm{e}^{t}\mathrm{e}^{R}}{(\mathrm{e}^{R} - \mathrm{e}^{t})^2} < 0
+\]
+因此 $\varphi'(t)$ 在 $(-R, R)$ 上严格单调递减，故方程 $\varphi'(t) = 0$ 至多有一个实根$t=-\frac{1}{\e+1}$。由于 $S(t)$ 在端点 $t = \pm R$ 处为零，在 $(-R, R)$ 内为正，故该驻点即为最大值点。此时 $c = \mathrm{e}^{t} = \mathrm{e}^{-\frac{1}{\mathrm{e}+1}}$，代入得
+\[
+S_{\max} = \sqrt{R^2 - \left(-\frac{1}{\mathrm{e}+1}\right)^2}\left(\mathrm{e}^{R} - \mathrm{e}^{-\frac{1}{\mathrm{e}+1}}\right) = \sqrt{\frac{\mathrm{e}-1}{\mathrm{e}+1}} \cdot \mathrm{e}^{-\frac{1}{\mathrm{e}+1}}(\mathrm{e}-1) 
+\]
+(3) 对于一般直线 $l$，设 $A(R\cos\theta_1, \mathrm{e}^{R\sin\theta_1})$，$B(R\cos\theta_2, \mathrm{e}^{R\sin\theta_2})$，则 $\triangle PAB$ 面积为
+\[
+S(\theta_1,\theta_2) = \frac{R}{2}\left| \cos\theta_1 (\mathrm{e}^{R\sin\theta_2} - \mathrm{e}^{R}) - \cos\theta_2 (\mathrm{e}^{R\sin\theta_1} - \mathrm{e}^{R}) \right|.
+\]
+由面积表达式及三角不等式得
+\[
+S \le \frac{R}{2} \left( |\cos\theta_1| (\mathrm{e}^{R} - \mathrm{e}^{R\sin\theta_2}) + |\cos\theta_2| (\mathrm{e}^{R} - \mathrm{e}^{R\sin\theta_1}) \right) \triangleq H(\theta_1,\theta_2),
+\]
+等号成立当且仅当 \(\cos\theta_1\) 与 \(\cos\theta_2\) 异号。令 \(u=\sin\theta_1\), \(v=\sin\theta_2\)，则
+\[
+H(u,v) = \frac{R}{2} \left( \sqrt{1-u^2}\,(\mathrm{e}^{R} - \mathrm{e}^{Rv}) + \sqrt{1-v^2}\,(\mathrm{e}^{R} - \mathrm{e}^{Ru}) \right).
+\]
+求偏导数并令其为零，得到方程组
+\[
+\frac{u}{\sqrt{1-u^2}}(\mathrm{e}^{R} - \mathrm{e}^{Rv}) = -R\sqrt{1-v^2}\,\mathrm{e}^{Ru}, \quad
+\frac{v}{\sqrt{1-v^2}}(\mathrm{e}^{R} - \mathrm{e}^{Ru}) = -R\sqrt{1-u^2}\,\mathrm{e}^{Rv}.
+\]
+由对称性知 \(u,v<0\)，令 \(a=-u>0\), \(b=-v>0\)，则方程组化为
+\[
+\frac{a}{\sqrt{1-a^2}}(\mathrm{e}^{R} - \mathrm{e}^{-Rb}) = R\sqrt{1-b^2}\,\mathrm{e}^{-Ra}, \quad
+\frac{b}{\sqrt{1-b^2}}(\mathrm{e}^{R} - \mathrm{e}^{-Ra}) = R\sqrt{1-a^2}\,\mathrm{e}^{-Rb}.
+\]
+两式相除并整理得
+\[
+\frac{a}{b} \cdot \frac{\mathrm{e}^{R} - \mathrm{e}^{-Rb}}{\mathrm{e}^{R} - \mathrm{e}^{-Ra}} = \mathrm{e}^{-R(a-b)}.
+\]
+取对数后移项得到
+\[
+\ln a + \ln(\mathrm{e}^{R} - \mathrm{e}^{-Ra}) + Ra = \ln b + \ln(\mathrm{e}^{R} - \mathrm{e}^{-Rb}) + Rb.
+\]
+定义函数 \(K(t)=\ln t + \ln(\mathrm{e}^{R} - \mathrm{e}^{-Rt}) + Rt=\ln t + \ln(\mathrm{e}^{\frac{\e}{\e+1}} - \mathrm{e}^{-\frac{\e}{\e+1}t}) + \frac{\e}{\e+1}t\)，则由复合函数单调性得到 \(K(t)\) 严格递增，从而 \(a=b\)，即 \(u=v\)。因此极值点必满足 \(u=v\)，此时
+\[
+H(u,u)=R\sqrt{1-u^2}(\mathrm{e}^{R} - \mathrm{e}^{Ru}),
+\]
+与 (2) 中形式相同，由 (2) 知该函数的最大值在 $u = -\frac{1}{\mathrm{e}}$ 处取得，同时，等号条件要求 $\cos\theta_1$ 与 $\cos\theta_2$ 异号，故取 $\theta_2 = \pi - \theta_1$，此时直线为水平线 $y = \mathrm{e}^{Ru} = \mathrm{e}^{-\frac{1}{\mathrm{e}+1}}$，且 $S$ 达到该最大值。由于 $H(u,v)$ 在边界 $u,v=\pm1$ 上为零，而内点值大于零，故该驻点即为全局最大值点。综上，$\triangle PAB$ 面积的最大值为$\displaystyle  \sqrt{\frac{\mathrm{e}-1}{\mathrm{e}+1}} \cdot \mathrm{e}^{-\frac{1}{\mathrm{e}+1}}(\mathrm{e}-1) $
+\end{solution}
+
+
+\newpage
+\begin{example}{}{}
+    （1）若$\theta\in\left(0,\frac{\pi}2\right)$，判断$2\cos^2\theta$与$\left(\frac{1}{n}\cos 2\theta+1\right)^n$的大小关系，并证明.\\
+    （2）证明：对于任意自然数$n$，$\theta\in\left(0,\frac{\pi}2\right)$，有
+\begin{gather*}
+\left(\sin^2\theta+\sin^3\theta+\cdots+\sin^{2n}\theta+\sin^{2n+1}\theta\right)+\left(\cos^2\theta+\cos^3\theta+\cdots+\cos^{2n}\theta+\cos^{2n+1}\theta\right)\\
+\geq\left(\sqrt{2}+2\right)\left(1-\frac{1}{2^n}\right)
+\end{gather*}
+\end{example}
+\begin{solution}
+（1）取$\theta=0$探路，显然有$2\leqslant \left(1+\frac1n\right)^n$，于是考虑证明$2\cos^2\theta\leqslant\left(\frac{1}{n}\cos 2\theta+1\right)^n$，即$1+\cos2\theta\leqslant \left(\frac{1}{n}\cos 2\theta+1\right)^n$，取对数即$\ln(1+\cos2\theta)\leqslant n\ln\left(1+\frac{\cos2\theta}{n}\right)$，改造成：
+\begin{align*}
+    f(x)&=n\ln\left(1+\frac{x}{n}\right)-\ln(1+x)\\
+    f'(x)&=\frac{1}{1+\frac{x}{n}}-\frac{1}{1+x}=\frac{(1+x)-\bigl(1+\frac{x}{n}\bigr)}{\bigl(1+\frac{x}{n}\bigr)(1+x)}=\frac{x\bigl(1-\frac1n\bigr)}{\bigl(1+\frac{x}{n}\bigr)(1+x)}.
+\end{align*}
+因此$f(x)$在$(-1,0]$上单调递减，在$[0,1]$上单调递增，从而$f(x)\geqslant f(0)=0$对任意$x\in(-1,1]$成立，等号仅当$x=0$时取得。于是$1+\cos2\theta\leqslant\bigl(1+\frac{\cos2\theta}{n}\bigr)^n$，即$2\cos^2\theta\leqslant\bigl(\frac{1}{n}\cos2\theta+1\bigr)^n$，等号当$\cos2\theta=0$，即$\theta=\frac\pi4$时成立。
+（2）由二倍角公式，\(\sin^2\theta = \frac{1-\cos2\theta}{2}\)，\(\cos^2\theta = \frac{1+\cos2\theta}{2}\)，则对于任意正整数 \(m \geq 2\)，
+\[
+\sin^m\theta + \cos^m\theta = 2^{-\frac{m}{2}} \left[ (1-\cos2\theta)^{\frac{m}{2}} + (1+\cos2\theta)^{\frac{m}{2}} \right].
+\]
+令 \(x = \cos2\theta \in (-1,1)\)，则需证的和式为
+\[
+S(\theta) = \sum_{m=2}^{2n+1} 2^{-\frac{m}{2}} \left[ (1-x)^{\frac{m}{2}} + (1+x)^{\frac{m}{2}} \right].
+\]
+对于每个 \(k = \frac{m}{2} \in \{1, 1.5, 2, \dots, n+0.5\}\)，考虑函数 \(\varphi_k(x) = (1-x)^k + (1+x)^k\)。由于 \(\varphi_k(x)\) 是偶函数，且当 \(x > 0\) 时，
+\[
+\varphi_k'(x) = -k(1-x)^{k-1} + k(1+x)^{k-1} = k\left[ (1+x)^{k-1} - (1-x)^{k-1} \right] > 0,
+\]
+所以 \(\varphi_k(x)\) 在 \([0,1)\) 上单调递增，从而在 \(x=0\) 处取最小值 \(\varphi_k(0)=2\)。因此
+\[
+(1-x)^{\frac{m}{2}} + (1+x)^{\frac{m}{2}} \geq 2\Rightarrow \sin^m\theta + \cos^m\theta \geq 2 \cdot 2^{-\frac{m}{2}} = 2^{1-\frac{m}{2}}.
+\]
+对 \(m\) 从 \(2\) 到 \(2n+1\) 求和得
+\[
+S(\theta) \geq \sum_{m=2}^{2n+1} 2^{1-\frac{m}{2}} = 2 \sum_{m=2}^{2n+1} 2^{-\frac{m}{2}} = 2 \cdot \frac{(\frac{1}{\sqrt{2}})^2 \left(1 - (\frac{1}{\sqrt{2}})^{2n}\right)}{1 - \frac{1}{\sqrt{2}}} = (2+\sqrt{2})\left(1 - \frac{1}{2^n}\right).
+\]
+等号成立当且仅当 \(x=0\)，即 \(\cos2\theta = 0\)，亦即 \(\theta = \frac{\pi}{4}\)。因此原不等式得证。
+\end{solution}
+\newpage
+\begin{example}{}{}
+    证明：曲线\[y=(x-\ln x)\e^{1-x}\]上不存再不同的两点关于直线$y=x$对称
+\end{example}
+\begin{solution}
+
+\end{solution}
+
+\newpage
+\begin{example}{邪帝导数题}{}
+    已知函数$f(x)=x-(a+1)\ln x-\frac{a}{x},(a>1)$\\
+    （1）讨论$f(x)$的单调性；\\
+    （2）若$f(x_1)=f(x_2)=f(x_3),(x_1<x_2<x_3)$，证明$f(x_1x_2x_3)<1-a$.
+\end{example}
+\begin{solution}
+\end{solution}
+\begin{example}{远古偏移题，来自陈语梦}{}
+已知 $x_{1} - \ln(\ln x_{1} + 1) = x_{2} - \ln(\ln x_{2} + 1) = m$求证\[m + 1 < x_{1} + x_{2} < \frac{7}{6}m + \frac{5}{6}\]
+\end{example}
+\begin{solution}
+    设函数$f(x)=x-\ln(\ln x+1)-1$，左侧化为\[g(x)=x^2-x\left(m+1\right)+1=x\ln(\ln x+1)-x+1,~~~x_1<1<x_2\Leftrightarrow g(x_1)>g(x_2)\]
+    加强证明$g(x)$单调递增，求导得$g'(x)=\ln(\ln x+1)+x\cdot\frac1{\ln x+1}\cdot\frac1x-1=\ln(\ln x+1)+\frac1{\ln x+1}-1$
+    又因为任意$x>0$有$\ln x>1-\frac1x$，所以$g'(x)>0$，故$g(x)$单调递增。右侧化为
+    \[g(x)=x^2-x\left(\frac{7}{6}f(x) + \frac{5}{6}\right)+1=1-\frac{{x}^{2}}{6}-\frac{5}{6}x+\frac76x\ln(\ln({x})+1)\]
+    可以考虑证明函数
+    \begin{align*}
+    h(x)&=g(x)+\frac16f(x)+\frac{7}{72}f^2(x)=x^2-x\left(\frac{7}{6}f(x) + \frac{5}{6}\right)+1+\frac16f(x)+\frac{7}{72}f^2(x)\\
+    &=
+    \end{align*}
+    单调递减
+\end{solution}
+\newpage
+\begin{example}{来自amare Donata Caesia}{}
+    $x_1\ln x_1=x_2\ln x_2=-x_3\ln x_3,x_1<x_2<x_3$，证明$x_1+x_2+x_3>2$
+\end{example}
+\begin{solution}
+设\[x_1\ln x_1=x_2\ln x_2=-x_3\ln x_3=m\]可以考虑加强证明\[x_1+x_2+x_3>-\frac{m^2}2-\frac13m+1+\frac{8}{3\e}+\frac{4\e}{135}\left(m+\frac1{\e}\right)^2\]
+设$\varepsilon=m+\frac1{\e}$这是因为\[\begin{cases}x_1+x_2>1+m+\frac{m^2}2\\x_3>1-m-\frac{m^2}2\end{cases}\]
+上界：\[x_1+x_2+x_3<2+(\e-3)m-\frac{m^2}{2}-\frac{2}{3}m^3\]
+
+\end{solution}
+
+\begin{example}{}{}
+    $x_1\ln x_1=x_2\ln x_2=m$,，证明$x_1+x_2>1+m+\frac{m^2}2$.
+\end{example}
