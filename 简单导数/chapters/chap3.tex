@@ -133,7 +133,7 @@ H(u,u)=R\sqrt{1-u^2}(\mathrm{e}^{R} - \mathrm{e}^{Ru}),
     f(x)&=n\ln\left(1+\frac{x}{n}\right)-\ln(1+x)\\
     f'(x)&=\frac{1}{1+\frac{x}{n}}-\frac{1}{1+x}=\frac{(1+x)-\bigl(1+\frac{x}{n}\bigr)}{\bigl(1+\frac{x}{n}\bigr)(1+x)}=\frac{x\bigl(1-\frac1n\bigr)}{\bigl(1+\frac{x}{n}\bigr)(1+x)}.
 \end{align*}
-因此$f(x)$在$(-1,0]$上单调递减，在$[0,1]$上单调递增，从而$f(x)\geqslant f(0)=0$对任意$x\in(-1,1]$成立，等号仅当$x=0$时取得。于是$1+\cos2\theta\leqslant\bigl(1+\frac{\cos2\theta}{n}\bigr)^n$，即$2\cos^2\theta\leqslant\bigl(\frac{1}{n}\cos2\theta+1\bigr)^n$，等号当$\cos2\theta=0$，即$\theta=\frac\pi4$时成立。
+因此$f(x)$在$(-1,0]$上单调递减，在$[0,1]$上单调递增，从而$f(x)\geqslant f(0)=0$对任意$x\in(-1,1]$成立，等号仅当$x=0$时取得。于是$1+\cos2\theta\leqslant\bigl(1+\frac{\cos2\theta}{n}\bigr)^n$，即$2\cos^2\theta\leqslant\bigl(\frac{1}{n}\cos2\theta+1\bigr)^n$，等号当$\cos2\theta=0$，即$\theta=\frac\pi4$时成立。\\
 （2）由二倍角公式，\(\sin^2\theta = \frac{1-\cos2\theta}{2}\)，\(\cos^2\theta = \frac{1+\cos2\theta}{2}\)，则对于任意正整数 \(m \geq 2\)，
 \[
 \sin^m\theta + \cos^m\theta = 2^{-\frac{m}{2}} \left[ (1-\cos2\theta)^{\frac{m}{2}} + (1+\cos2\theta)^{\frac{m}{2}} \right].
@@ -185,19 +185,37 @@ S(\theta) \geq \sum_{m=2}^{2n+1} 2^{1-\frac{m}{2}} = 2 \sum_{m=2}^{2n+1} 2^{-\fr
     h(x)&=g(x)+\frac16f(x)+\frac{7}{72}f^2(x)=x^2-x\left(\frac{7}{6}f(x) + \frac{5}{6}\right)+1+\frac16f(x)+\frac{7}{72}f^2(x)\\
     &=
     \end{align*}
-    单调递减
+    单调递减，上界：\[x_1+x_2+x_3<2+(\e-3)m-\frac{m^2}{2}-\frac{2}{3}m^3\]
 \end{solution}
 \newpage
 \begin{example}{来自amare Donata Caesia}{}
     $x_1\ln x_1=x_2\ln x_2=-x_3\ln x_3,x_1<x_2<x_3$，证明$x_1+x_2+x_3>2$
 \end{example}
 \begin{solution}
-设\[x_1\ln x_1=x_2\ln x_2=-x_3\ln x_3=m\]可以考虑加强证明\[x_1+x_2+x_3>-\frac{m^2}2-\frac13m+1+\frac{8}{3\e}+\frac{4\e}{135}\left(m+\frac1{\e}\right)^2\]
-设$\varepsilon=m+\frac1{\e}$这是因为\[\begin{cases}x_1+x_2>1+m+\frac{m^2}2\\x_3>1-m-\frac{m^2}2\end{cases}\]
-上界：\[x_1+x_2+x_3<2+(\e-3)m-\frac{m^2}{2}-\frac{2}{3}m^3\]
+考虑加强证明\[\begin{cases}x_1+x_2>1+m+\frac{m^2}2\\x_3>1-m-\frac{m^2}2\end{cases}\]
+第一个不等式，考虑加强证明$x_1+x_2>\e(3-\e)m^2+m+1$，化成$x-\ln x$的经典偏移模型，即证\[x_1-\ln x_1=x_2-\ln x_2=a>1,\frac{1}{x_1}+\frac{1}{x_2}>\e^a-1+\dfrac{\e(3-\e)}{\e^a}\]
+假设$\frac{1}{x_1}>\frac{1}{x_2},x_1<1<x_2$，即证\[g(x)=\frac{1}{x^2}-\left(\e^a-1+\dfrac{\e(3-\e)}{\e^a}\right)\frac{1}{x}=\frac{1}{x^2}-\left(\frac{\e^x}{x}-1+\e(3-\e)\dfrac{x}{\e^x}\right)\frac{1}{x},g(x_1)>g(x_2)\]则$x=1$必然是极值点，只需要改造$g(x)$使得其单调递减即可完成加强证明，显然地，考虑到$x_1-\ln x_1=x_2-\ln x_2=a$，取指数就有$\frac{\e^{x_1}}{x_1}=\frac{\e^{x_2}}{x_2}=\e^a$，只需证明
+\begin{align*}
+h(x)&=\frac{1}{x^2}-\frac{\frac{\mathrm{e}^x}{x}-1+\mathrm{e}(3-\mathrm{e})\frac{x}{\mathrm{e}^x}}{x}+1+\mathrm{e}(5-2\mathrm{e})\frac{x}{\mathrm{e}^x}\\
+h'(x)&=\frac{\mathrm{e}^x(2-x)-2}{x^3}-\frac{1}{x^2}+\mathrm{e}\mathrm{e}^{-x}\begin{bmatrix}8-3\mathrm{e}-(5-2\mathrm{e})x\end{bmatrix}
+\end{align*}
+$h(x)$单调递减即可，设$H(x)=x^3\e^xh'(x)=\mathrm{e}^{2x}(2-x)-(x+2)\mathrm{e}^x+\mathrm{e}x^3\left[8-3\mathrm{e}-(5-2\mathrm{e})x\right]$求4次导数把$x$的幂函数导掉：
+\begin{align*}
+    H'(x)&=e^{2x}(3-2x)-e^x(x+3)+3e(8-3e)x^2-4e(5-2e)x^3\\
+H''(x)&=4\e^{2x}(1-x)-\e^x(x+4)+6\e(8-3\e)x-12\e(5-2\e)x^2\\
+H'''(x)&=4\e^{2x}(1-2x)-\e^x(x+5)+6\e(8-3e)-24\e(5-2\e)x\\
+H''''(x)&=-16x\e^{2x}-(x+6)\e^x-24\e(5-2\e)
+\end{align*}
+显然对于$x>0$，$H''''(x)$单调递减，且$H''''(0)=-6+24\e(2\e-5)>0,\displaystyle \lim_{x\to+\infty}H''''(x)=-\infty$，故其存在零点$(\xi_1,0)$，则$H'''(x)$在$(0,\xi_1)$单增，在$(\xi_1,+\infty)$单减，由于
+\[H'''(0)=-1+6\e(8-3\e)<0,H'''(1)=26\e^2-78\e<0,H'''\left(\frac12\right)=6\e^2-12\e-\frac{11}{2}\sqrt{\e}>0\]
+故$H'''(x)$存在零点$(\xi_2,0),(\xi_3,0)$，那么$H''(x)$在$(0,\xi_2)$单减，在$(\xi_2,\xi_3)$单增，在$(\xi_3,+\infty)$单减，由于
+\[H''(0)=0,H''\left(\frac12\right)=11\e-\frac{9}{2}\sqrt{\e}-3\e^2>0,H''(1)=6\e^2-17\e<0\]
+所以$H''(x)$存在零点$(\xi_4,0),(\xi_5,0)$，所以$H'(x)$在$(0,\xi_4)$单减，在$(\xi_4,\xi_5)$单增，在$(\xi_5,\infty)$单减，由于$H'(0)=H'(1)=0$，所以$H'(x)$存在零点$(\xi_6,0)$，那么$H(x)$在$(0,\xi_6)$单减，在$(\xi_6,1)$单增，在$(1,+\infty)$单减，又因为$H(0)=H(1)=0$，所以$H(x)\leqslant 0$，故$h(x)$在$(0,+\infty)$单减。于是$x_1+x_2>\e(3-\e)m^2+m+1$得证.
 
+下证$x_3>1-m-\frac{m^2}2>1$，对于$m\in(-\frac1{\e},0)$，不难验证后一个“$>$”成立，两边套函数名$-m=x_3\ln x_3>(1-m-\frac{m^2}2)\ln (1-m-\frac{m^2}2)$即证
+\[p(m)=\frac{m}{\frac{m^2}2+m-1}-\ln (1-m-\frac{m^2}2)>0,\forall m\in(-\frac1{\e},0)\]
+令$t=-m\in(0,\frac{1}{e})$，则不等式化为
+$$f(t)=\frac{t}{1+t-\frac{t^{2}}{2}}-\ln \left(1+t-\frac{t^{2}}{2}\right)>0,~~f'(t)=\frac{t^{2}\left(2-\frac{t}{2}\right)}{\left(1+t-\frac{t^{2}}{2}\right)^{2}}>0, \quad \forall t\in\left(0,\frac{1}{e}\right)$$
+且$f(0)=0$，故$f(t)>0$在区间内成立，即$x_3>1-m-\frac{m^2}2>1$。这就证明了$x_1+x_2+x_3>2$.
 \end{solution}
 
-\begin{example}{}{}
-    $x_1\ln x_1=x_2\ln x_2=m$,，证明$x_1+x_2>1+m+\frac{m^2}2$.
-\end{example}
