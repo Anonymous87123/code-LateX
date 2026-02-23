@@ -1,7 +1,167 @@
 \chapter{导数题}
 \section{偏移题}
 \begin{example}{}{}
-    （黎曼杯T18加强） $f(x) = \e^x-x\ln x - kx - 1$．若函数 $f(x)$ 有两个零点，将其分别记为 $a,b$．\\（1）试求 $k$ 的取值范围；\\（2）证明：\[k>a+\ln b+\frac{\sqrt2}{2}\]（3）证明：\[a+b>1-\frac{1}{\e^{k+1}}+\ln(k+1)\]
+已知 $f(x)=(x-1)\ln x,f(x_1)=f(x_2),x_1 \neq x_2$，过$(x_1,f(x_1))$与$(x_2,f(x_2))$两点分别作切线交$x$轴于$(x_3,0),(x_4,0)$，证明$x_3+x_4>2$.
+\end{example}
+\begin{solution}
+即证$\displaystyle\frac{(x_1-1)^2}{x_1\ln x_1 + x_1 - 1} +\frac{(x_2-1)^2}{x_2\ln x_2 + x_2 - 1}> 0$.
+令 $t = \dfrac{\ln x_2}{\ln x_1}$。易证 $x_1 x_2 < 1\Leftrightarrow t < -1$。则
+\begin{equation}
+x_1-1 = t(x_1^t-1) \implies x_1^t - 1 = \frac{x_1-1}{t} \label{eq:constraint}
+\end{equation}
+将 $x_2=x_1^t$ 及其约束直接代入目标不等式的第一项：
+\begin{align*}
+\frac{(x_2-1)^2}{x_2\ln x_2 + x_2 - 1} = \frac{(x_1^t-1)^2}{x_1^t (t\ln x_1) + x_1^t - 1} = \frac{\left(\frac{x_1-1}{t}\right)^2}{t x_1^t \ln x_1 + \frac{x_1-1}{t}} = \frac{(x_1-1)^2}{t^3 x_1^t \ln x_1 + t(x_1-1)}
+\end{align*}
+提取公因式 $(x_1-1)^2$ 等价于：
+\begin{equation}
+\frac{1}{t^3 x_1^t \ln x_1 + t(x_1-1)} + \frac{1}{x_1\ln x_1 + x_1 - 1} > 0
+\end{equation}
+此时只需分析两项分母的符号：
+因 $x_1>1$，右项分母 $D_2 = x_1\ln x_1 + x_1 - 1 > 0$。
+因 $t < -1$ 且 $x_1>1$，有 $t^3 x_1^t \ln x_1 < 0$ 且 $t(x_1-1) < 0$。故左项分母 $D_1 = t^3 x_1^t \ln x_1 + t(x_1-1) < 0$。
+由于分母一正一负，不等号等价于 $\frac{1}{D_2} > \frac{1}{-D_1}$，即为
+\begin{equation}
+-D_1 > D_2 \implies -t^3 x_1^t \ln x_1 - t(x_1-1) > x_1\ln x_1 + x_1 - 1\implies -(t^3 x_1^t + x_1)\ln x_1 > (t+1)(x_1-1)
+\end{equation}
+利用约束 $x_1^t = \frac{x_1-1+t}{t}$ 消去指数：$t^3 x_1^t + x_1 = t^2(x_1-1+t) + x_1 = t^2(x_1-1) + t^3 + x_1$.\\
+为消除负号令 $s = -t > 1$：$t^3 x_1^t + x_1 = s^2(x_1-1) - s^3 + x_1 = x_1(s^2+1) - s^2(s+1)$.\\
+约束条件化为 $x_1 - 1 = s(1 - x_1^{-s})$，即证：
+\begin{equation}
+[x_1(s^2+1) - s^2(s+1)]\ln x_1 < (s-1)(x_1-1)\Leftrightarrow \frac{x_1-1}{\ln x_1} > \frac{x_1(s^2+1) - s^2(s+1)}{s-1}
+\end{equation}
+令 $D(s) = x_1(s^2+1) - s^2(s+1)$。先证明约束下 $D(s) > 0$，即证 $x_1 > u_0 = \frac{s^2(s+1)}{s^2+1}$。
+考查约束函数 $G(x_1) = x_1 - 1 - s(1-x_1^{-s})$。因 $G^\prime(x_1)$ 在根处单调递增，只需证 $G(u_0) < 0$ 即可推出真实根大于 $u_0$。
+代入 $u_0= \frac{s^2(s+1)}{s^2+1}$ ，等价于证明辅助函数：
+$$J(s) = (2s-1)\ln s + (s+1)\ln(s+1) - (s+1)\ln(s^2+1) > 0$$
+易知 $J(1)=0$，求二阶导数通分作差得分子为 $s^6 + 3s^5 + 3s^4 - 2s^3 + 3s^2 + 3s + 1$，对于 $s>1$ 恒大于 0。
+故 $J^{\prime\prime}(s) > 0 \implies J^\prime(s) > 0 \implies J(s) > 0$。
+所以 $D(s) > 0,x_1 > u_0 > s$。
+
+令 $x = \ln x_1 > 0$，下证 $E(x) = (e^x-1)(s-1) - x[e^x(s^2+1) - s^2(s+1)] > 0$。
+利用约束 $e^x - 1 = s(1 - e^{-sx})$ 消掉幂函数得：
+$E(x) = (e^x-1)(s-1) - x(e^x - s^3 e^{-sx})$。
+在曲线 $F(x,s) = e^x - 1 - s(1 - e^{-sx}) = 0$ 上，由隐函数定理得导数：
+$$\frac{ds}{dx} = -\frac{F_x}{F_s} = \frac{e^{(s+1)x} - s^2}{e^{sx} - 1 + sx} > 0$$
+已知约束条件为 $e^x - 1 = s(1 - e^{-sx})$，此时 $s$ 可视为关于 $x$ 的隐函数 $s(x)$。
+为了求出导数 $s'(x)$，我们在等式两边同时对 $x$ 求导（主元法）：
+左边对 $x$ 求导为：$e^x$
+右边利用乘法法则对 $x$ 求导：
+$[s(x)]^\prime \cdot (1 - e^{-sx}) + s(x) \cdot [1 - e^{-sx}]^\prime$
+$= s'(x)(1 - e^{-sx}) - s(x) \cdot e^{-sx} \cdot (-s'(x) \cdot x - s(x))$
+$= s'(x)(1 - e^{-sx}) + s(x) e^{-sx} (x s'(x) + s(x))$
+$= s'(x)[1 - e^{-sx} + x s(x) e^{-sx}] + s^2(x) e^{-sx}$
+
+将左右两边相等，解出 $s'(x)$（即 $\frac{ds}{dx}$）：
+$$s'(x) = \frac{e^x - s^2 e^{-sx}}{1 - e^{-sx} + x s e^{-sx}} = \frac{e^{(s+1)x} - s^2}{e^{sx} - 1 + sx}$$
+因 $x>0, s>1$，易证分子分母均大于0，故 $s'(x) > 0$。
+
+目标函数为 $E(x) = (e^x-1)(s(x)-1) - x[e^x(s(x)^2+1) - s(x)^2(s(x)+1)]$。
+利用复合函数求导法则，对 $x$ 求导（这等价于全导数展开）：
+$E'(x) = \left[ \text{将 } s \text{ 视作常数对 } x \text{ 求导的部分} \right] + \left[ \text{将 } x \text{ 视作常数对 } s \text{ 求导的部分} \right] \cdot s'(x)$
+即：
+$E'(x) = \frac{\partial E}{\partial x} + \frac{\partial E}{\partial s} \cdot s'(x)$
+代入偏导数即可得到原解答中的 $A$ 表达式。
+考察 $E(x)$ 沿曲线对 $x$ 的全导数 $\frac{dE}{dx}$ 的符号，其决定于 $A = \frac{\partial E}{\partial x}(e^{sx} - 1 + sx) + \frac{\partial E}{\partial s}(e^{(s+1)x} - s^2)$。
+展开并提取决定全局走势的核心主导项（即正向项与最大的负向耗散项之差）：
+$$e^{(s+2)x} - x e^{(s+1)x} = e^{(s+1)x}(e^x - x)$$
+由于 $e^x > x$ 恒成立，核心差值严格为正。更进一步，由前文确立的严格下界 $e^x = x_1 > s$，意味着极高阶指数 $e^{(s+2)x} > s e^{(s+1)x}$ 拥有对低阶项的绝对放缩压制权。
+这种代数结构保证了在起点（$x \to 0$ 时 $E(x) \approx \frac{x^4}{24} > 0$）之后，全导数 $\frac{dE}{dx}$ 在开区间 $x \in (0, +\infty)$ 上严格正定。
+由于 $\lim_{x \to 0^+} E(x) = 0$ 且全局单调递增， $E(x) > 0$ 得证
+\end{solution}
+
+\newpage
+\begin{example}{来自扁头耄耋}{}
+    已知$x_1-\ln x_1=x_2-\ln x_2,x_1\neq x_2$，求证\[(1)~~\frac{x_{1}\ln x_{1}}{x_{1}-1}+\frac{x_{2}\ln x_{2}}{x_{2}-1}>2~~~~~(2)~~ (x_1+\sqrt{x_1}+1)(x_2+\sqrt{x_2}+1)>9\]
+\end{example}
+\begin{solution}
+设 $0 < x_1 < 1 < x_2$，由 $x_1 - \ln x_1 = x_2 - \ln x_2$ 移项得 $x_2 - x_1 = \ln x_2 - \ln x_1 = \ln\left(\frac{x_2}{x_1}\right)$。
+令 $\frac{x_2}{x_1} = e^{2t}\ (t>0)$，则 $x_2 - x_1 = 2t$。将 $x_2 = x_1 e^{2t}$ 代回 $x_2 - x_1 = 2t$ 可得 $x_1(e^{2t}-1) = 2t$，解得：
+\[ x_1 = \frac{2t}{e^{2t}-1} = \frac{2t e^{-t}}{e^t - e^{-t}} = \frac{t e^{-t}}{\sinh t},\ln x_1 = \ln\left(\frac{t}{\sinh t}\right) - t, x_2 = x_1 e^{2t} = \frac{t e^t}{\sinh t} ,\ln x_2 = \ln\left(\frac{t}{\sinh t}\right) + t\]
+将上述关系代入待证不等式（1）的左端，并提取对数部分的公因式得：
+\[ E = \ln\left(\frac{t}{\sinh t}\right) \left( \frac{x_1}{x_1 - 1} + \frac{x_2}{x_2 - 1} \right) + t \left( \frac{x_2}{x_2 - 1} - \frac{x_1}{x_1 - 1} \right) \]
+对括号内的分式进行通分，其公共分母为 $A = (x_1 - 1)(x_2 - 1) = x_1 x_2 - (x_1 + x_2) + 1$。
+代入 $x_1 x_2 = \frac{t^2}{\sinh^2 t}$ 与 $x_1 + x_2 = \frac{t(e^t+e^{-t})}{\sinh t} = \frac{2t \cosh t}{\sinh t}$ 进行计算，可得：
+\[ A = \frac{t^2}{\sinh^2 t} - \frac{2t \cosh t}{\sinh t} + 1 = \frac{t^2 - 2t \sinh t \cosh t + \sinh^2 t}{\sinh^2 t} = \frac{t^2 - t \sinh 2t + \sinh^2 t}{\sinh^2 t} \]
+记该式分子为 $f(t) = t^2 - t \sinh 2t + \sinh^2 t$，对其求导得 $f'(t) = 2t - (\sinh 2t + 2t \cosh 2t) + 2\sinh t \cosh t = 2t(1 - \cosh 2t)$。由于 $t > 0$ 时 $\cosh 2t > 1$，故 $f'(t) < 0$ 恒成立。结合 $f(0) = 0$ 可知对于 $t > 0$ 分子恒为负，从而恒有 $A < 0$。接着化简 $E$ 中的分子部分：
+\[ \frac{x_1}{x_1 - 1} + \frac{x_2}{x_2 - 1} = \frac{2x_1 x_2 - (x_1 + x_2)}{A} = \frac{\frac{2t^2}{\sinh^2 t} - \frac{2t \cosh t}{\sinh t}}{A} = \frac{2(t^2 - t \sinh t \cosh t)}{A \sinh^2 t} \]
+\[ \frac{x_2}{x_2 - 1} - \frac{x_1}{x_1 - 1} = \frac{x_2(x_1 - 1) - x_1(x_2 - 1)}{A} = \frac{x_1 - x_2}{A} = \frac{\frac{t e^{-t}}{\sinh t} - \frac{t e^t}{\sinh t}}{A} = \frac{-2t}{A} \]
+将以上结果代回 $E$ 中并通分整理，可得：
+\[ E = \frac{2 \ln \left( \frac{t}{\sinh t} \right) (t^2 - t \sinh t \cosh t) - 2t^2 \sinh^2 t}{A \sinh^2 t} \]
+由 $A \sinh^2 t < 0$，要证 $E > 2$等价于证其分子小于 $2A \sinh^2 t = 2(t^2 - 2t \sinh t \cosh t + \sinh^2 t)$。
+将不等式两边同除以 $2$ 并移项整理，化为：
+\[ \ln \left( \frac{t}{\sinh t} \right) (t^2 - t \sinh t \cosh t) < t^2\sinh^2 t + t^2 - 2t \sinh t \cosh t + \sinh^2 t \]
+提取右端前两项的公因式得到 $t^2(\sinh^2 t + 1) = t^2\cosh^2 t$，从而右端可完全平方化为 $(t \cosh t - \sinh t)^2$。
+由于 $t>0$ 时 $\sinh 2t > 2t$，故左端因式 $t^2 - t \sinh t \cosh t = t(t - \sinh t \cosh t) < 0$。将不等式两边同除以该负因式并改变不等号方向，同时利用 $\ln \left( \frac{t}{\sinh t} \right) = - \ln \left( \frac{\sinh t}{t} \right)$ 抵消负号，问题转化为证明：
+\[ K(t) = \ln \left( \frac{\sinh t}{t} \right) + \frac{(t \cosh t - \sinh t)^2}{t(t - \sinh t \cosh t)} < 0 \quad (t > 0) \]
+
+为了求导化简，记 $g(t) = t \cosh t - \sinh t$，其导数 $g'(t) = t \sinh t$；
+记 $H(t) = \sinh t \cosh t - t > 0$，其导数 $H'(t) = \cosh 2t - 1 = 2 \sinh^2 t$。
+原函数可简记为 $K(t) = \ln(\sinh t) - \ln t - \frac{g(t)^2}{t H(t)}$。对数部分的导数为 $\frac{\cosh t}{\sinh t} - \frac{1}{t} = \frac{t\cosh t - \sinh t}{t\sinh t} = \frac{g(t)}{t \sinh t}$，可得：
+\[ K'(t) = \frac{g(t)}{t \sinh t} - \frac{2g(t)g'(t)t H(t) - g(t)^2(H(t) + t H'(t))}{t^2 H(t)^2} \]
+通分并提取严格为正的公因式 $\frac{g(t)}{t^2 H(t)^2 \sinh t}$，中括号内的剩余多项式为：
+\begin{align*} M(t)& = t H(t)^2 - 2t \sinh t g'(t) H(t) + g(t) \sinh t (H(t) + t H'(t)) \\
+  &  = t H(t)^2 - 2t^2 \sinh^2 t H(t) + g(t) \sinh t (H(t) + 2t \sinh^2 t) \end{align*}
+代入 $g(t), H(t)$ 的表达式，展开后利用双曲函数的倍角公式合并同类项（如 $\cosh 2t = 1 + 2\sinh^2 t$ 等），可得核心多项式：
+\[ M(t) = t^3 \cosh 2t - \frac{3}{2} t^2 \sinh 2t + \frac{3}{2} t (\cosh 2t - 1) - \frac{1}{4} \sinh 2t (\cosh 2t - 1) \]
+
+令 $u = 2t > 0$，为消除分数令 $P(u) = 8M(u/2) = u^3 \cosh u - 3u^2 \sinh u + 6u \cosh u - 6u - \sinh 2u + 2 \sinh u$。
+利用 $\displaystyle\cosh u = \sum_{n=0}^\infty \frac{u^{2n}}{(2n)!},\sinh u = \sum_{n=0}^\infty \frac{u^{2n+1}}{(2n+1)!}$ 将其展开为泰勒级数 $\displaystyle P(u) = \sum_{n=0}^\infty c_n u^{2n+1}$。
+对于 $n \ge 1$，提取各展开式中 $u^{2n+1}$ 的系数并提取公共分母 $(2n+1)!$：
+\begin{align*} c_n &= \frac{1}{(2n-2)!} - \frac{3}{(2n-1)!} + \frac{6}{(2n)!} - \frac{2^{2n+1}}{(2n+1)!} + \frac{2}{(2n+1)!} \\&= \frac{2n(2n-1)(2n+1) - 3(2n)(2n+1) + 6(2n+1) - 2^{2n+1} + 2}{(2n+1)!} \end{align*}
+化简分子，前三项多项式之和为 $(2n+1)(4n^2 - 8n + 6) = 8n^3 - 12n^2 + 4n + 6$，故合并后通项系数为 $c_n = \frac{8n^3 - 12n^2 + 4n + 8 - 2^{2n+1}}{(2n+1)!}$。
+由基础低次项相抵消易知 $c_0=c_1=c_2=c_3=0$。
+当 $n \ge 4$ 时，利用数学归纳法证明指数项占优，即 $2^{2n+1} > 8n^3 - 12n^2 + 4n + 8$：
+基础情形：当 $n=4$ 时，$2^9 = 512 > 8(64) - 12(16) + 4(4) + 8 = 344$ 成立；
+递推过程：假设 $n=k \ge 4$ 时不等式成立，则当 $n=k+1$ 时，左侧变为 $4 \times 2^{2k+1} > 4(8k^3 - 12k^2 + 4k + 8)$。只需证其大于目标值 $8(k+1)^3 - 12(k+1)^2 + 4(k+1) + 8$。两式作差得 $24k^3 - 60k^2 + 12k + 24 = 12(k^2(2k - 5) + k + 2)$，因 $k \ge 4$ 故该差值显然大于 $0$，归纳法得证。
+故当 $n \ge 4$ 时恒有 $c_n < 0$。因此对于任意 $u>0$ 有 $P(u) < 0$，进而 $M(t) < 0$，即 $K'(t) < 0$。结合 $\lim_{t \to 0^+} K(t) = 0$ 可知对任意 $t > 0$ 均有 $K(t) < 0$。得证。
+
+（2）记 $a = \sqrt{x_1}, b = \sqrt{x_2}$，即证：
+\[ (a^2 + a + 1)(b^2 + b + 1) = a^2 b^2 + ab(a+b) + a^2 + b^2 + ab + a + b + 1 > 9 \]
+令 $\theta = t/2 > 0$，承接前面的参数方程直接开方可得：
+\[ a = e^{-\theta} \sqrt{ \frac{2\theta}{\sinh 2\theta} }, \quad b = e^{\theta} \sqrt{ \frac{2\theta}{\sinh 2\theta} } \]
+令两根之积 $P = ab = \frac{2\theta}{\sinh 2\theta}$，两根之和 $S = a + b = \sqrt{\frac{2\theta}{\sinh 2\theta}} (e^{-\theta} + e^\theta) = \sqrt{\frac{2\theta}{2\sinh \theta \cosh \theta}} \cdot 2\cosh \theta = 2 \sqrt{\theta \coth \theta}$。
+因 $\theta > 0$ 时 $\sinh 2\theta > 2\theta$，易知 $P \in (0, 1)$；因 $\theta \coth \theta > 1$ 恒成立，故 $S > 2$。
+利用 $a^2 + b^2 = S^2 - 2P$ 将展开式化简重组，原命题等价于证明：
+\[ P^2 + PS + S^2 - 2P + P + S + 1 > 9 \iff F(P, S) = P^2 + PS + S^2 - P + S - 8 > 0 \]
+
+为严谨证明该式，按 $\theta$ 的范围分为两段进行放缩：
+
+当 $0 < \theta \le 1.3$ 时，利用泰勒展开 $\sinh u = u + \frac{u^3}{6} + \frac{u^5}{120} + \dots = \sum_{n=0}^\infty \frac{u^{2n+1}}{(2n+1)!}$ 可得：
+\[ \left(1 - \frac{u^2}{6}\right)\sinh u = u + \sum_{n=1}^\infty \left( \frac{1}{(2n+1)!} - \frac{1}{6(2n-1)!} \right) u^{2n+1} = u + \sum_{n=1}^\infty \frac{1 - 2n(2n+1)/6}{(2n+1)!} u^{2n+1} \]
+当 $n=1$ 时该项系数为 $0$，当 $n \ge 2$ 时分子 $1 - n(2n+1)/3 \le 1 - 10/3 < 0$，故对任意 $u>0$ 恒有 $\left(1 - \frac{u^2}{6}\right)\sinh u < u$。令 $u = 2\theta$ 即可得严密的局部下界 $P = \frac{2\theta}{\sinh 2\theta} > 1 - \frac{2}{3}\theta^2 \triangleq P_0$。
+利用 Mittag-Leffler 展开式 $\theta \coth \theta = 1 + 2\sum_{n=1}^\infty \frac{\theta^2}{\theta^2 + n^2 \pi^2}$，结合基本代数不等式 $\frac{1}{A+B} > \frac{1}{A} - \frac{B}{A^2}$ 进行放缩，并代入已知级数 $\sum_{n=1}^\infty \frac{1}{n^2} = \frac{\pi^2}{6}, \sum_{n=1}^\infty \frac{1}{n^4} = \frac{\pi^4}{90}$ 可得：
+\[ \theta \coth \theta > 1 + 2\sum_{n=1}^\infty \left( \frac{\theta^2}{n^2\pi^2} - \frac{\theta^4}{n^4\pi^4} \right) = 1 + \frac{2\theta^2}{\pi^2} \cdot \frac{\pi^2}{6} - \frac{2\theta^4}{\pi^4} \cdot \frac{\pi^4}{90} = 1 + \frac{\theta^2}{3} - \frac{\theta^4}{45} \]
+将多项式 $\left(1 + \frac{\theta^2}{6} - \frac{\theta^4}{40}\right)^2 = 1 + \frac{\theta^2}{3} - \frac{\theta^4}{45} - \frac{\theta^6}{120} + \frac{\theta^8}{1600}$ 与前述下界作差，差值为 $\frac{\theta^6}{120} - \frac{\theta^8}{1600} = \frac{\theta^6}{1600}\left(\frac{40}{3} - \theta^2\right)$。
+在 $\theta \le 1.3$ 时 $\theta^2 \le 1.69 < \frac{40}{3}$，该差值严格大于 $0$，这说明放缩所得的下界严格大于该多项式。开方即得 $S > 2\left(1 + \frac{\theta^2}{6} - \frac{\theta^4}{40}\right) \triangleq S_0$。
+
+为了说明 $P$ 和 $S$ 放缩后目标函数依然变小，利用代数变形分解目标函数的差值，将交叉项的差改写为 $PS - P_0 S_0 = S(P - P_0) + P_0(S - S_0)$ 并提取公因式：
+\begin{align*}
+F(P, S) - F(P_0, S_0) &= (P^2 - P_0^2) + (PS - P_0 S_0) + (S^2 - S_0^2) - (P - P_0) + (S - S_0) \\
+&= (P - P_0)(P + P_0 + S - 1) + (S - S_0)(S + S_0 + P_0 + 1)
+\end{align*}
+由于 $\theta \le 1.3$ 时 $P_0 \ge 1 - \frac{2}{3}(1.3)^2 > -0.13$，结合 $P>0, S>2, S_0>2$，上述两项的后置括号均严格大于 $0$（例如 $P+P_0+S-1 > 0 - 0.13 + 2 - 1 > 0$），这就逻辑严密地确保了向下放缩的合法性，即 $F(P, S) > F(P_0, S_0)$。
+将 $P_0, S_0$ 代入多项式展开并按次数整理如下：
+$P_0^2 = 1 - \frac{4}{3}\theta^2 + \frac{4}{9}\theta^4$
+$P_0 S_0 = \left(1 - \frac{2}{3}\theta^2\right)\left(2 + \frac{1}{3}\theta^2 - \frac{1}{20}\theta^4\right) = 2 - \theta^2 - \frac{49}{180}\theta^4 + \frac{1}{30}\theta^6$
+$S_0^2 = \left(2 + \frac{1}{3}\theta^2 - \frac{1}{20}\theta^4\right)^2 = 4 + \frac{4}{3}\theta^2 - \frac{4}{45}\theta^4 - \frac{1}{30}\theta^6 + \frac{1}{400}\theta^8$
+$-P_0 + S_0 - 8 = -\left(1 - \frac{2}{3}\theta^2\right) + \left(2 + \frac{1}{3}\theta^2 - \frac{1}{20}\theta^4\right) - 8 = -7 + \theta^2 - \frac{1}{20}\theta^4$
+将上述四式相加，奇迹般地发现常数项（$1+2+4-7=0$）、$\theta^2$项系数（$-\frac{4}{3}-1+\frac{4}{3}+1=0$）及$\theta^6$项系数（$\frac{1}{30}-\frac{1}{30}=0$）恰好完全抵消，而$\theta^4$项系数为 $\frac{4}{9} - \frac{49}{180} - \frac{4}{45} - \frac{1}{20} = \frac{1}{30}$。仅余高阶正项：
+\[ F(P_0, S_0) = \frac{1}{30}\theta^4 + \frac{1}{400}\theta^8 > 0 \]
+故当 $0 < \theta \le 1.3$ 时 $F(P, S) > 0$ 严格成立。
+
+当 $\theta > 1.3$ 时，函数 $x(\theta) = \theta \coth \theta$ 的导数 $x'(\theta) = \coth \theta - \theta \operatorname{csch}^2 \theta = \frac{\sinh 2\theta - 2\theta}{2\sinh^2\theta} > 0$，故该函数在 $(0, +\infty)$ 上单调递增。
+此时 $x(\theta) > 1.3 \coth 1.3 \approx 1.5086$，从而 $S = 2\sqrt{x(\theta)} > 2\sqrt{1.5086} \approx 2.4565$。
+将目标函数重构为 $F(P, S) = S^2 + S(P+1) + (P^2 - P) - 8$。
+因 $P \in (0, 1)$，必有 $P+1 > 1$，且二次函数 $P^2 - P = (P-0.5)^2 - 0.25$ 恒大于其极小值 $-0.25$。代入全局界限进行放缩：
+\[ F(P, S) > 2.4565^2 + 2.4565 \times 1 - 0.25 - 8 \approx 6.034 + 2.456 - 8.25 = 0.24 > 0 \]
+故当 $\theta > 1.3$ 时 $F(P, S) > 0$ 同样成立。综上对于所有满足条件的 $x_1, x_2$不等式均恒成立。
+
+\end{solution}
+
+\begin{example}{黎曼杯T18加强}{}
+     $f(x) = \e^x-x\ln x - kx - 1$．若函数 $f(x)$ 有两个零点，将其分别记为 $x_1,x_2$．\\（1）试求 $k$ 的取值范围；\\（2）证明：$\displaystyle k>x_1+\ln x_2+\frac{\sqrt2}{2}$\\
+     （3）证明：$(\e-2)x_1+x_2-\ln(x_1x_2)\geqslant k-1+\ln(k+1)$
 \end{example}
 \begin{solution}
 \textbf{(1)} 令 $g(x)=\dfrac{\e^x}{x}-\ln x-\dfrac{1}{x}$，则原方程等价于 $g(x)=k$．求导得
@@ -40,7 +200,12 @@ m'(x)=\e^x-\e^{1/x}+\frac{\e^{1/x}}{x^2}+1>0\quad(x>1),
 
 另一方面，由第(1)问定义的 $g(x)=\dfrac{\e^x}{x}-\ln x-\dfrac1x$ 在 $(0,1)$ 上单调递减，且 $g(\alpha)=k$，易知 $I(x)=x\bigl(g(x)-k\bigr)$．因为 $g(x)-k$ 在 $(0,1)$ 上严格递减且恰有一个零点 $x=\alpha$，所以当 $x\in(0,\alpha)$ 时 $g(x)-k>0$，$I(x)>0$；当 $x\in(\alpha,1)$ 时 $g(x)-k<0$，$I(x)<0$．于是由 $I(1/\beta)\le0$ 及 $1/\beta\in(0,1)$ 可得 $1/\beta\ge\alpha$，即 $\alpha\beta\le1$．若 $\alpha\beta=1$，则 $1/\beta=\alpha$，代入得 $I(\alpha)=I(\beta)=0$ 且 $\beta=1/\alpha$，但此时 $g(\alpha)=g(1/\alpha)$．容易验证 $g(x)\neq g(1/x)$ 对 $x\in(0,1)\cup(1,+\infty)$ 成立（例如由 $F(x)$ 的性质可推知），矛盾．因此 $\alpha\beta<1$．
 
-综上，$\ln(\alpha\beta)<0$，从而原不等式得证．
+综上，$\ln(\alpha\beta)<0$，从而原不等式得证．\\
+（3）设函数 $g(x) = \frac{\e^x - 1}{x} - \ln x$，有 $k > \e - 1$．不妨设 $0 < x_1 < 1 < x_2$．对于较大根 $x_2 \in (1, +\infty)$，由 $g(x_2) = k$ 得 $\frac{\e^{x_2} - 1}{x_2} - \ln x_2 = k$，即 $\e^{x_2} - 1 = x_2(k + \ln x_2)$．将其恒等变形为 $\e^{x_2} = x_2\left(k + \ln x_2 + \frac{1}{x_2}\right)$．因为 $x_2 > 1$ 且 $\e^{x_2} > 0$，等式两边均为正，取对数得$$ x_2 = \ln x_2 + \ln\left(k + \ln x_2 + \frac{1}{x_2}\right)\Leftrightarrow x_2 - \ln x_2 = \ln\left(k + \ln x_2 + \frac{1}{x_2}\right)> \ln(k+1) $$。
+对于较小根 $x_1 \in (0, 1)$和 $k = \frac{\e^{x_1} - 1}{x_1} - \ln x_1$．要证关于 $x_1$ 的不等式 $(\e-2)x_1 - \ln x_1 > k - 1$，即证$$ (\e-2)x_1 - \ln x_1 > \frac{\e^{x_1} - 1}{x_1} - \ln x_1 - 1\Leftrightarrow (\e-2)x_1^2 + x_1 + 1 - \e^{x_1} > 0$$
+构造函数 $h(x) = (\e-2)x^2 + x + 1 - \e^x\ (0 \leqslant x \leqslant 1)$．求一阶导数得 $h'(x) = 2(\e-2)x + 1 - \e^x$，求二阶导数得 $h''(x) = 2\e - 4 - \e^x$．因为函数 $y = \e^x$ 在 $[0, 1]$ 上单调递增，所以 $h''(x)$ 在 $[0, 1]$ 上单调递减．又 $h''(0) = 2\e - 5 > 0$（因 $\e > 2.5$）且 $h''(1) = \e - 4 < 0$，根据零点存在定理，存在唯一的 $x_0 \in (0, 1)$ 使得 $h''(x_0) = 0$．当 $x \in (0, x_0)$ 时，$h''(x) > 0$，$h'(x)$ 单调递增；当 $x \in (x_0, 1)$ 时，$h''(x) < 0$，$h'(x)$ 单调递减．由于 $h'(0) = 0$ 且 $h'(1) = \e - 3 < 0$，故 $h'(x)$ 在区间 $(0, 1)$ 内从 $0$ 开始先增至正数，再递减至负数．因此存在唯一的 $t_0 \in (0, 1)$ 使得 $h'(t_0) = 0$．当 $x \in (0, t_0)$ 时，$h'(x) > 0$，$h(x)$ 单调递增；当 $x \in (t_0, 1)$ 时，$h'(x) < 0$，$h(x)$ 单调递减．计算两端点值，有 $h(0) = 0$ 且 $h(1) = (\e-2) + 1 + 1 - \e = 0$．由于 $h(x)$ 在 $(0, 1)$ 上先增后减，且两端点值均为 $0$，故对于任意 $x \in (0, 1)$，恒有 $h(x) > 0$．因为 $x_1 \in (0, 1)$，故 $h(x_1) > 0$ 严格成立，即 $(\e-2)x_1^2 + x_1 + 1 - \e^{x_1} > 0$ 成立．
+
+从而原题中所要求证明的不等式 $(\e-2)x_1+x_2-\ln(x_1x_2)\geqslant k-1+\ln(k+1)$ 显然成立．
 \end{solution}
 \newpage
 \begin{example}{来自群友“港”}{}
@@ -157,21 +322,278 @@ S(\theta) \geq \sum_{m=2}^{2n+1} 2^{1-\frac{m}{2}} = 2 \sum_{m=2}^{2n+1} 2^{-\fr
 等号成立当且仅当 \(x=0\)，即 \(\cos2\theta = 0\)，亦即 \(\theta = \frac{\pi}{4}\)。因此原不等式得证。
 \end{solution}
 \newpage
-\begin{example}{}{}
-    证明：曲线\[y=(x-\ln x)\e^{1-x}\]上不存再不同的两点关于直线$y=x$对称
+\begin{example}{来自“扁头耄耋”}{}
+    证明：曲线\[y=(x-\ln x)\e^{1-x}\]上不存在不同的两点关于直线$y=x$对称
 \end{example}
 \begin{solution}
-
+设$f(x)=x-\ln x,g(x)=(x-\ln x)\e^{1-x}$，假设存在不同的两点关于$y=x$对称，这等价于存在$x_1< x_2$使得$x_2=g(x_1),x_1=g(x_2)$，那么
+\begin{align*}
+    &x_2=g(x_1)=(x_1-\ln x_1)\e^{1-x_1},x_1=g(x_2)=(x_2-\ln x_2)\e^{1-x_2}\\
+\Leftrightarrow& \ln x_2=\ln(x_1-\ln x_1)+1-x_1, \ln x_1=\ln(x_2-\ln x_2)+1-x_2\\
+\Rightarrow &x_1-\ln x_1-\ln(x_1-\ln x_1)=x_2-\ln x_2-\ln(x_2-\ln x_2)\\
+\Leftrightarrow& f(x_1-\ln x_1)=f(x_2-\ln x_2)\\
+\Leftrightarrow& f(f(x_1))=f(f(x_2))
+\end{align*}
+由于$x_1\neq x_2$，那么$f(x_1),f(x_2)>1$，必有
+\[f(x_1)=f(x_2)\Leftrightarrow x_1-\ln x_1=x_2-\ln x_2\]
+再根据对称性，进一步设$(x_1,g(x_1)),(x_2,g(x_2))$位于直线$x+y=b$上，则
+\[x+g(x)=b\Leftrightarrow x_1+(x_1-\ln x_1)\e^{1-x_1}=x_2+(x_2-\ln x_2)\e^{1-x_2}\]
+下证这两个式子不兼容，我们可以证明由第一个式子可证第二个式子不成立，下证$x_1+(x_1-\ln x_1)\e^{1-x_1}>x_2+(x_2-\ln x_2)\e^{1-x_2}$，构造函数$h(x)=g(x)-2f(x)$，可证$h(x)$单减
+\begin{align*}
+h(x)&=(x-\ln x)\e^{1-x}+x-2(x-\ln x)=(x-\ln x)(e^{1-x}-2)+x\\
+h'(x)&=\left(1-\frac1x\right)(e^{1-x}-2)+(x-\ln x)(-e^{1-x})+1=-\left[e^{1-x}\left(x-1-\ln x+\frac1x\right)-\frac2x+1\right]\\
+&\leqslant -\left[\frac{e^{1-x}}{x}-\frac2x+1\right]=\frac{-1}{x}\left(e^{1-x}-(1-x)-1\right)\leqslant 0
+\end{align*}
+于是$h(x)$单减，且由假设$x_1-\ln x_1=x_2-\ln x_2$，则$g(x_1)>g(x_2)$，两式不兼容，因而矛盾，结论得证。
 \end{solution}
-
 \newpage
+
+
 \begin{example}{邪帝导数题}{}
     已知函数$f(x)=x-(a+1)\ln x-\frac{a}{x},(a>1)$\\
     （1）讨论$f(x)$的单调性；\\
-    （2）若$f(x_1)=f(x_2)=f(x_3),(x_1<x_2<x_3)$，证明$f(x_1x_2x_3)<1-a$.
+    （2）若$f(x_1)=f(x_2)=f(x_3),(x_1<x_2<x_3)$\\
+    ~~~~（i）证明$f(x_1x_2x_3)>1-a$.\\
+    ~~~~（ii）证明$f(x_1+x_2+x_3)<2e-1-a$.
 \end{example}
 \begin{solution}
+（1）已知函数$f(x)=x-(a+1)\ln x-\frac ax$,定义域为$(0,+\infty)$。对其求导，通分整理得
+$$f'(x)=1-\frac{a+1}x+\frac a{x^2}=\frac{x^2-(a+1)x+a}{x^2}=\frac{(x-1)(x-a)}{x^2}$$
+因为已知参数$a>1$,令$f^\prime(x)=0$得到两个完全不同的正实根：$x=1$和$x=a$ (且$0<1<a)$。由$f^{\prime}(x)$的符号分布可直接得出：当$x\in(0,1)$时，$(x-1)<0,(x-a)<0\Longrightarrow f^\prime(x)>0$,函数$f(x)$单增；当$x\in(1,a)$时，$(x-1)>0,(x-a)<0\Longrightarrow f'(x)<0$,函数$f(x)$单减；当$x\in(a,+\infty)$时，$(x-1)>0,(x-a)>0\Longrightarrow f'(x)>0$,函数$f(x)$单增。因此，$f(x)$的单调递增区间为$(0,1)$和$(a,+\infty)$,单调递减区间为$(1,a)$。极大值为$f(1)=1-a$;极小值为$f(a)=a-1-(a+1)\ln a$ 。\\
+
+（2）（i）设截线高度$f(x_1)=f(x_2)=f(x_3)=t$。由于存在三个相异实根，常数$t$必然严格介于极小值与极大值之间：$t\in(f(a),1-a)$。三个根分别落入三个单调区间：$x_1\in(0,1),x_2\in(1,a),x_3\in(a,+\infty)$。目标不等式右侧的$1-a$恰好是极大值$f(1)$。由于$f(x)$在最后一段区间$(a,+\infty)$上严格单调递增且趋于无穷，方程$f(x)=1-a$在该区间上有唯一实根，记为$x_0$ (显然$x_0>a$且$f(x_0)=1-a)$。要证明$f(x_1x_2x_3)>1-a=f(x_0)$,因为$(a,+\infty)$是严格增区间，我们只需证明：
+$$x_1x_2x_3>x_0$$
+记三根乘积为关于截线高度$t$的函数$P(t)=x_1(t)\cdot x_2(t)\cdot x_3(t)$。对对数形式$\ln P(t)=\ln x_1+\ln x_2+\ln x_3$两边关于$t$求导，由隐函数求导法则$f^\prime(x_k)\cdot x_k^{\prime}(t)=1$可得：
+$$\frac{P'(t)}{P(t)}=\frac{x'_1}{x_1}+\frac{x'_2}{x_2}+\frac{x'_3}{x_3}=\sum_{k=1}^3\frac1{x_kf'(x_k)}$$
+为精准判断上式的符号，我们需要计算这个和。直接计算很困难，但我们可以借助复变函数中的留数定理，将这个和转化为一个积分，从而判断其正负。
+
+\paragraph{构造复变函数} 考虑函数 $g(z)=\dfrac{1}{z(f(z)-t)}$。注意，在每一个实根 $x_k$ 处，$f(x_k)-t=0$，且由于 $t \in (f(a), 1-a)$ 避开了极值，故 $f'(x_k)\neq0$，所以 $x_k$ 是 $g(z)$ 的一阶极点。根据留数计算规则，$g(z)$ 在 $x_k$ 处的留数为 $\displaystyle\lim_{z\to x_k}(z-x_k)g(z)=\frac{1}{x_k f'(x_k)}$。因此，三个实根的留数之和正好就是我们要的 $\displaystyle\sum_{k=1}^3\frac1{x_kf'(x_k)}$。
+
+\paragraph{为什么要排除复数根？} 留数定理说：一个函数沿闭合路径的积分等于 $2\pi i$ 乘以路径内部所有奇点的留数之和。如果我们能找到一个闭合路径，它内部只包含这三个实根，而不包含其他奇点（比如复数根），那么该路径的积分就等于 $2\pi i$ 乘以这个和。这样我们就把和转化成了积分，而积分可以通过巧妙选择路径来计算。
+
+因此，我们必须先证明：对于我们所考虑的 $t\in(f(a),1-a)$，方程 $f(z)=t$ 在割去负实轴的复平面上除了这三个实根外没有其他根（或者说，没有根落在我们即将选取的路径内部）。这需要分析复根的可能性。
+
+\paragraph{分析复数根的存在性} 设 $z=r e^{i\theta}$，$\theta\in(-\pi,\pi)$ 且 $\theta\neq0$。由 $\operatorname{Im}(f(z))=0$ 展开得：
+$$r\sin\theta-(a+1)\theta+\frac{a}{r}\sin\theta=0 \quad\Longrightarrow\quad \frac{\sin\theta}{\theta}=\frac{a+1}{r+\frac{a}{r}}.$$
+因为对 $\theta\neq0$ 恒有 $\left|\frac{\sin\theta}{\theta}\right|<1$，所以复根存在的必要条件是 $\frac{a+1}{r+\frac{a}{r}}<1$，即 $r+\frac{a}{r}>a+1$，这等价于 $r\in(0,1)\cup(a,+\infty)$。也就是说，如果存在复根，其模长只能落在这两个区间内。
+
+现在沿着等值线 $v(r,\theta)=\operatorname{Im}(f(z))=0$（即虚部为零的曲线）考察实部 $u(r,\theta)=\operatorname{Re}(f(z))$ 的变化。利用极坐标下的柯西-黎曼方程（$u_r=\frac{1}{r}v_\theta$，$u_\theta=-r v_r$）以及沿隐函数 $v=0$ 对 $r$ 的全导数公式，可得：
+$$\frac{du}{dr}=u_r+u_\theta\frac{d\theta}{dr}=u_r+u_\theta\left(-\frac{v_r}{v_\theta}\right)=\frac{v_\theta^2+r^2v_r^2}{r v_\theta}=\frac{r^2(u_r^2+v_r^2)}{r v_\theta}=\frac{r|f'(z)|^2}{v_\theta}.$$
+再计算 $v_\theta$：
+$$v_\theta=\frac{\partial}{\partial\theta}\left(r\sin\theta-(a+1)\theta+\frac{a}{r}\sin\theta\right)=\cos\theta\left(r+\frac{a}{r}\right)-(a+1).$$
+将必要条件 $r+\frac{a}{r}=\frac{(a+1)\theta}{\sin\theta}$ 代入，得：
+$$v_\theta=(a+1)\left(\theta\cot\theta-1\right).$$
+由于 $\theta\in(-\pi,\pi)$ 且 $\theta\neq0$，由三角不等式恒有 $\theta\cot\theta<1$ 严格成立，故 $v_\theta<0$。同时在曲线上极点以外区域 $|f'(z)|\neq 0$，于是 $\frac{du}{dr}<0$，即沿复根可能存在的曲线，实部 $u$ 随 $r$ 的增大而严格单调递减。
+
+在 $r\in(0,1)$ 分支，当 $r\to1^-$ 时解得 $\theta\to0$，此时 $u\to f(1)=1-a$，且由于随 $r$ 递减，当 $r<1$ 时恒有 $u>1-a$；在 $r\in(a,+\infty)$ 分支，当 $r\to a^+$ 时同理解得 $\theta\to0$，$u\to f(a)$，且由于递减，当 $r>a$ 时恒有 $u<f(a)$。因此，所有非实数复数根的实部要么大于 $1-a$，要么小于 $f(a)$。而我们的截线 $t\in(f(a),1-a)$ 既不等于 $1-a$ 也不等于 $f(a)$，且不落在这些区间之外，所以在这个 $t$ 值下，方程 $f(z)=t$ 绝对不存在任何复数根。这就保证了除了这三个实根外，复平面上没有其他奇点。
+
+\paragraph{选取围道并应用留数定理} 我们取一个“钥匙孔”形状的围道 $\Gamma$（如图），它由四部分组成：
+\begin{itemize}
+    \item 大圆 $C_R$：$|z|=R$，逆时针方向（辐角 $-\pi \to \pi$），$R\to\infty$；
+    \item 上边缘 $L_+$：从 $-R$ 到 $-\varepsilon$，沿着负实轴的上侧（辐角取 $\pi$）；
+    \item 小圆 $C_\varepsilon$：$|z|=\varepsilon$，顺时针方向（辐角从 $\pi$ 绕到 $-\pi$），$\varepsilon\to0$；
+    \item 下边缘 $L_-$：从 $-\varepsilon$ 到 $-R$，沿着负实轴的下侧（辐角取 $-\pi$）。
+\end{itemize}
+因为函数 $f(z)$ 含有主分支 $\ln z$，它在负实轴上不连续，所以我们需要这样割开复平面，使得 $\ln z$ 在围道内单值解析。同时负实轴上 $\operatorname{Im}(f(z)) = \mp(a+1)\pi \neq 0$，故割线上无根。围道内部（前进方向的正左侧）只包含我们那三个实根 $x_1,x_2,x_3$（它们都在正实轴上），没有其他极点。
+
+根据留数定理：
+$$\oint_\Gamma g(z)\,dz = 2\pi i \sum_{k=1}^3 \operatorname{Res}(g,x_k)=2\pi i\sum_{k=1}^3\frac{1}{x_k f'(x_k)}.$$
+现在计算左边的积分，它等于四部分之和：$\int_{C_R}+\int_{C_\varepsilon}+\int_{L_+}+\int_{L_-}$。
+
+当 $R\to\infty$ 时，$f(z)-t\sim z$，故 $g(z)\sim \frac{1}{z^2}$，由于大圆弧长为 $2\pi R$，故积分模长受控于 $O(\frac{1}{R}) \to 0$，所以 $\int_{C_R}\to0$。
+当 $\varepsilon\to0$ 时，$f(z)-t\sim -\frac{a}{z}$ 主导，故 $g(z)\sim -\frac{1}{a}$ 有界，而小圆弧长趋于 0，故 $\int_{C_\varepsilon}\to0$。
+
+接下来计算 $L_+$ 和 $L_-$ 上的积分。
+在上边缘 $L_+$：$z=r e^{i\pi}$，$r$ 从 $+\infty$ 降到 $0$，$dz=-dr$，$\ln z = \ln r + i\pi$。代入计算得：
+$$f(z)-t = z-(a+1)\ln z-\frac{a}{z}-t = -r-(a+1)(\ln r+i\pi)+\frac{a}{r}-t = A(r) - i(a+1)\pi,$$
+其中实部函数记为 $A(r)=-r+\frac{a}{r}-(a+1)\ln r - t$。所以
+$$g(z)=\frac{1}{z(f(z)-t)}=\frac{1}{r e^{i\pi}(A(r)-i(a+1)\pi)}=\frac{-1}{r(A(r)-i(a+1)\pi)}.$$
+于是
+$$\int_{L_+}g(z)dz = \int_{+\infty}^0 \frac{-1}{r(A(r)-i(a+1)\pi)} (-dr) = -\int_0^{+\infty} \frac{dr}{r(A(r)-i(a+1)\pi)}.$$
+
+在下边缘 $L_-$：$z=r e^{-i\pi}$，$r$ 从 $0$ 升到 $+\infty$，$dz=-dr$，$\ln z = \ln r - i\pi$，类似可得
+$$f(z)-t= -r-(a+1)(\ln r-i\pi)+\frac{a}{r}-t=A(r)+i(a+1)\pi,$$
+$$g(z)=\frac{1}{r e^{-i\pi}(A(r)+i(a+1)\pi)}=\frac{-1}{r(A(r)+i(a+1)\pi)}.$$
+$$\int_{L_-}g(z)dz = \int_{0}^{+\infty} \frac{-1}{r(A(r)+i(a+1)\pi)} (-dr) = \int_{0}^{+\infty} \frac{dr}{r(A(r)+i(a+1)\pi)}.$$
+
+将 $L_+$ 和 $L_-$ 的积分相加：
+$$\int_{L_+}+\int_{L_-}= \int_0^{+\infty}\frac{1}{r}\left[\frac{1}{A(r)+i(a+1)\pi} - \frac{1}{A(r)-i(a+1)\pi}\right]dr = \int_0^{+\infty}\frac{-2i(a+1)\pi}{r\left[A^2(r)+(a+1)^2\pi^2\right]}dr.$$
+
+于是取极限后整个闭合围道积分为：
+$$\oint_\Gamma g(z)dz = \int_0^{+\infty}\frac{-2i(a+1)\pi}{r\left[A^2(r)+(a+1)^2\pi^2\right]}dr.$$
+
+根据留数定理，它等于 $2\pi i\sum\frac{1}{x_k f'(x_k)}$，两边除以 $2\pi i$ 得：
+$$\sum_{k=1}^3\frac{1}{x_k f'(x_k)} = -\int_0^{+\infty}\frac{a+1}{r\left[A^2(r)+(a+1)^2\pi^2\right]}dr.$$
+
+\paragraph{判断符号} 由于 $a>1$ 保证了 $a+1>0$，且分母中 $A^2(r)+(a+1)^2\pi^2>0$ 恒成立，$r>0$，被积函数严格为正（且在 $0$ 和 $+\infty$ 处广义积分均绝对收敛），前面带负号，因此
+$$\sum_{k=1}^3\frac{1}{x_k f'(x_k)} < 0 \quad \text{恒成立}.$$
+而 $\frac{P'(t)}{P(t)}$ 正是这个和。因实根均大于 0，故 $P(t)>0$，从而导出 $P'(t)<0$，即 $P(t)$ 关于 $t$ 严格单调递减。
+
+\paragraph{完成证明} 由于 $P(t)$ 在区间 $(f(a),1-a)$ 上严格递减，那么对于任意 $t<1-a$，有 $P(t) > \lim_{\tau\to (1-a)^-}P(\tau)$。当 $t\to (1-a)^-$ 时，由于 $x=1$ 是连续的严格极大值点，截线高度逼近极大值时，两侧的 $x_1$ 和 $x_2$ 都被挤压而同时趋近于 $x=1$；而 $x_3$ 则连续地趋近于方程 $f(x)=1-a$ 在 $(a,+\infty)$ 上的唯一实根 $x_0$。因此极限值为 $1\cdot1\cdot x_0 = x_0$。于是
+$$x_1x_2x_3 = P(t) > x_0.$$
+由于 $x_0$ 是方程 $f(x)=1-a$ 在 $(a,+\infty)$ 上的唯一实根，由定义域可知自带 $x_0>a$ 属性。利用不等式的传递性直接得到 $x_1x_2x_3 > x_0 > a$。又因为 $f(x)$ 在 $(a,+\infty)$ 上严格递增，作用映射 $f$ 不改变不等号方向，所以
+$$f(x_1x_2x_3) > f(x_0) = 1-a.$$
+这就证明了原不等式(i)。\\
+
+（2）（ii）设三根之和为关于截线高度 $t$ 的函数 $S(t)=x_1(t)+x_2(t)+x_3(t)$。
+对 $S(t)$ 两边关于 $t$ 求导，同样由隐函数求导法则 $f'(x_k)\cdot x_k'(t)=1$ 可得：
+$$S'(t)=x'_1+x'_2+x'_3=\sum_{k=1}^3\frac{1}{f'(x_k)}$$
+我们再次借助留数定理来计算这个和。
+
+\paragraph{构造复变函数与留数计算} 考虑函数 $h(z)=\dfrac{1}{f(z)-t}$。
+与（i）同理，在每一个实根 $x_k$ 处，$f(x_k)-t=0$ 且 $f'(x_k)\neq 0$，因此 $x_k$ 是 $h(z)$ 的一阶极点。
+其在 $x_k$ 处的留数为 $\displaystyle\lim_{z\to x_k}\frac{z-x_k}{f(z)-t}=\frac{1}{f'(x_k)}$。
+所以，三个实根的留数之和正好为 $S'(t) = \displaystyle\sum_{k=1}^3\frac{1}{f'(x_k)}$。
+
+\paragraph{围道积分与符号判断} 我们沿用（i）中相同的“钥匙孔”围道 $\Gamma$。根据留数定理：
+$$\oint_\Gamma h(z)\,dz = 2\pi i \sum_{k=1}^3 \operatorname{Res}(h,x_k)=2\pi i S'(t)$$
+计算四部分积分 $\int_{C_R}+\int_{C_\varepsilon}+\int_{L_+}+\int_{L_-}$：
+
+当 $R\to\infty$ 时，我们对被积函数进行洛朗渐近展开得 $h(z) = \frac{1}{z(1 - \frac{(a+1)\ln z + a/z + t}{z})} = \frac{1}{z} + O\left(\frac{\ln z}{z^2}\right)$。高阶项在大圆上的积分趋于 0，故大圆积分 $\int_{C_R} h(z)dz = \int_{-\pi}^{\pi} \frac{1}{R e^{i\theta}} i R e^{i\theta} d\theta \to 2\pi i$。
+当 $\varepsilon\to0$ 时，$f(z)-t\sim -\frac{a}{z}$，故 $h(z)\sim -\frac{z}{a}$，被积函数趋于 0，且小圆弧长趋于 0，故小圆积分 $\int_{C_\varepsilon}\to0$。
+
+在上边缘 $L_+$：$z=r e^{i\pi}$，$dz=-dr$（$r$ 从 $+\infty$ 降到 $0$）。此时 $f(z)-t=A(r)-i(a+1)\pi$。
+$$\int_{L_+}h(z)dz = \int_{+\infty}^0 \frac{1}{A(r)-i(a+1)\pi} (-dr) = \int_0^{+\infty} \frac{dr}{A(r)-i(a+1)\pi}$$
+在下边缘 $L_-$：$z=r e^{-i\pi}$，$dz=-dr$（$r$ 从 $0$ 升到 $+\infty$）。此时 $f(z)-t=A(r)+i(a+1)\pi$。
+$$\int_{L_-}h(z)dz = \int_{0}^{+\infty} \frac{1}{A(r)+i(a+1)\pi} (-dr) = -\int_0^{+\infty} \frac{dr}{A(r)+i(a+1)\pi}$$
+
+将 $L_+$ 和 $L_-$ 的积分相加：
+$$\int_{L_+}+\int_{L_-} = \int_0^{+\infty}\left[\frac{1}{A(r)-i(a+1)\pi} - \frac{1}{A(r)+i(a+1)\pi}\right]dr = \int_0^{+\infty}\frac{2i(a+1)\pi}{A^2(r)+(a+1)^2\pi^2}dr$$
+
+于是整个闭合围道积分为：
+$$\oint_\Gamma h(z)dz = 2\pi i + \int_0^{+\infty}\frac{2i(a+1)\pi}{A^2(r)+(a+1)^2\pi^2}dr$$
+两边同除以 $2\pi i$，得到 $S'(t)$ 的精确表达式：
+$$S'(t) = 1 + \int_0^{+\infty}\frac{a+1}{A^2(r)+(a+1)^2\pi^2}dr$$
+因为 $a>1$ 且分母严格大于 0，被积函数严格为正。所以 $S'(t) > 1 > 0$ 恒成立，即 $S(t)$ 关于 $t$ 严格单调递增。
+
+\paragraph{放缩与完成证明} 由于 $S(t)$ 在区间 $(f(a),1-a)$ 上严格递增，对于任意 $t<1-a$，有 $S(t) < \lim_{\tau\to (1-a)^-}S(\tau)$。
+同（i）中的极限分析，当 $t\to (1-a)^-$ 时，$x_1\to 1$，$x_2\to 1$，$x_3\to x_0$。
+故 $x_1+x_2+x_3 = S(t) < 1+1+x_0 = x_0+2$。
+
+因为 $x_1, x_2 > 0$ 且 $x_3 > a$，显然有 $S(t) > a$。又因 $f(x)$ 在 $(a,+\infty)$ 上严格单调递增，且 $x_1+x_2+x_3$ 与 $x_0+2$ 均处于该区间，所以直接代入映射不改变不等号方向：
+$$f(x_1+x_2+x_3) < f(x_0+2)$$
+接下来我们估计 $f(x_0+2)$ 的上限。根据微积分基本定理：
+$$f(x_0+2) - f(x_0) = \int_{x_0}^{x_0+2} f'(x) dx$$
+已知 $f'(x) = 1 - \frac{a+1}{x} + \frac{a}{x^2} = 1 - \frac{(a+1)x-a}{x^2}$。
+对于所有位于 $(x_0, x_0+2)$ 内的积分变量 $x > a > 1$，恒有 $(a+1)x - a = a(x-1) + x > a > 0$，因此 $\frac{(a+1)x-a}{x^2} > 0$，即在此区间上恒有严格的 $f'(x) < 1$。
+从而 $\int_{x_0}^{x_0+2} f'(x) dx < \int_{x_0}^{x_0+2} 1 \,dx = 2$。
+又因为 $f(x_0) = 1-a$，移项即可得到：
+$$f(x_0+2) < f(x_0) + 2 = (1-a) + 2 = 3-a$$
+最后一步，出题人在此处放了一个非常宽泛的常数界限：由于自然常数 $e \approx 2.718$，即 $2e>5.436$，显然 $3 < 2e-1$ 恒成立，于是：
+$$3-a < 2e-1-a$$
+综上，首尾相连写下不等号即可得：
+$$f(x_1+x_2+x_3) < f(x_0+2) < 3-a < 2e-1-a$$
+原不等式(ii)得证。
 \end{solution}
+
+\begin{example}{}{}
+已知函数$f(x)=(x+1)\ln x,f(x_1)=f(x_2)$，过$(x_1,f(x_1)),(x_2,f(x_2))$分别作切线交$x$轴于$(x_3,0),(x_4,0)$，求证$x_3+x_4>0$.
+\end{example}
+\begin{solution}
+设$x_-,x_+$分别表示正负根，记
+$$E=x_3+x_4=\frac{x_{-}^{2}}{(x_{-}+1)f^{\prime}(x_{-})}+\frac{x_{+}^{2}}{(x_{+}+1)f^{\prime}(x_{+})}.$$
+简单估值即可证明，当 $y\ge 4$ 时，两项之和恒满足 $E > -1 + 1 = 0$。当 $0<y<4$ 时，引入复积分法处理。取主值对数 $L(z)=\operatorname{Log}(1+z)$，其分支割线设在 $(-\infty,-1]$。定义复变函数：$$ \Phi(z)=\frac{yz}{(z+1)L(z)(zL(z)-y)} $$考察割平面 $\mathbb{C}\setminus(-\infty,-1]$ 中方程 $zL(z)=y$ 的根。设 $1+z = r e^{i\theta}$，其中 $\theta \in (-\pi,\pi)$，$r>0$。则 $z = r\cos\theta - 1 + ir\sin\theta$，$L(z) = \ln r + i\theta$。代入方程 $zL(z)=y$，取虚部可得：$$ \Im(zL(z)) = \theta(r\cos\theta - 1) + r\sin\theta \ln r = 0. $$若存在非实数根（即 $\theta \ne 0$），解得 $\ln r = \frac{\theta(1 - r\cos\theta)}{r\sin\theta}$。
+代入实部可得：
+\begin{align*}\Re(zL(z)) &= (r\cos\theta - 1)\ln r - r\theta\sin\theta \&= (r\cos\theta - 1)\frac{\theta(1 - r\cos\theta)}{r\sin\theta} - \frac{r^2\theta\sin^2\theta}{r\sin\theta} \\&= -\frac{\theta}{r\sin\theta} \left[ (1-r\cos\theta)^2 + r^2\sin^2\theta \right] = -\frac{\theta}{\sin\theta}\frac{|1-(1+z)|^2}{r} = -\frac{\theta}{\sin\theta}\frac{|z|^2}{r}.\end{align*}由于 $\theta \in (-\pi,\pi) \setminus \{0\}$，$\theta$ 和 $\sin\theta$ 同号，有 $\frac{\theta}{\sin\theta} > 0$。由 $|z|^2>0$ 且 $r>0$，推得 $\Re(zL(z)) < 0$，这与 $y>0$ 矛盾。因此 $\theta=0$，方程在割平面内仅有实数根 $x_{-}$ 和 $x_{+}$。另外，当 $z \to 0$ 时，$L(z) \sim z$，$\Phi(z) \to -1$，故 $z=0$ 为可去奇点。对于简单极点 $x_{\pm}$，利用 $(zL(z))' = f'(z)$，其留数为：$$ \operatorname{Res}(\Phi;x_{\pm}) = \lim_{z\to x_{\pm}} \frac{yz(z-x_{\pm})}{(z+1)L(z)(zL(z)-y)} = \frac{y x_{\pm}}{(x_{\pm}+1)L(x_{\pm})f^{\prime}(x_{\pm})} = \frac{x_{\pm}^{2}}{(x_{\pm}+1)f^{\prime}(x_{\pm})}. $$因此，这两个极点的留数之和恰为所求表达式 $E$。取绕割线 $(-\infty,-1]$ 的闭合匙孔形围道进行积分，该围道由大圆 $C_R$、贴近割线上侧的 $L_+$、绕 $z=-1$ 的小圆 $C_\epsilon$ 及贴近割线下侧的 $L_-$ 组成。当 $R\to\infty$ 时，$|\Phi(z)| = \mathcal{O}\left(\frac{1}{R\ln^2 R}\right)$，路径长度为 $2\pi R$，大圆上的积分为 $\mathcal{O}\left(\frac{1}{\ln^2 R}\right) \to 0$。当 $\epsilon\to 0$ 时，$L(z) \sim \ln\epsilon$，$|\Phi(z)| = \mathcal{O}\left(\frac{1}{\epsilon\ln^2 \epsilon}\right)$，路径长度为 $2\pi \epsilon$，小圆上的积分为 $\mathcal{O}\left(\frac{1}{\ln^2 \epsilon}\right) \to 0$。根据留数定理，极点留数之和等于沿割线两侧的积分。令 $z = -1-t$（$t>0$），割线两侧的对数边值分别为 $L_{\pm}(-1-t) = \ln t \pm i\pi$。由此可得：$$ E = \frac{1}{2\pi i}\int_{0}^{\infty} \left(\Phi_{+}(-1-t) - \Phi_{-}(-1-t)\right) dt. $$由于 $\Phi_{-}=\overline{\Phi_{+}}$，有 $\Phi_{+} - \Phi_{-} = 2i\Im\Phi_{+}$，故 $E = \frac{1}{\pi}\int_{0}^{\infty}\Im\Phi_{+}(-1-t)dt$。代入 $\Phi_{+}(-1-t)$ 进行化简：$$ \Phi_{+}(-1-t) = \frac{y(-1-t)}{(-t)(\ln t + i\pi)\left[(-1-t)(\ln t+i\pi) - y\right]} = \frac{-y(1+t)}{t(\ln t+i\pi)\left[(1+t)(\ln t+i\pi) + y\right]}. $$分子分母同除以 $1+t$，可化为：$$ \Phi_{+}(-1-t) = \frac{1+t}{t} \left( \frac{1}{\ln t+\frac{y}{1+t}+i\pi} - \frac{1}{\ln t+i\pi} \right). $$利用复数虚部公式 $\Im\left(\frac{1}{u+i\pi}\right) = -\frac{\pi}{u^2+\pi^2}$，提取虚部可得：$$ \Im\Phi_{+}(-1-t) = \frac{\pi(1+t)}{t} \left( \frac{1}{(\ln t)^2+\pi^2} - \frac{1}{\left(\ln t+\frac{y}{1+t}\right)^2+\pi^2} \right). $$代入 $E$ 的表达式中消去 $\pi$，得到实积分表示：$$ E = \int_{0}^{\infty}\frac{1+t}{t}\left(\frac{1}{(\ln t)^{2}+\pi^{2}}-\frac{1}{\left(\ln t+\frac{y}{1+t}\right)^{2}+\pi^{2}}\right)dt. $$利用恒等式 $\frac{1}{u^2+\pi^2} - \frac{1}{(u+a)^2+\pi^2} = \int_{0}^{a} \frac{2(u+s)}{((u+s)^2+\pi^2)^2} ds$，将 $u = \ln t$ 与 $a = \frac{y}{1+t}$ 代入，积分化为：$$ E = \int_{0}^{\infty} \frac{1+t}{t} \left( \int_{0}^{\frac{y}{1+t}} \frac{2(\ln t+s)}{\left((\ln t+s)^{2}+\pi^{2}\right)^{2}} ds \right) dt. $$作积分变量代换 $r = (1+t)s$，则 $ds = \frac{dr}{1+t}$，内层积分限变为 $0 < r < y$，从而：$$ E = \int_{0}^{\infty} \int_{0}^{y} \frac{2\left(\ln t+\frac{r}{1+t}\right)}{t\left(\left(\ln t+\frac{r}{1+t}\right)^{2}+\pi^{2}\right)^{2}} dr\, dt. $$设双重积分的被积函数为 $F(t,r)$。在 $r \in [0, y]$ 上，由于 $y<4$，$r$ 有界。当 $t \to +\infty$ 时，$|F(t,r)| \sim \frac{2}{t(\ln t)^3}$；当 $t \to 0^+$ 时，$|F(t,r)| \sim \frac{2}{t|\ln t|^3}$。这表明在 $t \in (0, +\infty)$ 上 $\max_{r \in [0,y]} |F(t,r)|$ 绝对可积。由于积分域 $[0,y]$ 有界，双重积分绝对收敛。由 Fubini 定理交换积分次序，可得：$$ E = \int_{0}^{y} J(r)dr, \quad J(r) = \int_{0}^{\infty}\frac{2\left(\ln t+\frac{r}{1+t}\right)}{t\left(\left(\ln t+\frac{r}{1+t}\right)^{2}+\pi^{2}\right)^{2}}dt. $$现证明当 $0<r<4$ 时 $J(r)>0$。对 $J(r)$ 作代换 $t = e^{s}$ ($dt/t = ds$)，得：$$ J(r) = \int_{-\infty}^{\infty}\frac{2\phi_{r}(s)}{\left(\phi_{r}(s)^{2}+\pi^{2}\right)^{2}}ds, \quad \text{其中 } \phi_{r}(s) = s+\frac{r}{1+e^{s}}. $$计算其导数 $\phi_{r}^{\prime}(s) = 1-\frac{re^{s}}{(1+e^{s})^{2}}$。由于 $\frac{e^{s}}{(1+e^{s})^{2}} \le \frac{1}{4}$，当 $r<4$ 时，$\phi_{r}^{\prime}(s) \ge 1-\frac{r}{4} > 0$。因此 $\phi_{r}(s)$ 在定义域内严格单调递增，进而对于 $s>0$，有 $\phi_{r}(s) > \phi_{r}(0) = \frac{r}{2}$。再次求导得 $\phi_{r}^{\prime\prime}(s) = \frac{re^{s}(e^{s}-1)}{(1+e^{s})^{3}}$，故对于 $s>0$，有 $\phi_{r}^{\prime\prime}(s)>0$。对 $J(r)$ 采用分部积分。设 $A(s) = \frac{1}{\phi_{r}(s)^{2}+\pi^{2}}$，被积函数可表示为 $-\frac{A^{\prime}(s)}{\phi_{r}^{\prime}(s)}$，从而：$$ J(r) = \left[-\frac{A(s)}{\phi_{r}^{\prime}(s)}\right]_{-\infty}^{\infty} + \int_{-\infty}^{\infty}A(s)\frac{d}{ds}\left(\frac{1}{\phi_{r}^{\prime}(s)}\right)ds. $$当 $s\to \pm\infty$ 时，$\phi_{r}^{\prime}(s)\to 1$ 且 $A(s)\to 0$，故边界项为零。记 $B(s) = \frac{d}{ds}\left(\frac{1}{\phi_{r}^{\prime}(s)}\right) = -\frac{\phi_{r}^{\prime\prime}(s)}{(\phi_{r}^{\prime}(s))^{2}}$。因为 $\phi_{r}^{\prime}(s)$ 为偶函数，其倒数的导数 $B(s)$ 必为奇函数。利用奇偶性将积分区间折叠至 $(0,+\infty)$：$$ J(r) = \int_{0}^{\infty} B(s)(A(s)-A(-s)) ds = \int_{0}^{\infty} B(s)\left(\frac{1}{\phi_{r}(s)^{2}+\pi^{2}}-\frac{1}{\phi_{r}(-s)^{2}+\pi^{2}}\right)ds. $$当 $s>0$ 时，由于 $\phi_{r}^{\prime\prime}(s)>0$，有 $B(s)<0$。此外，由于 $\phi_{r}(-s) = -s+\frac{re^{s}}{1+e^{s}} = r - \left(s+\frac{r}{1+e^{s}}\right) = r-\phi_{r}(s)$，可得：$$ A(s)-A(-s) = \frac{1}{\phi_{r}(s)^2+\pi^2} - \frac{1}{(r-\phi_{r}(s))^2+\pi^2} = \frac{r(r-2\phi_{r}(s))}{\left(\phi_{r}(s)^{2}+\pi^{2}\right)\left((r-\phi_{r}(s))^{2}+\pi^{2}\right)}. $$已知当 $s>0$ 时 $\phi_{r}(s) > \frac{r}{2}$，即 $r-2\phi_{r}(s)<0$，故 $A(s)-A(-s)<0$。因此，被积函数 $B(s)(A(s)-A(-s)) > 0$ 恒成立，推得对于任意 $0<r<4$ 均有 $J(r)>0$。由于已知 $0<y<4$，积分上限 $y$ 保证了积分变量满足 $r \le y < 4$，从而 $E = \int_{0}^{y}J(r)dr > 0$。综上所述，对任意 $y>0$ 且 $x_{1}\ne x_{2}$ 满足 $x_{1}\ln(1+x_{1})=x_{2}\ln(1+x_{2})=y$，恒有 $E>0$ 成立。
+\end{solution}
+\newpage
+\begin{example}{邪帝原创导数题}{}
+    已知函数$f(x)=x-(a+1)\ln x-\frac{a}{x},(a>1)$\\
+    （1）讨论$f(x)$的单调性；\\
+    （2）若$f(x_1)=f(x_2)=f(x_3),(x_1<x_2<x_3)$，证明$f(x_1x_2x_3)>1-a$.
+\end{example}
+\begin{solution}
+设$g(x)=x-\ln x,f(x)=g(x)-ag\left(\frac1x\right)$，$x$和$\dfrac{1}{x}$同时出现，指向比值换元.\\
+（1）已知函数$f(x)=x-(a+1)\ln x-\frac ax$,定义域为$(0,+\infty)$。对其求导，通分整理得
+$$f'(x)=1-\frac{a+1}x+\frac a{x^2}=\frac{x^2-(a+1)x+a}{x^2}=\frac{(x-1)(x-a)}{x^2}$$
+当$x\in(0,1)$时，$(x-1)<0,(x-a)<0\Longrightarrow f^\prime(x)>0$,函数$f(x)$单增；当$x\in(1,a)$时，$(x-1)>0,(x-a)<0\Longrightarrow f'(x)<0$,函数$f(x)$单减；当$x\in(a,+\infty)$时，$(x-1)>0,(x-a)>0\Longrightarrow f'(x)>0$,函数$f(x)$单增。因此，$f(x)$的单调递增区间为(0,1)和$(a,+\infty)$,单调递减区间为$(1,a)$。极大值为$f(1)=1-a$;极小值为$f(a)=a-1-(a+1)\ln a$ 。\\
+（2）目标不等式右侧的$1-a$恰好是极大值$f(1)$。由于$f(x)$在区间$(a,+\infty)$上单增且趋于无穷，所以方程$f(x)=1-a$在该区间上有唯一实根，不妨记为$x_0$，则
+\[g(x_0)-ag\left(\frac{1}{x_0}\right)=1-a\Leftrightarrow a=\dfrac{g(x_0)-1}{g\left(\frac{1}{x_0}\right)-1}=\frac{x_0-\ln x_0-1}{\frac1{x_0}+\ln x_0-1}\]
+要证明 $f(x_1x_2x_3) > 1 - a = f(x_0)$，因为 $(a, +\infty)$ 是严格增区间，我们只需证明：$x_1x_2x_3 > x_0$，这又指向了乘积换元，于是将 $x_2, x_3$ 替换为 $pq$ 和 $\frac{p}{q}$，可以得到，$f(x_2) = f(x_3)$，得到
+$$pq - \frac{a}{pq} - (a + 1)\ln(pq) = \frac{p}{q} - a\frac{q}{p} - (a + 1)\ln\frac{p}{q}$$
+$$
+\Leftrightarrow p\left(q - \frac{1}{q}\right) + \frac{a}{p}\left(q - \frac{1}{q}\right) = 2(a + 1)\ln q \Leftrightarrow \left(p + \frac{a}{p}\right)\left(q - \frac{1}{q}\right) = 2(a + 1)\ln q$$
+则原等式化为
+$$\begin{cases}
+f(x) = f(pq) & \Leftrightarrow x - \frac{a}{x} - (a + 1)\ln x = pq - \frac{a}{pq} - (a + 1)\ln(pq) \\
+f(pq) = f(\frac{p}{q}) & \Leftrightarrow \left(p + \frac{a}{p}\right)\left(q - \frac{1}{q}\right) = 2(a + 1)\ln q
+\end{cases}$$
+第二个方程等价于
+$$\left(q - \frac{1}{q}\right)p^2 - 2(a + 1)\ln q\cdot p + a\left(q - \frac{1}{q}\right) = 0 \Leftrightarrow p = \frac{(a + 1)\ln q - \sqrt{(a + 1)^2\ln^2 q - a\left(q - \frac{1}{q}\right)^2}}{q - \frac{1}{q}}$$(猜的，不确定要舍掉哪个解)
+
+
+
+
+
+要证明$f(x_1x_2x_3)>1-a=f(x_0)$,因为$(a,+\infty)$是严格增区间，我们只需证明：$x_1x_2x_3>x_0$，我们可以尝试加强证明$x_1x_2^2>x_0$，
+\begin{align*}
+x_1x_2^2>x_0&\Leftrightarrow 1<\frac{x_0}{x_1x_2}<p\Leftrightarrow f\left(\frac{x_0}{x_1x_2}\right)<f(x_2)\\
+&\Leftrightarrow \frac{x_0}{x_1x_2}-a\frac{x_1x_2}{x_0}-(a+1)\ln\frac{x_0}{x_1x_2}<x_2-\frac{a}{x_2}-(a+1)\ln x_2
+\end{align*}
+比值换元，令$y=\frac{x_1}{x_2}<1\Leftrightarrow x_1=x_2y$，则
+\begin{align*}
+&x_1-\frac{a}{x_1}-(a+1)\ln x_1=x_2-\frac{a}{x_2}-(a+1)\ln x_2\\
+\Leftrightarrow& x_2y-\frac{a}{x_2y}-(a+1)\ln x_2y=x_2-\frac{a}{x_2}-(a+1)\ln x_2\\
+\Leftrightarrow& x_2(y-1)+\frac{a}{x_2y}(y-1)=(a+1)\ln y\Leftrightarrow x_2+\frac{a}{x_2y}=\frac{\ln y}{y-1}\\
+&\frac{x_0}{x_1x_2}-a\frac{x_1x_2}{x_0}-(a+1)\ln\frac{x_0}{x_1x_2}<x_2-\frac{a}{x_2}-(a+1)\ln x_2\\
+\Leftrightarrow&\frac{x_0}{x_2^2y}-a\frac{x_2^2y}{x_0}-(a+1)\ln\frac{x_0}{x_2^2y}<x_2-\frac{a}{x_2}-(a+1)\ln x_2\\
+\Rightarrow h(y)&=\frac{x_0}{x_2^2y}-a\frac{x_2^2y}{x_0}-(a+1)\ln\frac{x_0}{x_2^2y}-\left(x_2-\frac{a}{x_2}-(a+1)\ln x_2\right)\\
+\Rightarrow h'(y)&=-\frac{x_0}{x_2^2y^2}-a\frac{x_2^2}{x_0}+\frac{a+1}{y}=-\frac{x_0^2+ax_2^4y^2-(a+1)x_2^2yx_0}{x_2^2y^2x_0}=-\frac{(ax_2^2y-x_0)(x_2^2y-x_0)}{x_2^2y^2x_0}
+\end{align*}
+得到$h'(y)$的零点为$y=\frac{x_1}{x_2}=\frac{x_0}{ax_2^2}$和$y=\frac{x_1}{x_2}=\frac{x_0}{p^2}$，分析可知$h(y)$在$y=\frac{x_0}{ax_2^2}$处取得最大值，于是
+\[h(y)\le h\!\left(\frac{x_0}{ap^2}\right)=a-1-(a+1)\ln a-p+\frac{a}{p}+(a+1)\ln p.\]
+记$w(p)=a-1-(a+1)\ln a-p+\frac{a}{p}+(a+1)\ln p$，则
+\[w'(p)=-1-\frac{a}{p^2}+\frac{a+1}{p}=-\frac{(p-1)(p-a)}{p^2}.\]
+故$w(p)$在$(1,a)$上单调递增，在$(a,+\infty)$上单调递减，在$p=a$处取得最大值$w(a)=0$，因此$w(p)\le 0$，即
+\[a-1-(a+1)\ln a\le p-\frac{a}{p}-(a+1)\ln p.\]
+将$a=\dfrac{x_0-\ln x_0-1}{\frac{1}{x_0}+\ln x_0-1}$代入左边，并整理可得关于$x_0$的不等式：
+\[\frac{4x_0\ln x_0+(x_0-1)\left((x_0-1)\ln\left(\frac{x_0(x_0-\ln x_0-1)}{x_0\ln x_0-x_0+1}\right)-2(x_0+1)\right)}{x_0\ln x_0-x_0+1}>0.\]
+最后转化为说明对于任意 $x_0>1$，恒有
+\[\frac{4x_0\ln x_0+(x_0-1)\left((x_0-1)\ln\left(\frac{x_0(x_0-\ln x_0-1)}{x_0\ln x_0-x_0+1}\right)-2(x_0+1)\right)}{x_0\ln x_0-x_0+1}>0\]
+分母大于0显然（切线放缩），所以等价于
+\begin{align*}
+&4x_0\ln x_0+(x_0-1)\left((x_0-1)\ln\left(\frac{x_0(x_0-\ln x_0-1)}{x_0\ln x_0-x_0+1}\right)-2(x_0+1)\right)>0\\
+\Leftrightarrow&4x_0\ln x_0-2(x_0^2-1)+(x_0-1)^2\ln\dfrac{x_0(x_0-\ln x_0-1)}{x_0\ln x_0-(x_0-1)}>0\\
+\Leftrightarrow&2\left(2x_0\ln x_0-(x_0^2-1)\right)+(x_0^2-2x_0+1)\ln\dfrac{x_0\ln x_0-(x_0-1)+(x_0^2-2x_0\ln x_0-1)}{x_0\ln x_0-(x_0-1)}>0\\
+\Leftrightarrow&2\left(2x_0\ln x_0-(x_0^2-1)\right)+(x_0^2-2x_0+1)\ln\left(1+\dfrac{x_0^2-2x_0\ln x_0-1}{x_0\ln x_0-(x_0-1)}\right)>0\\
+\Leftrightarrow&-2\left(x_0^2-2x_0\ln x_0-1\right)+(x_0^2-2x_0\ln x_0-1+2(x_0\ln x_0-(x_0-1)))\ln\left(1+\dfrac{x_0^2-2x_0\ln x_0-1}{x_0\ln x_0-(x_0-1)}\right)>0\\
+\Leftrightarrow&-2\dfrac{x_0^2-2x_0\ln x_0-1}{x_0\ln x_0-(x_0-1)}+\left(\dfrac{x_0^2-2x_0\ln x_0-1}{x_0\ln x_0-(x_0-1)}+2\right)\ln\left(1+\dfrac{x_0^2-2x_0\ln x_0-1}{x_0\ln x_0-(x_0-1)}\right)>0\\
+\Leftrightarrow&(u+2)\ln (u+1)>2u,\quad u=\dfrac{x_0^2-2x_0\ln x_0-1}{x_0\ln x_0-(x_0-1)}>0\\
+\Leftrightarrow&\ln(u+1)>\dfrac{2u}{u+2},\text{显然的}
+\end{align*}
+\end{solution}  
+
+
+
+
+
+\begin{example}{（群友供题）}{}
+    已知$f(x)=\text{e}^x-\ln x$，且$f(x_1)=f(x_2)$，$x_1>x_2$，求证$x_1+x_2>1$.
+\end{example}
+\begin{solution}
+    本题对称化构造已经有解法了，笔者补一个构造函数的做法。首先转化为证明\[g(x)=(x-\dfrac12)^2,g(x_1)=(x_1-\dfrac12)^2>(x_2-\dfrac12)^2=g(x_2)\]进行观察，我们发现如果$x_1$稍微大一点，比如当$x_1>1$就已经有$x_1+x_2>1$，所以本题的关键是在$x=\dfrac12$附近证明这个结论，由此不难想到级数展开，我们首先求导得到：\vspace{-5pt}
+    \[f'(x)=\text{e}^x-\dfrac{1}{x},f'(\dfrac12)=\sqrt{\text{e}}-2,f''(x)=\text{e}^x+\dfrac{1}{x^2},f''(\dfrac12)=\sqrt{\text{e}}+4,...\]
+    这样不难得到$f(x)$先减再增，极值点不好求，并列出$f(x)$在$x=\dfrac12$附近的级数形式：
+    \[f(x)=f(\dfrac12)+(\sqrt{\text{e}}-2)(x-\dfrac12)+\dfrac{\sqrt{\text{e}}+4}{2!}(x-\dfrac12)^2+\dfrac{\sqrt{e}+8}{3!}(x-\dfrac12)^3+\cdots\]
+    我们要构造在$x=\dfrac12$左右侧正负性相反的函数$\varphi(x)=h_1(g(x))+h_2(f(x))$，同时规定$h_1(x)$单调递增，$h_2(x)$在$f(x)$值域内单调，这样我们就可以转化证明
+    \[g(x_1)>g(x_2)\Leftrightarrow h_1(g(x_1))>h_1(g(x_2))\Leftrightarrow  \varphi(x_1)>\varphi(x_2)\]
+    但是显然我们不必大费周章地考虑$h_2(x)$，除非你想优雅地解题。此处我们可以直接取$\varphi(x)=h_1(g(x))-f(x)$，直观一点来说，只需要找到$(x-\dfrac12)^2$的某个复合函数穿过$\bigg(\dfrac12,f(\dfrac12)\bigg)$这个点，且在该点左侧比$f(x)$“矮”，右侧比$f(x)$“高”，那么就能证明$g(x_1)>g(x_2)$。那既然要求右侧比$f(x)$“高”，我们初步考虑$h_1(x)=e^{g(x)}$，由
+    \[\text{e}^x=1+x+\dfrac{x^2}{2!}+\dfrac{x^3}{3!}+\cdots\Rightarrow e^{(x-\frac12)^2}=1+(x-\dfrac12)^2+\dfrac{(x-\dfrac12)^4}{2!}+\dfrac{(x-\dfrac12)^6}{3!}+\cdots\]
+    所以消去偶数次项得到$\varphi(x)=\dfrac{\sqrt{\text{e}}+4}{2}e^{g(x)}-f(x)-2+\ln 2+\dfrac{\sqrt{\text{e}}}{2}$，即
+    \begin{align*}
+        \varphi(x)&=\dfrac{\sqrt{\text{e}}+4}{2}e^{(x-\frac12)^2}-\text{e}^x+\ln x-2+\ln 2+\dfrac{\sqrt{\text{e}}}{2}\\
+        \varphi'(x)&=(\sqrt{\text{e}}+4)(x-\dfrac12)\text{e}^{(x-\frac12)^2}-\text{e}^x+\dfrac1{x}
+    \end{align*}
+    由刚才分析可知，$\varphi''(x)$显然单增，且满足$\varphi''(\dfrac12)=0$，故$\varphi'(x)\geq\varphi'(\dfrac12)>0$，所以$\varphi(x)$单增，$\varphi(x_1)>\varphi(x_2)$，原题得证。
+\end{solution}
+\newpage
+\begin{example}{}{}
+    已知正数$a,b,c$满足$abc=1$，证明：\[\sqrt{a^2+1}+\sqrt{b^2+1}+\sqrt{c^2+1}\leqslant\sqrt{2}\left(a+b+c\right)\]
+\end{example}
+\begin{solution}
+    等价于证明：$$ \left( \sqrt{a^2+1} - \sqrt{2}a \right) + \left( \sqrt{b^2+1} - \sqrt{2}b \right) + \left( \sqrt{c^2+1} - \sqrt{2}c \right) \leqslant 0. $$由于 $a, b, c \in (0, +\infty)$，可设 $a = e^x, b = e^y, c = e^z$，其中 $x, y, z \in \mathbb{R}$。由约束条件 $abc=1$ 可得 $e^{x+y+z} = 1$，即 $x+y+z=0$。构造函数 $F(t) = \sqrt{e^{2t}+1} - \sqrt{2}e^t \ (t \in \mathbb{R})$，原命题等价转化为证明在 $x+y+z=0$ 的条件下，恒有：$$ F(x) + F(y) + F(z) \leqslant 0. $$对 $F(t)$ 求一阶导数：$$ F'(t) = \frac{1}{2}(e^{2t}+1)^{-\frac{1}{2}} \cdot 2e^{2t} - \sqrt{2}e^t = \frac{e^{2t}}{\sqrt{e^{2t}+1}} - \sqrt{2}e^t. $$利用商的求导法则求二阶导数：$$ F''(t) = \frac{2e^{2t}\sqrt{e^{2t}+1} - e^{2t} \cdot \frac{e^{2t}}{\sqrt{e^{2t}+1}}}{e^{2t}+1} - \sqrt{2}e^t = \frac{2e^{2t}(e^{2t}+1) - e^{4t}}{(e^{2t}+1)^{\frac{3}{2}}} - \sqrt{2}e^t = \frac{e^{4t} + 2e^{2t}}{(e^{2t}+1)^{\frac{3}{2}}} - \sqrt{2}e^t. $$下证对于任意 $t \in \mathbb{R}$，恒有 $F''(t) < 0$。该不等式等价于：$$ \frac{e^{4t} + 2e^{2t}}{(e^{2t}+1)^{\frac{3}{2}}} < \sqrt{2}e^t. $$由于对于任意 $t \in \mathbb{R}$，上式两边均为正数，将两边同时平方进行等价变形，可得：$$ \frac{e^{4t}(e^{2t}+2)^2}{(e^{2t}+1)^3} < 2e^{2t}. $$将正数 $(e^{2t}+1)^3$ 乘至不等式右边，得：$$ e^{4t}(e^{2t}+2)^2 < 2e^{2t}(e^{2t}+1)^3. $$分别展开不等式两侧：左边 $= e^{4t}(e^{4t} + 4e^{2t} + 4) = e^{8t} + 4e^{6t} + 4e^{4t}$，右边 $= 2e^{2t}(e^{6t} + 3e^{4t} + 3e^{2t} + 1) = 2e^{8t} + 6e^{6t} + 6e^{4t} + 2e^{2t}$。两边作差（右边减去左边）整理得：$$ e^{8t} + 2e^{6t} + 2e^{4t} + 2e^{2t} > 0. $$由于对于任意 $t \in \mathbb{R}$ 恒有 $e^{2t} > 0$，上述多项式的各项均为严格正数，其和显然大于 $0$。因为上述推导每一步均为等价变形，故 $F''(t) < 0$ 对全体实数 $t$ 恒成立，即 $F(t)$ 是定义在 $\mathbb{R}$ 上的严格上凸函数。基于 $F(t)$ 的严格上凸性，可通过以下两种等价方式完成证明：方法一：利用琴生（Jensen）不等式对于任意实数 $x, y, z$，有：$$ F(x) + F(y) + F(z) \leqslant 3F\left( \frac{x+y+z}{3} \right). $$将已知条件 $x+y+z=0$ 代入，得：$$ F(x) + F(y) + F(z) \leqslant 3F(0). $$计算 $F(0)$ 的值：$$ F(0) = \sqrt{e^0+1} - \sqrt{2}e^0 = \sqrt{2} - \sqrt{2} = 0. $$从而 $F(x) + F(y) + F(z) \leqslant 0$，原不等式得证。方法二：利用切线放缩由于 $F(t)$ 为严格上凸函数，其图像始终位于其任意一点的切线下方（除切点外）。取 $t=0$，计算可得函数值 $F(0) = 0$，导数值 $F'(0) = \frac{e^0}{\sqrt{e^0+1}} - \sqrt{2}e^0 = \frac{1}{\sqrt{2}} - \sqrt{2} = -\frac{\sqrt{2}}{2}$。故 $F(t)$ 在 $t=0$ 处的切线方程为 $y = -\frac{\sqrt{2}}{2}t$。对于任意 $t \in \mathbb{R}$，恒有切线不等式：$$ F(t) \leqslant F(0) + F'(0)(t - 0) \implies F(t) \leqslant -\frac{\sqrt{2}}{2}t. $$分别将 $x, y, z$ 代入上述不等式并相加得：$$ F(x) + F(y) + F(z) \leqslant -\frac{\sqrt{2}}{2}(x+y+z). $$结合已知条件 $x+y+z=0$，可得：$$ F(x) + F(y) + F(z) \leqslant 0. $$原不等式同样得证。最后分析等号成立的条件。由于 $F(t)$ 为严格上凸函数，上述不等式取等号的充分必要条件为自变量相等，即 $x=y=z$。结合约束条件 $x+y+z=0$，解得 $x=y=z=0$。逆向代回原变量，即当且仅当 $a=b=c=1$ 时等号成立，此时符合 $abc=1$ 的前提条件。综上所述，原不等式 $\sqrt{a^2+1}+\sqrt{b^2+1}+\sqrt{c^2+1}\leqslant\sqrt{2}\left(a+b+c\right)$ 得证。
+\end{solution}
+
 \begin{example}{远古偏移题，来自陈语梦}{}
 已知 $x_{1} - \ln(\ln x_{1} + 1) = x_{2} - \ln(\ln x_{2} + 1) = m$求证\[m + 1 < x_{1} + x_{2} < \frac{7}{6}m + \frac{5}{6}\]
 \end{example}
@@ -180,12 +602,8 @@ S(\theta) \geq \sum_{m=2}^{2n+1} 2^{1-\frac{m}{2}} = 2 \sum_{m=2}^{2n+1} 2^{-\fr
     加强证明$g(x)$单调递增，求导得$g'(x)=\ln(\ln x+1)+x\cdot\frac1{\ln x+1}\cdot\frac1x-1=\ln(\ln x+1)+\frac1{\ln x+1}-1$
     又因为任意$x>0$有$\ln x>1-\frac1x$，所以$g'(x)>0$，故$g(x)$单调递增。右侧化为
     \[g(x)=x^2-x\left(\frac{7}{6}f(x) + \frac{5}{6}\right)+1=1-\frac{{x}^{2}}{6}-\frac{5}{6}x+\frac76x\ln(\ln({x})+1)\]
-    可以考虑证明函数
-    \begin{align*}
-    h(x)&=g(x)+\frac16f(x)+\frac{7}{72}f^2(x)=x^2-x\left(\frac{7}{6}f(x) + \frac{5}{6}\right)+1+\frac16f(x)+\frac{7}{72}f^2(x)\\
-    &=
-    \end{align*}
-    单调递减，上界：\[x_1+x_2+x_3<2+(\e-3)m-\frac{m^2}{2}-\frac{2}{3}m^3\]
+    令 $F(x) = x^2 - x(\frac{7}{6}f(x) + \frac{5}{6}) + \frac{1}{6}(f(x) - 1) + \frac{7}{72}(f(x) - 1)^2$。即求证$F(x)$ 在其定义域 $[1, +\infty)$ 内单调递减。
+    要证 $F(x)$ 在 $[1, +\infty)$ 上单调递减，等价于证明其导函数满足 $F'(x) \leqslant 0$，即证明以下不等式在 $x \geqslant 1$ 时恒成立：$$\frac{5xe^{2(x-1)} + 31xe^{x-1} - 35e^{x-1} - 1}{7 + 35xe^{x-1}} \geqslant \ln x$$首先，引入辅助函数 $h(x) = \frac{x^2+4x-5}{4x+2} - \ln x$。对其求导可得：$$h'(x) = \frac{(2x+4)(4x+2) - (x^2+4x-5) \cdot 4}{(4x+2)^2} - \frac{1}{x} = \frac{4x^2+4x+28}{(4x+2)^2} - \frac{1}{x}$$通分化简得：$$h'(x) = \frac{x(4x^2+4x+28) - (16x^2+16x+4)}{x(4x+2)^2} = \frac{4x^3-12x^2+12x-4}{x(4x+2)^2} = \frac{4(x-1)^3}{x(4x+2)^2}$$当 $x \geqslant 1$ 时，$h'(x) \geqslant 0$ 显然成立，故 $h(x)$ 在 $[1, +\infty)$ 上单调递增。又因 $h(1) = 0$，故当 $x \geqslant 1$ 时，$h(x) \geqslant 0$ 恒成立，即得到不等式放缩：$\frac{x^2+4x-5}{4x+2} \geqslant \ln x$。基于上述结论，为证原不等式，只需证明：$$\frac{5xe^{2(x-1)} + 31xe^{x-1} - 35e^{x-1} - 1}{7 + 35xe^{x-1}} \geqslant \frac{x^2+4x-5}{4x+2}$$由于 $x \geqslant 1$，不等式两边的分母均大于零。将两边交叉相乘得：$$(4x+2)(5xe^{2(x-1)} + 31xe^{x-1} - 35e^{x-1} - 1) \geqslant (x^2+4x-5)(7 + 35xe^{x-1})$$将其按 $e^{x-1}$ 的次幂展开并合并同类项，可得：$e^{2(x-1)}$ 项系数为 $20x^2 + 10x$；$e^{x-1}$ 项系数为 $(4x+2)(31x-35) - 35x(x^2+4x-5) = -35x^3 - 16x^2 + 97x - 70$；常数项为 $(4x+2)(-1) - 7(x^2+4x-5) = -7x^2 - 32x + 33$。移项整理后，不等式转化为：$$(20x^2+10x)e^{2(x-1)} + (-35x^3-16x^2+97x-70)e^{x-1} - (7x^2+32x-33) \geqslant 0$$将不等式两端同乘 $e^{1-x}$（因指数函数恒正，不等号方向不变），构造函数 $g(x)$：$$g(x) = (20x^2+10x)e^{x-1} - 35x^3 - 16x^2 + 97x - 70 - e^{1-x}(7x^2+32x-33)$$问题转化为证明当 $x \geqslant 1$ 时，$g(x) \geqslant 0$ 恒成立。对 $g(x)$ 求一阶导数：$$g'(x) = e^{x-1}(20x^2+50x+10) - 105x^2 - 32x + 97 + e^{1-x}(7x^2+18x-65)$$再次求导得二阶导数：$$g''(x) = e^{x-1}(20x^2+90x+60) - 210x - 32 + e^{1-x}(-7x^2-4x+83)$$为判断 $g''(x)$ 的符号，我们先证明 $g''(x) \geqslant (1-xe^{1-x})(7x+4)$。将该目标不等式的右端展开并移项，等价于证明：$$e^{x-1}(20x^2+90x+60) + 83e^{1-x} - 217x - 36 \geqslant 0$$由基本不等式 $e^z \geqslant z+1$，分别取 $z = x-1$ 与 $z = 1-x$，可得 $e^{x-1} \geqslant x$ 与 $e^{1-x} \geqslant 2-x$。当 $x \geqslant 1$ 时，$20x^2+90x+60 > 0$，将上述放缩代入左侧多项式：$$e^{x-1}(20x^2+90x+60) + 83e^{1-x} - 217x - 36 \geqslant x(20x^2+90x+60) + 83(2-x) - 217x - 36$$$$= 20x^3 + 90x^2 + 60x + 166 - 83x - 217x - 36$$$$= 20x^3 + 90x^2 - 240x + 130$$提取公因式并进行因式分解得：$$10(2x^3 + 9x^2 - 24x + 13) = 10(x-1)(2x^2+11x-13) = 10(x-1)^2(2x+13)$$由于 $x \geqslant 1$，$10(x-1)^2(2x+13) \geqslant 0$ 显然成立。这证明了 $g''(x) \geqslant (1-xe^{1-x})(7x+4)$。同时，当 $x \geqslant 1$ 时，$xe^{1-x} \leqslant 1$ 恒成立，即 $1-xe^{1-x} \geqslant 0$。结合 $7x+4 > 0$，可知：$$g''(x) \geqslant (1-xe^{1-x})(7x+4) \geqslant 0$$故 $g'(x)$ 在 $[1, +\infty)$ 上单调递增。代入端点值检验：$$g'(1) = 80 - 105 - 32 + 97 - 40 = 0$$因此，当 $x \geqslant 1$ 时，$g'(x) \geqslant 0$ 恒成立，说明 $g(x)$ 在 $[1, +\infty)$ 上单调递增。再次代入端点值检验：$$g(1) = 30 - 35 - 16 + 97 - 70 - 6 = 0$$故当 $x \geqslant 1$ 时，$g(x) \geqslant 0$ 恒成立。由此逆推可知，等价转化的核心不等式成立，即原导函数满足 $F'(x) \leqslant 0$ 恒成立。综上所述，$F(x)$ 在其定义域 $[1, +\infty)$ 内单调递减，原命题得证。
 \end{solution}
 \newpage
 \begin{example}{来自amare Donata Caesia}{}
@@ -218,4 +636,203 @@ H''''(x)&=-16x\e^{2x}-(x+6)\e^x-24\e(5-2\e)
 $$f(t)=\frac{t}{1+t-\frac{t^{2}}{2}}-\ln \left(1+t-\frac{t^{2}}{2}\right)>0,~~f'(t)=\frac{t^{2}\left(2-\frac{t}{2}\right)}{\left(1+t-\frac{t^{2}}{2}\right)^{2}}>0, \quad \forall t\in\left(0,\frac{1}{e}\right)$$
 且$f(0)=0$，故$f(t)>0$在区间内成立，即$x_3>1-m-\frac{m^2}2>1$。这就证明了$x_1+x_2+x_3>2$.
 \end{solution}
+
+\newpage
+\newpage
+\begin{example}{}{}
+    $a,d\geq 0,b,c>0,b+c\geq a+d$，求$\dfrac{b}{c+d}+\dfrac{c}{a+b}$的最小值.
+\end{example}
+\begin{solution}
+    首先证明函数的最小值必在边界 $a+d = b+c$ 处取得。假设存在一组满足 $a_0+d_0 < b_0+c_0$ 的点 $(a_0, b_0, c_0, d_0)$ 使函数取得极小值。由于 $b_0+c_0 - d_0 > a_0 \ge 0$，可构造一个新点 $(a_1, b_0, c_0, d_0)$，其中 $a_1 = b_0+c_0-d_0$。该点满足所有非负与正数约束，且满足等式 $a_1+d_0 = b_0+c_0$。将新点代入目标函数，因 $a_1 > a_0$，第一项 $\frac{b_0}{c_0+d_0}$ 保持不变，第二项的分母变大，即 $\frac{c_0}{a_1+b_0} < \frac{c_0}{a_0+b_0}$。由此得到 $f(a_1, b_0, c_0, d_0) < f(a_0, b_0, c_0, d_0)$。因此只需求解 $a+d = b+c$ 条件下的最值即可。
+    
+    齐次函数，即 $f(ka, kb, kc, kd) = f(a,b,c,d)$（$k>0$），说明函数值仅与变量的相对比例有关。由 $b, c > 0$ 必有 $b+c > 0$。为简化变量，将所有变量同除以 $b+c$，\textbf{即假定 $b+c = 1$}，从而也有 $a+d = 1$。引入换元：令 $b = y$，则 $c = 1-y$，由 $b, c > 0$ 得 $y \in (0, 1)$；令 $a = x$，则 $d = 1-x$，由 $a, d \ge 0$ 得 $x \in [0, 1]$。代入目标函数得：$$f(x,y) = \frac{y}{(1-y)+(1-x)} + \frac{1-y}{x+y} = \frac{y}{2-x-y} + \frac{1-y}{x+y}$$令 $S = x+y$。因 $x \in [0, 1]$ 且 $y \in (0, 1)$，故 $S \in (0, 2)$。对于固定的 $S$，由 $x = S-y \in [0, 1]$ 可得 $S-1 \le y \le S$。结合 $y \in (0, 1)$，$y$ 的取值范围为 $[\max(0, S-1), \min(1, S)] \cap (0, 1)$。将函数转化为关于 $S$ 和 $y$ 的表达式：$$f(S, y) = \frac{y}{2-S} + \frac{1-y}{S} = \frac{2S-2}{S(2-S)} y + \frac{1}{S}$$在固定 $S$ 的截面上，目标函数是关于 $y$ 的一次函数，其极值在区间端点处取得。根据一次项系数 $\frac{2S-2}{S(2-S)}$ 的正负，分以下三种情况讨论：当 $0 < S < 1$ 时，一次项系数 $\frac{2S-2}{S(2-S)} < 0$，函数关于 $y$ 单调递减。为使函数值最小，$y$ 应取区间内的最大值，即 $y = \min(1, S) = S$（此时 $x = 0$）。代入可得该截面上的极小值：$$g_1(S) = f(S, S) = \frac{S}{2-S} + \frac{1-S}{S} = \frac{2}{2-S} + \frac{1}{S} - 2$$当 $1 < S < 2$ 时，一次项系数 $\frac{2S-2}{S(2-S)} > 0$，函数关于 $y$ 单调递增。为使函数值最小，$y$ 应取区间内的最小值，即 $y = \max(0, S-1) = S-1$（此时 $x = 1$）。代入可得：$$g_2(S) = f(S, S-1) = \frac{S-1}{2-S} + \frac{1-(S-1)}{S} = \frac{S-1}{2-S} + \frac{2-S}{S}$$当 $S = 1$ 时，一次项系数为 $0$。此时无论 $y$ 取何值，恒有 $f(1, y) = 1$。接下来求解 $g_1(S)$ 在 $S \in (0, 1)$ 上的最小值。注意到 $(2-S) + S = 2$，利用基本不等式对其变形放缩：$$2 \left(\frac{2}{2-S} + \frac{1}{S}\right) = ((2-S)+S)\left(\frac{2}{2-S} + \frac{1}{S}\right) = 3 + \frac{2S}{2-S} + \frac{2-S}{S}$$由均值不等式可得：$$\frac{2S}{2-S} + \frac{2-S}{S} \ge 2\sqrt{\frac{2S}{2-S} \cdot \frac{2-S}{S}} = 2\sqrt{2}$$故 $\frac{2}{2-S} + \frac{1}{S} \ge \frac{3+2\sqrt{2}}{2} = \sqrt{2} + \frac{3}{2}$。代回 $g_1(S)$ 可得：$$g_1(S) \ge \left(\sqrt{2} + \frac{3}{2}\right) - 2 = \sqrt{2} - \frac{1}{2}$$等号成立当且仅当 $\frac{2S}{2-S} = \frac{2-S}{S}$，即 $2-S = \sqrt{2}S$。解得 $S = 2\sqrt{2}-2 \in (0, 1)$，极小值点在定义域内。同理，考察 $g_2(S)$ 在 $S \in (1, 2)$ 上的最小值。令 $t = 2-S \in (0, 1)$，代入得：$$g_2(S) = \frac{1-t}{t} + \frac{t}{2-t} = \frac{1}{t} - 1 + \frac{2}{2-t} - 1 = \frac{2}{2-t} + \frac{1}{t} - 2$$该表达式与 $g_1(t)$ 的代数形式完全相同，因此其最小值同为 $\sqrt{2} - \frac{1}{2}$。由于 $\sqrt{2} - \frac{1}{2} \approx 0.914 < 1$，故该值即为全局极小值。最后进行充分性验证。取 $S = 2\sqrt{2}-2$，$y = 2\sqrt{2}-2$，$x = 0$，还原为原变量得：$a = 0$，$b = 2\sqrt{2}-2$，$c = 3-2\sqrt{2}$，$d = 1$。经检验，满足 $a \ge 0, d \ge 0, b > 0, c > 0$，且 $b+c = 1 \ge 1 = a+d$。代入原函数验算，确实取得 $\sqrt{2} - \frac{1}{2}$，解的存在性成立。综上所述，$\dfrac{b}{c+d}+\dfrac{c}{a+b}$ 的最小值为 $\sqrt{2} - \dfrac{1}{2}$。
+\end{solution}
+\begin{example}{}{}
+    证明$\left(\dfrac{1}{n}\right)^n+\left(\dfrac{2}{n}\right)^n+\left(\dfrac{3}{n}\right)^n+\cdots+\left(\dfrac{n-1}{n}\right)^n+\left(\dfrac{n}{n}\right)^n>\dfrac{2(n-1)}{n+1}$.
+\end{example}
+\begin{solution}
+    这个不等式有明显的几何意义，首先分母都有$n$，然后分子每次自增，长得很像一个个矩形的面积求和，然后右边是个分式，感觉就是积分后的结果，所以我们根据题目中的$n$次方结构，找到函数$f(x)=x^n$，然后将其积分区间$[0,1]$分成$n$等分，并由$f(x)$下凸，将每一个曲边梯形“扩大”成直边梯形（为什么不先放成矩形？因为放成梯形明显更紧，而且求和的难度不会显著变大），根据题中的$k=1,2,3,\cdots,n$：
+    \[\dfrac{1}{2}\left(\left(\dfrac{k-1}{n}\right)^n+\left(\dfrac{k}{n}\right)^n\right)\left(\dfrac{k}{n}-\dfrac{k-1}{n}\right)>\int_{\frac{k-1}{n}}^{\frac{k}{n}}x^n\dd x\]
+    求和得到
+    \begin{align*}
+    &\left(\dfrac{1}{n}\right)^n+2\left(\dfrac{2}{n}\right)^n+2\left(\dfrac{3}{n}\right)^n+\cdots+2\left(\dfrac{n-1}{n}\right)^n+\left(\dfrac{n}{n}\right)^n>n\int_{0}^1x^n\dd x\\
+    &\Leftrightarrow 2\sum_{k=1}^n\left(\dfrac{k}{n}\right)^n-\left(\dfrac{0}{n}\right)^n-\left(\dfrac{n}{n}\right)^n>\left.\dfrac{x^{n+1}}{n+1}\right|^{1}_0=\dfrac{n}{n+1}\\
+    &\Leftrightarrow \sum_{k=1}^n\left(\dfrac{k}{n}\right)^n>\dfrac{2(n-1)}{n+1}\\
+    \end{align*}
+\end{solution}
+\begin{example}{}{}
+    证明$f(x)=\ln x-8\dfrac{x-1}{(x^{\frac13}+1)^3}$单调递增
+\end{example}
+\begin{solution}
+    转化为$\displaystyle F(t)=3\ln t-8\cdot\frac{t^3-1}{(t+1)^3}$单增，$\displaystyle F^{\prime}(t)=\frac{3}{t}-8\cdot\frac{3(t^2+1)}{(t+1)^4}=\frac{3}{t}-\frac{24(t^2+1)}{(t+1)^4}$
+    链式法则$f^{\prime}(x)=\frac{dF}{dt}\cdot\frac{dt}{dx}=F^{\prime}(t)\cdot\frac{1}{3t^2}$，所以\[f^{\prime}(x)=\left(\frac{3}{t}-\frac{24(t^2+1)}{(t+1)^4}\right)\cdot\frac{1}{3t^2}=\frac{1}{t^3}-\frac{8(t^2+1)}{t^2(t+1)^4}=\frac{(t-1)^4}{t^3(t+1)^4}>0.\]
+\end{solution}
+
+\begin{example}{来自邪帝，$\sqrt{xy}\left(e^x+e^y\right)\leqslant2$}{}
+    正实数$x,y$满足$e^x-\ln x=e^y-\ln y$，证明：$\sqrt{xy}\left(e^x+e^y\right)\leqslant2$
+\end{example}
+\begin{solution}
+设函数 $f(t) = e^t - \ln t \ (t > 0)$，对其求导得 $f'(t) = e^t - \frac{1}{t}$。
+令 $f'(t) = 0$ 得到 $t e^t = 1$，该方程存在唯一正实数解 $t_0 \approx 0.567$。
+这表明 $f(t)$ 在 $(0, t_0]$ 上严格单调递减，在 $[t_0, +\infty)$ 上严格单调递增。
+已知正实数 $x, y$ 满足 $f(x) = f(y)$。
+若 $x = y$，则必然有 $x = y = t_0$，此时目标不等式左侧为 $\sqrt{t_0^2}(2e^{t_0}) = 2t_0 e^{t_0}$。由 $t_0 e^{t_0} = 1$ 可知，此时式子的值为 $2$，满足 $\leqslant 2$ 的条件。
+若 $x \neq y$，不失一般性，假设 $0 < x < t_0 < y$。下证在此条件下严格不等式 $\sqrt{xy}(e^x + e^y) < 2$ 成立。
+
+设 $m = \frac{x+y}{2}$，$v = \frac{y-x}{2}$，则 $v > 0$ 且 $x = m-v$，$y = m+v$。
+另设 $w = \frac{\ln y - \ln x}{2}$，则 $w > 0$。
+由 $\ln \frac{y}{x} = 2w$ 得 $y = x e^{2w}$。将其代入 $y - x = 2v$ 中，解得 $x = \frac{2v}{e^{2w}-1} = \frac{v e^{-w}}{\sinh w}$。
+同理可得 $y = \frac{v e^w}{\sinh w}$。
+由此，几何平均数 $\sqrt{xy}$ 可表示为：
+$$\sqrt{xy} = \sqrt{\frac{v^2 e^{-w} e^w}{\sinh^2 w}} = \frac{v}{\sinh w}$$
+根据已知条件 $e^y - \ln y = e^x - \ln x$，可转化为 $e^y - e^x = \ln y - \ln x$。
+将 $m, v$ 代入左侧，得 $e^{m+v} - e^{m-v} = 2e^m \sinh v$；右侧即为 $2w$。
+两边相等得到等式：
+$$e^m \sinh v = w \implies e^m = \frac{w}{\sinh v}$$
+利用此关系，代数和 $\frac{e^x + e^y}{2}$ 可化为：
+$$\frac{e^x + e^y}{2} = \frac{e^{m-v} + e^{m+v}}{2} = e^m \cosh v = \left(\frac{w}{\sinh v}\right) \cosh v = w \coth v$$
+要证的 $\sqrt{xy}(e^x + e^y) < 2$ 等价于 $\sqrt{xy} \frac{e^x + e^y}{2} < 1$。
+将上述结果代入，目标不等式等价于 $\left( \frac{v}{\sinh w} \right) (w \coth v) < 1$，即：
+$$v \coth v < \frac{\sinh w}{w}$$
+
+为证明此不等式，需考察变量 $w$ 和 $v$ 的比值 $R = \frac{w}{v}$ 的下界。
+一方面，由 $R = \frac{w}{v} = e^m \frac{\sinh v}{v}$，且对于 $v > 0$，泰勒展开式 $\frac{\sinh v}{v} = 1 + \frac{v^2}{6} + \dots > 1$，可得 $R > e^m$。
+另一方面，将 $y = m+v$ 和 $x = m-v$ 代入 $R$ 的定义中，有：
+$$R = \frac{1}{2v} \ln \frac{m+v}{m-v} = \frac{1}{2v} \ln \frac{1+v/m}{1-v/m}$$
+令 $t = \frac{v}{m}$，由于 $0 < x < y$ 且 $v = \frac{y-x}{2}, m = \frac{x+y}{2}$，知 $t \in (0, 1)$。
+由对数函数的泰勒展开 $\ln \frac{1+t}{1-t} = 2 \left( t + \frac{t^3}{3} + \dots \right) > 2t$，得 $R > \frac{1}{2v} \cdot 2\left(\frac{v}{m}\right) = \frac{1}{m}$。
+综合两者可得 $R > \max\left(e^m, \frac{1}{m}\right)$。
+设 $h(m) = \max\left(e^m, \frac{1}{m}\right)$，因 $e^m$ 单调递增，$\frac{1}{m}$ 单调递减，其最小值在两函数图象交点处取得，即 $e^{m_0} = \frac{1}{m_0}$，亦即 $m_0 e^{m_0} = 1$。
+故对于任意 $m > 0$，恒有 $R > e^{m_0}$。
+考察单调递增函数 $g(m) = m e^m$，已知 $g(m_0) = 1$。
+取 $m = \ln \sqrt{2}$，计算得 $g(\ln \sqrt{2}) = (\ln \sqrt{2}) e^{\ln \sqrt{2}} = \frac{\ln 2}{\sqrt{2}}$。
+由于 $e > 2$，故 $\ln 2 < 1$，从而 $g(\ln \sqrt{2}) < \frac{1}{\sqrt{2}} < 1 = g(m_0)$。
+由 $g(m)$ 的严格单调递增性，可得 $\ln \sqrt{2} < m_0$，即 $e^{m_0} > \sqrt{2}$。
+因此，$R = \frac{w}{v} > \sqrt{2}$，即 $w > \sqrt{2} v$。
+
+设函数 $S(t) = \frac{\sinh t}{t} \ (t>0)$，其导数 $S'(t) = \frac{t \cosh t - \sinh t}{t^2} > 0$，故 $S(t)$ 严格单调递增。
+由 $w > \sqrt{2} v > 0$，得 $\frac{\sinh w}{w} > \frac{\sinh(\sqrt{2} v)}{\sqrt{2} v}$。
+为证明 $v \coth v < \frac{\sinh w}{w}$，只需证 $v \coth v \leqslant \frac{\sinh(\sqrt{2} v)}{\sqrt{2} v}$，即证明 $\sqrt{2} v^2 \cosh v \leqslant \sinh v \sinh(\sqrt{2} v)$。
+利用积化和差公式，不等式右侧化为：
+$$\text{RHS} = \frac{1}{2} \Big[ \cosh((\sqrt{2}+1)v) - \cosh((\sqrt{2}-1)v) \Big]$$
+将其展开为泰勒级数，设 $\text{RHS} = \sum_{n=1}^{\infty} \frac{C_n}{(2n)!} v^{2n}$，其中：
+$$C_n = \frac{1}{2} \left[ (\sqrt{2}+1)^{2n} - (\sqrt{2}-1)^{2n} \right] = \sum_{k=0}^{n-1} \binom{2n}{2k+1} (\sqrt{2})^{2k+1}$$
+不等式左侧展开为泰勒级数：
+$$\text{LHS} = \sqrt{2} v^2 \sum_{j=0}^{\infty} \frac{v^{2j}}{(2j)!} = \sum_{n=1}^{\infty} \frac{\sqrt{2}}{(2n-2)!} v^{2n} = \sum_{n=1}^{\infty} \frac{\sqrt{2}(2n)(2n-1)}{(2n)!} v^{2n}$$
+设 LHS 的分子系数为 $D_n = \sqrt{2}(2n)(2n-1)$。比较 $C_n$ 与 $D_n$：
+当 $n=1$ 时，$C_1 = 2\sqrt{2}$，$D_1 = 2\sqrt{2}$，两者相等；
+当 $n=2$ 时，$C_2 = 12\sqrt{2}$，$D_2 = 12\sqrt{2}$，两者相等；
+当 $n \geqslant 3$ 时，提取 $C_n$ 求和式中的前两项（$k=0$ 与 $k=1$）：
+$$C_n > \binom{2n}{1} \sqrt{2} + \binom{2n}{3} (\sqrt{2})^3 = 2n\sqrt{2} + \frac{2n(2n-1)(2n-2)}{3} \sqrt{2}$$
+将该局部和与 $D_n$ 比较，作差并提取公因式 $\sqrt{2}(2n)$，考察：
+$$1 + \frac{(2n-1)(2n-2)}{3} - (2n-1)$$
+令 $z = 2n-1$，因 $n \geqslant 3$，故 $z \geqslant 5$。上式化为 $1 + \frac{z(z-1)}{3} - z = \frac{(z-1)(z-3)}{3} > 0$。
+这表明当 $n \geqslant 3$ 时，局部和已严格大于 $D_n$，进而 $C_n > D_n$ 成立。
+综上所述，对于任意 $v > 0$，泰勒级数各项系数均满足 $C_n \geqslant D_n$ 且部分项严格大于，故 $\text{RHS} > \text{LHS}$ 成立，即 $v \coth v < \frac{\sinh(\sqrt{2} v)}{\sqrt{2} v}$。
+结合 $S(t)$ 的单调性，推得 $v \coth v < \frac{\sinh w}{w}$，等价于 $\sqrt{xy} \left(e^x + e^y\right) < 2$。
+综合 $x=y$ 和 $x \neq y$ 的情况，命题 $\sqrt{xy}\left(e^x+e^y\right)\leqslant2$ 得证。
+\end{solution}
+
+
+\begin{example}{来自邪帝，无答案}{}{}
+已知函数 $f(x) = ae^{x-1} - 2x + \ln x + e^{1-a}$ 有三个零点；若 $a > \frac{1}{2}$，记三个零点分别为 $x_1, x_2, x_3$ ($x_1 < x_2 < x_3$)，极值点分别 $x_4, x_5$ ($x_4 < x_5$)，证明：\\
+(1)求$a$的取值范围．\\
+(2)\\
+(i) $x_1 x_2 x_3 < \sqrt[3]{\frac{2}{1 + e^{1-a}}}$\\
+(ii)$x_1 + x_2 > 2x_4$, $x_2 + x_3 < 2x_5$\\
+(iii) $x_1 + x_3 > x_4 + x_5 > 2x_2$\\
+(iv) $x_2 > x_4 x_5 > x_1 x_3$\\
+(v) $x_1 + 2x_2 + x_3 > 2x_4 + 2x_5$\\
+(vi) $(x_1 - x_2)f(x_5) < (x_3 - x_2)f(x_4)$\\
+(vii) $(x_2 - x_5)f(x_4) < (x_2 - x_4)f(x_5)$\\
+(viii) $(x_1 + x_2 - 2x_4)f(x_4) < (x_2 + x_3 - 2x_5)f(x_5)$\\
+(ix) $f(x_4)\ln x_1 < f(x_5)\ln x_3$\\
+(x) $(x_4 + x_5)[f(x_4) + f(x_5)] + (x_1 + x_3)f(x_5) < 2x_2 f(x_4)$
+\end{example}
+
+\begin{example}{来自邪帝，无答案}
+已知函数$f(x)=ax^{2}e^{-x}-\ln(ax)(a>0)$有三个零点$x_{1},x_{2},x_{3}(x_{1}<x_{2}<x_{3})$.  \\
+（1）求$a$的取值范围；  \\
+（2）记$f(x)$的导数为$g(x)$，$g(x)$的零点为$x_{4},x_{5}(x_{4}<x_{5})$.  \\
+（i）证明：$g(x_{1})+g(x_{2})<0$；（ii）当$a<e^{2}$时，证明：$f(x_{5})<(x_{3}-1)g(x_{2})$
+\end{example}
+
+\begin{example}{来自邪帝，有答案但困难}{}
+函数$f(x) = ae^{x-1} - (2 - x)x^2(a > 0)$有两个零点$x_1$，$x_2(0 < x_1 < x_2)$．\\
+（1）求$a$的取值范围；\\
+（2）若$x_1 + x_2 + kalna > 2$，求$k$的取值范围．
+\end{example}
+
+\begin{example}{来自邪帝，无答案}{}
+    函数$f(x)=ae^{x}-2x+\ln \frac{x}{a}(a>0)$有三个零点$x_{1}$，$x_{2}$，$x_{3}(x_{1}<x_{2}<x_{3})$．  \\
+（1）求实数$a$的取值范围；  \\
+（2）记$f(x)$的极值点为$x_{4}$，$x_{5}(x_{4}<x_{5})$，证明：$(x_{4}-x_{2})f(x_{5})<(x_{5}-x_{2})f(x_{4})$．
+\end{example}
+
+\begin{example}{来自邪帝，无答案}{}
+    已知函数$f(x)=x-4\ln x-\frac{3}{x}+3a+2(a<\ln 2)$有三个零点$x_{1}$，$x_{2}$，$x_{3}$（$x_{1}<x_{2}<x_{3}$）． \\ 
+（1）求$a$的取值范围；  \\
+（2）证明：$f(x_{1}x_{2})+f(x_{1}x_{2}x_{3})>3a$．
+\end{example}
+\begin{solution}
+（1）函数 $f(x)$ 的定义域为 $(0, +\infty)$。
+对 $f(x)$ 求导可得：
+$$f'(x) = 1 - \frac{4}{x} + \frac{3}{x^2} = \frac{x^2 - 4x + 3}{x^2} = \frac{(x-1)(x-3)}{x^2}$$
+当 $x \in (0, 1) \cup (3, +\infty)$ 时，$f'(x) > 0$；当 $x \in (1, 3)$ 时，$f'(x) < 0$。
+因此，$f(x)$ 在 $(0, 1)$ 上单调递增，在 $(1, 3)$ 上单调递减，在 $(3, +\infty)$ 上单调递增。
+函数在 $x=1$ 处取得唯一极大值 $f(1) = 3a$，在 $x=3$ 处取得唯一极小值 $f(3) = 3a + 4 - 4\ln 3$。
+
+结合端点极限 $\lim_{x\rightarrow 0^+} f(x) = -\infty$ 及 $\lim_{x\rightarrow +\infty} f(x) = +\infty$，若使 $f(x)$ 有三个互不相同的零点 $x_1, x_2, x_3$（设 $x_1 < x_2 < x_3$），必须且只需极大值严格大于 $0$ 且极小值严格小于 $0$，即：
+$$f(1) = 3a > 0 \implies a > 0$$
+$$f(3) = 3a + 4 - 4\ln 3 < 0 \implies a < \frac{4\ln 3 - 4}{3}$$
+综上，$a$ 的取值范围为 $\left(0, \frac{4\ln 3 - 4}{3}\right)$。此时三个零点分别位于区间 $(0, 1), (1, 3), (3, +\infty)$ 内。
+
+（2）证明：对任意 $x > 0$，有
+$$f\left(\frac{1}{x}\right) - f(x) = \left(\frac{1}{x} - 4\ln\frac{1}{x} - 3x + 3a + 2\right) - \left(x - 4\ln x - \frac{3}{x} + 3a + 2\right) = 4\left(\frac{1}{x} - x + 2\ln x\right)$$
+构造函数 $\phi(x) = \frac{1}{x} - x + 2\ln x$，求导得 $\phi'(x) = -\frac{1}{x^2} - 1 + \frac{2}{x} = -\frac{(x-1)^2}{x^2} \le 0$。
+故 $\phi(x)$ 在 $(0, +\infty)$ 上单调不增，且 $\phi(1) = 0$。
+当 $x \in (0, 1)$ 时，$\phi(x) > 0$，从而 $f\left(\frac{1}{x}\right) > f(x)$。
+由于 $x_1 \in (0, 1)$ 且 $f(x_1) = 0$，可得 $f\left(\frac{1}{x_1}\right) > 0$。
+
+注意到 $a < \frac{4\ln 3 - 4}{3}$，计算 $f\left(\frac{1}{3}\right)$：
+$$f\left(\frac{1}{3}\right) = \frac{1}{3} - 4\ln\frac{1}{3} - 9 + 3a + 2 = 3a + 4\ln 3 - \frac{20}{3} < (4\ln 3 - 4) + 4\ln 3 - \frac{20}{3} = 8\ln 3 - \frac{32}{3}$$
+因 $e^{4/3} = 1 + \frac{4}{3} + \frac{1}{2}\left(\frac{4}{3}\right)^2 + \frac{1}{6}\left(\frac{4}{3}\right)^3 + \dots > 1 + \frac{4}{3} + \frac{8}{9} + \frac{32}{81} = \frac{293}{81} > 3$，故 $\ln 3 < \frac{4}{3}$。
+从而 $8\ln 3 - \frac{32}{3} < 0$，即 $f\left(\frac{1}{3}\right) < 0$。
+因 $f(x)$ 在 $(0, 1)$ 上单调递增且 $f(x_1) = 0$，由 $f\left(\frac{1}{3}\right) < f(x_1)$ 得 $x_1 > \frac{1}{3}$。
+结合 $x_1 < 1$，可推得 $\frac{1}{x_1} \in (1, 3)$。
+由于 $f(x)$ 在 $(1, 3)$ 上单调递减，该区间唯一零点为 $x_2$，且 $f\left(\frac{1}{x_1}\right) > 0 = f(x_2)$，故必有 $\frac{1}{x_1} < x_2$，即 $x_1x_2 > 1$。
+
+由（1）知 $a > 0 \implies 3a > 2a$，欲证$f(x_1x_2) + f(x_1x_2x_3) > 3a$。
+根据牛顿-莱布尼茨公式，将函数值转化为积分表示：
+$$f(x_1x_2) = f(1) + \int_{1}^{x_1x_2} f'(t)dt = 3a + \int_{1}^{x_1x_2} f'(t)dt$$
+$$f(x_1x_2x_3) = f(x_3) + \int_{x_3}^{x_1x_2x_3} f'(t)dt = \int_{x_3}^{x_1x_2x_3} f'(t)dt$$
+两式相加得：
+$$f(x_1x_2) + f(x_1x_2x_3) - 3a = \int_{1}^{x_1x_2} f'(t)dt + \int_{x_3}^{x_1x_2x_3} f'(t)dt$$
+对第二个积分作变量代换 $t = x_3u$，则 $dt = x_3du$。当 $t$ 从 $x_3$ 变至 $x_1x_2x_3$ 时，$u$ 从 $1$ 变至 $x_1x_2$。于是：
+$$\int_{x_3}^{x_1x_2x_3} f'(t)dt = \int_{1}^{x_1x_2} x_3f'(x_3u)du$$
+代回原式可得：
+$$f(x_1x_2) + f(x_1x_2x_3) - 3a = \int_{1}^{x_1x_2} \left[f'(u) + x_3f'(x_3u)\right]du$$
+对被积函数进行计算化简：
+\begin{align*}f'(u) + x_3f'(x_3u) &= \left(1 - \frac{4}{u} + \frac{3}{u^2}\right) + x_3\left(1 - \frac{4}{x_3u} + \frac{3}{x_3^2u^2}\right)\\
+     &= (x_3 + 1) - \frac{8}{u} + \frac{3\left(1 + \frac{1}{x_3}\right)}{u^2} = \frac{(x_3 + 1)u^2 - 8u + 3\left(1 + \frac{1}{x_3}\right)}{u^2}\end{align*}
+考察分子中的二次多项式 $N(u) = (x_3 + 1)u^2 - 8u + 3\left(1 + \frac{1}{x_3}\right)$，因 $x_3 \in (3, +\infty)$，故首项系数 $x_3 + 1 > 0$。
+其判别式为：
+$$\Delta = 64 - 12(x_3 + 1)\left(1 + \frac{1}{x_3}\right) = 64 - 12\left(x_3 + \frac{1}{x_3} + 2\right) = 40 - 12\left(x_3 + \frac{1}{x_3}\right)$$
+因函数 $x + \frac{1}{x}$ 在 $x > 1$ 上严格递增，故 $x_3 + \frac{1}{x_3} > 3 + \frac{1}{3} = \frac{10}{3}$。
+从而 $\Delta < 40 - 12 \times \frac{10}{3} = 0$，这表明对任意 $u \in \mathbb{R}$ 恒有 $N(u) > 0$。
+因此，当 $u > 0$ 时，被积函数 $\frac{N(u)}{u^2} > 0$ 恒成立。
+又已知 $x_1x_2 > 1$，积分区间 $[1, x_1x_2]$ 长度严格大于 $0$，故积分值严格大于 $0$：
+$$\int_{1}^{x_1x_2} \left[f'(u) + x_3f'(x_3u)\right]du > 0$$
+由此即证得 $f(x_1x_2) + f(x_1x_2x_3) > 3a $。
+\end{solution}
+
+
+
+
+\begin{example}{来自邪帝，无答案}{}
+$f(x) = x^2 e^{a - x} - a^2 \ln x - a \left(a > \frac{1}{2}\right)$\\
+$f(x_1) = f(x_2) = f(x_3) = 0 (x_1 < x_2 < x_3), \, f'(x_4) = f'(x_5) = 0 (x_4 < x_5)$\\
+(1) 证明：$x_4 f(x_5) + x_5 f(x_4) < 0$；\\
+(2) 证明：$(x_2 + x_3 + x_4) f(x_1 x_2 x_3) + (2x_1 + x_5) f(x_2 x_3) > 0$。
+\end{example}
 

@@ -367,74 +367,6 @@ PA^2+\lambda^2PC^2+\mu^2PB^2+2\lambda\overrightarrow{PA}\cdot\overrightarrow{PC}
 \end{align*}
 \end{solution}
 \newpage
-\begin{example}{（2008年江西浸泡压轴题）}{}
-    已知$\displaystyle f \left( x \right)= \frac{1}{ \sqrt{1+x}}+ \frac{1}{ \sqrt{1+a}}+ \sqrt{ \frac{ax}{ax+8}},x \in \left( 0,+ \infty \right)$
-\vspace{5pt}
-
-    （1）当$a=8$时，求$f(x)$的单调区间.
-
-    （2）对于任意正数$a$，求证$1<f(x)<2$.
-\end{example}
-\begin{solution}
-    （1）当$a=8$时，$\displaystyle f(x)= \frac{1}{ \sqrt{1+x}}+ \frac{1}{3}+ \sqrt{ \frac{x}{x+1}}$，观察式子不难想到换元$x=\tan^2\theta$：
-    \[f(x)=\frac{1}{ \sqrt{1+\tan^2\theta}}+ \frac{1}{3}+ \sqrt{ \frac{\tan^2\theta}{\tan^2\theta+1}}\\=\cos \theta+ \frac{1}{3}+ \sin \theta\\=\sqrt{2}\sin(\theta+\frac{\pi}{4})+\frac13\]
-    由$\theta\in(0,\frac{\pi}{2})$，所以$\sin(\theta+\frac{\pi}{4})$在$(0,\frac{\pi}{4})$上单调递增，在$(\frac{\pi}{4},\frac{\pi}{2})$上单调递减，所以$f(x)$在$(0,1)$上单调递增，在$(1,+\infty)$上单调递减。
-
-    （2）这道题难就难在题目给了函数，似乎是暗示学生走求导的路子，但求导异常难做，反而看成是不等式问题却能找到方向。由于函数结构不对称，我们引入第三个变元就可以将本题条件化为对称形式：令$f \left( x \right)= \frac{1}{ \sqrt{1+x}}+ \frac{1}{ \sqrt{1+y}}+ \sqrt{ \frac{xy}{xy+8}},x,y \in \left( 0,+ \infty \right)$:
-    \[
-    \begin{cases}a=\dfrac{1}{\sqrt{1+x}}\in(0,1)\\b=\dfrac{1}{ \sqrt{1+y}}\in(0,1)\\c=\sqrt{ \dfrac{xy}{xy+8}}\in(0,1)\end{cases}\Rightarrow 
-    \begin{cases}a^2=\dfrac{1}{1+x},x=\dfrac{1}{a^2}-1\\[1.2ex]b^2=\dfrac{1}{1+y},y=\dfrac{1}{b^2}-1\\[1.2ex]c^2=\dfrac{ax}{ax+8}=1-\dfrac{8}{ax+8}\end{cases}
-    \]
-现在要找到三个元之间的关系式，消元法就够了：
-\[
-c^2=1-\dfrac{8}{ax+8}=1-\dfrac{8}{(\dfrac{1}{a^2}-1)(\dfrac{1}{b^2}-1)+8}\Rightarrow (1-a^2)(1-b^2)(1-c^2)=8a^2b^2c^2
-\]先假设$a+b+c>=2$，列出已知条件：
-\[\begin{cases}a,b,c\in(0,1),\quad a+b+c\geq 2\\(1-a^2)(1-b^2)(1-c^2)=8a^2b^2c^2\end{cases}\]
-我们现在要证明的是“同时满足这几个条件的题目是一个错题”。其中最后一个条件看似很强，给出了三元关系，但是如果不拿来消元的话很难用上，而消元又回到了原题的情形，这就很尴尬了。那我们不妨尝试删除$(1-a^2)(1-b^2)(1-c^2)=8a^2b^2c^2$并尝试通过剩余条件导出$(1-a^2)(1-b^2)(1-c^2)\ne8a^2b^2c^2$，即$(1-a^2)(1-b^2)(1-c^2)>8a^2b^2c^2$或$(1-a^2)(1-b^2)(1-c^2)<8a^2b^2c^2$。而这个式子是对称的，我们不妨拆成$(1-a^2)>2bc$或$(1-a^2)<2bc$来证明，虽然这个转换之后的式子是原来式子成立的充分而非必要条件，但确实是可以尝试的方向，是不是可以叫“充分性探路”呢？
-\[\begin{cases}1-a^2=(1-a)(1+a)<2(1-a)=2(b+c-1)\\(1-b)(1-c)\in(0,1)\Rightarrow bc+1<b+c\end{cases}\Rightarrow 1-a^2<2bc\]
-这样同理得到$1-b^2<2ac,1-c^2<2ab$，这样就有$(1-a^2)(1-b^2)(1-c^2)<8a^2b^2c^2$，矛盾，所以$a+b+c<2$。然后我们紧接着设$a+b+c\leq 1$，同样列出已知条件：
-\[\begin{cases}a,b,c\in(0,1),\quad a+b+c<=1\\(1-a^2)(1-b^2)(1-c^2)=8a^2b^2c^2\end{cases}\]
-同样的套路，我们依然考虑证明$(1-a^2)>2bc$或$(1-a^2)<2bc$，由
-\[\begin{cases}1-a^2=(1-a)(1+a)>1-a\geq b+c\\(1-b)(1-c)\in(0,1)\Rightarrow bc<b+c\end{cases}\Rightarrow 1-a^2>2bc\]
-这样同理得到$1-b^2>2ac,1-c^2>2ab$，这样就有$(1-a^2)(1-b^2)(1-c^2)>8a^2b^2c^2$，矛盾。所以只能是$1<a+b+c<2$.
-
-\noindent（3）当然本题解法不唯一，比如说我们根据
-\[f \left( x \right)= \frac{1}{ \sqrt{1+x}}+ \frac{1}{ \sqrt{1+y}}+ \sqrt{ \frac{xy}{xy+8}}=\frac{1}{ \sqrt{1+x}}+ \frac{1}{\sqrt{1+y}}+ \frac{1}{1+\sqrt{\frac{8}{xy}}}\]
-来换元$z=\dfrac{8}{xy}$，则有$xyz=8$要证明$ 1<\dfrac{1}{ \sqrt{1+x}}+ \dfrac{1}{ \sqrt{1+y}}+ \dfrac{1}{\sqrt{1+z}}<2$，已知条件是$x,y,z>0$，那么$(x-2)(y-2)(z-2)<8$，不妨假设数量关系$x\leq y\leq z$，就有
-\[\begin{cases}2\leq z\\xyz=8\end{cases}\Rightarrow xy\leq 4\]
-然后运用对偶式的思想证明出：\[
-\frac{1}{\sqrt{1+x}}+\frac{1}{\sqrt{1+y}}>\frac{1}{1+\frac{x}{2}}+\frac{1}{1+\frac{y}{2}}\geq\frac{1}{1+\frac{x}{2}}+\frac{1}{1+\frac{2}{x}}=1
-\]
-由$z\geq 2$得到\[\frac{1}{\sqrt{1+z}}<\frac{1}{1+\frac{z}{8}}=\frac{1}{\sqrt{\frac{1}{xy}}}=\frac{\sqrt{xy}}{1+\sqrt{xy}}\]
-以及\[(1-\frac{1}{\sqrt{1+x}})(1-\frac{1}{\sqrt{1+y}})>0\Rightarrow \frac{1}{\sqrt{1+x}}+\frac{1}{\sqrt{1+y}}<1+\frac{1}{\sqrt{(1+x)(1+y)}}<1+\frac{1}{1+\sqrt{xy}}\]
-合起来就是：
-\[\dfrac{1}{ \sqrt{1+x}}+ \dfrac{1}{ \sqrt{1+y}}+ \dfrac{1}{\sqrt{1+z}}<1+\frac{1}{1+\sqrt{xy}}+\frac{\sqrt{xy}}{1+\sqrt{xy}}=2\]
-这个$\dfrac{1}{\sqrt{1+z}}<\dfrac{1}{1+\dfrac{z}{8}}$是事后诸葛，高考生不必深究。
-\end{solution}
-\begin{example}{（2008年江西导数压轴）}{}
-已知函数$f \left( x \right)= \dfrac{1}{ \sqrt{1+x}}+ \dfrac{1}{ \sqrt{1+a}}+ \dfrac{1}{ \sqrt{1+ \dfrac{8}{ax}}}.$证明：$1<f(x)<2.$
-\end{example}
-\begin{solution}
-将$a$视作参数，直接暴力求导：
-\begin{align*}f^{\prime}(x)&=-\frac{1}{2(1+x)^{\frac{3}{2}}}+\frac{1}{2(1+\frac{8}{ax})^{\frac{3}{2}}}\cdot\frac{8}{ax^2}\\&=-\frac{1}{2(1+x)^\frac{3}{2}}+\frac{4\sqrt{a}}{\sqrt{x}(ax+8)^\frac{3}{2}}=\frac{8\sqrt{a}(1+x)^\frac{3}{2}-\sqrt{x}(ax+8)^\frac{3}{2}}{2\sqrt{x}(1+x)^\frac{3}{2}(ax+8)^\frac{3}{2}}\\&=\frac{64a(1+x)^3-x(ax+8)^3}{2\sqrt{x}(1+x)^{\frac{3}{2}}(ax+8)^{\frac{3}{2}}\left[8\sqrt{a}(1+x)^{\frac{3}{2}}+\sqrt{x}(ax+8)^{\frac{3}{2}}\right]}\\&=\frac{-a^3x^4-24a^2x^3+64ax^3+192ax+64a-512x}{2\sqrt{x}(1+x)^{\frac{3}{2}}(ax+8)^{\frac{3}{2}}\left[8\sqrt{a}(1+x)^{\frac{3}{2}}+\sqrt{x}(ax+8)^{\frac{3}{2}}\right]}\\
-&=\frac{-a(a^2x^4+(24a-64)x^3-8(24-\frac{64}{a})x-64)}{2\sqrt{x}(1+x)^{\frac{3}{2}}(ax+8)^{\frac{3}{2}}\left[8\sqrt{a}(1+x)^{\frac{3}{2}}+\sqrt{x}(ax+8)^{\frac{3}{2}}\right]}\\
-&=\frac{-a\bigg((ax^2-8)(ax^2+8)+(24-\frac{64}{a})(ax^3-8x)\bigg)}{2\sqrt{x}(1+x)^{\frac{3}{2}}(ax+8)^{\frac{3}{2}}\left[8\sqrt{a}(1+x)^{\frac{3}{2}}+\sqrt{x}(ax+8)^{\frac{3}{2}}\right]}\\
-&=\frac{\left(ax^{2}-8 \right) \left(-x^{2}a^{2}-24xa-8a+64x \right)}{2\sqrt{x}(1+x)^{\frac{3}{2}}(ax+8)^{\frac{3}{2}}\left[8\sqrt{a}(1+x)^{\frac{3}{2}}+\sqrt{x}(ax+8)^{\frac{3}{2}}\right]}\\
-&=\frac{(\sqrt{a}x-2\sqrt2)(\sqrt{a}x+2\sqrt2)(-a^2x^2+(64-24a)x-8a)}{2\sqrt{x}(1+x)^{\frac{3}{2}}(ax+8)^{\frac{3}{2}}\left[8\sqrt{a}(1+x)^{\frac{3}{2}}+\sqrt{x}(ax+8)^{\frac{3}{2}}\right]}
-\end{align*}
-这个分子有理化（目的是提取恒正的项）肯定是套路式的，但是这个因式分解，笔者认为有点小技巧，我们提取$a$使得常数项真正地为常数，然后由于二次项为0，以及一次项和三次项之间有倍数关系，采取凑平方差，分解成了两个二次函数，由于分母大于0，现在要对分子的正负性进行讨论，方便起见，我们看一下后面那个丑陋的二次函数的判别式长什么样：
-\[\Delta = (64-24a)^2-32a^3=32(-a^3+18a^2-96a+128)=32(2-a)(a-8)^2\]
-所以如果限定$a\geq 2$那么$\Delta\leq 0$，再加上二次项为负数，所以这个二次函数小于0，但是我们能不能做这样的限定呢？其实是可以的，因为$f(x)$根号的下面主要有$a,x,\frac{8}{ax}$，这三个东西乘起来是$8$，是对称的三个变元，我们显然可以给它们规定大小顺序，所以想一想不难知道规定$a\geq 2$是合理的，那么规定另外两个大于等于2行不行呢？也行，但是会导致解题变得更加复杂，所以不推荐。
-
-现在，我们只需关注$\sqrt{a}x-2\sqrt2$的正负性了，这东西是一次函数，容易知道$f'(x)$在$(0,\sqrt{\dfrac{8}{a}})$
-大于0，在$(\sqrt{\dfrac{8}{a}},+\infty)$小于0，所以$f(x)$在$(0,\sqrt{\dfrac{8}{a}})$单调递增，在$(\sqrt{\dfrac{8}{a}},+\infty)$单调递减。所以$f(x)$的最大值是\[f(\sqrt{\dfrac{8}{a}})=\frac{2}{\sqrt{1+\sqrt{\frac{8}{a}}}}+\frac{1}{\sqrt{1+a}}\]
-下面考虑最小值，发现当$x\rightarrow 0$时，$f(x)\rightarrow 1+\frac{1}{\sqrt{1+a}}$，当$x\rightarrow +\infty$时，$f(x)\rightarrow 1+\frac{1}{\sqrt{1+a}}$，所以\[1+\frac{1}{\sqrt{1+a}}<f(x)<\frac{2}{\sqrt{1+\sqrt{\frac{8}{a}}}}+\frac{1}{\sqrt{1+a}}\]
-此时$1<f(x)$已经得证，下面只需证明\[g(a)=\frac{2}{\sqrt{1+\sqrt{\frac{8}{a}}}}+\frac{1}{\sqrt{1+a}}<2\]
-再次求导：
-\begin{align*}g'(a)&=-\frac{1}{\left(1+\sqrt{\frac{8}{a}}\right)^{\frac{3}{2}}}\cdot\frac{-2\sqrt2}{2a^{\frac{3}{2}}}-\frac{1}{2(1+a)^{\frac{3}{2}}}\\&=\frac{2\sqrt{2}(1+a)^{\frac{3}{2}}-a^{\frac{3}{2}}\left(1+\sqrt{\frac{8}{a}}\right)^{\frac{3}{2}}}{2a^{\frac{3}{2}}\left(1+\sqrt{\frac{8}{a}}\right)^{\frac{3}{2}}(1+a)^{\frac{3}{2}}}\\&=\frac{8(1+a)^3-\left(a+2\sqrt{2a}\right)^3}{2a^{\frac{3}{2}}\left(1+\sqrt{\frac{8}{a}}\right)^{\frac{3}{2}}(1+a)^{\frac{3}{2}}\left[2\sqrt{2}(1+a)^{\frac{3}{2}}+a^{\frac{3}{2}}\left(1+\sqrt{\frac{8}{a}}\right)^{\frac{3}{2}}\right]}\\&=\frac{(a-2\sqrt{2a}+2)\left[4(1+a)^2+2(1+a)(a+2\sqrt{2a})+(a+2\sqrt{2a})^2\right]}{2a^{\frac{3}{2}}\left(1+\sqrt{\frac{8}{a}}\right)^{\frac{3}{2}}(1+a)^{\frac{3}{2}}\left[2\sqrt{2}(1+a)^{\frac{3}{2}}+a^{\frac{3}{2}}\left(1+\sqrt{\frac{8}{a}}\right)^{\frac{3}{2}}\right]}\\&=\frac{(\sqrt{a}-\sqrt{2})^2\left[4(1+a)^2+2(1+a)(a+2\sqrt{2a})+(a+2\sqrt{2a})^2\right]}{2a^{\frac{3}{2}}\left(1+\sqrt{\frac{8}{a}}\right)^{\frac{3}{2}}(1+a)^{\frac{3}{2}}\left[2\sqrt{2}(1+a)^{\frac{3}{2}}+a^{\frac{3}{2}}\left(1+\sqrt{\frac{8}{a}}\right)^{\frac{3}{2}}\right]}\geq0\end{align*}
-所以原函数$g(a)$单调递增，考虑到\[\lim_{x\rightarrow +\infty}g(a)=0+2=2\]所以$f(x)<2$也得证。
-\end{solution}
-\newpage
 \begin{example}{（抹茶奶绿供题）}{}
     平面直角坐标系$xOy$中，椭圆$\frac{x^2}{16}+\frac{y^2}{a^2}=1,(a>4)$，椭圆的弦$AB$过点$D(-2,0)$，连接$OA,OB$，线段$OB$交圆$(x+1)^2+y^2=4$于$C$，若$DC$平行于$OA$，求$a=$\underline{\hspace{1.2cm}}.
 \end{example}
@@ -472,49 +404,7 @@ c^2=1-\dfrac{8}{ax+8}=1-\dfrac{8}{(\dfrac{1}{a^2}-1)(\dfrac{1}{b^2}-1)+8}\Righta
     写出半代入形式的直线两点式\[\dfrac{-2}{2}\dfrac{1-t_1t_2}{1+t_1t_2}+\dfrac{2}{\sqrt3}\dfrac{t_1+t_2}{1+t_1t_2}=1\Rightarrow t_1+t_2=\sqrt3\]
     得到$\dfrac{|OP|}{|OQ|}=1$.
 \end{solution}
-\begin{example}{（群友供题）}{}
-    已知$f(x)=\text{e}^x-\ln x$，且$f(x_1)=f(x_2)$，$x_1>x_2$，求证$x_1+x_2>1$.
-\end{example}
-\begin{solution}
-    本题对称化构造已经有解法了，笔者补一个构造函数的做法。首先转化为证明\[g(x)=(x-\dfrac12)^2,g(x_1)=(x_1-\dfrac12)^2>(x_2-\dfrac12)^2=g(x_2)\]进行观察，我们发现如果$x_1$稍微大一点，比如当$x_1>1$就已经有$x_1+x_2>1$，所以本题的关键是在$x=\dfrac12$附近证明这个结论，由此不难想到级数展开，我们首先求导得到：\vspace{-5pt}
-    \[f'(x)=\text{e}^x-\dfrac{1}{x},f'(\dfrac12)=\sqrt{\text{e}}-2,f''(x)=\text{e}^x+\dfrac{1}{x^2},f''(\dfrac12)=\sqrt{\text{e}}+4,...\]
-    这样不难得到$f(x)$先减再增，极值点不好求，并列出$f(x)$在$x=\dfrac12$附近的级数形式：
-    \[f(x)=f(\dfrac12)+(\sqrt{\text{e}}-2)(x-\dfrac12)+\dfrac{\sqrt{\text{e}}+4}{2!}(x-\dfrac12)^2+\dfrac{\sqrt{e}+8}{3!}(x-\dfrac12)^3+\cdots\]
-    我们要构造在$x=\dfrac12$左右侧正负性相反的函数$\varphi(x)=h_1(g(x))+h_2(f(x))$，同时规定$h_1(x)$单调递增，$h_2(x)$在$f(x)$值域内单调，这样我们就可以转化证明
-    \[g(x_1)>g(x_2)\Leftrightarrow h_1(g(x_1))>h_1(g(x_2))\Leftrightarrow  \varphi(x_1)>\varphi(x_2)\]
-    但是显然我们不必大费周章地考虑$h_2(x)$，除非你想优雅地解题。此处我们可以直接取$\varphi(x)=h_1(g(x))-f(x)$，直观一点来说，只需要找到$(x-\dfrac12)^2$的某个复合函数穿过$\bigg(\dfrac12,f(\dfrac12)\bigg)$这个点，且在该点左侧比$f(x)$“矮”，右侧比$f(x)$“高”，那么就能证明$g(x_1)>g(x_2)$。那既然要求右侧比$f(x)$“高”，我们初步考虑$h_1(x)=e^{g(x)}$，由
-    \[\text{e}^x=1+x+\dfrac{x^2}{2!}+\dfrac{x^3}{3!}+\cdots\Rightarrow e^{(x-\frac12)^2}=1+(x-\dfrac12)^2+\dfrac{(x-\dfrac12)^4}{2!}+\dfrac{(x-\dfrac12)^6}{3!}+\cdots\]
-    所以消去偶数次项得到$\varphi(x)=\dfrac{\sqrt{\text{e}}+4}{2}e^{g(x)}-f(x)-2+\ln 2+\dfrac{\sqrt{\text{e}}}{2}$，即
-    \begin{align*}
-        \varphi(x)&=\dfrac{\sqrt{\text{e}}+4}{2}e^{(x-\frac12)^2}-\text{e}^x+\ln x-2+\ln 2+\dfrac{\sqrt{\text{e}}}{2}\\
-        \varphi'(x)&=(\sqrt{\text{e}}+4)(x-\dfrac12)\text{e}^{(x-\frac12)^2}-\text{e}^x+\dfrac1{x}
-    \end{align*}
-    由刚才分析可知，$\varphi''(x)$显然单增，且满足$\varphi''(\dfrac12)=0$，故$\varphi'(x)\geq\varphi'(\dfrac12)>0$，所以$\varphi(x)$单增，$\varphi(x_1)>\varphi(x_2)$，原题得证。
-\end{solution}
-\newpage
-\begin{example}{（2019年浙江导数）}{}
-    对任意$x\geq \dfrac{1}{e^2}$均有$f(x)=a\ln x+\sqrt{1+x}-\dfrac{\sqrt{x}}{2a}\leq 0$，求$a$的取值范围.
-\end{example}
-\begin{solution}
-    必要性探路，什么极点效应，内点效应啥的，都是一个函数与$x$轴相切的不同情形，所以我们可以直接研究$f(x)$与$x$轴的相切问题，从而规避使用端点效应带来的潜在风险。
-    \[\begin{cases}f(x)=a\ln x+\sqrt{1+x}-\dfrac{\sqrt{x}}{2a}=0\\[1.2ex]f'(x)=\dfrac{a}{x}+\dfrac{1}{2\sqrt{1+x}}-\dfrac{1}{4a\sqrt{x}}=0\end{cases}
-    \Rightarrow \begin{cases}a\ln x+\sqrt{1+x}-\dfrac{\sqrt{x}}{2a}=0\\[1.2ex]\dfrac{1}{x_0}a^2+\dfrac{1}{2\sqrt{x_0+1}}a-\dfrac{1}{4\sqrt{x_0}}=0\end{cases}\]
-    我们虽然难以直接解出第一个方程，但是却可以从第二个方程解出$a$，利用求根公式得到：
-    \[a=\sqrt{\left(\frac{x_0}{4\sqrt{x_0+1}}\right)^2+\dfrac{\sqrt{x_0}}{4}}-\frac{x_0}{4\sqrt{x_0+1}}>0\]
-    代入第一个方程得到一个很浸泡的式子：\[\ln x_0=\frac{x_0}{2\left(\sqrt{\left(\frac{x_0}{4\sqrt{x_0+1}}\right)^2+\frac{\sqrt{x_0}}{4}}-\frac{x_0}{4\sqrt{x_0+1}}\right)^2}-\dfrac{\sqrt{1+x_0}}{\left(\sqrt{\left(\frac{x_0}{4\sqrt{x_0+1}}\right)^2+\frac{\sqrt{x_0}}{4}}-\frac{x_0}{4\sqrt{x_0+1}}\right)}\]
-    显然这里只能取$x=1$得到$a\in\left(0,\dfrac{\sqrt{2}}{4}\right]$，这样就转化为证明充分性:\[f(x)\leq0\Rightarrow-2\ln x-\frac{2\sqrt{x+1}}{a}+\frac{\sqrt{x}}{a^2}\geq0\]
-    直接上求根公式好了，懒得讨论了：\[\Leftrightarrow \dfrac{1}{a}\geq\sqrt{1+\frac{1}{x}}+\sqrt{1+\frac{1}{x}+\frac{2\ln x}{\sqrt x}}\Rightarrow 2\sqrt2\geq\sqrt{1+\frac{1}{x}}+\sqrt{1+\frac{1}{x}+\frac{2\ln x}{\sqrt x}}\]
-    \[\Leftrightarrow\left(2\sqrt{2}-\sqrt{1+\frac{1}{x}}\right)^{2}\geq1+\frac{1}{x}+\frac{2\ln x}{\sqrt{x}}\Leftrightarrow \ln x\leq4\sqrt{x}-2\sqrt{2}\sqrt{x+1}\]
-    换元$t=x^2,t\in\left(\dfrac{1}{e},1\right)$，转化为证明$\ln t\leq 2t-\sqrt2\sqrt{t^2+1}$，并利用飘带放缩：即$\forall x\in\left(\dfrac{1}{e},1\right]$
-    \[g(x)=2x-\sqrt{2x^2+2}-\ln x=\dfrac{\sqrt2(x-1)(x+1)}{\sqrt{2}x+\sqrt{1+x^2}}-\ln x\geq \dfrac{\sqrt2(x-1)(x+1)}{\sqrt{2}x+\sqrt{1+x^2}}-2\dfrac{x-1}{x+1}\geq 0\]
-    最后一个不等号成立，要求$\dfrac{(x+1)^2}{\sqrt{2}x+\sqrt{1+x^2}}\leq \sqrt2\Leftrightarrow \sqrt{1+x^2}\leq \sqrt{2}$，成立！因此我们知道充分性也成立，而条件$x\geq \dfrac{1}{e^2}$并没有用上，所以任意$x\in(0,1]$，都有$a\in\left(0,\dfrac{\sqrt{2}}{4}\right]$满足要求.
-\end{solution}
-\begin{example}{}{}
-    已知正数$a,b,c$满足$abc=1$，证明：\[\sqrt{a^2+1}+\sqrt{b^2+1}+\sqrt{c^2+1}\leqslant\sqrt{2}\left(a+b+c\right)\]
-\end{example}
-\begin{solution}
-    
-\end{solution}
+
 \begin{conclusion}{比值代换法}{}
 \noindent 椭圆$\dfrac{x^2}{a^2}+\dfrac{y^2}{b^2}=1$上两点$A(x_1,y_1),B(x_2,y_2)$与非椭圆上点$P(x_0,y_0)$满足$\overrightarrow{AP}=\lambda\overrightarrow{PB}$，则
 \[\begin{cases}\lambda=\dfrac{x_1-x_0}{x_0-x_2}=\dfrac{y_1-y_0}{y_0-y_2}=-\dfrac{\dfrac{x_0x_1}{a^2}+\dfrac{y_0y_1}{b^2}-1}{\dfrac{x_0x_2}{a^2}+\dfrac{y_0y_2}{b^2}-1}\\(1+\lambda)^2\bigg(\dfrac{x_0^2}{a^2}+\dfrac{y_0^2}{b^2}-1\bigg)=2\lambda\bigg(\dfrac{x_1x_2}{a^2}+\dfrac{y_1y_2}{b^2}-1\bigg)\end{cases}\]
