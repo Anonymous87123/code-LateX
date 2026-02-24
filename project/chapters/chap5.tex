@@ -1,0 +1,72 @@
+\chapter{抹茶题集}
+\begin{example}{抹茶T1}{}
+    椭圆 $\frac{x^2}{4}+y^2=m(m>1)$ 上3点 $A,B,P(0,1)$满足$\overrightarrow{AP}=2\overrightarrow{PB}$，求 $|x_B|$ 的最大值
+\end{example}
+\begin{solution}
+由于我们将证明：一旦 $m$ 固定，符合题意的弦最多只有一对对称解，$|x_B|$ 此时是一个确定的定值。因此“求最大值”必然是指 随着参数 $m$ 在允许范围 $(m>1)$ 内变化时，绝对值 $|x_B|$ 能达到的全局上界。设点 $A(x_A, y_A)$，点 $B(x_B, y_B)$。已知定点 $P(0, 1)$。有
+$$ \overrightarrow{AP} = (0 - x_A, 1 - y_A) = (-x_A, 1 - y_A), \overrightarrow{PB} = (x_B - 0, y_B - 1) = (x_B, y_B - 1) $$
+由于 $\overrightarrow{AP} = 2\overrightarrow{PB}$，代入条件：$$ \begin{cases} -x_A = 2x_B \\ 1 - y_A = 2(y_B - 1) \end{cases} \implies \begin{cases} \mathbf{x_A = -2x_B} \\ \mathbf{y_A = 3 - 2y_B} \end{cases} $$
+已知 $A$ 和 $B$ 都在椭圆 $\frac{x^2}{4} + y^2 = m$ 上。分别代入
+$$ \frac{x_B^2}{4} + y_B^2 = m ,\frac{(-2x_B)^2}{4} + (3 - 2y_B)^2 = m $$
+消去 $x_B$得到：$$ \frac{x_B^2}{4} + y_B^2 = x_B^2 + 4y_B^2 - 12y_B + 9 \Leftrightarrow\left(1 - \frac{1}{4}\right)x_B^2 + (4 - 1)y_B^2 - 12y_B + 9 = 0 $$
+整理得到椭圆轨迹 $E_B: \frac{x^2}{4} + (y - 2)^2 = 1$ ，将 $x_B^2$ 反代，找出参数 $m$ 和 $y_B$ 的对应关系为$m = 4y_B - 3$，由条件 $m > 1$：$$ 4y_B - 3 > 1 \implies 4y_B > 4 \implies y_B > 1 $$，因此，满足条件的点 $B$ 的充分且必要集合为：椭圆 $\frac{x_B^2}{4} + (y_B - 2)^2 = 1$ 上满足 $y_B > 1$ 的所有点。由于点 $B$ 在 $\frac{x_B^2}{4} + (y_B - 2)^2 = 1$ 上，且任意实数的平方非负 $(y_B - 2)^2 \geq 0$：$$ \frac{x_B^2}{4} = 1 - (y_B - 2)^2 \le 1 \implies x_B^2 \le 4 \implies \mathbf{|x_B| \le 2} $$当且仅当 $y_B = 2$ 时取得等号，此时完美符合约束 $y_B > 1$，且对应的 $m = 4(2)-3 = 5$ 同样符合 $m>1$。
+\end{solution}
+\begin{example}{抹茶T2}{}
+    椭圆 $\frac{x^{2}}{4}+y^{2}=1$ 的右焦点为 $F$，过点 $F$ 的直线交椭圆于 $A,B$ 两点，若 $|OA|^{2}=|AB|$，求点 $A$ 的坐标.
+\end{example}
+\begin{solution}
+    点 $A$ 的焦半径为：$ r_A = 2 - \frac{\sqrt{3}}{2}x_A $，凡是过焦点的弦被焦点分成的两段 $r_A$ 和 $r_B$，必然满足经典的调和性质：$ \frac{1}{r_A} + \frac{1}{r_B} = \frac{2a}{b^2} $，将 $a=2, b=1$ 代入：$$ \frac{1}{r_A} + \frac{1}{r_B} = \frac{4}{1} = 4 $$消去$r_B$：$$ \frac{1}{r_B} = 4 - \frac{1}{r_A} = \frac{4r_A - 1}{r_A} \implies r_B = \frac{r_A}{4r_A - 1} $$
+弦长 $|AB| = r_A + r_B = r_A + \frac{r_A}{4r_A - 1} = \frac{4r_A^2}{4r_A - 1}$将 $r_A = 2 - \frac{\sqrt{3}}{2}x_A$ 代入：$$ |AB| = \frac{4\left(2 - \frac{\sqrt{3}}{2}x_A\right)^2}{4\left(2 - \frac{\sqrt{3}}{2}x_A\right) - 1} = \frac{4\left(4 - 2\sqrt{3}x_A + \frac{3}{4}x_A^2\right)}{8 - 2\sqrt{3}x_A - 1} = \frac{3x_A^2 - 8\sqrt{3}x_A + 16}{7 - 2\sqrt{3}x_A} $$
+然后将 $|OA|^2$ 同样转化为关于 $x_A$ 的表达式
+$$|OA|^2 = x_A^2 + y_A^2 = x_A^2 + 1 - \frac{x_A^2}{4} = 1 + \frac{3}{4}x_A^2 = \frac{3x_A^2 + 4}{4}$$
+联立$ \frac{3x_A^2 + 4}{4} = \frac{3x_A^2 - 8\sqrt{3}x_A + 16}{7 - 2\sqrt{3}x_A} $得到
+$$ 2\sqrt{3}x_A^3 - 3x_A^2 - 8\sqrt{3}x_A + 12 = 0 $$分解得$$ (x_A^2 - 4)(2\sqrt{3}x_A - 3) = 0 $$
+当$x_A^2 - 4 = 0$解得 $x_A = 2$ 或 $x_A = -2$。即$(2, 0)$和$(-2, 0)$。当$2\sqrt{3}x_A - 3 = 0$
+解得 $x_A = \frac{3}{2\sqrt{3}} = \frac{\sqrt{3}}{2}$。即$\left(\frac{\sqrt{3}}{2}, \frac{\sqrt{13}}{4}\right)$ 和 $\left(\frac{\sqrt{3}}{2}, -\frac{\sqrt{13}}{4}\right)$。
+\end{solution}
+
+\begin{example}{抹茶T3}{}
+    抛物线$y^2=4x$的焦点为$F$,过焦点的直线交抛物线于$A,B$两点，点$M$在抛物线上，满足$MA垂直 MB,FM垂直AB$,求 $\triangle ABM$ 的面积.
+\end{example}
+\begin{solution}
+    假设 $AB \perp x$ 轴，则直线方程为 $x = 1$。解得 $y^2 = 4 \implies A(1, 2), B(1, -2)$，此时$\overrightarrow{MA} \cdot \overrightarrow{MB} = (1, 2) \cdot (1, -2) = 1 - 4 = -3 \neq 0$。矛盾！故设直线 $AB$ 的方程为 $x = ty + 1$ （其中 $t \neq 0$）。联立得$y^2 - 4ty - 4 = 0$，
+设点 $M$ 的坐标为 $(x_0, y_0)$，且 $x_0 = \frac{y_0^2}{4}$。
+$\overrightarrow{MA} = (x_1 - x_0, y_1 - y_0) = \left(\frac{y_1^2 - y_0^2}{4}, y_1 - y_0\right),\overrightarrow{MB} = (x_2 - x_0, y_2 - y_0) = \left(\frac{y_2^2 - y_0^2}{4}, y_2 - y_0\right)$
+由 $MA \perp MB$ 得 $\overrightarrow{MA} \cdot \overrightarrow{MB} = 0$：
+$$\frac{y_1^2 - y_0^2}{4} \cdot \frac{y_2^2 - y_0^2}{4} + (y_1 - y_0)(y_2 - y_0) = 0\Leftrightarrow(y_1 - y_0)(y_2 - y_0) \left[ \frac{(y_1 + y_0)(y_2 + y_0)}{16} + 1 \right] = 0$$化简得$(y_1 + y_0)(y_2 + y_0) + 16 = 0$，代入得$-4 + y_0(4t) + y_0^2 + 16 = 0 \implies y_0^2 + 4ty_0 + 12 = 0$，所以$t = \frac{-y_0^2 - 12}{4y_0}$。
+
+由 $FM \perp AB$ 得$t(y_0^2 - 4) + 4y_0 = 0$，联立消去 $t$：$$\frac{-y_0^2 - 12}{4y_0} = \frac{-4y_0}{y_0^2 - 4}\Leftrightarrow (y_0^2 - 12)(y_0^2 + 4) = 0$$解得$M$ 点的横坐标：$x_0 = \frac{y_0^2}{4} = \frac{12}{4} = 3$。所以 $M(3, \pm 2\sqrt{3})$。$t^2 = \left( \frac{-4(\pm 2\sqrt{3})}{12 - 4} \right)^2 = \left(\mp \sqrt{3}\right)^2 = 3$。已知 $FM \perp AB$，且焦点 $F$ 在直线 $AB$ 上，因此点 $M$ 到底边 $AB$ 的距离$$|FM| = \sqrt{(x_0 - 1)^2 + (y_0 - 0)^2} = \sqrt{(3 - 1)^2 + 12} = \sqrt{4 + 12} = 4$$底边 $|AB|$：由抛物线焦点弦长公式 $|AB| = x_1 + x_2 + p$：由于 $x = ty+1$，可得 $x_1+x_2 = t(y_1+y_2)+2 = t(4t)+2 = 4t^2+2$。因此 $|AB| = 4t^2 + 2 + p = 4(3) + 2 + 2 = 16$。面积 $S$：$$S_{\triangle ABM} = \frac{1}{2} \times |AB| \times |FM| = \frac{1}{2} \times 16 \times 4 = 32$$
+
+另解：由 $\triangle AMB$ 是以 $AB$ 为斜边的直角三角形且 $FM \perp AB$ 可知，根据射影定理得 $|FM|^2 = |FA| \cdot |FB|$。
+建立以 $F$ 为极点，极轴沿 $x$ 轴正方向的极坐标系，抛物线方程为 $r = \frac{2}{1 - \cos\theta}$。设直线 $AB$ 的倾斜角为 $\alpha$，则 $A, B$ 的极角分别为 $\alpha$ 和 $\alpha + \pi$。由极坐标性质可知：
+$$ |FA| = \frac{2}{1 - \cos\alpha}, \quad |FB| = \frac{2}{1 + \cos\alpha} $$
+从而 $|FA| \cdot |FB| = \frac{4}{1 - \cos^2\alpha} = \frac{4}{\sin^2\alpha}$。又弦长 $|AB| = |FA| + |FB| = \frac{4}{\sin^2\alpha}$，故由此确立几何关系：$|FM|^2 = |AB|$。
+由于 $FM \perp AB$，点 $M$ 的极角为 $\alpha \pm \frac{\pi}{2}$，代入极坐标方程得 $|FM| = \frac{2}{1 \pm \sin\alpha}$。结合前述关系式得：
+$$ \left( \frac{2}{1 \pm \sin\alpha} \right)^2 = \frac{4}{\sin^2\alpha} \implies \frac{1}{1 \pm \sin\alpha} = \frac{1}{|\sin\alpha|} $$
+解得 $\sin^2\alpha = \frac{1}{4}$。此时，弦长 $|AB| = \frac{4}{1/4} = 16$，高 $|FM| = \sqrt{16} = 4$。
+因此，$\triangle ABM$ 的面积为：
+$$ S_{\triangle ABM} = \frac{1}{2} |AB| \cdot |FM| = \frac{1}{2} \times 16 \times 4 = 32 $$
+\end{solution}
+
+\begin{example}{抹茶T4}{}
+    点 $A(0,-1)$，点 $P,Q$ 满足点 $A,P,Q$ 共线，且 $|AP|\cdot |AQ|=3$，若 $k_{OQ}=3k_{OP}$，求点 $P$ 的轨迹方程.
+\end{example}
+\begin{solution}
+设动点 $P$ 的坐标为 $(x, y)$，点 $Q$ 的坐标为 $(x_Q, y_Q)$。由题设 $k_{OQ} = 3k_{OP}$ 可知，直线 $OP$ 与 $OQ$ 的斜率均存在且不为零，故点 $P$ 与点 $Q$ 的横坐标均满足 $x \neq 0$ 且 $x_Q \neq 0$。由斜率公式得 $\frac{y_Q}{x_Q} = \frac{3y}{x}$，即 $x y_Q = 3x_Q y$。
+
+由于点 $A(0, -1)$ 与 $P, Q$ 三点共线，且 $P$ 不在 $y$ 轴上，故向量 $\overrightarrow{AP} \neq \vec{0}$。设 $\overrightarrow{AQ} = \lambda \overrightarrow{AP}$（$\lambda \neq 0$），则有：
+$$ (x_Q, y_Q + 1) = \lambda (x, y + 1) \implies x_Q = \lambda x, \quad y_Q = \lambda(y + 1) - 1 $$
+将上述关系代入 $x y_Q = 3x_Q y$ 中，得 $x[\lambda(y + 1) - 1] = 3\lambda x y$。因 $x \neq 0$，等式两边同除以 $x$ 并整理得 $\lambda(y + 1) - 1 = 3\lambda y$，即 $\lambda(1 - 2y) = 1$。若 $y = \frac{1}{2}$，方程无解，故 $y \neq \frac{1}{2}$，从而解得 $\lambda = \frac{1}{1 - 2y}$。
+
+根据长度条件 $|AP| \cdot |AQ| = 3$，结合 $\overrightarrow{AQ} = \lambda \overrightarrow{AP}$ 可得 $|\lambda| \cdot |AP|^2 = 3$。代入距离公式与 $\lambda$ 的表达式，得到关于 $P$ 点坐标的方程：
+$$ \left| \frac{1}{1 - 2y} \right| \cdot [x^2 + (y + 1)^2] = 3 \implies x^2 + (y + 1)^2 = 3|1 - 2y| $$
+针对 $1 - 2y$ 的正负号进行分类讨论：
+
+当 $1 - 2y > 0$，即 $y < \frac{1}{2}$ 时，方程化为 $x^2 + y^2 + 2y + 1 = 3 - 6y$，整理得 $x^2 + y^2 + 8y - 2 = 0$，配方得标准方程 $x^2 + (y + 4)^2 = 18$。该圆上点的纵坐标最大值为 $y_{max} = -4 + \sqrt{18} = -4 + 3\sqrt{2}$。由于 $3\sqrt{2} = \sqrt{18} < 4.5$，故 $y_{max} < 0.5$，即该轨迹圆上的所有点均满足 $y < \frac{1}{2}$ 的前提条件。
+
+当 $1 - 2y < 0$，即 $y > \frac{1}{2}$ 时，方程化为 $x^2 + y^2 + 2y + 1 = -(3 - 6y)$，整理得 $x^2 + y^2 - 4y + 4 = 0$，即 $x^2 + (y - 2)^2 = 0$。此方程的唯一实数解为点 $(0, 2)$，但该点横坐标 $x = 0$，不满足斜率存在的初始前提，故应予以舍弃。
+
+综上所述，动点 $P$ 的轨迹是以 $(0, -4)$ 为圆心，$\sqrt{18}$ 为半径的圆，且需除去与 $y$ 轴的交点。其轨迹方程为：
+$$ x^2 + (y + 4)^2 = 18 \quad (x \neq 0) $$
+或写成一般式：$x^2 + y^2 + 8y - 2 = 0 \quad (x \neq 0)$。
+\end{solution}

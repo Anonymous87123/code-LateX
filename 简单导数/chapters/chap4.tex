@@ -563,3 +563,38 @@ $$M(p,q) \ge 2\cos\left(\frac{\pi}{p+q}\right)$$
 令$x=\arccos(1-u),y=\arccos u$，则\[x^2+y^2=G(u)=(\arccos(1-u))^2+(\arccos u)^2,\quad u\in[0,1]\]
 求导：$$G'(u)=2\arccos(1-u)\cdot\frac{-1}{\sqrt{1-(1-u)^2}}\cdot(-1)+2\arccos u\cdot\frac{-1}{\sqrt{1-u^2}}=\frac{2\arccos(1-u)}{\sqrt{2u-u^2}}-\frac{2\arccos u}{\sqrt{1-u^2}}$$
 当 $u\in(0,1)$ 时，对应的 $x, y \in (0,\frac{\pi}{2})$。此时$\sin x = \sqrt{1-\cos^2 x} = \sqrt{1-(1-u)^2} = \sqrt{2u-u^2}$，$\sin y = \sqrt{1-\cos^2 y} = \sqrt{1-u^2}$所以$G'(u)=2\left(\frac{x}{\sin x}-\frac{y}{\sin y}\right)$，根据形式，引入在 $(0,\frac{\pi}{2}]$显然单增的函数 $H(t)=\frac{t}{\sin t}$。当 $u\in(0,\frac{1}{2})$ 时：此时 $1-u > \frac{1}{2} > u$，即 $\cos x > \cos y$，$x < y$， $H(x) < H(y)$，即 $\frac{x}{\sin x} < \frac{y}{\sin y}$。因此 $G'(u) < 0$，$G(u)$ 在区间 $[0,\frac{1}{2}]$ 上严格单调递减。当 $u\in(\frac{1}{2},1)$ 时，此时 $1-u < \frac{1}{2} < u$，即 $\cos x < \cos y$。同理 $x > y$，$H(x) > H(y)$。因此 $G'(u) > 0$，$G(u)$ 在区间 $[\frac{1}{2},1]$ 上单增。
+
+\newpage
+\section{零点题}
+\begin{example}{邪帝}{}
+已知函数 $f(x)=x\ln(x-2)-\ln a$ 的零点为 $x_0$， $g(x)=2ax+\dfrac{x}{\ln x-a}$．  \\
+(1) 实数 $x_1$, $x_2$ ($e^a<x_1<x_2$) 满足 $g(x_1)=g(x_2)$，若 $x_1x_2>e^{x_0}$，求 $a$ 的取值范围；  \\
+(2) 记函数 $h(x)=f(x)-g(x)$，讨论 $h(x)$ 的零点个数．
+\end{example}
+\begin{solution}
+（1）$f(x) = x\ln(x-2) - \ln a$ 的零点为 $x_0$，故 $x_0 > 2$ 且 $\ln a = x_0\ln(x_0-2)$。函数 $g(x) = 2ax + \frac{x}{\ln x - a}$，且存在 $e^a < x_1 < x_2$ 使得 $g(x_1) = g(x_2)$。出于简化分母的考虑，令 $t = \ln x - a$，由 $x > e^a$ 知 $t > 0$。此时 $x = e^{t+a}$，函数 $g(x)$ 转化为 $g(x) = e^{t+a} \left( 2a + \frac{1}{t} \right) = e^a \cdot e^t \left( 2a + \frac{1}{t} \right)$。
+
+设 $F(t) = e^t \left( 2a + \frac{1}{t} \right)$，则 $F(t_1) = F(t_2)$，其中 $0 < t_1 < t_2$。求导得$F'(t) = e^t \frac{2at^2 + t - 1}{t^2}$。令 $F'(t) = 0$，因 $t>0$ 且 $a>0$，方程 $2at^2+t-1=0$ 有唯一正根 $t_0 = \frac{\sqrt{1+8a}-1}{4a}$。当 $t \in (0, t_0)$ 时，$F'(t) < 0$；当 $t \in (t_0, +\infty)$ 时，$F'(t) > 0$。故 $F(t)$ 在 $t_0$ 处取得极小值，且满足 $0 < t_1 < t_0 < t_2$。
+
+下证 $t_1 + t_2 > 2t_0$。构造 $H(t) = \ln F(t) = t + \ln(2at+1) - \ln t$，则 $H(t_1) = H(t_2)$。求导得：
+$$H'(t) = 1 + \frac{2a}{2at+1} - \frac{1}{t} = \frac{2at^2+t-1}{2at^2+t}$$
+进一步构造 $\varphi(x) = H(t_0 - x) - H(t_0 + x)$，其中 $0 < x < t_0$。求导并用 $2at_0^2+t_0=1$ 代入得：
+$$\varphi'(x) = - \left[ H'(t_0-x) + H'(t_0+x) \right] = -\frac{2(4a^2x^4 - (1+6a)x^2)}{(1+2ax^2)^2 - (1+8a)x^2}$$
+由于 $0 < x < t_0$，有 $x^2 < t_0^2 = \frac{1+4a-\sqrt{1+8a}}{8a^2}$。此时 $4a^2x^2 < 4a^2t_0^2 < 1+6a$，可知$\varphi'(x)$分子小于 $0$，分母大于 $0$。从而 $\varphi'(x) > 0$，故 $\varphi(x) > \varphi(0) = 0$，即 $H(t_0 - x) > H(t_0 + x)$。令 $x = t_0 - t_1$，得 $H(t_1) > H(2t_0 - t_1)$。结合 $H(t_1) = H(t_2)$ 可得 $H(t_2) > H(2t_0 - t_1)$。由于 $t_2$ 与 $2t_0 - t_1$ 均位于 $H(t)$ 的单增区间 $(t_0, +\infty)$ 内，故 $t_2 > 2t_0 - t_1$，即 $t_1 + t_2 > 2t_0$。
+
+由 $x_1 x_2 = e^{t_1+a} \cdot e^{t_2+a} = e^{t_1+t_2+2a}> e^{2t_0+2a}$。为使 $x_1 x_2 > e^{x_0}$ 恒成立，必要性探路 $e^{2t_0+2a} \geqslant e^{x_0}$，即 $2t_0 + 2a \geqslant x_0$。显然函数 $x \ln(x-2)$ 在 $(2, +\infty)$ 上单增，条件等价于 $f(2t_0+2a) \geqslant f(x_0) = 0$。
+
+由 $2at_0^2+t_0-1=0$ 得 $a = \frac{1-t_0}{2t_0^2}$，代入得 $2t_0+2a = \frac{2t_0^3 - t_0 + 1}{t_0^2}$。设 $A(t_0) = f(2t_0+2a) = (2t_0+2a) \ln(2t_0+2a-2) - \ln a$，需使得 $A(t_0) \geqslant 0$ 恒成立。对 $A(t_0)$ 求导可知 $A'(t_0) < 0$ 恒成立。当 $a = 1$ 时，对应 $t_0 = \frac{1}{2}$，$2t_0+2a = 3$，此时 $A(1/2) = 0$。为保证 $A(t_0) \geqslant 0$，必须满足 $t_0 \le \frac{1}{2}$。又因 $a = \frac{1-t_0}{2t_0^2}$ 在 $(0, 1)$ 上随 $t_0$ 单调递减，故 $t_0 \le \frac{1}{2}$ 等价于 $a \geqslant 1$。因此，$a$ 的取值范围为 $[1, +\infty)$。
+\newpage
+（2）原方程等价于 $W(x) = \frac{f(x) - g(x)}{x} = \ln(x-2) - \frac{\ln a}{x} - 2a - \frac{1}{\ln x - a} = 0$。对 $W(x)$ 求导：
+$$W'(x) = \frac{1}{x-2} + \frac{\ln a}{x^2} + \frac{1}{x(\ln x - a)^2}$$
+先考察定义域避免踩坑，显然函数 $W(x)$ 的定义域需满足 $x > 2$ 且 $x \ne e^a$。
+
+当 $a > \ln 2$ 时，$e^a > 2$，定义域为 $(2, e^a) \cup (e^a, +\infty)$。考察 $W'(x)$ 的前两项通分得 $\frac{x^2 + (x-2)\ln a}{x^2(x-2)}$。设分子为 $p(x) = x^2 + (x-2)\ln a$，其对称轴为 $x = -\frac{\ln a}{2}$。由于 $a > \ln 2$，不难得到对称轴严格小于 $\frac{1}{2}$，故 $p(x)$ 在 $x > 2$ 上严格单调递增。又因 $p(2) = 4 > 0$，故对任意 $x > 2$ 均有 $p(x) > 0$。从而 $W'(x) > 0$ 恒成立，函数 $W(x)$ 在区间 $(2, e^a)$ 和 $(e^a, +\infty)$ 内均严格单调递增。在 $(2, e^a)$ 内，当 $x \to 2^+$ 时 $W(x) \to -\infty$；当 $x \to (e^a)^-$ 时 $W(x) \to +\infty$，存在 $1$ 个零点。在 $(e^a, +\infty)$ 内，当 $x \to (e^a)^+$ 时 $W(x) \to -\infty$；当 $x \to +\infty$ 时 $W(x) \to +\infty$，也存在 $1$ 个零点。故此时 $h(x)$ 存在 $2$ 个零点。
+
+当 $0 < a \leqslant \ln 2$ 时，$e^a \leqslant 2$，此时均有 $\ln x > \ln 2 \geqslant a$，定义域为 $(2, +\infty)$。当 $x \to 2^+$ 时 $W(x) \to -\infty$；当 $x \to +\infty$ 时 $W(x) \to +\infty$。若存在极值点 $x_1$ 使得 $W'(x_1) = 0$，则有 $\frac{\ln a}{x_1} = -\frac{x_1}{x_1-2} - \frac{1}{(\ln x_1 - a)^2}$。将其代入 $W(x_1)$ 得：
+$$W(x_1) = \ln(x_1-2) + \frac{x_1}{x_1-2} + \frac{1}{(\ln x_1 - a)^2} - \frac{1}{\ln x_1 - a} - 2a$$
+由于 $x_1 - 2 > 0$，有 $\ln(x_1-2) + \frac{x_1-2+2}{x_1-2} = \ln(x_1-2) + \frac{2}{x_1-2} + 1 \geqslant \ln 2 + 2$。又设 $t = \ln x_1 - a > 0$，则 $\frac{1}{t^2} - \frac{1}{t} = \left(\frac{1}{t} - \frac{1}{2}\right)^2 - \frac{1}{4} \geqslant -\frac{1}{4}$。因此对于任意极值点，有 $W(x_1) \geqslant \ln 2 + 2 - \frac{1}{4} - 2a \geqslant \ln 2 + \frac{7}{4} - 2\ln 2 > 0$。这表明 $W(x)$ 的所有极小值均严格大于 $0$。由于 $x \to 2^+$ 时函数从 $-\infty$ 开始单调上升，在到达首个极小值的过程中穿过 $x$ 轴一次，此后函数值恒为正。故此时仅存在 $1$ 个零点。
+
+综上所述，当 $0 < a \leqslant \ln 2$ 时，$h(x)$ 有 $1$ 个零点；当 $a > \ln2$ 时，$h(x)$ 有2个零点.
+\end{solution}
