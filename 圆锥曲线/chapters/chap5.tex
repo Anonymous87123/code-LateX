@@ -70,3 +70,28 @@ $$ \left| \frac{1}{1 - 2y} \right| \cdot [x^2 + (y + 1)^2] = 3 \implies x^2 + (y
 $$ x^2 + (y + 4)^2 = 18 \quad (x \neq 0) $$
 或写成一般式：$x^2 + y^2 + 8y - 2 = 0 \quad (x \neq 0)$。
 \end{solution}
+\begin{example}{抹茶T5}{}
+    双曲线 $\frac{x^{2}}{a^{2}} - \frac{y^{2}}{b^{2}} = 1$ 的右顶点为 $A$, $\overrightarrow{OB} = 2\overrightarrow{OA}$, 若双曲线上存在点 $P$, 使得 $\angle APB = \frac{\pi}{2}$, 求双曲线的离心率的取值范围.
+\end{example}
+\begin{solution}
+设双曲线的标准方程为 $\frac{x^2}{a^2} - \frac{y^2}{b^2} = 1$ ($a>0, b>0$)，其右顶点为 $A(a, 0)$。由 $\overrightarrow{OB} = 2\overrightarrow{OA}$ 可得 $B$ 点坐标为 $(2a, 0)$。设双曲线上存在点 $P(x, y)$ 满足 $\angle APB = \frac{\pi}{2}$，则有 $\overrightarrow{PA} \cdot \overrightarrow{PB} = 0$ 且点 $P$ 不与 $A, B$ 重合，即 $y \neq 0$。
+
+根据向量坐标运算，$\overrightarrow{PA} = (a - x, -y)$，$\overrightarrow{PB} = (2a - x, -y)$，由数量积为零得：
+$$(x - a)(x - 2a) + y^2 = 0 \implies y^2 = -(x - a)(x - 2a)$$
+由于 $y^2 > 0$，可得 $x$ 的取值范围满足 $a < x < 2a$。此条件同时限定了点 $P$ 必须位于双曲线的右支。
+
+将点 $P$ 在双曲线上的关系 $y^2 = b^2 \left( \frac{x^2}{a^2} - 1 \right)$ 代入上述方程。利用离心率关系 $\frac{b^2}{a^2} = e^2 - 1$，得 $y^2 = (e^2 - 1)(x^2 - a^2)$。联立圆与双曲线的方程：
+$$(e^2 - 1)(x - a)(x + a) = -(x - a)(x - 2a)$$
+由于 $x > a$，等式两边可约去 $x - a$，得：
+$$(e^2 - 1)(x + a) = -(x - 2a)$$
+整理得 $e^2 x + e^2 a - x - a = -x + 2a$，化简可解得点 $P$ 的横坐标为：
+$$x = \frac{3 - e^2}{e^2} a$$
+
+要使满足题意的点 $P$ 存在，该横坐标 $x$ 必须满足范围 $a < x < 2a$。代入得：
+$$a < \frac{3 - e^2}{e^2} a < 2a$$
+由于 $a > 0$，不等式各边同除以 $a$ 得 $1 < \frac{3}{e^2} - 1 < 2$，即 $2 < \frac{3}{e^2} < 3$。由此解得：
+$$1 < e^2 < \frac{3}{2}$$
+考虑到双曲线离心率 $e > 1$，对不等式开平方得 $1 < e < \frac{\sqrt{6}}{2}$。
+
+经过检验，当 $e \in (1, \frac{\sqrt{6}}{2})$ 时，所求横坐标 $x$ 对应的纵坐标 $y = \pm \sqrt{-(x-a)(x-2a)}$ 必为非零实数，保证了点 $P$ 存在且不与 $A, B$ 重合，满足 $\angle APB = \frac{\pi}{2}$。若 $e = \frac{\sqrt{6}}{2}$，则 $x = a$，此时点 $P$ 与顶点 $A$ 重合，角不存在。因此，双曲线离心率 $e$ 的取值范围是 $(1, \frac{\sqrt{6}}{2})$。
+\end{solution}

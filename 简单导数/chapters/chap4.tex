@@ -42,33 +42,19 @@ $$\lim_{u \to 1^-} F(u) = \frac{2}{2}\ln 2 + 0 - \ln 2 + \ln(2-1) = 0$$
 \end{example}
 \begin{solution}
     令 $s=\frac{x-1}{x+1}$，由于 $x>0$，可得 $s\in(-1,1)$，此变换为一一对应。由此反解出 $x=\frac{1+s}{1-s}$，进而有 $x+1=\frac{2}{1-s}$ 以及 $\frac{1}{x+1}=\frac{1-s}{2}$。将原不等式左边化简并代入以 $s$ 为变量的表达式可得：
-$$ \frac{x}{x+1} = \frac{1+s}{2} $$
-$$ \frac{4x^2}{(x+1)^3} = 4\left(\frac{1+s}{1-s}\right)^2 \left(\frac{1-s}{2}\right)^3 = \frac{1}{2}(1+s)^2(1-s) $$
-将上述两式相加，提取公因式并展开：
+$$ \frac{x}{x+1} = \frac{1+s}{2} ,\frac{4x^2}{(x+1)^3} = 4\left(\frac{1+s}{1-s}\right)^2 \left(\frac{1-s}{2}\right)^3 = \frac{1}{2}(1+s)^2(1-s),x^{\frac{1}{x+1}} = \left(\frac{1+s}{1-s}\right)^{\frac{1-s}{2}} $$
+于是：
 $$ \frac{4x^2}{(x+1)^3}+\frac{x}{x+1} = \frac{1}{2}\left[(1+s)+(1+s)^2(1-s)\right] = \frac{1}{2}(2+2s-s^2-s^3) = (1+s)\left(1-\frac{s^2}{2}\right) $$
-同时，原不等式右边可直接表示为：
-$$ x^{\frac{1}{x+1}} = \left(\frac{1+s}{1-s}\right)^{\frac{1-s}{2}} $$
-故在 $s\in(-1,1)$ 的条件下，原不等式等价于：
+故在 $s\in(-1,1)$ 上，原不等式等价于：
 $$ (1+s)\left(1-\frac{s^2}{2}\right) \le \left(\frac{1+s}{1-s}\right)^{\frac{1-s}{2}} $$
-当 $s\in(-1,1)$ 时，不等式两边均严格大于 0，对两边同时取自然对数，不等号方向不变。构造函数 $Q(s)$ 为两端对数之差：
+显然当 $s\in(-1,1)$ 时两边均大于 0，同时取对数，做差构造函数 $Q(s)$：
 $$ Q(s) = \frac{1-s}{2}\ln\left(\frac{1+s}{1-s}\right) - \ln(1+s) - \ln\left(1-\frac{s^2}{2}\right) $$
-原命题等价于证明对任意 $s\in(-1,1)$ 均有 $Q(s) \ge 0$。
-
-考察 $Q(s)$ 的奇偶性，计算 $Q(-s)$：
-$$ Q(-s) = \frac{1+s}{2}\ln\left(\frac{1-s}{1+s}\right) - \ln(1-s) - \ln\left(1-\frac{s^2}{2}\right) = -\frac{1+s}{2}\ln\left(\frac{1+s}{1-s}\right) - \ln(1-s) - \ln\left(1-\frac{s^2}{2}\right) $$
-两式作差可得：
-$$ Q(-s) - Q(s) = -\ln\left(\frac{1+s}{1-s}\right) - \ln(1-s) + \ln(1+s) = 0 $$
-因此 $Q(-s)=Q(s)$，即 $Q(s)$ 为偶函数。故只需证明 $Q(s) \ge 0$ 在 $s\in[0,1)$ 上成立即可。
-
-对 $Q(s)$ 求一阶导数：
-$$ Q'(s) = -\frac{1}{2}\ln\left(\frac{1+s}{1-s}\right) + \frac{1-s}{2}\left(\frac{1}{1+s}+\frac{1}{1-s}\right) - \frac{1}{1+s} + \frac{s}{1-\frac{s^2}{2}} $$
-其中中间两项化简为 $\frac{1-s}{2}\cdot\frac{2}{1-s^2} - \frac{1}{1+s} = 0$，从而：
-$$ Q'(s) = \frac{2s}{2-s^2} - \frac{1}{2}\ln\left(\frac{1+s}{1-s}\right) $$
-继续求二阶导数：
-$$ Q''(s) = \frac{2(2-s^2)-2s(-2s)}{(2-s^2)^2} - \frac{1}{2}\left(\frac{1}{1+s}+\frac{1}{1-s}\right) = \frac{2(2+s^2)}{(2-s^2)^2} - \frac{1}{1-s^2} $$
-通分合并后得到：
-$$ Q''(s) = \frac{2(2+s^2)(1-s^2)-(2-s^2)^2}{(2-s^2)^2(1-s^2)} = \frac{(4-2s^2-2s^4)-(4-4s^2+s^4)}{(2-s^2)^2(1-s^2)} = \frac{s^2(2-3s^2)}{(2-s^2)^2(1-s^2)} $$
-
+于是等价于证明对任意 $s\in(-1,1)$ 均有 $Q(s) \ge 0$。显然 $Q(s)$ 为偶函数。故只需证明 $Q(s) \ge 0$ 在 $s\in[0,1)$ 上成立即可。
+对 $Q(s)$ 求导：
+\begin{align*}
+Q'(s) &= -\frac{1}{2}\ln\left(\frac{1+s}{1-s}\right) + \frac{1-s}{2}\left(\frac{1}{1+s}+\frac{1}{1-s}\right) - \frac{1}{1+s} + \frac{s}{1-\frac{s^2}{2}}=  \frac{2(2+s^2)}{(2-s^2)^2} - \frac{1}{1-s^2}\\
+&= \frac{2(2+s^2)(1-s^2)-(2-s^2)^2}{(2-s^2)^2(1-s^2)} = \frac{(4-2s^2-2s^4)-(4-4s^2+s^4)}{(2-s^2)^2(1-s^2)} = \frac{s^2(2-3s^2)}{(2-s^2)^2(1-s^2)} 
+\end{align*}
 对于 $s\in(0,1)$，分母 $(2-s^2)^2(1-s^2) > 0$ 恒成立，故 $Q''(s)$ 的符号由分子中的 $2-3s^2$ 决定。当 $0 < s < \sqrt{\frac{2}{3}}$ 时，$Q''(s) > 0$；当 $\sqrt{\frac{2}{3}} < s < 1$ 时，$Q''(s) < 0$。这表明导函数 $Q'(s)$ 在 $\left(0, \sqrt{\frac{2}{3}}\right)$ 上单调递增，在 $\left(\sqrt{\frac{2}{3}}, 1\right)$ 上单调递减。
 由于 $Q'(0) = 0$，且当 $s \to 1^-$ 时：
 $$ \lim_{s\to 1^-} Q'(s) = \lim_{s\to 1^-} \left( \frac{2s}{2-s^2} - \frac{1}{2}\ln\frac{1+s}{1-s} \right) = 2 - \infty = -\infty < 0 $$
@@ -83,6 +69,59 @@ $$ \frac{1-s}{2}\ln\frac{1+s}{1-s} = \frac{t}{2}\ln\frac{2-t}{t} \sim -\frac{1}{
 
 因此，在常规定义域 $x>0$ 内原不等式恒成立，解集为 $(0, +\infty)$，等号仅在 $x=1$ 处取到。若允许 $0^1=0$ 成立，则解集为 $[0, +\infty)$，等号在 $x=0$ 及 $x=1$ 处取到。
 \end{solution}
+
+\begin{example}{}{}
+    对于一切$x\geq0$证明\[\ln(x+1)+\frac{x}{\sqrt{\frac{1}{2}x^2+1}}+\frac{1}{2}x^2-2x \geq 0\]
+\end{example}
+\begin{solution}
+设函数 $f(x) = \ln(x+1) + \frac{x}{\sqrt{\frac{1}{2}x^2+1}} + \frac{1}{2}x^2 - 2x$。
+由于对数函数的真数必须严格大于 $0$，故 $f(x)$ 的定义域为 $(-1, +\infty)$。
+经代入检验，$f(0) = \ln(1) + 0 + 0 - 0 = 0$。
+
+对 $f(x)$ 求导，可得：
+$$f'(x) = \frac{1}{x+1} + \frac{1 \cdot \sqrt{\frac{1}{2}x^2+1} - x \cdot \frac{x}{2\sqrt{\frac{1}{2}x^2+1}}}{\frac{1}{2}x^2+1} + x - 2$$
+化简中间的无理项，得一阶导数表达式为：
+$$f'(x) = \frac{1}{x+1} + \frac{1}{\left(\frac{1}{2}x^2+1\right)^{\frac{3}{2}}} + x - 2$$
+
+为判断 $f'(x)$ 的符号，先引入并证明以下引理：
+对于任意实数 $y \ge 0$，恒有 $(1+y)^{\frac{3}{2}} \le 1 + \frac{3}{2}y + \frac{3}{8}y^2$。
+证明如下：因 $y \ge 0$，不等式两侧均大于 $0$，对两侧同时平方，比较大小即可。
+左式的平方为：$\left( (1+y)^{\frac{3}{2}} \right)^2 = 1 + 3y + 3y^2 + y^3$；
+右式的平方为：$\left( 1 + \frac{3}{2}y + \frac{3}{8}y^2 \right)^2 = 1 + \frac{9}{4}y^2 + \frac{9}{64}y^4 + 3y + \frac{3}{4}y^2 + \frac{9}{8}y^3 = 1 + 3y + 3y^2 + \frac{9}{8}y^3 + \frac{9}{64}y^4$。
+两式相减可得：
+$$\left( 1 + \frac{3}{2}y + \frac{3}{8}y^2 \right)^2 - \left( (1+y)^{\frac{3}{2}} \right)^2 = \frac{1}{8}y^3 + \frac{9}{64}y^4$$
+由于 $y \ge 0$，该差值显然恒大于等于 $0$，故引理成立。
+
+对于任意实数 $x$，均有 $\frac{1}{2}x^2 \ge 0$。令 $y = \frac{1}{2}x^2$，代入上述引理可得：
+$$\left(1+\frac{1}{2}x^2\right)^{\frac{3}{2}} \le 1 + \frac{3}{4}x^2 + \frac{3}{32}x^4$$
+对该不等式两侧取倒数，得：
+$$\frac{1}{\left(\frac{1}{2}x^2+1\right)^{\frac{3}{2}}} \ge \frac{1}{1 + \frac{3}{4}x^2 + \frac{3}{32}x^4} = \frac{32}{3x^4 + 24x^2 + 32}$$
+将此下界代回一阶导数 $f'(x)$ 的表达式中，并对前两项通分：
+$$f'(x) \ge \frac{1}{x+1} + x - 2 + \frac{32}{3x^4 + 24x^2 + 32} = \frac{x^2 - x - 1}{x+1} + \frac{32}{3x^4 + 24x^2 + 32}$$
+
+进一步将右侧通分，公分母为 $(x+1)(3x^4 + 24x^2 + 32)$。在定义域 $x > -1$ 内，该分母恒大于 $0$。
+记分子为 $N(x)$，展开并合并同类项：
+$$N(x) = (x^2 - x - 1)(3x^4 + 24x^2 + 32) + 32(x+1)$$
+$$= (3x^6 + 24x^4 + 32x^2) - (3x^5 + 24x^3 + 32x) - (3x^4 + 24x^2 + 32) + 32x + 32$$
+$$= 3x^6 - 3x^5 + 21x^4 - 24x^3 + 8x^2$$
+提取 $x^2$，得 $N(x) = x^2(3x^4 - 3x^3 + 21x^2 - 24x + 8)$。
+
+设 $H(x) = 3x^4 - 3x^3 + 21x^2 - 24x + 8$，对其进行配方：
+$$H(x) = 3\left(x^4 - x^3 + \frac{1}{4}x^2\right) - \frac{3}{4}x^2 + 21x^2 - 24x + 8$$
+$$= 3\left(x^2 - \frac{1}{2}x\right)^2 + \frac{81}{4}x^2 - 24x + 8$$
+$$= 3\left(x^2 - \frac{1}{2}x\right)^2 + \frac{81}{4}\left(x^2 - \frac{32}{27}x\right) + 8$$
+$$= 3\left(x^2 - \frac{1}{2}x\right)^2 + \frac{81}{4}\left[ \left(x - \frac{16}{27}\right)^2 - \frac{256}{729} \right] + 8$$
+$$= 3\left(x^2 - \frac{1}{2}x\right)^2 + \frac{81}{4}\left(x - \frac{16}{27}\right)^2 - \frac{64}{9} + 8$$
+$$= 3\left(x^2 - \frac{1}{2}x\right)^2 + \frac{81}{4}\left(x - \frac{16}{27}\right)^2 + \frac{8}{9}$$
+由于实数的平方非负，且 $\frac{8}{9} > 0$，因此对于任意实数 $x$，恒有 $H(x) \ge \frac{8}{9} > 0$。
+
+综上所述，当 $x > -1$ 时，分子 $N(x) = x^2 H(x) \ge 0$（当且仅当 $x=0$ 时等号成立），分母恒正。
+因此 $f'(x) \ge 0$ 恒成立，且 $f'(x)$ 仅在 $x=0$ 处为 $0$。
+这表明原函数 $f(x)$ 在 $(-1, +\infty)$ 上严格单调递增。
+又因 $f(0) = 0$，故当且仅当 $x \ge 0$ 时，有 $f(x) \ge f(0) = 0$。
+从而使原不等式成立的解集为 $\{x \mid x \ge 0\}$。解答完毕。
+\end{solution}
+
 
 \begin{example}{}{}
     证明函数 $f(x) = \frac{[\ln(x+1)]^x}{x^{\ln x}}$ 在 $x \in (0, +\infty)$ 上严格单调递增
@@ -210,7 +249,7 @@ $$f(x)\ge2\sqrt{\sqrt{\frac{x^{a}}{a}}\cdot\sqrt{\frac{a^{x}}{x}}}-2=2\sqrt[4]{x
 当 $a>1$ 且 $x>1$, 或 $0<a<1$ 且 $0<x<1$ 时, 均有 $x^{a-1}a^{x-1}>1$, 此时 $f(x)>0$ 显然成立. 由 $a=1$ 时已证的单调性可知 $f(x)\ge f(1)=0$. 结合表达式关于 $a$ 和 $x$ 的对称性, 后续只需证明当 $0<a<1<x$ 时的情形.
 
 为便于处理指数形式, 考虑通过换元分离变量. 令 $x=p^{2}$, $a=q^{2}$, 其中 $p>1>q>0$, 则原不等式转化为证明：
-$$\frac{p^{q^{2}}}{q}+\frac{q^{p^{2}}}{p}\ge2.$$
+\[\frac{p^{q^{2}}}{q}+\frac{q^{p^{2}}}{p}\ge2\]
 首先对 $p^{q^{2}}$ 进行放缩. 构造不等式 $p^{q^{2}}\ge1+q\left(\frac{p}{p+q-pq}-1\right)$, 两边取对数, 即证 $q^{2}\ln p\ge \ln\left[1+q\left(\frac{p}{p+q-pq}-1\right)\right]$.
 设 $g(p)=q^{2}\ln p-\ln\left[1+q\left(\frac{p}{p+q-pq}-1\right)\right]$, 对其求导可得：
 $$g^{\prime}(p)=\frac{q^{2}}{p}-\frac{q\frac{(p+q-pq)-p(1-q)}{(p+q-pq)^{2}}}{1+q\left(\frac{p}{p+q-pq}-1\right)}=\frac{q^{2}}{p}-\frac{q^{2}}{(p+q-pq)^{2}+(p+q-pq)(pq^{2}-q^{2})}$$
@@ -269,8 +308,102 @@ $$\varphi^{\prime}(u)=\frac{(u-1)^{2}(3u^{2}+8u+3)}{4u^{2}(u^{2}+1)(u+1)^{2}}\ge
 观察可知 $k\left(\frac{1}{e+1}\right) = \left(\frac{e+2}{e+1} - 1\right)e^1 + \frac{1}{e+1} - 1 = \frac{e}{e+1} - \frac{e}{e+1} = 0$，故 $v = \frac{1}{e+1}$ 为该方程的唯一解，此时 $u = (e+2)v = \frac{e+2}{e+1}$。
 最后代回 $x_0$ 的表达式，解得 $x_0 = e^u + e^v = e^{\frac{e+2}{e+1}} + e^{\frac{1}{e+1}} = e^{\frac{1}{e+1}}(e + 1)$。
 \end{solution}
+\newpage
+\begin{example}{来自“港”}{}
+若$t>0$，证明: \[\e^{\frac{t+1+\ln t}{(t+1)^2}\mathrm{e}^{\frac{t\ln t-t-1}{t+1}}x}+\mathrm{e}^{\frac{t+1-t\ln t}{(t+1)^2}\mathrm{e}^{\frac{t\ln t-t-1}{t+1}}x}-x\geqslant0\]
+\end{example}
+\begin{solution}
+证明：当 $t=1$ 时等号显然成立。下设 $t>0$ 且 $t \neq 1$。
+引入 $x_1 = \frac{\ln t}{t-1}, x_2 = \frac{t\ln t}{t-1}$，以及
+$$u = \frac{\ln t}{t+1}=\frac{x_1(x_2-x_1)}{x_1+x_2}, \quad v = \frac{t\ln t}{t+1}=\frac{x_2(x_2-x_1)}{x_1+x_2}$$
+由此可得 $u + v = \frac{(t+1)\ln t}{t+1} = \ln t$，且 $\frac{v}{u} = t$。
+考察原不等式的指数部分，有 $\frac{t\ln t - t - 1}{t+1} = \frac{t\ln t}{t+1} - 1 = v - 1$。
+考察第一项与第二项的系数，注意到 $\frac{1}{t+1} = \frac{x_1}{x_1+x_2}$，则：
+$$\frac{t+1+\ln t}{(t+1)^2} = \frac{1}{t+1} \left( 1 + \frac{\ln t}{t+1} \right) = \frac{x_1}{x_1+x_2}(1+u)$$
+$$\frac{t+1-t\ln t}{(t+1)^2} = \frac{1}{t+1} \left( 1 - \frac{t\ln t}{t+1} \right) = \frac{x_1}{x_1+x_2}(1-v)$$
+将上述关系代入原不等式 $\frac{t+1+\ln t}{(t+1)^2} \mathrm{e}^{\frac{t\ln t - t - 1}{t+1}x} + \frac{t+1-t\ln t}{(t+1)^2} \mathrm{e}^{\frac{t\ln t - t - 1}{t+1}x} - x \geqslant 0$，整理为关于 $x_1, x_2$ 的形式：
+$$\mathrm{e}^{\frac{x_1}{x_1+x_2}(1+u)\mathrm{e}^{v-1}x} + \mathrm{e}^{\frac{x_1}{x_1+x_2}(1-v)\mathrm{e}^{v-1}x} - x \geqslant 0$$
+观察到 $Y = \frac{x_1}{x_1+x_2}\mathrm{e}^{v-1}x$为多次出现的结构，解得
+$$ x = \frac{x_1+x_2}{x_1} \mathrm{e}^{1-v} Y = (t+1)\mathrm{e}^{1-v} Y= (\mathrm{e}^{u+v} + 1)\mathrm{e}^{1-v} Y = (\mathrm{e}^{1+u} + \mathrm{e}^{1-v})Y$$
+此时原不等式等价于：
+\begin{align*}
+&\mathrm{e}^{(1+u)Y} + \mathrm{e}^{(1-v)Y} - (\mathrm{e}^{1+u} + \mathrm{e}^{1-v})Y \geqslant 0 \Leftrightarrow\mathrm{e}^{(1+u)Y} + \mathrm{e}^{(1-v)Y} \geqslant  (\mathrm{e}^{1+u} + \mathrm{e}^{1-v})Y\\
+\text{考虑}&\mathrm{e}^{(1+u)Y} + \mathrm{e}^{(1-v)Y} \geqslant \mathrm{e}^{1+u} + \mathrm{e}^{1-v} + (({1+u})\mathrm{e}^{1+u} + ({1-v})\mathrm{e}^{1-v})(Y-1),\text{切线放缩}\\
+\Leftrightarrow&\mathrm{e}^{(1+u)Y} + \mathrm{e}^{(1-v)Y} \geqslant \mathrm{e}^{1+u} + \mathrm{e}^{1-v} + (\mathrm{e}^{1+u} + \mathrm{e}^{1-v} + \mathrm{e}(u\mathrm{e}^u - v\mathrm{e}^{-v}))(Y-1)\\
+\Leftrightarrow&\mathrm{e}^{(1+u)Y} + \mathrm{e}^{(1-v)Y} \geqslant \mathrm{e}^{1+u} + \mathrm{e}^{1-v} + (\mathrm{e}^{1+u} + \mathrm{e}^{1-v} )(Y-1)\\
+\Leftrightarrow&\mathrm{e}^{(1+u)Y} + \mathrm{e}^{(1-v)Y} \geqslant  (\mathrm{e}^{1+u} + \mathrm{e}^{1-v})Y
+\end{align*}
+于是得证。注：切线放缩是根据取等条件$Y=1$，先注意到取等条件再构造放缩。
+\end{solution}
+
+
+\begin{example}{虚调子}{}
+    对于所有的 $x > 0$，均有
+$$e^{-x} + e^{-\frac{1}{x}} \leq 1 - \frac{3\left(1 - \frac{2}{e}\right)}{1 + x + \frac{1}{x}}$$
+\end{example}
+\begin{solution}
+观察原不等式，若将变量$x$替换为$\frac{1}{x}$，不等式左侧$e^{-\frac{1}{x}} + e^{-x}$与右侧分母$1 + \frac{1}{x} + x$均保持不变。因此，该不等式在变换$x \leftrightarrow \frac{1}{x}$下具有对称性。对于$x \in (0, 1)$的情形，可通过代换转化为$x > 1$的情形。故只需证明$x \ge 1$时的情形即可，$(0, 1)$区间可由对称性自然推导得出。
+
+记常数$c = 3\left(1 - \frac{2}{e}\right)$。当$x \ge 1$时，不等式右侧分母通分为$1 + x + \frac{1}{x} = \frac{x^2+x+1}{x}$，且显然有$\frac{x^2+x+1}{x} > 0$。在不等式两边同乘$x^2+x+1$，得到等价不等式：
+$$(x^2+x+1)\left(e^{-x} + e^{-\frac{1}{x}}\right) \leq x^2+x+1 - cx$$
+移项后，构造辅助函数$P(x)$：
+$$P(x) = (x^2+x+1)\left(1 - e^{-x} - e^{-\frac{1}{x}}\right) - cx$$
+原命题即转化为证明：对于所有的$x \ge 1$，$P(x) \ge 0$恒成立。
+
+检验端点$x = 1$的值：
+$$P(1) = 3(1 - 2e^{-1}) - c = 3\left(1 - \frac{2}{e}\right) - 3\left(1 - \frac{2}{e}\right) = 0$$
+由于$P(1) = 0$，为了证明$P(x) \ge 0$，只需证明$P(x)$在$[1, +\infty)$上严格单调递增，即只需证明其一阶导数$P'(x) > 0$对一切$x > 1$恒成立。
+
+应用乘积求导法则，对$P(x)$求导：
+$$P'(x) = (2x+1)\left(1 - e^{-x} - e^{-\frac{1}{x}}\right) + (x^2+x+1)\left(e^{-x} - \frac{1}{x^2}e^{-\frac{1}{x}}\right) - c$$
+将其展开并按常数项、含$e^{-x}$的项、含$e^{-1/x}$的项分别合并同类项：
+常数项为$2x+1 - c$；
+含$e^{-x}$的项为$-(2x+1)e^{-x} + (x^2+x+1)e^{-x} = (x^2-x)e^{-x}$；
+含$e^{-1/x}$的项为$-(2x+1)e^{-\frac{1}{x}} - \frac{x^2+x+1}{x^2}e^{-\frac{1}{x}} = -\left(2x+2 + \frac{1}{x} + \frac{1}{x^2}\right)e^{-\frac{1}{x}}$。
+组合后可得导数表达式：
+$$P'(x) = 2x+1 - c + (x^2-x)e^{-x} - \left(2x+2+\frac{1}{x}+\frac{1}{x^2}\right)e^{-\frac{1}{x}}$$
+
+为便于判断符号，令$s = \frac{1}{x}$。由$x > 1$知$s \in (0, 1)$。代入$P'(x)$并提取公因子$\frac{1}{s}$：
+$$P'\left(\frac{1}{s}\right) = \frac{1}{s} \left[ 2 + s - cs + \left(\frac{1}{s} - 1\right)e^{-\frac{1}{s}} - (2+2s+s^2+s^3)e^{-s} \right]$$
+将$c = 3 - \frac{6}{e}$代入前三项化简：
+$$2 + s - cs = 2 + s - \left(3 - \frac{6}{e}\right)s = 2(1-s) + \frac{6s}{e}$$
+从而导数表达式化为：
+$$P'\left(\frac{1}{s}\right) = \frac{1}{s} \left[ 2(1-s) + \frac{6s}{e} + \frac{1-s}{s}e^{-\frac{1}{s}} - (2+2s+s^2+s^3)e^{-s} \right]$$
+
+观察方括号内的$\frac{1-s}{s}e^{-\frac{1}{s}}$一项。由于$s \in (0, 1)$，有$1-s > 0$、$s > 0$且$e^{-\frac{1}{s}} > 0$，故$\frac{1-s}{s}e^{-\frac{1}{s}} > 0$恒成立。为了证明$P'\left(\frac{1}{s}\right) > 0$，只需证明去掉该正项后的剩余部分大于等于$0$。
+为此，构造辅助函数$f(s)$：
+$$f(s) = 2(1-s) + \frac{6s}{e} - (2+2s+s^2+s^3)e^{-s}$$
+下证对于$s \in (0, 1)$，$f(s) > 0$。
+
+先计算$f(s)$在闭区间$[0, 1]$两端点的值：
+$$f(0) = 2 - 2 = 0$$
+$$f(1) = \frac{6}{e} - (2+2+1+1)e^{-1} = 0$$
+对$f(s)$求一阶导数：
+$$f'(s) = -2 + \frac{6}{e} - \left[ (2+2s+3s^2)e^{-s} - (2+2s+s^2+s^3)e^{-s} \right] = -2 + \frac{6}{e} + (s^3 - 2s^2)e^{-s}$$
+继续对$f'(s)$求二阶导数：
+$$f''(s) = (3s^2 - 4s)e^{-s} - (s^3 - 2s^2)e^{-s} = e^{-s} (-s^3 + 5s^2 - 4s)$$
+提取因式$-s$进行分解：
+$$f''(s) = -s(s^2 - 5s + 4)e^{-s} = -s(s-1)(s-4)e^{-s}$$
+对于探讨的开区间$s \in (0, 1)$，有$-s < 0$、$s-1 < 0$、$s-4 < 0$。三个负数相乘结果为负，加上$e^{-s} > 0$，得出在$(0, 1)$内$f''(s) < 0$恒成立。
+
+由$f''(s) < 0$可知，$f'(s)$在区间$[0, 1]$上严格单调递减。
+考察$f'(s)$在边界处的值：
+$$f'(0) = -2 + \frac{6}{e} > 0$$
+$$f'(1) = -2 + \frac{6}{e} - e^{-1} = -2 + \frac{5}{e} < 0$$
+由于$f'(s)$严格单调递减，且由正变负，根据零点定理，在$(0, 1)$内部存在唯一的点$s_0$，使得$f'(s_0) = 0$。
+由此可知，在$[0, s_0]$上$f'(s) > 0$，函数$f(s)$严格单调递增；在$[s_0, 1]$上$f'(s) < 0$，函数$f(s)$严格单调递减。
+结合$f(s)$全程先增后减的形态且两端$f(0) = f(1) = 0$，可知对于整个区间$(0, 1)$内部，严格有$f(s) > 0$成立。
+
+回顾前述逻辑链，由$f(s) > 0$及$\frac{1-s}{s}e^{-\frac{1}{s}} > 0$恒成立，可推得$P'\left(\frac{1}{s}\right) > 0$对$s \in (0, 1)$严格成立。
+还原变量$x = \frac{1}{s}$，得知导函数$P'(x) > 0$对所有$x > 1$恒成立，故原函数$P(x)$在$[1, +\infty)$上严格单调递增。结合$P(1) = 0$，必然有对于所有的$x \ge 1$均有$P(x) \ge 0$，等号当且仅当$x=1$时取得。
+根据对称性，上述结论自然延拓至$0 < x < 1$的情形。
+
+综上所述，不等式$e^{-x} + e^{-\frac{1}{x}} \leq 1 - \frac{3\left(1 - \frac{2}{e}\right)}{1 + x + \frac{1}{x}}$对于所有的$x > 0$均成立，等号当且仅当$x = 1$时取得，证明完毕。
+\end{solution}
+
+
 \begin{example}{}{}
-   证明：$\e^x\geqslant\frac{3\sqrt{\e}}{4}x+\frac{\sqrt{5\e}}{4}\sqrt{x^2+1}$
+\[\e^x\geqslant\frac{3\sqrt{\e}}{4}x+\frac{\sqrt{5\e}}{4}\sqrt{x^2+1}\]
 \end{example}
 \begin{solution}
 原命题等价于证明：
@@ -402,18 +535,116 @@ c^2=1-\dfrac{8}{ax+8}=1-\dfrac{8}{(\dfrac{1}{a^2}-1)(\dfrac{1}{b^2}-1)+8}\Righta
 
 \newpage
 \section{三角函数恒成立问题}
-\begin{example}{}{}
-    证明对于任意 $x > 0$，有：$$x + \frac{1}{x} + 1 \geqslant \cot\left(\frac{\pi}{2(x^2+x+1)}\right)\cot\left(\frac{\pi x^2}{2(x^2+x+1)}\right)$$
+\begin{example}{经典题}{}
+求$f(x) = \sin x \sin 2x \sin 3x$的值域.
 \end{example}
-记 $D=x^{2}+x+1$ ，并设 $A=\frac{\pi}{2D}$、$B=\frac{\pi x}{2D}$、$C=\frac{\pi x^{2}}{2D}$ 。
-由定义可知 $A+B+C=\frac{\pi(1+x+x^{2})}{2D}=\frac{\pi}{2}$ 。
-当 $x>0$ 时，满足 $D - x^2 = x+1 > 0$，$D - x = x^2+1 > 0$ 且 $D - 1 = x^2+x > 0$ ，即 $D > \max(x^2, x, 1)$ 。
-因此 $A, B, C \in \left(0,\frac{\pi}{2}\right)$ ，其三角函数值均恒正。此外，三者满足等比关系 $B^{2}=\left(\frac{\pi x}{2D}\right)^{2}=AC$ ，即 $B=\sqrt{AC}$ 。原不等式左侧可变形为 $x+\frac{1}{x}+1=\frac{x^{2}+x+1}{x}=\frac{D}{x}$ 。由 $B=\frac{\pi x}{2D}$ 得 $\frac{D}{x}=\frac{\pi}{2B}$ ，故证明原不等式等价于证明 $\frac{\pi}{2B}\ge\cot A\cot C$ 。由于 $A+C=\frac{\pi}{2}-B$ ，利用余切函数的加法公式与诱导公式可得：$$\cot(A+C)=\frac{\cot A\cot C-1}{\cot A+\cot C}=\cot\left(\frac{\pi}{2}-B\right)=\tan B=\frac{1}{\cot B}$$整理得 $\cot A\cot C=1+\frac{\cot A+\cot C}{\cot B}$ 。同时，由 $A+B+C=\frac{\pi}{2}$ 得 $\frac{\pi}{2B}=\frac{A+B+C}{B}=1+\frac{A+C}{B}$ 。将上述两式代入等价不等式中，问题转化为证明 $\frac{A+C}{B}\ge\frac{\cot A+\cot C}{\cot B}$ 。因 $B \in \left(0,\frac{\pi}{2}\right)$ ，有 $\cot B>0$ 且 $B>0$ ，不等式两边同乘 $B\cot B$ 得 $(A+C)\cot B\ge B(\cot A+\cot C)$ 。将 $B=Ax$ 与 $C=Ax^{2}$ 代入，得 $(A+Ax^{2})\cot(Ax)\ge Ax(\cot A+\cot(Ax^{2}))$ 。由于 $A>0$ ，两边同除以 $A$ 并移项，即需证明差值函数 $\Delta\ge0$ ，其中：$$\Delta=(1+x^{2})\cot(Ax)-x\cot A-x\cot(Ax^{2})$$对于 $t\in(0,\pi)$ ，余切函数存在 Mittag-Leffler 展开式 $\cot t=\frac{1}{t}-2t\sum_{n=1}^{\infty}\frac{1}{n^{2}\pi^{2}-t^{2}}$ 。由于 $A, Ax, Ax^{2} \in \left(0,\frac{\pi}{2}\right) \subset (0,\pi)$ ，满足展开条件。将展开式代入 $\Delta$ 的表达式中，对应于 $\frac{1}{t}$ 的主项为：$$\frac{1+x^{2}}{Ax}-\frac{x}{A}-\frac{x}{Ax^{2}}=\frac{1+x^{2}-x^{2}-1}{Ax}=0$$主项抵消为零。整理剩余的绝对收敛级数部分，提取公共因子 $2Ax$ 并合并，可得：$$\begin{aligned} \Delta &= (1+x^{2})\left(-2Ax\sum_{n=1}^{\infty}\frac{1}{n^{2}\pi^{2}-A^{2}x^{2}}\right) - x\left(-2A\sum_{n=1}^{\infty}\frac{1}{n^{2}\pi^{2}-A^{2}}\right) - x\left(-2Ax^{2}\sum_{n=1}^{\infty}\frac{1}{n^{2}\pi^{2}-A^{2}x^{4}}\right) \\ &= 2Ax\sum_{n=1}^{\infty}\left[\frac{1}{n^{2}\pi^{2}-A^{2}}+\frac{x^{2}}{n^{2}\pi^{2}-A^{2}x^{4}}-\frac{1+x^{2}}{n^{2}\pi^{2}-A^{2}x^{2}}\right] \end{aligned}$$因外部因子 $2Ax>0$ ，只需证明方括号内的通项非负。固定正整数 $n\ge1$ ，记 $\lambda=n^{2}\pi^{2}$，$s=A^{2}$ 。由前述角度范围知 $s<\frac{\pi^{2}}{4}$，$x^{2}s<\frac{\pi^{2}}{4}$，$x^{4}s<\frac{\pi^{2}}{4}$ 。又 $n\ge1$ 使得 $\lambda\ge\pi^{2}$ ，故分母 $\lambda-s$、$\lambda-x^2s$ 及 $\lambda-x^4s$ 均严格大于 $0$ 。对通项进行通分，其分子 $N$ 展开并化简为：$$\begin{aligned} N &= (\lambda-x^{2}s)(\lambda-x^{4}s)+x^{2}(\lambda-s)(\lambda-x^{2}s)-(1+x^{2})(\lambda-s)(\lambda-x^{4}s) \\ &= (\lambda^{2}-\lambda s x^{2}-\lambda s x^{4}+s^{2}x^{6}) + x^{2}(\lambda^{2}-\lambda s-\lambda s x^{2}+s^{2}x^{2}) - (1+x^{2})(\lambda^{2}-\lambda s-\lambda s x^{4}+s^{2}x^{4}) \\ &= \lambda s(x^{6}-x^{4}-x^{2}+1) \\ &= \lambda s(x^{4}-1)(x^{2}-1) \\ &= \lambda s(x^{2}+1)(x-1)^{2}(x+1)^{2} \end{aligned}$$因此，通分后的分式可化简为：$$\frac{\lambda s(x-1)^{2}(x+1)^{2}(x^{2}+1)}{(\lambda-s)(\lambda-x^{2}s)(\lambda-x^{4}s)}$$对于所有的 $n\ge1$ ，有 $\lambda>0$ 且 $s>0$ ，且分母的三个因式均为正。分子中 $(x-1)^{2} \ge 0$ 且其余各项严格为正，故上述分式非负。这保证了无穷级数中的每一项均非负，结合 $2Ax > 0$ 可得 $\Delta\ge0$ 恒成立，原不等式得证。由分子表达式 $\lambda s(x-1)^{2}(x+1)^{2}(x^{2}+1)$ 可知，等号成立当且仅当 $(x-1)^{2}=0$ ，即 $x=1$ 。此时 $A=B=C=\frac{\pi}{6}$ ，不等式两侧均等于 $3$ 。综上，对一切 $x>0$ 该不等式均成立，等号当且仅当 $x=1$ 时取得。
+\begin{solution}
+反复积化和差
+\begin{align*}
+    f(x) &= \frac{1}{2}(\sin 2x \cos 2x - \sin 2x \cos 4x)= \frac{1}{4}(\sin 2x + \sin 4x - \sin 6x)\\
+    f'(x)&= \frac{1}{4}(2\cos 2x + 4\cos 4x - 6\cos 6x) = 0
+\end{align*}
+令 $v = \cos 2x$，用二倍角和三倍角公式（$\cos 4x = 2v^2 - 1$，$\cos 6x = 4v^3 - 3v$）代入$f'(x)=0$得到
+\[6v^3 - 2v^2 - 5v + 1 = (v - 1)(6v^2 + 4v - 1) = 0\Leftrightarrow v =\frac{-2 \pm \sqrt{10}}{6}\]
+此时$f(x) = \frac{1}{4}\sin 2x (1 + 2\cos 2x - (4\cos^2 2x - 1)) = \frac{1}{2}\sin 2x (1 + v - 2v^2)$，将$\sin 2x$换成$v$的式子，考虑平方：$$f(x)^2 = \frac{1}{4}\sin^2 2x (1 + v - 2v^2)^2 = \frac{1}{4}(1 - v^2)(1 + v - 2v^2)^2$$用$6v^2 = 1 - 4v \implies v^2 = \frac{1 - 4v}{6}$反复降次得到极值$ \frac{1039 + 680v}{972}$，此时$f(x)^2 = \frac{2437 + 340\sqrt{10}}{11664}$，开方得到值域\[\left[- \frac{34\sqrt{2} + 5\sqrt{5}}{108}, \frac{34\sqrt{2} + 5\sqrt{5}}{108}\right]\]
+\end{solution}
 
-\begin{example}{}{}
+
+\begin{example}{来自“扁头耄耋”}{}
     证明对于任意 $x > 0$，有：$$x + \frac{1}{x} + 1 \geqslant \cot\left(\frac{\pi}{2(x^2+x+1)}\right)\cot\left(\frac{\pi x^2}{2(x^2+x+1)}\right)$$
 \end{example}
-已知 $x > 0$，令 $y = x^2 + x + 1$，显然有 $y > 0$。构造三个角度：$$\alpha = \frac{\pi}{2(x^2+x+1)} = \frac{\pi}{2y}, \quad \beta = \frac{\pi x^2}{2(x^2+x+1)} = \frac{\pi x^2}{2y}, \quad \gamma = \frac{\pi x}{2(x^2+x+1)} = \frac{\pi x}{2y}$$由于 $x > 0$，故 $\alpha, \beta, \gamma > 0$。这三个角度之和为：$$\alpha + \beta + \gamma = \frac{\pi}{2y}(1 + x^2 + x) = \frac{\pi}{2}$$因此 $\alpha, \beta, \gamma$ 均严格位于区间 $\left(0, \frac{\pi}{2}\right)$ 内。同时，计算可得 $\gamma^2 = \frac{\pi^2 x^2}{4y^2}$，且 $\alpha \beta = \frac{\pi^2 x^2}{4y^2}$，由此得到等比关系 $\gamma^2 = \alpha \beta$。对原不等式左侧进行代数变形：$$x + \frac{1}{x} + 1 = \frac{x^2+x+1}{x} = \frac{y}{x}$$由 $\gamma = \frac{\pi x}{2y}$ 可知 $\frac{y}{x} = \frac{\pi}{2\gamma}$。结合 $\alpha + \beta + \gamma = \frac{\pi}{2}$，原不等式左侧可化为：$$\frac{\pi/2}{\gamma} = \frac{\alpha + \beta + \gamma}{\gamma} = \frac{\alpha + \beta}{\gamma} + 1$$于是，原不等式等价于证明：$$\frac{\alpha + \beta}{\gamma} + 1 \geqslant \cot \alpha \cot \beta$$利用 $\alpha + \beta = \frac{\pi}{2} - \gamma$，等式两边同取余切。由于各角均在第一象限，三角函数值均大于 $0$，有：$$\cot(\alpha + \beta) = \cot\left(\frac{\pi}{2} - \gamma\right) = \tan \gamma = \frac{1}{\cot \gamma}$$根据余切的和角公式 $\cot(\alpha+B) = \frac{\cot A \cot B - 1}{\cot A + \cot B}$ 展开左侧，得到：$$\frac{\cot \alpha \cot \beta - 1}{\cot \alpha + \cot \beta} = \frac{1}{\cot \gamma}$$两边同乘 $\cot \alpha + \cot \beta$，移项整理得：$$\cot \alpha \cot \beta = 1 + \frac{\cot \alpha + \cot \beta}{\cot \gamma}$$将此式代回待证不等式，两边消去 $1$，由于 $\cot \gamma > 0$，原命题等价转化为证明：$$\frac{\alpha + \beta}{\gamma} \cot \gamma \geqslant \cot \alpha + \cot \beta$$对于 $t \in (0, \pi)$，余切函数 $\cot t$ 具有绝对收敛的洛朗级数展开：$$\cot t = \frac{1}{t} - \sum_{k=1}^\infty c_k t^{2k-1}$$其中 $c_k = \frac{2^{2k} |B_{2k}|}{(2k)!}$（$B_{2k}$ 为伯努利数）。由偶数阶伯努利数交替变号的性质可知，对任意 $k \geqslant 1$，均有 $c_k > 0$。因为 $\alpha, \beta, \gamma \in \left(0, \frac{\pi}{2}\right)$，均处于级数的绝对收敛域内，可将展开式代入等价不等式中。不等式左侧展开为：$$\frac{\alpha + \beta}{\gamma} \left( \frac{1}{\gamma} - \sum_{k=1}^\infty c_k \gamma^{2k-1} \right) = \frac{\alpha + \beta}{\gamma^2} - \sum_{k=1}^\infty c_k (\alpha + \beta) \gamma^{2k-2}$$代入等比关系 $\gamma^2 = \alpha \beta$，左侧化简为：$$\frac{\alpha + \beta}{\alpha \beta} - \sum_{k=1}^\infty c_k (\alpha + \beta) (\alpha \beta)^{k-1} = \frac{1}{\alpha} + \frac{1}{\beta} - \sum_{k=1}^\infty c_k (\alpha + \beta)(\alpha \beta)^{k-1}$$不等式右侧展开并合并为：$$\left( \frac{1}{\alpha} - \sum_{k=1}^\infty c_k \alpha^{2k-1} \right) + \left( \frac{1}{\beta} - \sum_{k=1}^\infty c_k \beta^{2k-1} \right) = \frac{1}{\alpha} + \frac{1}{\beta} - \sum_{k=1}^\infty c_k (\alpha^{2k-1} + \beta^{2k-1})$$将不等式左侧减去右侧，消去公共的首项，并提取公因式得差值表达式：$$\Delta = \sum_{k=1}^\infty c_k \left[ \alpha^{2k-1} + \beta^{2k-1} - (\alpha + \beta)\alpha^{k-1}\beta^{k-1} \right]$$设方括号内的第 $k$ 项为 $T_k$。将其展开并重新分组：$$T_k = \alpha^{2k-1} + \beta^{2k-1} - \alpha^k \beta^{k-1} - \alpha^{k-1} \beta^k = \alpha^{k-1}(\alpha^k - \beta^k) - \beta^{k-1}(\alpha^k - \beta^k) = (\alpha^{k-1} - \beta^{k-1})(\alpha^k - \beta^k)$$分析 $T_k$ 的符号：当 $k=1$ 时，$T_1 = 0$；当 $k \geqslant 2$ 时，由于幂函数 $f(t) = t^p$（$p>0$）在 $t>0$ 上严格单调递增，故 $\alpha^{k-1} - \beta^{k-1}$ 与 $\alpha^k - \beta^k$ 必定同号或同为 $0$。因此，它们的乘积 $T_k \geqslant 0$ 恒成立。由于对一切 $k \geqslant 1$ 都有 $c_k > 0$ 且 $T_k \geqslant 0$，故无穷级数之和 $\Delta \geqslant 0$ 恒成立，即左侧大于等于右侧，核心不等式得证。关于等号成立条件：当且仅当对于所有 $k \geqslant 2$，均有 $T_k = 0$ 时等号成立，此时要求 $\alpha = \beta$。代入定义得 $\frac{\pi}{2y} = \frac{\pi x^2}{2y}$，解得 $x^2 = 1$。由已知 $x > 0$，故等号当且仅当 $x = 1$ 时成立。证明完毕。
+\begin{solution}
+设 $A = \frac{\pi}{2(x^2+x+1)}$，$B = \frac{\pi x^2}{2(x^2+x+1)}$，并构造辅助角 $C = \frac{\pi x}{2(x^2+x+1)}$。由于 $x > 0$，显然有 $A, B, C \in (0, \frac{\pi}{2})$。注意到 $A + B + C = \frac{\pi}{2}$，且满足 $C^2 = \frac{\pi^2 x^2}{4(x^2+x+1)^2} = AB$，即 $C = \sqrt{AB}$。
+
+为了化简不等式右侧 $\text{RHS} = \cot A \cot B$，利用和角公式及 $A + B = \frac{\pi}{2} - C$，可得：
+$$ \tan(A+B) = \frac{\tan A + \tan B}{1 - \tan A \tan B} = \tan\left(\frac{\pi}{2} - C\right) = \cot C = \frac{1}{\tan C} $$
+整理得 $\tan C(\tan A + \tan B) = 1 - \tan A \tan B$，等式两边同除以 $\tan A \tan B$ 并重排项，得到：
+$$ \cot A \cot B = 1 + \tan C(\cot A + \cot B) $$
+对于不等式左侧 $\text{LHS} = x + \frac{1}{x} + 1 = \frac{x^2+x+1}{x}$，结合 $C$ 的定义式可知 $\text{LHS} = \frac{\pi}{2C}$。由 $A+B+C = \frac{\pi}{2}$，可将其进一步表示为 $\text{LHS} = \frac{A+B+C}{C} = \frac{A+B}{C} + 1$。此时，原不等式 $\text{LHS} \ge \text{RHS}$ 等价于：
+$$ \frac{A+B}{C} + 1 \ge 1 + \tan C(\cot A + \cot B) \iff \frac{\cot A + \cot B}{A+B} \le \frac{\cot C}{C} $$
+代入 $C = \sqrt{AB}$，命题转化为证明对于任意 $A, B \in (0, \frac{\pi}{2})$，恒有 $\frac{\cot A + \cot B}{A+B} \le \frac{\cot \sqrt{AB}}{\sqrt{AB}}$。
+
+利用$\cot z = \frac{1}{z} - \sum_{n=1}^\infty \frac{2z}{n^2\pi^2 - z^2}$。将其代入目标不等式左侧得：
+$$ \frac{\cot A + \cot B}{A+B} = \frac{1}{AB} - \sum_{n=1}^\infty \frac{2}{A+B} \left( \frac{A}{n^2\pi^2 - A^2} + \frac{B}{n^2\pi^2 - B^2} \right) $$
+目标不等式右侧展开为：
+$$ \frac{\cot \sqrt{AB}}{\sqrt{AB}} = \frac{1}{AB} - \sum_{n=1}^\infty \frac{2}{n^2\pi^2 - AB} $$
+只需证明级数中每一对应项均满足：
+$$ \frac{1}{A+B} \left( \frac{A}{a - A^2} + \frac{B}{a - B^2} \right) \ge \frac{1}{a - AB} \quad (\text{其中 } a = n^2\pi^2, n \ge 1) $$
+由于 $A, B \in (0, \frac{\pi}{2})$，分母 $a-A^2, a-B^2, a-AB$ 均为正数。将上式两边同乘分母并展开：
+$$ [A(a - B^2) + B(a - A^2)](a - AB) \ge (A+B)(a - A^2)(a - B^2) $$
+左侧化简为 $(A+B)(a - AB)^2$，右侧展开为 $(A+B)[a^2 - a(A^2+B^2) + A^2B^2]$。消去正数因子 $(A+B)$ 并展开平方式：
+$$ a^2 - 2aAB + A^2B^2 \ge a^2 - a(A^2+B^2) + A^2B^2 \iff a(A^2+B^2) \ge 2aAB $$
+由于 $a > 0$，上式等价于 $(A-B)^2 \ge 0$，该式显然成立。故原级数每一项的不等关系均成立，累加后得证。
+
+当且仅当 $A = B$ 时等号成立，即 $x^2 = 1$，结合 $x > 0$ 知取等条件为 $x = 1$。综上所述，原不等式得证。
+\end{solution}
+
+\begin{example}{来自“扁头耄耋”}{}
+    证明对于任意 $x > 0$，有：$$ \cot\left(\frac{\pi}{2(x^2+x+1)}\right)\cot\left(\frac{\pi x^2}{2(x^2+x+1)}\right)\geqslant 3$$
+\end{example}
+\begin{solution}
+    设$A=\frac{\pi}{2(x^2+x+1)}$，$B=\frac{\pi x^2}{2(x^2+x+1)}$，并继续沿用前文构造的辅助角$C=\frac{\pi x}{2(x^2+x+1)}$。由于$x>0$，显然有$A, B, C \in (0, \frac{\pi}{2})$，且满足$A+B+C=\frac{\pi}{2}$及$C=\sqrt{AB}$。利用前文已证明的恒等式进行变形：$$\cot A \cot B = 1 + \tan C(\cot A + \cot B)$$将括号内式子用正余弦展开并通分，同时代入和角关系$A+B=\frac{\pi}{2}-C$：$$\cot A + \cot B = \frac{\sin(A+B)}{\sin A \sin B} = \frac{\sin(\frac{\pi}{2} - C)}{\sin A \sin B} = \frac{\cos C}{\sin A \sin B}$$将其代回原式，即可将目标等式右侧化简为：$$\cot A \cot B = 1 + \frac{\sin C}{\cos C} \cdot \frac{\cos C}{\sin A \sin B} = 1 + \frac{\sin C}{\sin A \sin B}$$为证明原式$\geqslant 3$，我们需要对分母$\sin A \sin B$寻找上限。由于$C$是$A, B$的几何平均数（即$C=\sqrt{AB}$），自然联想到利用函数的凹凸性。
+构造函数$f(t)=\ln(\sin e^t)$，其定义域为$e^t \in (0, \frac{\pi}{2})$。对该函数求导：
+$$f'(t) = \frac{\cos e^t \cdot e^t}{\sin e^t} = e^t \cot e^t,f''(t) = e^t \cot e^t - e^{2t} \csc^2 e^t = \frac{\frac{1}{2}e^t \sin(2e^t) - e^{2t}}{\sin^2 e^t}$$
+对于任意$u=e^t > 0$，由于$\sin(2u) < 2u$恒成立，故分子$\frac{1}{2}u \sin(2u) - u^2 < u^2 - u^2 = 0$，这意味着$f''(t) < 0$。因此$f(t)$在对应区间上为严格凹函数。
+根据Jensen不等式（琴生不等式），有：
+$$\frac{f(\ln A) + f(\ln B)}{2} \leqslant f\left(\frac{\ln A + \ln B}{2}\right) = f(\ln \sqrt{AB}) = f(\ln C)$$
+即$\frac{1}{2}(\ln \sin A + \ln \sin B) \leqslant \ln \sin C$，脱去对数后得到关键不等式：$$\sin A \sin B \leqslant \sin^2 C$$（当且仅当$A=B$时取等号）。将此结论代入前面的化简式中：$$\cot A \cot B = 1 + \frac{\sin C}{\sin A \sin B} \geqslant 1 + \frac{\sin C}{\sin^2 C} = 1 + \frac{1}{\sin C}\geqslant 1 + \frac{1}{\sin(\frac{\pi}{6})} = 1 + 2 = 3$$综上所述，$\cot A \cot B \geqslant 3$恒成立。等号成立的条件为$A=B$且$C=\frac{\pi}{6}$，即$x=1$。原不等式另一侧得证。
+\end{solution}
+
+\begin{example}{来自“许你坚强”}{}
+    证明对于任意 $A, B \in (0, \frac{\pi}{2})$，恒有 $\displaystyle\frac{\cot A + \cot B}{A+B} \le \frac{\cot \sqrt{AB}}{\sqrt{AB}}$。
+\end{example}
+\begin{solution}
+已知 $A, B \in (0, \frac{\pi}{2})$，由于待证不等式关于 $A, B$ 对称，不妨设 $A \geq B$。令 $x = \sqrt{AB}$，则 $x \in (0, \frac{\pi}{2})$ 且 $A \geq x \geq B > 0$。由 $B = \frac{x^2}{A}$ 可知，在固定常数 $x$ 的前提下，$A$ 的取值范围为 $[x, \frac{\pi}{2})$。
+
+构造关于 $A$ 的单变量函数：
+$$f(A) = \frac{\cot A + \cot(\frac{x^2}{A})}{A + \frac{x^2}{A}}$$
+对其求导可得：
+$$f'(A) = \frac{(A + \frac{x^2}{A})(-\csc^2 A + \frac{x^2}{A^2}\csc^2 \frac{x^2}{A}) - (1 - \frac{x^2}{A^2})(\cot A + \cot \frac{x^2}{A})}{(A + \frac{x^2}{A})^2}$$
+将 $B = \frac{x^2}{A}$ 代回上述导数公式，并将分子与分母同乘 $A$，得：
+$$f'(A) = \frac{(A + B)(-A \csc^2 A + B \csc^2 B) - (A - B)(\cot A + \cot B)}{A(A + B)^2}$$
+令导数公式的分子部分为 $\Delta(A, B)$，即：
+$$\Delta(A, B) = (A + B)(B \csc^2 B - A \csc^2 A) - (A - B)(\cot A + \cot B)$$
+由于分母 $A(A + B)^2 > 0$，$f'(A)$ 的符号完全由 $\Delta(A, B)$ 决定。要证明原不等式，需证当 $A \geq B$ 时，恒有 $\Delta(A, B) \leq 0$。
+
+引入辅助函数 $R(y) = y \cot y$，$y \in (0, \frac{\pi}{2})$，其导数为 $R'(y) = \cot y - y \csc^2 y$。进一步令 $Q(y) = -R'(y) = y \csc^2 y - \cot y$。代入 $\Delta(A, B)$ 的第一项中有 $y \csc^2 y = Q(y) + \cot y$，故：
+$$B \csc^2 B - A \csc^2 A = Q(B) - Q(A) + \cot B - \cot A$$
+将其代入 $\Delta(A, B)$ 并展开，可化简为：
+$$\Delta(A, B) = (A + B)[Q(B) - Q(A)] - 2(A\cot A - B\cot B) = (A + B)[Q(B) - Q(A)] - 2[R(A) - R(B)]$$
+由微积分基本定理，连续函数 $R(y)$ 在区间上的增量可表示为积分：
+$$R(A) - R(B) = \int_{B}^{A} R'(t) dt = -\int_{B}^{A} Q(t) dt$$
+为证明 $\Delta(A, B) \leq 0$，等价于证明如下构造的二元函数 $F(A, B) \geq 0$：
+$$F(A, B) = -\Delta(A, B) = (A + B)[Q(A) - Q(B)] - 2\int_{B}^{A} Q(t) dt$$
+对 $F(A, B)$ 关于 $A$ 求一阶偏导：
+$$\frac{\partial F}{\partial A} = [Q(A) - Q(B)] + (A + B)Q'(A) - 2Q(A) = (A + B)Q'(A) - Q(A) - Q(B)$$
+令 $G(A, B) = \frac{\partial F}{\partial A}$，继续对 $A$ 求偏导：
+$$\frac{\partial G}{\partial A} = Q'(A) + (A + B)Q''(A) - Q'(A) = (A + B)Q''(A)$$
+
+为确定偏导数的符号，考察 $Q(y)$ 的各阶导数（$y \in (0, \frac{\pi}{2})$）：
+$$Q'(y) = 2\csc^2 y(1 - y \cot y)$$
+$$Q''(y) = 2\csc^2 y [y - 3 \cot y + 3y \cot^2 y]$$
+将 $Q''(y)$ 方括号内的部分转化为正余弦表达式，令 $u = 2y \in (0, \pi)$：
+$$y - 3 \cot y + 3y \cot^2 y = \frac{y(1 + 2 \cos^2 y) - 1.5 \sin(2y)}{\sin^2 y} = \frac{\frac{u}{2}(2 + \cos u) - 1.5 \sin u}{\sin^2 y}$$
+只需考察分子的符号，设 $z(u) = u + \frac{u}{2} \cos u - 1.5 \sin u$。对其求导：
+$$z'(u) = 1 - \cos u - \frac{u}{2} \sin u$$
+$$z''(u) = \frac{1}{2}(\sin u - u \cos u)$$
+当 $u \in (0, \frac{\pi}{2}]$ 时，由正切函数的不等式性质 $\tan u > u$ 可知 $\sin u > u \cos u$；当 $u \in (\frac{\pi}{2}, \pi)$ 时，$\cos u < 0$，显然有 $\sin u - u \cos u > 0$。因此在整个区间 $(0, \pi)$ 内恒有 $z''(u) > 0$。由此可知 $z'(u)$ 单调递增，结合 $z'(0) = 0$ 得 $z'(u) > 0$；进而 $z(u)$ 单调递增，结合 $z(0) = 0$ 推得 $z(u) > 0$。这表明对于 $y \in (0, \frac{\pi}{2})$，恒有 $Q''(y) > 0$。
+
+基于 $Q''(A) > 0$ 及 $A + B > 0$，可得 $\frac{\partial G}{\partial A} > 0$，即 $G(A, B)$ 关于 $A$ 在 $[B, \frac{\pi}{2})$ 上单调递增。考察起点值 $G(B, B) = 2(BQ'(B) - Q(B))$，设 $H(y) = yQ'(y) - Q(y)$，求导得 $H'(y) = yQ''(y) > 0$，故 $H(y)$ 单调递增。
+利用泰勒展开分析 $y \to 0^+$ 时的极限行为：
+$$Q(y) = \frac{y - \frac{1}{2}\sin(2y)}{\sin^2 y} = \frac{y - \frac{1}{2}(2y - \frac{4y^3}{3} + \dots)}{y^2 - \frac{y^4}{3} + \dots} = \frac{2y}{3} + \frac{4y^3}{45} + O(y^5)$$
+求导得 $Q'(y) = \frac{2}{3} + \frac{4y^2}{15} + O(y^4)$。代入 $H(y)$ 中计算：
+$$H(y) = y\left(\frac{2}{3} + \frac{4y^2}{15}\right) - \left(\frac{2y}{3} + \frac{4y^3}{45}\right) + O(y^5) = \frac{8y^3}{45} + O(y^5)$$
+因此 $\lim_{y \to 0^+} H(y) = 0$。由于 $H(y)$ 严格单调递增，故当 $y > 0$ 时 $H(y) > 0$，从而起点值 $G(B, B) > 0$。
+
+因为 $G(B, B) > 0$ 且 $\frac{\partial G}{\partial A} > 0$，故对于 $A \geq B$ 恒有 $G(A, B) > 0$。这表明 $\frac{\partial F}{\partial A} > 0$，函数 $F(A, B)$ 关于 $A$ 单调递增。结合 $F(B, B) = 0$，得出当 $A \geq B$ 时 $F(A, B) \geq 0$ 恒成立。
+由 $F(A, B) \geq 0$ 可得 $\Delta(A, B) \leq 0$，进而 $f'(A) \leq 0$。这意味着在保持 $x = \sqrt{AB}$ 不变的情况下，函数 $f(A)$ 在区间 $[x, \frac{\pi}{2})$ 上严格单调递减。因此，函数在边界点 $A = x$（即 $A = B = \sqrt{AB}$）处取得最大值：
+$$f(A) \leq f(x) = \frac{\cot x + \cot(\frac{x^2}{x})}{x + \frac{x^2}{x}} = \frac{2\cot x}{2x} = \frac{\cot x}{x}$$
+将 $x = \sqrt{AB}$ 代回即证得原不等式：
+$$\frac{\cot A + \cot B}{A + B} \leq \frac{\cot \sqrt{AB}}{\sqrt{AB}}$$
+当且仅当 $A = B$ 时，等号成立。证毕。
+\end{solution}
 
 
 \begin{example}{}{}
@@ -453,64 +684,23 @@ $$ m'(x) = 2 \cot x + \frac{\sec^2 x}{\tan x} - \frac{3}{x} = \frac{2\cos^2 x + 
 因此 $m'(x) > 2\left(\frac{3}{2x}\right) - \frac{3}{x} = 0$。
 这说明 $m(x)$ 在 $(0, \frac{\pi}{2})$ 上单调递增，由于 $\lim_{x\to 0} m(x) = 0$，故 $m(x) > 0$，从而 $x^3 < \sin^2 x \tan x$ 成立。至此，$\left(\frac{x}{k}\right)^{2k^2+1} < \frac{\tan x}{k}\left(\sin\frac{x}{k}\right)^{2k^2}$ 证明完毕。
 \end{solution}
+
+\newpage
 \begin{example}{三角函数}{}
-    （1）求函数 $f(x) = 3^{\sin x} +3^{\cos x}$ 的取值范围\\
-    （2）求函数 $f_a(x) = a^{\sin x} + a^{\cos x}$ 的取值范围，其中 $a > 1$.
+    求函数 $f_a(x) = a^{\sin x} + a^{\cos x}$ 的取值范围，其中 $a > 1$.
 \end{example}
 \begin{solution}
-考虑更一般的问题：设 $a > 1$，求函数 $f_a(x) = a^{\sin x} + a^{\cos x}$ 的取值范围。
+对于函数 $f_a(x) = a^{\sin x} + a^{\cos x}$（$a > 1$），首先分析其最小值的取得。根据均值不等式，有 $a^{\sin x} + a^{\cos x} \geq 2\sqrt{a^{\sin x + \cos x}}$。当且仅当 $a^{\sin x} = a^{\cos x}$，即 $\sin x = \cos x$ 时，等号成立。由辅助角公式可知 $\sin x + \cos x = \sqrt{2}\sin\left(x + \frac{\pi}{4}\right)$，其最小值为 $-\sqrt{2}$。考虑到指数函数 $y = a^u$（$a > 1$）单调递增，故 $\sqrt{a^{\sin x + \cos x}}$ 的最小值为 $\sqrt{a^{-\sqrt{2}}} = a^{-1/\sqrt{2}}$。当 $x = 2k\pi - \frac{3\pi}{4}$（$k \in \mathbb{Z}$）时，$\sin x = \cos x = -\frac{\sqrt{2}}{2}$，上述等号均能成立，故函数 $f_a(x)$ 的最小值为 $2a^{-1/\sqrt{2}}$。
 
-\noindent\textbf{1. 最小值}
-\[
-a^{\sin x} + a^{\cos x} \geq 2\sqrt{a^{\sin x + \cos x}}.
-\]
-等号成立当且仅当 $a^{\sin x}=a^{\cos x}$，即 $\sin x = \cos x$。
-又 $\sin x + \cos x = \sqrt{2}\sin\left(x+\frac{\pi}{4}\right) \geq -\sqrt{2}$，且 $a>1$ 时指数函数单调递增，故
-\[
-\sqrt{a^{\sin x + \cos x}} \geq \sqrt{a^{-\sqrt{2}}} = a^{-1/\sqrt{2}}.
-\]
-等号成立当且仅当 $\sin\left(x+\frac{\pi}{4}\right) = -1$。同时满足 $\sin x = \cos x$ 与 $\sin\left(x+\frac{\pi}{4}\right) = -1$ 的 $x$ 存在，例如 $x = -\frac{3\pi}{4} + 2k\pi\ (k\in\mathbb{Z})$，此时 $\sin x = \cos x = -\frac{\sqrt{2}}{2}$。因此最小值可以取到，为
-\[
-\min f_a(x) = 2a^{-1/\sqrt{2}}.
-\]
+分析函数 $f_a(x)$ 的最大值。作平移变换 $x = y + \frac{\pi}{4}$，则原函数可化为 $f_a(x) = a^{\frac{\sin y + \cos y}{\sqrt{2}}} + a^{\frac{\cos y - \sin y}{\sqrt{2}}}$。记 $b = \frac{\ln a}{\sqrt{2}} > 0$，利用双曲余弦函数 $\cosh u = \frac{e^u + e^{-u}}{2}$，原函数可改写为 $f_a(x) = 2e^{b \cos y} \cosh(b \sin y)$。对 $\frac{f_a(x)}{2}$ 取对数得 $\ln\frac{f_a(x)}{2} = b \cos y + \ln \cosh(b \sin y)$。由于 $\cos y \leq \sqrt{1 - \sin^2 y}$，当 $\cos y \geq 0$ 时等号成立，故有 $\ln\frac{f_a(x)}{2} \leq \sqrt{b^2 - (b\sin y)^2} + \ln \cosh(b \sin y)$。
 
-\noindent\textbf{2. 最大值}:作平移变换 $x = y + \frac{\pi}{4}$，则
-\[
-\sin x = \sin\left(y+\frac{\pi}{4}\right) = \frac{\sin y + \cos y}{\sqrt{2}},\quad
-\cos x = \cos\left(y+\frac{\pi}{4}\right) = \frac{\cos y - \sin y}{\sqrt{2}}.
-\]
-通法肯定是换底，记 $b = \frac{1}{\sqrt{2}}\ln a$（显然 $b>0$），则$a^{\sin x} = e^{b(\sin y + \cos y)},\quad
-a^{\cos x} = e^{b(\cos y - \sin y)}$，于是
-\[
-f_a(x) = e^{b\cos y}\bigl(e^{b\sin y}+e^{-b\sin y}\bigr)=2e^{b\cos y}\cosh(b\sin y).
-\]
-取对数：
-\[
-\ln\frac{f_a(x)}{2}=b\cos y+\ln\cosh(b\sin y). \tag{1}
-\]
-取绝对值：
-\[
-b\cos y \leq b\sqrt{1-\sin^2 y} = \sqrt{b^2 - (b\sin y)^2},
-\]
-等号成立当且仅当 $\cos y \geq 0$（此时 $|\cos y|=\cos y$）。代入(1)得
-\[
-\ln\frac{f_a(x)}{2} \leq \sqrt{b^2 - (b\sin y)^2} + \ln\cosh(b\sin y).
-\]
-令 $t = b\sin y$，则 $t\in[-b,b]$，记右端函数为
-\[
-g_b(t) = \sqrt{b^2 - t^2} + \ln\cosh t,\quad t\in[-b,b].
-\]
-由于 $g_b$ 是偶函数（$\sqrt{b^2-t^2}$ 偶，$\ln\cosh t$ 偶），只需考虑 $t\in[0,b]$ 上的最大值。若该最大值在 $t_0$ 处取得，且存在 $y$ 使得 $\sin y = t_0/b$ 且 $\cos y \geq 0$（即 $y\in[-\frac{\pi}{2}+2k\pi,\frac{\pi}{2}+2k\pi]$），则原函数 $f_a(x)$ 的最大值为 $2e^{g_b(t_0)}$。由于 $g_b(t)$ 是连续函数，最大值必存在。
+令 $t = b \sin y$，则 $t \in [-b, b]$。构造辅助函数 $g(t) = \sqrt{b^2 - t^2} + \ln \cosh t$。由于 $g(t)$ 是偶函数，仅需讨论 $t \in [0, b]$ 上的单调性。对 $g(t)$ 求导得 $g'(t) = \tanh t - \frac{t}{\sqrt{b^2 - t^2}}$，继续求二阶导数得 $g''(t) = \operatorname{sech}^2 t - \frac{b^2}{(b^2 - t^2)^{3/2}}$。观察可知 $\operatorname{sech}^2 t$ 与 $-\frac{b^2}{(b^2 - t^2)^{3/2}}$ 在 $[0, b)$ 上均严格递减，故 $g''(t)$ 在 $[0, b]$ 上严格递减。由于 $g''(0) = 1 - \frac{1}{b}$，最大值的取得需分两种情况讨论：
 
-下面分析 $g_b(t)$ 在 $[0,b]$ 上的单调性。求导：
-\[
-g_b'(t) = -\frac{t}{\sqrt{b^2-t^2}} + \tanh t,\quad g_b'(0)=0,~~g_b''(t) = -\frac{b^2}{(b^2-t^2)^{3/2}} + \operatorname{sech}^2 t.
-\]
-注意到 $-\dfrac{b^2}{(b^2-t^2)^{3/2}}$ 在 $[0,b]$ 上严格递减（分母随 $t$ 增大而减小，分式值增大，加负号后递减），而 $\operatorname{sech}^2 t$ 也在 $[0,b]$ 上严格递减，因此 $g_b''(t)$ 在 $[0,b]$ 上严格递减。由 $g_b''(0)=1-\dfrac{1}{b}$知需要分两种情况讨论：
-\begin{itemize}
-    \item \textbf{情形1：} $b \leq 1$。此时 $g_b''(0) \leq 0$，由 $g_b''(t)$ 递减知 $g_b''(t) < 0$ 对一切 $t\in(0,b]$ 成立，故 $g_b'(t)$ 在 $[0,b]$ 上严格递减。又 $g_b'(0)=0$，所以 $g_b'(t) < 0$ 对 $t>0$ 成立，即 $g_b(t)$ 在 $[0,b]$ 上严格递减。因此最大值在 $t=0$ 处取得，$g_b(0)=\sqrt{b^2}+0 = b$。此时 $t=0$ 对应 $\sin y = 0$，即 $y = k\pi$；结合 $\cos y \geq 0$ 取 $y=0$（或 $2k\pi$），从而 $x = \frac{\pi}{4} + 2k\pi$。代入得最大值为$\max f_a(x) = 2e^{b} = 2a^{1/\sqrt{2}}$.
-    \item \textbf{情形2：} $b > 1$。此时 $g_b''(0) > 0$，由于 $g_b''(t)$ 严格递减，存在唯一的 $t_1\in(0,b)$ 使得 $g_b''(t_1)=0$，且在 $(0,t_1)$ 上 $g_b''(t)>0$，在 $(t_1,b)$ 上 $g_b''(t)<0$。于是 $g_b'(t)$ 在 $[0,t_1]$ 上严格递增，在 $[t_1,b]$ 上严格递减。由 $g_b'(0)=0$ 知存在 $t_0\in(0,b)$ 使得 $g_b'(t_0)=0$，且 $g_b(t)$ 在 $[0,t_0]$ 上递增，在 $[t_0,b]$ 上递减，最大值在 $t_0$ 处取得。此时最大值大于 $g_b(0)=b$，即 $\max f_a(x) > 2a^{1/\sqrt{2}}$。
-\end{itemize}
+若 $b \leq 1$（即 $1 < a \leq e^{\sqrt{2}}$），则 $g''(0) \leq 0$。由 $g''(t)$ 严格递减可知 $g''(t) < 0$ 对一切 $t \in (0, b]$ 成立，故 $g'(t)$ 在 $[0, b]$ 上严格递减。又 $g'(0) = 0$，故在 $t \in (0, b]$ 内 $g'(t) < 0$，函数 $g(t)$ 在 $[0, b]$ 上严格递减。此时最大值在 $t = 0$ 处取得，即 $g(0) = b$。对应 $x = 2k\pi + \frac{\pi}{4}$ 时，原函数取得最大值 $2e^b = 2a^{1/\sqrt{2}}$。
+
+若 $b > 1$（即 $a > e^{\sqrt{2}}$），则 $g''(0) > 0$。由于 $g''(t)$ 严格递减且当 $t \to b$ 时 $g''(t) \to -\infty$，存在唯一的 $t_1 \in (0, b)$ 使得 $g''(t_1) = 0$。此时 $g'(t)$ 在 $[0, t_1]$ 上严格递增，在 $[t_1, b]$ 上严格递减。结合 $g'(0) = 0$ 且当 $t \to b$ 时 $g'(t) \to -\infty$，可知在 $(0, b)$ 内存在唯一的 $t_0$ 使得 $g'(t_0) = 0$。此时 $g(t)$ 在 $t_0$ 处取得极大值，亦为最大值。由于 $g(t_0) > g(0) = b$，此情形下最大值大于 $2a^{1/\sqrt{2}}$。
+
+综上所述，当 $1 < a \leq e^{\sqrt{2}}$ 时（如 $a=3$），函数 $f_a(x)$ 的取值范围为 $[2a^{-1/\sqrt{2}}, 2a^{1/\sqrt{2}}]$；当 $a > e^{\sqrt{2}}$ 时，最小值为 $2a^{-1/\sqrt{2}}$，最大值为 $2\exp\left(\sqrt{b^2 - t_0^2} + \ln \cosh t_0\right)$，其中 $t_0$ 为方程 $\tanh t = \frac{t}{\sqrt{b^2 - t^2}}$ 在 $(0, b)$ 内的唯一根。
 \end{solution}
 
 \begin{example}{港梦杯第18题原稿}{}
@@ -566,7 +756,16 @@ $$M(p,q) \ge 2\cos\left(\frac{\pi}{p+q}\right)$$
 
 \newpage
 \section{零点题}
-\begin{example}{邪帝}{}
+\begin{example}{“港”命制，零点和小于$2^n-1$}{}
+已知函数 $f(x)=x-\ln x-1\ (x>0)$，定义 $f_{n+1}(x)=f_n(f(x))\ (n\in \mathbb{N}^*)$.\\
+(1) 求 $f_n(x)-x$ 的零点个数；\\
+(2) 证明：$f_n(x)$ 的所有极值点之和不小于 $2^n-1$.
+\end{example}
+\begin{solution}
+由链式法则 $f_n'(x) = \prod_{k=0}^{n-1} f'(f_k(x))$。由于定义域限制，极值点对应的导数为0，必然要求连乘式中某一项为0。但若 $f_k(x)=1\ (k \le n-2)$，点就不在 $f_n$ 的定义域内。因此，能在定义域内使 $f_n'(x)=0$ 的点，当且仅当 $f_{n-1}(x)=1$。（且这些点均满足 $f_n(x)=0$，为极小值点）。令 $A_k = \{x > 0 \mid f_k(x) = 1\}$，则 $A_{n-1}$ 即为 $f_n(x)$ 的所有极值点构成的集合。依题意，$A_0=\{1\}$；$A_k$ 相当于对 $A_{k-1}$ 中的每一个元素，求方程 $f(x)=y$ 的两根。集合 $A_{k-1}$ 的大小为 $2^{k-1}$。
+\end{solution}
+
+\begin{example}{邪帝零点题}{}
 已知函数 $f(x)=x\ln(x-2)-\ln a$ 的零点为 $x_0$， $g(x)=2ax+\dfrac{x}{\ln x-a}$．  \\
 (1) 实数 $x_1$, $x_2$ ($e^a<x_1<x_2$) 满足 $g(x_1)=g(x_2)$，若 $x_1x_2>e^{x_0}$，求 $a$ 的取值范围；  \\
 (2) 记函数 $h(x)=f(x)-g(x)$，讨论 $h(x)$ 的零点个数．
@@ -597,4 +796,59 @@ $$W(x_1) = \ln(x_1-2) + \frac{x_1}{x_1-2} + \frac{1}{(\ln x_1 - a)^2} - \frac{1}
 由于 $x_1 - 2 > 0$，有 $\ln(x_1-2) + \frac{x_1-2+2}{x_1-2} = \ln(x_1-2) + \frac{2}{x_1-2} + 1 \geqslant \ln 2 + 2$。又设 $t = \ln x_1 - a > 0$，则 $\frac{1}{t^2} - \frac{1}{t} = \left(\frac{1}{t} - \frac{1}{2}\right)^2 - \frac{1}{4} \geqslant -\frac{1}{4}$。因此对于任意极值点，有 $W(x_1) \geqslant \ln 2 + 2 - \frac{1}{4} - 2a \geqslant \ln 2 + \frac{7}{4} - 2\ln 2 > 0$。这表明 $W(x)$ 的所有极小值均严格大于 $0$。由于 $x \to 2^+$ 时函数从 $-\infty$ 开始单调上升，在到达首个极小值的过程中穿过 $x$ 轴一次，此后函数值恒为正。故此时仅存在 $1$ 个零点。
 
 综上所述，当 $0 < a \leqslant \ln 2$ 时，$h(x)$ 有 $1$ 个零点；当 $a > \ln2$ 时，$h(x)$ 有2个零点.
+\end{solution}
+
+\begin{example}{邪帝零点题}{}
+已知函数$f(x)=\frac{x-a}{\ln x}$，$g(x)=(x+a)^2+a$，其中$a\in R$.\\
+（1）当$a=0$时，若曲线$f(x)$与直线$y=k$有一个交点，求实数$k$的取值范围；\\
+（2）设函数$h(x)=f(x)+g(x)$，讨论$h(x)$的零点个数.
+\end{example}
+\begin{solution}
+
+\end{solution}
+
+
+\newpage
+\begin{example}{来自amare Donata Caesia}{}
+    函数 $f(x) = \log_a(\ln(x + a))$, $g(x) = \ln(x + b)$ 共零点.\\
+（1）求 $b - a$ 的值;（2）若 $f(x) \geq g(x)$ 在区间 $(-b, 2]$ 上恒成立, 求实数 $a$ 的取值范围.
+\end{example}
+\begin{solution}
+（1）对于函数 $f(x) = \log_a(\ln(x + a))$，满足 $\ln(x + a) > 0$，即 $x > 1 - a$。令 $f(x) = 0$解得其唯一零点 $x_1 = e - a$。对于函数 $g(x) = \ln(x + b)$，其定义域为 $x > -b$，令 $g(x) = 0$ 解得其唯一零点 $x_2 = 1 - b$。共零点则 $e - a = 1 - b$，整理得 $b - a = 1 - e$。\\
+（2）令 $t = x + a$，由于 $x \in (e - 1 - a, 2]$，则 $t \in (e - 1, a + 2]$。原不等式可转化为 $H(t) = \frac{\ln(\ln t)}{\ln a} - \ln(t + 1 - e) \ge 0$。显然，当 $t = e$ 时，$H(e) = \log_a(\ln e) - \ln(e + 1 - e) = 0$。
+
+当 $0 < a < 1$ 时，$\ln a < 0$。若 $a \le e - 2$，则区间右端点 $a + 2 \le e$。此时对于任意 $t \in (e - 1, a + 2]$，均有 $t \le e$，则 $\ln(\ln t) \le 0$。由于 $\ln a < 0$，得 $\frac{\ln(\ln t)}{\ln a} \ge 0$。同时，$t \le e$ 导致 $t + 1 - e \le 1$，故 $\ln(t + 1 - e) \le 0$，即 $-\ln(t + 1 - e) \ge 0$。此时 $H(t)$ 为两个非负项之和，恒有 $H(t) \ge 0$。若 $e - 2 < a < 1$，则区间包含 $t > e$ 的部分，此时若取 $t = a + 2 > e$，则 $\ln(\ln t) > 0$ 且 $\ln(t + 1 - e) > 0$，导致 $H(a + 2) < 0$，不满足题意。故此种情况下 $a \in (0, e - 2]$。
+
+当 $a > 1$ 时，区间 $(e - 1, a + 2]$ 包含内部点 $t = e$。若 $H(t) \ge 0$ 在该区间内恒成立且 $H(e) = 0$，则 $t = e$ 必须为 $H(t)$ 的极小值点。根据费马引理，必有 $H'(e) = 0$。对 $H(t)$ 求导得：
+$$H'(t) = \frac{1}{t \ln t \ln a} - \frac{1}{t + 1 - e}$$
+令 $H'(e) = \frac{1}{e \ln a} - 1 = 0$，解得 $\ln a = \frac{1}{e}$，即 $a = e^{\frac{1}{e}}$。现检验 $a = e^{\frac{1}{e}}$ 的充分性：此时 $H'(t) = \frac{e(t + 1 - e) - t \ln t}{t \ln t (t + 1 - e)}$。设分子为 $u(t) = e(t + 1 - e) - t \ln t$，则 $u'(t) = e - 1 - \ln t$。在 $t \in (e - 1, a + 2]$ 上，由于 $a = e^{\frac{1}{e}} < 2$，故 $t < 4$。而 $e^{e - 1} > e^{1.7} > 4$，故在该区间内 $\ln t < e - 1$，得 $u'(t) > 0$。由于 $u(t)$ 单调递增且 $u(e) = 0$，故当 $t \in (e - 1, e)$ 时 $H'(t) < 0$，当 $t \in (e, a + 2]$ 时 $H'(t) > 0$。因此 $H(t)$ 在 $t = e$ 处取得最小值 $H(e) = 0$，满足 $H(t) \ge 0$ 恒成立。
+
+综上所述，$b - a = 1 - e$，实数 $a$ 的取值范围是 $(0, e - 2] \cup \{ e^{\frac{1}{e}} \}$。
+\end{solution}
+
+\newpage
+\begin{example}{来自扛把子}{}
+已知函数$f(x)=e^{ax}+\ln\left(x+1\right)-2$tan$x-1.$ $x\in\left(-1,\frac\pi2\right).$\\
+(1) 当 $a=0$ 时，讨论$f(x)$ 的零点个数.\\
+(2) 证明：当 $a\leqslant1$ 时，$f(x)$ 有且仅有两个零点.
+\end{example}
+\begin{solution}
+（1）当 $a=0$ 时， $f(x) = \ln(x+1) - 2\tan x$。定义域 $x \in \left(-1, \frac{\pi}{2}\right)$。显然 $f(0) = \ln 1 - 2\tan 0 = 0$，故 $x=0$ 是函数的一个零点。
+求导：$$f'(x) = \frac{\cos^2 x - 2x - 2}{(x+1)\cos^2 x}=\frac{h(x)}{(x+1)\cos^2 x},h'(x) = -2\sin x \cos x - 2 = -\sin(2x) - 2$$
+注意到$h'(x) \leqslant -1 < 0$ 恒成立。故 $h(x)$ 在 $\left(-1, \frac{\pi}{2}\right)$ 上单减，$h(-1) = \cos^2(-1) > 0$，$h(0) = 1 - 0 - 2 = -1 < 0$，所以对任意 $x > 0$，都有 $h(x) < 0 \implies f'(x) < 0$，所以$f(x)$ 在 $\left(0, \frac{\pi}{2}\right)$ 上严格单调递减，又 $f(0)=0$，可知该区间$f(x) < 0$，无零点。
+
+显然，存在唯一的实数 $x_0 \in (-1, 0)$ 使得 $h(x_0) = 0$。当 $x \in (-1, x_0)$ 时，$h(x)>0 \implies f'(x) > 0$，$f(x)$ 单调递增；当 $x \in (x_0, 0)$ 时，$h(x)<0 \implies f'(x) < 0$，$f(x)$ 单调递减。因 $f(0) = 0$ 且 $f(x)$ 在 $(x_0, 0)$ 上递减，必然有极大值 $f(x_0) > 0$。又因当 $x \to -1^+$ 时，$\ln(x+1) \to -\infty$，即 $f(-1^+) \to -\infty$。因为 $f(x)$ 在 $(-1, x_0)$ 上从 $-\infty$ 单调递增至 $f(x_0) > 0$，必定且仅必定穿过 $x$ 轴一次。因此该区间有且仅有 $1$ 个零点。综上，当 $a=0$ 时，$f(x)$ 有且仅有 $2$ 个零点。\\
+（2）当 $a \leqslant 1$ 时，仍有$f(0) = e^0 + \ln 1 - 0 - 1 = 0$，不难想到分正负区间讨论。对于 $x > 0$ 且 $a \leqslant 1$，有$e^{ax} \leqslant e^x$。从而有：$$f(x) \leqslant e^x + \ln(x+1) - 2\tan x - 1 \triangleq f_1(x)$$
+求导发现在$(0,\frac{\pi}2)$区间，有\[f_1'(x) = e^x + \frac{1}{x+1} - \frac{2}{\cos^2 x}\leqslant(1 + x + x^2)+(1 - x + x^2)-(2 + 2x^2)=0\]
+所以$f_1(x)$ 在 $\left(0, \frac{\pi}{2}\right)$ 上单减。又 $f_1(0)=0$，所以$(0,\frac{\pi}2)$区间无零点。
+
+现在只需想方设法证明$(-1,0)$区间有一个零点就可以。令\[y(x) = 1 + 2\tan x - \ln(x+1),y'(x) = \frac{2}{\cos^2 x} - \frac{1}{x+1},y''(x) = \frac{4\sin x}{\cos^3 x} + \frac{1}{(x+1)^2}\]
+令 $t = -x$，则 $t \in (0, 1)$。此时
+\begin{align*}
+y''(t) &= \frac{1}{(1-t)^2} - \frac{4\sin t}{\cos^3 t}>\frac{1}{(1-t)^2}-\frac{4t}{(1-\frac{t^2}2)^3}\\
+&=\dfrac{1 - 4t + \frac{13}{2}t^2 - 4t^3 + \frac{3}{4}t^4 - \frac{1}{8}t^6}{(1-t)^2(1-\frac{t^2}2)^3}=\frac{(1-t)^4 + \frac{t^2}{8}(4 - 2t^2 - t^4)}{(1-t)^2(1-\frac{t^2}2)^3}>0
+\end{align*}
+据泰勒中值定理，对于任意 $x \in (-1, 0)$存在中值 $c \in (x, 0)$使得：$$y(x) = y(0) + y'(0)x + \frac{y''(c)}{2}x^2= 1 + x + \frac{y''(c)}{2}x^2>0$$
+
+
 \end{solution}
