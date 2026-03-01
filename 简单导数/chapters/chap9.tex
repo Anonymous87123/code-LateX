@@ -1,0 +1,414 @@
+\chapter{斐波那契数列}
+我们定义斐波那契的生成矩阵 $M = \begin{pmatrix} 1 & 1 \\ 1 & 0 \end{pmatrix}$，根据矩阵乘法，它的 $n$ 次方完美“封印”了连续三个斐波那契数（规定 $F_0=0$）$$ M^n = \begin{pmatrix} F_{n+1} & \mathbf{F_n} \\ \mathbf{F_n} & F_{n-1} \end{pmatrix} $$
+因此，无论算出一大坨什么矩阵，我们永远只盯住等号两边矩阵的“右上角元素”，它必然是我们要找的 $F_n$。
+\section{推导项与项的关系}
+\subsection{含$m,n$}
+写出 $M^{m+n} = M^m \cdot M^n$：$$ \begin{pmatrix} \mathbf{F_{m+n+1}} & \mathbf{F_{m+n}} \\ F_{m+n} & F_{m+n-1} \end{pmatrix} = \begin{pmatrix} \mathbf{F_{m+1}} & \mathbf{F_m} \\ F_m & F_{m-1} \end{pmatrix} \begin{pmatrix} \mathbf{F_{n+1}} & \mathbf{F_n} \\ F_n & F_{n-1} \end{pmatrix} $$
+看左上角：\[\mathbf{F_{m+n+1} = F_{m+1}F_{n+1} + F_m F_n}\]
+看右上角：\[\mathbf{F_{m+n} = F_{m+1}F_n + F_m F_{n-1}}\]
+在上式中令 $m=n$，看左上角：\[\mathbf{F_{2n+1} = F_{n+1}^2 + F_n^2}\]
+看右上角：\[F_{2n} = F_{n+1}F_n + F_n F_{n-1}\]
+把 $F_{n+1}$ 拆成 $F_n + F_{n-1}$，代入得到 \[\mathbf{F_{2n} = F_n^2 + 2F_{n-1}F_n}\]
+赋值，令 $m\leftarrow n+r, n\leftarrow n-r$），得到：\[F_{n+r}F_{n-r} + F_{n+r-1}F_{n-r-1} = F_{(n+r)+(n-r)-1} = \mathbf{F_{2n-1}}\]
+两式相减，得到即 \[F_n^2 - F_{n-r}F_{n+r} = (-1)^{n-r}F_r^2\]
+由行列式：\[\det(M) = -1\]利用行列式的乘法性质：$\det(M^n) = (\det M)^n$得：
+\[F_{n+1}F_{n-1} - F_n^2=(-1)^n\]
+还有我们的大一统公式：
+\[F_pF_q - F_uF_v = (-1)^{p+1}F_{u-p}F_{q-u},~~\text{（条件 $p+q = u+v$，且 $p$ 最小）}\] 
+因为 $p$ 最小，令 $k = u-p$。根据条件 $p+q = u+v$，必然有 $q = v+k$。左边可以写成 
+\[F_p F_{v+k} - F_{p+k} F_v= -\det \begin{pmatrix} F_{p+k} & F_p \\ F_{v+k} & F_v \end{pmatrix} \]
+利用结论：$F_{n+k} = F_k F_{n+1} + F_{k-1} F_n$，我们把矩阵的第一列拆成两个向量的线性组合：
+$$ \begin{pmatrix} F_{p+k} \\ F_{v+k} \end{pmatrix} = F_k \begin{pmatrix} F_{p+1} \\ F_{v+1} \end{pmatrix} + F_{k-1} \begin{pmatrix} F_p \\ F_v \end{pmatrix} $$
+第二部分的行列式两列成比例（都是 $F_p, F_v$），所以直接为 0。于是只剩下第一部分：$$ - F_k \cdot \det \begin{pmatrix} F_{p+1} & F_p \\ F_{v+1} & F_v \end{pmatrix} = -F_k (F_{p+1}F_v - F_{v+1}F_p) $$括号里的东西等于 $(-1)^p F_{v-p}$。代进去，总结果等于：$-F_k (-1)^p F_{v-p} = \mathbf{(-1)^{p+1} F_k F_{v-p}}$。最后把 $k = u-p$ 和 $v-p = q-u$ 代回，瞬间得到：$(-1)^{p+1}F_{u-p}F_{q-u}$。
+
+
+\section{邻项关系或者隔项关系}
+初中一年级学的完全平方公式 $(a+b)^2+(a-b)^2 = 2a^2+2b^2$
+代入$$  (F_{n+2} + F_{n+1})^2 + (F_{n+2} - F_{n+1})^2 $$得到
+\[F_{n+3}^2 + F_n^2 = 2F_{n+1}^2 + 2F_{n+2}^2\]
+还有一个4次幂综合恒等式：\[F_n^4 = F_{n+2}F_{n+1}F_{n-1}F_{n-2} + 1\]
+这只需要调用\[F_n^2 - F_{n-r}F_{n+r} = (-1)^{n-r}F_r^2\]
+得到两组公式\[F_{n+1}F_{n-1} = F_n^2 - (-1)^n \cdot 1 = \mathbf{F_n^2 + (-1)^n},~~F_{n+2}F_{n-2} = F_n^2 - (-1)^{n-2} F_2^2 = \mathbf{F_n^2 - (-1)^n}\]
+乘起来$$ F_{n+2}F_{n+1}F_{n-1}F_{n-2} = \big(F_n^2 + (-1)^n\big)\big(F_n^2 - (-1)^n\big) = (F_n^2)^2 - \big((-1)^n\big)^2 = \mathbf{F_n^4 - 1} $$
+
+\begin{conclusion}{}{}
+对于任意奇数步长 $k$，它的平方差永远能发生“量子坍缩”，完美分离出交叉项和 $(-1)^n$：
+\[\mathbf{F_{n+k}^2 - F_n^2 = L_k F_n F_{n+k} + F_k^2 (-1)^n} \]
+\end{conclusion}
+母矩阵 $M = \begin{pmatrix} 1 & 1 \\ 1 & 0 \end{pmatrix}$。如果你跨越 $k$ 步，矩阵就是 $M^k = \begin{pmatrix} F_{k+1} & F_k \\ F_k & F_{k-1} \end{pmatrix}$。任何矩阵，必须满足它自己的特征方程。特征方程的公式是：$X^2 - (\text{迹})X + (\text{行列式})I = 0$。我们来看看 $M^k$ 这个矩阵：迹（主对角线之和）：$F_{k+1} + F_{k-1} = \mathbf{L_k}$ （这正是卢卡斯的定义！）。行列式：$F_{k+1}F_{k-1} - F_k^2 = \mathbf{(-1)^k}$ （卡西尼恒等式）。把它们代入特征方程，瞬间得到 $M^k$ 必须服从的法则：$$ (M^k)^2 - L_k M^k + (-1)^k I = 0 $$
+给这个方程两边同时乘以任意步长 $M^n$：$$ \mathbf{M^{n+2k} - L_k M^{n+k} + (-1)^k M^n = 0} $$
+提取这三个矩阵的右上角元素，得到\[\mathbf{F_{n+2k} = L_k F_{n+k} - (-1)^k F_n}\]
+（翻译：不管你一次跨多少步，第 3 个锚点，永远可以由前 2 个锚点线性表出！这就是为什么公式里会凭空冒出一个卢卡斯数 $L_k$！）再由
+卡塔兰恒等式$$ \mathbf{F_m^2 - F_{m-r}F_{m+r} = (-1)^{m-r} F_r^2} $$
+令中心点 $\mathbf{m = n+k}$，跨度 $\mathbf{r = k}$。左边界 $m-r = (n+k)-k = \mathbf{n}$右边界 $m+r = (n+k)+k = \mathbf{n+2k}$，代入卡塔兰恒等式，得到
+\[\mathbf{F_{n+k}^2 - F_n F_{n+2k} = (-1)^n F_k^2}\]
+对于$F_{n+2k} = L_k F_{n+k} - (-1)^k F_n$和$F_{n+k}^2 - F_n \mathbf{F_{n+2k}} = (-1)^n F_k^2$，直接把后一个式子里的 $F_{n+2k}$ 强行替换掉：$$ F_{n+k}^2 - F_n \cdot \mathbf{\big[ L_k F_{n+k} - (-1)^k F_n \big]} = (-1)^n F_k^2\Leftrightarrow \mathbf{F_{n+k}^2 - L_k F_n F_{n+k} + (-1)^k F_n^2 = (-1)^n F_k^2} $$
+只要把这个母公式两边同除以 $L_k \cdot (F_n F_{n+k})^2$，再从 $n=1$ 到无穷求和。等号右边就会触发完美的多米诺骨牌坍缩，只留下前 $k$ 项！
+于是，万能裂项模具诞生：
+$$ \mathbf{ \sum_{n=1}^\infty \frac{1}{F_n F_{n+k}} + \frac{F_k^2}{L_k} \sum_{n=1}^\infty \frac{(-1)^n}{(F_n F_{n+k})^2} = \frac{1}{L_k} \sum_{j=1}^k \frac{1}{F_j^2} } $$
+决定级数长什么样子的，是左边平方项前面的常数系数：$\mathbf{\frac{F_k^2}{L_k}}$。我们来试着转动旋钮：拨到 $k=1$：$F_1=1, L_1=1$。系数 $=\frac{1^2}{1} = \mathbf{1}$。完美对应第一问！
+\[\sum_{n=1}^{\infty}\frac{1}{F_n F_{n+1}} + \sum_{n=1}^{\infty}\frac{(-1)^n}{(F_n F_{n+1})^2} = 1\]
+拨到 $k=3$：$F_3=2, L_3=4$。系数 $=\frac{2^2}{4} = \mathbf{1}$。
+\[\sum_{n=1}^{\infty}\frac{1}{F_n F_{n+3}} + \sum_{n=1}^{\infty}\frac{(-1)^n}{(F_n F_{n+3})^2} = \frac{9}{16}\]
+为什么出题人到 $k=3$ 就停了？因为在整个浩瀚无垠的数学宇宙中，$k=1$ 和 $k=3$ 是仅有的两个能让 $\frac{F_k^2}{L_k} = 1$ 的奇数！因为 $F_k$ 是呈指数级爆炸增长的，$F_k^2$ 的增长速度远远甩开了 $L_k$。只要 $k \ge 5$，$F_k^2$ 必定大于 $L_k$，系数再也不可能是完美无瑕的 1！出题人不是不想出 $k=5$，而是宇宙法则禁止了他！他一旦出了 $k=5$，前面就会挂上极其丑陋的分数，查表：$F_5=5, L_5=11$。左侧系数：$F_5^2 / L_5 = \mathbf{25/11}$。右侧裂项残骸：\[\frac{1}{11} \left( 1 + 1 + \frac{1}{4} + \frac{1}{9} + \frac{1}{25} \right) = \frac{1}{11} \times \frac{2161}{900} = \mathbf{\frac{2161}{9900}}\]
+得到
+\[ \mathbf{\sum_{n=1}^\infty \frac{1}{F_n F_{n+5}} + \sum_{n=1}^\infty \frac{25(-1)^n}{11(F_n F_{n+5})^2} = \frac{2161}{9900}} \]
+原题的第三问 \[\sum \frac{2(-1)^n}{(F_n F_{n+3})^2} - \sum \frac{(-1)^n}{(F_n F_{n+1})^2} = \frac{5}{8}\] 
+这是车间里的“二次加工”！出题人嫌一次项 $\frac{1}{F_n F_{n+k}}$ 太碍眼，于是他利用了底层图纸中隐藏的另一个“交叉湮灭定律”：任意相邻奇数步长的级数，乘以自身的 $F_k$ 后相减，一次项必然完美裂项！
+$$ F_a \sum \frac{1}{F_n F_{n+a}} - F_{a+2} \sum \frac{1}{F_n F_{n+a+2}} = \mathbf{\frac{1}{F_{a+1}F_{a+2}}} $$
+出题人就是用【2 倍的第二问】减去【1 倍的第一问】，强行炸掉了所有一次项，拼凑出了那个孤品。既然懂了工艺，我们就拿刚才造出的 $k=5$ 和现成的 $k=3$ 来碰一碰，造出全网首发、独一无二的“第四问”！\\
+1. 将 $k=3$ 的方程乘以 $F_3$ (也就是 2) $\implies$ 平方项系数是 $2 \times 1 = \mathbf{2}$。\\
+2. 将 $k=5$ 的方程乘以 $F_5$ (也就是 5) $\implies$ 平方项系数是 $5 \times \frac{25}{11} = \mathbf{\frac{125}{11}}$。\\
+3. 两式相减，左侧一次项坍缩为 $\frac{1}{F_4 F_5} = \frac{1}{3 \times 5} = \mathbf{\frac{1}{15}}$。\\
+4. 常数项计算：$5 \times (\frac{2161}{9900}) - 2 \times (\frac{9}{16}) = \frac{2161}{1980} - \frac{9}{8} = \mathbf{-\frac{131}{3960}}$。\\
+5. 将坍缩的 $\frac{1}{15}$ 移项：$-\frac{131}{3960} - \frac{1}{15} = \mathbf{-\frac{131}{3960} - \frac{264}{3960}}$ （注意方向，这里两边同时变号处理）。
+ $$ \mathbf{ \sum_{n=1}^\infty \frac{125(-1)^n}{11(F_n F_{n+5})^2} - \sum_{n=1}^\infty \frac{2(-1)^n}{(F_n F_{n+3})^2} = \frac{131}{3960} } $$
+
+\section{各种求和}
+在矩阵视角下，一切数列求和，都是套用高中生都会的等比求和公式：$S = A \frac{A^n - I}{A - I}$。
+根据特征方程，我们有 \[\mathbf{M^2 = M + I}\] （$I$ 为单位矩阵 $\begin{pmatrix} 1 & 0 \\ 0 & 1 \end{pmatrix}$）。
+因为\[M^2 - M = I \implies M(M-I) = I\]所以\[(M-I)^{-1} = M\] （同理可推 $(M^2-I)^{-1} = M^{-1}$）。求逆竟然不用除法。
+所以我们对矩阵求和：\[S_n = \sum_{i=1}^n M^i = M (M^n - I) (M-I)^{-1}= M(M^n - I)\mathbf{M} = \mathbf{M^{n+2} - M^2} \]
+对比右上角：$M^{n+2}$ 右上角是 $F_{n+2}$，$M^2$ 右上角是 $F_2=1$。显然：
+\[\sum_{i=1}^n F_i = F_{n+2} - 1\]
+跨次数求和也是一样，求偶数项 $\sum_{i=1}^n M^{2i}$，公比变成 $M^2$：
+\[S_{even} = M^2 (M^{2n} - I) (M^2 - I)^{-1} = M^2(M^{2n} - I)\mathbf{M^{-1}} = \mathbf{M^{2n+1} - M}\]
+我们把等号两边的矩阵写开（只需看矩阵右边那一列）：$$ \begin{pmatrix} \dots & \mathbf{\sum F_{2i}} \\ \dots & \mathbf{\sum F_{2i-1}} \end{pmatrix} = \begin{pmatrix} \dots & \mathbf{F_{2n+1}} \\ \dots & \mathbf{F_{2n}} \end{pmatrix} - \begin{pmatrix} \dots & \mathbf{1} \\ \dots & \mathbf{0} \end{pmatrix} $$看右上角：\[\mathbf{\sum F_{2i} = F_{2n+1} - 1}\]
+看右下角：\[\mathbf{\sum F_{2i-1} = F_{2n}}\]
+差分求和$\sum i F_i$的推到就是错位相减：令 $S = \sum_{i=1}^n i M^i$
+\[(I-M)S = M + M^2 + \dots + M^n - n M^{n+1} = M^{n+2} - M^2 - n M^{n+1}\]
+两边左乘 $(I-M)^{-1}$ 也就是 $\mathbf{-M}$：$$ S = -M(M^{n+2} - M^2 - n M^{n+1}) = \mathbf{-M^{n+3} + M^3 + n M^{n+2}} $$
+看右上角元素（注：$F_3=2$）：\[\sum i F_i = -F_{n+3} + 2 + n F_{n+2}=(n+1)F_{n+2} - F_{n+4} + 2\]
+
+\begin{conclusion}{}{}
+    \[\prod_{k=2}^n \left(1 + \frac{(-1)^{k+1}}{F_k^2}\right) = \frac{F_{n+1}}{F_n}\]
+\end{conclusion}
+公式：$\prod_{k=2}^n \left(1 + \frac{(-1)^{k+1}}{F_k^2}\right) = \frac{F_{n+1}}{F_n}$
+卡西尼恒等式是 $F_{k+1}F_{k-1} = F_k^2 + (-1)^k$。因此通分后应该是：$1 + \frac{(-1)^k}{F_k^2} = \frac{F_{k+1}F_{k-1}}{F_k^2}$。且为了防止 $k=1$ 时分子出现 $F_0 = 0$ 毁掉连乘，必须从 $k=2$ 开始：$$ \prod_{k=2}^n \frac{F_{k-1} F_{k+1}}{F_k \cdot F_k} = \left( \frac{F_1}{F_2} \cdot \frac{F_3}{F_2} \right) \cdot \left( \frac{F_2}{F_3} \cdot \frac{F_4}{F_3} \right) \cdots \left( \frac{F_{n-1}}{F_n} \cdot \frac{F_{n+1}}{F_n} \right) $$这是一个极其完美的拉链式交叉相消（裂项），所有中间项全军覆没，最后只剩 $\frac{F_1}{F_2} \cdot \frac{F_{n+1}}{F_n} = \frac{F_{n+1}}{F_n}$
+
+\section{整除性质}
+既然 $m$ 能整除 $n$，设 $n = k \cdot m$。那么 $M^n = (M^m)^k$。我们考察矩阵 $M^m$，并把它放到 模 $F_m$ 的世界里（即遇到 $F_m$ 的倍数全部变成 0）：
+$$ M^m = \begin{pmatrix} F_{m+1} & F_m \\ F_m & F_{m-1} \end{pmatrix} \equiv \begin{pmatrix} F_{m+1} & \mathbf{0} \\ \mathbf{0} & F_{m-1} \end{pmatrix} \pmod{F_m} $$
+奇迹出现了！它变成了一个对角矩阵！对于对角矩阵求 $k$ 次方，非对角线上的元素永远是 0：$$ M^{km} = (M^m)^k \equiv \begin{pmatrix} (F_{m+1})^k & \mathbf{0} \\ \mathbf{0} & (F_{m-1})^k \end{pmatrix} \pmod{F_m} $$这就意味着，$M^{km}$ 这个结果矩阵的右上角元素（即 $F_n$），除以 $F_m$ 的余数必定是 $\mathbf{0}$。即 $F_n \equiv 0 \pmod{F_m}$。
+
+\section{组合数与杨辉三角}
+\subsection{杨辉三角}
+斐波那契数列的无穷生成函数是 \[\frac{x}{1-x-x^2} = \sum_{n=1}^{\infty} F_n x^n\]
+利用等比数列展开 $\frac{1}{1-q}$，令 $q = (x+x^2)$：
+$$ \frac{x}{1 - (x + x^2)} = x \sum_{k=0}^{\infty} (x + x^2)^k = \sum_{k=0}^{\infty} x^{k+1} (1 + x)^k $$
+利用高中二项式定理把 $(1+x)^k$ 展开为 $\sum_{i=0}^k C_k^i x^i$：
+$$\frac{x}{1 - (x + x^2)}  = \sum_{k=0}^{\infty} \sum_{i=0}^k C_k^i x^{k+i+1} $$
+我们要找 $F_n$，就是找 $x^n$ 的系数。令指数 $k+i+1 = n$，也就是 $\mathbf{k = n-1-i}$。把 $k$ 替换掉，系数 $C_k^i$ 直接就变成了 $C_{n-1-i}^i$.
+
+\subsection{生成函数}
+斐波那契数列的无穷生成函数是 \[\frac{x}{1-x-x^2} = \sum_{n=1}^{\infty} F_n x^n\]
+输入 $x = \frac{1}{2}$：右边变成 $\frac{1/2}{1 - 1/2 - 1/4} = 2$。得到
+\[ \frac{F_1}{2} + \frac{F_2}{4} + \frac{F_3}{8} + \frac{F_4}{16} + \dots = \mathbf{2}\] 
+输入 $x = \frac{1}{10}$：右边变成 $\frac{1/10}{1 - 1/10 - 1/100} = \frac{10}{89}$。\[\frac{F_1}{10} + \frac{F_2}{100} + \frac{F_3}{1000} + \dots = \mathbf{\frac{10}{89}} \]
+
+对$\frac{x}{1-x-x^2} = \sum_{n=1}^{\infty} F_n x^n$左边求导：$\sum_{k=1}^\infty k F_k x^{k-1}$。两边同乘 $x$，就凭空给数列加了一个不断放大的权重 $k$：变成 $\sum_{k=1}^\infty k \cdot F_k x^k$。右边求导并乘 $x$，化简后得到：$\frac{x(1+x^2)}{(1-x-x^2)^2}$。现在，往里面输入极限变量 $x = \mathbf{1/2}$。左边变成了 $\sum_{k=1}^\infty \frac{k \cdot F_k}{2^k}$。右边变成了 $\frac{1/2 \times (1+1/4)}{(1 - 1/2 - 1/4)^2} = \frac{5/8}{(1/4)^2} = \frac{5/8}{1/16} = \mathbf{10}$。所以
+$$  \frac{1 \cdot F_1}{2} + \frac{2 \cdot F_2}{4} + \frac{3 \cdot F_3}{8} + \frac{4 \cdot F_4}{16} + \frac{5 \cdot F_5}{32} \dots = \mathbf{10}  $$
+
+
+\subsection{引入$\pi$和$\e$}
+\begin{conclusion}{}{}
+\[\sum_{k=0}^\infty \frac{(-1)^k \cdot \pi^{2k+1}}{(2k+1)!} F_{2k+1} = \mathbf{0} \]
+\end{conclusion}
+正弦函数的泰勒展开是 $\sin(x) = \sum_{k=0}^\infty \frac{(-1)^k}{(2k+1)!} x^{2k+1}$。我们把 $x$ 替换成 $\pi M$（圆周率 $\times$ 矩阵）：
+$$ \sin(\pi M) = \sum_{k=0}^\infty \frac{(-1)^k \pi^{2k+1}}{(2k+1)!} M^{2k+1} $$
+等式右边的右上角是：\[\sum_{k=0}^\infty \frac{(-1)^k \pi^{2k+1}}{(2k+1)!} F_{2k+1}\]
+等式左边 $\sin(\pi M)$，利用对角化原理，矩阵函数的非对角线元素必然正比于 $\frac{f(\alpha) - f(\beta)}{\alpha - \beta}$。（其中 $\alpha, \beta$ 是黄金分割根）。在这里 $f(x) = \sin(\pi x)$。因为韦达定理，$\alpha + \beta = 1$，所以 $\beta = 1 - \alpha$。代入计算：$\sin(\pi \beta) = \sin(\pi(1-\alpha)) = \sin(\pi - \pi \alpha)$。根据诱导公式 $\sin(\pi - \theta) = \sin(\theta)$，所以 $\sin(\pi \beta)=\sin(\pi \alpha)$！分子为 $0$。得证。
+
+\begin{conclusion}{}{}
+\[\sum_{n=0}^\infty \frac{F_n}{n!} = \frac{2\sqrt{e}}{\sqrt{5}} \sinh\left(\frac{\sqrt{5}}{2}\right) \]
+\end{conclusion}
+由$e^x = \sum_{n=0}^\infty \frac{x^n}{n!}$。则$e^M = \sum_{n=0}^\infty \frac{1}{n!} M^n$。右边矩阵的右上角是无穷级数：$\sum_{n=0}^\infty \frac{F_n}{n!}$。左边 $e^M$ 的右上角该怎么算？根据对角化定理，任何矩阵函数 $f(M)$ 的右上角元素，永远等于 $\frac{f(\alpha) - f(\beta)}{\alpha - \beta}$ （$\alpha, \beta$ 是黄金比例两根，分母恰好是 $\sqrt{5}$）。代入 $f(x) = e^x$，得到 $\frac{e^\alpha - e^\beta}{\sqrt{5}}$。我们把 $\alpha$ 和 $\beta$ 的值代入并拆开：$\frac{1}{\sqrt{5}} \left( e^{\frac{1+\sqrt{5}}{2}} - e^{\frac{1-\sqrt{5}}{2}} \right) = \frac{e^{1/2}}{\sqrt{5}} \left( e^{\frac{\sqrt{5}}{2}} - e^{-\frac{\sqrt{5}}{2}} \right)$，括号里的 $\frac{e^x - e^{-x}}{2}$ 就是双曲正弦函数 $\sinh(x)$。
+
+\begin{conclusion}{}{}
+\[\sum_{n=0}^\infty \frac{(-1)^n \cdot \pi^{2n}}{(2n)!} F_{2n} = -\frac{2}{\sqrt{5}} \sin\left(\frac{\sqrt{5}\pi}{2}\right)\]
+\end{conclusion}
+计算$$ \cos(\pi M) = \sum_{n=0}^\infty \frac{(-1)^n \pi^{2n}}{(2n)!} M^{2n} $$
+右边展开的右上角是：\[\sum_{n=0}^\infty \frac{(-1)^n \pi^{2n}}{(2n)!} F_{2n}\]
+左边 $\cos(\pi M)$ 的右上角，代入万能公式 $\frac{\cos(\pi \alpha) - \cos(\pi \beta)}{\sqrt{5}}$。因为 $\alpha = \frac{1+\sqrt{5}}{2}$，所以 $\pi \alpha = \frac{\pi}{2} + \frac{\sqrt{5}\pi}{2}$。根据诱导公式 $\cos(\frac{\pi}{2} + \theta) = -\sin(\theta)$，所以 $\cos(\pi \alpha) = \mathbf{-\sin\left(\frac{\sqrt{5}\pi}{2}\right)}$。同理，$\pi \beta = \frac{\pi}{2} - \frac{\sqrt{5}\pi}{2}$，因为 $\cos(\frac{\pi}{2} - \theta) = \sin(\theta)$，所以 $\cos(\pi \beta) = \mathbf{\sin\left(\frac{\sqrt{5}\pi}{2}\right)}$。分子相减：$\left(-\sin\frac{\sqrt{5}\pi}{2}\right) - \left(\sin\frac{\sqrt{5}\pi}{2}\right) = \mathbf{-2\sin\left(\frac{\sqrt{5}\pi}{2}\right)}$！除以分母 $\sqrt{5}$得证。
+
+
+\subsection{利用二项式展开}
+\begin{conclusion}{}{}
+\[\sum_{k=1}^n \binom{n}{k} F_{k-1} = \mathbf{F_{2n-1} - 1}\]
+\end{conclusion}
+对特征方程 $M^2 = M+I$ 两边取 $n$ 次方进行二项式展开：
+$$ M^{2n} = (M+I)^n = \sum_{k=0}^n \binom{n}{k} M^k $$
+我们取等号两边矩阵的右下角元素（因为 $M^k$ 的右下角恰好是 $F_{k-1}$）：左边是 $F_{2n-1}$，右边是 $\sum_{k=0}^n \binom{n}{k} F_{k-1}$。此时注意完整的二项式求和必须从 $k=0$ 开始。当 $k=0$ 时，这一项是 $\binom{n}{0}F_{-1}$。因为 $F_1 = F_0 + F_{-1} \implies 1 = 0 + F_{-1}$，所以 $F_{-1}=1$。这一项的值是 $\mathbf{1}$。所以正确展开是\[\sum_{k=1}^n \binom{n}{k} F_{k-1} = \mathbf{F_{2n-1} - 1}\]
+
+\begin{conclusion}{}{}
+\[F_n + F_{n-1} + \sum_{k=0}^{n-2} F_k 2^{n-2-k} = 2^n\]
+\end{conclusion}
+这坨乱七八糟的求和等于算 \[\sum M^k 2^{n-2-k} = 2^{n-2} \sum_{k=0}^{n-2} (\frac{M}{2})^k\]
+利用等比求和公式：$S = 2^{n-2} \cdot [I - (\frac{M}{2})^{n-1}] \cdot (I - \frac{M}{2})^{-1}$。
+提取常数，我们需要求 $(2I - M)$ 的逆矩阵：
+$$ 2I - M = \begin{pmatrix} 2 & 0 \\ 0 & 2 \end{pmatrix} - \begin{pmatrix} 1 & 1 \\ 1 & 0 \end{pmatrix} = \begin{pmatrix} 1 & -1 \\ -1 & 2 \end{pmatrix}, (2I - M)^{-1} = \begin{pmatrix} 2 & 1 \\ 1 & 1 \end{pmatrix}=M^2 $$ 
+代回原式：$$ S = 2^{n-2} \cdot \left[I - \frac{M^{n-1}}{2^{n-1}}\right] \cdot 2M^2 = \mathbf{2^{n-1}M^2 - M^{n+1}} $$
+看矩阵的右上角：左边是要求的和，右边是 $2^{n-1}F_2 - F_{n+1} = \mathbf{2^{n-1} - F_{n+1}}$。把前面原本就有的 $F_n + F_{n-1}$ 加回来（这俩加起来刚好等于 $F_{n+1}$），结果直接抵消！最后只剩下：$2^{n-1}$。
+
+\begin{conclusion}{求$F_{pn}$}{}
+   \[ \mathbf{F_{pn} = \sum_{k=0}^n \binom{n}{k} F_p^k F_{p-1}^{n-k} F_k} \]
+\end{conclusion}
+利用矩阵乘法的性质，任何高次矩阵都可以被“降维”成 1 次矩阵和单位阵的线性组合。这是一个万能方程：\[M^p = F_p M + F_{p-1} I\]
+推导是简单的，对于斐波那契矩阵 $M = \begin{pmatrix} 1 & 1 \\ 1 & 0 \end{pmatrix}$，它的特征方程是 $\lambda^2 - \lambda - 1 = 0$。把它变成矩阵形式，就是
+$$ \mathbf{M^2 - M - I = 0 \implies M^2 = M + I} $$
+(注：此时系数是 1 和 1，也就是 $\mathbf{F_2 M + F_1 I}$)，既然 $M^2 = M+I$，这就意味着任何比二次高的多项式都能被硬生生地锤回一次方！我们来像细胞分裂一样，一步步乘以 $M$，看看会发生什么：算 $M^3$：
+\[M^3 = M \cdot M^2= M(M + I) = \mathbf{M^2} + M= (M + I) + M = \mathbf{2M + 1I}\]
+系数变成了 2 和 1。而 $\mathbf{F_3=2, F_2=1}$！
+\[M^4 = M \cdot M^3 = M(2M + I) = \mathbf{2M^2} + M= 2(M + I) + M = 2M + 2I + M = \mathbf{3M + 2I}\]
+系数变成了 3 和 2。而 $\mathbf{F_4=3, F_3=2}$！
+\[M^5 = M \cdot M^4 = M(3M + 2I) = \mathbf{3M^2} + 2M= 3(M + I) + 2M = 3M + 3I + 2M = \mathbf{5M + 3I}\]
+系数变成了 5 和 3。而 $\mathbf{F_5=5, F_4=3}$！规律彻底暴露了！！！设 $M^k = a M + b I$。当我们乘以 $M$ 升级到下一代时：$$ M^{k+1} = M(a M + b I) = a \mathbf{M^2} + b M $$代入 $M^2 = M+I$：$$ = a(M+I) + bM = \mathbf{(a+b)M + aI} $$你看懂这极其恐怖的基因传承了吗？新的 $M$ 系数 ($a+b$) = 旧的 $M$ 系数 + 旧的 $I$ 系数。新的 $I$ 系数 ($a$) = 旧的 $M$ 系数。前一项的系数相加，变成下一项的系数……这他妈不就是斐波那契数列的繁衍定义 $\mathbf{F_n = F_{n-1} + F_{n-2}}$ 吗！！！因为每一次矩阵乘法，本质上就是在执行一次斐波那契的错位相加！所以，如果我们一直推演到第 $p$ 次方，它的系数毫无悬念，必然、且只能是第 $p$ 项和第 $p-1$ 项的斐波那契数：
+$$  \mathbf{M^p = F_p M + F_{p-1} I} $$
+现在，我们给这个等式两边同时取 $n$ 次方，并用高中二项式定理：
+$$ M^{pn} = (F_p M + F_{p-1} I)^n = \sum_{k=0}^n \binom{n}{k} (F_p M)^k (F_{p-1} I)^{n-k} $$
+永远只看等号两边矩阵的右上角元素，你瞬间得到了一个极其恐怖的“万能母公式”：
+$$ \mathbf{F_{pn} = \sum_{k=0}^n \binom{n}{k} F_p^k F_{p-1}^{n-k} F_k} $$
+输入 $p=3$，（此时 $F_3=2, F_2=1$）：\[\boxed{ F_{3n} = \sum_{k=0}^n \binom{n}{k} 2^k F_k }\]
+输入 $p=4$，（此时 $F_4=3, F_3=2$）：\[ \boxed{ F_{4n} = \sum_{k=0}^n \binom{n}{k} 3^k 2^{n-k} F_k }\]
+
+\begin{conclusion}{含$(-1)^n$}{}
+ \[ \sum_{k=0}^n \binom{n}{k} (-1)^k F_{n-2k} = 0 \]
+\end{conclusion}
+在初等代数里，处理带有 $(-1)^k$ 的交错求和极其痛苦。但在矩阵里，只需要算一个逆矩阵。我们知道 $M^2 = M + I$。如果你亲自求一下逆矩阵 $M^{-1}$，你会发现一个奇迹：$M - M^{-1} = I$。我们给等式两边同时取 $n$ 次方：$(M - M^{-1})^n = I^n = I$。左边用二项式展开：$$ \sum_{k=0}^n \binom{n}{k} M^{n-k} (-M^{-1})^k = \sum_{k=0}^n \binom{n}{k} (-1)^k M^{n-2k} $$这坨东西等于单位矩阵 $I$。而单位矩阵的右上角元素是 $0$！得到
+$$ \boxed{ \sum_{k=0}^n \binom{n}{k} (-1)^k F_{n-2k} = 0 } $$(注：这里必然会产生负数角标，根据定义 $F_{-m} = (-1)^{m+1}F_m$。没有任何肉眼可见的规律能推导出这种跨步交错的抵消关系，这是被矩阵维度强行隐藏在底层的秘密！)
+
+\begin{conclusion}{双项乘积求和}{}
+ \[ \sum_{k=0}^n (F_{k+1}F_{n-k} + F_k F_{n-k-1}) = (n+1)F_n \]
+\end{conclusion}
+把矩阵拆成两半相乘：$M^n = M^k \cdot M^{n-k}$。如果我们把 $k$ 从 $0$ 遍历到 $n$ 全部加起来：$$ \sum_{k=0}^n M^k M^{n-k} = \sum_{k=0}^n M^n = \mathbf{(n+1)M^n} $$等号右边的右上角显然是：$(n+1)F_n$。等号左边我们进行老老实实的矩阵乘法（提取右上角，即左阵的第一行 $\times$ 右阵的第二列）：
+\[\begin{pmatrix} F_{k+1} & F_k \end{pmatrix} \cdot \begin{pmatrix} F_{n-k} \\ F_{n-k-1} \end{pmatrix} = F_{k+1}F_{n-k} + F_k F_{n-k-1}\]。左右相等，我们直接把一句废话“$M^n = M^n$”翻译成了一个极其变态的公式：
+\[ \sum_{k=0}^n (F_{k+1}F_{n-k} + F_k F_{n-k-1}) = (n+1)F_n \]
+
+
+
+\begin{conclusion}{}{}
+    \[F_n^3 + 3 F_{n-3}^3 + F_{n-4}^3 = 3 F_{n-1}^3 + 6 F_{n-2}^3\]
+\end{conclusion}
+斐波那契的特征方程两根为 $\alpha, \beta$。所以 $F_n \propto \alpha^n - \beta^n$。把 $F_n$ 立方展开，利用 $\alpha\beta=-1$，你会发现 $F_n^3$ 这个新数列，是由 $\alpha^3, \beta^3, -\alpha, -\beta$ 这四个公比构成的四维空间的线性组合！这意味着，$F_n^3$ 的递推关系，必然对应一个以这四个数为根的四次特征多项式！我们直接把这个多项式构造出来 $P(x) = (x-\alpha^3)(x-\beta^3)(x+\alpha)(x+\beta)$：前半部分：$x^2 - (\alpha^3+\beta^3)x + (\alpha\beta)^3 = x^2 - \mathbf{4}x - 1$后半部分：$x^2 + (\alpha+\beta)x + \alpha\beta = x^2 + \mathbf{1}x - 1$两者相乘：$$ (x^2 - 4x - 1)(x^2 + x - 1) = \mathbf{x^4 - 3x^3 - 6x^2 + 3x + 1 = 0} $$根据特征多项式的系数 $(1, -3, -6, 3, 1)$，我们直接写出新数列的递推式：$$ A_n - 3A_{n-1} - 6A_{n-2} + 3A_{n-3} + A_{n-4} = 0 $$移项并把 $A_k$ 替换回 $F_k^3$，瞬间得到：$$ F_n^3 + 3F_{n-3}^3 + F_{n-4}^3 = \mathbf{3F_{n-1}^3} + 6F_{n-2}^3 $$
+
+\section{不等式}
+$$ \mathbf{\frac{n-2}{n-1} < \log_{F_{n+1}} F_n < \frac{n-1}{n}} $$
+
+\chapter{神秘裂项题型}
+
+\section{反正切裂项}
+底层模具（出题人用的母版公式）：$$ \arctan X - \arctan Y = \arctan \frac{X-Y}{1+XY} $$$$ \operatorname{arccot} X - \operatorname{arccot} Y = \operatorname{arccot} \frac{XY+1}{Y-X} $$出题人的唯一工作，就是选定 $X$ 和 $Y$，然后拼命把括号里的式子化简。为了不让你看出来，他们开发了三条流水线：
+
+\begin{example}{$\sum \arctan \frac{2n^2-4}{n^4+n^2+3}$}{}
+    \[\sum \arctan \frac{2n^2-4}{n^4+n^2+3}\]
+\end{example}
+这题绝对不是硬凑的！出题人选定了极其简单的 $X = \frac{n-1}{(n-1)^2+1}$，和跨项的 $Y = \frac{n+1}{(n+1)^2+1}$。他开始在草稿纸上算：分子 $X-Y$ 通分化简，得到 $\frac{2n^2-4}{n^4+4}$。分母 $1+XY$ 通分化简，得到 $\frac{n^4+n^2+3}{n^4+4}$。为什么偏偏分母都是 $n^4+4$？因为著名的索菲·热尔曼恒等式：$n^4+4 = (n^2-2n+2)(n^2+2n+2)$，刚好是 $X$ 和 $Y$ 自身分母的乘积！两者一除，$n^4+4$ 完美约掉，留下了清爽的 $\frac{2n^2-4}{n^4+n^2+3}$。这根本不是天赋，这是精密的代数设计！
+
+\begin{example}{$\operatorname{arccot} \frac{a_{n+1}}{a_n} - \operatorname{arccot} \frac{a_n}{a_{n-1}}$}{}
+    递推式 $a_{n+1} = 4a_n - a_{n-1}$，首项 $a_1=2, a_2=8$。求
+\[\sum \operatorname{arccot} a_n^2\]
+\end{example}
+出题人想让学生做 $\operatorname{arccot} \frac{a_{n+1}}{a_n} - \operatorname{arccot} \frac{a_n}{a_{n-1}}$ 的裂项。令 $X = \frac{a_{n+1}}{a_n}, Y = \frac{a_n}{a_{n-1}}$，代入反余切公式，研究括号里的式子 $\frac{XY+1}{Y-X}$：分子：$XY+1 = \frac{a_{n+1}}{a_{n-1}} + 1 = \frac{a_{n+1}+a_{n-1}}{a_{n-1}}$。利用递推式 $a_{n+1} = 4a_n - a_{n-1}$，分子直接变成 $\frac{4a_n}{a_{n-1}}$。分母：$Y-X = \frac{a_n}{a_{n-1}} - \frac{a_{n+1}}{a_n} = \frac{a_n^2 - a_{n+1}a_{n-1}}{a_n a_{n-1}}$。高潮来了：对于所有二阶递推数列，都存在一个伟大的不变量——卡西尼恒等式（$a_{n+1}a_{n-1} - a_n^2 = C$）。出题人算出这个常数 $C=-4$。所以分母变成了 $\frac{4}{a_n a_{n-1}}$。两者相除：$\frac{4a_n / a_{n-1}}{4 / (a_n a_{n-1})} = \mathbf{a_n^2}$！极其繁琐的杂项全部被“卡西尼恒等式”吃掉了。为了让常数恰好是 4 以完美抵消，出题人“精心”反推，设定了首项 $a_1=2, a_2=8$。一切都在剧本里！
+
+\begin{example}{$\sum_{n=-\infty}^{+\infty} \arctan\left(\frac{1}{\sqrt{6}F_n + 1}\right)$}{}
+    设数列$F_n$满足$F_1 = F_2 = 1$且对任意整数$n$都有$F_n = F_{n-1} + F_{n-2}$，证明：
+$$\sum_{n=-\infty}^{+\infty} \arctan\left(\frac{1}{\sqrt{6}F_n + 1}\right) = \sum_{n=-\infty}^{+\infty} \arctan\left(\frac{1}{\sqrt{6}F_n - 1}\right) = \frac{\pi}{2}$$
+\end{example}
+底层底牌：$\arctan X - \arctan Y = \arctan \frac{X-Y}{1+XY}$ + 卡西尼恒等式。出题动作：命题人强行设 $X = \sqrt{\frac{3}{2}}F_{2n}, Y = \sqrt{\frac{3}{2}}F_{2n-2}$。分母 $1+XY = 1 + \frac{3}{2}F_{2n}F_{2n-2}$。此时祭出斐波那契的“卡西尼恒等式”：$F_{2n}F_{2n-2} = F_{2n-1}^2 - 1$，分母直接化简为纯粹的 $\frac{3}{2}F_{2n-1}^2 - \frac{1}{2}$。上下同乘 2，那个莫名其妙的 $\sqrt{6}$ 和系数就全出来了。
+
+\begin{example}{$\frac{\sinh\pi}{\cosh(2n\pi)-\cosh\pi}$}{}
+$\displaystyle\sum_{n=1}^{\infty}\frac{\sinh\pi}{\cosh(2n\pi)-\cosh\pi}$，这里$\sinh x=\frac{e^x-e^{-x}}{2}$, $\cosh x=\frac{e^x+e^{-x}}{2}$是双曲函数
+\end{example}
+双曲函数级数题：$\frac{\sinh\pi}{\cosh(2n\pi)-\cosh\pi}$底层底牌：$\coth A - \coth B = \frac{\sinh(B-A)}{\sinh A \sinh B}$ + 积化和差。出题动作：命题人令 $A = (n-\frac{1}{2})\pi, B = (n+\frac{1}{2})\pi$。分子 $B-A = \pi$ 是常数。分母 $\sinh A \sinh B$ 用大学里的积化和差公式展开，刚好等于 $\frac{1}{2}(\cosh(A+B) - \cosh(A-B)) = \frac{1}{2}(\cosh(2n\pi) - \cosh\pi)$。
+因此就有$$\sum_{n=1}^{\infty}\frac{\sinh\pi}{\cosh(2n\pi)-\cosh\pi}=\frac{1}{2}\left(\coth\frac{\pi}{2}-\lim_{n\to\infty}\coth\left(n+\frac{1}{2}\right)\pi\right)=\frac{1}{e^{\pi}-1}$$
+
+\begin{example}{$\sum_{n=2}^{\infty} \operatorname{arccot} (3a_n^2) $}{}
+设数列满足 $a_1=1, a_2=3, a_{n+1} = 3a_n - a_{n-1}$。计算级数：$$ \sum_{n=2}^{\infty} \operatorname{arccot} (3a_n^2) $$
+\end{example}
+随便找个数列：设 $a_1=1, a_2=3, a_{n+1} = 3a_n - a_{n-1}$。提取它的卡西尼常数：$a_3=8$，$a_3 a_1 - a_2^2 = 8 \times 1 - 9 = -1$。所以 $a_{n+1}a_{n-1} - a_n^2 = -1$。调出反切模具：设 $X = \frac{a_{n+1}}{a_n}, Y = \frac{a_n}{a_{n-1}}$。分子：$XY+1 = \frac{a_{n+1}+a_{n-1}}{a_{n-1}} = \frac{3a_n}{a_{n-1}}$。分母：$Y-X = \frac{a_n^2-a_{n+1}a_{n-1}}{a_na_{n-1}} = \frac{1}{a_na_{n-1}}$。两者一除：$\frac{3a_n/a_{n-1}}{1/(a_na_{n-1})} = 3a_n^2$。题目成型！
+
+\begin{example}{$ \sum_{n=1}^{\infty} \arctan \left( \frac{n^2+n-1}{n^4+2n^3+4n^2+3n+2} \right) $}{}
+    $$ \sum_{n=1}^{\infty} \arctan \left( \frac{n^2+n-1}{n^4+2n^3+4n^2+3n+2} \right) $$
+\end{example}
+调出反正切模具：$\arctan X - \arctan Y$。随便设一个相差步长为1的多项式：$X = \frac{n}{n^2+1}, Y = \frac{n+1}{n^2+2n+2}$。强行化简：分子 $X-Y = \frac{n^2+n-1}{\text{共同分母}}$；分母 $1+XY = \frac{n^4+2n^3+4n^2+3n+2}{\text{共同分母}}$。丑陋的分母自动约掉，直接包装出题。
+
+\section{多项式型}
+
+\begin{example}{$\displaystyle \sum_{n=1}^{99} \sqrt{1 + \frac{1}{n^2} + \frac{1}{(n+1)^2}}$}{}
+    $$\displaystyle \sum_{n=1}^{99} \sqrt{1 + \frac{1}{n^2} + \frac{1}{(n+1)^2}}$$
+\end{example}
+底层底牌（初中乘法公式）：初中生都会的完全平方公式 $(a+b-c)^2 = a^2+b^2+c^2+2ab-2ac-2bc$。机器加工（出题动作）：命题人在草稿纸上极其无聊地令 $a=1, b=\frac{1}{n}, c=\frac{1}{n+1}$。来看看后面那一串交叉项 $2(ab - ac - bc)$ 会变成什么：$2\left(\frac{1}{n} - \frac{1}{n+1} - \frac{1}{n(n+1)}\right)$奇迹发生了！ 因为小学生都知道 $\frac{1}{n} - \frac{1}{n+1} = \frac{1}{n(n+1)}$，所以括号里刚好等于 0！交叉项居然完全抵消了！这意味着：$1 + \frac{1}{n^2} + \frac{1}{(n+1)^2} \equiv \left(1 + \frac{1}{n} - \frac{1}{n+1}\right)^2$。出题人狂喜，直接给左边套上个大根号出题。
+
+
+\begin{example}{$ \sum_{n=2}^{\infty} \left( \sqrt{ \frac{1}{F_{n-1}^2} + \frac{1}{F_n^2} + \frac{1}{F_{n+1}^2} } - \frac{1}{F_n} \right) $}{}
+已知 $F_n$ 为斐波那契数列。计算无穷级数：$$ \sum_{n=2}^{\infty} \left( \sqrt{ \frac{1}{F_{n-1}^2} + \frac{1}{F_n^2} + \frac{1}{F_{n+1}^2} } - \frac{1}{F_n} \right) $$
+\end{example}
+在初中代数里，所有人都学过三项的完全平方公式：$$ \left(\frac{1}{x} + \frac{1}{y} + \frac{1}{z}\right)^2 = \frac{1}{x^2} + \frac{1}{y^2} + \frac{1}{z^2} + \frac{2(x+y+z)}{xyz} $$命题人盯着这个公式，发现了一个毁灭级的系统漏洞：只要我强行规定 $x + y + z = 0$，后面的交叉项尾巴就会直接等于 0，灰飞烟灭！于是，诞生了这把万能钥匙：【零和根式定理】如果 $x+y+z=0$，那么必定有：$$ \sqrt{\frac{1}{x^2} + \frac{1}{y^2} + \frac{1}{z^2}} \equiv \left| \frac{1}{x} + \frac{1}{y} + \frac{1}{z} \right| $$你原题里的那个例子，仅仅是因为出题人极其无聊地令：$x=1,\; y=n,\; z=-(n+1)$。你看，$1 + n - (n+1)$ 刚好等于 0！既然掌握了“上帝代码”，我们就可以随意修改 $x, y, z$，只要保证它们加起来等于 0，就能量产变态神题！
+
+有什么数列天然满足 $x+y-z=0$？斐波那契数列啊！$F_{n-1} + F_n - F_{n+1} = 0$。所以直接令 $x = F_{n-1}, y = F_n, z = -F_{n+1}$。
+
+\begin{example}{}{}
+    $$ \sum_{n=1}^{\infty} \frac{1}{\sqrt{n^2 + (n+1)^2 + n^2(n+1)^2} - 1} $$
+\end{example}
+出题人发现，不用分数的倒数，纯粹的整数多项式也能引发这种“交叉项抵消的奇迹”。造题剧本：在草稿纸上写下连续两个数的平方，以及它们乘积的平方：$n^2$、$(n+1)^2$、$n^2(n+1)^2$。把它们加起来：$n^2 + (n^2+2n+1) + (n^4+2n^3+n^2) = n^4 + 2n^3 + 3n^2 + 2n + 1$。出题人盯着这串对称的系数 1, 2, 3, 2, 1，倒吸了一口凉气。这不正是 $(n^2+n+1)^2$ 展开后的系数吗？！没错！三个独立的平方加在一起，天生就是一个巨大的完全平方！为了制造裂项，出题人注意到 $(n^2+n+1) - 1 = n(n+1)$。于是他决定把根号放在分母，并且在外面减去 
+
+根号解体后就是 $n^2+n+1$。分母变成了 $n^2+n+1 - 1 = n(n+1)$。题目瞬间跌落为小学奥数：$\sum \frac{1}{n(n+1)} = \sum (\frac{1}{n} - \frac{1}{n+1}) = \mathbf{1}$。
+
+
+\begin{example}{}{}
+    $$ \sum_{n=1}^{\infty} \frac{3}{\sqrt{n(n+1)(n+2)(n+3) + 1} - 1} $$
+\end{example}
+连续四个自然数相乘，再加上 1，会发生什么？$n(n+1)(n+2)(n+3) + 1$把首尾相乘，中间相乘：$= (n^2+3n)(n^2+3n+2) + 1$。设 $u = n^2+3n$，式子变成了 $u(u+2)+1 = u^2+2u+1 = \mathbf{(u+1)^2}$。奇迹再次发生！连续四项乘积加 1，永远是一个完美平方 $(n^2+3n+1)^2$！为了把它做成完美的裂项，出题人观察开出来的结果 $n^2+3n+1$，他决定在根号外面减去 1，得到 $n^2+3n = n(n+3)$。这刚好是一个步长为 3 的分母！
+
+根号拔掉后是 $n^2+3n+1$，减去 1 得到 $n(n+3)$。原式直接化为 $\sum \frac{3}{n(n+3)}$。小学生都知道的裂项：$\frac{1}{n} - \frac{1}{n+3}$。跨度为 3 的首尾连消，留下前三项：$1 + \frac{1}{2} + \frac{1}{3} = \mathbf{\frac{11}{6}}$。
+
+
+
+\begin{example}{}{}
+    $$ \sum_{n=1}^{10} \sqrt{\frac{n^4 + (n+1)^4 + (2n+1)^4}{2}} $$
+\end{example}
+造题剧本：【Candido 恒等式】：$a^4 + b^4 + (a+b)^4 \equiv 2(a^2 + ab + b^2)^2$出题人看到这个公式，手都在颤抖。他令 $a = n, b = n+1$，那么 $a+b = 2n+1$。代入公式开根号，他得到了：$\sqrt{\frac{n^4 + (n+1)^4 + (2n+1)^4}{2}} = n^2 + n(n+1) + (n+1)^2 = \mathbf{3n^2 + 3n + 1}$。此时，出题人直接起立了！因为在代数中，立方差 $(n+1)^3 - n^3$ 展开后，恰好就等于 $3n^2 + 3n + 1$ ！！这意味着，一堆极其恐怖的 4 次方相加，开根号之后，居然是一个极其完美的立方差裂项！因此原式就是 $\sum_{n=1}^{10} \left[ (n+1)^3 - n^3 \right]$！极其残暴的中间项全部对消成灰！答案就是尾项减首项：$(10+1)^3 - 1^3 = 1331 - 1 = \mathbf{1330}$。整个过程无需计算任何四次方，直接两行写完答案！
+
+
+\begin{example}{$\displaystyle \sum_{n=1}^{99} \frac{1}{(n+1)\sqrt{n} + n\sqrt{n+1}}$}{}
+    \[\displaystyle \sum_{n=1}^{99} \frac{1}{(n+1)\sqrt{n} + n\sqrt{n+1}}\]
+\end{example}
+底层底牌（小学减法）：差生都会的 $\frac{1}{\sqrt{n}} - \frac{1}{\sqrt{n+1}}$。机器加工（出题动作）：命题人在草稿纸上通分，得到 $\frac{\sqrt{n+1} - \sqrt{n}}{\sqrt{n(n+1)}}$。出题人觉得这太容易被看穿，于是极其阴险地搞了一波**“逆向有理化”**（给分子分母同乘共轭项 $\sqrt{n+1} + \sqrt{n}$）！奇迹发生了！分子变成了平方差 $(\sqrt{n+1})^2 - (\sqrt{n})^2 = 1$。分母变成了 $\sqrt{n(n+1)}(\sqrt{n+1} + \sqrt{n})$。把根号外的公因式乘进去，变成了 $(n+1)\sqrt{n} + n\sqrt{n+1}$！减号彻底消失！一个完美不对称、没有任何破绽的无理分母怪兽诞生了！
+
+
+\begin{example}{$\displaystyle \sum_{n=1}^{99} \frac{n}{n^4+n^2+1}$}{}
+\[\displaystyle \sum_{n=1}^{99} \frac{n}{n^4+n^2+1}\]
+\end{example}
+底层底牌（初中因式分解）：平方差公式。机器加工（出题动作）：命题人盯上了四次多项式 $n^4 + n^2 + 1$。他强行加一项减一项，配方成 $(n^4 + 2n^2 + 1) - n^2$，也就是 $(n^2+1)^2 - n^2$。平方差公式一展，瞬间裂开变成 $(n^2 - n + 1)(n^2 + n + 1)$。出题人惊讶地发现，前后两个括号的差值居然恰好是 $2n$！更变态的是，如果把前一个括号里的 $n$ 换成 $n+1$，它会变成 $(n+1)^2 - (n+1) + 1 = n^2 + n + 1$，正好无缝衔接等于后一个括号！出题人马上把 $2n$ 除过去，构造出了绝美恒等式：$\frac{n}{n^4+n^2+1} \equiv \frac{1}{2}\left(\frac{1}{n^2-n+1} - \frac{1}{n^2+n+1}\right)$
+
+\begin{example}{$\displaystyle \sum_{n=1}^{99} (n^2+n+1)n!$}{}
+\[\displaystyle \sum_{n=1}^{99} (n^2+n+1)n!\]
+\end{example}
+底层底牌（初中提取公因式）：小学生都知道的阶乘递推 $(n+1)! = (n+1) \cdot n!$。机器加工（出题动作）：出题人在草稿纸上写下一个极其简单的数列 $f(n) = n \cdot n!$。他好奇地算了一下相邻两项的差：$f(n+1) - f(n) = (n+1)(n+1)! - n \cdot n!$。他把前项的 $(n+1)!$ 拆解为 $(n+1)\cdot n!$，然后提取公因式 $n!$，变成了：$[(n+1)^2 - n] \cdot n!$把中括号里一展开：$n^2 + 2n + 1 - n = n^2 + n + 1$。这就意味着，**减号被多项式完美“吞噬”了！**最后化简成了没有任何破绽的、看似只会越来越大的正项乘积 $(n^2+n+1)n!$ .
+
+\section{爆炸型递推}
+
+\begin{example}{}{}
+设数列满足 $a_1=2, a_{n+1}=a_n^2-a_n+1$。求无穷级数：
+\[\displaystyle \sum_{n=1}^{\infty} \frac{1}{a_n}\]
+\end{example}
+底层底牌（小学分式减法）：极其简单的分式裂项 $\frac{1}{x-1} - \frac{1}{x} = \frac{1}{x^2-x}$。机器加工（出题动作）：命题人想：“如果我强行定义一个递推数列 $a_n$，让它的下一项减去1，刚好等于这个分母（即 $a_{n+1}-1 = a_n^2-a_n$），会发生什么？”于是，他移个项，造出了一个极其诡异的递推公式：$a_{n+1} = a_n^2 - a_n + 1$。在这个规则下，底牌公式就变成了：$\frac{1}{a_{n+1}-1} = \frac{1}{a_n(a_n-1)} = \frac{1}{a_n-1} - \frac{1}{a_n}$。再移项，得到了终极杀器：$\frac{1}{a_n} = \frac{1}{a_n-1} - \frac{1}{a_{n+1}-1}$。
+
+\begin{example}{}{}
+   $$ \sum_{n=1}^{\infty} \frac{n^3-n^2-2n-1}{n!} $$
+\end{example}
+调出底层引擎：出题人在草稿纸上写下极简的阶乘减法 $f(n) - f(n+1)$：$$ \frac{n^3}{n!} - \frac{(n+1)^3}{(n+1)!} $$开粉碎机（毁尸灭迹）：公分母是 $(n+1)!$。前一项上下同乘 $(n+1)$。分子变成了：$n^3(n+1) - (n+1)^3 = (n+1)[n^3 - (n+1)^2] = \mathbf{(n+1)(n^3-n^2-2n-1)}$。接下来是命题人最得意的操作：把分子分母的 $(n+1)$ 强行约掉！分母退化为 $n!$，而分子留下了一个连有理根都没有的丑陋三次多项式：$n^3-n^2-2n-1$。减号彻底消失，只剩下一坨混沌！这个级数本质上就是 $\frac{n^3}{n!} - \frac{(n+1)^3}{(n+1)!}$。连加之后，全部同归于尽，直接剩下第一项！答案：$\frac{1^3}{1!} - 0 = \mathbf{1}$。不用动笔，三秒结束战斗！
+
+\begin{example}{}{}
+   设数列满足首项 $a_1 = \sqrt{2}$，且 $a_{n+1} = a_n^3 - 3a_n$。计算$$ \prod_{n=1}^{10} (a_n + 1) = (a_1+1)(a_2+1) \cdots (a_{10}+1) $$
+\end{example}
+
+调出底层引擎：三角学中一个极度冷门的三倍角变身公式：$\frac{\sin 3\theta}{\sin \theta} = 2\cos 2\theta + 1$。
+开粉碎机：出题人为了隐藏 $\cos$，定义了一个数列 $a_n = 2\cos(2 \cdot 3^{n-1} x)$。
+在这个角度翻 3 倍的设定下，利用 $\cos 3\alpha = 4\cos^3\alpha - 3\cos\alpha$ 倒推，这个数列恰好满足极简的三次非线性递推：$a_{n+1} = a_n^3 - 3a_n$。
+在这个递推下，$(a_n + 1)$ 刚好就等于 $\frac{\sin(3^n x)}{\sin(3^{n-1} x)}$。
+前一项的分子，天生等于后一项的分母！ 只要连乘，就会发生大雪崩！
+设定首项：让 $x = \pi/8$，首项 $a_1 = 2\cos(\pi/4) = \sqrt{2}$。
+
+
+\section{指数型裂项}
+我们的目标是设计母版 $\frac{1}{A} - \frac{k}{B}$，通分后得到 $\frac{B - kA}{A \cdot B}$，并让分子能完美约掉分母里的 $A$。
+
+第一步：设定演化引擎（时空跃迁）：你必须先决定数列是怎么生长的。竞赛中最爱用的是指数倍增，比如 $x \to x^2$（平方演化），或者 $x \to x^3$（立方演化）。
+
+第二步：挑选种子 $A$ 【基因匹配法则】$A$ 可以随便挑吗？绝对不行！黄金法则：种子 $A$ 演化成 $B$ 之后，$B$ 必须能因式分解出 $A$！我们把多出来的那个因式叫做 $Q$。即：$B = A \cdot Q$。举例：设定引擎 $x \to x^2$。我挑 $A = x-1$。演化后 $B = x^2-1$。因为 $x^2-1 = (x-1)(x+1)$，它完美包含了 $A$！所以 $Q = x+1$。满足条件！
+
+第三步：召唤“魔法橡皮擦”算出 $k$ 【全场最高能】此时，式子变成了 $\frac{1}{A} - \frac{k}{A \cdot Q}$。通分后是 $\frac{Q - k}{A \cdot Q}$。我们极度渴望分子里的 $(Q - k)$ 能把分母里的 $A$ 约掉！这意味着，$(Q-k)$ 必须含有 $A$ 这个因式。根据初中的因式定理（如果多项式含有因式 $A$，那么当 $A=0$ 时，多项式必须等于 0）：我们只需要令 $A = 0$，解出 $x$，代入 $Q$ 里，算出来的常数就是 $k$！继续刚才的例子：令 $A = 0 \implies x-1=0 \implies x=1$。把 $x=1$ 代入 $Q = x+1$，得到 $1+1 = \mathbf{2}$。所以 $k$ 强制等于 2！根本不用猜！把 $k=2$ 代入分子：$Q - k = (x+1) - 2 = x-1$。刚好就是 $A$！上下约掉 $A$，成品出炉：$\mathbf{\frac{1}{x+1} \equiv \frac{1}{x-1} - \frac{2}{x^2-1}}$。
+
+你一直觉得 $\frac{1}{(x-x^{-1})^2} - \frac{4}{(x^2-x^{-2})^2}$ 惊为天人，仿佛外星科技。还原命题现场：
+\begin{itemize}
+\item 选引擎：平方翻倍 $x \to x^2$。
+\item 选种子 $A$：出题人一开始选的是没有平方的 $A = x-x^{-1}$。那么 $B = x^2-x^{-2} = (x-x^{-1})(x+x^{-1})$。所以 $Q = x+x^{-1}$。
+\item 找 $k$：令 $A = 0 \implies x-x^{-1}=0 \implies x^2 = 1 \implies x = 1$ 或 $-1$。把 $x$ 代入 $Q = x+x^{-1}$：当 $x=1$ 时，$Q = 2$。当 $x=-1$ 时，$Q = -2$。
+\item 出题人崩溃了！ $k$ 必须是一个固定的常数，但现在算出来有两个值（2和-2）！这意味着不管 $k$ 取什么，分子绝对无法完美因式分解！如果硬算，减号根本消不掉！
+\item 出题人一拍大腿：“只要把正负号搞死就行了！”怎么消灭正负号？加平方啊！于是，他把种子强行改成了 $A = (x-x^{-1})^2$。
+\item 展开后：$A = x^2 - 2 + x^{-2}$。演化后：$B = (x^2-x^{-2})^2 = (x-x^{-1})^2(x+x^{-1})^2 = A \cdot (x+x^{-1})^2$。新的商：$Q = (x+x^{-1})^2 = x^2 + 2 + x^{-2}$。再次找 $k$：令 $A = 0 \implies x^2 - 2 + x^{-2} = 0 \implies x^2 + x^{-2} = 2$。把它直接代入 $Q$：$Q = (x^2+x^{-2}) + 2 = 2 + 2 = \mathbf{4}$。\item $k=4$ 变成了一个绝对完美的唯一常数！我们来看看分子：$Q - 4 = x^2+2+x^{-2} - 4 = x^2-2+x^{-2}$。这特么刚好就是新的 $A$！上下完美约掉，留下了极其暴力的 $\mathbf{\frac{1}{(x+x^{-1})^2}}$！
+\item 你看懂了吗？！那个充满魔力的“平方”和“常数 4”，根本不是什么神谕，那是为了让因式定理强行成立，暴力打上去的代数补丁！
+\end{itemize}
+
+既然懂了原理，我们现在拿张草稿纸，用 $x \to x^3$ （立方引擎） 造一个极其变态、全世界从未出现过的神题。
+\begin{itemize}
+\item 选引擎：$x \to x^3$
+\item 选种子 $A$：为了简单，选 $A = x-1$。演化后：$B = x^3-1 = (x-1)(x^2+x+1)$。所以 $Q = x^2+x+1$。
+\item 求魔法橡皮擦 $k$：令 $A = 0 \implies x-1=0 \implies \mathbf{x=1}$。把 $x=1$ 代入 $Q$：$Q = 1^2 + 1 + 1 = \mathbf{3}$。算出常数 $k = 3$！
+\item 见证奇迹的时刻：分子 $Q - k = (x^2+x+1) - 3 = x^2+x-2$。十字相乘分解：$x^2+x-2 = (x-1)(x+2)$。刚好含有 $A$！约掉 $(x-1)$。最终留在考卷上的极简式子是：$\mathbf{\frac{x+2}{x^2+x+1}}$。
+\end{itemize}
+
+\begin{example}{}{}
+    令 $x_n = 2^{3^n}$。计算无穷级数：$$ \sum_{n=1}^{\infty} 3^n \frac{x_n+2}{x_n^2+x_n+1} $$不知
+\end{example}
+这就是你用 $\frac{3^n}{x_n-1} - \frac{3^{n+1}}{x_{n+1}-1}$ 在 1 分钟内强行捏出来的残骸！连加抵消后，答案就是 $\frac{3}{2^3-1} = \frac{3}{7}$。
+
+我们在草稿纸上写下极其简单的分式减法（我们用 3 次方，所以系数配 3）：$$ \frac{1}{x^2-1} - \frac{3}{x^6-1} $$开始像小学生一样通分：公分母是 $x^6-1$。前面一项上下同乘 $(x^4+x^2+1)$。分子变成了：$(x^4+x^2+1) - 3 = \mathbf{x^4+x^2-2}$。这时候，出题人邪魅一笑。这个四次多项式可以十字相乘分解为 $(x^2-1)(x^2+2)$！此时分式变成了：$$ \frac{(x^2-1)(x^2+2)}{(x^2-1)(x^4+x^2+1)} $$上下把 $(x^2-1)$ 狠狠约掉！减号灰飞烟灭！只留下一个极其清爽的式子：$$ \mathbf{\frac{x^2+2}{x^4+x^2+1}} $$你看！一个世界上极其罕见的全新恒等式被你发明出来了：$\frac{x^2+2}{x^4+x^2+1} \equiv \frac{1}{x^2-1} - \frac{3}{x^6-1}$ ！【3. 套外壳出题】令变量 $x$ 呈三次方倍增，比如 $x_n = 2^{3^n}$。给两边同乘 $3^n$
+\begin{example}{}{}
+    计算带有双重指数塔的无穷级数：$$ \sum_{n=0}^{\infty} 3^n \frac{4^{3^n}+2}{16^{3^n} + 4^{3^n} + 1} $$
+\end{example}
+不过是你刚才搓出来的 $\frac{3^n}{x_n^2-1} - \frac{3^{n+1}}{x_{n+1}^2-1}$！连加后中间死光，答案就是首项 $\frac{1}{x_0^2-1} = \mathbf{\frac{1}{3}}$。
+
+3 次方的递推规则是 $y_{n+1} = y_n^3 - 3y_n$。因为是 3 次方，且外面套了平方，倍增系数 $k = 3^2 = 9$。在草稿纸上写下底层减法：$$ \frac{1}{y^2-4} - \frac{9}{(y^3-3y)^2-4} $$
+强行展开分母的后半部分：$(y^3-3y)^2 - 4 = y^6 - 6y^4 + 9y^2 - 4$。利用因式分解大法，它刚好等于 $(y^2-4)(y^2-1)^2$！现在开始通分：$$ \frac{1}{y^2-4} - \frac{9}{(y^2-4)(y^2-1)^2} = \frac{(y^2-1)^2 - 9}{(y^2-4)(y^2-1)^2} $$分子展开：$y^4 - 2y^2 + 1 - 9 = \mathbf{y^4 - 2y^2 - 8}$。十字相乘分解分子：$(y^2-4)(y^2+2)$！奇迹再次降临！分子分母的 $(y^2-4)$ 完美约掉！最终留下了一个绝美的式子：$$ \mathbf{\frac{y^2+2}{(y^2-1)^2}} $$
+
+\begin{example}{}{}
+    设数列满足 $a_1 = 3$，且 $a_{n+1} = a_n^3 - 3a_n$。计算无穷级数：$$ \sum_{n=1}^{\infty} 9^n \frac{a_n^2+2}{(a_n^2-1)^2} $$
+\end{example}
+三次非线性递推，外加平方分母和 $9^n$ 指数！但你作为造物主知道，它的底层就是 $\frac{9^n}{a_n^2-4} - \frac{9^{n+1}}{a_{n+1}^2-4}$。连加抵消，答案就是首项 $\frac{9}{a_1^2-4} = \mathbf{\frac{9}{5}}$！
+\begin{example}{}{}
+    计算无穷连乘积：$$ \prod_{n=2}^{\infty} \frac{n^3-1}{n^3+1} = \frac{7}{9} \times \frac{26}{28} \times \frac{63}{65} \times \dots $$
+\end{example}
+出题人想造一个连乘积，分子分母全用立方：$\frac{n^3-1}{n^3+1}$。利用初中课本公式展开它：$$ \frac{n^3-1}{n^3+1} = \mathbf{ \left( \frac{n-1}{n+1} \right) \times \left( \frac{n^2+n+1}{n^2-n+1} \right) } $$左边 $\frac{n-1}{n+1}$ 的连乘很好消（跨两步的裂项）。但右边那坨恶心的二次多项式怎么办？出题人的毒辣之处在于，他利用了代数式的“时间平移”巧合！令 $P(n) = n^2-n+1$。如果你把 $n$ 变成“下一项” $n+1$，算一下 $P(n+1) = (n+1)^2-(n+1)+1 = n^2+2n+1-n-1+1 = \mathbf{n^2+n+1}$！看到了吗？！右边那坨看似不可约分的二次式，本质上是 $\mathbf{\frac{P(n+1)}{P(n)}}$ 的完美相邻裂项！
+
+做题家的绝望：三次方分式的无限连乘？难道要求助于伽马函数（Gamma Function）或者韦达定理找复平面上的根？很多人连提笔的勇气都没有，光看前几项乘积根本找不到规律。你的上帝视角：直接把式子撕成两半分别乘！第一半：$\prod \frac{n-1}{n+1} = \frac{1}{3} \times \frac{2}{4} \times \frac{3}{5} \dots = \frac{1 \times 2}{N(N+1)}$。第二半：$\prod \frac{P(n+1)}{P(n)} = \frac{P(3)}{P(2)} \times \frac{P(4)}{P(3)} \dots = \frac{P(N+1)}{P(2)} = \frac{N^2+N+1}{3}$。两边一合体：$\lim_{N \to \infty} \frac{2(N^2+N+1)}{3N(N+1)} = \mathbf{\frac{2}{3}}$。这堆毫无规律的杂乱数字乘到无穷大，答案居然是一个极其干净的 $2/3$！
+
+\begin{example}{}{}
+    已知常数 $x$，计算无穷级数：$$ \sum_{n=1}^\infty \frac{1}{2^n} \tan\left(\frac{x}{2^n}\right) = \frac{1}{2}\tan\left(\frac{x}{2}\right) + \frac{1}{4}\tan\left(\frac{x}{4}\right) + \dots $$
+\end{example}
+
+【底牌源代码（高一三角函数的二倍角公式）】出题人在草稿纸上写下余切 $\cot A = \frac{\cos A}{\sin A}$。然后算一下 $\cot A - 2\cot(2A)$：$$ \frac{\cos A}{\sin A} - \frac{2\cos 2A}{\sin 2A} $$把 $\sin 2A$ 展开成 $2\sin A \cos A$：$$ \frac{\cos A}{\sin A} - \frac{2\cos 2A}{2\sin A \cos A} = \frac{\cos^2 A - \cos 2A}{\sin A \cos A} $$把 $\cos 2A = \cos^2 A - \sin^2 A$ 代入分子：$$ \frac{\cos^2 A - (\cos^2 A - \sin^2 A)}{\sin A \cos A} = \frac{\sin^2 A}{\sin A \cos A} = \frac{\sin A}{\cos A} = \mathbf{\tan A} $$太惊艳了！$\mathbf{\tan A}$ 竟然可以被裂项为 $\mathbf{\cot A - 2\cot 2A}$！为了让级数无限坍缩，出题人令 $A = \frac{x}{2^n}$，并在两边同时除以 $2^n$：$$ \frac{1}{2^n}\tan\left(\frac{x}{2^n}\right) = \frac{1}{2^n}\cot\left(\frac{x}{2^n}\right) - \frac{1}{2^{n-1}}\cot\left(\frac{x}{2^{n-1}}\right) $$这是一个带着指数权重系数的完美裂项！
+
+做题家的绝望：无限叠加的正切函数？随着角度趋近于 0，系数也趋近于 0。这看起来像极了某种傅里叶展开，或者是魏尔斯特拉斯（Weierstrass）处处连续不可导的病态分形函数。无从下手！你的上帝视角：一眼看穿底牌！原式根本就是 $\frac{1}{2^n}\cot(x/2^n) - \frac{1}{2^{n-1}}\cot(x/2^{n-1})$ 的连环爆炸。首尾相消后，只剩下无穷远处的末项 $\lim_{n \to \infty} \left[ \frac{1}{2^n}\cot\left(\frac{x}{2^n}\right) \right]$，减去最开始的 $\cot x$。根据大学微积分第一课的重要极限 $\lim_{\theta \to 0} \theta \cot \theta = 1$，末项极限刚好是 $\frac{1}{2^n} \times \frac{1}{x/2^n} = \frac{1}{x}$！答案直接拍在做题家脸上：$\mathbf{\frac{1}{x} - \cot x}$。把离散的无穷级数算成了一个绝美的连续函数，没有用任何高级实变函数知识！
+
+\begin{example}{}{}
+    已知非线性数列 $y_0 = 3, y_{n+1} = y_n^3 - 3y_n$。计算无穷级数：$$ \sum_{n=0}^\infty 9^n \frac{y_n^2+2}{(y_n^2-1)^2} $$
+\end{example}
+【三次方的“黄金降维”引擎】你提供的公式是基于“平方倍增”（$x \to x^2$）的。我们直接把它升级成更恐怖的**“立方倍增”（$x \to x^3$）**！【底层底牌（初中代数）】：刚才用的底牌是 $A(A+4)$，现在我们用 $A(A+3)^2$。在草稿纸上强行计算：$\frac{1}{A} - \frac{9}{A(A+3)^2}$。通分化简：$\frac{A^2+6A+9 - 9}{A(A+3)^2} = \frac{A^2+6A}{A(A+3)^2} = \mathbf{\frac{A+6}{(A+3)^2}}$。左边是裂项，右边却化简成了一个极其干净的 $\frac{A+6}{(A+3)^2}$！【造题剧本：代入变量】：令 $A = y_n^2 - 4$。那么 $A+6 = y_n^2+2$，$A+3 = y_n^2-1$。代入刚才的式子，直接生成恒等式：$$ \mathbf{ \frac{y_n^2+2}{(y_n^2-1)^2} = \frac{1}{y_n^2-4} - \frac{9}{y_n^2(y_n^2-3)^2} } $$出题人定义非线性递推数列 $y_{n+1} = y_n^3 - 3y_n$。那么后面的分母恰好就是 $y_{n+1}^2 - 4$！两边同乘 $9^n$ 启动裂变！
+
+【做题家的绝望】：三次方递推、指数 $9^n$、分子分母异阶式交织在一起。哪怕是最顶级的大学生，都会觉得这是不可解的怪物。【你的秒杀】：扯去华丽的外衣，原式完美等价于 $\frac{9^n}{y_n^2-4} - \frac{9^{n+1}}{y_{n+1}^2-4}$。多米诺骨牌无情倒下，首项代入 $n=0$，得到 $\frac{9^0}{3^2-4} = \mathbf{\frac{1}{5}}$。
+
+\begin{example}{}{}
+设数列 $y_0 = 3, y_{n+1} = y_n^4 - 4y_n^2 + 2$。计算无穷级数：$$ \sum_{n=0}^\infty 16^n \frac{y_n^4+4}{y_n^2(y_n^2-2)^2} $$
+\end{example}
+既然到了这一步，我们直接跨过 3 次方，挑战普通人类一辈子都不会去算的 4 次方裂项！【底层底牌】：使用底牌式：$\frac{1}{A} - \frac{16}{A(A+4)(A+2)^2}$。通分后，分子是 $(A+4)(A^2+4A+4) - 16 = A^3 + 8A^2 + 20A + 16 - 16 = A(A^2+8A+20)$。约掉 $A$，得到右边：$\mathbf{\frac{A^2+8A+20}{(A+4)(A+2)^2}}$。【造题剧本】：依然令 $A = y_n^2 - 4$。代入化简后，准备见证奇迹：分子：$(y^2-4)^2 + 8(y^2-4) + 20 = y^4 - 8y^2 + 16 + 8y^2 - 32 + 20 = \mathbf{y^4 + 4}$！(极其清爽！)分母：$(y^2)(y^2-2)^2$。设定四次方递推数列 $y_{n+1} = y_n^4 - 4y_n^2 + 2$。
+
+【做题家的绝望】：分子是四次方，分母是六次方展开，里面还套着常数 2 和 4。傅里叶来了都得烧卷子。【你的秒杀】：这就是 $\frac{16^n}{y_n^2-4} - \frac{16^{n+1}}{y_{n+1}^2-4}$ 的化身。首尾相消，答案 $=\frac{16^0}{3^2-4} = \mathbf{\frac{1}{5}}$。
+
+
+\begin{example}{}{}
+对于 $0 < x < 1$，计算无穷级数：$$ \sum_{n=0}^\infty \frac{4 x^{2^n} (x^{2^{n+1}} + x^{2^n} + 1)}{(1-x^{2^{n+1}})^2} $$
+\end{example}
+前面的都是在玩 $f(n) - c \cdot f(n+1)$。现在，我们不加任何指数倍增器，仅靠代数本身的错位，造一个极其罕见的不带 $2^n$ 系数的平方裂项！【罕见底牌（分式平方差公式）】：出题人在纸上写下：$\frac{1+u}{1-u} - \frac{1+u^2}{1-u^2} = \frac{2u}{1-u^2}$。他觉得太简单，于是把两边同时平方！$$ \left(\frac{1+u}{1-u}\right)^2 - \left(\frac{1+u^2}{1-u^2}\right)^2 = \frac{(1+u)^4 - (1+u^2)^2}{(1-u^2)^2} = \frac{4u^3+4u^2+4u}{(1-u^2)^2} = \mathbf{ \frac{4u(u^2+u+1)}{(1-u^2)^2} } $$【造题剧本】：令 $u = x^{2^n}$。右边自然就变成了下一项 $x^{2^{n+1}}$。
+
+【做题家的绝望】：没有常规的 $2^n$ 乘子，分子里 $x$ 的指数呈现 $2^{n+1}$ 和 $2^n$ 的诡异混搭，且没有任何递推数列做暗示。普通人绝对无法从 $\frac{4u(u^2+u+1)}{(1-u^2)^2}$ 逆推出它是两个平方式的差。【你的秒杀】：原项直接化为 $\left(\frac{1+x^{2^n}}{1-x^{2^n}}\right)^2 - \left(\frac{1+x^{2^{n+1}}}{1-x^{2^{n+1}}}\right)^2$。无穷坍缩后，因为 $x < 1$，尾项极限 $\lim_{n \to \infty} x^{2^n} = 0$，所以尾部变成 $(\frac{1+0}{1-0})^2 = 1$。最终答案极其优雅：$\left(\frac{1+x}{1-x}\right)^2 - 1 = \mathbf{\frac{4x}{(1-x)^2}}$。
+
+\begin{example}{}{}
+已知常数 $x \neq 0$，求无穷级数：$$ \sum_{n=1}^{\infty} \frac{1}{4^n} \sec^2\left(\frac{x}{2^n}\right) $$
+\end{example}
+高一学生都知道：$\sin 2\theta = 2 \sin \theta \cos \theta$。两边平方并取倒数：$\frac{1}{\sin^2 2\theta} = \frac{1}{4 \sin^2 \theta \cos^2 \theta}$。此时，出题人做了一个“极其鸡贼”的动作——把分子上的 $1$ 强行写成 $\mathbf{\sin^2 \theta + \cos^2 \theta}$：$$ \frac{1}{\sin^2 2\theta} = \frac{\sin^2 \theta + \cos^2 \theta}{4 \sin^2 \theta \cos^2 \theta} = \mathbf{\frac{1}{4 \cos^2 \theta} + \frac{1}{4 \sin^2 \theta}} $$把 $\cos^2 \theta$ 移到一边，我们就得到了一个绝美的裂项模具：$$ \mathbf{\frac{1}{4 \cos^2 \theta} = \frac{1}{\sin^2 2\theta} - \frac{1}{4 \sin^2 \theta}} $$左右同乘 4，把 $\frac{1}{\cos^2 \theta}$ 写成 $\sec^2 \theta$（正割函数），公式变为：$\sec^2 \theta = 4\csc^2 2\theta - \csc^2 \theta$。【造题剧本】：为了让级数无限坍缩，出题人令 $\theta = \frac{x}{2^n}$，并给等式两边同时除以 $\mathbf{4^n}$！
+
+【做题家的绝望】：正割函数 $\sec^2$ 里面嵌套着指数衰减的角度，外面还除以 $4^n$！这玩意儿怎么求出精确的闭式解？泰勒展开？傅里叶级数？全都没用！【你的秒杀】：这不就是刚才配凑出来的 $\frac{1}{4^{n-1}} \csc^2(\frac{x}{2^{n-1}}) - \frac{1}{4^n} \csc^2(\frac{x}{2^n})$ 吗？！级数求和后，只剩下：$\text{首项}(n=1) - \text{无穷远处的尾项}$。首项 $=\frac{1}{4^0} \csc^2(\frac{x}{1}) = \mathbf{\csc^2 x}$。尾项怎么求？利用大学微积分等价无穷小：当 $n \to \infty$ 时，$\sin(\frac{x}{2^n}) \approx \frac{x}{2^n}$。所以尾项极限 $= \lim_{n \to \infty} \frac{1}{4^n \cdot (\frac{x^2}{4^n})} = \mathbf{\frac{1}{x^2}}$！最终答案：$\mathbf{\csc^2 x - \frac{1}{x^2}}$！(纯粹的高一三角公式，竟然硬生生算出了包含无穷小极限的绝美函数！)
+
+你疑惑的 $\frac{1+u}{1-u} - \frac{1+u^2}{1-u^2} = \frac{2u}{1-u^2}$ 这个底牌是怎么找到的？真相是：出题人根本没找，他是“先写答案，再造题目”！出题人不需要去背任何罕见的公式，他只需要像开盲盒一样执行三步：随便写个答案（造母体）：出题人今天心情好，随便在草稿纸上写一个极其简单、但不那么对称的分式：$\mathbf{f(u) = \frac{1+u}{1-u}}$。强制指数倍增：把 $u$ 变成 $u^2$，得到 $f(u^2) = \frac{1+u^2}{1-u^2}$。做减法算题目：他像初中生一样，老老实实地通分硬算 $f(u) - f(u^2)$：$$ \frac{1+u}{1-u} - \frac{1+u^2}{1-u^2} = \frac{(1+u)^2 - (1+u^2)}{1-u^2} $$$$ = \frac{1+2u+u^2-1-u^2}{1-u^2} = \mathbf{\frac{2u}{1-u^2}} $$神级底牌诞生了！出题人拿到 $\frac{2u}{1-u^2}$ 这个通分化简后的结果，把它包装成极其恶心的级数题目。而把极其简单的 $\frac{1+u}{1-u}$ 藏在自己兜里当标准答案。学生拿到题目后，需要像福尔摩斯一样去猜它怎么裂项，而你作为出题人，心里冷笑：这玩意儿不过是我通分减出来的“工业废料”！
+
+你今天不想用 $\frac{1+u}{1-u}$，你随便定一个更奇葩的：$\mathbf{f(u) = \frac{u}{u^2+1}}$。你硬算一下 $f(u) - f(u^2)$：$$ \frac{u}{u^2+1} - \frac{u^2}{u^4+1} = \frac{u(u^4+1) - u^2(u^2+1)}{(u^2+1)(u^4+1)} = \mathbf{\frac{u^5 - u^4 + u - u^2}{u^6+u^4+u^2+1}} $$看！一张极度恶心、毫无规律、让人根本不想通分的六次分式底牌诞生了！你只要令 $u = 2^{2^n}$，一道全网无解析的强基神题就造好了，做题家绝对会在这个式子面前绝望，而你只用了一分钟！
+
+这是全场最高能的核心！你疑惑的 $A(A+4)$ 为什么配 $4$？$A(A+3)^2$ 为什么配 $9$？因为不配这些数字，分母的 $A$ 就约不掉！出题人如果想造一个 $k$ 次方的指数递推（比如 $x \to x^3$），他永远遵循以下机械步骤：永远令核心锚点 $\mathbf{A = (x - x^{-1})^2}$。此时已知 $x^2 + x^{-2} = \mathbf{A+2}$。【第一步：强行展开下一项】当 $k=3$（三次方递推）时，下一项必然是 $(x^3 - x^{-3})^2$。初中因式分解：$x^3 - x^{-3} = (x-x^{-1})(x^2+1+x^{-2})$。把后面的括号凑成 $A$：$x^2+1+x^{-2} = (x^2+x^{-2}) + 1 = (A+2) + 1 = \mathbf{A+3}$。所以，两边平方后，下一项的分母必定是：$\mathbf{A(A+3)^2}$。(你看，分母根本不是挑出来的，是代数展开自动长出来的！)【第二步：常数湮灭（魔法的本质）】出题人要构造裂项：$\frac{1}{A} - \frac{\mathbf{C}}{A(A+3)^2}$。强行通分后，分子变成了：$(A+3)^2 - C = \mathbf{A^2 + 6A + 9 - C}$。高潮来了：怎么才能把分母的 $A$ 约掉，让式子变漂亮？必须让分子的常数项消失！所以，毫无商量的余地，直接令 $9 - C = 0 \implies \mathbf{C = 9}$！这就是为什么公式里偏偏是 $\frac{9}{A(A+3)^2}$ 的唯一原因！它根本不是挑出来的，是逼出来的！(注：数学界有一个死规律，展开后的多项式常数项永远等于 $\mathbf{k^2}$。所以 2次方必定配 4，3次方必定配 9，4次方必定配 16！)
+
+【你的上帝权限：现场手搓一张 5 次方的深渊底牌！】算下一项分母 ($k=5$)：我们要算 $(x^5 - x^{-5})^2$。分解得到 $(x-x^{-1})(x^4+x^2+1+x^{-2}+x^{-4})$。利用 $x^2+x^{-2} = A+2$，算出后面一长串等于 $A^2+5A+5$。所以下一项的分母绝对是：$\mathbf{A(A^2+5A+5)^2}$！常数湮灭：裂项设为 $\frac{1}{A} - \frac{C}{A(A^2+5A+5)^2}$。通分后的分子是：$(A^2+5A+5)^2 - C$。展开 $(A^2+5A+5)^2$，它的常数项毫无疑问是 $5^2 = \mathbf{25}$！为了干掉常数项，必须令 $\mathbf{C = 25}$！神级底牌诞生：分子变成 $(A^2+5A+5)^2 - 25 = A^4+10A^3+35A^2+50A+25-25$。常数完美抵消！提取一个 $A$ 与分母约掉，你得到了一张足以毁灭人类智商的全新 5 次方底牌：$$ \mathbf{\frac{A^3+10A^2+35A+50}{(A^2+5A+5)^2} = \frac{1}{A} - \frac{25}{A(A^2+5A+5)^2}} $$
+
+你以为不用反正切就安全了？出题人可以直接用最基础的 $\cos$ 设下死局。这招叫“无中生有”，因为关键的破解钥匙，被出题人从题目里“偷走”了！底层底牌（高一两角差的正切公式）：$\tan A - \tan B = \frac{\sin A}{\cos A} - \frac{\sin B}{\cos B} = \frac{\sin A \cos B - \cos A \sin B}{\cos A \cos B} = \mathbf{\frac{\sin(A-B)}{\cos A \cos B}}$。机器加工（出题动作）：出题人令 $A = n+1, B = n$。代入底牌，分子变成了 $\sin((n+1)-n) = \mathbf{\sin 1}$。得到恒等式：$\frac{\sin 1}{\cos(n+1) \cos n} = \tan(n+1) - \tan n$。杀人诛心的一步来了：出题人觉得分子上的 $\sin 1$ 太容易暴露目标了，于是他直接把这个常数除过去，从题目里彻底抹除了！【神仙考题 4】（俄罗斯数学奥林匹克经典题）（注：角度制）计算求和：$\displaystyle \frac{1}{\cos 1^\circ \cos 2^\circ} + \frac{1}{\cos 2^\circ \cos 3^\circ} + \cdots + \frac{1}{\cos 88^\circ \cos 89^\circ}$【你的上帝视角秒杀】：凡人看到连乘的 $\cos$ 在分母上，企图用积化和差，越算越乱。而你微微一笑，知道出题人“偷走”了分子的常数。你强行给式子外面乘一个 $\frac{1}{\sin 1^\circ}$，里面全部分子乘上幽灵因子 $\sin( (n+1)^\circ - n^\circ )$。瞬间，所有分式崩解为 $\tan 2^\circ - \tan 1^\circ + \tan 3^\circ - \tan 2^\circ \dots$首尾相消，答案脱口而出：$\mathbf{\frac{\tan 89^\circ - \tan 1^\circ}{\sin 1^\circ}}$。不用动一笔一划的计算！第八大厂：“正弦倍角”的雪崩连乘厂有些题目连加号和减号都没有，全是乘号。指数呈 $2^n$ 翻倍增长，这看起来就像高等调和分析或者傅里叶变换的魔咒。底层底牌（高中正弦倍角公式的移项）：$\sin(2A) = 2\sin A \cos A$。出题人把 $\cos A$ 孤立出来：$\mathbf{\cos A = \frac{\sin 2A}{2\sin A}}$。机器加工（出题动作）：注意这个恐怖的结构：分子的角度，刚好是分母角度的 2 倍！如果出题人把一堆角度成倍递增的 $\cos$ 乘在一起（比如 $x, 2x, 4x$）：$\cos x \cdot \cos 2x \cdot \cos 4x = \frac{\sin 2x}{2\sin x} \cdot \frac{\sin 4x}{2\sin 2x} \cdot \frac{\sin 8x}{2\sin 4x}$看懂了吗？前一项的分子，完美地被后一项的分母吃掉了！ 这是一场多米诺骨牌般的链式反应。【神仙考题 5】（各大高中奥数联赛经典门神题）求纯数值表达式的值：$\displaystyle \cos 20^\circ \cdot \cos 40^\circ \cdot \cos 80^\circ$【你的上帝视角秒杀】：做题家在尝试用积化和差硬算，痛苦不堪。而你直接给它强行配上一个“幽灵分母” $8\sin 20^\circ$ （为了配平连乘的式子，上下同乘）。连乘瞬间化为大雪崩：原式 $= \frac{\sin 160^\circ}{8\sin 20^\circ}$因为 $\sin 160^\circ$ 和 $\sin 20^\circ$ 在三角函数里互补（$\sin(\pi-x)=\sin x$），直接约掉，答案等于 $\mathbf{\frac{1}{8}}$。这根本不是三角学，这就是个连连看消除游戏！
+
+大家只防着反正切，出题人就改用三角函数本身来搞你。带有指数倍增角度（如 $2^n x$）的三角题，常被认为是深奥的傅里叶分析。底层底牌（初中三角恒等式变形）：出题人在纸上推导 $\cot x - \cot 2x$：$= \frac{\cos x}{\sin x} - \frac{\cos^2 x - \sin^2 x}{2\sin x \cos x}$通分合并：$= \frac{2\cos^2 x - \cos^2 x + \sin^2 x}{2\sin x \cos x} = \frac{1}{2\sin x \cos x} = \mathbf{\frac{1}{\sin 2x}}$。这是一个绝美的“余割解体公式”：$\csc 2x = \cot x - \cot 2x$。机器加工（出题动作）：只要把角度换成以指数倍增的 $2^{n-1} \theta$ 和 $2^n \theta$，它就变成了现成的无穷裂项多米诺骨牌。【神仙考题 4】对任意常数 $\theta \in (0, \pi)$，计算三角级数：$\displaystyle \sum_{n=1}^{\infty} \frac{1}{\sin(2^n \theta)}$【你的上帝视角秒杀】：看到分母里的 $\sin$ 和角度的指数倍增，常人以为误入了复分析的考场。而你直接代入底牌，原式瞬间变成 $\sum (\cot(2^{n-1} \theta) - \cot(2^n \theta))$。首尾相消，答案清爽无比：$\mathbf{\cot \theta - \lim_{n \to \infty} \cot(2^n \theta)}$。纯粹的初等代数操作！

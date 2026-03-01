@@ -1,0 +1,221 @@
+\chapter{Text to SQL生成自我修正指南}
+
+文本到SQL中的自我修正是提示大型语言模型（LLM）修改其先前错误生成的SQL查询的过程。当前的小样本方法通过人工分析LLM在训练数据上的常见错误来设计自我修正指南——这是一项耗时任务，且受限于人类识别所有错误模式的能力。
+
+这里提出MAGIC，一种新颖的多智能体方法，可自动化自我修正指南的创建。MAGIC采用三个专门智能体（管理者、修正者和反馈者），它们基于训练数据中LLM方法的失败案例协作，迭代生成并精炼针对LLM错误的自我修正指南并在推理时集成到初始方法中，帮助其避免常见错误。这里的实验表明，MAGIC生成的指南优于人类专家编写的指南，并增强了修正的可解释性。
+
+贡献包括：（i）建立文本到SQL的自我修正指南生成任务，提出MAGIC方法，其生成的指南优于人类编写；（ii）系统分析不同场景下自我修正的效果；（iii）使用相同GPT-4版本复现所有基线，提供全面可比较的见解；（iv）开源所有代码。
+
+\section*{基础概念介绍}
+\begin{itemize}
+    \item \textbf{Text-to-SQL}：将日常语言描述的问题（例如“去年销量最高的产品是什么？”）自动转换成能在数据库上执行的SQL查询语句的任务。
+    \item \textbf{大型语言模型（LLM）}：像GPT-4这样的大规模神经网络，能够理解和生成自然语言及代码。
+    \item \textbf{自我修正}：让模型自己检查先前生成的SQL是否正确，如果不正确就尝试修改，类似于人类写完答案后再检查一遍。
+    \item \textbf{智能体（Agent）}：这里指专门负责某项工作的AI程序模块。MAGIC中有三个智能体，各自分工合作。
+    \item \textbf{自我修正指南}：一组提示或规则，告诉模型如何修正常见的错误，例如“当问题要求‘最多的’时，记得用ORDER BY和LIMIT 1”。
+    \item \textbf{数据集}：\textbf{Spider}和\textbf{BIRD}是两个广泛使用的评测数据集，包含许多自然语言问题及其对应的正确SQL，用来测试text-to-SQL系统的准确率。
+    \item \textbf{执行准确率（EX）}：将模型生成的SQL在数据库上运行，看结果是否和标准答案的运行结果一致。一致就算正确。
+    \item \textbf{有效效率分数（VES）}：在正确的基础上，还考虑SQL的执行速度，速度越快分数越高（只在BIRD这种大数据库上有意义）。
+    \item \textbf{基线方法}：用来和新方法对比的已有方法，比如Self-Debugging、Self-Consistency等。
+\end{itemize}
+
+
+\section{相关工作}
+
+\subsection{用于Text-to-SQL的LLM}
+早期方法利用LLM的零样本上下文学习能力生成SQL。后续模型通过任务分解和思维链等技术提升性能，如DAIL-SQL、MAC-SQL、C3、自我一致性和从少到多提示。此外，还有研究专注于微调LLM。这里选择DIN-SQL作为初始系统，因其高效、开源且包含人类编写的自我修正指南，适合与MAGIC自动生成的指南对比。
+
+\subsection{Text-to-SQL中的自我修正}
+自我修正研究在多个领域已有综述，但在Text-to-SQL中相对有限。
+\begin{itemize}
+\item Self-debugging生成解释用于修正；
+\item DIN-SQL设计人类编写指南并修正所有初始SQL；
+\item 自我一致性通过生成多个候选并投票；
+\item MAC-SQL的精炼器使用执行错误作为修正信号。
+\end{itemize}
+这里是首个通过生成自我修正指南来解决Text-to-SQL自我修正的研究，也是首个在Text-to-SQL或其他领域使用多智能体方法设计自我修正指南的工作。。基于LLM的智能体研究广泛，如AutoGPT、OpenAgents、AutoGen。但在Text-to-SQL中应用较少，MAC-SQL是唯一的多智能体协作框架。受此启发，MAGIC采用多智能体协作框架，自动分析SQL预测失败并生成指南。
+
+\section{MAGIC方法}
+
+\subsection{任务定义}
+给定一组自然语言问题及其对应的数据库模式和初始生成的错误SQL查询，任务是生成一个针对LLM错误的自我修正指南。指南生成所用的数据不应与评估数据重叠，以防过拟合。
+
+\subsection{三个智能体}
+MAGIC包含三个智能体，它们通过失败案例迭代交互：
+\begin{itemize}
+    \item \textbf{管理者智能体}：协调整个过程，存储成功的反馈，并聚合反馈以生成指南。
+    \item \textbf{反馈智能体}：通过与标准答案对比，解释错误SQL中的错误。
+    \item \textbf{修正智能体}：根据提供的反馈修改错误SQL。
+\end{itemize}
+
+\subsection{反馈-修正循环}
+对于每个问题、标准答案SQL \(s^{gt}\) 和错误SQL \(s'\)：
+\begin{enumerate}
+    \item 管理者请求反馈智能体通过与 \(s^{gt}\) 对比解释 \(s'\) 中的错误。
+    \item 管理者整合反馈，并请求修正智能体根据反馈修改 \(s'\)。
+    \item 修正智能体生成修改后的SQL。
+    \item 管理者执行修改后的SQL并将结果与 \(s^{gt}\) 对比。
+    \item 当修改成功或达到最大迭代次数（5次）时循环结束。
+\end{enumerate}
+
+\subsection{修订智能体指令}
+在第一次迭代中，管理者使用预定义提示与反馈和修正智能体交互。如果修正失败，管理者会根据先前的响应、问题、\(s'\) 和 \(s^{gt}\) 修订这些预定义提示。这里发现此步骤对管理者适应智能体交互至关重要。
+
+对于每次成功的修改，管理者存储对应的反馈。当累积到10个成功反馈的批次时，管理者使用预定义提示生成或更新自我修正指南。过程在2小时内完成。先前方法需要大量人工工作，而MAGIC可在2小时内高效生成经验证更好的指南。
+
+管理者智能体在生成指南时可访问所有信息，但其他智能体访问受限。修正智能体始终只接收 \(s'\)，确保成功修正表明反馈能有效覆盖错误。这保证了生成的指南能防止初始系统的错误。
+
+\section{实验设置}
+
+\subsection{数据集}
+\begin{itemize}
+    \item \textbf{Spider}：包含10,181个问题，5,693个独特SQL查询，涵盖200个数据库，分为训练、开发和测试集。
+    \item \textbf{BIRD}：包含12,751个问题-SQL对，涵盖95个大数据库（33.4 GB）和37个专业领域，引入外部知识增加复杂度。
+\end{itemize}
+
+\subsection{评估指标}
+\begin{itemize}
+    \item \textbf{执行准确率（EX）}：比较预测SQL的执行结果与标准答案SQL的执行结果。
+    \item \textbf{有效效率分数（VES）}：评估正确查询的执行效率。对于Spider，由于数据库小，执行时间差异可忽略，故不报告VES。
+\end{itemize}
+
+\subsection{基线方法}
+\textbf{无指南的自我修正方法：}
+\begin{itemize}
+    \item Self-Debugging：生成解释用于自我修正。
+    \item Self-Consistency：生成20个SQL查询，通过投票选择最终SQL。
+    \item Multiple-Prompt：重新排列表格候选，生成20种组合，采用投票机制。
+\end{itemize}
+\textbf{带指南的自我修正方法：}
+\begin{itemize}
+    \item Human Expert G (MAC-SQL)：针对执行错误的人类编写指南。
+    \item Human Expert G (DIN-SQL)：DIN-SQL的人类编写指南。
+\end{itemize}
+所有基线均使用相同GPT-4版本复现。
+
+\section{结果}
+
+\subsection{RQ1：与基线方法的有效性对比}
+
+\begin{table}[htbp]
+\centering
+\caption{BIRD数据集执行准确率（\%）——数值越高越好}
+\label{tab:bird}
+\begin{tabularx}{\textwidth}{l XXX}  % 4列：第一列左对齐，后三列自动分配宽度
+\toprule
+\multirow{2}{*}{方法} & \multicolumn{3}{c}{自我修正应用场景} \\
+\cmidrule{2-4}
+ & \makecell{修正错误SQL\\(已知SQL错了)} & \makecell{仅当SQL执行\\(出错时修正)} & \makecell{不管对错\\(都尝试修正)} \\
+\midrule
+无自我修正 & 56.52 & 56.62 & 56.52 \\
+\midrule
+\multicolumn{4}{l}{\textbf{无指南的自我修正}} \\
+Self-Debugging    & 57.24 & 56.78 & 56.58 \\
+Self-Consistency  & 58.08 & 56.58 & 57.17 \\
+Multiple-Prompt   & 57.86 & 56.65 & 57.30 \\
+\midrule
+\multicolumn{4}{l}{\textbf{带指南的自我修正}} \\
+Human Expert G (MAC-SQL) & 56.60 & 56.58 & 46.14 \\
+Human Expert G (DIN-SQL) & 57.76 & 56.98 & 55.80 \\
+\textbf{MAGIC G (Ours)}  & \textbf{59.13} & \textbf{57.32} & \textbf{58.55} \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\begin{table}[htbp]
+\centering
+\caption{Spider数据集执行准确率（\%）——数值越高越好}
+\label{tab:spider}
+\begin{tabular}{lc}
+\toprule
+方法 & EX \\
+\midrule
+无自我修正 & 78.62 \\
+Self-Consistency & 81.64 \\
+Multiple-Prompt & 80.22 \\
+Human's G (MAC-SQL) & 81.15 \\
+Human's G (DIN-SQL) & 80.35 \\
+\textbf{MAGIC's G (Ours)} & \textbf{85.66} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+MAGIC生成的指南在两个数据集上均优于所有基线。注意：在“修正所有SQL”场景中，MAC-SQL的人类指南反而降低了准确率（从56.52降到46.14），因为盲目修正可能把对的改错。这说明指南质量至关重要。另外，初始系统中只有46个SQL执行出错，所以“修正执行错误的SQL”场景下提升空间有限。
+
+\subsection{RQ2：反馈数量的影响}
+
+\begin{table}[htbp]
+\centering
+\caption{使用不同数量的反馈批次生成指南的效果（BIRD）}
+\label{tab:batches}
+\begin{tabular}{lccccc}
+\toprule
+累积反馈批次数 & 0 & 1 & 5 & 10 & 39（全部） \\
+\midrule
+执行准确率EX（\%） & 56.52 & 57.4 & 58.8 & 59.13 & 59.13 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+聚合10个批次（100条反馈）后，MAGIC生成的指南已优于人类编写的指南，继续增加反馈不再提升效果。这表明100条反馈足以覆盖常见错误模式。
+
+\subsection{RQ3：管理者智能体的作用}
+
+管理者智能体负责协调、存储反馈并修订指令。实验对比了有无管理者的效果。无管理者时，只有反馈和修正智能体直接循环（类似批评-精炼），不生成指南。
+
+\begin{table}[htbp]
+\centering
+\caption{管理者智能体对修正效果的影响（训练集）}
+\label{tab:manager}
+\begin{tabular}{lcccccc}
+\toprule
+\multirow{2}{*}{设置} & \multicolumn{3}{c}{BIRD} & \multicolumn{2}{c}{Spider} \\
+\cmidrule{2-6}
+ & EX↑ & VES↑ & 平均迭代次数↓ & EX↑ & 平均迭代次数↓ \\
+\midrule
+\multicolumn{6}{l}{\textbf{最大迭代次数=2}} \\
+无管理者 & 73.01 & 68.29 & 1.17 & 81.40 & 1.11 \\
+有管理者 & 78.94 & 80.22 & 1.12 & 86.52 & 1.05 \\
+\midrule
+\multicolumn{6}{l}{\textbf{最大迭代次数=5}} \\
+无管理者 & 78.60 & 79.58 & 2.87 & 83.28 & 2.22 \\
+有管理者 & 81.81 & 84.19 & 2.41 & 91.78 & 2.15 \\
+\bottomrule
+\end{tabular}\\
+\footnotesize{EX：执行准确率（越高越好）；VES：效率分数（越高越好）；平均迭代次数：修正成功所需的平均循环次数（越少越好）。}
+\end{table}
+
+有管理者时，不仅修正准确率更高，生成的SQL也更高效，且所需迭代次数更少。这是因为管理者会在修订提示时加入优化指令。
+
+\section{讨论}
+
+\subsection{对其他方法的适用性}
+这里将MAGIC生成的指南应用到其他text-to-SQL方法上，看是否也能提升它们的表现。
+
+\begin{table}[htbp]
+\centering
+\caption{MAGIC指南在不同方法上的表现（BIRD开发集）}
+\label{tab:applicability}
+\begin{tabular}{lcc}
+\toprule
+方法 & 原准确率EX（\%） & 加MAGIC指南后EX（\%） \\
+\midrule
+Zero-shot GPT-4 & 40.18 & 48.19 \\
+Few-shot CoT GPT-4 & 45.66 & 50.38 \\
+DIN-SQL & 56.52 & 59.13 \\
+MAC-SQL & 59.39 & 61.92 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+MAGIC的指南能普遍提升各种方法的准确率，说明其具有一定的通用性。
+
+\subsection{指南中示例的来源}
+这里检查了生成指南中的示例是否直接抄自反馈，发现并非如此。管理者智能体会把多条反馈综合起来，创造出新的示例，避免过拟合。
+
+\subsection{数据库分析}
+不同数据库上MAGIC指南的提升幅度不同。有些数据库（如涉及复杂查询的）提升更大，有些则较小。这可能与LLM对特定领域知识的掌握程度有关，提示未来可以针对数据库特点定制指南。
+
+\section{结论}
+
+MAGIC引入了一种新颖的多智能体方法，用于自动生成Text-to-SQL中的自我修正指南。它克服了手动创建指南的局限性，优于人类编写的指南，并改进了强大的小样本方法。这项工作展示了利用LLM生成自身自我修正指南的潜力，并将指南生成确立为一个值得专注研究的重要任务。所有代码已开源。
