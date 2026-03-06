@@ -1,0 +1,2284 @@
+\chapter{双元法与mod法}
+\section{mod法}
+有理分式分解 $\frac{P(x)}{A(x)B(x)}$ 的核心目的只有一个：把它拆成 $\frac{U(x)}{A(x)} + \frac{V(x)}{B(x)}$。我们通分一下，等价于求解一个多项式方程：$$ U(x)B(x) + V(x)A(x) = P(x) $$
+如果在等式两边对 $A(x)$ 取模（也就是令 $A(x)=0$），那么 $V(x)A(x)$ 这一项就消失了，式子变成了：
+$$ U(x)B(x) \equiv P(x) \pmod{A(x)} $$
+进而在模 $A(x)$ 的意义下，除以 $B(x)$，得到：
+$$ U(x) \equiv P(x) \cdot \color{blue}{B^{-1}(x)} \pmod{A(x)} $$
+问题转化为求 $B(x)$ 在模 $A(x)$ 下的“乘法逆元” $B^{-1}(x)$（也就是多项式的倒数）。
+抛开一切特例，所有的有理分式分解，在代数结构上只需要这3法就够了
+\begin{itemize}
+\item 扩展欧几里得算法:只要 $A(x)$ 和 $B(x)$ 没有公因式，根据裴蜀定理，必然存在多项式 $u(x)$ 和 $v(x)$，使得 $\mathbf{u(x)A(x) + v(x)B(x) = 1}$。
+\item 多项式的 $p(x)$ 进制展开:遇到重因式 $(x^2+1)^2$ 怎么办？绝不要搞“加减mod式”。它的本质就和把十进制数字转成二进制一样——只要把分子连续除以底座 $(x^2+1)$ 取余数，就能像剥洋葱一样把它完美拆解！
+\item 二项式升幂法:遇到最恶心的混合重因式 $A^m B^n$，只需找到一次方的裴蜀等式，然后两边直接求 $(m+n-1)$ 次方展开。
+\end{itemize}
+比如要分解$\frac{x+2}{(x^2+2x+2)(x^2+1)}$ ，设大分母 $A = x^2+2x+2$，小分母 $B = x^2+1$。我们要求它们组合出 1。先大除以小（辗转相除）：\[A \div B = 1 \dots \text{余数} (2x+1)\implies A \equiv 2x+1 \pmod{x^2+1}\]
+然后用除数$B$除以余式$2x+1$，由于后者是一次式，所以直接带入$2x+1=0$的根$x=-\frac12$可得余数$\left(-\frac12\right)^2+1=\frac54$，然后直接用大除法得到$\frac{x^2+1-\frac54}{2x+1}=\frac{2x-1}{4}$，所以商是 $\frac{2x-1}{4}$，余数是 $\frac{5}{4}$，写成等式：$B - (2x+1)(\frac{2x-1}{4}) = \frac{5}{4}$。又因为$2x+1$是$A\div B$的余数（商为1），所以有$2x+1=A-B$代入就有：\[\frac{5}{4} = B - (A - B)\left(\frac{2x-1}{4}\right)\Leftrightarrow\frac{5}{4} = B\left(\frac{2x+3}{4}\right) - A\left(\frac{2x-1}{4}\right)\]
+两边同乘 $\frac{4}{5}$ 创造出常数 $1$（方便进行1的代换）：$$ \mathbf{1 = B \left(\frac{2x+3}{5}\right) + A \left(\frac{1-2x}{5}\right)} $$
+所以原式可以如下分解：
+\begin{align*}
+\frac{x+2}{AB}=&\frac{(x+2)\left( B \left(\frac{2x+3}{5}\right) + A \left(\frac{1-2x}{5}\right)\right)}{AB}= \frac{-2x^2-3x+2}{5(x^2+1)} + \frac{2x^2+7x+6}{5(x^2+2x+2)}\\
+=&{-\frac{2}{5}} + \frac{4-3x}{5(x^2+1)}+ {\frac{2}{5}} + \frac{3x+2}{5(x^2+2x+2)}\\
+=&\frac{4-3x}{5(x^2+1)}+ \frac{3x+2}{5(x^2+2x+2)}
+\end{align*}
+再比如提取 $\frac{x^3+3x}{(x^2+1)^2}$，可以这样：
+\begin{align*}
+\frac{x(x^2+1) + 2x}{(x^2+1)^2} = \mathbf{\frac{x}{x^2+1} + \frac{2x}{(x^2+1)^2}} 
+\end{align*}
+再比如分解 $\frac{1}{(x-1)^2(x^2+1)^2}$，可以设 $A = x-1, B = x^2+1$。
+一眼看出它们的一次关系：$B - A(x+1) = (x^2+1) - (x^2-1) = 2$两边除以 2，得到底层裴蜀等式： $\mathbf{\frac{1}{2}B - \frac{x+1}{2}A = 1}$，然后进行二项式升幂（魔法发生的地方）因为题目分母是 $A^2 B^2$，指数之和减一是 $2+2-1 = 3$，把上面的等式两边直接三次方：$$ 1^3 = \left(\frac{1}{2}B - \frac{x+1}{2}A\right)^3 $$
+用初中公式 $(a-b)^3 = a^3 - 3a^2b + 3ab^2 - b^3$ 展开：$$ 1 = \frac{1}{8}B^3 - \frac{3(x+1)}{8}B^2 A + \frac{3(x+1)^2}{8}B A^2 - \frac{(x+1)^3}{8}A^3 $$
+按 $B^2$ 和 $A^2$ 提取公因式分组：
+$$ 1 = B^2 \underbrace{\left[ \frac{1}{8}B - \frac{3(x+1)}{8}A \right]}_{\text{这是} A^2 \text{的分子} U(x)} + A^2 \underbrace{\left[ \frac{3(x+1)^2}{8}B - \frac{(x+1)^3}{8}A \right]}_{\text{这是} B^2\text{ 的分子} V(x)} $$
+化简一下括号里的一次式：$U(x) = \frac{2-x^2}{4}$， $V(x) = \frac{x^4+2x^3+3x^2+4x+2}{4}$。两边同除以 $A^2 B^2$，原式已经裂开了：$\frac{1}{A^2 B^2} = \frac{U(x)}{A^2} + \frac{V(x)}{B^2}$。把它们除以各自的分母化为真分式：
+\begin{align*}
+U(x) \div (x-1)^2 &\implies \frac{2-x^2}{4} = \color{blue}{-\frac{1}{4}(x-1)^2} + \frac{3-2x}{4}\\
+V(x) \div (x^2+1)^2 &\implies \frac{x^4+2x^3+3x^2+4x+2}{4} = \color{blue}{\frac{1}{4}(x^2+1)^2} + \frac{2x^3+x^2+4x+1}{4}
+\end{align*}
+多项式部分 $-\frac{1}{4}$ 和 $+\frac{1}{4}$ 再次完美抵消！最终结果：$$ \mathbf{\frac{3-2x}{4(x-1)^2} + \frac{2x^3+x^2+4x+1}{4(x^2+1)^2}} $$
+\begin{example}{分解$\frac{2x^2 + 3}{(x-1)(x^2+x+1)}$}{}
+    分解 $\displaystyle F(x) = \frac{2x^2 + 3}{(x-1)(x^2+x+1)}$
+\end{example}
+\begin{solution}
+设小底座 $B = x-1$，大底座 $A = x^2+x+1$。大除以小：$$ x^2+x+1 = (x-1)(x+2) + 3 $$移项，让常数余数留在单侧：$3 = A - (x+2)B$。两边同除以 3：$$ \mathbf{1 = \frac{1}{3}A - \frac{x+2}{3}B} $$
+分子是 $P(x) = 2x^2+3$。将上面的 1 乘以分子 $P$，并除以总分母 $AB$：
+\begin{align*}
+\frac{P}{AB} &= \frac{P \cdot (\frac{1}{3}A - \frac{x+2}{3}B)}{AB} = \frac{P/3}{B} - \frac{P(x+2)/3}{A}\\
+&= \frac{2x^2+3}{3(x-1)}+\frac{-2x^3-4x^2-3x-6}{3(x^2+x+1)}\\
+&=\mathbf{\color{blue}{\frac{2x+2}{3}}} + \frac{5}{3(x-1)}+\mathbf{\color{blue}{\frac{-2x-2}{3}}} + \frac{-x+4}{3(x^2+x+1)}\\
+&=\frac{5}{3(x-1)} + \frac{4-x}{3(x^2+x+1)}
+\end{align*}
+\end{solution}
+
+\begin{example}{分解$\frac{x^5}{(x^2+1)^3}$}{}
+分解 $\displaystyle F(x) = \frac{x^5}{(x^2+1)^3}$
+\end{example}
+\begin{solution}
+令底座 $t = x^2+1$，那么核心关系就是 ${x^2 = t-1}$。把分子 $x^5$ 写成 $t$ 的多项式：$$ x^5 = x \cdot (x^2)^2 = x(t-1)^2 = x(t^2 - 2t + 1) = \mathbf{x \cdot t^2 - 2x \cdot t + x} $$
+把 $t$ 换回 $(x^2+1)$：$$ \text{分子} = x(x^2+1)^2 - 2x(x^2+1) + x $$放回原式，连同分母 $(x^2+1)^3$ 一起除开，直接顺水推舟，项项约分：$$ \mathbf{\frac{x}{x^2+1} - \frac{2x}{(x^2+1)^2} + \frac{x}{(x^2+1)^3}} $$
+\end{solution}
+
+\begin{example}{分解$\frac{x}{(x-1)^2(x+1)^2}$}{}
+分解 $\displaystyle F(x) = \frac{x}{(x-1)^2(x+1)^2}$
+\end{example}
+\begin{solution}
+设 $A = x+1$，$B = x-1$。分母是 $A^2 B^2$。一眼看出它俩相差 2：$A - B = 2 \implies \mathbf{1 = \frac{1}{2}A - \frac{1}{2}B}$
+目标是分家 $A^2$ 和 $B^2$，总指数是 $2+2=4$。只需升到 $4-1 = \mathbf{3}$ 次方，两边同时立方：$$ 1^3 = \left(\frac{1}{2}A - \frac{1}{2}B\right)^3 = \frac{1}{8}(A^3 - 3A^2B + 3AB^2 - B^3) $$把含有 $A^2$ 的项抱团，含有 $B^2$ 的项抱团，提取公因式：$$ 1 = \mathbf{A^2} \left[ \frac{A - 3B}{8} \right] + \mathbf{B^2} \left[ \frac{3A - B}{8} \right] $$把 $A=x+1, B=x-1$ 代回括号化简：$(A-3B)/8 = ((x+1) - 3(x-1))/8 = \mathbf{(2-x)/4}$$(3A-B)/8 = (3(x+1) - (x-1))/8 = \mathbf{(x+2)/4}$，我们得到：$$ \mathbf{1 = A^2 \left( \frac{2-x}{4} \right) + B^2 \left( \frac{x+2}{4} \right)} $$
+原式 $= \frac{x}{A^2 B^2} \times \mathbf{1}$，把上面的等式乘进去并约分：$$ \frac{x(2-x)}{4 B^2} + \frac{x(x+2)}{4 A^2} = \frac{2x-x^2}{4(x-1)^2} + \frac{x^2+2x}{4(x+1)^2} $$分子次数等于分母（2次），我们需要化为真分式：左边：$2x-x^2 = -(x-1)^2 + 1 \implies \mathbf{\color{blue}{-\frac{1}{4}}} + \frac{1}{4(x-1)^2}$右边：$x^2+2x = (x+1)^2 - 1 \implies \mathbf{\color{blue}{\frac{1}{4}}} - \frac{1}{4(x+1)^2}$常数 $\color{blue}{-\frac{1}{4}}$ 和 $\color{blue}{+\frac{1}{4}}$ 又双叒叕归零了！绝美答案掉落：$$ \mathbf{\frac{1}{4(x-1)^2} - \frac{1}{4(x+1)^2}} $$
+\end{solution}
+
+\begin{example}{分解$\frac{x^2}{(x^2+1)^2(x^2+x+1)}$}{}
+    分解 $\displaystyle F(x) = \frac{x^2}{(x^2+1)^2(x^2+x+1)}$
+\end{example}
+\begin{solution}
+设 $B = x^2+1$（平方底座），$A = x^2+x+1$（一次底座）。先大除以小：
+\[A \div B\implies (x^2+x+1) = 1 \cdot (x^2+1) + x \implies \mathbf{x = A - B}\]
+除数除以余数：\[B \div x\implies(x^2+1) \div x = x \cdots 1 \implies 1 = B - x \cdot x\]
+把第一步的余数 $x=(A-B)$ 代入到第二步（只能代入余数）得到1的代换：
+$$ 1 = B - x\cdot (A - B) = B - xA + xB = \mathbf{(x+1)B - xA} $$
+分母是 $B^2 A^1$，总指数 $2+1=3$。升 $3-1 = \mathbf{2}$ 次方（平方）：
+$$ 1^2 = [ (x+1)B - xA ]^2 = (x+1)^2 B^2 - 2x(x+1)AB + x^2A^2 $$
+分组归类（包含 $B^2$ 的一组，包含 $A^1$ 的一组）：
+$$ 1 = \mathbf{B^2} \left[ (x+1)^2 \right] + \mathbf{A} \left[ -2x(x+1)B + x^2 A \right] $$
+代入化简得
+$$ \mathbf{1 = B^2(x+1)^2 + A(-x^4-x^3-x^2-2x)} $$于是
+$$ \frac{x^2 \cdot \mathbf{1}}{AB^2} = \frac{x^4+2x^3+x^2}{A} + \frac{-x^6-x^5-x^4-2x^3}{B^2} $$两边大除法：左侧除以 $A=(x^2+x+1)$：商是 $\mathbf{\color{blue}{x^2+x-1}}$，余数是 $1$。右侧除以 $B^2=(x^4+2x^2+1)$：商是 $\mathbf{\color{blue}{-x^2-x+1}}$，余数是 $-x^2+x-1$。商式多项式相加：$(x^2+x-1) + (-x^2-x+1) = \mathbf{0}$抵消，此时裂项完成： $\frac{1}{x^2+x+1} + \frac{-x^2+x-1}{(x^2+1)^2}$。右边的真分式 $\frac{-x^2+x-1}{(x^2+1)^2}$ 分子还可以继续拆，把分子改写为以 $(x^2+1)$ 为基底的进制：$-x^2+x-1 = -1(x^2+1) + x$除以 $(x^2+1)^2$ 得到：$\frac{-(x^2+1)+x}{(x^2+1)^2} = \frac{-1}{x^2+1} + \frac{x}{(x^2+1)^2}$。答案合并：$$ \mathbf{\frac{1}{x^2+x+1} - \frac{1}{x^2+1} + \frac{x}{(x^2+1)^2}} $$
+\end{solution}
+
+\begin{example}{$F(x) = \frac{1}{x(x-1)(x^2+1)}$型}{}
+分解 $\displaystyle F(x) = \frac{1}{x(x-1)(x^2+1)}$
+\end{example}
+\begin{solution}
+我们要拆分 $\frac{1}{x \cdot (x-1)(x^2+1)}$。强行分为两组：小底座 $A = x$，大底座 $M = (x-1)(x^2+1) = \mathbf{x^3 - x^2 + x - 1}$。
+大底座除以小底座：\[M \div A\implies (x^3 - x^2 + x - 1) \div x \implies \text{商是 } x^2-x+1\text{，余数是 } \mathbf{-1}\]
+写成等式：$M = A(x^2-x+1) - 1$移项，得到 1的代换：$$ \mathbf{1 = A(x^2-x+1) - M} $$
+这里原分式的分子是 1。把上面的等式代入分子的位置，并除以总分母 $A \cdot M$：$$ \frac{1}{AM} = \frac{A(x^2-x+1) - M}{AM} = \mathbf{\frac{x^2-x+1}{M} - \frac{1}{A}} $$看！第一刀完美切下！ 我们毫不费力地把 $-\frac{1}{x}$ 剥离了出去，现在我们需要对付：$\mathbf{\frac{x^2-x+1}{(x-1)(x^2+1)}}$。
+此时新的分子 $P = x^2-x+1$。分母又变回了双因式：底座 $B = x^2+1$ 和 $C = x-1$。
+大底座 $B$ 除以小底座 $C$：$(x^2+1) \div (x-1)$商是 $x+1$，余数是 $2$。列出等式：$B = C(x+1) + 2 \implies \mathbf{2 = B - C(x+1)}$两边除以 2得到1的代换：$$ \mathbf{1 = \frac{1}{2}B - \frac{x+1}{2}C} $$
+把这个 1 乘以分子 $P$，并除以联合分母 $B \cdot C$：
+\begin{align*}
+\frac{P \cdot 1}{B \cdot C} =& \frac{P(\frac{1}{2}B - \frac{x+1}{2}C)}{B \cdot C} = \mathbf{\frac{P/2}{C} - \frac{P(x+1)/2}{B}}\\
+=&\frac{x^2-x+1}{2(x-1)}+\frac{-x^3-1}{2(x^2+1)}\\
+=&{\frac{x}{2}} + \frac{1}{2(x-1)}{-\frac{x}{2}} + \frac{x-1}{2(x^2+1)}\\
+=&\mathbf{\frac{1}{2(x-1)} + \frac{x-1}{2(x^2+1)}}
+\end{align*} 
+综述上，分解为：$$ F(x) = -\frac{1}{x} + \frac{1}{2(x-1)} + \frac{x-1}{2(x^2+1)} $$
+\end{solution}
+
+
+\begin{example}{$\frac{x^3}{(x-1)(x+1)(x^2+x+1)}$型}{}
+    分解 $\displaystyle F(x) = \frac{x^3}{(x-1)(x+1)(x^2+x+1)}$
+\end{example}
+\begin{solution}
+们先把 $(x-1)$ 和 $(x+1)$ 瞬间剥离！掩住它，把 $x=1$ 代入剩下部分：分子 $1^3 = 1$；分母 $(1+1)(1+1+1) = 6$。第一块碎片掉落：$\mathbf{\color{blue}{\frac{1/6}{x-1}}}$把 $x=-1$ 代入剩下部分：分子 $(-1)^3 = -1$；分母 $(-1-1)(1-1+1) = -2$。第二块碎片掉落：$\mathbf{\color{blue}{\frac{1/2}{x+1}}}$(这两步全靠心算，五秒钟解决！)
+现在，全场只剩最后那个复杂大 Boss $(x^2+x+1)$ 了。我们需要对它用“辗转相除法”吗？根本不需要！ 原式减去刚才那两块碎片，剩下的残骸天然就是它的！先把两块碎片合体（方便相减）：$\displaystyle \frac{1}{6(x-1)} + \frac{3}{6(x+1)} = \frac{4x-2}{6(x^2-1)} = \mathbf{\frac{2x-1}{3(x^2-1)}}$拿原式减掉它：$$ \text{残骸} = \frac{x^3}{(x^2-1)(x^2+x+1)} - \frac{2x-1}{3(x^2-1)} $$通分，只需给右边乘上大 Boss $(x^2+x+1)$：$$ \text{残骸分子} = 3x^3 - (2x-1)(x^2+x+1) = 3x^3 - (2x^3+x^2+x-1) = \mathbf{x^3 - x^2 - x + 1} $$见证魔法的时刻到了！看看刚才说的“物理降维”有没有发生！将残骸分子提取公因式：$x^3 - x^2 - x + 1 = x^2(x-1) - (x-1) = \mathbf{(x^2-1)(x-1)}$。把它放回分式中，和分母的 $(x^2-1)$ 咔嚓一刀，完美抵消！$$ \text{最终残骸} = \frac{(x^2-1)(x-1)}{3(x^2-1)(x^2+x+1)} = \mathbf{\color{red}{\frac{x-1}{3(x^2+x+1)}}} $$全剧终！三块拼图完美集齐：$$ \mathbf{F(x) = \frac{1}{6(x-1)} + \frac{1}{2(x+1)} + \frac{x-1}{3(x^2+x+1)}} $$
+\end{solution}
+
+
+\section{双元法}
+本章省略了常数$C$。
+\subsection{双元微分公式}
+\begin{theorem}{微分公式}{}
+\begin{itemize}
+\item 实圆：$x\dd x+y\dd y=0$；虚圆：$x\dd x=y\dd y$；
+\item 参数微元，实圆：$\frac{\dd x}{y}=-\dd\theta, \quad \frac{\dd y}{x}=\dd\theta$；
+\item 参数微元，虚圆：$\frac{\dd x}{y}=\dd\phi,\quad \frac{\dd y}{x}=\dd\phi$；
+\item 面积2倍的微元，$y\dd x-x\dd y=(x^2\pm y^2)\dd\theta$，注意顺序和微分的顺序一致；
+\item 比值微元，$\dd\left(\frac{x}{y}\right)=\frac{y\dd x-x\dd y}{y^2}$；
+\end{itemize}
+\end{theorem}
+1. 实圆：$x\dd x+y\dd y=0$；虚圆：$x\dd x=y\dd y$；几何解释如下：
+\begin{itemize}
+\item 实圆：瞬时位移向量 $(\dd x, \dd y)$ 必须垂直于位置向量$(x,y)$，二者内积为零
+\item 虚圆：等价于：$\frac{\dd x}{x} = \frac{\dd y}{y}  $，即 $x$ 与 $y$ 的相对变化率（对数微分）必须严格相等。
+\end{itemize}
+2. 参数微元，实圆：$\frac{\dd x}{y}=\frac{\dd y}{x}=-\dd\theta, \quad \frac{\dd y}{x}=\dd\theta$；虚圆：$\frac{\dd x}{y}=\dd\phi,\quad \frac{\dd y}{x}=\dd\phi$；几何解释如下：
+\begin{itemize}
+\item 实圆:$ \dd\theta  $ 是位置向量绕原点逆时针转过的有向小角（数学正方向）。此时指针尖端的位移大小等于弧长 $  a\dd\theta  $，方向正好是 $  \vec{r}  $ 逆时针旋转 90° 得到的向量 $  (-y, x)  $，模也是$a$。所以
+\[(\dd x, \dd y)=\dd\theta(-y,x)\]
+\item 虚圆：$\dd\phi$ 是位置向量绕原点逆时针转过的有向小角，此时指针尖端的位移大小等于 $  a\dd\phi  $，方向正好与 $\vec{r}$ 沿$y=x$对称的向量$(y,x)$一致。所以
+\[(\dd x, \dd y)=\dd\theta(y,x)\]
+\end{itemize}
+3. 面积2倍的微元，利用扇形面积两倍等于半径平方乘以角度（弧度）即得，注意方向。面积微元可以等比例地转化为角度微元，角度微元可以等比例地转化为面积微元。
+\begin{itemize}
+\item $x\dd y-y\dd x=(x^2\pm y^2)\dd\theta$（逆向面积），对应逆时针角度微元$\dd\theta$，即实圆关系的$\frac{\dd y}{x}$，虚圆关系的$\frac{\dd y}{x},\frac{\dd x}y$
+\item $y\dd x-x\dd y=(x^2\pm y^2)(-\dd\theta)$（顺向面积）对应顺时针角度微元$-\dd\theta$，即实圆关系的$\frac{\dd x}{y}$.
+\end{itemize}
+但是这个实际上是不难记忆的，我们实际解题时先无脑补齐分母的$x^2\pm y^2$，然后观察：
+\begin{itemize}
+\item 对于$\frac{x\dd y-y\dd x}{x^2+y^2}$，观察到分子左侧的$x\dd y$和分母的$x^2$，相除就是$\frac{\dd y}{x}$，所以这是$\frac{\dd y}{x},-\frac{\dd x}{y}$的合分比之后的结果。
+\item 对于$\frac{y\dd x-x\dd y}{x^2+y^2}$，观察到分子左侧的$y\dd x$和分母的$y^2$（无关哪一侧，加法满足交换律），相除就是$\frac{\dd x}{y}$，所以这是$\frac{\dd x}{y},-\frac{\dd y}{x}$的合分比之后的结果。
+\item 对于$\frac{x\dd y-y\dd x}{x^2-y^2}$，观察到分子左侧的$x\dd y$和分母的$x^2$，相除就是$\frac{\dd y}{x}$，所以这是$\frac{\dd y}{x},\frac{\dd x}{y}$的合分比之后的结果。
+\item 对于$\frac{y\dd x-x\dd y}{x^2-y^2}$，观察到分子左侧的$y\dd x$和分母的$-y^2$，相除就是$-\frac{\dd x}{y}$，所以这是$-\frac{\dd x}{y},-\frac{\dd y}{x}$的合分比之后的结果。
+\end{itemize}
+4. 比值微元，$\dd\left(\frac{x}{y}\right)=\frac{y\dd x-x\dd y}{y^2}$；这个式子经常反过来用作积分降次。它并非死板的代数商法则，它背后的几何图景极其优美——\textbf{中心投影与面积的相似缩放}：
+\begin{itemize}
+\item \textbf{比值即投影坐标：} 比值 $\frac{x}{y}$ 在几何上代表什么？想象平面上有一条高度归一化的水平参考线 $y=1$。将原点与动点 $P(x,y)$ 连成一条射线，交该辅助线于投影点 $P'$。根据相似三角形可知，投影点 $P'$ 的坐标恰为 $\left(\frac{x}{y}, 1\right)$。也就是说，比值 $\frac{x}{y}$ 本质上是动点向 $y=1$ 直线作中心投影后的\textbf{横坐标}。
+\item \textbf{投影扫过的面积：} 当投影点 $P'$ 在直线上发生纯水平的微小位移 $\dd\left(\frac{x}{y}\right)$ 时，它绕原点构成的微小投影三角形，底为 $\dd\left(\frac{x}{y}\right)$，高恒为 1。用二维外积计算其逆时针 2 倍有向面积，恰为横纵交叉相乘：$\frac{x}{y}\cdot 0 - 1\cdot\dd\left(\frac{x}{y}\right) = -\dd\left(\frac{x}{y}\right)$。
+\item \textbf{相似缩放原理：} 实际动点 $P(x,y)$ 和投影点 $P'$ 始终在同一条射线上，两者的向径距离缩放比例刚好是纵坐标之比（$y$ 倍）。根据平面几何基本定理\textbf{“相似图形的面积比等于相似比的平方”}，实际动点扫过的面积必定等于投影点扫过面积的 $y^2$ 倍！
+\item \textbf{公式瞬间推导：} \textbf{实际的 2 倍面积} $= y^2 \times$ \textbf{投影的 2 倍面积}。即：
+\[ x\dd y - y\dd x = y^2 \left[ -\dd\left(\frac{x}{y}\right) \right] \]
+将负号放进括号并移项，瞬间即可得到 $\dd\left(\frac{x}{y}\right)=\frac{y\dd x-x\dd y}{y^2}$。
+\end{itemize}
+
+\subsection{双元积分公式}
+\begin{theorem}{$\int\frac{\dd x}{y}$型}{}
+\begin{itemize}
+    \item 实圆：$\int\frac{\dd x}{y}=\arctan\frac{x}{y}$；
+    \item 虚圆：$\int \frac{\dd x}{y}=\ln(x+y)$.
+\end{itemize}
+\end{theorem}
+对于虚圆 \(x^2 - y^2 = 1\)（或一般常数），参数方程可写为 \(x = \cosh \phi\)，\(y = \sinh \phi\)，那么：
+\[
+x + y = \cosh \phi + \sinh \phi = e^\phi,\quad\phi = \ln(x + y).
+\]
+而微分 \(\frac{\dd x}{y} = \dd\phi\)（因为 \(\dd x = \sinh \phi \, \dd\phi = y \, \dd\phi\)），因此
+\[
+\int \frac{dx}{y} = \phi + C = \ln(x + y) + C.
+\]
+在双曲线上，\(\phi\) 是“双曲角度”（类似圆中的角度），而 \(x+y\) 恰好是双曲线上的一个自然指数坐标，其对数就是双曲角。想象双曲线 \(x^2 - y^2 = 1\)，它由两支组成，通常考虑右支。对于右支上的点，\(x > 0\)，且 \(x+y > 0\)，随着 \(\phi\) 增大，点沿双曲线向右上方移动，\(x+y\) 指数增长。所以 \(\ln(x+y)\) 度量了沿双曲线移动的“路程”或“参数增量”。
+
+对于实圆 \(x^2 + y^2 = 1\)，最自然的参数是角度 \(\theta\)，例如取 \(x = \cos\theta\)，\(y = \sin\theta\)。此时积分：
+\[\frac{\dd x}{y} = -\dd \theta\Rightarrow\int \frac{\dd x}{y} = -\theta + C\]
+另一方面，比值 \(\frac{x}{y} = \cot\theta\)，所以
+\[\arctan\frac{x}{y} = \arctan(\cot\theta) = \frac{\pi}{2} - \theta \quad (\text{在适当范围内})\]
+因此\[\int \frac{dx}{y} = \arctan\frac{x}{y} + \left(C - \frac{\pi}{2}\right).\]
+即两者相差常数，所以不定积分公式成立。
+
+\begin{theorem}{$\int \frac{\dd x}{y^3}$型}{}
+\vspace{-15pt}
+\begin{align*}
+\int \frac{\dd x}{y^3} &=\int\frac{1}{y^2}\frac{\dd x}{y}=\int\frac{1}{y^2}\frac{y\dd x-x\dd y}{y^2\pm x^2} =\frac{1}{y^2\pm x^2}\int\frac{y\dd x-x\dd y}{y^2}=\frac{1}{y^2\pm x^2}\int\dd\left(\frac{x}{y}\right)\\
+\int \frac{\dd x}{xy^2}&=\int\frac1{xy}\frac{\dd x}{y}=\int\frac1{xy}\frac{y\dd x-x\dd y}{y^2\pm x^2}=\frac{1}{y^2\pm x^2}\int\left(\frac{\dd x}{x}-\frac{\dd y}{y}\right)\\
+\int \frac{\dd x}{x^2y}&=\int\frac{1}{x^2}\frac{\dd x}{y}=\int\frac{1}{x^2}\frac{y\dd x-x\dd y}{y^2\pm x^2}=\frac{-1}{y^2\pm x^2}\int\dd\left(\frac{y}{x}\right)
+\end{align*}
+\end{theorem}
+精髓在于发现直接使用第一组公式不行，然后用微分公式转化。
+\begin{theorem}{$\int x\dd y$型}{}
+\vspace{-15pt}
+\begin{align*}
+\int x\dd y&=\int\frac12\left(x\dd y+y\dd x+x\dd y-y\dd x\right)=\frac12\int\dd(xy)+\frac{x^2\pm y^2}2\int\dd\frac{x}{y}\\
+\int y\dd x&=\int\frac12\left(y\dd x+x\dd y+y\dd x-x\dd y\right)=\frac12\int\dd(xy)+\frac{x^2\pm y^2}2\int\dd\frac{y}{x}
+\end{align*}
+\end{theorem}
+重点在于拆开分成两组，然后分别凑微分。
+\begin{theorem}{$\int\frac{x\dd y}{y}$型}{}
+\vspace{-15pt}
+\begin{align*}
+\int \frac{\dd x}{xy}&=\frac{1}{C}\int\frac{x^2\pm y^2}{xy}\dd x=\frac1{C}\left(\int\frac{x\dd x}{y}\pm \int\frac{y\dd x}{x}\right)\\
+\int\frac{x\dd y}{y}&=\int\frac{xy\dd y}{y^2}
+\end{align*}
+之后把 $y\dd y$和分母的$y^2$换掉，变成单元。
+\end{theorem}
+
+\begin{theorem}{$\int\dfrac{\dd x}{y^{2n}}$型}{}
+负偶数次幂，用“常数代换+微分代换+分部积分”进行降次。
+\end{theorem}
+举个例子：
+\begin{align*}
+\int\dfrac{\dd x}{y^4}&=\frac{1}{C}\int\frac{x^2\pm y^2}{y^4}\dd x=\frac{1}{C}\left(\int\frac{x^2\dd x}{y^4}\pm\int\frac{\dd x}{y^2}\right)\\
+&=\begin{cases}\frac{1}{C}\left(\int\frac{xy\dd y}{y^4}\pm\int\frac{\dd x}{y^2}\right)=\frac{1}{C}\left(\int\frac{x\dd y}{y^3}\pm\int\frac{\dd x}{y^2}\right)\\\frac{1}{C}\left(\int\frac{-xy\dd y}{y^4}\pm\int\frac{\dd x}{y^2}\right)=\frac{1}{C}\left(\int\frac{-x\dd y}{y^3}\pm\int\frac{\dd x}{y^2}\right)\end{cases}
+\end{align*}
+然后，对于$\displaystyle\int\frac{x\dd y}{y^3}$这种类型的，采用分部积分
+\begin{align*}
+    \int\frac{x\dd y}{y^3}&=\int x\dd\left(\frac1{-2}\frac{1}{y^2}\right)=-\frac12\int x\dd\left(\frac{1}{y^2}\right)\\
+    &=-\frac12\frac{x}{y^2}+\frac12\int\frac{\dd x}{y^2}\\
+\end{align*}
+分母次数更加高的也是循环这样的流程进行。
+
+\begin{theorem}{$\int y^{2n-1}\dd x$型}{}
+\vspace{-15pt}
+\begin{align*}
+\int \frac{\dd x}{y}&=\int \frac{\dd x}{y}\\
+\int y\dd x&=\frac12 xy+\frac121\int \frac{\dd x}{y}\\
+\int y^3\dd x&=\frac14 xy^3+\frac14\frac32 xy+\frac14\frac321\int\frac{\dd x}{y}\\
+\int y^5\dd x&=\frac16 xy^5+\frac16\frac54 xy^3+\frac16\frac54\frac32 xy +\frac16\frac54\frac321\int\frac{\dd x}{y}\\
+\int y^7\dd x&=\frac18 xy^7+\frac18\frac76 xy^5+\frac18\frac76\frac54 xy^3+\frac18\frac76\frac54\frac32 xy +\frac18\frac76\frac54\frac321\int\frac{\dd x}{y}
+\end{align*}
+找规律填数字
+\begin{align*}\int y^{2n-1}\mathrm{d}x&\begin{aligned}=\sum_{k=0}^{n-1}\frac{(2n-1)!!\left(2n-2k-2\right)!!}{(2n)!!\left(2n-2k-1\right)!!}\left(y^2\pm x^2\right)^kxy^{2n-1-2k}\end{aligned}\\&\begin{aligned}+\frac{(2n-1)!!}{(2n)!!}\left(y^2\pm x^2\right)^n\int\frac{\mathrm{d}x}{y}\end{aligned}\end{align*}
+\end{theorem}
+设双元底座常数为 $C = y^2 \pm x^2$。
+对该底座关系两边同时求微分，可得到极其对称的双元微分约束：
+$$ 2y \dd y \pm 2x \dd x = 0 \implies \mathbf{y \dd y = \mp x \dd x} $$
+同时，我们将底座关系移项，得到关于 $x^2$ 的代换式：
+$$ \mathbf{\mp x^2 = y^2 - C} $$
+
+现设我们需要降次的目标积分为 $\displaystyle I_n = \int y^{2n-1} \dd x$（其中 $n \ge 1$）。
+
+\textbf{第一步：分部积分。}
+我们将 $y^{2n-1}$ 视为 $1 \cdot y^{2n-1}$ 进行分部积分（抽出一个 $x$）：
+\begin{align*}
+I_n &= \int y^{2n-1} \dd x = x y^{2n-1} - \int x \dd\left(y^{2n-1}\right) \\
+&= x y^{2n-1} - (2n-1) \int x y^{2n-2} \dd y 
+\end{align*}
+
+\textbf{第二步：微元交换与代数降次。}
+见证魔法的时刻到了！我们将积分号里的 $x y^{2n-2} \dd y$ 强行拆解，把 $\dd y$ 与 $y$ 结合，并用前面推导出的微分关系 $\mathbf{y \dd y = \mp x \dd x}$ 替换：
+\begin{align*}
+\int x y^{2n-2} \dd y &= \int x y^{2n-3} (y \dd y) \\
+&= \int x y^{2n-3} (\mp x \dd x) \\
+&= \int y^{2n-3} (\mp x^2) \dd x
+\end{align*}
+此时，再利用底座代换式 $\mp x^2 = y^2 - C$ 彻底消去 $x^2$：
+\begin{align*}
+\int y^{2n-3} (\mp x^2) \dd x &= \int y^{2n-3} (y^2 - C) \dd x \\
+&= \int y^{2n-1} \dd x - C \int y^{2n-3} \dd x \\
+&= \mathbf{I_n - C I_{n-1}}
+\end{align*}
+
+\textbf{第三步：建立递推关系。}
+将这个绝妙的降次结果代回第一步的分部积分等式中：
+\begin{align*}
+I_n &= x y^{2n-1} - (2n-1) \big( I_n - C I_{n-1} \big) \\
+I_n &= x y^{2n-1} - (2n-1)I_n + (2n-1)C I_{n-1}
+\end{align*}
+将带有 $I_n$ 的项统统移项合并至左侧：
+\begin{align*}
+2n I_n &= x y^{2n-1} + (2n-1)C I_{n-1} \\
+\implies \mathbf{I_n} &\mathbf{= \frac{1}{2n} x y^{2n-1} + \frac{2n-1}{2n} C I_{n-1}}
+\end{align*}
+至此，我们得到了极其优美的\textbf{双元降次递推公式}！
+
+\textbf{第四步：递推展开（通项化）与引入双阶乘。}
+我们将递推式像剥洋葱一样层层向下展开：
+\begin{align*}
+I_n &= \frac{1}{2n} x y^{2n-1} + \frac{2n-1}{2n} C \left( \frac{1}{2n-2} x y^{2n-3} + \frac{2n-3}{2n-2} C I_{n-2} \right) \\
+&= \frac{1}{2n} x y^{2n-1} + \frac{2n-1}{2n(2n-2)} C x y^{2n-3} + \frac{(2n-1)(2n-3)}{2n(2n-2)} C^2 I_{n-2} \\
+&= \dots
+\end{align*}
+观察第 $k$ 次降次（$k=0, 1, \dots, n-1$）产生的多项式项的系数规律。其分子是由奇数组成的连乘，分母是由偶数组成的连乘：
+$$ \text{第 } k \text{ 项系数} = \frac{(2n-1)(2n-3)\cdots(2n-2k+1)}{(2n)(2n-2)\cdots(2n-2k)} $$
+为了将其写成双阶乘（$!!$）形式，我们在分子和分母同乘所需补齐的“尾巴”：
+\begin{itemize}
+    \item 分子补齐：$\displaystyle (2n-1)(2n-3)\cdots(2n-2k+1) = \frac{(2n-1)!!}{\mathbf{(2n-2k-1)!!}} $
+    \item 分母补齐：$\displaystyle (2n)(2n-2)\cdots(2n-2k) = \frac{(2n)!!}{\mathbf{(2n-2k-2)!!}} $
+\end{itemize}
+两者相除，第 $k$ 项的系数被完美压缩为：
+$$ \mathbf{\frac{(2n-1)!!(2n-2k-2)!!}{(2n)!!(2n-2k-1)!!}} $$
+对应的代数项为 $C^k x y^{2n-1-2k}$，将 $C$ 替换回 $y^2 \pm x^2$，即 $\mathbf{\left(y^2 \pm x^2\right)^k x y^{2n-1-2k}}$。
+
+\textbf{第五步：收尾。}
+当降次进行到底层 $k=n$ 时，代数项剥离完毕，剩下的是最底层的积分项 $I_0 = \int y^{-1} \dd x = \int \frac{\dd x}{y}$。
+此时，它前面累积的系数正是将所有分子奇数和分母偶数连乘到底：
+$$ \frac{(2n-1)(2n-3)\cdots 1}{(2n)(2n-2)\cdots 2} = \mathbf{\frac{(2n-1)!!}{(2n)!!}} $$
+并伴随着底层常数 $C^n = \left(y^2 \pm x^2\right)^n$。
+
+最后，将所有展开的代数项碎片与最底层的积分项相加，我们便严丝合缝地得到了终极的点火公式：
+\begin{align*}
+\int y^{2n-1}\mathrm{d}x =& \sum_{k=0}^{n-1}\frac{(2n-1)!!\left(2n-2k-2\right)!!}{(2n)!!\left(2n-2k-1\right)!!}\left(y^2\pm x^2\right)^k x y^{2n-1-2k} \\
+&+ \frac{(2n-1)!!}{(2n)!!}\left(y^2\pm x^2\right)^n\int\frac{\mathrm{d}x}{y}
+\end{align*}
+
+\begin{theorem}{$\int\sec^n x\mathrm{d}x$型}{}
+\vspace{-15pt}
+\begin{align*}&\int\sec x\mathrm{d}x=1\ln|\sec x+\tan x|\\&\int\sec^{3}x\mathrm{d}x=\frac{1}{2}\tan x\sec x+\frac{1}{2}1\ln|\sec x+\tan x|\\&\int\sec^{5}x\mathrm{d}x=\frac{1}{4}\tan x\sec^{3}x+\frac{1}{4}\frac{3}{2}\tan x\sec x+\frac{1}{2}\frac{3}{2}1\ln|\sec x+\tan x|\\&\int\sec^{7}x\mathrm{d}x=\frac{1}{6}\tan x\sec^{5}x+\frac{1}{6}\frac{5}{4}\tan x\sec^{3}x+\frac{1}{6}\frac{5}{4}\frac{3}{2}\tan x\sec x+\frac{1}{6}\frac{5}{4}\frac{3}{2}1\ln|\sec x+\tan x|\end{align*}
+\end{theorem}
+置$P=\sec x,q=\tan x,2,1p^{2}=q^{2}+1$，且$\dd q=p^{2}\dd x$，则$\displaystyle\int\sec^{2n+1}x\dd x=\int p^{2n-1}\dd q$.
+\begin{theorem}{$\int\csc^{2n+1}x\dd x$型}{}
+\vspace{-15pt}
+\begin{align*}&\int\csc x\mathrm{d}x=-1\ln|\csc x+\cot x|\\&\int\csc^3x\mathrm{d}x=-\frac{1}{2}\cot x\csc x-\frac{1}{2}1\ln|\csc x+\cot x|\\&\int\csc^5x\mathrm{~d}x=-\frac{1}{4}\cot x\csc^3x-\frac{1}{4}\frac{3}{2}\cot x\csc x-\frac{1}{4}\frac{3}{2}1\ln|\csc x+\cot x|\\&\int\csc^7x\mathrm{~d}x=-\frac{1}{6}\cot x\csc^5x-\frac{1}{6}\frac{5}{4}\cot x\csc^3x-\frac{1}{6}\frac{5}{4}\frac{3}{2}\cot x\csc x-\frac{1}{6}\frac{5}{4}\frac{3}{2}1\ln|\csc x+\cot x|\end{align*}
+\end{theorem}
+留意到恒等式\[\csc^{2}x=\frac{1}{\sin^{2}x}=\frac{\sin^{2}x+\cos^{2}x}{\sin^{2}x}=1+\cot^{2}x\]
+置$p=\csc x,q=\cot x,nyp^{2}=q^{2}+1$，并且\[\dd q=\dd\left(\frac{\cos x}{\sin x}\right)=\frac{-\sin^{2}x-\cos^{2}x}{\sin^{2}x}\dd x=-p^{2}\cdot \dd x\implies\int\csc^{2n+1}x\dd x=-\int p^{2n-1}\dd q\]
+
+\begin{theorem}{$\cos^{2n}x$型}{}
+\vspace{-15pt}
+\begin{align*}
+\int\mathrm{d}x&=1x\\
+\int\cos^2x\operatorname{d}x&=\frac{1}{2}\sin x\cos x+\frac{1}{2}1x\\
+\int\cos^4x\operatorname{d}x&=\frac{1}{4}\sin x\cos^{3}x+\frac{1}{4}\frac{3}{2}\sin x\cos x+\frac{1}{4}\frac{3}{2}1x\\
+\int\cos^6x\operatorname{d}x&=\frac{1}{6}\sin x\cos^5x+\frac{1}{6}\frac{5}{4}\sin x\cos^3x+\frac{1}{6}\frac{5}{4}\frac{3}{2}\sin x\cos x+\frac{1}{6}\frac{5}{4}\frac{3}{2}1x\\
+\int\cos^8x\operatorname{d}x&=\frac{1}{8}\sin x\cos^7x+\frac{1}{8}\frac{7}{6}\sin x\cos^5x+\frac{1}{8}\frac{7}{6}\frac{5}{4}\sin x\cos^3x+\frac{1}{8}\frac{7}{6}\frac{5}{4}\frac{3}{2}\sin x\cos x\\
+&~~~~+\frac{1}{8}\frac{7}{6}\frac{5}{4}\frac{3}{2}1x
+\end{align*}
+\end{theorem}
+置$p=\cos x,q=\sin x$，则$\dd q=p\dd x$，$\int\cos^mx\dd x=\int p^{2n-1}\dd q$
+
+\begin{theorem}{$\sin^{2n}x$型}{}
+    \vspace{-15pt}
+    \begin{align*}
+        \int\mathrm{d}x=&1x\\
+        \int\sin^2x\mathrm{d}x=&-\frac{1}{2}\sin x\cos x+\frac{1}{2}1x\\
+        \int\sin^4x\operatorname{d}x=&-\frac{1}{4}\sin^3x\cos x-\frac{1}{4}\frac{3}{2}\sin x\cos x+\frac{1}{4}\frac{3}{2}1x\\
+        \int\sin^6x\operatorname{d}x=&-\frac{1}{6}\sin^5x\cos x-\frac{1}{6}\frac{5}{4}\sin^3x\cos x-\frac{1}{6}\frac{5}{4}\frac{3}{2}\sin x\cos x+\frac{1}{6}\frac{5}{4}\frac{3}{2}1x\\
+        \int\sin^8x\operatorname{d}x=&-\frac{1}{8}\sin^7x\cos x-\frac{1}{8}\frac{7}{6}\sin^5x\cos x-\frac{1}{8}\frac{7}{6}\frac{5}{4}\sin^3x\cos x-\frac{1}{8}\frac{7}{6}\frac{5}{4}\frac{3}{2}\sin x\cos x\\
+        &+\frac{1}{8}\frac{7}{6}\frac{5}{4}\frac{3}{2}1x
+    \end{align*}
+\end{theorem}
+置$p=\sin x,q=\cos x$，则$\dd q=p\dd x$，$\int\sin^{2n}x\dd x=\int p^{2n-1}\dd q$.
+
+\begin{theorem}{$\frac{1}{(1+x^2)^n}$型}{}
+    \vspace{-15pt}
+    \begin{align*}
+        \int\frac{1}{1+x^2}\mathrm{d}x=&\arctan x\\
+        \int\frac{1}{\left(1+x^2\right)^2}\mathrm{d}x=&\frac{1}{2}\frac{x}{1+x^2}+\frac{1}{2}1\arctan x\\
+        \int\frac{1}{\left(1+x^2\right)^3}\mathrm{d}x=&\frac{1}{4}\frac{x}{\left(1+x^2\right)^2}+\frac{1}{4}\frac{3}{2}\frac{x}{1+x^2}+\frac{1}{4}\frac{3}{2}1\arctan x\\
+        \int\frac{1}{\left(1+x^{2}\right)^{4}}\mathrm{d}x=&\frac{1}{6}\frac{x}{\left(1+x^{2}\right)^{3}}+\frac{1}{6}\frac{5}{4}\frac{x}{\left(1+x^{2}\right)^{2}}+\frac{1}{6}\frac{5}{4}\frac{3}{2}\frac{x}{1+x^{2}}+\frac{1}{6}\frac{5}{4}\frac{3}{2}1\arctan x\\
+        \int\frac{1}{\left(1+x^{2}\right)^{5}}\mathrm{d}x=&\frac{1}{8}\frac{x}{\left(1+x^{2}\right)^{4}}+\frac{1}{8}\frac{7}{6}\frac{x}{\left(1+x^{2}\right)^{3}}+\frac{1}{8}\frac{7}{6}\frac{5}{4}\frac{x}{\left(1+x^{2}\right)^{2}}+\frac{1}{8}\frac{7}{6}\frac{5}{4}\frac{3}{2}\frac{x}{1+x^{2}}\\
+        &+\frac{1}{8}\frac{7}{6}\frac{5}{4}\frac{3}{2}1\arctan x
+    \end{align*}
+\end{theorem}
+记$y=\sqrt{1+x^{2}}$，则$y^2=x^2+1,\dd y=\frac{x}{\sqrt{1+x^2}}\dd x=\frac{x}{y}\dd x$
+\begin{align*}
+\int\frac{\dd x}{(1+x^{2})^{2}}&=\int\frac{\dd x}{y^{4}}=\int\frac{y^{2}-x^{2}}{y^{4}}\dd x=\int\frac{\dd x}{y^{2}}-\int\frac{x\dd y}{y^{3}}\\&=\int\frac{\dd x}{1+x^{2}}-\int x\dd\left(y^{-2}\cdot\frac{1}{-2}\right)=\arctan x+\frac{1}{2}\cdot\left[\frac{x}{y^{2}}-\int\frac{\dd x}{y^{2}}\right]
+\end{align*}
+\begin{theorem}{$\frac{1}{(1-x^2)^n}$型}{}
+\vspace{-15pt}
+\begin{align*}
+\int\frac{1}{1-x^2}\mathrm{d}x=&\operatorname{artanh}x\quad(\text{注:}\operatorname{artanh}x=\frac{1}{2}\ln\left|\frac{1+x}{1-x}\right|)\\
+\int\frac{1}{\left(1-x^2\right)^2}\mathrm{d}x=&\frac{1}{2}\frac{x}{1-x^2}+\frac{1}{2}1\operatorname{artanh}x\\
+\int\frac{1}{\left(1-x^2\right)^3}\mathrm{d}x=&\frac{1}{4}\frac{x}{\left(1-x^2\right)^2}+\frac{1}{4}\frac{3}{2}\frac{x}{1-x^2}+\frac{1}{4}\frac{3}{2}1\operatorname{artanh}x\\
+\int\frac{1}{(1-x^{2})^{4}}\mathrm{d}x=&\frac{1}{6}\frac{x}{(1-x^2)^3}+\frac{1}{6}\frac{5}{4}\frac{x}{(1-x^2)^2}+\frac{1}{6}\frac{5}{4}\frac{3}{2}\frac{x}{1-x^2}+\frac{1}{6}\frac{5}{4}\frac{3}{2}1\operatorname{artanh}x\\
+\int\frac{1}{\left(1-x^{2}\right)^{5}}\dd x=&\frac{1}{8}\frac{x}{\left(1-x^{2}\right)^{4}}+\frac{1}{8}\frac{7}{6}\frac{x}{\left(1-x^{2}\right)^{3}}+\frac{1}{8}\frac{7}{6}\frac{5}{4}\frac{x}{\left(1-x^{2}\right)^{2}}+\frac{1}{8}\frac{7}{6}\frac{5}{4}\frac{3}{2}\frac{x}{1-x^{2}}\\
+&+\frac{1}{8}\frac{7}{6}\frac{5}{4}\frac{3}{2}1\mathrm{artanh}x\end{align*}
+\end{theorem}
+记$y=\sqrt{1-x^{2}}$，则$x^2+y^2=1$，则
+\begin{align*}
+    \int\frac{1}{(1-x^{2})^{2}}\dd x&=\int\frac{\dd x}{y^{4}}=\int\frac{x^{2}+y^{2}}{y^{4}}\dd x=\int\frac{x^{2}}{y^{4}}\dd x+\int\frac{\dd x}{y^{2}}\\
+&=-\int\frac{x\dd y}{y^3}+\int\frac{\dd x}{1-x^{2}}=\text{arctanh}~x+\int\frac{\dd x}{1-x^{2}}\\
+\end{align*}
+
+\begin{theorem}{$\frac{x^{2n}}{\sqrt{1-x^2}}\dd x$型}{}
+    \vspace{-15pt}
+    \begin{align*}
+        \int\frac{1}{\sqrt{1-x^{2}}}\mathrm{d}x=&-\arccos x\\
+        \int\frac{x^2}{\sqrt{1-x^2}}\mathrm{d}x=&-\frac{1}{2}x\sqrt{1-x^2}-\frac{1}{2}1\arccos x\\
+        \int\frac{x^4}{\sqrt{1-x^2}}\mathrm{d}x=&-\frac{1}{4}x^3\sqrt{1-x^2}-\frac{1}{4}\frac{3}{2}x\sqrt{1-x^2}-\frac{1}{4}\frac{3}{2}1\arccos x\\
+        \int\frac{x^{6}}{\sqrt{1-x^{2}}}\mathrm{d}x=&-\frac{1}{6}x^5\sqrt{1-x^2}-\frac{1}{6}\frac{5}{4}x^3\sqrt{1-x^2}-\frac{1}{6}\frac{5}{4}\frac{3}{2}x\sqrt{1-x^2}-\frac{1}{6}\frac{5}{4}\frac{3}{2}1\arccos x\\
+        \int\frac{x^{8}}{\sqrt{1-x^{2}}}\mathrm{d}x=&-\frac{1}{8}x^{7}\sqrt{1-x^{2}}-\frac{1}{8}\frac{7}{6}x^{5}\sqrt{1-x^{2}}-\frac{1}{8}\frac{7}{6}\frac{5}{4}x^{3}\sqrt{1-x^{2}}-\frac{1}{8}\frac{7}{6}\frac{5}{4}\frac{3}{2}x\sqrt{1-x^{2}}\\
+        &-\frac{1}{8}\frac{7}{6}\frac{5}{4}\frac{3}{2}1\arccos x
+    \end{align*}
+\end{theorem}
+记$y=\sqrt{1-x^{2}}$，$y^{2}+x^{2}=1\Rightarrow x\dd x=-y\dd y$
+\[\int\frac{x^{2n}}{\sqrt{1-x^{2}}}\dd x=\int\frac{x^{2n}\dd x}{y}=-\int x^{2n-1}\dd y\]
+特别地,当$n=1$时
+\begin{align*}
+\int\frac{x^{2}}{\sqrt{1-x^{2}}}\dd x=&-\int x\dd y=-\frac{1}{2}\times y-\frac{1}{2}\cdot\arctan\frac{y}{x}\\=&-\frac{1}{2}\times\sqrt{1-x^{2}}-\frac{1}{2}\arctan\frac{\sqrt{1-x^{2}}}{x}=-\frac{1}{2}\times\sqrt{1-x^{2}}-\frac{1}{2}\arccos x
+\end{align*}
+
+\begin{conclusion}{$\int\frac{1}{x^{2n-1}\sqrt{1-x^2}}\mathrm{d}x$型}{}
+    \vspace{-15pt}
+    \begin{align*}
+    \int\frac{1}{x\sqrt{1-x^2}}\mathrm{d}x=&-\ln\frac{1+\sqrt{1-x^2}}{x}\\
+    \int\frac{1}{x^{3}\sqrt{1-x^{2}}}\mathrm{d}x=&-\frac{1}{2}\frac{\sqrt{1-x^{2}}}{x^{2}}-\frac{1}{2}1\ln\frac{1+\sqrt{1-x^{2}}}{x}\\
+    \int\frac{1}{x^5\sqrt{1-x^2}}\mathrm{d}x=&-\frac{1}{4}\frac{\sqrt{1-x^2}}{x^4}-\frac{1}{4}\frac{3}{2}\frac{\sqrt{1-x^2}}{x^2}-\frac{1}{4}\frac{3}{2}1\ln\frac{1+\sqrt{1-x^2}}{x}\\
+    \int\frac{1}{x^7\sqrt{1-x^2}}\dd x=&-\frac{1}{6}\frac{\sqrt{1-x^2}}{x^6}-\frac{1}{6}\frac{5}{4}\frac{\sqrt{1-x^2}}{x^4}-\frac{1}{6}\frac{5}{4}\frac{3}{2}\frac{\sqrt{1-x^2}}{x^2}-\frac{1}{6}\frac{5}{4}\frac{3}{2}1\ln\frac{1+\sqrt{1-x^2}}{x}\\
+    \int\frac{1}{x^9\sqrt{1-x^2}}\mathrm{d}x=&-\frac{1}{8}\frac{\sqrt{1-x^{2}}}{x^{8}}-\frac{1}{8}\frac{7}{6}\frac{\sqrt{1-x^{2}}}{x^{6}}-\frac{1}{8}\frac{7}{6}\frac{5}{4}\frac{\sqrt{1-x^{2}}}{x^{4}}-\frac{1}{8}\frac{7}{6}\frac{5}{4}\frac{3}{2}\frac{\sqrt{1-x^{2}}}{x^{2}}\\
+    &-\frac{1}{8}\frac{7}{6}\frac{5}{4}\frac{3}{2}1\ln\frac{1+\sqrt{1-x^{2}}}{x}
+    \end{align*}
+\end{conclusion}
+记$y=\sqrt{1-x^{2}}\Rightarrow y^{2}+x^{2}=1\Rightarrow x\dd x=-y\dd y$
+\[\int\frac{\dd x}{x^{2n+1}\cdot\sqrt{1-x^{2}}}=\int\frac{\dd x}{x^{2n+1}\cdot y}=-\int\frac{\dd y}{x^{2n+2}}\]
+\begin{conclusion}{$\int\frac{x^{2n}}{\sqrt{x^{2}-1}}\dd x$型}{}
+    \vspace{-15pt}
+    \begin{align*}
+    \int\frac{1}{\sqrt{x^{2}-1}}dx=&\operatorname{arcosh}x=\ln\left|x+\sqrt{x^2-1}\right|\\
+    \int\frac{x^{2}}{\sqrt{x^{2}-1}}\mathrm{d}x=&\frac{1}{2}x\sqrt{x^2-1}+\frac{1}{2}1\operatorname{arcosh}x\\
+    \int\frac{x^4}{\sqrt{x^2-1}}\mathrm{d}x=&\frac{1}{4}x^3\sqrt{x^2-1}+\frac{1}{4}\frac{3}{2}x\sqrt{x^2-1}+\frac{1}{4}\frac{3}{2}1\operatorname{arcosh}x\\
+    \int\frac{x^{6}}{\sqrt{x^{2}-1}}\mathrm{d}x=&\frac{1}{6}x^5\sqrt{x^2-1}+\frac{1}{6}\frac{5}{4}x^3\sqrt{x^2-1}+\frac{1}{6}\frac{5}{4}\frac{3}{2}x\sqrt{x^2-1}+\frac{1}{6}\frac{5}{4}\frac{3}{2}1\mathrm{arcosh}x\\
+    \int\frac{x^8}{\sqrt{x^2-1}}\dd x=&\frac{1}{8}x^7\sqrt{x^2-1}+\frac{1}{8}\frac{7}{6}x^5\sqrt{x^2-1}+\frac{1}{8}\frac{7}{6}\frac{5}{4}x^3\sqrt{x^2-1}+\frac{1}{8}\frac{7}{6}\frac{5}{4}\frac{3}{2}x\sqrt{x^2-1}\\
+    &+\frac{1}{8}\frac{7}{6}\frac{5}{4}\frac{3}{2}1\mathrm{arcosh}~x
+    \end{align*}
+\end{conclusion}
+置$y=\sqrt{x^{2}-1}\Rightarrow x^{2}-y^{2}=1$，则
+\[\int\frac{x^{2n}}{\sqrt{x^{2}-1}}\dd x=\int\frac{x^{2n}}{y}\dd x=\int x^{2n-1}\dd y\]
+特别地，当$n=1$时，有
+\[\int\frac{x^{2}}{\sqrt{x^{2}-1}}\dd x=\int x\dd y=\frac{1}{2}xy+\frac{1}{2}\cdot\ln(x+y)\]
+
+\begin{conclusion}{$\int\frac{\dd x}{x^{2n+1}\sqrt{x^{2}-1}}$型}{}
+\vspace{-15pt}
+\begin{align*}
+    \int\frac{1}{x\sqrt{x^{2}-1}}\mathrm{d}x=&\arccos\frac{1}{|x|}\\
+    \int\frac{1}{x^{3}\sqrt{x^{2}-1}}\mathrm{d}x=&\frac{1}{2}\frac{\sqrt{x^{2}-1}}{x^{2}}+\frac{1}{2}1\arccos\frac{1}{|x|}\\
+    \int\frac{1}{x^5\sqrt{x^2-1}}\mathrm{d}x=&\frac{1}{4}\frac{\sqrt{x^2-1}}{x^4}+\frac{1}{4}\frac{3}{2}\frac{\sqrt{x^2-1}}{x^2}+\frac{1}{4}\frac{3}{2}1\arccos\frac{1}{|x|}\\
+    \int\frac{1}{x^7\sqrt{x^2-1}}\mathrm{d}x=&\frac{1}{6}\frac{\sqrt{x^2-1}}{x^6}+\frac{1}{6}\frac{5}{4}\frac{\sqrt{x^2-1}}{x^4}+\frac{1}{6}\frac{5}{4}\frac{3}{2}\frac{\sqrt{x^2-1}}{x^2}+\frac{1}{6}\frac{5}{4}\frac{3}{2}1\arccos\frac{1}{|x|}\\
+    \int\frac{1}{x^{9}\sqrt{x^{2}-1}}\mathrm{d}x=&\frac{1}{8}\frac{\sqrt{x^{2}-1}}{x^{8}}+\frac{1}{8}\frac{7}{6}\frac{\sqrt{x^{2}-1}}{x^{6}}+\frac{1}{8}\frac{7}{6}\frac{5}{4}\frac{\sqrt{x^{2}-1}}{x^{4}}+\frac{1}{8}\frac{7}{6}\frac{5}{4}\frac{3}{2}\frac{\sqrt{x^{2}-1}}{x^{2}}\\
+    &+\frac{1}{8}\frac{7}{6}\frac{5}{4}\frac{3}{2}1\arccos\frac{1}{|x|}
+\end{align*}
+\end{conclusion}
+置$y=\sqrt{x^{2}-1}$，则$x^2-y^2=1$，则
+\[\int\frac{\dd x}{x^{2n+1}\sqrt{x^{2}-1}}=\int\frac{\dd x}{x^{2n+1}\cdot y}=\int\frac{\dd y}{x^{2n+2}}\]
+当$n=0$时\[\int\frac{\dd x}{x\sqrt{x^2-1}}=\int\frac{\dd y}{x^2}=\int\frac{\dd y}{x^2}=\int\frac{\dd y}{1+y^2}=\arctan y\]
+
+\begin{conclusion}{$\int\frac{x^{2n}}{\sqrt{x^{2}+1}}\dd x$型}{}
+    \vspace{-15pt}
+    \begin{align*}
+        \int\frac{1}{\sqrt{x^2+1}}\mathrm{d}x=&\operatorname{arcsinh}x\\
+        \int\frac{x^2}{\sqrt{x^2+1}}\mathrm{d}x=&\frac{1}{2}x\sqrt{x^2+1}-\frac{1}{2}1\operatorname{arcsinh}x\\
+        \int\frac{x^4}{\sqrt{x^2+1}}\mathrm{d}x=&\frac{1}{4}x^{3}\sqrt{x^{2}+1}-\frac{1}{4}\frac{3}{2}x\sqrt{x^{2}+1}+\frac{1}{4}\frac{3}{2}1\operatorname{arcsinh}x\\
+        \int\frac{x^6}{\sqrt{x^2+1}}\mathrm{d}x=&\frac{1}{6}x^5\sqrt{x^2+1}-\frac{1}{6}\frac{5}{4}x^3\sqrt{x^2+1}+\frac{1}{6}\frac{5}{4}\frac{3}{2}x\sqrt{x^2+1}-\frac{1}{6}\frac{5}{4}\frac{3}{2}1\operatorname{arcsinh}x\\
+        \int\frac{x^8}{\sqrt{x^2+1}}\mathrm{d}x=&\frac{1}{8}x^{7}\sqrt{x^{2}+1}-\frac{1}{8}\frac{7}{6}x^{5}\sqrt{x^{2}+1}+\frac{1}{8}\frac{7}{6}\frac{5}{4}x^{3}\sqrt{x^{2}+1}-\frac{1}{8}\frac{7}{6}\frac{5}{4}\frac{3}{2}x\sqrt{x^{2}+1}\\
+        &+\frac{1}{8}\frac{7}{6}\frac{5}{4}\frac{3}{2}1\mathrm{arcsinh}x
+    \end{align*}
+\end{conclusion}
+置$y=\sqrt{x^{2}+1}$，则$y^2-x^2=1$，于是：
+\[\int\frac{x^{2n}}{\sqrt{x^{2}+1}}\dd x=\int\frac{x^{2n-1}\cdot x\dd x}{y}=\int x^{2n-1}\dd y\]
+当n=1时
+\begin{align*}
+\int\frac{x^{2}}{\sqrt{x^{2}+1}}\dd x&=\int x\dd y=\frac{1}{2}xy-\frac{1}{2}\ln(x+y)\\
+&=\frac{1}{2}\times\sqrt{x^{2}+1}-\frac{1}{2}\ln(x+\sqrt{x^{2}+1})
+\end{align*}
+
+\begin{conclusion}{$\int\frac{\dd x}{x^{2n+1}\cdot\sqrt{x^{2}+1}}$型}{}
+    \vspace{-15pt}
+    \begin{align*}
+        \int\frac{1}{x\sqrt{x^2+1}}\mathrm{d}x&=-\ln\frac{1+\sqrt{x^{2}+1}}{x}\\
+        \int\frac{1}{x^3\sqrt{x^2+1}}\mathrm{d}x=&-\frac{1}{2}\frac{\sqrt{x^2+1}}{x^2}+\frac{1}{2}1\ln\frac{1+\sqrt{x^2+1}}{x}\\
+        \int\frac{1}{x^{5}\sqrt{x^{2}+1}}\mathrm{d}x=&-\frac{1}{4}\frac{\sqrt{x^2+1}}{x^4}+\frac{1}{4}\frac{3}{2}\frac{\sqrt{x^2+1}}{x^2}-\frac{1}{4}\frac{3}{2}1\ln\frac{1+\sqrt{x^2+1}}{x}\\
+        \int\frac{1}{x^7\sqrt{x^2+1}}\mathrm{d}x=&-\frac{1}{6}\frac{\sqrt{x^2+1}}{x^6}+\frac{1}{6}\frac{5}{4}\frac{\sqrt{x^2+1}}{x^4}-\frac{1}{6}\frac{5}{4}\frac{3}{2}\frac{\sqrt{x^2+1}}{x^2}+\frac{1}{6}\frac{5}{4}\frac{3}{2}1\ln\frac{1+\sqrt{x^2+1}}{x}\\
+        \int\frac{1}{x^{9}\sqrt{x^{2}+1}}\mathrm{d}x=&-\frac{1}{8}\frac{\sqrt{x^{2}+1}}{x^{8}}+\frac{1}{8}\frac{7}{6}\frac{\sqrt{x^{2}+1}}{x^{6}}-\frac{1}{8}\frac{7}{6}\frac{5}{4}\frac{\sqrt{x^{2}+1}}{x^{4}}+\frac{1}{8}\frac{7}{6}\frac{5}{4}\frac{3}{2}\frac{\sqrt{x^{2}+1}}{x^{2}}\\
+        &-\frac{1}{8}\frac{7}{6}\frac{5}{4}\frac{3}{2}1\ln\frac{1+\sqrt{x^{2}+1}}{x}
+    \end{align*}
+\end{conclusion}
+置$y=\sqrt{x^{2}+1}$，则$y^{2}-x^{2}=1$，
+\[\int\frac{\dd x}{x^{2n+1}\cdot\sqrt{x^{2}+1}}=\int\frac{\dd x}{x^{2n+1}\cdot y}=\int\frac{\dd y}{x^{2n+2}}\]
+当$n=0$时
+\begin{align*}
+\int\frac{\dd x}{x\cdot\sqrt{x^{2}+1}}=&\int\frac{\dd y}{x^{2}}=\int\frac{y^{2}-x^{2}}{x^{2}}\dd y=\int\frac{y^{2}\dd y}{x^{2}}-\int \dd y\\=&\int\frac{y^{2}}{y^{2}-1}\dd y-\int \dd y=\int\frac{\dd y}{y^{2}-1}=-\text{arctanh} y
+\end{align*}
+
+\section{经典组合}
+\noindent 经典双元
+\begin{itemize}
+\item $p=\sin x,q=\cos x;~p=\sec x,q=\tan x$.
+\item $p=\sqrt{x^2-1},q=\sqrt{1-x^2},r=\sqrt{x^2+1}$.
+\item $p=\sqrt{1+a^2x^2},q=ax$.
+\item $p=\sqrt{2+x^3},q=x^{\frac32}.$和$p=\sqrt{a+x^k},q=x^{\frac{k}2}$
+\item $p=\frac{\sqrt2\sqrt{x^2+1}}{x+1},q=\frac{x-1}{x+1}$，则$p^2=1+q^2$.
+\item $p=\frac{x}{\sqrt{1-x^2}},q=\frac{\sqrt{2x^2-1}}{\sqrt{1-x^2}}\Rightarrow p^2-1=q^2$.
+\item $p=x+\frac{a}{x},q=x-\frac{a}{x}$.
+\item $p=\sqrt{x-a}+\sqrt{b-x},q=\sqrt{x-a}-\sqrt{b-x}$.
+\item $p=\cos x+\sin x,q=\cos x-\sin x\Rightarrow p^2+q^2=2,\dd p=q\dd x,\dd q=-p\dd x$.
+\item $p=\sin x+2\cos x,q=\cos x-2\sin x$.
+\item $p=\sqrt{\sec^4x+\tan^4x},q=\sqrt2\sec x\tan x\Rightarrow p^2-q^2=1$.
+\item $p=\sqrt{\sec x+1},q=\sqrt{\sec x-1}\Rightarrow p^2-q^2=2,pq=\tan x$.
+\item $p=\sqrt{1+\sin x}=\sin \frac{x}2+\cos\frac{x}2,q=\cos\frac{x}2-\sin\frac{x}2$.
+\end{itemize}
+经典三元
+\begin{itemize}
+\item $p=\sin x,q=\cos x,r=\sqrt{1+\sin^2 x}$.
+\item $p=\sqrt{x}+\sqrt{\frac{2}{x}},q=\sqrt{x}-\sqrt{\frac{2}{x}},r=\sqrt{x+\frac{2}{x}+2}$.
+\item $p=\frac{\sqrt2\sqrt{1+x+x^2}}{\sqrt{x^2+1}},q=\frac{x+1}{\sqrt{x^2+1}},r=\frac{1-x}{\sqrt{x^2+1}}\implies q^2=p^2-1=2-r^2$.
+\item $p=x+\frac{a}{x},q=x-\frac{a}{x},r=\sqrt{x^2+\frac{a^2}{x^2}+b}$.
+\item $r=\sqrt{x+\frac1x+1},s=\sqrt{x+\frac1x-1},p=\sqrt{x}+\frac1{\sqrt{x}},q=\sqrt{x}-\frac1{\sqrt{x}}$.
+\item $p=\cos x+\sin x,q=\cos x-\sin x,r=\sqrt{2\sin x\cos x}\implies r^2=p^2-1=1-q^2,\dd p=q\dd x,\dd q=-p\dd x$.
+\item $p=\sin\frac{x}{2}+\cos\frac{x}{2},q=\cos\frac{x}{2}-\sin\frac{x}{2}=\sqrt{1-\sin x},r=\sqrt{\sin x}$.
+\item $p=\sin x+\cos x,q=\cos x-\sin x,r=\sqrt{2+\sin 2x}\implies r^2-p^2=1,p^2+q^2=2$.
+\item $p=x+\sqrt{1-x^2},q=x-\sqrt{1-x^2},r=\sqrt{2+2x\sqrt{1-x^2}}\implies r^2-p^2=1,p^2+q^2=2$.
+\item $p,q=\frac{\sqrt{\sqrt{1+x^4}+1}\pm\sqrt{\sqrt{1+x^4}-1}}{\sqrt2x},r=\frac{\sqrt[4]{1+x^4}}{x},p^2-q^2=2,p^2-r^2=1$.
+\end{itemize}
+经典恒等式
+\begin{itemize}
+\item$\sin^2x+\cos^2x=1\Leftrightarrow (\sqrt{1-x^2})^2+x^2=1$
+\item $(x+1)^2+(x-1)^2=2(x^2+1)\Leftrightarrow \left(\frac{\sqrt2\sqrt{x^2+1}}{x+1}\right)^2=1+\left(\frac{x-1}{x+1}\right)^2$.
+\item $x^2-(1-x^2)=2x^2-1\Leftrightarrow \left(\frac{x}{\sqrt{1-x^2}}\right)^2-\left(\frac{\sqrt{2x^2-1}}{\sqrt{1-x^2}}\right)^2=1$.
+\item 偶数次多项式配方也能出恒等式。比如$1+x^2+3x^4=\left(\frac{x^2}{2}+1\right)^2+\left(\frac{\sqrt{11}}{2}x^2\right)^2$.
+\item $2(1+x+x^2)=(x+1)^2+(x^2+1)$.
+\item $5(x^2+4)=4(x-1)^2+(x+4)^2$.
+\item $\left(x-\frac{a}{x}\right)^2+4a=\left(x+\frac{a}{x}\right)^2$
+\end{itemize}
+
+\section{例题}
+\begin{example}{$\int \sqrt{1 + x^2} \dd x$}{}
+\[\int \sqrt{1 + x^2} \dd x\]
+\end{example}
+\begin{solution}
+令$y=\sqrt{1+x^2}$，则$y^2-x^2=1$，于是：
+\begin{align*}
+\int \sqrt{1 + x^2} \dd x &= \int y\dd x=\frac12\int 2y\dd x=\frac12\int(y\dd x+x\dd y+y\dd x-x\dd y)\\
+&=\frac12xy+\frac{y^2-x^2}2\int\frac{y\dd x-x\dd y}{y^2-x^2} =\frac12xy+\frac{1}2\int\frac{\dd x}{y}\\
+&=\frac12x\sqrt{1+x^2}+\frac12\ln(x+\sqrt{1+x^2})
+\end{align*}
+\end{solution}
+
+\begin{example}{$\int \frac{x^2}{\sqrt{1 - x^2}} dx$}{}
+求 $\int \frac{x^2}{\sqrt{1 - x^2}} \dd x$
+\end{example}
+\begin{solution}
+令$y=\sqrt{1-x^2}$，则$x^2+y^2=1$，于是：
+\begin{align*}
+\int \frac{x^2}{\sqrt{1 - x^2}} \dd x=&\int\frac{x^2\dd x}{y}=\int\frac{x(x\dd x)}{y}=-\int x\dd y\\
+=&\frac12\left(\int y\dd x-x\dd y-(x\dd y+y\dd x)\right)\\
+=&\frac12\int\frac{y\dd x-x\dd y}{x^2+y^2}-\frac12xy=\frac{-1}2\int\frac{\dd y}{x}-\frac12xy\\
+=&-\frac12\arctan\frac{y}{x}-\frac12xy=- \frac{1}{2} \left( x \sqrt{1 - x^2} + \arctan \frac{\sqrt{1 - x^2}}{x} \right)
+\end{align*}
+\end{solution}
+
+\begin{example}{$\int\frac{1}{2} \left( 1 + \sqrt{1 + 4x^2} \right)\dd x$}{}
+求$\displaystyle\int\frac{1}{2} \left( 1 + \sqrt{1 + 4x^2} \right)\dd x$
+\end{example}
+\begin{solution}
+设 $p = \sqrt{1 + 4x^2}, q = 2x,p^2-q^2=1$，则有：
+\begin{align*}
+    \int\frac{1}{2} \left( 1 + \sqrt{1 + 4x^2} \right)\dd x&=\frac12\int(1+p)\dd\frac{q}{2}=\frac14\int(1+p)\dd q\\
+    &=\frac14q+\frac18\int\left(p\dd q+q\dd p+p\dd q-q\dd p\right)\\
+    &=\frac14q+\frac18pq+\frac18\int\frac{p\dd q-q\dd p}{p^2-q^2}=\frac14q+\frac18pq+\frac18\ln(p+q)\\
+\end{align*}
+\end{solution}
+
+\begin{example}{$\int \frac{\mathrm{d}x}{\sqrt{1 - \sin^4 x}}$}{}
+求$\displaystyle\int \frac{\mathrm{d}x}{\sqrt{1 - \sin^4 x}}$
+\end{example}
+\begin{solution}
+    由\[\int \frac{\mathrm{d}x}{\sqrt{1 - \sin^4 x}}=\int \frac{\mathrm{d}x}{\sqrt{1 - \sin^2 x}\sqrt{1 + \sin^2 x}}=\int \frac{\mathrm{d}x}{\cos x\sqrt{1+\sin^2 x}}\]
+    而$\sin x$求导后会被$\cos x$消掉，设 $p = \sin x, q = \cos x, r = \sqrt{1 + \sin^2 x}$，则有$\dd x=\frac{\dd \sin x}{\cos x}$：
+    \begin{align*}
+\int \frac{\mathrm{d}x}{\sqrt{1 - \sin^4 x}} =& \int \frac{\mathrm{d}x}{rq} = \int \frac{\mathrm{d}p}{rq^2}=\int\frac{\dd p}{r(r^2-2p^2)}=\int\frac{r^2}{r^2-2p^2}\frac{\dd p}{r^3}\\
+=&\int\frac{r^2}{r^2-2p^2}\dd\frac{p}{r}=\int\frac{1}{1-2\left(\frac{p}{r}\right)^2}\dd\left(\frac{p}{r}\right)\\
+=&\frac{1}{\sqrt{2}} \operatorname{arctanh} \sqrt{\frac{2 \sin^2 x}{1 + \sin^2 x}}
+    \end{align*}
+\end{solution}
+
+\begin{example}{$\int x^2\sqrt{1+x^2}\dd x$}{}
+    \[\int x^2\sqrt{1+x^2}\dd x\]
+\end{example}
+\begin{solution}
+    令$y=\sqrt{1+x^2}$，则$y^2-x^2=1$，于是：
+    \begin{align*}
+        \int x^2y\dd x=& \int y\dd \frac{x^3}3=\frac{x^3y}3-\frac13\int x^3\dd y\\
+        =&\frac{x^3y}{3}-\frac13\left[\frac14 x^3y+\frac14\frac32(x^2-y^2)xy+\frac14\frac32(x^2-y^2)^2\frac{\dd y}{x}\right]
+    \end{align*}
+\end{solution}
+
+\begin{example}{$\int\frac{\dd x}{x+\sqrt{x^2+x+1}}$}{}
+\[\int\frac{\dd x}{x+\sqrt{x^2+x+1}}\]
+\end{exmaple}
+\begin{solution}
+\begin{align*}
+\int\frac{\dd x}{x+\sqrt{x^2+x+1}}=&-\int\frac{x-\sqrt{x^{2}+x+1}}{x+1}\dd x=-\int\frac{x+1-1-\sqrt{x^{2}+x+1}}{x+1}\dd x\\
+=&-\int1\dd x+\int\frac{\dd x}{x+1}+\int\frac{\sqrt{x(x+1)+1}}{x+1}\dd x\\
+=&-x+\ln|x+1|+\int\frac{1}{\sqrt{x+1}}\cdot\sqrt{x+\frac{1}{x+1}}\dd x\\
+=&-x+\ln|x+1|+\int \dd(2\sqrt{x+1})\cdot\sqrt{x+\frac{1}{x+1}}
+\end{align*}
+记$r=\sqrt{x+\frac{1}{x+1}},p=\sqrt{x+1}+\frac{1}{\sqrt{x+1}},q=\sqrt{x+1}-\frac{1}{\sqrt{x+1}}$，则有：
+\[q^2=r^2-1,p^2=r^2+3,q\dd q=r\dd r,p\dd p=r\dd r\]
+那么
+\begin{align*}
+&\int \dd(2\sqrt{x^2+1})\sqrt{x+\frac{1}{x+1}}\\
+=&\int r\dd(p+q)=r(p+q)-\int(p+q)\dd r\\
+=&r(p+q)-\int p\dd r-\int q\dd r\\
+=&r(p+q)-\frac{1}{2}pr-\frac12(p^2-r^2)\int\frac{\dd r}{p}-\frac12qr-\frac12(q^2-r^2)\int\frac{\dd r}{q}\\
+=&\frac12r(p+q)-\frac32\ln(p+r)+\frac12\ln(q+r)\\
+=&\sqrt{x^2+x+1}-\frac32\ln(x+2+\sqrt{x^2+x+1})+\frac12\ln(x+\sqrt{x^2+x+1})+\frac12\ln|x+1|
+\end{align*}
+所以原式为
+\begin{align*}
+-x+\frac32\ln|x+1|+\sqrt{x^2+x+1}-\frac32\ln(x+2+\sqrt{x^2+x+1})+\frac12\ln(x+\sqrt{x^2+x+1})
+\end{align*}
+\end{solution}
+
+\begin{example}{$\int\frac{x^2\dd x}{\sqrt{x^2+a^2}}}{}
+\[\int\frac{x^2\dd x}{\sqrt{x^2+a^2}}\]
+\end{example}
+\begin{solution}
+设$y=\sqrt{x^2+a^2}\implies y^2-x^2=a^2$，于是：
+\begin{align*}
+\int\frac{x^2\dd x}{y}=&\int\frac{xy\dd y}{y}=\int x\dd y=\frac12xy+\frac12(x^2-y^2)\int\frac{\dd y}{x}\\
+=&\frac12xy+\frac12(x^2-y^2)\ln(x+y)
+\end{align*}
+\end{solution}
+
+\begin{example}{$\int\frac{\dd x}{(1-x^2)^2}$}{}
+\[\int\frac{\dd x}{(1-x^2)^2}\]
+\end{example}
+\begin{solution}
+设$y=\sqrt{|1-x^2|}$，则$x^2+y^2=1$，于是：
+\begin{align*}
+    
+\end{align*}
+\end{solution}
+
+% 例题 2.5 求 $\int \sqrt{\frac{x}{2 + x^3}} \mathrm{d}x$.
+
+% 解：若设 $p = x^{\frac{2}{3}}, q = \sqrt{2 + x^3}$,
+
+% $$
+
+% \int \sqrt{\frac{x}{2 + x^3}} \mathrm{d}x = \frac{2}{3} \int \frac{\mathrm{d}p}{q} = \frac{2}{3} \ln |p + q| \tag{2.13}$$
+
+% 例题 2.6 [2020 广东省数竞 (民办高职)] 求 $\int \ln \left(x+\sqrt{1+x^{2}}\right) \mathrm{d} x$.
+
+% 解: (By 白酱) 令 $y=\sqrt{1+x^{2}}$, 这里注意逆用第一积分分公式, 则:
+
+% $$\begin{aligned}
+
+% \int \ln \left(x+\sqrt{1+x^{2}}\right) \mathrm{d} x & =\int \ln (x+y) \mathrm{d} x \\
+
+% & =x \ln (x+y)-\int \frac{\mathrm{d} x}{x} \\
+
+% & =x \ln (x+y)-\int \frac{\mathrm{d} x}{y} \\
+
+% & =x \ln (x+y)-\int \mathrm{d} y \\
+
+% & =x \ln (x+y)-y
+
+% \end{aligned}$$
+
+% 例题 2.7 求 $\int \frac{\ln \left(x+\sqrt{1+x^{2}}\right)}{x^{2}} \mathrm{~d} x$.
+
+% 解: (By 风中鱼) 令 $y=\sqrt{1+x^{2}}$, 同前:
+
+% $$\begin{aligned}
+
+% \int \frac{\ln \left(x+\sqrt{1+x^{2}}\right)}{x^{2}} \mathrm{~d} x & =-\int \ln (x+y) \mathrm{d}\left(\frac{1}{x}\right) \\
+
+% & =-\frac{1}{x} \ln (x+y)+\int \frac{\mathrm{d} x}{x y} \\
+
+% & =\int \frac{\mathrm{d} y}{x^{2}}-\frac{\ln (x+y)}{x} \\
+
+% & =-\operatorname{arth} y-\frac{\ln (x+y)}{x} \\
+
+% & =-\operatorname{arth}\left(\sqrt{1+x^{2}}\right)-\frac{\ln \left(x+\sqrt{1+x^{2}}\right)}{x}
+
+% \end{aligned}$$
+
+% 下面是常见三角函数的积分, 若设 $p=\sin x, q=\cos x$ :
+
+% - $\int \sin x \mathrm{d} x=\int p \mathrm{d} x=\int -\mathrm{d} q=-\cos x$
+
+% - $\int \cos x \mathrm{d} x=\int q \mathrm{d} x=\int \mathrm{d} p=\sin x$
+
+% - $\int \tan x \mathrm{d} x=\int \frac{p}{q} \mathrm{d} x=\int \frac{-\mathrm{d} q}{q}=-\ln (\cos x)$
+
+% - $\int \cot x \mathrm{d} x=\int \frac{q}{p} \mathrm{d} x=\int \frac{\mathrm{d} p}{p}=\ln (\sin x)$
+
+% - $\int \csc x \mathrm{d} x=\int \frac{-\mathrm{d} q}{p^{2}}=-\int \frac{\mathrm{d} q}{1-q^{2}}=-\operatorname{arth}(\cos x)$
+
+% - $\int \sec x \mathrm{d} x=\int \frac{\mathrm{d} p}{q^{2}}=\int \frac{\mathrm{d} p}{1-p^{2}}=\operatorname{arth}(\sin x)$
+
+% 2.2 双元的降次与递推
+
+% 在一般的课本上, 常常采用三角换元法。这算是双元的一种特殊情形, 两者的主要区别在于三角有倍角半角表示, 而双元需要变换成分角形式。后者见以后的内容, 这里讲解不用倍角表示来求解高次不定积分。
+
+% 在这个部分中只有三种富有技巧性的操作，分别是常数代换、部分积分和混合。
+
+% 例题2.8 求 $\int \sin^3 x dx$.
+
+% 解 先进行双元换元 $p = \sin x, q = \cos x$，
+
+% $$\int \sin^3 x dx = \int \frac{p^3 dp}{q} = - \int p^2 dq$$
+
+% $$
+
+% = - \int (1 - q^2) dq$$
+
+% $$= \frac{1}{3} q^3 - q$$
+
+% 这里是单纯的常数代换，用来联系 $n$ 次与 $n+2$ 次。
+
+% 例题 2.9 求 $\int \sin^4 x dx$.
+
+% 解：同前，令 $p = \sin x, q = \cos x$，
+
+% $$
+
+% \int \sin^4 x dx = - \int p^3 dq$$
+
+% $$= - \int (1 - q^2) p dq = \int q^2 p dq - \int p dq$$
+
+% $$
+
+% = - \int p^2 q dq - \int p dq$$
+
+% $$= - \frac{1}{3} p^3 q - \int p dq + \frac{1}{3} \int p^3 dq$$
+
+% $$
+
+% = - \frac{1}{4} p^3 q - \frac{3}{4} \int p dq$$
+
+% 这里我们会发现最开始的 $\int p^3 dq \to \int p dq$，这个过程就是混合降次。（注：上面最后一个等号是消去红色部分 1.3 混合得到。）
+
+% 更高次也可以利用这个方法来降次求得。然后利用
+
+% $$\int p dq = \frac{1}{2} \left[ \int p dq + q dp + \int \frac{p dq - q dp}{q^2 + p^2} \right]$$
+
+% $$
+
+% = \frac{1}{2} \left( \int d(pq) + \int \frac{dq}{p} \right)$$
+
+% $$= \frac{1}{2} \left( pq + \arctan \frac{q}{p} \right)$$
+
+% $$
+
+% = \frac{1}{2} (\sin x \cos x - x)$$
+
+% 即可完成积分。
+
+% 当然不止限于三角函数积分，类似 $\int (1 + x^2)^{\frac{3}{2}} dx$ 也可解决。这里我们可以总结一个常用公式，对于考试来说是绰绰有余的：
+
+% 结论 对于双元 $p, q$，有
+
+% $$\int p dq = \frac{1}{2} p q + \frac{1}{2} (p^2 \pm q^2) \int \frac{dq}{p}$$
+
+% 其中虚圆取减号，实圆取加号。总之 $p^2 \pm q^2$ 是常数。
+
+
+
+% 下面讨论更高次的情况。不难发现求解更高次的关键在于讨论 $\int y^n \mathrm{d}x$, $\int \frac{\mathrm{d}x}{y^n}$ 的求解。另外两个是 $\int x^n \mathrm{d}x$, $\int \frac{\mathrm{d}x}{x^n}$，这是显然的，不做讨论。
+
+% 其中当 $n$ 为偶数时，利用常数代换可以解决 $\int y^n \mathrm{d}x$，而 $\int \frac{\mathrm{d}x}{y^n}$ 可以同时利用常数代换和部分积分化简到 $\int \frac{\mathrm{d}x}{y^2}$。
+
+% $$\int \frac{\mathrm{d}x}{y^{2n}} = \frac{a_n x}{y^{2n}} + \ldots + \frac{a_2 x}{y^4} + a_1 \int \frac{\mathrm{d}x}{y^2}
+
+% \tag{2.15}$$
+
+% 这个我们可以用反正切函数等表达。
+
+% 其中当 $n$ 为奇数时，$\int \frac{\mathrm{d}x}{y^n}$ 可以与之前类似，化简到 $\int \frac{\mathrm{d}x}{y^3}$。
+
+% $$\int \frac{\mathrm{d}x}{y^{2n+1}} = \frac{a_n x}{y^{2n+1}} + \ldots + a_1 \int \frac{\mathrm{d}x}{y^3}
+
+% \tag{2.16}$$
+
+% 这个在双元第三积分公式里已经解决。而对于 $\int y^n \mathrm{d}x$，我们则需要还加上混合操作，来得到：
+
+% $$\int y^{2n+1} \mathrm{d}x = a_n y^{2n+1} x + \ldots + a_1 y x + a_0 \int \frac{\mathrm{d}x}{y}
+
+% \tag{2.17}$$
+
+% 然后利用双元第一积分公式得到解决。
+
+% 感兴趣的读者可以算出以上公式各个系数。类比于点火公式，这里算出最后一种情形（最常见）：
+
+% **定理 2.5. 双元点火公式**
+
+% 对于双元 $x, y$，我们有：
+
+% $$\int y^{2n-1} \mathrm{d}x = \sum_{k=0}^{n-1} \frac{(2n-1)!! (2n-2k-2)!!}{(2n)!! (2n-2k-1)!!} (y^2 \pm x^2)^k x y^{2n-1-2k} + \frac{(2n-1)!!}{(2n)!!} (y^2 \pm x^2)^n \int \frac{\mathrm{d}x}{y}$$
+
+% 注：$y^2 \pm x^2$ 为双元常数。
+
+% 一些低次的例子为
+
+% $$
+
+% \int y^3 \mathrm{d}x = \frac{1}{4} x y^3 + \frac{3}{8} (y^2 \pm x^2) x y + \frac{3}{8} (y^2 \pm x^2)^2 \int \frac{\mathrm{d}x}{y}
+
+% \tag{2.18}
+
+% $$
+
+% $$
+
+% \int y^5 \mathrm{d}x = \frac{1}{6} x y^5 + \frac{5}{24} (y^2 \pm x^2) x y^3 + \frac{5}{16} (y^2 \pm x^2)^2 x y + \frac{5}{16} (y^2 \pm x^2)^3 \int \frac{\mathrm{d}x}{y}
+
+% \tag{2.19}
+
+% $$
+
+
+
+% 至此，我们可以认为如果一个积分能被转化为 $\int x^m y^n \mathrm{d}x$ 这样的双元形式，则必有初等表达。或者称，双元的多项式的不定积分是初等的。
+
+
+
+% 2.3 双元的分式构型
+
+% 2.3.1 双元的非齐次基本构型
+
+% 在常见的不定积分中，总会有些非齐次的项，是不是双元就用不了呢？答案是否定的。
+
+% 例题 2.10 求解 $\int \frac{\mathrm{d}x}{\sqrt{1-x^2}+\lambda}$.
+
+% 若设 $y=\sqrt{1-x^2}$，则分母是一个双元和常数的和。我们可以把双元均看成一次，常数看成二次/零次，此之谓非齐次。因为有 $x^2+y^2=1$。通用方法是有理化：
+
+% $$\int \frac{\mathrm{d}x}{\sqrt{1-x^2}+\lambda} = \int \frac{\mathrm{d}x}{\lambda + y} = \int \frac{\lambda - y}{\lambda^2 - y^2}\mathrm{d}x$$
+
+% 这样可以分成两块来求解。
+
+% $$
+
+% I = \int \frac{\mathrm{d}x}{\lambda^2 - y^2} = \int \frac{\mathrm{d}x}{\lambda^2 - 1 + x^2}$$
+
+% $$= \begin{cases}
+
+% \frac{1}{\sqrt{\lambda^2-1}} \arctan \frac{x}{\sqrt{\lambda^2-1}}, & |\lambda|>1 \\
+
+% -\frac{1}{x}, & \lambda=1 \\
+
+% -\frac{1}{\sqrt{1-\lambda^2}} \operatorname{arcth} \frac{x}{\sqrt{1-\lambda^2}}, & |\lambda|<1
+
+% \end{cases}$$
+
+% 与另一部分，需要用到第三公式，并且将次数凑齐。
+
+% $$J = \int \frac{y \mathrm{d}x}{\lambda^2 - y^2} = \int \frac{y^4}{[\lambda^2 x^2 + (\lambda^2 - 1) y^2](x^2 + y^2)} \frac{\mathrm{d}x}{y^3}$$
+
+% $$
+
+% = \int \frac{\mathrm{d}b}{(\lambda^2 b^2 + \lambda^2 - 1)(1 + b^2)} = \int \frac{\lambda^2 \mathrm{d}b}{\lambda^2 b^2 + \lambda^2 - 1} - \int \frac{\mathrm{d}b}{1 + b^2}$$
+
+% $$= -\arctan \frac{x}{y} + \begin{cases}
+
+% \frac{|\lambda|}{\sqrt{\lambda^2-1}} \arctan \frac{|\lambda|}{\sqrt{\lambda^2-1}} \frac{x}{y}, & |\lambda|>1 \\
+
+% -\frac{y}{x}, & \lambda=1 \\
+
+% -\frac{|\lambda|}{\sqrt{1-\lambda^2}} \operatorname{arcth} \frac{|\lambda|}{\sqrt{1-\lambda^2}} \frac{x}{y}, & |\lambda|<1
+
+% \end{cases}$$
+
+% 其中 $b$ 代表两个双元的比。到此本题已经结束了。可以看到计算量略大，这是因为它其实对应着三角换元法中的万能代换，是一种理论上完美的解法。如果不是万不得已，可以不用这么配读。另外，如果这里的 $\lambda=1$ 的话是更简便的过程的，留作读者思考。
+
+% 需要注意，求解这种结构的定积分时要进行连续修正。下面是一个进行过修正的例子：
+
+% $$\int \frac{\mathrm{d}x}{\lambda + \cos x} = \begin{cases}
+
+% \frac{2 \operatorname{sgn}(\lambda)}{\sqrt{\lambda^2-1}} \left( \frac{x}{2} + \arctan \frac{(1-\sqrt{\frac{\lambda-1}{\lambda+1}}) \sin x}{(1+\sqrt{\frac{\lambda-1}{\lambda+1}}) - (1-\sqrt{\frac{\lambda-1}{\lambda+1}}) \cos x} \right), & |\lambda| > 1 \\
+
+% \cot \frac{x}{2}, & \lambda = -1; \tan \frac{x}{2}, \lambda = 1 \\
+
+% \frac{1}{\sqrt{1-\lambda^2}} \ln \left| \frac{\sqrt{\frac{1+\lambda}{1-\lambda}} \tan \frac{x}{2}}{\sqrt{\frac{1+\lambda}{1-\lambda}} + \tan \frac{x}{2}} \right|, & |\lambda| < 1
+
+% \end{cases}$$
+
+% 还可以看到，如果要写出结果，需要分很多情况讨论。所以我们在存储这部分内容
+
+% 时，可以保留一部分不定积分，类似之前 $pdq$ 的积分一样。
+
+% **定理 2.6. 非齐次构型公式 1**
+
+% 对于双元 $p, q$，我们有：
+
+% $$\int \frac{dq}{\lambda + p} = \int \frac{dq}{p} + \lambda \left[ f(q) - f\left(\frac{q}{p}\right) \right] \tag{2.20}$$
+
+% 其中：$f(q) = \int \frac{dq}{\lambda^2 - p^2}$.
+
+% 如果把 $dq/p$ 移到左边，那么我们还有
+
+% **定理 2.7. 非齐次构型公式 2**
+
+% 对于双元 $p, q$，我们有：
+
+% $$
+
+% \int \frac{dq}{p(p + \lambda)} = f\left(\frac{\lambda q}{p}\right) - f(q) \tag{2.21}$$
+
+% 其中：$f(q) = \int \frac{dq}{\lambda^2 - p^2}$.
+
+% 2.3.2 双元的齐次基本构型
+
+% **定理 2.8. 一次齐次构型公式**
+
+% (2022) 对于双元 $p, q$，若 $p^2 \pm q^2 = C$ 我们有：
+
+% $$\int \frac{dq}{Ap + Bq} = \frac{1}{A^2 \pm B^2} \left( A \int \frac{dq}{p} \pm B \ln (Ap + Bq) \right) \tag{2.22}$$
+
+% **定理 2.9. 二次齐次构型公式**
+
+% (2022) 对于双元 $p, q$，若 $p^2 \pm q^2 = C$ 我们有：
+
+% $$
+
+% \int \frac{pdq}{Ap^2 - Bq^2} = \frac{1}{A \pm B} \left( \int \frac{dq}{p} \pm \int \frac{d(q/p)}{A/B - (q/p)^2} \right) \tag{2.23}$$
+
+% 证明 Hint: 我们由等分性有：
+
+% $$p^2 \pm q^2 = C \to \int \frac{Ap dq \pm B q dp}{Ap^2 - B q^2} = \int \frac{dq}{p} \tag{2.24}$$
+
+% $$
+
+% \int \frac{p dq - q dp}{Ap^2 - B q^2} = \int \frac{p^2}{Ap^2 - B q^2} d\left(\frac{q}{p}\right) = \int \frac{d(q/p)}{A - B (q/p)^2} \tag{2.25}$$
+
+% 证明即将这两者线性组合。
+
+% 例题 2.11 求 $\int \frac{\sqrt{t^2 - 1}}{2 - t^2} dt$.
+
+% 解:(By 风中鱼) 置 $s = \sqrt{t^2 - 1}, b = \frac{t}{s}$, 有:
+
+% $$\int \frac{\sqrt{t^2 - 1}}{2 - t^2} dt = - \int \frac{s dt}{2 s^2 - t^2}$$
+
+% $$
+
+% = - \frac{1}{3} \left( \int \frac{dt}{s} - \int \frac{d(t/s)}{2 - (t/s)^2} \right)$$
+
+% $$= - \frac{1}{3} \ln (t + s) + \frac{1}{3 \sqrt{2}} \operatorname{arcth} \frac{t}{\sqrt{2} s}$$
+
+% $$
+
+% = \frac{1}{3 \sqrt{2}} \operatorname{arcth} \frac{t}{\sqrt{2} \sqrt{t^2 - 1}} - \frac{1}{3} \ln \left( t + \sqrt{t^2 - 1} \right)$$
+
+% 例题 2.12 求 $\int \frac{\sqrt{\cos 2x}}{\sin x} dx, \int \frac{dx}{\cos x \sqrt{\cos 2x}}$.
+
+% 解:(By 虚调子) 我们设
+
+% $$p = \frac{\sqrt{\cos 2x}}{\sin x}, q = \frac{\cos x}{\sin x}, r = \frac{1}{\sin x}$$
+
+% 这样我们有
+
+% $$
+
+% p^2 + 1 = q^2 = r^2 - 1, dx = - \frac{dr}{qr}$$
+
+% 于是带入后利用上面的构型公式可得。
+
+% $$\int \frac{\sqrt{\cos 2x}}{\sin x} dx = - \int \frac{dr}{p q} = \int \frac{p dq}{p^2 - 2 q^2}$$
+
+% $$
+
+% = \int \frac{p dq}{p^2 - 2 q^2} = - \left( \int \frac{dq}{p} - \int \frac{d(q/p)}{\frac{1}{2} - (q/p)} \right)$$
+
+% $$= \sqrt{2} \operatorname{arcth} \left( \frac{\sqrt{2} \cos x}{\sqrt{\cos 2x}} \right) - \ln \left( \frac{\cos x + \sqrt{\cos 2x}}{\sin x} \right)$$
+
+% 与
+
+% $$
+
+% \int \frac{dx}{\cos x \sqrt{\cos 2x}} = - \int \frac{r^2 dr}{p q q r} = - \int \frac{dp}{q^2} = - \arctan \frac{\sqrt{\cos 2x}}{\sin x} \quad (2.26)$$
+
+% 2.4 双元的恒等式诱导
+
+% 不定积分的背后往往隐藏着恒等式，下面用例题来讲解一些常用思路。
+
+% 例题 2.13 求 $\int \frac{dx}{(x+1)\sqrt{x^2 + 1}}$.
+
+% 解: (By 水中星) 我们首先需要注意到: $2(x^2 + 1) = (x + 1)^2 + (x - 1)^2$. 当然本质上和待定系数一样, 我们是为了把分母的根式以及非齐次项 $x + 1$ 化为齐次。什么意思呢?
+
+% 若令
+
+% $$\frac{\sqrt{2} \sqrt{x^2 + 1}}{x + 1} = p, \frac{x - 1}{x + 1} = q$$
+
+% 我们有 $p^2 = 1 + q^2$。作用体现在下面：
+
+% $$\int \frac{\mathrm{d}x}{(x+1)\sqrt{x^2+1}} = \int \frac{\frac{1+x}{2}\mathrm{d}q}{\frac{x+1}{p}\frac{\sqrt{2}}{p}}
+
+% = \frac{1}{\sqrt{2}} \int \frac{\mathrm{d}q}{p}
+
+% = \frac{1}{\sqrt{2}} \ln(p+q)$$
+
+% 当然，如果我们令
+
+% $$\frac{\sqrt{2}\sqrt{x^2+1}}{x-1} = p, \quad \frac{x+1}{x-1} = q$$
+
+% 也是可以算的，留作读者习题。
+
+% 我们可以发现分母的非齐次项与根号的乘积，在做这种双换元后，变成了被前面所研究的双元构型。那么如何确定我们需要的双换元呢？过程里写的是注意到一个恒等式——这个恒等式把一个根号下的多项式转变为两个多项式平方和（差）的形式。对于没有接触过双元的人来说，往往会发现，如果仅做两个多项式的比值换元（如果多项式是一次的，称为“莫比乌斯变换”），原来的积分得到了“化简”。而双元正好就是为什么所谓的“莫比乌斯变换”有用的源头。我们采用的双元体系，实际上推广了莫比乌斯变换，使得不用非得是一次的多项式之比，甚至不一定是多项式，具体可以看下面的例题。
+
+% 对于恒等式的“注意到”，如果真注意不到，也有相关的算法直接套用，具体见本节末尾的结论。
+
+% 例题 2.14 求 $\int \frac{\mathrm{d}x}{(x+1)^2(1+x^2)}$.
+
+% 解：(By 风中鱼) 置
+
+% $$
+
+% p = \frac{x-1}{x+1}, q = \frac{\sqrt{2}\sqrt{x^2+1}}{x+1},$$
+
+% 则
+
+% $$\int \frac{\mathrm{d}x}{(x+1)^2(1+x^2)} = \int \frac{2}{q^2} \frac{\mathrm{d}x}{(1+x)^4}
+
+% = \int \frac{1}{q^2} \frac{(1-p)^2}{4} \mathrm{d}p
+
+% = \frac{1}{4} \int \frac{q^2 - 2p}{q^2} \mathrm{d}p
+
+% = \frac{1}{4} \int \left(1 - \frac{2p}{q^2}\right) \mathrm{d}p
+
+% = \frac{1}{4} p - \frac{1}{2} \ln q
+
+% = \frac{1}{4} \cdot \frac{x-1}{x+1} - \frac{1}{2} \ln \frac{\sqrt{2}\sqrt{x^2+1}}{x+1}$$
+
+% 例题 2.15 求 $\int \frac{\mathrm{d}x}{(1-x^2)\sqrt{2x^2-1}}$.
+
+% 解：(By 风中鱼) 注意到：$x^{2}-(1-x^{2})=2x^{2}-1$，于是我们令
+
+% $$p=\frac{x}{\sqrt{1-x^{2}}}, q=\frac{\sqrt{2x^{2}-1}}{\sqrt{1-x^{2}}}, p^{2}-1=q^{2} \tag{2.27}$$
+
+% 则由前面的第三公式 $\mathrm{d}\left(\frac{x}{y}\right)=(y^{2}+x^{2})\frac{\mathrm{d}x}{y^{3}}$ 不难得到：$\mathrm{d}p=\frac{\mathrm{d}x}{(\sqrt{1-x^{2}})^{3}}$，于是：
+
+% $$
+
+% \int \frac{\mathrm{d}x}{(1-x^{2})\sqrt{2x^{2}-1}} = \int \frac{\mathrm{d}p}{q} = \ln{(p+q)} = \ln{\frac{x+\sqrt{2x^{2}-1}}{\sqrt{1-x^{2}}}}$$
+
+% 例题 2.16 求 $\int \frac{\mathrm{d}x}{x\sqrt{1+x^{2}+3x^{4}}}$．
+
+% 解：(By 风中鱼) 注意到恒等式：
+
+% $$1+x^{2}+3x^{4} = \left(\frac{1}{2}x^{2}+1\right)^{2} + \frac{11}{4}x^{4}$$
+
+% 我们置 $p=\frac{2\sqrt{1+x^{2}+3x^{4}}}{\sqrt{11}x^{2}}, q=\frac{x^{2}+2}{\sqrt{11}x^{2}}, \mathrm{d}q=\frac{-4\mathrm{d}x}{\sqrt{11}x^{3}}$，于是
+
+% $$
+
+% \int \frac{\mathrm{d}x}{x\sqrt{1+x^{2}+3x^{4}}} = \int \frac{\mathrm{d}x}{p\frac{\sqrt{11}}{2}x^{3}} = \int \frac{-\frac{\sqrt{11}}{4}x^{3}\mathrm{d}q}{p\frac{\sqrt{11}}{2}x^{3}} = -\frac{1}{2}\int \frac{\mathrm{d}q}{p} = -\frac{1}{2}\ln{(p+q)}$$
+
+% 例题 2.17 求 $\int \frac{1-x^{2}}{1+x^{2}}\frac{\mathrm{d}x}{\sqrt{1+x+x^{2}}}$．
+
+% 解：(By 风中鱼) 注意到：$(1+x)^{2}=2(1+x+x^{2})-(1+x^{2})$，于是我们令
+
+% $$p=\sqrt{2}\sqrt{\frac{1+x+x^{2}}{1+x^{2}}}, q=\frac{1+x}{\sqrt{1+x^{2}}}, r=\frac{1-x}{\sqrt{1+x^{2}}}$$
+
+% 就有 $q^{2}=p^{2}-1=2-r^{2}$，于是
+
+% $$
+
+% \int \frac{1-x^{2}}{1+x^{2}}\frac{\mathrm{d}x}{\sqrt{1+x+x^{2}}} = \int \frac{2\mathrm{d}x}{(1+x^{2})\sqrt{1+x+x^{2}}} - \int \frac{\mathrm{d}x}{\sqrt{1+x+x^{2}}} = \int \frac{2\sqrt{2}}{p}\mathrm{d}\left(\frac{q-r}{2}\right) - \ln{\left|x+\frac{1}{2}+\sqrt{1+x+x^{2}}\right|} = \sqrt{2}\ln{|p+q|} - \sqrt{2}\arctan{\frac{r}{p}} - \ln{\left|x+\frac{1}{2}+\sqrt{1+x+x^{2}}\right|}$$
+
+% 例题 2.18 求 $\int \frac{R\sin\theta\cos\theta-r\sin\theta}{(R^{2}+r^{2}-2Rr\cos\theta)^{\frac{3}{2}}}\mathrm{d}\theta$．
+
+% 解:(By 风中鱼)注意到:
+
+% $(R\cos \theta -r)^{2}+(R\sin \theta)^{2}=R^{2}+r^{2}-2Rr\cos \theta =(R-r\cos \theta)^{2}+(r\sin \theta)^{2}$
+
+% 则有:
+
+% $R^{2}(R-r\cos \theta)^{2}-r^{2}(R\cos \theta -r)^{2}=(R^{2}-r^{2})(R^{2}+r^{2}-2Rr\cos \theta)$
+
+% 若设
+
+% $m=\frac{r}{R}\frac{R\cos \theta -r}{R\,R-r\cos \theta},n=\frac{\sqrt{R^{2}-r^{2}}}{R}\frac{\sqrt{R^{2}+r^{2}-2Rr\cos \theta}}{R-r\cos \theta}$
+
+% 则构成了双元 $m^{2}+n^{2}=1$。同时: $dm=\frac{r}{R}\frac{(r^{2}-R^{2})\sin \theta}{(R-r\cos \theta)^{2}}d\theta$, 于是:
+
+% $\int \frac{R\sin \theta \cos \theta -r\sin \theta}{(R^{2}+r^{2}-2Rr\cos \theta)^{\frac{3}{2}}}d\theta =-\frac{\sqrt{R^{2}-r^{2}}}{r^{2}R}\int \frac{mdm}{n^{3}}$
+
+% $=\frac{\sqrt{R^{2}-r^{2}}}{r^{2}R}\int \frac{dn}{n^{2}}$
+
+% $=-\frac{R-r\cos \theta}{r^{2}\sqrt{R^{2}+r^{2}-2Rr\cos \theta}}$
+
+
+
+% 例题 2.19 求 $\int \frac{\sqrt{x^{2}+x+1}}{(x+1)^{2}}dx$.
+
+
+
+% 解:(By 水中星)由于有恒等式:
+
+% $3(x+1)^{2}+(x-1)^{2}=4(x^{2}+x+1)$
+
+% 故不妨设
+
+% $p=\frac{x-1}{x+1},q=2\frac{\sqrt{x^{2}+x+1}}{x+1}$
+
+% 同时有 $dp=\frac{2dx}{(x+1)^{2}}$, 故:
+
+% $\int \frac{\sqrt{x^{2}+x+1}}{(x+1)^{2}}dx =\int \frac{dx}{\sqrt{x^{2}+x+1}}-\int \frac{x dx}{(x+1)^{2}\sqrt{x^{2}+x+1}}$
+
+% $=\ln \left(x+\frac{1}{2}+\sqrt{x^{2}+x+1}\right)-\int \frac{x dp}{q(x+1)}$
+
+% $=\ln \left(x+\frac{1}{2}+\sqrt{x^{2}+x+1}\right)-\int \frac{(p+1)dp}{2q}$
+
+% $=\ln \left(x+\frac{1}{2}+\sqrt{x^{2}+x+1}\right)-\frac{1}{2q}-\frac{1}{2}\ln (p+q)$
+
+% $=\ln \left(x+\frac{1}{2}+\sqrt{x^{2}+x+1}\right)-\frac{\sqrt{x^{2}+x+1}}{x+1}-\frac{1}{2}\ln \left(\frac{x-1+2\sqrt{x^{2}+x+1}}{x+1}\right)$
+
+
+
+% 例题 2.20 求 $\int \frac{x^{2}+1}{(x-1)^{\frac{5}{2}}\sqrt{1+x^{3}}}dx$.
+
+% 解:(By 虚调子) 注意到恒等式:
+
+% $$4(1+x^{3})=3(x-1)^{2}(x+1)+(x+1)^{3} \tag{2.32}$$
+
+% 若设双元:
+
+% $$
+
+% p=\frac{2}{x-1}\sqrt{\frac{x^{3}+1}{x+1}}, q=\frac{x+1}{x-1}, p^{2}=3+q^{2} \tag{2.33}$$
+
+% 则:
+
+% $$\int\frac{x^{2}+1}{(x-1)^{\frac{5}{2}}\sqrt{1+x^{3}}}dx =\int\frac{\frac{2}{(x-1)^{2}}\cdot\frac{x^{2}+1}{2}}{p\sqrt{q}}\cdot\frac{dx}{(x-1)^{2}}$$
+
+% $$
+
+% =-\int\frac{q^{2}+1}{p\sqrt{q}}\frac{dq}{2} =-\frac{1}{6}\int\frac{2q^{2}+p^{2}}{p\sqrt{q}}dq$$
+
+% $$=-\frac{1}{3}\int\frac{2qdq+pdq}{2\sqrt{q}} =-\frac{1}{3}\int d(p\sqrt{q})$$
+
+% $$
+
+% =-\frac{1}{3}p\sqrt{q} =-\frac{2}{3}\frac{\sqrt{1+x^{3}}}{(x-1)^{\frac{3}{2}}}$$
+
+% 我们可以总结出一类双元思路:
+
+% $$p,q,r\mapsto\frac{2}{x-1}\sqrt{\frac{x^{3}+1}{x+1}},\frac{x+1}{x-1},\sqrt{2}\frac{\sqrt{x^{2}+1}}{x-1}$$
+
+% 这对解具备相似结构的不定积分提供了便利。在这里面令 $x=\frac{t}{a}$ 可以进行一点小的推广。
+
+% 如果对数字不太敏感的读者,可以利用如下公式来“注意到恒等式”。
+
+% 结论
+
+% $$
+
+% (a^{2}-4b)(x+x_{0})^{2}+4(x_{0}^{2}-ax_{0}+b)(x^{2}+ax+b)=[(2x_{0}-a)x+ax_{0}-2b]^{2} \tag{2.34}$$
+
+% 其中 $x_{0},a,b$ 可以视为用来固定的参数。
+
+% 使用方法是,我们从分母中选取要凑的式子 $(x+x_{0})^{2}$ 和 $x^{2}+ax+b$, 然后把系数代到上面的式子, 这样会自然得到另一个新的平方项。
+
+% 2.5 特殊的双元
+
+% 定理 2.10. 辅助角公式
+
+% 对于常数 $a,b>0$, 有:
+
+% $$a\sin x + b\cos x = \sqrt{a^{2}+b^{2}}\sin(x+\phi) \tag{2.35}$$
+
+% 其中 $\tan\phi = \frac{b}{a}$.
+
+% 同样地利用辅助角公式可以得到:
+
+% $$
+
+% b\sin x - a\cos x = \sqrt{a^{2}+b^{2}}\cos(x+\phi) \tag{2.36}$$
+
+% 这里我们可以发现双元
+
+% $\left\{\frac{a \sin x+b \cos x}{\sqrt{a^{2}+b^{2}}}, \frac{b \sin x-a \cos x}{\sqrt{a^{2}+b^{2}}}\right\}$
+
+% 它对应着初始双元 $\{\sin x, \cos x\}$ 逆时针旋转了 $\phi: \{\sin (x+\phi), \cos (x+\phi)\}$.
+
+
+
+% 类似地我们可以对其他双元旋转来产生新的双元。而且在实际中旋转后的双元很有效果。
+
+
+
+% 下面是一些常见双元的例子：
+
+
+
+% 2.5.1 对勾三元
+
+
+
+% 因为有恒等式 $\left(x-\frac{a}{x}\right)^{2}+4 a=\left(x+\frac{a}{x}\right)^{2}$，所以这里可以诱导出一对双元。（又称“对勾三元（From Mirion）”）
+
+
+
+% $p, q, r \mapsto x+\frac{a}{x}, x-\frac{a}{x}, \sqrt{x^{2}+\frac{a^{2}}{x^{2}}+b}$
+
+
+
+% 在化简一些四次的不定积分上，有奇效。观察次数差来换双元即可。另外还有一个特别的小技巧，我们可以注意到 $\frac{1}{2} p+\frac{1}{2} q=x$，由等分性：
+
+% $\frac{\mathrm{d} x}{x}=\frac{\mathrm{d}\left(\frac{1}{2} p+\frac{1}{2} q\right)}{\frac{1}{2} p+\frac{1}{2} q}=\frac{\mathrm{d} p}{q}$
+
+% (2.37)
+
+
+
+% 如果将 $x$ 换成 $x^{n}$，那么
+
+% $n \frac{\mathrm{d} x}{x}=\frac{\mathrm{d}\left(x^{n}\right)}{x^{n}}=\frac{\mathrm{d} p}{q}$
+
+% (2.38)
+
+
+
+% 这个技巧将在下面的例题中频繁使用。
+
+
+
+% 例题 2.21 求 $\int \frac{1-x^{2}}{1+x^{2}} \frac{\mathrm{d} x}{\sqrt{x^{4}+x^{2}+1}}$.
+
+
+
+% 解：(By 风中鱼) 设
+
+% $p=x+\frac{1}{x}, q=x-\frac{1}{x}, r=\frac{\sqrt{x^{4}+x^{2}+1}}{x}$
+
+% (2.39)
+
+
+
+% 则：
+
+% $\begin{aligned} \int \frac{1-x^{2}}{1+x^{2}} \frac{\mathrm{d} x}{\sqrt{x^{4}+x^{2}+1}} & =-\int \frac{\mathrm{d} p}{p r} \\ & =-\int \frac{\mathrm{d} r}{p^{2}}=-\int \frac{\mathrm{d} r}{r^{2}+1} \\ & =\arctan \frac{x}{\sqrt{x^{4}+x^{2}+1}} \end{aligned}$
+
+
+
+% 例题 2.22 求 $\int \frac{x^{4}-1}{x^{4}+x^{2}+1} \frac{\mathrm{d} x}{\sqrt{1+x^{4}}}$.
+
+% 解:(By 风中鱼) 设
+
+% $$p = x - \frac{1}{x}, q = x + \frac{1}{x}, r = \frac{\sqrt{1 + x^2 + x^4}}{x}, s = \frac{\sqrt{1 + x^4}}{x}$$
+
+% 则有双元分解:
+
+% $$
+
+% \int \frac{x^4 - 1}{x^4 + x^2 + 1} \frac{dx}{\sqrt{1 + x^4}} = \int \frac{pq}{r^2 s} \frac{dx}{x} = \int \frac{pq}{r^2 s} \frac{qdp - pdq}{4} = \int \frac{(q^2 - p^2)}{4r^2} ds = \int \frac{ds}{r^2} = \arctan \frac{\sqrt{1 + x^4}}{x} \to -\arctan \frac{x}{\sqrt{1 + x^4}}$$
+
+% 例题 2.23 求 $\int \frac{x^4 - 1}{x^2} \frac{dx}{\sqrt{x^4 + x^2 + 1}}$.
+
+% 解:(By 风中鱼) 设
+
+% $$p = x + \frac{1}{x}, q = x - \frac{1}{x}, r = \sqrt{\left(x + \frac{1}{x}\right)^2 - 1}$$
+
+% 则有双元分解:
+
+% $$
+
+% \int \frac{x^4 - 1}{x^2} \frac{dx}{\sqrt{x^4 + x^2 + 1}} = \int \frac{pq}{r} \frac{dq}{p} = \int \frac{qdq}{r} = \int dr = \sqrt{\left(x + \frac{1}{x}\right)^2 - 1}$$
+
+% 例题 2.24 求 $\int \frac{x^4 + x^2}{(x^4 + 1)^2} dx$.
+
+% 解:(By 风中鱼) 置
+
+% $$p = x + \frac{1}{x}, q = x - \frac{1}{x}, r = \sqrt{x^2 + \frac{1}{x^2}}$$
+
+% 有
+
+% $$
+
+% \int \frac{x^4 + x^2}{(x^4 + 1)^2} dx = \int \frac{1 + \frac{1}{x^2}}{(x^2 + \frac{1}{x^2})^2} dx = \int \frac{dq}{r^4} = \frac{1}{2} \int \frac{r^2 - q^2}{r^4} dq = \frac{1}{2} \int \frac{dq}{q^2 + 2} - \frac{1}{2} \int \frac{qdr}{r^3} = \frac{q}{4r^2} + \frac{1}{4\sqrt{2}} \arctan \frac{q}{\sqrt{2}} = \frac{x^3 - x}{4(x^4 + 1)} + \frac{1}{4\sqrt{2}} \arctan \frac{x^2 - 1}{\sqrt{2}x}$$
+
+% 例题 2.25 求 $\int \frac{x^{2}+n^{2} x+1}{x^{4}-n x^{2}+1} \mathrm{~d} x$, 其中 $n \in(0,2)$.
+
+
+
+% 解: (By 水中星) 使 $a=1$, 则
+
+
+
+% $\begin{aligned} \int \frac{p+n^{2}}{p^{2}-2-n} \cdot \frac{\mathrm{d} p+\mathrm{d} q}{p+q} & =\int \frac{p+n^{2}}{p^{2}-2-n} \cdot \frac{p \mathrm{~d} q-q \mathrm{~d} p}{p^{2}-q^{2}} \\ & =\int \frac{\mathrm{d} q}{q^{2}-2-n}+n^{2} \int \frac{p^{2} \mathrm{~d}(q / p)}{p^{2}-\frac{2+n}{4}\left(p^{2}-q^{2}\right)} \\ & =\int \frac{\mathrm{d} q}{q^{2}+2-n}+4 n^{2} \int \frac{\mathrm{d} b}{(2+n) b^{2}+(2-n)} \\ & =\frac{1}{\sqrt{2-n}} \arctan \frac{q}{\sqrt{2-n}}+\frac{4 n^{2}}{\sqrt{4-n^{2}}} \arctan \sqrt{\frac{2+n}{2-n}} \frac{q}{p} \\ & =\frac{1}{\sqrt{2-n}} \arctan \frac{x-1 / x}{\sqrt{2-n}}+\frac{4 n^{2}}{\sqrt{4-n^{2}}} \arctan \sqrt{\frac{2+n}{2-n}} \frac{x^{2}-1}{x^{2}+1} \end{aligned}$
+
+
+
+% 例题 2.26 求 $\int \frac{1-x}{1+x} \frac{\mathrm{d} x}{\sqrt{x^{4}+k x^{2}+1}}$.
+
+
+
+% 解: (By 风中鱼) 我们置
+
+
+
+% $p=x+\frac{1}{x}, q=x-\frac{1}{x}, r=\frac{\sqrt{x^{4}+k x^{2}+1}}{x}$
+
+
+
+% 就有 $p^{2}-r^{2}=2-k$, 此时原来的结构明晰:
+
+
+
+% $\begin{aligned} \int \frac{1-x}{1+x} \frac{\mathrm{d} x}{\sqrt{x^{4}+k x^{2}+1}} & =\int \frac{1-x^{2}}{x^{2}+2 x+1} \frac{\mathrm{d} x}{\sqrt{x^{4}+k x^{2}+1}} \\ & =-\int \frac{\mathrm{d} p}{(2+p) r}=\int \frac{p-2}{4-p^{2}} \frac{\mathrm{d} p}{r} \\ & =\int \frac{\mathrm{d} r}{2+k-r^{2}}-2 \int \frac{r^{2}}{4 r^{2}-(k+2) p^{2}} \mathrm{~d}\left(\frac{p}{r}\right) \\ & =\left\{\begin{array}{l} \frac{1}{\sqrt{2+k}}\left[\operatorname{arth} \frac{\sqrt{x^{4}+k x^{2}+1}}{x \sqrt{2+k}}-\operatorname{arth} \frac{\sqrt{k+2}\left(1+x^{2}\right)}{2 \sqrt{x^{4}+k x^{2}+1}}\right](k>-2) \\ \frac{x-1}{|x^{2}-1|}(k=-2) \\ -\frac{1}{\sqrt{-2-k}}\left[\arctan \frac{\sqrt{x^{4}+k x^{2}+1}}{x \sqrt{-2-k}}+\arctan \frac{\sqrt{-k-2}\left(1+x^{2}\right)}{2 \sqrt{x^{4}+k x^{2}+1}}\right](k<-2) \end{array}\right. \end{aligned}$
+
+
+
+% 例题 2.27 求 $\int \frac{\sqrt{x^{2}+2 x+2}}{x} \mathrm{~d} x$.
+
+
+
+% 解: (By 风中鱼) 不妨设:
+
+
+
+% $p=\sqrt{x}+\sqrt{\frac{2}{x}}, q=\sqrt{x}-\sqrt{\frac{2}{x}}, r=\sqrt{x+\frac{2}{x}+2}$
+
+
+
+% 则积分可以转化为双元：
+
+% $$\int \frac{\sqrt{x^2 + 2x + 2}}{x} dx = \int \frac{r}{\sqrt{x}} dx = \int r d(p+q)$$
+
+% $$
+
+% = \frac{1}{2}(p+q)r + (1 - \sqrt{2}) \int \frac{dp}{r} + (1 + \sqrt{2}) \int \frac{dq}{r}$$
+
+% $$= \sqrt{x^2 + 2x + 2} + (1 - \sqrt{2}) \ln \left( \sqrt{x + \frac{2}{x} + 2} + \sqrt{x + \sqrt{\frac{2}{x}}} \right)$$
+
+% $$
+
+% + (1 + \sqrt{2}) \ln \left( \sqrt{x + \frac{2}{x} + 2} + \sqrt{x} - \sqrt{\frac{2}{x}} \right)$$
+
+% $$= \sqrt{x^2 + 2x + 2} + \ln \left( x + 1 + \sqrt{x^2 + 2x + 2} \right)$$
+
+% $$
+
+% + \sqrt{2} \ln \frac{\sqrt{x^2 + 2x + 2} + x - \sqrt{2}}{\sqrt{x^2 + 2x + 2} + x + \sqrt{2}}$$
+
+% 例题 2.28 求 $\int \sqrt{a + \left(\frac{x}{2} - \frac{1}{2x}\right)^2} dx$.
+
+% 解: (By 风中鱼) 不妨设:
+
+% $$p = \frac{x}{2} - \frac{1}{2x}, q = \frac{x}{2} + \frac{1}{2x}, r = \sqrt{a + \left(\frac{x}{2} - \frac{1}{2x}\right)^2}$$
+
+% 则积分可以转化为双元:
+
+% $$
+
+% \int \sqrt{a + \left(\frac{x}{2} - \frac{1}{2x}\right)^2} dx = \int r d(p+q)$$
+
+% $$= \frac{1}{2}(p+q)r + \frac{a}{2} \ln(r+p) + \frac{a-1}{2} \ln(r+q)$$
+
+% $$
+
+% = \frac{x}{2} \sqrt{a + \left(\frac{x}{2} - \frac{1}{2x}\right)^2} + \frac{a}{2} \ln \left( \frac{x}{2} - \frac{1}{2x} + \sqrt{a + \left(\frac{x}{2} - \frac{1}{2x}\right)^2} \right)$$
+
+% $$+ \frac{a-1}{2} \ln \left( \frac{x}{2} + \frac{1}{2x} + \sqrt{a + \left(\frac{x}{2} - \frac{1}{2x}\right)^2} \right)$$
+
+% 例题 2.29 求 $\int \frac{\sqrt{x^2 + ax + 1}}{\sqrt{x^2 + bx + 1}} \cdot \frac{dx}{x^2 - 1}$.
+
+% 解: (By 风中鱼) 若设
+
+% $$
+
+% p = \sqrt{x} + \frac{1}{\sqrt{x}}, q = \sqrt{x} - \frac{1}{\sqrt{x}}, r = \sqrt{x + \frac{1}{x} + a}, s = \sqrt{x + \frac{1}{x} + b}$$
+
+% 则
+
+% $$\int \frac{\sqrt{x^{2}+a x+1}}{\sqrt{x^{2}+b x+1}} \frac{\mathrm{d} x}{x^{2}-1}=\int \frac{r}{s} \frac{1}{p q} \frac{2 \mathrm{d} p}{q}=2 \int \frac{r \mathrm{d} s}{p^{2} q^{2}}$$
+
+% $$
+
+% =\frac{1}{2} \int \frac{r}{q^{2}} \mathrm{d} s-\frac{1}{2} \int \frac{r}{p^{2}} \mathrm{d} s$$
+
+% $$=\frac{b-a}{2} \int \frac{r \mathrm{d} s}{(b+2) r^{2}-(a+2) s^{2}}-\frac{b-a}{2} \int \frac{r \mathrm{d} s}{(b-2) r^{2}-(a-2) s^{2}}$$
+
+% $$
+
+% =\frac{1}{2}\left(\int \frac{\mathrm{d} t}{\frac{b-2}{a-2}-t^{2}}-\int \frac{\mathrm{d} t}{\frac{b+2}{a+2}-t^{2}}\right), t=\frac{s}{r}$$
+
+% $$=\frac{1}{2} \sqrt{\frac{a-2}{b-2}} \operatorname{ar th} \sqrt{\frac{a-2}{b-2}} \frac{\sqrt{x^{2}+b x+1}}{\sqrt{x^{2}+a x+1}}$$
+
+% $$
+
+% -\frac{1}{2} \sqrt{\frac{a+2}{b+2}} \operatorname{ar th} \sqrt{\frac{a+2}{b+2}} \frac{\sqrt{x^{2}+b x+1}}{\sqrt{x^{2}+a x+1}}$$
+
+% 例题 2.30 求 $\int \frac{x^{2}+1}{x^{4}+x^{3}+x^{2}+x+1} \mathrm{~d} x$.
+
+% 解: (By 风中鱼) 使 $a=1, b=1$ 也即令:
+
+% $$p=x+\frac{1}{x}, q=x-\frac{1}{x}, r=\sqrt{x^{2}+\frac{1}{x^{2}}}+1$$
+
+% 那么我们可以简化原式:
+
+% $$
+
+% \int \frac{x^{2}+1}{x^{4}+x^{3}+x^{2}+x+1} \mathrm{~d} x=\int \frac{\left(1+\frac{1}{x^{2}}\right) \mathrm{d} x}{x^{2}+\frac{1}{x^{2}}+x+\frac{1}{x}+1}$$
+
+% $$=\int \frac{\mathrm{d} q}{r^{2}+p}=\int \frac{\mathrm{d} q}{p^{2}+p-1}$$
+
+% $$
+
+% =\int \frac{\mathrm{d} q}{p-\frac{\sqrt{5}-1}{2}}-\int \frac{\mathrm{d} q}{p+\frac{\sqrt{5}+1}{2}}$$
+
+% 然后利用一个常用结论 (属于王者百题热身题).
+
+% $$\int \frac{\mathrm{d} q}{p+a}=\int \frac{(p-a) \mathrm{d} q}{p^{2}-a^{2}}$$
+
+% $$
+
+% =\int \frac{\mathrm{d} q}{p}+a^{2} \int \frac{1}{p^{2}-a^{2}} \frac{\mathrm{d} q}{p}-a \int \frac{\mathrm{d} q}{q^{2}+4-a^{2}}$$
+
+% $$=\ln (p+q)+a^{2} \int \frac{p^{2} \mathrm{d}(q / p)}{(4-a^{2}) p^{2}+a^{2} q^{2}}-a \int \frac{\mathrm{d} q}{q^{2}+4-a^{2}}$$
+
+% 然后分别带入一定的 $a$ 值即可。
+
+% $$
+
+% \int \frac{\mathrm{d} q}{p-\frac{\sqrt{5}-1}{2}}=\ln (p+q)+\int \frac{\mathrm{d} b}{\frac{1}{5+2 \sqrt{5}}+b^{2}}+\frac{\sqrt{5}-1}{2} \int \frac{\mathrm{d} q}{q^{2}+\frac{5+\sqrt{5}}{2}}$$
+
+% $$=\ln (p+q)+\sqrt{5+2 \sqrt{5}} \operatorname{arc} \tan \left(\sqrt{5+2 \sqrt{5}} \frac{q}{p}\right)$$
+
+% $$
+
+% +\frac{\sqrt{5}-1}{\sqrt{10+2 \sqrt{5}}} \operatorname{arc} \tan \frac{\sqrt{2} q}{\sqrt{5+\sqrt{5}}}$$
+
+% 同理：
+
+% $$\int \frac{dq}{p+\frac{\sqrt{5}+1}{2}} = \ln(p+q)+\sqrt{5-2\sqrt{5}}\arctan\left(\sqrt{5-2\sqrt{5}}\frac{q}{p}\right) -\frac{\sqrt{5}+1}{\sqrt{10-2\sqrt{5}}}\arctan\frac{\sqrt{2}q}{\sqrt{5-\sqrt{5}}}$$
+
+% 最后带入原式，
+
+% $$
+
+% \int \ldots dx = \sqrt{5+2\sqrt{5}}\arctan\left(\sqrt{5+2\sqrt{5}}\frac{x^2-1}{x^2+1}\right) + \frac{\sqrt{5}-1}{\sqrt{10+2\sqrt{5}}}\arctan\frac{\sqrt{2}(x-1/x)}{\sqrt{5+\sqrt{5}}} -\sqrt{5-2\sqrt{5}}\arctan\left(\sqrt{5-2\sqrt{5}}\frac{x^2-1}{x^2+1}\right) -\frac{\sqrt{5}+1}{\sqrt{10-2\sqrt{5}}}\arctan\frac{\sqrt{2}(x-1/x)}{\sqrt{5-\sqrt{5}}}$$
+
+% 右边这两个可以由之前的结论修正，这里限于篇幅就不过多介绍了。
+
+% 例题 2.31 求 $\int \frac{dx}{x+\sqrt{x^2-x+1}}$.
+
+% 解：(By 风中鱼) 设
+
+% $$p=\sqrt{x-1}+\frac{1}{\sqrt{x-1}}, q=\sqrt{x-1}-\frac{1}{\sqrt{x-1}}, r=\sqrt{x+\frac{1}{x-1}}$$
+
+% 则不难求解：
+
+% $$
+
+% \int \frac{dx}{x+\sqrt{x^2-x+1}} = \int \frac{x-\sqrt{x^2-x+1}}{x-1}dx = x+\ln|x-1| - \int rd(p+q)$$
+
+% $$= x+\ln|x-1|-r\sqrt{x-1}+\frac{1}{2}\ln(p+r)-\frac{3}{2}\ln(q+r)$$
+
+% $$
+
+% = x+\frac{3}{2}\ln|x-1|-\sqrt{x^2-x+1}+\frac{1}{2}\ln\left(x+\sqrt{x^2-x+1}\right) -\frac{3}{2}\ln\left(x-2+\sqrt{x^2-x+1}\right)$$
+
+% 读者习题: 求
+
+% $$\int \frac{dx}{x+\sqrt{x^2+x+1}} \tag{2.42}$$
+
+
+
+% 例题 2.32 求 $\int \frac{\sqrt{1+x^4}}{1-x^4}dx$.
+
+% 解:(By 虚调子) 设 $p = \frac{1}{x} + x, q = \frac{1}{x} - x, r = \sqrt{x^2 + \frac{1}{x^2}}$, 则:
+
+% $$\int \frac{\sqrt{1 + x^4}}{1 - x^4} \mathrm{d}x = \int \frac{r}{pq} \cdot \frac{\mathrm{d}x}{x} = \int \frac{r}{pq} \cdot \frac{p + q}{2} \mathrm{d}\left(\frac{p - q}{2}\right)$$
+
+% $$
+
+% = \frac{1}{4} \int \frac{r}{pq} (q \mathrm{d}p - p \mathrm{d}q) = \frac{1}{4} \int \frac{r \mathrm{d}p}{p} - \frac{1}{4} \int \frac{r \mathrm{d}q}{q}$$
+
+% $$= \frac{1}{4} \left( \int \frac{r^2 \mathrm{d}r}{r^2 + 2} - \int \frac{r^2 \mathrm{d}r}{r^2 - 2} \right)$$
+
+% $$
+
+% = \frac{1}{2\sqrt{2}} \left( \operatorname{arth} \frac{r}{\sqrt{2}} - \arctan \frac{r}{\sqrt{2}} \right)$$
+
+% $$= \frac{1}{2\sqrt{2}} \left( \operatorname{arth} \frac{\sqrt{1 + x^4}}{\sqrt{2}x} - \arctan \frac{\sqrt{1 + x^4}}{\sqrt{2}x} \right)$$
+
+% 例题 2.33 求 $\int \frac{\mathrm{d}x}{\sqrt{(x + x^{-1})^2 - 12}}$
+
+% 解:(By 零蛋大) 设 $p = x + x^{-1}, q = x - x^{-1}, r = \sqrt{(x + x^{-1})^2 - 12}$, 则
+
+% $$
+
+% \int \frac{\mathrm{d}x}{\sqrt{(x + x^{-1})^2 - 12}} = \int \frac{\mathrm{d}(p + q)}{2r}$$
+
+% $$= \frac{1}{2} \ln [(p + r)(q + r)]$$
+
+% $$
+
+% = \frac{1}{2} \ln \left( 2x^2 - 10 + 2x \sqrt{(x + x^{-1})^2 - 12} \right)$$
+
+% 例题 2.34 求 $\int \frac{1 - x + 3x^2}{(1 + x + x^2)^2 \sqrt{1 - x + x^2}} \mathrm{d}x.$
+
+% 解:(By 风中鱼) 利用前面的经验, 我们置:
+
+% $$\begin{cases}
+
+% p = \sqrt{x} + \frac{1}{\sqrt{x}}, q = \sqrt{x} - \frac{1}{\sqrt{x}} \\
+
+% r = \sqrt{x + \frac{1}{x} - 1}, s = \sqrt{x + \frac{1}{x} + 1}
+
+% \end{cases}
+
+% \tag{2.43}$$
+
+% 若已知元素:
+
+% $$I = \int \frac{\mathrm{d}q}{s^2 r} = \int \frac{r^2}{3r^2 - 2q^2} \mathrm{d}\left(\frac{q}{r}\right) = \frac{1}{\sqrt{6}} \operatorname{arth} \sqrt{\frac{2}{3}} \frac{q}{r}
+
+% \tag{2.44}$$
+
+% $$J = \int \frac{\mathrm{d}p}{s^2 r} = - \int \frac{r^2}{r^2 + 2p^2} \mathrm{d}\left(\frac{p}{r}\right) = - \frac{1}{\sqrt{2}} \arctan \sqrt{2} \frac{p}{r}
+
+% \tag{2.45}$$
+
+% 于是有
+
+% $$\int \frac{1 - x + 3x^2}{(1 + x + x^2)^2 \sqrt{1 - x + x^2}} dx = \int \frac{\sqrt{1 - x + x^2} dx}{(1 + x + x^2)^2} + \int \frac{2x^2 dx}{(1 + x + x^2)^2 \sqrt{1 - x + x^2}}$$
+
+% $$
+
+% = \int \frac{\sqrt{x} dx}{x^2 s^4} + \int \frac{2 dx}{\sqrt{x} s^4 r}$$
+
+% $$= \int \frac{r}{s^4} (dq - dp) + 2 \int \frac{dp + dq}{s^4 r}$$
+
+% $$
+
+% = \int \frac{r^2 + 2}{s^4 r} dq + \int \frac{2 - r^2}{s^4 r} dp = \int \frac{dq + dp}{s^2 r} - 2 \int \frac{r dp}{s^4}$$
+
+% $$= I + J + 2 \int \frac{r dp}{s^2} - 2 \int \frac{rp^2 dp}{s^4}$$
+
+% $$
+
+% = I - 3J + 2 \int \frac{dp}{r} - 2 \int \frac{rp^2 dp}{s^4}$$
+
+% 同时我们注意到：
+
+% $$d \left( \frac{pr}{s^2} \right) = \frac{p dr + r dp}{s^2} - \frac{2 pr ds}{s^3}$$
+
+% $$
+
+% = \frac{(p^2 + r^2) dp}{s^2 r} - 2 \frac{rp^2 dp}{s^4}$$
+
+% $$= 2 \frac{dp}{r} - J - 2 \frac{rp^2 dp}{s^4}$$
+
+% 这样原积分结构明了，
+
+% $$
+
+% \int \frac{1 - x + 3x^2}{(1 + x + x^2)^2 \sqrt{1 - x + x^2}} dx = I - 2J + \frac{pr}{s^2} = \frac{pr}{s^2} - \frac{1}{\sqrt{6}} \ar th \sqrt{\frac{2}{3}} \frac{q}{r} + \sqrt{2} \arctan \sqrt{2} \frac{p}{r}$$
+
+% $$= \frac{(1 + x) \sqrt{1 - x + x^2}}{1 + x + x^2}$$
+
+% $$
+
+% + \sqrt{2} \arctan \frac{\sqrt{2}(1 + x)}{\sqrt{1 - x + x^2}} - \frac{1}{\sqrt{6}} \ar th \frac{\sqrt{6}(1 - x)}{3 \sqrt{1 - x + x^2}}$$
+
+% 例题 2.35 求 $\int \frac{\sqrt{x - 3}}{\sqrt{x - 3} + \sqrt{9 - x}} dx$.
+
+% 解：(By 风中鱼) 不妨设
+
+% $$p = \sqrt{x - 3} + \sqrt{9 - x}, q = \sqrt{x - 3} - \sqrt{9 - x}$$
+
+% 则我们可以发现 $p^2 + q^2 = 12, pq = 2x - 12$, 于是
+
+% $$
+
+% \int \frac{\sqrt{x - 3}}{\sqrt{x - 3} + \sqrt{9 - x}} dx = \int \frac{p + q}{2p} d \left( \frac{pq}{2} \right)$$
+
+% $$= \frac{1}{4} \int \frac{(p + q)(p dq + q dp)}{p}$$
+
+% $$
+
+% = \frac{1}{4} \int \frac{p^2 dq + p q dp + p q dq + q^2 dp}{p}$$
+
+% $$= \frac{1}{4} p q + \frac{1}{8} q^2 + \frac{1}{4} \int \frac{12 - p^2}{p} dp$$
+
+% $$
+
+% = \frac{1}{2} x - \frac{1}{2} \sqrt{(x - 3)(9 - x)} + 3 \ln \left( \sqrt{x - 3} + \sqrt{9 - x} \right)$$
+
+% 2.5.2 三角三元
+
+% 下面我们设 $p = \cos x + \sin x$, $q = \cos x - \sin x$, 这其实是原来的初始双元进行了 $45^\circ$ 旋转。如果必要还可以加一个二次元：$r = \sqrt{2 \sin x \cos x}$。
+
+% $$p, q, r \longmapsto \cos x + \sin x, \cos x - \sin x, \sqrt{2 \sin x \cos x}$$
+
+% - 有数量关系：$r^2 = p^2 - 1 = 1 - q^2$
+
+% - 有导数关系：$dp = q dx, dq = -p dx$。
+
+% 例题 2.36 求 $\displaystyle \int \frac{\sin^2 x \cos x}{\sin x + \cos x} dx$。
+
+% 解：(By 风中鱼)
+
+% $$
+
+% \int \frac{\sin^2 x \cos x}{\sin x + \cos x} dx = \int \frac{\frac{r^2}{2} \cdot \frac{p - q}{2}}{\frac{p}{q}} dp$$
+
+% $$= \frac{1}{4} \int \frac{r^2 dp}{q} - \frac{1}{4} \int \frac{r^2 dp}{p}$$
+
+% $$
+
+% = \frac{1}{4} \int \frac{dp}{q} - \frac{1}{4} \int q dp - \frac{1}{4} \int \frac{p^2 - 1}{p} dp$$
+
+% $$= -\frac{1}{8} \int pdq + qdp - \frac{1}{4} \left( \frac{1}{2} p^2 - \ln p \right)$$
+
+% $$
+
+% = \frac{1}{4} \ln p - \frac{1}{8} (pq + p^2)$$
+
+% $$= \frac{1}{4} \ln (\sin x + \cos x) - \frac{1}{4} \cos x (\sin x + \cos x)$$
+
+% 例题 2.37 求
+
+% $$
+
+% \int \frac{\cos^2 x}{\sin x + 2 \cos x} dx \tag{2.46}$$
+
+% 解：(By 风中鱼) 这里我们需要推广一下，另设 $m = \sin x + 2 \cos x$, $n = \cos x - 2 \sin x$，这也是一种旋转。顺便，此类双元对应了过时的“组合积分法”，或者说是一种推广。
+
+% $$\int \frac{\cos^2 x}{\sin x + 2 \cos x} dx = \int \frac{(2m + n)^2}{25m} \frac{dm}{n}$$
+
+% $$
+
+% = \frac{4}{25} \int \frac{m dm}{n} + \frac{4}{25} \int dm + \frac{1}{25} \int \frac{n dm}{m}$$
+
+% $$= \frac{4}{25} (m - n) - \frac{1}{25} \int \frac{n^2 dn}{5 - n^2}$$
+
+% $$
+
+% = \frac{4}{25} (m - n) + \frac{n}{25} - \frac{1}{5} \int \frac{dn}{5 - n^2}$$
+
+% $$= \frac{4m - 3n}{25} - \frac{1}{5\sqrt{5}} \text{arth} \frac{n}{\sqrt{5}}$$
+
+
+
+% 例题 2.38 一般地，求 $\displaystyle \int \frac{\sin x \cos x}{a \sin x + b \cos x} dx$。
+
+% 解:(By 风中鱼) 若设 $p = a \sin x + b \cos x$, $q = a \cos x - b \sin x$, 则:
+
+% $$\sin x \cos x = \frac{(ap - bq)(bp + aq)}{(a^2 + b^2)^2}
+
+% \eqno (2.47)$$
+
+% 带入即可:
+
+% $$\int \frac{\sin x \cos x}{a \sin x + b \cos x} \mathrm{d}x = \int \frac{1}{p} \frac{(ap - bq)(bp + aq)}{(a^2 + b^2)^2} \frac{\mathrm{d}p}{q}
+
+% = \frac{1}{(a^2 + b^2)^2} \left[ ab \int \left( \frac{p \mathrm{d}p}{q} - \frac{q \mathrm{d}p}{p} \right) + (a^2 - b^2) \int \mathrm{d}p \right]
+
+% = \frac{1}{(a^2 + b^2)^2} \left[ \frac{(a^2 - b^2)p - abq}{ } + ab \int \frac{q^2 \mathrm{d}q}{a^2 + b^2 - q^2} \right]
+
+% = \frac{1}{(a^2 + b^2)^2} \left[ \frac{(a^2 - b^2)p - 2abq}{ } + ab \sqrt{a^2 + b^2} \operatorname{arcth} \frac{q}{\sqrt{a^2 + b^2}} \right]
+
+% = \frac{a \sin x - b \cos x}{a^2 + b^2} + \frac{ab}{(a^2 + b^2)^{\frac{3}{2}}} \operatorname{arcth} \frac{a \cos x - b \sin x}{\sqrt{a^2 + b^2}}$$
+
+% 例题 2.39 求 $\int \sqrt{\sin x - \sin^2 x} \mathrm{d}x$.
+
+% 解:(By 水中星) 设
+
+% $$p = \sin \frac{x}{2} + \cos \frac{x}{2}, q = \cos \frac{x}{2} - \sin \frac{x}{2} = \sqrt{1 - \sin x}, r = \sqrt{\sin x}
+
+% \eqno (2.48)$$
+
+% 于是就转化为双元积分了:
+
+% $$\int \sqrt{\sin x - \sin^2 x} \mathrm{d}x = \int q r \frac{2 \mathrm{d}p}{q}
+
+% = 2 \int r \mathrm{d}p = \int \mathrm{d}(rp) - \int \frac{\mathrm{d}p}{r}
+
+% = pr - \ln(p + r)
+
+% = \sqrt{(1 + \sin x) \sin x} - \ln \left( \sqrt{1 + \sin x} + \sqrt{\sin x} \right)$$
+
+% 结果进行 sgn 修正的话, 在前面乘一个 $\operatorname{sgn}\left(\cos \frac{x}{2} - \sin \frac{x}{2}\right)$ 即可。
+
+% 例题 2.40 求 $\int \sin^{\frac{3}{2}} x \cos^{\frac{5}{2}} x \mathrm{d}x$.
+
+% 解: 若设 $p = \sin x + \cos x$, $q = \cos x - \sin x$, $r = \sqrt{2 \sin x \cos x}$, (这里需要用到前面的双元点火公式) 则：
+
+% $$\int \sin^{\frac{3}{2}} x \cos^{\frac{5}{2}} x dx = \int \frac{r^3}{2\sqrt{2}} \cdot \frac{p + q}{2} \frac{dp}{q}$$
+
+% $$
+
+% = \frac{1}{4\sqrt{2}} \left( \int r^3 dp - \int r^3 dq \right)$$
+
+% $$= \frac{1}{4\sqrt{2}} \left( \frac{1}{4} r^3 p - \frac{3}{8} rp + \frac{3}{8} \ln |r + p| \right)$$
+
+% $$
+
+% \left. - \frac{1}{4} r^3 q - \frac{3}{8} rq - \frac{3}{8} \arctan \frac{q}{r} \right)$$
+
+% $$= \frac{2r^3 \sin x - 3r \cos x}{16\sqrt{2}} + \frac{3}{32\sqrt{2}} \left( \ln |r + p| - \arctan \frac{q}{r} \right)$$
+
+% 例题 2.41 求
+
+% $$
+
+% \int \frac{dx}{\sin x + \cos x + \sin x \cos x} \tag{2.49}$$
+
+% 解：(By 风中鱼)
+
+% $$\int \frac{dx}{\sin x + \cos x + \sin x \cos x} = \int \frac{-1}{p + r^2/2} \frac{dq}{p} = -2 \int \frac{dq}{p (2p + p^2 - 1)}$$
+
+% $$
+
+% = -2 \int \frac{dq}{p (p + 1 + \sqrt{2}) (p + 1 - \sqrt{2})}$$
+
+% $$= 2 \int \frac{dq}{p} - \left(1 + \frac{1}{\sqrt{2}}\right) \int \frac{dq}{p + 1 + \sqrt{2}}$$
+
+% $$
+
+% - \left(1 - \frac{1}{\sqrt{2}}\right) \int \frac{dq}{p + 1 - \sqrt{2}}$$
+
+% 这是前面用过的模型，这里将剩下的一些简单的计算过程省略。
+
+% 例题 2.42 求 $\int \arctan \left(1 - \frac{\sec x}{\sin x}\right) \cos x dx$.
+
+% 解：(By 风中鱼)
+
+% $$\int \arctan \left(1 - \frac{\sec x}{\sin x}\right) \cos x dx = \sin x \arctan \left(1 - \frac{\sec x}{\sin x}\right) - \int \frac{p - q}{2} \frac{\frac{4}{r^3} dr}{1 + \left(1 - \frac{2}{r^2}\right)^2}$$
+
+% $$
+
+% = \sin x \arctan \left(1 - \frac{\sec x}{\sin x}\right) - 2 \int \frac{(p - q) r dr}{r^4 + (r^2 - 2)^2}$$
+
+% $$= \sin x \arctan \left(1 - \frac{\sec x}{\sin x}\right) - \int \frac{p^2 dp + q^2 dq}{r^4 - 2r^2 + 2}$$后面其实算是固定的套路了。另设 $m = p + \frac{\sqrt{5}}{p}, n = p - \frac{\sqrt{5}}{p}$，
+
+% $$\int \frac{p^2 dp}{r^4 - 2r^2 + 2} = \int \frac{p^2 dp}{p^4 - 4p^2 + 5}$$
+
+% $$
+
+% = \int \frac{d(m + n)}{2(p^2 + 5/p^2 - 4)}$$
+
+% $$= \frac{1}{2} \int \frac{dm}{m^2 - (4 + 2\sqrt{5})} + \frac{1}{2} \int \frac{dn}{n^2 + 2\sqrt{5} - 4}$$
+
+% $$
+
+% = \frac{1}{2\sqrt{2\sqrt{5} - 4}} \arctan \frac{n}{\sqrt{2\sqrt{5} - 4}} - \frac{1}{2\sqrt{4 + 2\sqrt{5}}} \operatorname{arcth} \frac{m}{\sqrt{4 + 2\sqrt{5}}}$$
+
+% 另一部分同理，
+
+% $$\int \frac{q^2 dq}{r^4 - 2r^2 + 2} = \int \frac{q^2 dq}{q^4 + 1}$$
+
+% $$
+
+% = \frac{1}{2\sqrt{2}} \arctan \frac{q - 1/q}{\sqrt{2}} - \frac{1}{2\sqrt{2}} \operatorname{arcth} \frac{q + 1/q}{\sqrt{2}}$$
+
+% 回代即可得到结果。
+
+% **命题 2.1. 王者百题 094**
+
+% 验证：
+
+% $$\int \frac{\sqrt{\tan x}}{\sqrt{\tan x} + 1} dx = \frac{1}{2} \operatorname{arcth} \frac{2\sqrt{\tan x}}{\tan x + 1} + \frac{1}{2} \ln (\cos x - \sin x) - \frac{x}{2}$$
+
+% $$
+
+% - \frac{\ln \left(\sqrt{2} \sin x \cos x + \sin x + \cos x \right)}{\sqrt{2}}$$
+
+% 解：（By 风中鱼）
+
+% $$\int \frac{\sqrt{\tan x}}{\sqrt{\tan x} + 1} dx = \int \frac{\sqrt{\sin x}}{\sqrt{\sin x} + \sqrt{\cos x}} dx$$
+
+% $$
+
+% = \int \frac{\sqrt{\sin x} \left( \sqrt{\cos x} - \sqrt{\sin x} \right)}{\cos x - \sin x} dx$$
+
+% $$= \int \frac{\frac{r}{\sqrt{2}} - \frac{p - q}{2}}{\frac{q}{\sqrt{2}}} \cdot \frac{dp}{q}$$
+
+% $$
+
+% = \frac{1}{\sqrt{2}} \int \frac{r dp}{1 - r^2} - \frac{1}{2} \int \frac{p dp}{q^2} + \frac{dp}{q}$$
+
+% $$= \frac{1}{\sqrt{2}} \int \frac{r^2 dr}{p(1 - r^2)} + \frac{1}{2} \ln q - \frac{1}{2} \arctan \frac{p}{q}$$
+
+% $$
+
+% = \frac{1}{\sqrt{2}} \left( - \int \frac{dr}{p} + \int \frac{dr}{p(1 - r^2)} \right) + \ldots$$
+
+% $$= \frac{1}{\sqrt{2}} \int \frac{p dr - r dp}{p^2 - 2r^2} - \frac{1}{\sqrt{2}} \ln (r + p) + \ldots$$
+
+% $$
+
+% = \frac{1}{2} \operatorname{arcth} \frac{\sqrt{2} r}{p} - \frac{\ln (r + p)}{\sqrt{2}} + \frac{\ln q}{\sqrt{2}} - \frac{1}{2} \arctan \frac{p}{q}$$
+
+% 后面的化简过程省略。例题 2.43 求$\int \frac {\sin }x$d$x\sqrt {2}+ \sin x+ \cos x$
+
+
+
+
+
+% $$\begin{aligned}\textbf{: (by 水中量)设 }p=\sin x+\cos x,q=\cos x-\sin x\text{,则}\\\int\frac{\sin x\mathrm{d}x}{\sqrt{2}+\sin x+\cos x}&=\int\frac{p-q}{\sqrt{2}+p}\frac{\mathrm{d}p}{2q}\\&=\int\frac{p-q}{2q^2}\left(\sqrt{2}-p\right)\frac{\mathrm{d}p}{q}\\&=\frac{\sqrt{2}}{2}\left(\int\frac{p\mathrm{d}p}{q^3}-\int\frac{q\mathrm{d}p}{q^3}\right)-\int\frac{p^2\mathrm{d}p}{2q^3}+\int\frac{pq\mathrm{d}p}{2q^3}\\&=\frac{\sqrt{2}}{2q}-\arctan\frac{q}{\sqrt{2}}-\frac{1}{2}\ln q+\int\frac{p\mathrm{d}q}{2q^2}\\&=\frac{\sqrt{2}}{2q}-\arctan\frac{q}{\sqrt{2}}-\frac{1}{2}\ln q-\frac{p}{2q}+\frac{1}{2}\arctan\frac{p}{q}\end{aligned}$$
+
+
+
+% 下面是一个系列的题目：
+
+
+
+% 例题 2.44 求$\int\frac\mathrm{d}x{\sin^3x+\cos^3x}.$
+
+% \begin{aligned}&\text{例是}\\&&&&&\text{解:(By 水中星)按 }p=\sin x+\cos x,q=\cos x-\sin x,r=\sqrt{2\sin x\cos x}\text{ 设双元:}\\&&&&&\mathrm{1}\\&&&&&\begin{aligned}\int\frac{\mathrm{d}x}{\sin^3x+\cos^3x}=\int\frac{\mathrm{d}x}{\left(\sin x+\cos x\right)\left(1-\sin x\cos x\right)}\end{aligned}\\&&&&&=\int\frac{1}{p\left(1-\frac{r^2}{2}\right)}\frac{\mathrm{d}q}{p}=\int\frac{2\mathrm{d}q}{\left(2-q^2\right)\left(1+q^2\right)}\\&&&&&\begin{aligned}=\frac{1}{3}\int\frac{\mathrm{d}q}{2-q^2}+\frac{1}{3}\int\frac{\mathrm{d}q}{1+q^2}\end{aligned}\\&&&=\frac{1}{3\sqrt{2}}\mathrm{arth}\frac{q}{\sqrt{2}}+\frac{1}{3}\mathrm{arc}\tan q\\&&&&&=\frac{1}{3\sqrt{2}}\mathrm{arth}\frac{\sin x-\cos x}{\sqrt{2}}+\frac{1}{3}\mathrm{arc}\tan\left(\sin x-\cos x\right)\\&\text{例题 2.45 求}\int\frac{\mathrm{d}x}{\sin^4x+\cos^4x}.&\\&&&&&\text{解:可以简单凑}\tan.\text{x 解决:}\\&\int\frac{\mathrm{d}x}{\sin^4x+\cos^4x}&&=\int\frac{\mathrm{d}x}{1-2\sin^2x\cos^2x}\\&&&\begin{aligned}=\frac{1}{2}\int\frac{\mathrm{d}x}{1-\sqrt{2}\sin x\cos x}+\frac{1}{2}\int\frac{\mathrm{d}x}{1+\sqrt{2}\sin x\cos x}\end{aligned}\\&&&\begin{aligned}&=\frac{1}{2}\int\frac{\mathrm{d}\left(\tan x\right)}{\tan^2x-\sqrt{2}\tan x+1}+\frac{1}{2}\int\frac{\mathrm{d}\left(\tan x\right)}{\tan^2x+\sqrt{2}\tan x+1}\end{aligned}\\&&&\begin{aligned}&=\frac{1}{\sqrt{2}}\left(\arctan\left(\sqrt{2}\tan x-1\right)+\arctan\left(\sqrt{2}\tan x+1\right)\right)\end{aligned}\\&&&=\frac{1}{\sqrt{2}}\mathrm{arc}\tan\frac{\sqrt{2}\tan x}{1-\tan^2x}\end{aligned}
+
+% 例题 2.46 求 $\int \frac{dx}{\sin^5 x + \cos^5 x}$.
+
+% 解：(By 虚调子) 设双元：$p = \sin x + \cos x$, $q = \sin x - \cos x$, $r = \sqrt{2 \sin x \cos x}$ 就有：
+
+% $$\int \frac{dx}{\sin^5 x + \cos^5 x} = \int \frac{dx}{(\sin x + \cos x)(1 - \sin x \cos x - \sin^2 x \cos^2 x)} \\
+
+% = \int \frac{dq}{p^2 \left(1 - \frac{r^2}{2} - \frac{r^4}{4}\right)} = \int \frac{4 dq}{(2 - q^2)\left(5 - (2 - q^2)^2\right)} \\
+
+% = \frac{4}{5} \int \frac{dq}{2 - q^2} - \frac{2}{5} \int \frac{dq}{\sqrt{5} + 2 - q^2} + \frac{2}{5} \int \frac{dq}{\sqrt{5} - 2 + q^2} \\
+
+% = \frac{4}{5\sqrt{2}} \operatorname{arth} \frac{\sin x - \cos x}{\sqrt{2}} - \frac{2}{5\sqrt{5}} \operatorname{arth} \frac{\sin x - \cos x}{\sqrt{5} + 2} \\
+
+% + \frac{2}{5\sqrt{5} - 2} \arctan \frac{\sin x - \cos x}{\sqrt{5} - 2}$$
+
+% 例题 2.47 求 $\int \frac{dx}{\sin^6 x + \cos^6 x}$.
+
+% 解：(By 水中星) 比 5 次要简单的多：
+
+% $$\int \frac{dx}{\sin^6 x + \cos^6 x} = \int \frac{8 dx}{5 + 3 \cos 4x} \\
+
+% = \int \frac{2 d(2x)}{4 \cos^2 (2x) + \sin^2 (2x)} \\
+
+% = \arctan \frac{\tan (2x)}{2} \\
+
+% \sim 2x - \arctan \frac{\sin 4x}{\cos 4x + 3}$$
+
+% 最后这个是进行了连续修正。对于更高次，可以由递推式：
+
+% $$\sin^{n+2} x + \cos^{n+2} x = \sin^n x + \cos^n x - \sin^2 x \cos^2 x (\sin^{n-2} x + \cos^{n-2} x)$$
+
+% 来进⾏双元简化。
+
+% 一般地，有 @ Polynomial 得到的如下结果：
+
+% **定理 2.11. 三角高齐次式公式**
+
+% $$
+
+% \int \frac{\sin^m 2x}{\sin^{2n} x + \cos^{2n} x} dx = \\
+
+% \frac{2^{n-1} \left[\frac{n}{2}\right]}{n} \sum_{k=1}^{n} (-1)^k \cos^{n-1-m} (\theta_{n,k}) \times
+
+% \begin{cases}
+
+% -\arctan (\sin (\theta_{n,k}) \cdot \tan 2x), & 2 \mid m \\
+
+% \arctan (\cot (\theta_{n,k}) \cdot \cos 2x), & 2 \nmid m
+
+% \end{cases}
+
+% $$
+
+% 其中 $\theta_{n,k} = \frac{\pi}{n} \left(k - \frac{1}{2}\right)$, $m \in Z^+ < 2n$.
+
+
+
+% 2.5.3 $\sec x, \tan x$
+
+
+
+% 有的时候以 $\sec x, \tan x$ 等为双元可以简化问题，更快地得出结果。
+% 题2.48 求 $\int \frac{\sec^3 x + \sec x \tan^2 x}{\sqrt{\sec^4 x + \tan^4 x}} \mathrm{d}x$.
+% 解:(By 学数垃圾) 若设
+% $$p = \sqrt{2} \sec x \tan x, q = \sqrt{\sec^4 x + \tan^4 x}$$
+% 则不难得到
+% $$
+% \int \frac{\sec^3 x + \sec x \tan^2 x}{\sqrt{\sec^4 x + \tan^4 x}} \mathrm{d}x = \frac{1}{\sqrt{2}} \int \frac{\mathrm{d}p}{q} = \frac{1}{\sqrt{2}} \ln \left( \sqrt{2} \sec x \tan x + \sqrt{\sec^4 x + \tan^4 x} \right)$$
+% 题2.49 求 $\int \sqrt{1 + \sec^4 x} \tan x \mathrm{d}x$.
+% 解: (By 风中鱼) 若设
+% $$\sec x - \cos x = p, \sec x + \cos x = q, \sqrt{\sec^2 x + \frac{1}{\sec^2 x}} = r \tag{2.52}$$
+% 则不难得到:
+% $$
+% \int \sqrt{1 + \sec^4 x} \tan x \mathrm{d}x = \int \sqrt{1 + \sec^4 x} \frac{\mathrm{d}(\sec x)}{\sec x} = \int r \frac{\mathrm{d}(p+q)}{2} = \frac{1}{4} (p+q) r - \frac{1}{2} \int \frac{\mathrm{d}p}{r} + \frac{1}{2} \int \frac{\mathrm{d}q}{r} = \frac{1}{4} (p+q) r + \frac{1}{2} \ln \frac{q+r}{p+r} = \frac{1}{2} \sqrt{1 + \sec^4 x} + \frac{1}{2} \ln \frac{\sec^2 x + 1 + \sqrt{1 + \sec^4 x}}{\sec^2 x - 1 + \sqrt{1 + \sec^4 x}}$$
+% 题2.50 求 $\int \frac{\sqrt{1 + \sec x}}{\tan x} \mathrm{d}x$.
+% 解:(By 风中鱼) 不妨置
+% $$p = \sqrt{1 + \sec x}, q = \sqrt{\sec x - 1}$$
+% 则有
+% $$
+% \int \frac{\sqrt{1 + \sec x}}{\tan x} \mathrm{d}x = \int \frac{p}{pq} \frac{\mathrm{d}(p^2)}{(p^2 - 1)pq} = \int \frac{2\mathrm{d}p}{(p^2 - 2)(p^2 - 1)} = \int \frac{2\mathrm{d}p}{p^2 - 2} - \int \frac{2\mathrm{d}p}{p^2 - 1} = 2 \operatorname{arth} \sqrt{1 + \sec x} - \sqrt{2} \operatorname{arth} \sqrt{\frac{1 + \sec x}{2}}$$
+% 2.5.4 半角双元
+% 例题 2.51 求 $\int \frac{1+\sin x}{1+\sin x+\cos x}dx$.
+
+% 解：(By 游鹤) 若设 $p=\sqrt{1+\sin x}, q=\frac{\cos x}{\sqrt{1+\sin x}}, p^2+q^2=2, dp=\frac{q}{2}dx$ (2.53)
+% 则不难得到：
+% $\int \frac{1+\sin x}{1+\sin x+\cos x}dx = \int \frac{p^2}{p^2+pq}\frac{2dp}{q} = -2\int \frac{dq}{p+q}$
+% $= -\int \frac{dp+dq}{p+q} + \int \frac{dp-dq}{p+q}$
+% $= -\ln(p+q)+\arctan \frac{p}{q}$
+% $= -\ln(1+\sin x+\cos x)+\arctan \frac{1+\sin x}{\cos x}$
+% 其中用到了之前的齐次构型。
+% 例题 2.52 求 $\int 2\frac{\arctan \sqrt{\sin x}}{1+\sin x}-\sqrt{\sin x}dx$.
+
+% 解：(By 如梦令) 若设 $p=\frac{\cos x}{\sqrt{1+\sin x}}, q=\sqrt{1+\sin x}, r=\sqrt{\sin x}$
+% 则不难得到
+% $\int 2\frac{\arctan \sqrt{\sin x}}{1+\sin x}-\sqrt{\sin x}dx = \int \left(2\frac{\arctan r}{q^2}-r\right)\frac{2dq}{p}$
+% $= -2\int \arctan r d\left(\frac{p}{q}\right)-2\int r\frac{dq}{p}$
+% $= -2\frac{p}{q}\arctan r+2\int \frac{p}{q}\frac{dr}{q^2}-2\int r\frac{dq}{p}$
+% $= -2\frac{p}{q}\arctan r+2\int pd\left(\frac{r}{q}\right)-2\int r\frac{dq}{p}$
+% $= -2\frac{p}{q}\arctan r+2\frac{pr}{q}-2\int \frac{r}{q}dp-2\int r\frac{dq}{p}$
+% $= -2\frac{p}{q}\arctan r+2\frac{pr}{q}$
+% $= \frac{2\cos x}{1+\sin x}\left(\sqrt{\sin x}-\arctan \sqrt{\sin x}\right)$
+
+% 2.6 复杂例子下的双元用法
+% 下面是一些经典的例题。
+% 例题 2.53 求 $\int \frac{\sqrt{1-t^2}}{t-x}dt, \int \frac{\sqrt{1-t^2}}{(t-x)^2}dt, \int \frac{dt}{(t-x)\sqrt{1-t^2}}, \int \frac{dt}{(t-x)^2\sqrt{1-t^2}}$, 其中
+% 例题 2.59 求 $\int \frac{dt}{(t-x)^n\sqrt{1-t^2}}, \int \frac{t^m dt}{(t-x)^n\sqrt{1-t^2}}, \int \frac{dt}{(t-x)^n\sqrt{1-t^2}}, \int \frac{t^m dt}{(t-x)^n\sqrt{1-t^2}}$, 共中有
+% $$|x| < 1.$$
+% 解:(By 虚调子) 首先我们注意到恒等式:
+% $$
+% (1 - x^2)(1 - t^2) + (t - x)^2 = (xt - 1)^2 \tag{2.54}$$
+% 那么设双元:
+% $$p = \sqrt{1 - x^2}\frac{\sqrt{1 - t^2}}{t - x}, q = \frac{xt - 1}{t - x}, dq = \frac{1 - x^2}{(t - x)^2}dt$$
+% 这样去掉根号即有
+% $$
+% \int \frac{\sqrt{1 - t^2}}{t - x} dt = \int \frac{1 - x^2 - (t - x)(t + x)}{(t - x)\sqrt{1 - t^2}} dt$$
+% $$= (1 - x^2)\int \frac{dt}{(t - x)\sqrt{1 - t^2}} - \int \frac{t + x}{\sqrt{1 - t^2}} dt$$
+% $$
+% = \sqrt{1 - x^2}\int \frac{dq}{p} + \sqrt{1 - t^2} - x\arctan \frac{t}{\sqrt{1 - t^2}}$$
+% $$= \sqrt{1 - x^2}\ln \frac{xt - 1 + \sqrt{1 - x^2}\sqrt{1 - t^2}}{t - x} + \sqrt{1 - t^2} - x\arctan \frac{t}{\sqrt{1 - t^2}}$$
+% 然后
+% $$
+% \int \frac{\sqrt{1 - t^2}}{(t - x)^2} dt = \int \frac{1 - x^2 - 2x(t - x) - (t - x)^2}{(t - x)^2\sqrt{1 - t^2}} dt$$
+% $$= (1 - x^2)\int \frac{dt}{(t - x)^2\sqrt{1 - t^2}} - 2x\int \frac{dt}{(t - x)\sqrt{1 - t^2}} - \arctan \frac{t}{\sqrt{1 - t^2}}$$
+% $$
+% = \frac{1}{\sqrt{1 - x^2}}\int (x - q)\frac{dq}{p} - 2\frac{x}{\sqrt{1 - x^2}}\int \frac{dq}{p} - \arctan \frac{t}{\sqrt{1 - t^2}}$$
+% $$= -\frac{\sqrt{1 - t^2}}{t - x} - \frac{x}{\sqrt{1 - x^2}}\ln \frac{xt - 1 + \sqrt{1 - x^2}\sqrt{1 - t^2}}{t - x} - \arctan \frac{t}{\sqrt{1 - t^2}}$$
+% 剩下两个其实在前面的过程中已经计算过了,
+% $$
+% \int \frac{dt}{(t - x)\sqrt{1 - t^2}} = \frac{1}{\sqrt{1 - x^2}}\ln \frac{xt - 1 + \sqrt{1 - x^2}\sqrt{1 - t^2}}{t - x} \tag{2.55}$$
+% $$\int \frac{dt}{(t - x)^2\sqrt{1 - t^2}} = \frac{x}{(1 - x^2)^{\frac{3}{2}}}\ln \frac{xt - 1 + \sqrt{1 - x^2}\sqrt{1 - t^2}}{t - x} - \frac{\sqrt{1 - t^2}}{(1 - x^2)(t - x)} \tag{2.56}$$
+% 例题 2.54 求 $\int \frac{dx}{(2 + \sin 2x)^3}$.
+% 解:(By 风中鱼) 我们设 $p = \sin x + \cos x, q = \cos x - \sin x, r = \sqrt{2 + \sin 2x}$, 但是考虑到高次数, 我们还要设
+% $$
+% m = \frac{p}{r}, n = \frac{q}{\sqrt{3}r}, m^2 + n^2 = \frac{2}{3} \tag{2.57}$$
+% 这样我们有
+% $$\int \frac{\mathrm{d}x}{(2+\sin 2x)^3} = \int \frac{\mathrm{d}p}{qp^6} = \frac{1}{9}\int \frac{(r^2+q^2)^2}{qr^6}\mathrm{d}p$$
+% $$
+% = \frac{1}{9}\int \frac{\mathrm{d}p}{qr^2} + \frac{2}{9}\int \frac{q\mathrm{d}p}{r^4} + \frac{1}{9}\int \frac{q^3\mathrm{d}p}{r^6}$$
+% $$= \frac{1}{9}\int \frac{\mathrm{d}m}{\sqrt{3}n} + \frac{2}{9}\int \sqrt{3}n\mathrm{d}m + \frac{1}{9}\int (\sqrt{3}n)^3\mathrm{d}m$$
+% $$
+% = \left(\frac{1}{9\sqrt{3}} + \frac{\sqrt{3}}{9}\frac{2}{3}\right)\arctan \frac{m}{n} + \frac{\sqrt{3}}{9}mn + \frac{\sqrt{3}}{3}\left(\frac{1}{4}mn^3 + \frac{3}{8}\frac{2}{3}mn + \frac{3}{8}\frac{4}{9}\arctan \frac{m}{n}\right)$$
+% $$= \frac{\sqrt{3}}{12}\frac{p}{r} - \frac{q^3}{3\sqrt{3}r^3} + \frac{7\sqrt{3}}{36}\frac{pq}{\sqrt{3}r^2} + \frac{\sqrt{3}}{6}\arctan \frac{\sqrt{3}p}{q}$$
+% $$
+% = \frac{1}{36}\frac{\cos 2x(1-\sin 2x)}{(2+\sin 2x)^2} + \frac{7}{36}\frac{\cos 2x}{2+\sin 2x} + \frac{\sqrt{3}}{6}\arctan \frac{\sqrt{3}(\sin x + \cos x)}{\cos x - \sin x}$$
+% 例题 2.55 求 $\int \frac{\sqrt{1+x}+\sqrt{x-1}}{x+2\sqrt{x^2-1}}\mathrm{d}x$.
+% 解:(By 南极撸) 设 $t = \sqrt{x-1} + \sqrt{x+1}$, 那么 $t^2 = 2\left(x + \sqrt{x^2-1}\right)$, 同时 $\frac{1}{t^2} = \frac{1}{2}\left(x - \sqrt{x^2-1}\right)$. 最后我们可以得到:
+% $$\begin{cases}
+% x = \frac{1}{2}\left(\frac{t^2}{2} + \frac{2}{t^2}\right) = \frac{t^4 + 4}{4t^2} \\
+% \sqrt{x^2-1} = \frac{t^4 - 4}{4t^2}
+% \end{cases}$$
+% 于是:
+% $$\int \frac{\sqrt{1+x}+\sqrt{x-1}}{x+2\sqrt{x^2-1}}\mathrm{d}x = \int \frac{2\sqrt{x^2-1}\mathrm{d}( \sqrt{1+x} + \sqrt{x-1})}{x+2\sqrt{x^2-1}}$$
+% $$
+% = \int \frac{\frac{t^4-4}{2t^2}\mathrm{d}t}{\frac{3t^4-4}{t^2}} = 2\int \frac{t^4-4}{3t^4-4}\mathrm{d}t$$
+% $$= \frac{2}{3}t - \frac{16}{9}\int \frac{\mathrm{d}t}{t^4 - \frac{4}{3}}$$
+% $$
+% = \frac{2}{3}\left[t + \frac{\sqrt{2}}{\sqrt[4]{3}}\left(\arctan \left(\frac{\sqrt[4]{3}}{\sqrt{2}}t\right) + \operatorname{arth}\left(\frac{\sqrt[4]{3}}{\sqrt{2}}t\right)\right)\right]$$
+% 然后回代即可。
+% 例题 2.56 求
+% $$\int \frac{\mathrm{d}x}{\sin^6 x + \sin^3 x} \tag{2.58}$$
+% (2.59)
+
+% 解：(By 风中鱼)由于次数很高，所以想办法降次：
+
+% $$\int\frac{\mathrm{d}x}{\sin^9x+\sin^3x}=\int\frac{\mathrm{d}x}{\sin^3x}-\int\frac{\sin^3x\mathrm{d}x}{1+\sin^6x}$$
+
+% 前面的还是挺简单的：
+
+% $$\begin{aligned}\text{一}\\\int\frac{\mathrm{d}x}{\sin^3x}&\to\int\frac{1}{p^3}\frac{\mathrm{d}p}{q}=\int\frac{\mathrm{d}p}{pq}+\int\frac{q\mathrm{d}p}{p^3}\\(p,q=\sin x,\cos x)&=-\frac{q}{2p^2}-\int\frac{\mathrm{d}q}{2p^2}\\&=-\frac{\cos x}{2\sin^2x}-\frac{1}{2}\text{arth}\left(\cos x\right)\\=n\:\tan x=a.\:\text{就有}\end{aligned}$$
+
+% 重置双元：$\sec x=p,\tan x=q$,就有
+
+% $$\begin{aligned}\text{C}&x=p,\text{aun}x=q,\text{ on }\\&\int\frac{\sin^3x}{1+\sin^6x}\mathrm{d}x=\int\frac{p^2q^2}{p^6+q^6}\mathrm{d}p\\&=\frac{1}{3}\left[\int\frac{p^2+q^2}{p^4-p^2q^2+q^4}\mathrm{d}p-\int\frac{\mathrm{d}p}{p^2+q^2}\right]\\&=\frac{1}{3}\left[\int\frac{2p^2-1}{p^4-p^2+1}\mathrm{d}p-\int\frac{\mathrm{d}p}{2p^2-1}\right]\end{aligned}$$
+% 再利用之前的技巧，令
+
+% $$m=p+\frac1p,n=p-\frac1p,l=\sqrt{p^2+\frac1{p^2}-1}$$
+
+% 有：
+
+% $$\int\frac{2p^2-1}{p^4-p^2+1}\mathrm{d}p=\int\frac{3\mathrm{d}m+\mathrm{d}n}{2l^2}$$
+
+% $=\frac32\int\frac{\mathrm{d}m}{m^2-3}+\frac12\int\frac{\mathrm{d}n}{n^2+1}$
+
+% $\begin{aligned}2\int m^2-3\text{ '}2\int n^2+1\\=\frac12\arctan n-\frac{\sqrt{3}}2\mathrm{arth}\frac{m}{\sqrt{3}}\\\int\frac{\mathrm{d}x}{\sin^9x+\sin^3x}=\frac1{2\sqrt{3}}\mathrm{arth}\frac{\sec^2x+1}{\sqrt{3}\sec x}-\frac16\arctan\left(\sec x-\frac1{\sec x}\right)\end{aligned}$
+
+% 总之：
+
+% $-\frac1{3\sqrt{2}}$arth$\sqrt2\sec x-\frac\cos x{2\sin^2x}-\frac12$arth$\left(\cos x\right)$
+
+% d$x$
+
+% 例题 2.57 求/
+
+% $\overline{\sin x+\cos x+\tan x+\cot x+\sec x+\csc x}$
+
+% 解：(By Mirion)可以乘上$\sin x\cos x$ 来化简函数名，仍然是前面的双元体系。但是
+% 因为是非齐次的，需要有不同的处理。令：
+
+% $$\sin x+\cos x,\cos x-\sin x,\sqrt{2\sin x\cos x}\to\sqrt2\frac{u^2-1}{u^2+1},\sqrt2\frac{2u}{u^2+1},\frac{\sqrt{u^4-6u^2+1}}{u^2+1}$$
+
+% (2.60)
+
+% \begin{aligned}&\text{则:}\\&\begin{aligned}\int\frac{\mathrm{d}x}{\sin x+\cos x+\tan x+\cot x+\sec x+\csc x}\end{aligned}\\&=\int\frac{\sin x\cos x\mathrm{d}x}{(\sin x+\cos x)(\sin x\cos x+1)+1}\\&=\int\frac{\frac{u^4-6u^2+1}{2\left(u^2+1\right)^2}}{\sqrt{2}\frac{u^2-1}{u^2+1}\left(\frac{u^4-6u^2+1}{2\left(u^2+1\right)^2}+1\right)+1}\frac{\mathrm{d}\left(\sqrt{2}\frac{u^2-1}{u^2+1}\right)}{\sqrt{2}\frac{2u}{u^2+1}}\\&=2\int\frac{\left(\sqrt{2}+1\right)u^2-\sqrt{2}+1}{\left(\sqrt{2}+4\right)u^4-\sqrt{2}+4}\mathrm{d}u(u\in(0,1))\\&=\frac{2\sqrt{2}+2}{\sqrt{2}+4}\int\frac{u^2-\left(3-2\sqrt{2}\right)}{u^4+\frac{9-4\sqrt{2}}7}\mathrm{d}u\\&=\frac{3\sqrt{2}+2}{7}\int\frac{\left(3\sqrt{2}-5\right)\mathrm{d}p+\left(6-3\sqrt{2}\right)\mathrm{d}q}{u^{2}+\left(9-4\sqrt{2}\right)/\left(7u^{2}\right)}\\&=\frac{10+14\sqrt{2}}7\mathrm{arth}\left[\left(2+\frac1{\sqrt{2}}\right)\left(u+\frac1{\left(9+4\sqrt{2}\right)u}\right)\right]\\&\begin{aligned}&+3\sqrt{2}\text{arc}\tan\left[\left(2+\frac{1}{\sqrt{2}}\right)\left(u-\frac{1}{\left(9+4\sqrt{2}\right)u}\right)\right]\end{aligned}\\&最后我们考虑\\&u=\frac{\sin x+\cos x+\sqrt{2}}{\cos x-\sin x}&(2.61)\\&\text{回代即可。}\\&\text{15}\text{则题2.58求}\int\operatorname{arc}\cos\left(\frac{\tan\alpha}{\tan x}\right)\cos x\sin x\mathrm{d}x\left(0<\alpha<x<\frac{\pi}{2}\right).\\&\text{解:(By虚之花)先分部一次:}\\&\begin{aligned}\int\operatorname{arc}\cos\left(\frac{\tan\alpha}{\tan x}\right)\cos x\sin x\mathrm{d}x=-\frac{1}{4}\int\operatorname{arc}\cos\left(\frac{\tan\alpha}{\tan x}\right)\mathrm{d}\left[\cos2x\right]\end{aligned}\\&\begin{aligned}&=-\frac14...+\frac{\tan\alpha}4\int\cos2x\frac{\cot x\sec^2x\mathrm{d}x}{\sqrt{\tan^2x-\tan^2}}\\&=-\frac14...+\frac{\tan\alpha}4\int\frac{\cot x-\tan x}{\sqrt{\tan^2x-\tan^2\alpha}}\mathrm{d}x\\\text{若置}p=\tan x,q=\sqrt{\tan^2x-\tan^2\alpha},r=\sqrt{\tan^2x+1}{:}\end{aligned}\\&\int\frac{\cot x-\tan x}{\sqrt{\tan^2x-\tan^2\alpha}}\mathrm{d}x=\frac12\int\frac{\mathrm{d}\left(\tan^2x\right)}{\tan^2x\sqrt{\tan^2x-\tan^2\alpha}}\\&&&-\int\frac{\mathrm{d}\left(\tan^{2}x\right)}{(\tan^{2}x+1)\sqrt{\tan^{2}x-\tan^{2}\alpha}}\\&&&\begin{aligned}=\int\frac{p\mathrm dp}{p^2q}-2\int\frac{p\mathrm dp}{r^2q}=\int\frac{\mathrm dq}{p^2}-2\int\frac{\mathrm dq}{r^2}\end{aligned}\\&&&=\frac{1}{\tan\alpha}\mathrm{arc}\operatorname{tan}\frac{q}{\tan\alpha}-\frac{2}{\sqrt{\operatorname{tan}^{2}\alpha+1}}\mathrm{arc}\operatorname{tan}\frac{q}{\sqrt{\operatorname{tan}^{2}\alpha+1}}\end{aligned}
+% 回代即有：
+% $$\int \arccos\left(\frac{\tan\alpha}{\tan x}\right)\cos x\sin x\,dx = -\frac{1}{4}\arccos\left(\frac{\tan\alpha}{\tan x}\right)\cos 2x + \frac{1}{4}\arctan\frac{\sqrt{\tan^2 x - \tan^2\alpha}}{\tan\alpha} - \frac{\tan\alpha}{2\sqrt{\tan^2\alpha+1}}\arctan\frac{\sqrt{\tan^2 x - \tan^2\alpha}}{\sqrt{\tan^2\alpha+1}}$$
+% 例题 2.59 求 $\displaystyle\int\frac{dx}{(1+\cos x+\sin x)^2+1}$.
+% 解:(By 虚调子) 设 $p = \cos x + \sin x$, $q = \sin x - \cos x$, 那么可以适当分拆出双元积分构型:
+% $$
+% \int\frac{dx}{(1+\cos x+\sin x)^2+1} = \int\frac{dq}{p(p+1-i)(p+1+i)} = \frac{1}{2i}\int\frac{dq}{p(p+1-i)} - \frac{1}{2i}\int\frac{dq}{p(p+1+i)} = \frac{1}{2i}\left(\int\frac{(1-i)db}{(1-i)^2-2+(1-i)^2b^2} - \int\frac{(1+i)db}{(1+i)^2-2+(1+i)^2b^2} + \int\frac{dq}{(1+i)^2-2+q^2}\right) = \frac{1}{2}\int\frac{2+b^2}{b^4+2b^2+2}db - 2\int\frac{dq}{q^4-4q^2+8}$$
+% 然后再用对勾双元解即可，其中 $b = q/p$.
+% $$\int\frac{2+b^2}{b^4+2b^2+2}db = \sqrt{\frac{\sqrt{2}-1}{8}}\operatorname{arth}\frac{b+\sqrt{2}/b}{\sqrt{2\left(\sqrt{2}-1\right)}} + \sqrt{\frac{\sqrt{2}+1}{8}}\arctan\frac{b-\sqrt{2}/b}{\sqrt{2\left(\sqrt{2}+1\right)}}$$
+% $$
+% \int\frac{dq}{q^4-4q^2+8} = -\frac{1}{4\sqrt{\sqrt{2}+1}}\operatorname{arth}\frac{q+2\sqrt{2}/q}{2\sqrt{\sqrt{2}+1}} + \frac{1}{4\sqrt{\sqrt{2}-1}}\arctan\frac{q-2\sqrt{2}/q}{2\sqrt{\sqrt{2}-1}}$$
+% 总之
+% $$\int\frac{dx}{(1+\cos x+\sin x)^2+1} = -\frac{\sqrt{\sqrt{2}-1}}{4\sqrt{2}}\operatorname{arth}\frac{\sqrt{\sqrt{2}+1}+(\sqrt{2}-1)\sin(2x)}{\sqrt{2\left(\sqrt{2}-1\right)}\cos(2x)} + \frac{\sqrt{\sqrt{2}+1}}{4\sqrt{2}}\arctan\frac{\sqrt{2}-1+(\sqrt{2}+1)\sin(2x)}{\sqrt{2\left(\sqrt{2}+1\right)}\cos(2x)} + \frac{\sqrt{\sqrt{2}-1}}{2}\operatorname{arth}\frac{1-\sin 2x+2\sqrt{2}}{2\sqrt{\sqrt{2}+1}(\sin x-\cos x)} - \frac{\sqrt{\sqrt{2}+1}}{2}\arctan\frac{1-\sin 2x-2\sqrt{2}}{2\sqrt{\sqrt{2}-1}(\sin x-\cos x)}$$
+% 同时可以得到一个定积分的结果
+% $$
+% \int_0^{2\pi}\frac{dx}{(1+\cos x+\sin x)^2+1} = \sqrt{\frac{\sqrt{2}+1}{2}}\pi \tag{2.62}$$
+% 例题2.60 求 $\int \frac{dx}{(1+\sin x)^n} (n\in \mathbb{N}^+)$.
+% 解:(By 虚设子) 设 $p=\sqrt{1+\sin x}, q=\sin \frac{x}{2}-\cos \frac{x}{2}$, 就有 $p^2+q^2=2$,
+% $$\int \frac{dx}{(1+\sin x)^n}=2\int \frac{dq}{p^{2n+1}} =\int \frac{(p^2+q^2)dq}{2p^{2n+1}}$$
+% $$
+% =\int \frac{pdq-qdp}{2p^{2n}} =\int \frac{p^2(p^2+q^2)^{n-1}}{2^np^{2n}}d\left(\frac{q}{p}\right)$$
+% $$=\frac{1}{2^n}\sum_{k=0}^{n-1}\int \binom{n-1}{k}\frac{q^{2k}}{p^{2k}}d\left(\frac{q}{p}\right)$$
+% $$
+% =\frac{1}{2^n}\sum_{k=0}^{n-1}\binom{n-1}{k}\frac{1}{2k+1}\frac{q^{2k+1}}{p^{2k+1}}$$
+% $$=\sum_{k=0}^{n-1}\binom{n-1}{k}\frac{\tan^{2k+1}(\frac{x}{2}-\frac{\pi}{4})}{2^n(2k+1)}$$
+% 2.7 三角函数的复杂不定积分
+% 如果以三角函数本身出题的话, 双元可能就无法发挥功效了。双元相比三角函数表达最大的一个区别是没有倍角表示。这其实也是人为赋予的, 我们有时也可以定义双元的倍角来类似操作。
+% 2.7.1 倍角展开
+% 对于一些简单的高次三角函数积分, 是可以有相对简单的倍角表达的。首先我们考虑欧拉公式: $e^{i\theta}:=\cos\theta+i\sin\theta$ 以及
+% 定理 2.12. De Moivre’s formula
+% 若 $z_1=r_1 e^{i\theta_1}, z_2=r_2 e^{i\theta_2}$, 则 $$
+% z_1 z_2=(r_1 r_2)e^{i(\theta_1+\theta_2)}\tag{2.63}$$
+% 它有一个相当常用的推论:
+% 结论 若设 $y=e^{i\theta}$, 则 $2\cos\theta=y+\frac{1}{y}, 2i\sin\theta=y-\frac{1}{y}$, 更进一步:
+% $$2\cos(n\theta)=y^n+\frac{1}{y^n}, 2i\sin(n\theta)=y^n-\frac{1}{y^n}\tag{2.64}$$
+
+% 例题 2.61 求 $\int \cos^8 x dx$.
+% 解:利用之前的推论，我们有
+% $$2^{8}\cos^{8}x = \left(y + \frac{1}{y}\right)^{8}$$
+% $$
+% = \left(y^{8} + \frac{1}{y^{8}}\right) + 8\left(y^{6} + \frac{1}{y^{6}}\right) + 28\left(y^{4} + \frac{1}{y^{4}}\right) + 56\left(y^{2} + \frac{1}{y^{2}}\right) + 70$$
+% $$= 2\cos 8x + 16\cos 6x + 56\cos 4x + 112\cos 2x + 70$$
+% 因此我们可以有:
+% $$
+% \int \cos^{8}x dx = \frac{1}{2^{7}}\int (\cos 8x + 8\cos 6x + 28\cos 4x + 56\cos 2x + 35)dx$$
+% $$= \frac{1}{2^{7}}\left(\frac{\sin 8x}{8} + \frac{4\sin 6x}{3} + 7\sin 4x + 28\sin 2x + 35x\right)$$
+% 更一般地,我们有一些相关的恒等式:
+% $$
+% \cos^{n}x = \sum_{k=0}^{n}\frac{1}{2^{n}}\binom{n}{k}\cos[(n-2k)x] \tag{2.65}$$
+% $$\sin^{n}x = \sum_{k=0}^{n}\frac{(-1)^{n+k}}{2^{n}}\binom{n}{k}\cos\left[(n-2k)x + \frac{\pi}{2}n\right] \tag{2.66}$$
+% 例题 2.62 求 $\int \frac{dx}{3\sin x + 4\cos x + 4}$.
+% 解:化半角:
+% $$
+% \int \frac{dx}{3\sin x + 4\cos x + 4} = \int \frac{dx}{6\sin \frac{x}{2}\cos \frac{x}{2} + 8\cos^{2}\frac{x}{2}}$$
+% $$= \int \frac{d\left(\tan \frac{x}{2}\right)}{3\tan \frac{x}{2} + 4} = \frac{1}{3}\ln\left(3\tan \frac{x}{2} + 4\right)$$
+% 例题 2.63 求 $\int \frac{dx}{\sin 2x + 2\sin x}$.
+% 解:(By 学数垃圾) 利用倍角公式:
+% $$
+% \int \frac{dx}{\sin 2x + 2\sin x} = \int \frac{dx}{2\sin x (1 + \cos x)}$$
+% $$= \int \frac{\sin^{2}\frac{x}{2} + \cos^{2}\frac{x}{2}}{8\sin \frac{x}{2}\cos^{3}\frac{x}{2}}dx$$
+% $$
+% = -\frac{1}{4}\int \frac{d\left(\cos \frac{x}{2}\right)}{\cos^{3}\frac{x}{2}} + \frac{1}{4}\int \frac{dx}{\sin x}$$
+% $$= \frac{1}{8\cos^{2}\frac{x}{2}} + \frac{1}{4}\ln\left(\tan \frac{x}{2}\right)$$
+% 2.7.2 和差化积
+% 对于不同倍角之间,还有变换公式。
+% 定理 2.13. 和差化积公式
+% $\sin x \pm \sin y = 2 \sin \frac{x \pm y}{2} \cos \frac{x \mp y}{2}$
+% $\cos x + \cos y = 2 \cos \frac{x + y}{2} \cos \frac{x - y}{2}$
+% $\cos x - \cos y = -2 \sin \frac{x + y}{2} \cdot \sin \frac{x - y}{2}$
+
+% 同样的，这里还有积化和差公式。
+
+% 定理 2.14. 积化和差公式
+% $\sin x \sin y = \frac{1}{2} (\cos (x - y) - \cos (x + y))$
+% $\sin x \cos y = \frac{1}{2} (\sin (x + y) - \sin (x - y))$
+% $\cos x \cos y = \frac{1}{2} (\cos (x + y) + \cos (x - y))$
+
+% 这里给出一些例题：
+
+% 例题 2.64 求 $\int \sin x \sin 3x \sin 5x dx$.
+
+% 解：利用积化和差公式可以将三角的积变成三角的和。
+% $\int \sin x \sin 3x \sin 5x dx = \int \frac{\cos (2x) - \cos (4x)}{2} \sin 5x dx$
+% $= \frac{1}{4} \int \sin 7x + \sin 3x - \sin 9x - \sin x dx$
+% $= -\frac{1}{4} \left( \frac{\cos 7x}{7} + \frac{\cos 3x}{3} - \frac{\cos 9x}{9} - \cos x \right)$
+
+% 例题 2.65 求 $\int \frac{\sin (nx)}{\sin x} dx$.
+
+% 解：思路是递推，若记 $I_n = \int \frac{\sin (nx)}{\sin x} dx$，我们有
+% $I_n - I_{n-2} = \int 2 \cos (n-1)x dx = 2 \frac{\sin (n-1)x}{n-1}$
+
+% 于是不难得到：
+% $I_{2n} = I_0 + 2 \sum_{k=1}^{n} \frac{\sin nx}{n} = 2 \sum_{k=1}^{n} \frac{\sin nx}{n} \quad (2.67)$
+% $I_{2n+1} = I_1 + 2 \sum_{k=1}^{n} \frac{\sin (n+1)x}{n+1} = x + 2 \sum_{k=1}^{n} \frac{\sin (n+1)x}{n+1} \quad (2.68)$
+
+% 例题 2.66 求 $\int \cot (x - a) \cot (x - b) dx$.
+% 解:(By Polynomial)注意到
+% $$\cot(a-b)=\frac{1+\cot(x-a)\cot(x-b)}{\cot(x-a)-\cot(x-b)}$$
+% 于是不难得到
+% $$
+% \int \cot(x-a)\cot(x-b)\,dx$$
+% $$=\int \cot(a-b)(\cot(x-a)-\cot(x-b))-1\,dx$$
+% $$
+% =\cot(a-b)\ln\frac{\sin(a-x)}{\sin(b-x)}-x$$
+% 例题2.67 求 $\int \frac{\cos(2x)}{\cos(3x)}dx$.
+% 解:(By 陪忆) 不难注意到:
+% $$\int \frac{\cos(2x)}{\cos(3x)}dx = \int \frac{\cos 2x \cos x}{\cos 3x \cos x}dx$$
+% $$
+% = \frac{1}{2}\int \frac{\cos(3x)+\cos x}{\cos(3x)\cos x}dx$$
+% $$= \frac{1}{2}\int \sec x + \sec 3x dx$$
+% $$
+% = \frac{1}{6}\ln\left[(\sec x + \tan x)^3(\sec 3x + \tan 3x)\right]$$
+% 2.7.3 朗斯基行列式
+% 方法也并不是固定的，还可以联系上朗斯基行列式。所谓朗斯基行列式，就是
+% $$W(p,q)=\begin{vmatrix}p&q\\p'&q'\end{vmatrix}$$
+% 这种形式将会带来特殊的关系。
+% 例题2.68 求 $\int \frac{dx}{\sin(x+a)\sin(x+b)}$.
+% 解:(By 虚调子) 注意到 $\sin(x+a),\sin(x+b)$ 都是
+% $$
+% y''+y=0$$
+% 的解，那么它们的朗斯基行列式为常数，也即
+% $$\int \frac{dx}{\sin(x+a)\sin(x+b)} = \frac{1}{\sin(b-a)}\int \frac{\sin(b-a)}{\sin(a+x)\sin(b+x)}dx$$
+% $$
+% = \frac{1}{\sin(b-a)}\int \frac{d(\sin(a+x))}{\sin(a+x)} - \frac{d(\sin(b+x))}{\sin(b+x)}$$
+% $$= \frac{1}{\sin(b-a)}\ln\left|\frac{\sin(a+x)}{\sin(b+x)}\right|$$
+
+% 例题2.69 求 $\int e^{ax}\sin bx dx$.
+% \begin{aligned}&&\text{解:(By 风中鱼)考虑朗斯基行列式,有}\\&&\frac{\mathrm{d}}{\mathrm{d}x}\begin{vmatrix}f^{\prime}\left(x\right)&g^{\prime}\left(x\right)\\f\left(x\right)&g\left(x\right)\end{vmatrix}=\begin{vmatrix}f^{\prime\prime}\left(x\right)&g^{\prime\prime}\left(x\right)\\f\left(x\right)&g\left(x\right)\end{vmatrix}\mathrm{(2.70)}\\&\text{于本题,即}\\&&&&\int e^{ax}\sin bx\mathrm{d}x=\frac{1}{a^2+b^2}\begin{vmatrix}(e^{ax})^{\prime}&(\sin bx)^{\prime}\\e^{ax}&\sin bx\end{vmatrix}\quad(2.71)&&&&\mathrm{.}\\&以及更一般地,\\&&\int e^{ax+b}\operatorname{sin}\left(ux+v\right)\mathrm{d}x=\frac{1}{a^{2}+u^{2}}\begin{vmatrix}\frac{\mathrm{d}}{\mathrm{d}x}\left(e^{ax+b}\right)&\frac{\mathrm{d}}{\mathrm{d}x}\left(\operatorname{sin}\left(ux+v\right)\right)\\e^{ax+b}&\operatorname{sin}\left(ux+v\right)\end{vmatrix}\quad(2.72)\end{aligned}
+% 第三章 单元积分之路
+% 这里的单元与之前的双元对应，并不是 unit 的意思。而是另外一种特殊的“双元”。最开始的灵感来源于三角函数的万能公式，是在利用双元法解题时的一小撮"另类"。知友 @ 鸽姬布的回答提示了单元法仍有一定的高妙之处，而不只是对应于半角换元。然后在 2022 年间逐渐完善了 $pq = C$ 型的双元体系，由于往往不太需要同时对两者进行积分，也就是没说有双元第一公式这样的双元复杂性，所以归类为“单元”。这部分联系了过时的“万能换元法”、“欧拉换元法”等，是它们在双元体系下的更优雅的推广。
+% 在了解其基础后，我们可以更完备的开发。在 2022 年末，知乎的 @ 无理函数君思路放在处理指数函数类不定积分上，使得在计算此类不定积分上有不需要过多技巧的方案。
+% 目前仍在开发中 (2023.3)。
+% 3.1 双元化单元
+% 在双元法里，我们常常会考虑：$x^2 + y^2 = 1$ 这种情形。因为这使得
+% $$\int ydx - xdy = \int \frac{ydx - xdy}{x^2 + y^2} \to \arctan \frac{x}{y}$$
+% 但是这并不是唯一的情形！比如当 $x, y$ 满足 $xy = 1$ 时，
+% $$
+% \int ydx - xdy = \int \frac{ydx - xdy}{xy} = \int \frac{dx}{x} - \frac{dy}{y} = \ln \frac{x}{y}$$
+% 也是可以积出来的。
+% 那么我们可以来研究 $pq = C$ 的双元 $p, q$，微分关系将与二次双元不相同：
+% $$pdq + qdp = 0$$
+% 值得一提的是二次双元与这类定积双元是很容易互相转化的，换句话说两者本质上是一回事，在求解不定积分上各有各的方便之处。
+% $$
+% p^2 - q^2 = C \to (p + q)(p - q) = C$$
+% 如果是实圆的话将带虚数。
+% 例题 3.1 求 $\int \frac{dx}{1 + \sqrt{x} + \sqrt{1 + x}}$.
+% 解：不妨设
+% $$p = \sqrt{x} + \sqrt{1 + x}, q = \sqrt{1 + x} - \sqrt{x}, pq = 1$$
+% 这样可以将原题可以去掉根号：
+% $$\int \frac{\mathrm{d}x}{1+\sqrt{x}+\sqrt{1+x}} = \int \frac{1}{1+p} \mathrm{d}\left(\frac{1}{4}(p-q)^2\right)$$
+% $$
+% = \frac{1}{2} \int \frac{p \mathrm{d}p}{1+p} + \frac{1}{2} \int \frac{q^2 \mathrm{d}q}{1+q}$$
+% $$= \frac{1}{2}p - \frac{1}{2} \ln(p+1) + \frac{1}{2}\left(\frac{1}{2}q^2 - q\right) + \frac{1}{2} \ln(1+q)$$
+% $$
+% = \frac{1}{4}(\sqrt{1+x}-\sqrt{x})^2 + \sqrt{x} + \frac{1}{2} \ln \frac{1+\sqrt{1+x}-\sqrt{x}}{1+\sqrt{1+x}+\sqrt{x}}$$
+% 例题 3.2 求 $\int \sqrt{x+\sqrt{1+x^2}} \mathrm{d}x$.
+% 解：(By 风中鱼) 往往我们不需要写出双元，一般竞赛题(对，这种题已经只会在竞赛出现了)会采用如下写法：若设 $t = \sqrt{x+\sqrt{1+x^2}}$，则有 $t^2 - \frac{1}{t^2} = 2x$，于是题目结构已经解析完毕。
+% $$\int \sqrt{x+\sqrt{1+x^2}} \mathrm{d}x = \frac{1}{2} \int t \mathrm{d}\left(t^2 - \frac{1}{t^2}\right)$$
+% $$
+% = \int t\left(t + \frac{1}{t^3}\right) \mathrm{d}t$$
+% $$= \frac{1}{3}t^3 - \frac{1}{t}$$
+% 例题 3.3 求 $\int \frac{\sqrt{x+\sqrt{x^2+1}}}{x+2\sqrt{x^2+1}} \mathrm{d}x$.
+% 解：(By 风中鱼) 若设
+% $$
+% p = x+\sqrt{x^2+1},\ q = \sqrt{x^2+1}-x,\ pq=1$$
+% 则我们能转化原题，
+% $$\int \frac{\sqrt{x+\sqrt{x^2+1}}}{x+2\sqrt{x^2+1}} \mathrm{d}x = \int \frac{\sqrt{p}}{3p+q} \mathrm{d}(p-q)$$
+% $$
+% = \int \frac{p\sqrt{p}}{3p^2+1} \mathrm{d}p - \int \frac{\mathrm{d}q}{\sqrt{q}(3+q^2)}$$
+% $$= 2\left(\int \frac{m^4}{3m^4+1} \mathrm{d}m - \int \frac{\mathrm{d}n}{3+n^4}\right)$$
+% 其中 $m,n$ 分别为 $\sqrt{p},\sqrt{q}$。后面的过程这里省略，具体可以参见“有理积分之根”部分。
+% 例题 3.4 求 $\int \frac{\sec^2 x \mathrm{d}x}{(\sec x + \tan x)^n}$.
+% 解：若设 $t = \sec x + \tan x$，则 $\frac{1}{t} = \sec x - \tan x$，于是我们有：
+% $$
+% \begin{cases}
+% \sec x = \frac{1}{2}\left(t + \frac{1}{t}\right) \\
+% \mathrm{d}t = t \sec x \mathrm{d}x
+% \end{cases}
+% $$
+% 带入：
+% $$\int \frac{\sec^2 x dx}{(\sec x + \tan x)^n} = \int \frac{1}{t^n} \frac{1}{2} \left( t + \frac{1}{t} \right) \frac{dt}{t}
+% = \frac{1}{2} \int \frac{1}{t^n} \frac{1}{t} + \frac{1}{t^{n+2}} dt
+% = \frac{1}{2} \left( \frac{t^{1-n}}{1-n} - \frac{t^{-1-n}}{1+n} \right)$$
+% 另外，对于 $n = \pm 1$，其相应的奇点部分取 $\ln x$ 形式即可。
+% 3.2 多重根号杂例
+% 众所周知 (?), MMA 对于处理根号很苦手，以至于某些简单的多重根号不定积分被萌新误认为是非初等的，这里举一些常见的例子帮助分析问题。
+% 例题 3.5 求 $\int \sqrt{1 + (1 + x^2)^{-1} + \left(1 + \sqrt{1 + x^2}\right)^{-2}} dx$
+% 解: (By 风中鱼) 不难发现
+% $$\int \sqrt{1 + (1 + x^2)^{-1} + \left(1 + \sqrt{1 + x^2}\right)^{-2}} dx = \int 1 + \frac{1}{x^2} - \frac{1}{x^2 \sqrt{1 + x^2}} dx
+% = x - \frac{1}{x} + \frac{\sqrt{1 + x^2}}{x}$$
+% 例题 3.6 求 $\int \frac{dx}{\sqrt{1 + x \sqrt{1 - x^2}}}$.
+% 解: (By Polynomial) 若设
+% $$p = x + \sqrt{1 - x^2}, q = x - \sqrt{1 - x^2}, r = \sqrt{2 + 2x \sqrt{1 - x^2}}$$
+% 则不难得到
+% $$
+% \int \frac{dx}{\sqrt{1 + x \sqrt{1 - x^2}}} = \frac{1}{\sqrt{2}} \int \frac{d(p + q)}{r}
+% = \frac{1}{\sqrt{2}} \arctan \frac{q}{r} + \frac{1}{\sqrt{2}} \ln(r + p)
+% = \frac{1}{\sqrt{2}} \left( \arctan \frac{x - \sqrt{1 - x^2}}{\sqrt{2 + 2x \sqrt{1 - x^2}}} + \ln \left( \sqrt{2 + 2x \sqrt{1 - x^2}} + x + \sqrt{1 - x^2} \right) \right)
+% $$
+% 例题 3.7 求 $\int \frac{\sqrt{1 + \sqrt{1 + x^4}}}{1 + x^4} dx$.
+% 解: (By 风中鱼) 若设
+% $$
+% p, q = \frac{\sqrt{1 + \sqrt{1 + x^4}} \pm \sqrt{\sqrt{1 + x^4} - 1}}{\sqrt{2} x}, r = \frac{\sqrt[4]{1 + x^4}}{x} \quad (3.5)$$
+% 那么有
+% $$\int \frac{\sqrt{1+\sqrt{1+x^{4}}}}{1+x^{4}} \mathrm{d} x=\int \frac{p+q}{\sqrt{2}} \frac{1}{r^{4}}\left(-\frac{1}{2}\right) \mathrm{d}(p q)$$
+% $$
+% =-\frac{1}{2 \sqrt{2}} \int \frac{\left(q^{2}+2\right) \mathrm{d} q}{\left(q^{2}+1\right)^{2}}-\frac{1}{2 \sqrt{2}} \int \frac{\left(p^{2}-2\right) \mathrm{d} p}{\left(p^{2}-1\right)^{2}}$$
+% $$=-\frac{1}{4 \sqrt{2}} \frac{q}{1+q^{2}}-\frac{3}{4 \sqrt{2}} \arctan q+\frac{1}{4 \sqrt{2}} \frac{p}{1-p^{2}}+\frac{3}{4 \sqrt{2}} \operatorname{arcth} p$$
+% $$
+% =\frac{3}{4 \sqrt{2}} \operatorname{arcth}\left(\frac{\sqrt{1+\sqrt{1+x^{4}}}+x^{2}}{x}\right)-\frac{x \sqrt{1+\sqrt{1+x^{4}}}}{4 \sqrt{1+x^{4}}}$$
+% $$-\frac{3}{4 \sqrt{2}} \arctan \left(\frac{\sqrt{1+\sqrt{1+x^{4}}}-x^{2}}{x}\right)$$
+% 例题 3.8 求 $\int \frac{\mathrm{d} x}{\sqrt{1+x^{2}+\sqrt{1+x^{4}}}}$.
+% 解:(By Polynomial) 我们设
+% $$
+% p, q=\sqrt{x} \pm \frac{1}{\sqrt{x}} ; r, s=\sqrt{x+\frac{1}{x}} \pm \sqrt{2}$$
+% 这样我们可以凑出来
+% $$\frac{r+s}{\sqrt{2}}=\frac{\sqrt{1+x^{2}}+\sqrt{1+x^{4}}}{\sqrt{x}}$$
+% 带入即有
+% $$
+% \int \frac{\mathrm{d} x}{\sqrt{1+x^{2}+\sqrt{1+x^{4}}}}=\int \frac{\sqrt{2} \mathrm{d} x}{(r+s) \sqrt{x}}=\frac{1}{2} \int(s-r) \mathrm{d}(p+q)$$
+% $$=\frac{1}{4}(s-r)(p+q)+\frac{2+\sqrt{2}}{4} \ln [(s+q)(p+r)]-\frac{2-\sqrt{2}}{4} \ln [(s+p)(r+q)]$$
+% 回代的结果这里就省略了。
+% 例题 3.9 求 $\int \frac{\sqrt{1+\sqrt{1+x^{4}}}+\sqrt{2} \sqrt{1+x^{4}}+\sqrt{1+x^{4}}}{1+x^{4}} \mathrm{d} x$.
+% 解:(By Polynomial) 设
+% $$
+% b=\frac{x}{\sqrt{1+\sqrt{1+x^{4}}}+\sqrt{2} \sqrt{1+x^{4}}+\sqrt{1+x^{4}}}$$
+% 于是不难得到
+% $$\int \frac{\sqrt{1+\sqrt{1+x^4}+\sqrt{2}\sqrt{1+x^4}+\sqrt{1+x^4}}}{1+x^4}dx = \int \frac{4db}{1+b^4}$$
+% $$
+% = \sqrt{2}\arctan\left(1+\frac{\sqrt{2}x}{\sqrt{1+\sqrt{1+x^4}+\sqrt{2}\sqrt{1+x^4}+\sqrt{1+x^4}}}\right)$$
+% $$-\sqrt{2}\arctan\left(1-\frac{\sqrt{2}x}{\sqrt{1+\sqrt{1+x^4}+\sqrt{2}\sqrt{1+x^4}+\sqrt{1+x^4}}}\right)$$
+% $$
+% +\frac{1}{\sqrt{2}}\ln\frac{1+\sqrt{1+x^4}+\sqrt{2}\sqrt{1+x^4}+\sqrt{1+x^4}+x^2+\sqrt{2}x\sqrt{1+\sqrt{1+x^4}+\sqrt{2}\sqrt{1+x^4}+\sqrt{1+x^4}}}{1+\sqrt{1+x^4}+\sqrt{2}\sqrt{1+x^4}+\sqrt{1+x^4}+x^2-\sqrt{2}x\sqrt{1+\sqrt{1+x^4}+\sqrt{2}\sqrt{1+x^4}+\sqrt{1+x^4}}}$$
+% 例题 3.10 求 $\int \frac{\sqrt{x^4+\sqrt{1+x^4}+2\sqrt{x^4-1+\sqrt{(x^8-1)(x^4-1)}}}}{1+x^4}dx$.
+% 解:(By Mirion) 裂项：若设
+% $$t = \frac{x}{\sqrt{x^4-1}}, s = \frac{x}{\sqrt{1+\sqrt{1+x^4}}}$$
+% 则
+% $$
+% \int \frac{\sqrt{x^4+\sqrt{1+x^4}+2\sqrt{x^4-1+\sqrt{(x^8-1)(x^4-1)}}}}{1+x^4}dx$$
+% $$= \int \frac{\sqrt{x^4-1}}{x^4+1}dx + \int \frac{\sqrt{1+\sqrt{1+x^4}}}{1+x^4}dx$$
+% $$
+% = -\int \frac{dt}{4t^4+1} + 2\int \frac{ds}{1+s^4}$$
+% 后略。
+% 例题 3.11 求 $\int \sqrt{2+\cos x+\sqrt{5+4\cos x}}dx$.
+% 解:(By 魏念辉) 不难注意到:
+% $$\int \sqrt{2+\cos x+\sqrt{5+4\cos x}}dx = \int \frac{\sin x}{\sqrt{5+4\cos x-2-\cos x}}dx$$
+% $$
+% (t = \sqrt{5+4\cos x}) = \int \frac{-tdt}{\sqrt{-t^2+4t-3}}$$
+% $$= \sqrt{-t^2+4t-3}-2\arctan\frac{t-2}{\sqrt{-t^2+4t-3}}$$
+% $$
+% = \frac{2\sin x}{\sqrt{2+\cos x+\sqrt{5+4\cos x}}}$$
+% $$-2\sgn(\sin x)\arcsin\left(\sqrt{5+4\cos x}-2\right)$$
+% 再进行连续修正即可。
+% 3.3 指数类的单元法
+% 思路一般是这样，我们关于指数类的不定积分，$\int e^{f(x)} g(x) \, \mathrm{d}x$ 里面的因子 $e^{f(x)}$ 是在不定积分的运算前后都不会消失，这引导我们关注该因子。不妨设为双元之一。而另一个双元也是“不会消失”的，这样我们可以用双元来表示整个完整过程。出于简单考虑，可以设 $x$ 为另一个双元（@ 无理函数君），重心偏向于指数单元。这里在此基础上参考了 @ 初于冬雪在 2023 年初的一部分思路，做了进一步开发。
+% 例题 3.12 求 $\int x^2 \exp\left(\frac{x^2}{2} - x\right) \, \mathrm{d}x$.
+% 解：(百合) 我们首先能关注到 $o = \exp\left(\frac{x^2}{2} - x\right)$ 的因子。然后默认另一个元是 $x$，两者的微分关系是：
+% $$\frac{\mathrm{d}o}{o} = (x-1) \, \mathrm{d}x$$
+% 然后是将原来的积分换元：
+% $$
+% \int x^2 \exp\left(\frac{x^2}{2} - x\right) \, \mathrm{d}x = \int x^2 o \, \mathrm{d}x$$
+% $$= \int o (x-1)(x+1) \, \mathrm{d}x + \int o \, \mathrm{d}x$$
+% $$
+% = \int (x+1) o \frac{\mathrm{d}o}{o} + \int o \, \mathrm{d}x$$
+% $$= (x+1) o$$
+% $$
+% = (x+1) \exp\left(\frac{x^2}{2} - x\right)$$
+% 例题 3.13 求 $\int e^{\sin x} \left(\frac{x \cos^3 x - \sin x}{\cos^2 x}\right) \, \mathrm{d}x$.
+% 解：我们首先能关注到 $o = e^{\sin x}$ 的因子，除此之外还有一个分母的极点需要保留，也即 $p = \frac{e^{\sin x}}{\cos x}$ 也一定是存在的。他们之间的微分关系如下：
+% $$\frac{\mathrm{d}o}{o} = \cos x \, \mathrm{d}x = \frac{o}{p} \, \mathrm{d}x,\quad \frac{\mathrm{d}p}{p} = \left(\cos x + \frac{\sin x}{\cos x}\right) \, \mathrm{d}x$$
+% 然后我们将原来的一元积分分往已设置的双元换元：
+% $$
+% \int e^{\sin x} \left(\frac{x \cos^3 x - \sin x}{\cos^2 x}\right) \, \mathrm{d}x = \int x e^{\sin x} \cos x \, \mathrm{d}x - \int e^{\sin x} \frac{\sin x}{\cos^2 x} \, \mathrm{d}x$$
+% $$= \int x o \frac{\mathrm{d}o}{o} - \int p \left(\frac{\mathrm{d}p}{p} - \frac{\mathrm{d}o}{o}\right)$$
+% $$
+% = x o - \int o p \frac{\mathrm{d}o}{o^2} - p + \int p \frac{\mathrm{d}o}{o}$$
+% $$= x o - p$$
+% $$a
+% = e^{\sin x} \left(x - \frac{1}{\cos x}\right)$$
+% \begin{aligned}&\text{例题 3.14 求}\int\left(1+x-\frac{1}{x}\right)e^{x+\frac{1}{x}}\mathrm{d}x.\\&&\text{解:(By 风中鱼)}\\&\text{极点,这将来自于 }p=xe^{x+\frac{1}{x}},\text{他们的微分关系是}\\&&&&\frac{\mathrm{d}o}{o}=\left(1-\frac{1}{x^2}\right)\mathrm{d}x,\frac{\mathrm{d}p}{p}=\left(1+\frac{1}{x}-\frac{1}{x^2}\right)\mathrm{d}x\\&\text{于是}\\&&\int\left(1+x-\frac{1}{x}\right)e^{x+\frac{1}{x}}\mathrm{d}x&&=\int xo\frac{\mathrm{d}p}{p}\\&&&&=\int\mathrm{d}p=p\\&&&&=xe^{x+\frac{1}{x}}\end{aligned}

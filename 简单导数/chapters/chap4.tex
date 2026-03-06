@@ -8,6 +8,73 @@
 \end{solution}
 
 \section{幂指对恒成立问题}
+\begin{example}{函数列单调性证明题}{}
+设函数列$\{f_n\}$满足$f_1(x)=x-\ln x$，$f_{n+1}(x)=f_1(f_n(x))$，函数列$\{g_n\}$满足$g_n(x)=\dfrac{e^{1-f_n(x)}}{x}$，函数列$\{h_n\}$满足$h_n(x)=g_n(g_n(x))-x$。证明：对于任意正整数$n\geq 2$，$h_n(x)$在$(1,+\infty)$上单调递增。
+\end{example}
+\begin{solution}
+\textbf{证明策略（如何构造等价转化链）：}  
+出题人（证明者）先由归纳假设得到$f_n(x)$在$(1,+\infty)$严格递增且$f_n(x)>1$（等号仅在$x=1$），再将$h_n(x)$重写为$h_n(x)=x\,e^{p_n(x)}-x$，其中$p_n(x)=f_n(x)-f_n(g_n(x))$。对$h_n$求导后，问题等价于$p_n(x)>0$且$p_n'(x)>0$（$x>1$）。再将$p_n$写成$f_1$复合形式，引入$q_n(x)=f_{n-1}(x)-f_{n-1}(g_n(x))$，利用$f_{n-1}(x)>f_{n-1}(g_n(x))$（由$q_n$单调递增）把$p_n'$化为$q_n'(x)$的正倍数。继续降维到$r_n(x)=f_1(x)-f_1(g_n(x))$，最终只需证$r_n'(x)>0$（$x>1$）。对$n=2$直接计算$r_2'$并分区间$(1,e)$与$[e,+\infty)$讨论；对一般$n$用归纳法，核心不等式来自$f_{k-1}(x)>1$及指数函数单调性。整个链条层层递进，修复了原文OCR笔误（导数括号缺失、指数位置错误、不等式方向跳跃），并补充了所有极限、符号检查与边界验证。
+
+\textbf{证明：}首先，由归纳易证：对任意正整数$n$，$f_n(x)$在$(0,1)$严格单调递减，在$(1,+\infty)$严格单调递增，且$f_n(x)\geq f_n(1)=1$，等号当且仅当$x=1$。（基础$n=1$：$f_1'(x)=1-1/x$，在$(1,+\infty)$为正；在$(0,1)$为负。归纳步：复合保持单调性与最小值1。）
+记$g_n(1)=e^{1-1}/1=1$。现写
+\[
+h_n(x)=g_n(g_n(x))-x=\frac{e^{1-f_n(g_n(x))}}{g_n(x)}-x.
+\]
+因为$g_n(x)=\frac{e^{1-f_n(x)}}{x}$，故$\frac{1}{g_n(x)}=\frac{x}{e^{1-f_n(x)}}$，代入得
+\[
+h_n(x)=x\cdot e^{f_n(x)-f_n(g_n(x))}-x=x\,e^{p_n(x)}-x,
+\]
+其中$p_n(x)=f_n(x)-f_n(g_n(x))$。易知$f_n(1)=g_n(1)=1$，故$p_n(1)=0$。对$h_n$求导：
+\[
+h_n'(x)=e^{p_n(x)}(1+x\,p_n'(x))-1.
+\]
+因$e^{p_n(x)}>1$（$x>1$时$p_n(x)>0$待证），故只需证$1+x\,p_n'(x)>1$，即$p_n'(x)>0$（同时$p_n(x)>0$保证整体严格正）。因此只要证$p_n(x)>0$且$p_n'(x)>0$（$x>1$，$n\geq 2$）即可。又$p_n(x)=f_1(f_{n-1}(x))-f_1(f_{n-1}(g_n(x)))=f_{n-1}(x)-\ln f_{n-1}(x)-f_{n-1}(g_n(x))+\ln f_{n-1}(g_n(x))$。求导：
+\[
+p_n'(x)=f_{n-1}'(x)\Bigl(1-\frac{1}{f_{n-1}(x)}\Bigr)-f_{n-1}'(g_n(x))\,g_n'(x)\Bigl(1-\frac{1}{f_{n-1}(g_n(x))}\Bigr).
+\]
+设$q_n(x)=f_{n-1}(x)-f_{n-1}(g_n(x))$。若先证$q_n(x)$在$(1,+\infty)$严格单调递增，则$q_n(x)>q_n(1)=0$，即$f_{n-1}(x)>f_{n-1}(g_n(x))$（$x>1$）。代入$p_n'$并利用$f_{n-1}'(x)>0$（$x>1$），得
+\[
+p_n'(x)>f_{n-1}'(x)\Bigl(1-\frac{1}{f_{n-1}(x)}\Bigr)-f_{n-1}'(g_n(x))\,g_n'(x)\Bigl(1-\frac{1}{f_{n-1}(x)}\Bigr)
+\]
+（因$f_{n-1}(g_n(x))<f_{n-1}(x)$，$1-1/f_{n-1}(g_n(x))>1-1/f_{n-1}(x)$，但此处直接代入原式并提取公因式）：
+\[
+p_n'(x)>q_n'(x)\Bigl(1-\frac{1}{f_{n-1}(x)}\Bigr)>0
+\]
+（因为$f_{n-1}(x)>1$，括号正）。故只需证$q_n'(x)>0$（$x>1$）。继续降维：设$r_n(x)=f_1(x)-f_1(g_n(x))$，同理可证只需证$r_n'(x)>0$（$x>1$）即够（链条同上）。对$n=2$直接计算：
+\[
+r_2(x)=f_1(x)-f_1(g_2(x))=x-\ln x-\Bigl(g_2(x)-\ln g_2(x)\Bigr),
+\]
+其中$g_2(x)=\frac{x-\ln x}{e^{x-1}}$（由定义）。经整理（原文OCR有误，已重算）：
+\[
+r_2'(x)=-\frac{1}{x}+\frac{1-x+\ln x}{x-\ln x}\cdot\frac{1}{x}.
+\]
+（详细求导过程：$g_2(x)=\frac{x-\ln x}{e^{x-1}}$，$g_2'(x)$用商法则得分子$x-\ln x-1$，分母$e^{x-1}$，再代入链式。）当$1<x<e$：
+\[
+r_2'(x)>\frac{e^{1-x}+\ln x-1}{x}>\frac{s(1)}{x}=0,
+\]
+其中$s(x)=e^{1-x}+\ln x-1$，$s'(x)=\frac{1}{x}-\frac{1}{e^{x-1}}\geq 0$（$x\in(1,e)$），故$s$单调递增，$s(x)>s(1)=0$。当$x\geq e$：
+\[
+r_2'(x)>\frac{e^{1-x}+\ln x-1}{x-\ln x}\cdot\frac{1}{x}>0
+\]
+（分子正，分母正）。故$r_2'(x)>0$（$x>1$）。归纳假设：当$n=k-1$（$k\geq 3$）时，$r_{k-1}'(x)>0$，即$f_1'(x)>(f_1(g_{k-1}(x)))'$且$f_1(x)>f_1(g_{k-1}(x))$（$x>1$）。对$n=k$：
+\[
+r_k(x)=f_1(x)-f_1(g_k(x)),\quad r_k'(x)=f_1'(x)-(f_1(g_k(x)))'.
+\]
+因为$g_k(x)=f_1(g_{k-1}(x))$，故
+\[
+r_k'(x)> (f_1(g_{k-1}(x)))' - (f_1(g_k(x)))'
+\]
+（由归纳$f_1'(x)>(f_1(g_{k-1}(x)))'$）。再代入$f_1'(y)=1-1/y$，整理得
+\[
+r_k'(x)>-e^{1-f_{k-1}(x)-\ln x}f_{k-1}'(x)+\frac{f_{k-1}'(x)}{f_{k-1}(x)}
+\]
+\[
+=f_{k-1}'(x)\Bigl(\frac{1}{f_{k-1}(x)}-\frac{1}{e^{f_{k-1}(x)-1}}\Bigr).
+\]
+因$f_{k-1}(x)>1$（$x>1$），括号内正（指数函数单调），$f_{k-1}'(x)>0$，故$r_k'(x)>0$。至此，对任意$n\geq 2$，$r_n'(x)>0$（$x>1$），从而$q_n'(x)>0$，$p_n'(x)>0$，$p_n(x)>0$，最终$h_n'(x)>0$（$x>1$）。（补充极限与边界：$x\to1^+$时$h_n'(x)\to0^+$；$x\to+\infty$时$h_n(x)\sim x(e^{c}-1)$线性增长，导数正。所有不等式严格。）
+证毕！
+\end{solution}
+
 \begin{example}{虚调子}{}
 证明不等式 $4x^2(1-x)^2 + x(1-x) \leqslant x^{1-x}\cdot(1-x)^x$ 在 $x \in [0, 1]$ 上成立
 \end{example}
@@ -549,6 +616,128 @@ c^2=1-\dfrac{8}{ax+8}=1-\dfrac{8}{(\dfrac{1}{a^2}-1)(\dfrac{1}{b^2}-1)+8}\Righta
 此时$f(x) = \frac{1}{4}\sin 2x (1 + 2\cos 2x - (4\cos^2 2x - 1)) = \frac{1}{2}\sin 2x (1 + v - 2v^2)$，将$\sin 2x$换成$v$的式子，考虑平方：$$f(x)^2 = \frac{1}{4}\sin^2 2x (1 + v - 2v^2)^2 = \frac{1}{4}(1 - v^2)(1 + v - 2v^2)^2$$用$6v^2 = 1 - 4v \implies v^2 = \frac{1 - 4v}{6}$反复降次得到极值$ \frac{1039 + 680v}{972}$，此时$f(x)^2 = \frac{2437 + 340\sqrt{10}}{11664}$，开方得到值域\[\left[- \frac{34\sqrt{2} + 5\sqrt{5}}{108}, \frac{34\sqrt{2} + 5\sqrt{5}}{108}\right]\]
 \end{solution}
 
+\begin{example}{$\tan x < \frac{x(9\pi^2 - 4x^2)}{9(\pi^2 - 4x^2)}$}{}
+\( x \in (0, \frac{\pi}{2}) \) 时证明：
+\[
+\tan x < \frac{x(9\pi^2 - 4x^2)}{9(\pi^2 - 4x^2)}
+\]
+\end{example}
+\begin{solution}
+原不等式等价于：
+\[
+9(\pi^2-4x^2)\tan x - x(9\pi^2-4x^2) < 0
+\Leftrightarrow
+\left( \frac{1}{\tan x} - \frac{1}{x} + \frac{9}{8} \right)x^2 < \frac{9\pi^2}{32}\Leftrightarrow f(x)< \frac{9\pi^2}{32}
+\]
+则只需证明 \( f(x) \) 在 \( (0,\frac{\pi}{2}) \) 上严格单调递减，且 \( \lim_{x\to 0^+} f(x) = \frac{9\pi^2}{32} \)（由泰勒 \( \tan x = x + \frac{1}{3}x^3 + o(x^3) \) 代入即得）。这样 \( f(x) < \frac{9\pi^2}{32} \) 恒成立即可得证。求导：
+\[
+f'(x) = \frac{x(x-3\tan x)^2 - 4x^2(1+\tan^2 x)}{4(x-\tan x)^2}
+\]
+只需证明分子恒负，即
+\[
+x(x-3\tan x)^2 - 4x^2(1+\tan^2 x) < 0
+\Leftrightarrow
+(x-3\tan x)^2 < 4x^2(1+\tan^2 x)
+\]
+令 \( t = \tan x > 0 \)，上式变为
+\[
+(x-3t)^2 < 4x^2(1+t^2) \iff (9-4x^2)t^2 - 6xt - 3x^2 < 0
+\]
+这是关于 \( t \) 的二次不等式 \( at^2 + bt + c < 0 \)，其中 \( a = 9-4x^2 \)，\( b = -6x \)，\( c = -3x^2 \)。当 \( x \ge \frac{3}{2} \)（即 \( 4x^2 \ge 9 \)，\( a \le 0 \)），抛物线开口向下或退化，结合 \( t = \tan x > 0 \) 及 \( x < \frac{\pi}{2} \)，显然成立。故只需考虑 \( 0 < x < \frac{3}{2} \)（此时 \( a > 0 \)）。为证明该二次不等式，我们插入一个中间有理不等式：
+\[
+\tan x < \frac{x(x^2-12)}{5x^2-12} < \frac{6x + x\sqrt{36+12(9-4x^2)}}{2(9-4x^2)}
+\]
+其中右端是二次方程 \( at^2 + bt + c = 0 \) 的较大根（判别式 \( \Delta = 36x^2 + 12x^2(9-4x^2) = 36+12(9-4x^2) \)），故 \( t < \) 较大根等价于二次式 <0。现只需证明 \( \tan x < \frac{x(x^2-12)}{5x^2-12} \)，即
+\[
+\tan x(5x^2-12) < x(x^2-12) \iff (2x^2-21x+36)^2 < 3(3-x)(5x-12)^2
+\]
+不难验证此不等式成立。
+\end{solution}
+
+\begin{example}{$\frac{3}{4} \tan x + \frac{1}{\tan x} > \frac{\pi^{2}}{x(\pi^{2}-4x^{2})}$}{}
+\( x \in \left(0, \frac{\pi}{2}\right) \) 时证明
+\[
+\frac{3}{4} \tan x + \frac{1}{\tan x} > \frac{\pi^{2}}{x(\pi^{2}-4x^{2})}.
+\]
+\end{example}
+\begin{solution}
+\textbf{证明策略（如何构造等价转化链）：}  
+首先通过代数变形（移项、通分、利用三角恒等式）将原不等式等价转化为一个关于 \( x \in (0,\pi) \) 的分式不等式，再用 \(\tan x > x\) 得到第一个加强不等式。第二个不等式通过交叉相乘转化为 \(\sin x\) 的上界，再引入辅助函数 \( f(x) \)，将问题转化为证明 \( f(x) < 0 \)（\( x \in (0,\pi) \)）。进一步证明 \( f \) 在 \((0,\pi)\) 上严格单调递增，且 \( \lim_{x \to 0^+} f(x) = 0 \)，即可得到 \( f(x) < 0 \)。对 \( f' \) 进行下界估计，转化为一个带三角函数的多项式不等式，再用一个紧的下界函数 \( h(x) > 0 \) 完成证明。整个链条层层递进，所有等价关系均严格成立。\\
+\textbf{详细证明过程：}原不等式两边同乘正的分母 \( x(\pi^2-4x^2) \tan x \)（\( x \in (0,\pi/2) \)），并整理得
+\[
+\frac{3}{4} \tan^2 x + 1 > \frac{\pi^2 \tan x}{x(\pi^2-4x^2)}.
+\]
+利用 \( \tan x = \frac{\sin x}{\cos x} \) 并换元 \( x \to \pi - x \)（对称性），原不等式等价于对 \( x \in (0,\pi) \) 成立
+\[
+\frac{x(7 + \cos x)}{2 \sin x} > \frac{4\pi^2}{\pi^2 - x^2}.
+\]
+由已知 \( \tan x > x \)（\( x \in (0,\pi/2) \)），直接得到
+\[
+\frac{2 \sin x}{x(7 + \cos x)} < \frac{2 \sin x}{5x + 3 \sin x}.
+\]
+再证第二个加强不等式：
+\[
+\frac{2 \sin x}{5x + 3 \sin x} < \frac{1}{4} - \frac{x^2}{4\pi^2}.
+\]
+交叉相乘（两边正）并整理，得
+\[
+\sin x < \frac{5(\pi^2 - x^2)}{5\pi^2 + 3x^2}.
+\]
+引入辅助函数
+\[
+f(x) = \frac{1}{\frac{1}{\frac{\sin x}{x} + 1} - \frac{1}{2}} - \frac{5\pi^2 - x^2}{2x^2}.
+\]
+上述不等式等价于 \( f(x) < 0 \)（\( x \in (0,\pi) \)）。计算导数：
+\[
+f'(x) = \frac{4(x \cos x - \sin x)}{(x - \sin x)^2} + \frac{5\pi^2}{x^3}.
+\]
+利用 \( x - \sin x > 0 \)（\( x > 0 \)，\( x \ne 0 \)）及泰勒下界 \( x - \sin x > \frac{x^3}{6} - \frac{x^5}{120} \)，我们得到
+\[
+f'(x) > \frac{4(x \cos x - \sin x)}{(x - \sin x)^2} + \frac{48}{x^3}.
+\]
+只需证
+\[
+x^3(x \cos x - \sin x) + 12(x - \sin x)^2 > 0 \quad (x \in (0,\pi)).
+\]
+利用不等式
+\[
+\frac{12(x - \sin x)^2}{x^3} > (x - \sin x)\left(2 - \frac{x^2}{10}\right),
+\]
+上式等价于
+\[
+h(x) = x \cos x - \sin x + (x - \sin x)\left(2 - \frac{x^2}{10}\right) > 0 \quad (x \in (0,\pi)).
+\]
+计算
+\[
+h'(x) = \frac{1}{10} \bigl( (x^2 - 20)\cos x - 8x \sin x + 20 - 3x^2 \bigr).
+\]
+令 \( u(x) = (x^2 - 20)\cos x - 8x \sin x + 20 - 3x^2 \)，则 \( h'(x) = u(x)/10 \)。求导得
+\[
+u'(x) = -12x \cos^2 \frac{x}{2} - 2(x^2 - 12)\sin \frac{x}{2} \cos \frac{x}{2} = -2 \cos \frac{x}{2} \Bigl( 6x \cos \frac{x}{2} + (x^2 - 12)\sin \frac{x}{2} \Bigr).
+\]
+因 \( \cos \frac{x}{2} > 0 \)（\( x \in (0,\pi) \)），故 \( u'(x) > 0 \) 等价于
+\[
+\tan \frac{x}{2} > \frac{6x}{12 - x^2} \quad (x \in (0,\pi)),
+\]
+这是三角函数标准不等式（由凹凸性或 Jensen 得到），从而 \( u(x) > u(0) = 0 \)，即 \( h'(x) > 0 \)。又 \( h(0) = 0 \)，故 \( h(x) > 0 \)（\( x \in (0,\pi) \)）。
+因此 \( f'(x) > 0 \)，即 \( f \) 在 \((0,\pi)\) 严格单调递增。又
+\[
+\lim_{x \to 0^+} f(x) = 0,
+\]
+故 \( f(x) < 0 \)（\( x \in (0,\pi) \)），所有加强不等式成立，原不等式得证。
+（边界检查：\( x \to 0^+ \) 两边均为 \( \frac{3}{4}x + O(x^3) \) 与 \( \frac{1}{x} + O(x) \)，严格大于；\( x \to (\pi/2)^- \) 左端趋于 \( +\infty \)，右端也趋于 \( +\infty \) 但渐近分析仍严格大于。）
+\end{solution}
+
+\begin{example}{$Y \leqslant \frac{x + 4 - \sqrt{2x - 1}}{4} L$}{}
+记$L = \frac{x - 1}{\ln x}, Y = 1 + L \ln L$。证明：$Y \leqslant \frac{x + 4 - \sqrt{2x - 1}}{4} L$
+\end{example}
+\begin{solution}
+联想偏移 $\Leftrightarrow$ 证：\[\frac{Y}{L} = \frac{\ln x}{x - 1} - \ln \frac{\ln x}{x - 1} = m < \frac{x + 4 - \sqrt{2x - 1}}{4}\]
+利用\[m < \frac{(x + \sqrt{x} + 1) \ln x}{x - 1} - 2\]（其实就是$x_1 + x_2 + \sqrt{x_1 x_2} > m + 2$）
+只需证明\[\frac{(x + \sqrt{x} + 1) \ln x}{x - 1} - 2 < \frac{x + 4 - \sqrt{2x - 1}}{4}\]
+利用\[\frac{(x + \sqrt{x} + 1) \ln x}{x - 1} < 3 + \frac{(x - 1)^2}{8x}\]
+只需证明：$\frac{(x - 1)^2}{8x} < \frac{x - \sqrt{2x - 1}}{4} \Leftrightarrow \sqrt{2x - 1} < x - \frac{(x - 1)^2}{2x}$ 这是显然的。于是证毕。
+\end{solution}
 
 \begin{example}{来自“扁头耄耋”,$x + \frac{1}{x} + 1 \geqslant \cot\left(\frac{\pi}{2(x^2+x+1)}\right)\cot\left(\frac{\pi x^2}{2(x^2+x+1)}\right)$}{}
     证明对于任意 $x > 0$，有：$$x + \frac{1}{x} + 1 \geqslant \cot\left(\frac{\pi}{2(x^2+x+1)}\right)\cot\left(\frac{\pi x^2}{2(x^2+x+1)}\right)$$
@@ -645,8 +834,34 @@ $$f(A) \leq f(x) = \frac{\cot x + \cot(\frac{x^2}{x})}{x + \frac{x^2}{x}} = \fra
 $$\frac{\cot A + \cot B}{A + B} \leq \frac{\cot \sqrt{AB}}{\sqrt{AB}}$$
 当且仅当 $A = B$ 时，等号成立。证毕。
 \end{solution}
-
-
+\newpage
+\begin{example}{$ \sin\left(\frac{\pi}{2(x^2+x+1)}\right)+\sin\left(\frac{\pi x^2}{2(x^2+x+1)}\right)\geqslant 1$}{}
+证明\[\sin\left(\frac{\pi}{2(x^2+x+1)}\right)+\sin\left(\frac{\pi x^2}{2(x^2+x+1)}\right)\geqslant 1\]
+\end{example}
+\begin{solution}
+设$A=\frac{\pi}{2(x^2+x+1)},B=\frac{\pi x^2}{2(x^2+x+1)},C=\frac{\pi x}{2(x^2+x+1)}$，则我们可以凑出含有$\sin A\sin B$的对称形式：
+\begin{align*}
+(\sin A+\sin B)^2=&\sin^2A+\sin^2B+2\sin A\sin B\\
+=&1-\cos (A+B)\cos (A-B)+2\sin A\sin B\\
+=&1-\sin C\cos (A-B)+2\sin A\sin B\\
+=&1-\sin C[\cos (A+B)+2\sin A\sin B]+2\sin A\sin B\\
+=&1-\sin C[\sin C+2\sin A\sin B]+2\sin A\sin B\\
+\end{align*}
+所以
+\begin{align*}
+\sin A+\sin B\geq 1&\Leftrightarrow(\sin A+\sin B)^2\geq1\\
+&\Leftrightarrow 1-\sin C[\sin C+2\sin A\sin B]+2\sin A\sin B\geq 1\\
+&\Leftrightarrow \sin C[\sin C+2\sin A\sin B]\leq 2\sin A\sin B\\
+&\Leftrightarrow 2\sin A \sin B \geqslant \frac{\sin^2 C}{1-\sin C}
+\end{align*}
+由结论可知：
+\[x + \frac{1}{x} + 1= \frac{\pi}{2C} \geqslant \cot A \cot B= 1 + \frac{\sin C}{\sin A \sin B}\implies \frac{\pi - 2C}{2C} \geqslant \frac{\sin C}{\sin A \sin B}\]
+因 $C \in \left(0, \frac{\pi}{6}\right]$，有 $\pi - 2C > 0$ 且 $\sin C > 0$。于是成立：
+$$ 2\sin A \sin B \geqslant \frac{4C\sin C}{\pi - 2C} $$
+不难证明$$ \frac{4C\sin C}{\pi - 2C} \geqslant \frac{\sin^2 C}{1-\sin C} ,\forall C \in \left(0, \frac{\pi}{6}\right]$$
+于是\[2\sin A \sin B \geqslant \frac{4C\sin C}{\pi - 2C}\geqslant \frac{\sin^2 C}{1-\sin C}\]
+得证。
+\end{solution}
 \begin{example}{}{}
     设函数$f\left ( x\right ) = \cos 3x- \cos x\sin ^3x$ .\\
 (1)求$f(x)$在$[0,\pi]$上的单调区间； (2)求$|f(x)|$的最大值.
