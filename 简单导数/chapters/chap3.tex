@@ -1,5 +1,74 @@
-\chapter{导数题}
+\chapter{偏移题}
 \section{偏移题}
+\begin{example}{}{}
+$f(x)=(e^(2x))+(x^2),f'(w)=0,f(u)=f(v)=a$,证明或证伪$f''(w)((u-v)^2)<8(a-f(w))$.
+\end{example}
+\begin{solution}
+首先，分析函数 $f(x) = e^{2x} + x^2$ 的基本性质。计算其一阶与二阶导数：
+$$ f'(x) = 2(e^{2x} + x), \quad f''(x) = 4e^{2x} + 2. $$
+由于对于任意实数 $x$ 均有 $f''(x) > 0$ 恒成立，函数 $f(x)$ 在 $\mathbb{R}$ 上严格凸。因此，方程 $f'(x) = 0$ 存在唯一解 $w$，且 $w$ 为 $f(x)$ 的全局极小值点。由 $f'(w) = 0$ 可得 $e^{2w} + w = 0$，即 $e^{2w} = -w > 0$。此时极小值点处的二阶导数可表示为：
+$$ f''(w) = 4e^{2w} + 2 = 4(-w) + 2 = 2(1 - 2w). $$
+由于 $f(x)$ 严格凸且 $\lim_{|x| \to \infty} f(x) = +\infty$，对于任意常数 $a > f(w)$，方程 $f(x) = a$ 恰有两个不同的实数解。已知 $f(u) = f(v) = a$ 且 $u \ne v$，不妨设 $u < v$，则根据凸函数的性质必有 $u < w < v$。
+
+其次，引入等高线截距的中点与半长。令 $m = \frac{u+v}{2}$，$h = \frac{v-u}{2}$，由 $u < v$ 可知 $h > 0$，且 $u = m - h$，$v = m + h$，从而有 $(v-u)^2 = 4h^2$。
+由 $f(u) = f(v) = a$，即 $f(m+h) = f(m-h)$，代入函数表达式并作差可得：
+$$ 0 = f(m+h) - f(m-h) = \left[ e^{2(m+h)} + (m+h)^2 \right] - \left[ e^{2(m-h)} + (m-h)^2 \right]. $$
+展开并提取公因式，得到：
+$$ 0 = e^{2m}(e^{2h} - e^{-2h}) + 4mh. $$
+利用双曲函数恒等式 $e^{2h} - e^{-2h} = 2\sinh(2h)$，上式可化简为 $2e^{2m}\sinh(2h) + 4mh = 0$，即：
+$$ e^{2m}\sinh(2h) = -2mh. $$
+由于对于 $h > 0$ 有 $\sinh(2h) > 0$，由上式的符号关系可知中点必须满足 $m < 0$。
+
+进一步地，计算 $a - f(m)$ 的表达式：
+$$ a - f(m) = f(m+h) - f(m) = e^{2(m+h)} + (m+h)^2 - (e^{2m} + m^2) = e^{2m}(e^{2h}-1) + 2mh + h^2. $$
+将 $2mh = -e^{2m}\sinh(2h)$ 代入上式，并利用双曲函数恒等式 $e^{2h} - 1 - \sinh(2h) = \cosh(2h) - 1 = 2\sinh^2 h$，可得：
+$$ a - f(m) = h^2 + e^{2m}(e^{2h} - 1 - \sinh(2h)) = h^2 + 2e^{2m}\sinh^2 h. $$
+
+另一方面，探讨等高线中点 $m$ 与极小值点 $w$ 的位置关系。由于 $f(x)$ 的三阶导数 $f'''(x) = 8e^{2x} > 0$，由泰勒展开可知，对于任意 $h > 0$，存在 $\xi$ 使得：
+$$ f(w+h) - f(w-h) = \frac{f'''(\xi)}{3}h^3 > 0. $$
+而已知中点 $m$ 满足 $f(m+h) - f(m-h) = 0$，因此等高线两交点的中点不可能与极小值点重合，即 $m \ne w$。由于 $w$ 是唯一的全局极小值点，必然有 $f(m) > f(w)$，进而得出 $a - f(w) > a - f(m)$。
+因此，为了证明目标不等式 $f''(w)(u-v)^2 < 8(a-f(w))$，只需证明更严格的不等式：
+$$ f''(w)(v-u)^2 < 8(a-f(m)). $$
+
+将 $f''(w) = 2(1-2w)$ 和 $(v-u)^2 = 4h^2$ 代入，并将 $a-f(m)$ 替换为前述推导结果，该不等式等价于：
+$$ 8(1-2w)h^2 < 8(h^2 + 2e^{2m}\sinh^2 h) \iff (1-2w)h^2 < h^2 + 2e^{2m}\sinh^2 h. $$
+化简可得：
+$$ -wh^2 < e^{2m}\sinh^2 h \iff e^{2m}\left(\frac{\sinh h}{h}\right)^2 > -w. $$
+利用条件 $e^{2m}\sinh(2h) = -2mh$ 等价变形为 $e^{2m} = \frac{-2mh}{\sinh(2h)}$，代入待证不等式的左侧，并利用 $\sinh(2h) = 2\sinh h \cosh h$ 约简：
+$$ e^{2m}\left(\frac{\sinh h}{h}\right)^2 = \frac{-2mh}{\sinh(2h)} \cdot \frac{\sinh^2 h}{h^2} = \frac{-m}{h} \cdot \frac{\sinh h}{\cosh h} = \frac{-m}{h} \tanh h. $$
+从而，待证不等式等价转化为 $\frac{-m}{h} \tanh h > -w$，即证明 $-m > -wh \coth h$。
+
+为了证明此不等式，对于固定的 $h > 0$，构造函数 $F(x) = e^{-2x}\frac{\sinh(2h)}{2h} - x$（$x > 0$）。其导数为 $F'(x) = -2e^{-2x}\frac{\sinh(2h)}{2h} - 1 < 0$，故 $F(x)$ 在 $(0, +\infty)$ 上严格单调递减。由前述关系式 $e^{2m}\sinh(2h) = -2mh$ 变形可得 $e^{-2(-m)} \frac{\sinh(2h)}{2h} = -m$，因此 $x = -m$ 是方程 $F(x) = 0$ 的唯一解。由于函数 $F(x)$ 严格单调递减，要证明 $-m > -wh\coth h$，只需证明 $F(-wh\coth h) > 0$。
+
+将 $x = -wh\coth h$ 代入 $F(x)$ 的表达式，即需证明：
+$$ e^{2wh\coth h}\frac{\sinh(2h)}{2h} - (-wh\coth h) > 0 \iff e^{2wh\coth h}\frac{\sinh(2h)}{2h} > -wh\coth h. $$
+由于极小值点 $w < 0$ 且 $h > 0$，将不等式两端同除以正数 $-wh\coth h$，并利用 $\coth h = \frac{\cosh h}{\sinh h}$ 与 $\sinh(2h) = 2\sinh h\cosh h$ 约简，可得等价形式：
+$$ e^{2wh\coth h}\frac{2\sinh h\cosh h}{2h} \cdot \frac{\sinh h}{-wh\cosh h} > 1 \iff e^{2wh\coth h}\left(\frac{\sinh h}{h}\right)^2 > -w. $$
+对该不等式两边取自然对数，并利用极小值点满足的关系式 $e^{2w} = -w \implies 2w = \ln(-w)$，可得：
+$$ 2wh\coth h + 2\ln\left(\frac{\sinh h}{h}\right) > 2w \iff \ln\left(\frac{\sinh h}{h}\right) + w(h\coth h - 1) > 0. $$
+
+于是，构造函数 $\phi(h) = \ln\left(\frac{\sinh h}{h}\right) + w(h\coth h - 1)$（$h > 0$），目标转化为证明对于任意 $h > 0$，均有 $\phi(h) > 0$。显然 $\lim_{h \to 0^+} \phi(h) = 0$。对 $\phi(h)$ 求导得：
+$$ \phi'(h) = \left(\coth h - \frac{1}{h}\right) + w\left(\coth h - \frac{h}{\sinh^2 h}\right) = \frac{1}{h}\left[ (1+w)h\coth h - w\frac{h^2}{\sinh^2 h} - 1 \right]. $$
+要证 $\phi'(h) > 0$，只需证明方括号内的表达式严格大于零，即对于一切 $h > 0$ 满足 $(1+w)h\coth h - w\frac{h^2}{\sinh^2 h} > 1$。
+对此进行两方面的论证：
+首先，界定极小值点 $w$ 的范围。构造辅助函数 $s(x) = e^{2x} + x$，其导数 $s'(x) = 2e^{2x} + 1 > 0$，故 $s(x)$ 严格单调递增。由于 $s(0) = 1 > 0$，且 $s\left(-\frac{1}{2}\right) = e^{-1} - \frac{1}{2} < 0$（由于 $e > 2$），可知唯一的零点 $w$ 满足 $w \in \left(-\frac{1}{2}, 0\right)$，进而可推得 $1+w > -w > 0$。
+其次，证明对于任意 $h > 0$，满足双曲不等式 $h\coth h + \frac{h^2}{\sinh^2 h} \ge 2$。构造函数 $H(h) = 1 + h^2 + \frac{h}{2}\sinh(2h) - \cosh(2h)$，易见 $H(0) = 0$ 且 $H'(0) = 0$。其二阶导数为：
+$$ H''(h) = 2 + \cosh(2h) + 2h\sinh(2h) - 3\cosh(2h) = 2 - 2\cosh(2h) + 2h\sinh(2h). $$
+将 $2 - 2\cosh(2h) = -4\sinh^2 h$ 以及 $\sinh(2h) = 2\sinh h\cosh h$ 代入，得到：
+$$ H''(h) = 4\sinh h(h\cosh h - \sinh h). $$
+令 $G(h) = h\cosh h - \sinh h$，由 $G(0)=0$ 且当 $h>0$ 时 $G'(h) = h\sinh h > 0$ 可知，$G(h) > 0$ 恒成立。因此 $H''(h) > 0$，说明 $H(h)$ 是严格凸函数，结合 $H(0)=H'(0)=0$ 可知，当 $h > 0$ 时恒有 $H(h) > 0$。将 $H(h) > 0$ 的原表达式展开，得到 $h^2 + h\sinh h \cosh h - 2\sinh^2 h > 0$，两边同除以 $\sinh^2 h > 0$ 即可得出 $h\coth h + \frac{h^2}{\sinh^2 h} > 2$，进而变形为 $h\coth h - 1 > 1 - \frac{h^2}{\sinh^2 h}$。
+
+结合上述两方面结论，由于当 $h > 0$ 时 $\sinh h > h$ 保证了 $1 - \frac{h^2}{\sinh^2 h} > 0$，且 $1+w > -w > 0$，可进行如下同向不等式放缩：
+$$ (1+w)(h\coth h - 1) > -w(h\coth h - 1) > -w\left(1 - \frac{h^2}{\sinh^2 h}\right). $$
+将该式两端展开并移项，即得 $(1+w)h\coth h - w\frac{h^2}{\sinh^2 h} > 1$。由此可得对任意 $h > 0$ 均有 $\phi'(h) > 0$，说明 $\phi(h)$ 在 $(0, +\infty)$ 上严格单调递增，进而 $\phi(h) > \lim_{h \to 0^+} \phi(h) = 0$ 成立。
+
+综上所述，由 $\phi(h) > 0$ 逆推可得 $F(-wh\coth h) > 0$，结合函数 $F(x)$ 的单调递减性可得 $-m > -wh\coth h$，进一步等价推导出 $e^{2m}\left(\frac{\sinh h}{h}\right)^2 > -w$ 以及 $(1-2w)h^2 < a - f(m)$。将该不等式两边同乘 $8$ 得到：
+$$ 8(1-2w)h^2 < 8(a - f(m)). $$
+注意到 $f''(w)(v-u)^2 = 2(1-2w)(4h^2) = 8(1-2w)h^2$，故有 $f''(w)(v-u)^2 < 8(a - f(m))$。最后结合已证的放缩关系 $a - f(w) > a - f(m)$，可得：
+$$ f''(w)(u-v)^2 = f''(w)(v-u)^2 < 8(a - f(m)) < 8(a - f(w)). $$
+结论得证。
+\end{solution}
+
 \begin{example}{来自“港”}{}
 已知$x_1-\ln x_1=x_2-\ln x_2=x_3\ln x_3-x_3+2=x_4\ln x_4-x_4+2,\quad x_2>x_1,\quad x_4>x_3.$证明:\[x_2+x_3>x_1+x_4\]
 \end{example}
@@ -513,7 +582,7 @@ $$v_\theta=(a+1)\left(\theta\cot\theta-1\right).$$
 \begin{itemize}
     \item 大圆 $C_R$：$|z|=R$，逆时针方向（辐角 $-\pi \to \pi$），$R\to\infty$；
     \item 上边缘 $L_+$：从 $-R$ 到 $-\varepsilon$，沿着负实轴的上侧（辐角取 $\pi$）；
-    \item 小圆 $C_\varepsilon$：$|z|=\varepsilon$，顺时针方向（辐角从 $\pi$ 绕到 $-\pi$），$\varepsilon\to0$；
+    \item 小圆 $C_{\varepsilon}$：$|z|=\varepsilon$，顺时针方向（辐角从 $\pi$ 绕到 $-\pi$），$\varepsilon\to0$；
     \item 下边缘 $L_-$：从 $-\varepsilon$ 到 $-R$，沿着负实轴的下侧（辐角取 $-\pi$）。
 \end{itemize}
 因为函数 $f(z)$ 含有主分支 $\ln z$，它在负实轴上不连续，所以我们需要这样割开复平面，使得 $\ln z$ 在围道内单值解析。同时负实轴上 $\operatorname{Im}(f(z)) = \mp(a+1)\pi \neq 0$，故割线上无根。围道内部（前进方向的正左侧）只包含我们那三个实根 $x_1,x_2,x_3$（它们都在正实轴上），没有其他极点。
@@ -618,70 +687,91 @@ $$E=x_3+x_4=\frac{x_{-}^{2}}{(x_{-}+1)f^{\prime}(x_{-})}+\frac{x_{+}^{2}}{(x_{+}
 \begin{align*}\Re(zL(z)) &= (r\cos\theta - 1)\ln r - r\theta\sin\theta \&= (r\cos\theta - 1)\frac{\theta(1 - r\cos\theta)}{r\sin\theta} - \frac{r^2\theta\sin^2\theta}{r\sin\theta} \\&= -\frac{\theta}{r\sin\theta} \left[ (1-r\cos\theta)^2 + r^2\sin^2\theta \right] = -\frac{\theta}{\sin\theta}\frac{|1-(1+z)|^2}{r} = -\frac{\theta}{\sin\theta}\frac{|z|^2}{r}.\end{align*}由于 $\theta \in (-\pi,\pi) \setminus \{0\}$，$\theta$ 和 $\sin\theta$ 同号，有 $\frac{\theta}{\sin\theta} > 0$。由 $|z|^2>0$ 且 $r>0$，推得 $\Re(zL(z)) < 0$，这与 $y>0$ 矛盾。因此 $\theta=0$，方程在割平面内仅有实数根 $x_{-}$ 和 $x_{+}$。另外，当 $z \to 0$ 时，$L(z) \sim z$，$\Phi(z) \to -1$，故 $z=0$ 为可去奇点。对于简单极点 $x_{\pm}$，利用 $(zL(z))' = f'(z)$，其留数为：$$ \operatorname{Res}(\Phi;x_{\pm}) = \lim_{z\to x_{\pm}} \frac{yz(z-x_{\pm})}{(z+1)L(z)(zL(z)-y)} = \frac{y x_{\pm}}{(x_{\pm}+1)L(x_{\pm})f^{\prime}(x_{\pm})} = \frac{x_{\pm}^{2}}{(x_{\pm}+1)f^{\prime}(x_{\pm})}. $$因此，这两个极点的留数之和恰为所求表达式 $E$。取绕割线 $(-\infty,-1]$ 的闭合匙孔形围道进行积分，该围道由大圆 $C_R$、贴近割线上侧的 $L_+$、绕 $z=-1$ 的小圆 $C_\epsilon$ 及贴近割线下侧的 $L_-$ 组成。当 $R\to\infty$ 时，$|\Phi(z)| = \mathcal{O}\left(\frac{1}{R\ln^2 R}\right)$，路径长度为 $2\pi R$，大圆上的积分为 $\mathcal{O}\left(\frac{1}{\ln^2 R}\right) \to 0$。当 $\epsilon\to 0$ 时，$L(z) \sim \ln\epsilon$，$|\Phi(z)| = \mathcal{O}\left(\frac{1}{\epsilon\ln^2 \epsilon}\right)$，路径长度为 $2\pi \epsilon$，小圆上的积分为 $\mathcal{O}\left(\frac{1}{\ln^2 \epsilon}\right) \to 0$。根据留数定理，极点留数之和等于沿割线两侧的积分。令 $z = -1-t$（$t>0$），割线两侧的对数边值分别为 $L_{\pm}(-1-t) = \ln t \pm i\pi$。由此可得：$$ E = \frac{1}{2\pi i}\int_{0}^{\infty} \left(\Phi_{+}(-1-t) - \Phi_{-}(-1-t)\right) dt. $$由于 $\Phi_{-}=\overline{\Phi_{+}}$，有 $\Phi_{+} - \Phi_{-} = 2i\Im\Phi_{+}$，故 $E = \frac{1}{\pi}\int_{0}^{\infty}\Im\Phi_{+}(-1-t)dt$。代入 $\Phi_{+}(-1-t)$ 进行化简：$$ \Phi_{+}(-1-t) = \frac{y(-1-t)}{(-t)(\ln t + i\pi)\left[(-1-t)(\ln t+i\pi) - y\right]} = \frac{-y(1+t)}{t(\ln t+i\pi)\left[(1+t)(\ln t+i\pi) + y\right]}. $$分子分母同除以 $1+t$，可化为：$$ \Phi_{+}(-1-t) = \frac{1+t}{t} \left( \frac{1}{\ln t+\frac{y}{1+t}+i\pi} - \frac{1}{\ln t+i\pi} \right). $$利用复数虚部公式 $\Im\left(\frac{1}{u+i\pi}\right) = -\frac{\pi}{u^2+\pi^2}$，提取虚部可得：$$ \Im\Phi_{+}(-1-t) = \frac{\pi(1+t)}{t} \left( \frac{1}{(\ln t)^2+\pi^2} - \frac{1}{\left(\ln t+\frac{y}{1+t}\right)^2+\pi^2} \right). $$代入 $E$ 的表达式中消去 $\pi$，得到实积分表示：$$ E = \int_{0}^{\infty}\frac{1+t}{t}\left(\frac{1}{(\ln t)^{2}+\pi^{2}}-\frac{1}{\left(\ln t+\frac{y}{1+t}\right)^{2}+\pi^{2}}\right)dt. $$利用恒等式 $\frac{1}{u^2+\pi^2} - \frac{1}{(u+a)^2+\pi^2} = \int_{0}^{a} \frac{2(u+s)}{((u+s)^2+\pi^2)^2} ds$，将 $u = \ln t$ 与 $a = \frac{y}{1+t}$ 代入，积分化为：$$ E = \int_{0}^{\infty} \frac{1+t}{t} \left( \int_{0}^{\frac{y}{1+t}} \frac{2(\ln t+s)}{\left((\ln t+s)^{2}+\pi^{2}\right)^{2}} ds \right) dt. $$作积分变量代换 $r = (1+t)s$，则 $ds = \frac{dr}{1+t}$，内层积分限变为 $0 < r < y$，从而：$$ E = \int_{0}^{\infty} \int_{0}^{y} \frac{2\left(\ln t+\frac{r}{1+t}\right)}{t\left(\left(\ln t+\frac{r}{1+t}\right)^{2}+\pi^{2}\right)^{2}} dr\, dt. $$设双重积分的被积函数为 $F(t,r)$。在 $r \in [0, y]$ 上，由于 $y<4$，$r$ 有界。当 $t \to +\infty$ 时，$|F(t,r)| \sim \frac{2}{t(\ln t)^3}$；当 $t \to 0^+$ 时，$|F(t,r)| \sim \frac{2}{t|\ln t|^3}$。这表明在 $t \in (0, +\infty)$ 上 $\max_{r \in [0,y]} |F(t,r)|$ 绝对可积。由于积分域 $[0,y]$ 有界，双重积分绝对收敛。由 Fubini 定理交换积分次序，可得：$$ E = \int_{0}^{y} J(r)dr, \quad J(r) = \int_{0}^{\infty}\frac{2\left(\ln t+\frac{r}{1+t}\right)}{t\left(\left(\ln t+\frac{r}{1+t}\right)^{2}+\pi^{2}\right)^{2}}dt. $$现证明当 $0<r<4$ 时 $J(r)>0$。对 $J(r)$ 作代换 $t = e^{s}$ ($dt/t = ds$)，得：$$ J(r) = \int_{-\infty}^{\infty}\frac{2\phi_{r}(s)}{\left(\phi_{r}(s)^{2}+\pi^{2}\right)^{2}}ds, \quad \text{其中 } \phi_{r}(s) = s+\frac{r}{1+e^{s}}. $$计算其导数 $\phi_{r}^{\prime}(s) = 1-\frac{re^{s}}{(1+e^{s})^{2}}$。由于 $\frac{e^{s}}{(1+e^{s})^{2}} \le \frac{1}{4}$，当 $r<4$ 时，$\phi_{r}^{\prime}(s) \ge 1-\frac{r}{4} > 0$。因此 $\phi_{r}(s)$ 在定义域内严格单调递增，进而对于 $s>0$，有 $\phi_{r}(s) > \phi_{r}(0) = \frac{r}{2}$。再次求导得 $\phi_{r}^{\prime\prime}(s) = \frac{re^{s}(e^{s}-1)}{(1+e^{s})^{3}}$，故对于 $s>0$，有 $\phi_{r}^{\prime\prime}(s)>0$。对 $J(r)$ 采用分部积分。设 $A(s) = \frac{1}{\phi_{r}(s)^{2}+\pi^{2}}$，被积函数可表示为 $-\frac{A^{\prime}(s)}{\phi_{r}^{\prime}(s)}$，从而：$$ J(r) = \left[-\frac{A(s)}{\phi_{r}^{\prime}(s)}\right]_{-\infty}^{\infty} + \int_{-\infty}^{\infty}A(s)\frac{d}{ds}\left(\frac{1}{\phi_{r}^{\prime}(s)}\right)ds. $$当 $s\to \pm\infty$ 时，$\phi_{r}^{\prime}(s)\to 1$ 且 $A(s)\to 0$，故边界项为零。记 $B(s) = \frac{d}{ds}\left(\frac{1}{\phi_{r}^{\prime}(s)}\right) = -\frac{\phi_{r}^{\prime\prime}(s)}{(\phi_{r}^{\prime}(s))^{2}}$。因为 $\phi_{r}^{\prime}(s)$ 为偶函数，其倒数的导数 $B(s)$ 必为奇函数。利用奇偶性将积分区间折叠至 $(0,+\infty)$：$$ J(r) = \int_{0}^{\infty} B(s)(A(s)-A(-s)) ds = \int_{0}^{\infty} B(s)\left(\frac{1}{\phi_{r}(s)^{2}+\pi^{2}}-\frac{1}{\phi_{r}(-s)^{2}+\pi^{2}}\right)ds. $$当 $s>0$ 时，由于 $\phi_{r}^{\prime\prime}(s)>0$，有 $B(s)<0$。此外，由于 $\phi_{r}(-s) = -s+\frac{re^{s}}{1+e^{s}} = r - \left(s+\frac{r}{1+e^{s}}\right) = r-\phi_{r}(s)$，可得：$$ A(s)-A(-s) = \frac{1}{\phi_{r}(s)^2+\pi^2} - \frac{1}{(r-\phi_{r}(s))^2+\pi^2} = \frac{r(r-2\phi_{r}(s))}{\left(\phi_{r}(s)^{2}+\pi^{2}\right)\left((r-\phi_{r}(s))^{2}+\pi^{2}\right)}. $$已知当 $s>0$ 时 $\phi_{r}(s) > \frac{r}{2}$，即 $r-2\phi_{r}(s)<0$，故 $A(s)-A(-s)<0$。因此，被积函数 $B(s)(A(s)-A(-s)) > 0$ 恒成立，推得对于任意 $0<r<4$ 均有 $J(r)>0$。由于已知 $0<y<4$，积分上限 $y$ 保证了积分变量满足 $r \le y < 4$，从而 $E = \int_{0}^{y}J(r)dr > 0$。综上所述，对任意 $y>0$ 且 $x_{1}\ne x_{2}$ 满足 $x_{1}\ln(1+x_{1})=x_{2}\ln(1+x_{2})=y$，恒有 $E>0$ 成立。
 \end{solution}
 \newpage
-\begin{example}{邪帝原创导数题}{}
+\begin{example}{$f(x_1x_2x_3)>1-a$}{}
     已知函数$f(x)=x-(a+1)\ln x-\frac{a}{x},(a>1)$\\
     （1）讨论$f(x)$的单调性；\\
     （2）若$f(x_1)=f(x_2)=f(x_3),(x_1<x_2<x_3)$，证明$f(x_1x_2x_3)>1-a$.
 \end{example}
 \begin{solution}
-设$g(x)=x-\ln x,f(x)=g(x)-ag\left(\frac1x\right)$，$x$和$\dfrac{1}{x}$同时出现，指向比值换元.\\
 （1）已知函数$f(x)=x-(a+1)\ln x-\frac ax$,定义域为$(0,+\infty)$。对其求导，通分整理得
 $$f'(x)=1-\frac{a+1}x+\frac a{x^2}=\frac{x^2-(a+1)x+a}{x^2}=\frac{(x-1)(x-a)}{x^2}$$
 当$x\in(0,1)$时，$(x-1)<0,(x-a)<0\Longrightarrow f^\prime(x)>0$,函数$f(x)$单增；当$x\in(1,a)$时，$(x-1)>0,(x-a)<0\Longrightarrow f'(x)<0$,函数$f(x)$单减；当$x\in(a,+\infty)$时，$(x-1)>0,(x-a)>0\Longrightarrow f'(x)>0$,函数$f(x)$单增。因此，$f(x)$的单调递增区间为(0,1)和$(a,+\infty)$,单调递减区间为$(1,a)$。极大值为$f(1)=1-a$;极小值为$f(a)=a-1-(a+1)\ln a$ 。\\
-（2）目标不等式右侧的$1-a$恰好是极大值$f(1)$。由于$f(x)$在区间$(a,+\infty)$上单增且趋于无穷，所以方程$f(x)=1-a$在该区间上有唯一实根，不妨记为$x_0$，则
-\[g(x_0)-ag\left(\frac{1}{x_0}\right)=1-a\Leftrightarrow a=\dfrac{g(x_0)-1}{g\left(\frac{1}{x_0}\right)-1}=\frac{x_0-\ln x_0-1}{\frac1{x_0}+\ln x_0-1}\]
-要证明 $f(x_1x_2x_3) > 1 - a = f(x_0)$，因为 $(a, +\infty)$ 是严格增区间，我们只需证明：$x_1x_2x_3 > x_0$，这又指向了乘积换元，于是将 $x_2, x_3$ 替换为 $pq$ 和 $\frac{p}{q}$，可以得到，$f(x_2) = f(x_3)$，得到
-$$pq - \frac{a}{pq} - (a + 1)\ln(pq) = \frac{p}{q} - a\frac{q}{p} - (a + 1)\ln\frac{p}{q}$$
-$$
-\Leftrightarrow p\left(q - \frac{1}{q}\right) + \frac{a}{p}\left(q - \frac{1}{q}\right) = 2(a + 1)\ln q \Leftrightarrow \left(p + \frac{a}{p}\right)\left(q - \frac{1}{q}\right) = 2(a + 1)\ln q$$
-则原等式化为
-$$\begin{cases}
-f(x) = f(pq) & \Leftrightarrow x - \frac{a}{x} - (a + 1)\ln x = pq - \frac{a}{pq} - (a + 1)\ln(pq) \\
-f(pq) = f(\frac{p}{q}) & \Leftrightarrow \left(p + \frac{a}{p}\right)\left(q - \frac{1}{q}\right) = 2(a + 1)\ln q
-\end{cases}$$
-第二个方程等价于
-$$\left(q - \frac{1}{q}\right)p^2 - 2(a + 1)\ln q\cdot p + a\left(q - \frac{1}{q}\right) = 0 \Leftrightarrow p = \frac{(a + 1)\ln q - \sqrt{(a + 1)^2\ln^2 q - a\left(q - \frac{1}{q}\right)^2}}{q - \frac{1}{q}}$$(猜的，不确定要舍掉哪个解)
-
-
-
-
-
-要证明$f(x_1x_2x_3)>1-a=f(x_0)$,因为$(a,+\infty)$是严格增区间，我们只需证明：$x_1x_2x_3>x_0$，我们可以尝试加强证明$x_1x_2^2>x_0$，
+（2）既然方程 $f(x)=c$ 有三个不同正根，则公共值 $c$ 必处于$f(a)<c<f(1)=1-a$，因此$x_1<1<x_2<a<x_3$，由于 $f$ 在 $(a,\infty)$ 上严格递增，方程$f(x)=f(1)=1-a$在 $x>a$ 上有且仅有一个解，记作 $r$。题目转化为证明 $x_1x_2x_3>r$。
+把三根视为 $c$ 的函数：
+\[x_1=x_1(c),\quad x_2=x_2(c),\quad x_3=x_3(c),\quad c\in(f(a),1-a).\]
+由于每个根在各自单调区间内且 $f'(x_i)\neq 0$，可对 $f(x_i(c))=c$ 作隐函数求导，对 $P(c)=x_1x_2x_3,\ln P(c)=\ln x_1+\ln x_2+\ln x_3$，求导得：
+\[f'(x_i)\,x_i'(c)=1\implies x_i'(c)=\frac{1}{f'(x_i)},~~\frac{P'(c)}{P(c)}=\sum_{i=1}^3\frac{x_i'(c)}{x_i}=\sum_{i=1}^3\frac{1}{x_i f'(x_i)}\]
+注意到 $H(x) = x \cdot (f(x) - c),H'(x) = 1 \cdot (f(x) - c) + x \cdot f'(x)=x f'(x)$，所以如下变形：
+\[f(x_i)=c\Leftrightarrow x_if(x_i)-cx_i=0\Leftrightarrow \frac{x_if(x_i)-c}{a+1}=h_c(x)=0\Leftrightarrow x_i\ln x_i=\frac{x_i^2-cx_i-a}{a+1}\]
+于是\[h_c(x)=-\frac{x}{a+1}(f(x)-c)\Rightarrow h_c'(x_i)=-\frac{x_i}{a+1}f'(x_i)\quad(\text{因 }f(x_i)=c)\]
+于是
+\[\frac{P'(c)}{P(c)}=-\dfrac{1}{a+1}\left(\frac{1}{h_c'(x_1)}+\frac{1}{h_c'(x_2)}+\frac{1}{h_c'(x_3)}\right)\]
+因此在三点 $x_1,x_2,x_3$ 上，函数 $g(x)=x\ln x$ 的值等于同一个二次函数$Q_c(x):=\frac{x^2-cx-a}{a+1}$。且 $h_c(x)=0$ 与 $f(x)=c$ 的解完全一致。做差并定义
+\[h_c(x):=g(x)-Q_c(x)=x\ln x-\frac{x^2-cx-a}{a+1},~~h_c(x_1)=h_c(x_2)=h_c(x_3)=0\]
+由于 $h_c$ 在 $x_1,x_2,x_3$ 均为零，可写成
+\[h_c(x)=(x-x_1)(x-x_2)(x-x_3)\,q(x),~~q(x)=\frac{h_c(x)}{(x-x_1)(x-x_2)(x-x_3)},(x\neq x_i)\]
+令$p(x)=(x-x_1)(x-x_2)(x-x_3)$，得$h_c(x)=p(x)q(x),h_c(x_i)=0,h_c'(x_i)=p'(x_i)q(x_i)=-\frac{x_i}{a+1}f'(x_i)$，于是：
 \begin{align*}
-x_1x_2^2>x_0&\Leftrightarrow 1<\frac{x_0}{x_1x_2}<p\Leftrightarrow f\left(\frac{x_0}{x_1x_2}\right)<f(x_2)\\
-&\Leftrightarrow \frac{x_0}{x_1x_2}-a\frac{x_1x_2}{x_0}-(a+1)\ln\frac{x_0}{x_1x_2}<x_2-\frac{a}{x_2}-(a+1)\ln x_2
+\frac{P'(c)}{P(c)}&=-\frac{1}{a+1}\sum_{i=1}^3\frac{1}{p'(x_i)q(x_i)}\\
+\sum_{i=1}^3\frac{1}{p'(x_i)q(x_i)}&= \frac{1/q(x_1)}{(x_1-x_2)(x_1-x_3)} + \frac{1/q(x_2)}{(x_2-x_1)(x_2-x_3)} + \frac{1/q(x_3)}{(x_3-x_1)(x_3-x_2)}\\
+&= \frac{1}{x_3 - x_1} \left[ \frac{1/q(x_3) - 1/q(x_2)}{x_3 - x_2} - \frac{1/q(x_2) - 1/q(x_1)}{x_2 - x_1} \right]\\
+&=  \frac{1}{(x_3 - x_1)^2}\left[\frac{1/q(x_3) - 1/q(x_2)}{\frac{x_3 - x_2}{x_3-x_1}} - \frac{1/q(x_2) - 1/q(x_1)}{\frac{x_2 - x_1}{x_3-x_1}}\right]\\
+&= \frac{1}{(x_3 - x_1)^2} \left[ \frac{1/q(x_3) - 1/q(x_2)}{\theta} - \frac{1/q(x_2) - 1/q(x_1)}{1-\theta} \right],\theta = \frac{x_3 - x_2}{x_3 - x_1}=1 -  \frac{x_2 - x_1}{x_3 - x_1}\\
+&=\frac{1}{(x_3-x_1)^2} \frac{(1-\theta)[1/q(x_3) - F(x_2)] - \theta[1/q(x_2) - 1/q(x_1)]}{\theta(1-\theta)}\\
+&=\frac{1}{(x_3-x_1)^2} \frac{ \theta 1/q(x_1) + (1-\theta)1/q(x_3) - 1/q(x_2)}{\theta(1-\theta)}
 \end{align*}
-比值换元，令$y=\frac{x_1}{x_2}<1\Leftrightarrow x_1=x_2y$，则
+转而考察$\frac{1}{q(x)}=\frac{(x-x_1)(x-x_2)(x-x_3)}{x\ln x-\frac{x^2-cx-a}{a+1}}$的凹凸性，我们观察二次式$\frac{x^2-cx-a}{a+1}$对$x\ln x$的拟合效果（拟合过程中，分子的$(x-x_1)(x-x_2)(x-x_3)$如何产生？），于是将$g(x)=x\ln x$使用标准积分表示（$x>0$）：
 \begin{align*}
-&x_1-\frac{a}{x_1}-(a+1)\ln x_1=x_2-\frac{a}{x_2}-(a+1)\ln x_2\\
-\Leftrightarrow& x_2y-\frac{a}{x_2y}-(a+1)\ln x_2y=x_2-\frac{a}{x_2}-(a+1)\ln x_2\\
-\Leftrightarrow& x_2(y-1)+\frac{a}{x_2y}(y-1)=(a+1)\ln y\Leftrightarrow x_2+\frac{a}{x_2y}=\frac{\ln y}{y-1}\\
-&\frac{x_0}{x_1x_2}-a\frac{x_1x_2}{x_0}-(a+1)\ln\frac{x_0}{x_1x_2}<x_2-\frac{a}{x_2}-(a+1)\ln x_2\\
-\Leftrightarrow&\frac{x_0}{x_2^2y}-a\frac{x_2^2y}{x_0}-(a+1)\ln\frac{x_0}{x_2^2y}<x_2-\frac{a}{x_2}-(a+1)\ln x_2\\
-\Rightarrow h(y)&=\frac{x_0}{x_2^2y}-a\frac{x_2^2y}{x_0}-(a+1)\ln\frac{x_0}{x_2^2y}-\left(x_2-\frac{a}{x_2}-(a+1)\ln x_2\right)\\
-\Rightarrow h'(y)&=-\frac{x_0}{x_2^2y^2}-a\frac{x_2^2}{x_0}+\frac{a+1}{y}=-\frac{x_0^2+ax_2^4y^2-(a+1)x_2^2yx_0}{x_2^2y^2x_0}=-\frac{(ax_2^2y-x_0)(x_2^2y-x_0)}{x_2^2y^2x_0}
+\ln x=&\int_1^x\frac1u\dd u=\int_1^x\left(\int_0^{\infty}\frac{1}{(u+t)^2}\dd t\right)\dd u=\int_0^{\infty}\int_0^x \frac{1}{(u+t)^2}\dd u\dd t\\
+=& \int_0^\infty\left[ -\frac{1}{u+t} \right]_{u=1}^{u=x} \dd t= \int_0^\infty \left( \frac{1}{1+t} - \frac{1}{x+t} \right) \mathrm{d}t\\
+g(x)=x\ln x=&\int_0^\infty\left(\frac{x}{1+t}-1+\frac{t}{x+t}\right)\dd t
 \end{align*}
-得到$h'(y)$的零点为$y=\frac{x_1}{x_2}=\frac{x_0}{ax_2^2}$和$y=\frac{x_1}{x_2}=\frac{x_0}{p^2}$，分析可知$h(y)$在$y=\frac{x_0}{ax_2^2}$处取得最大值，于是
-\[h(y)\le h\!\left(\frac{x_0}{ap^2}\right)=a-1-(a+1)\ln a-p+\frac{a}{p}+(a+1)\ln p.\]
-记$w(p)=a-1-(a+1)\ln a-p+\frac{a}{p}+(a+1)\ln p$，则
-\[w'(p)=-1-\frac{a}{p^2}+\frac{a+1}{p}=-\frac{(p-1)(p-a)}{p^2}.\]
-故$w(p)$在$(1,a)$上单调递增，在$(a,+\infty)$上单调递减，在$p=a$处取得最大值$w(a)=0$，因此$w(p)\le 0$，即
-\[a-1-(a+1)\ln a\le p-\frac{a}{p}-(a+1)\ln p.\]
-将$a=\dfrac{x_0-\ln x_0-1}{\frac{1}{x_0}+\ln x_0-1}$代入左边，并整理可得关于$x_0$的不等式：
-\[\frac{4x_0\ln x_0+(x_0-1)\left((x_0-1)\ln\left(\frac{x_0(x_0-\ln x_0-1)}{x_0\ln x_0-x_0+1}\right)-2(x_0+1)\right)}{x_0\ln x_0-x_0+1}>0.\]
-最后转化为说明对于任意 $x_0>1$，恒有
-\[\frac{4x_0\ln x_0+(x_0-1)\left((x_0-1)\ln\left(\frac{x_0(x_0-\ln x_0-1)}{x_0\ln x_0-x_0+1}\right)-2(x_0+1)\right)}{x_0\ln x_0-x_0+1}>0\]
-分母大于0显然（切线放缩），所以等价于
+注意对固定 $t>0$，$\frac{x}{1+t}-1$ 关于 $x$ 是一次函数，用二次式去拟合时，不会贡献余项（三次因子）；产生三次因子余项的来源只有 $\frac{t}{x+t}$。于是考虑$\frac{t}{x+t}$的插值，我们的目标是算出它被 $x_1, x_2, x_3$ 三点插值后的“核心误差因子” $q(x)$。在代数上，$q(x)$ 对应的正是三阶差商，记作 $f[x_1, x_2, x_3, x]$。计算一阶差商：
 \begin{align*}
-&4x_0\ln x_0+(x_0-1)\left((x_0-1)\ln\left(\frac{x_0(x_0-\ln x_0-1)}{x_0\ln x_0-x_0+1}\right)-2(x_0+1)\right)>0\\
-\Leftrightarrow&4x_0\ln x_0-2(x_0^2-1)+(x_0-1)^2\ln\dfrac{x_0(x_0-\ln x_0-1)}{x_0\ln x_0-(x_0-1)}>0\\
-\Leftrightarrow&2\left(2x_0\ln x_0-(x_0^2-1)\right)+(x_0^2-2x_0+1)\ln\dfrac{x_0\ln x_0-(x_0-1)+(x_0^2-2x_0\ln x_0-1)}{x_0\ln x_0-(x_0-1)}>0\\
-\Leftrightarrow&2\left(2x_0\ln x_0-(x_0^2-1)\right)+(x_0^2-2x_0+1)\ln\left(1+\dfrac{x_0^2-2x_0\ln x_0-1}{x_0\ln x_0-(x_0-1)}\right)>0\\
-\Leftrightarrow&-2\left(x_0^2-2x_0\ln x_0-1\right)+(x_0^2-2x_0\ln x_0-1+2(x_0\ln x_0-(x_0-1)))\ln\left(1+\dfrac{x_0^2-2x_0\ln x_0-1}{x_0\ln x_0-(x_0-1)}\right)>0\\
-\Leftrightarrow&-2\dfrac{x_0^2-2x_0\ln x_0-1}{x_0\ln x_0-(x_0-1)}+\left(\dfrac{x_0^2-2x_0\ln x_0-1}{x_0\ln x_0-(x_0-1)}+2\right)\ln\left(1+\dfrac{x_0^2-2x_0\ln x_0-1}{x_0\ln x_0-(x_0-1)}\right)>0\\
-\Leftrightarrow&(u+2)\ln (u+1)>2u,\quad u=\dfrac{x_0^2-2x_0\ln x_0-1}{x_0\ln x_0-(x_0-1)}>0\\
-\Leftrightarrow&\ln(u+1)>\dfrac{2u}{u+2},\text{显然的}
+f[x_1, x_2] =& \frac{f(x_2) - f(x_1)}{x_2 - x_1}=\frac{\frac{1}{x_2+t} - \frac{1}{x_1+t}}{x_2-x_1}=\frac1{x_2-x_1}\frac{(x_1+t) - (x_2+t)}{(x_1+t)(x_2+t)}\\
+=&\frac1{x_2-x_1}\frac{-(x_2 - x_1)}{(x_1+t)(x_2+t)}=\frac{-1}{(x_1+t)(x_2+t)}\\
+f[x_1, x_2, x_3] =& \frac{f[x_2, x_3] - f[x_1, x_2]}{x_3 - x_1}=\frac{ \frac{-1}{(x_2+t)(x_3+t)} - \frac{-1}{(x_1+t)(x_2+t)}}{x_3 - x_1}=\frac{\frac{1}{x_2+t} \left[ \frac{1}{x_1+t} - \frac{1}{x_3+t} \right]}{x_3-x_1}\\
+=&\frac{\frac{1}{x_2+t} \left[ \frac{(x_3+t) - (x_1+t)}{(x_1+t)(x_3+t)} \right]}{x_3-x_1}=\frac{\frac{x_3 - x_1}{(x_1+t)(x_2+t)(x_3+t)}}{x_3-x_1}=\frac{1}{(x_1+t)(x_2+t)(x_3+t)}
 \end{align*}
+同理，三阶差商$f[x_1, x_2, x_3, x]$为$\frac{-1}{(t+x_1)(t+x_2)(t+x_3)(t+x)}$，对每个 $t$ 的余项积分后可得到（可由拉格朗日插值余项对 $\frac{t}{x+t}$ 直接计算）：
+\[q(x)= -\int_{0}^{\infty}\frac{t\dd t}{(t+x_1)(t+x_2)(t+x_3)(t+x)}\]
+因此 $q(x)<0$。设
+\[
+s(x)=-q(x)>0,\phi(x)=\frac{1}{s(x)}=-\frac{1}{q(x)},w(t):=\frac{t}{(t+x_1)(t+x_2)(t+x_3)}>0, (t>0),
+\]
+对于反常积分，由控制收敛定理（存在一个常数 $M$，使得 $w(t) < \frac{M}{1+t^2}$， $w(t)$ 具有 $1/t^2$ 的衰减率；导致其高阶导数的被积函数以极快的速度（$1/t^4, 1/t^5$）趋近于 0），这个积分可在积分号下求导：
+\[s(x)=\int_0^\infty \frac{w(t)}{x+t}\dd t,~~s'(x)=-\int_0^\infty \frac{w(t)}{(x+t)^2}\dd t,~~s''(x)=2\int_0^\infty \frac{w(t)}{(x+t)^3}\dd t\]
+令
+\[A(t)=\frac{\sqrt{w(t)}}{(x+t)^{1/2}},B(t)=\frac{\sqrt{w(t)}}{(x+t)^{3/2}},\int_0^\infty A(t)B(t)\dd t=\int_0^\infty\frac{w(t)}{(x+t)^2}\dd t.\]
+由柯西--施瓦兹不等式，
+\[
+\left(\int_0^\infty\frac{w(t)}{(x+t)^2}\dd t\right)^2
+\leqslant
+\left(\int_0^\infty\frac{w(t)}{x+t}\dd t\right)
+\left(\int_0^\infty\frac{w(t)}{(x+t)^3}\dd t\right)
+=\frac12\,s(x)s''(x).
+\]
+等价于
+\[2(s'(x))^2\le s(x)s''(x)\]
+而
+\[
+\phi(x)=\frac{1}{s(x)}\implies \phi''(x)=\frac{2(s')^2-ss''}{s^3}\le 0,
+\]
+所以 $\phi$ 为凹函数。并且这里是严格凹：柯西--施瓦兹取等需 $A(t)$ 与 $B(t)$ 在所有 $w(t)>0$ 的 $t$ 上成比例，
+即 $(x+t)$ 必恒定，这不可能在一段 $t>0$ 上成立；而 $w(t)>0$ 对所有 $t>0$ 成立。
+故 $\phi''(x)<0$，从而
+\[
+\phi(x)=-\frac{1}{q(x)}\ \text{在 }(0,\infty)\text{ 上严格凹。}
+\]
+而$x_2=\theta x_1+(1-\theta)x_3$，故
+\[
+\phi(x_2)>\theta\phi(x_1)+(1-\theta)\phi(x_3).
+\]
+代回 $\phi=-1/q,m>0$ 并整理得
+\[\theta\frac1{q(x_1)}-\frac1{q(x_2)}+(1-\theta)\frac1{q(x_3)}>0\implies \sum_{i=1}^3\frac{1}{p'(x_i)q(x_i)}>0
+\implies\frac{P'(c)}{P(c)}<0\]
+即$P(c)=x_1(c)x_2(c)x_3(c)$在$(f(a),1-a)$上严格递减，所以$P(c)>\lim_{t\uparrow 1-a}P(t)=r$，即$x_1x_2x_3>r$，$P>r>a$ 且 $f$ 在 $(a,\infty)$ 上递增，从而
+$f(x_1x_2x_3)=f(P)>f(r)=1-a$，证毕。
 \end{solution}  
 
 

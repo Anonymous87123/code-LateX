@@ -368,9 +368,9 @@ $$ H(e^{-s}) = -s(e^{-s}+1) - 2e^{-s} + 2 + \frac{1}{2}s^4 e^{-2s} < 0 $$
 两端同乘恒正因子 $e^s$，彻底抹除分母，构造连续多项式 $W(s)$：
 $$ W(s) = e^s(2-s) - s - 2 + \frac{1}{2}s^4 e^{-s} \quad (\text{需证 } W(s) < 0 \text{ 对 } \forall s > 0 \text{ 成立}) $$
 \textbf{实施高阶剥洋葱法连续求导：}
-$W(0) = 0$。
-$W'(s) = e^s(1-s) - 1 + \frac{1}{2}s^3 e^{-s}(4-s) \implies W'(0) = 0$。
-$W''(s) = -s e^s + \frac{1}{2}e^{-s}\left(12s^2 - 8s^3 + s^4\right)$。
+$W(0) = 0$。\\
+$W'(s) = e^s(1-s) - 1 + \frac{1}{2}s^3 e^{-s}(4-s) \implies W'(0) = 0$。\\
+$W''(s) = -s e^s + \frac{1}{2}e^{-s}\left(12s^2 - 8s^3 + s^4\right)$。\\
 目标转化为证 $W''(s) < 0$，等价移项为：$\frac{1}{2}\left(12s^2 - 8s^3 + s^4\right)e^{-s} < s e^s \implies 6s - 4s^2 + \frac{1}{2}s^3 < e^{2s}$ 恒成立。
 \textbf{启动绝对级数安全放缩法：} 对于 $\forall s>0$，指数泰勒级数纯正项截断必严格成立 $e^{2s} > 1 + 2s + 2s^2 + \frac{4}{3}s^3$。
 作差验证误差冗余防线：

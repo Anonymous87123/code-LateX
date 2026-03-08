@@ -6,7 +6,7 @@
 先数一数原题给了多少条件，然后数一数要拟合什么点，拟合到多少阶，把所有点的要拟合阶数（包括0阶）相加，减去1，就是插值多项式的次数，余项比插值多项式的次数高1阶。然后根据余项的阶数和原函数的光滑性条件，判断是属于什么类型。
 \section{插值法}
 \newpage
-\begin{example}{K值法}{}
+\begin{example}{$\int_a^bf\left(x\right)dx=\left(b-a\right)f\left(\frac{a+b}{2}\right)+\frac{1}{24}\left(b-a\right)^3f''\left(\xi\right)$}{}
 $f(x)\in C^2[a,b]$，证明存在$\xi\in(a,b)$使得\[\int_a^bf\left(x\right)dx=\left(b-a\right)f\left(\frac{a+b}{2}\right)+\frac{1}{24}\left(b-a\right)^3f''\left(\xi\right)\]
 \end{example}
 \begin{solution}
@@ -27,7 +27,7 @@ p'\left(\frac{a+b}2\right)&=\frac{F(a)}{a-b}+\frac{F(b)}{b-a}-\frac{c}{4}(b-a)^2
 \[F'''(\xi)=\frac{24}{(b-a)^3}(F(b)-F(a))-\frac{24}{(b-a)^2}F'\left(\frac{a+b}2\right)\]
 \end{solution}
 
-\begin{example}{}{}
+\begin{example}{$\frac{f(b)-f(a)}{b-a}=\frac{f'(a)+f'(b)}{2}-\frac{f'''(\xi)}{12}(b-a)^2$}{}
 设$f\in C^1[a,b]\cap D^3(a,b)$，证明存在$\xi\in(a,b)$，使得\[\frac{f(b)-f(a)}{b-a}=\frac{f'(a)+f'(b)}{2}-\frac{f'''(\xi)}{12}(b-a)^2\]
 \end{example}
 \begin{solution}
@@ -43,7 +43,7 @@ p'(b)&=\frac{f(b)-f(a)}{b-a}+(kb+m)(a-b)=f'(b)
 设$G(x)=f(x)-p(x)$，则$G(a)=G(b)=0,G'(a)=G'(b)=0$，所以由罗尔中值定理，存在$\xi_1\in(a,b)$使得$G'(\xi_1)=0$，再由罗尔中值定理，存在$\xi_2,\xi_3$使得$G''(\xi_2)=0,G''(\xi_3)=0$，最后由罗尔中值定理，存在$\xi\in(a,b)$使得$G'''(\xi)=0$，所以\[f'''(\xi)=p'''(\xi)=6k=\frac{6(f'(b)+f'(a))}{(b-a)^2}-\frac{12(f(b)-f(a))}{(b-a)^3}\]
 \end{solution}
 \newpage
-\begin{example}{}{}
+\begin{example}{$\left|\int_0^2f(x)\dd x\right|\leqslant M$}{}
 设$f\in C[0,2]\cap D(0,2)$，满足$f(0)=f(2)=0,|f'(x)|\leqslant M,\forall x\in(0,2)$，证明\[\left|\int_0^2f(x)\dd x\right|\leqslant M\]
 \end{example}
 \begin{solution}
@@ -59,7 +59,7 @@ p'(b)&=\frac{f(b)-f(a)}{b-a}+(kb+m)(a-b)=f'(b)
     \end{align*}
 \end{solution}
 \newpage
-\begin{example}{}{}
+\begin{example}{$ \left|\int_0^1f(x)\dd x\right|\leqslant \dfrac{M}{12}$}{}
 设$f\in D^2[0,1],f(0)=f(1)=0,|f''(x)|\leqslant M$，证明$\displaystyle \left|\int_0^1f(x)\dd x\right|\leqslant \dfrac{M}{12}$
 \end{example}
 \begin{solution}
@@ -73,7 +73,7 @@ p'(b)&=\frac{f(b)-f(a)}{b-a}+(kb+m)(a-b)=f'(b)
 \end{align*}
 \end{solution}
 \newpage
-\begin{example}{}{}
+\begin{example}{$f'''(\theta)=0$}{}
     设$f\in C^3[0,2]$满足\[f(0)=f'(0)=0,\int_0^2f(x)\dd x=8\int_0^1f(x)\dd x\]求证存在$\theta\in(0,2)$使得$f'''(\theta)=0$
 \end{example}
 \begin{solution}
@@ -82,7 +82,7 @@ p'(b)&=\frac{f(b)-f(a)}{b-a}+(kb+m)(a-b)=f'(b)
 \end{solution}
 
 \newpage
-\begin{example}{}{}
+\begin{example}{$f'(\xi)=3$}{}
     $f(x)$在$[0,1]$可导，且$\displaystyle \int_0^1f(x)\dd x=\dfrac52,\int_0^1 xf(x)\dd x=\dfrac32$,求证在$(0,1)$存在$\xi$使$f'(\xi)=3$.
 \end{example}
 \begin{solution}
@@ -100,7 +100,7 @@ p'(1)&=1 + (k+1)(1)+0k=1 + k + 1 = 2 + k = \frac52\Rightarrow k=\frac12
 构造$W(x)=g(x)-p(x)$，则$W(0)=W(1)=W'(0)=W'(1)=0$，且$W(x)$在$(0,1)$上三阶可导，由罗尔中值定理，存在$\xi_1\in(0,1)$使得$G'(\xi_1)=0$，再由罗尔中值定理，存在$\xi_2\in(0,\xi_1)$使得$W''(\xi_2)=0$，存在$\xi_3\in(\xi_1,1)$使得$W''(\xi_3)=0$，再由罗尔中值定理，存在$\xi\in(\xi_2,\xi_3)\subset(0,1)$使得$W'''(\xi)=0$，所以\[g'''(\xi)=p'''(\xi)=6k=3\]
 \end{solution}
 \newpage
-\begin{example}{}{}
+\begin{example}{$f(a)+f(b)-2f\left(\frac{a+b}{2}\right)=\frac14(b-a)^2f''(\xi)$}{}
 $f(x)$在$[a,b]$上连续，在$(a,b)$上二次可微，证明存在$\xi\in(a,b)$使得
 \[f(a)+f(b)-2f\left(\frac{a+b}{2}\right)=\frac14(b-a)^2f''(\xi)\]
 \end{example}
@@ -114,7 +114,7 @@ $f(x)$在$[a,b]$上连续，在$(a,b)$上二次可微，证明存在$\xi\in(a,b)
 所以\[f(a)+f(b)-2f\left(\frac{a+b}{2}\right)=\frac14(b-a)^2f''(\xi)\]
 \end{solution}
 
-\begin{example}{}{}
+\begin{example}{$f'''(\xi)=3$}{}
     设$f\in C^3[-1,1]$满足$f(-1)=0,f'(0)=0,f(1)=1$，证明存在$\xi\in(-1,1)$使得$f'''(\xi)=3$
 \end{example}
 \begin{solution}
@@ -128,7 +128,7 @@ p'(0)=&\frac12-c=0\Rightarrow c=\frac{1}{2}
 构造$G(x)=f(x)-p(x)$，则$G(-1)=G(0)=G(1)=0,G'(0)=0$，由罗尔中值定理，存在$\xi_1\in(-1,0)$使得$G'(\xi_1)=0$，存在$\xi_2\in(0,1)$使得$G'(\xi_2)=0$，加上$G'(0)=0$，再由罗尔中值定理，存在$\xi_3\in(\xi_1,0)\subset(-1,1)$使得$G''(\xi_3)=0$，存在$\xi_4\in(0,\xi_2)\subset(-1,1)$使得$G''(\xi_4)=0$，再由罗尔中值定理，存在$\xi\in(\xi_3,\xi_4)\subset(-1,1)$使得$G'''(\xi)=0$，所以\[f'''(\xi)=p'''(\xi)=6c=3\]
 \end{solution}
 \newpage
-\begin{example}{}{}
+\begin{example}{$|f(x)-p(x)|\leqslant \frac1{384}\max_{x\in[0,1]}\{f''''(x)\}$}{}
     $f(x)\in C^4[0,1]$，三次多项式$p(x)$满足$p(0)=f(0),p(1)=f(1),p'(0)=f'(0),p'(1)=f'(1)$，证明\[|f(x)-p(x)|\leqslant \frac1{384}\max_{x\in[0,1]}\{f''''(x)\}\]
 \end{example}
 \begin{solution}
@@ -138,7 +138,7 @@ p'(0)=&\frac12-c=0\Rightarrow c=\frac{1}{2}
 取绝对值得到\[|f(x)-p(x)|\leqslant \frac1{384}\max_{x\in[0,1]}\{f''''(x)\}\]
 \end{solution}
 \newpage
-\begin{example}{}{}
+\begin{example}{$f''''(\xi)=0$}{}
 设$f\in C^4[0,1]$，且$\displaystyle \int_0^1f(x)\dd x+3f\left(\frac12\right)=8\int_{\frac14}^{\frac34}f(x)\dd x$，求证存在$\xi\in(0,1)$使得$f''''(\xi)=0$.
 \end{example}
 \begin{solution}
@@ -156,7 +156,7 @@ p(x)=&L(x)+s(x)
 \end{solution}
 \newpage
 
-\begin{example}{}{}
+\begin{example}{$\displaystyle\max_{x\in[0,1]}f''(x)\geqslant8$}{}
     设$f\in C^2[0,1]$，满足$f(0)=f(1)=0,\displaystyle\min_{x\in[0,1]}f(x)=-1$，证明$\displaystyle\max_{x\in[0,1]}f''(x)\geqslant8$
 \end{example}
 \begin{solution}
@@ -180,7 +180,7 @@ p(x)=&L(x)+s(x)
 分类讨论即可：当$c\in(0,\frac12]$时，$\frac{2}{c^2}\geqslant8$；当$c\in(\frac12,1)$时，$\frac{2}{(1-c)^2}\geqslant8$。即证$\displaystyle\max_{x\in[0,1]}f''(x)\geqslant8$
 \end{solution}
 \newpage
-\begin{example}{}{}
+\begin{example}{$a\geqslant\sqrt2$}{}
     设$f\in D^2\left[-a,a\right],a>0$满足
 \[f\left(-a\right)=-1,f\left(a\right)=1,f'\left(-a\right)=f'\left(a\right)=0,\left|f''\left(x\right)\right|\leqslant1\]
 证明$(1)~a\geqslant\sqrt2\quad (2)~a>\sqrt2.$
@@ -240,7 +240,7 @@ f(0)=f(a)+f'(a)(0-a)+\int_{a}^0(0-t)f''(t)\dd t=1-\int_{0}^{a}t f''(t)\,\mathrm{
 那么$g(a)=g(b)=0,g''=f''$，拆分积分余项即可发现：
 \begin{align*}\int_a^bg^{\prime\prime}\left(y\right)k\left(x,y\right)dy&\begin{aligned}=\frac{b-x}{b-a}\int_{a}^{x}g^{\prime\prime}\left(y\right)\left(a-y\right)dy+\frac{x-a}{b-a}\int_{x}^{b}g^{\prime\prime}\left(y\right)\left(y-b\right)dy\end{aligned}\\&=\frac{b-x}{b-a}\left[\left(a-x\right)g^{\prime}\left(x\right)+\int_{a}^{x}g^{\prime}\left(y\right)dy\right]+\frac{x-a}{b-a}\left[-g^{\prime}\left(x\right)\left(x-b\right)-\int_{x}^{b}g^{\prime}\left(y\right)dy\right]\\&=\frac{b-x}{b-a}\left[\left(a-x\right)g^{\prime}\left(x\right)+g\left(x\right)\right]+\frac{x-a}{b-a}\left[-g^{\prime}\left(x\right)\left(x-b\right)+g\left(x\right)\right]\\&=g\left(x\right).\end{align*}
 \newpage
-\begin{example}{}{}
+\begin{example}{$\int_a^b\left|\frac{f''(x)}{f(x)}\right|\dd x\geqslant \frac{4}{b-a}$}{}
     设$f\in C^2[a,b]$，且$f(a)=f(b)=0$，证明\[\int_a^b\left|\frac{f''(x)}{f(x)}\right|\dd x\geqslant \frac{4}{b-a}\]
 \end{example}
 \begin{solution}
@@ -282,8 +282,8 @@ f(0)=f(a)+f'(a)(0-a)+\int_{a}^0(0-t)f''(t)\dd t=1-\int_{0}^{a}t f''(t)\,\mathrm{
     （等号成立条件可进一步讨论，此处略。）
 \end{solution}
 \newpage
-\begin{example}{}{}
-    （2004年全国II卷）函数$f(x)=x\ln x$，求证：对于$a>b>0$有
+\begin{example}{（2004年全国II卷）}{}
+    函数$f(x)=x\ln x$，求证：对于$a>b>0$有
     \[f(a)+f(b)-2f\left(\frac{a+b}{2}\right)<(a-b)\ln 2\]
 \end{example}
 \begin{solution}
@@ -299,7 +299,7 @@ g(x)&=\frac{(x-a)(x-b)}{(\frac{a+b}{2}-a)(\frac{a+b}{2}-b)}f\left(\frac{a+b}{2}\
 
 
 \newpage
-\begin{example}{}{}
+\begin{example}{$\displaystyle |F(x)|\leqslant \frac{M(b-a)^2}{16}$}{}
     设$f\in D[a,b]$，且$|f'(x)|\leqslant M,\displaystyle \int_a^bf(x)\dd x=0$，令$\displaystyle |F(x)|=\left|\int_a^xf(t)\dd t\right|$，证明:\\
     (1) $\displaystyle |F(x)|\leqslant \frac{M(b-a)^2}{8}$;\\
     (2)若$f(a)=f(b)=0$，则$\displaystyle |F(x)|\leqslant \frac{M(b-a)^2}{16}$.
@@ -321,7 +321,7 @@ g(x)&=\frac{(x-a)(x-b)}{(\frac{a+b}{2}-a)(\frac{a+b}{2}-b)}f\left(\frac{a+b}{2}\
 最后提示一下，要看要证明的结论是什么，插值只是辅助手段，比如本题结论就是$F(x)$的上下界，那么先看余项够不够微分条件用完，如果刚好，就是（1），如果差远了，就是（2），（2）中引入了$F(x)$取到上下界时的自变量$x_0$，在两个区间分别插值，最后相减得到$F(x_0)$的表达式，绝对值不等式得到$F(x_0)$的上界，再利用$x\in(a,b)$得到最终结论。
 \end{solution}
 \newpage
-\begin{example}{}{}
+\begin{example}{$f'''(\xi)=3+\xi$}{}
     设$f(x)\in C^3[-1,1]$满足$f(-1)=0,f'(0)=0,f(1)=1$，证明存在$\xi\in(-1,1)$使得\[f'''(\xi)=3+\xi\]
 \end{example}
 \begin{solution}
@@ -336,7 +336,7 @@ g(x)&=\frac{(x-a)(x-b)}{(\frac{a+b}{2}-a)(\frac{a+b}{2}-b)}f\left(\frac{a+b}{2}\
     构造$W(x)=g(x)-p(x)$，则$W(-1)=W(1)=W'(0)=W(0)=0$，且$W(x)$在$(-1,1)$上三阶可导，由罗尔中值定理，存在$\xi_1\in(-1,0)$使得$W'(\xi_1)=0$，存在$\xi_2\in(0,1)$使得$W'(\xi_2)=0$，加上$W'(0)=0$，再由罗尔中值定理，存在$\xi_3\in(\xi_1,0)\subset(-1,1)$使得$W''(\xi_3)=0$，存在$\xi_4\in(0,\xi_2)\subset(-1,1)$使得$W''(\xi_4)=0$，再由罗尔中值定理，存在$\xi\in(\xi_3,\xi_4)\subset(-1,1)$使得$W'''(\xi)=0$，所以\[g'''(\xi)=f'''(\xi)-\xi=p'''(\xi)=6c=3\Leftrightarrow f'''(\xi)=3+\xi\]
 \end{solution}
 \newpage
-\begin{example}{}{}
+\begin{example}{$f'\left(\xi\right)=\int_0^1\left(12x-6\right)f\left(x\right)\dd x$}{}
 设 $f\in C^1[0,1]$,证明存在 $\xi\in[0,1]$,使得$$f'\left(\xi\right)=\int_0^1\left(12x-6\right)f\left(x\right)\dd x$$
 \end{example}
 \begin{solution}
