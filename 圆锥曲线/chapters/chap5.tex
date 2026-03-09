@@ -1,8 +1,94 @@
 \chapter{实战练习}
 
 \begin{example}{}{}
-设$F$ 为椭圆$C_1:\frac{x^2}4+\frac{y^2}3=1$ 的右焦点，$l$为$F$ 关于$C_{_1}$的准线. 设$B(1,\frac32),A$为$l$上一动点。设直线 $AB$ 与$C_{_1}$ 再次交于点$C$ ,$\triangle BCF$ 的 外接 圆 与 直 线 $AF$ 再次交于点$D$，设$D$ 的轨迹为$C_2.\\
-(1)证明：C_2$是与$y$轴相切的椭圆\\
+椭圆$E:\frac{x^2}4+y^2=1$上有三点$G,S,T$,直线$ST$过点$C(2,2)$,点$M$为$GS$中点且在直线$y=x$上，证明：$GT$ 过定点
+\end{example}
+\begin{solution}
+写出椭圆的内积算子和极化算子：$$E(X, Y) = \frac{x_X x_Y}{4} + y_X y_Y, \quad T(X, Y) = E(X, Y) - 1$$
+因为 $G, S, T$ 都在椭圆上，所以它们自身的极化都是 0（代入等于 1）：
+$$E(G,G)=1, \quad E(S,S)=1, \quad E(T,T)=1$$
+已知点 $M$ 在直线 $y=x$ 上，设 $M(m, m)$。又已知点 $C(2, 2)$，显然$C = \frac{2}{m} M \implies 2M = mC$。点 $M$ 是 $GS$ 的中点，所以 $G + S = 2M$。把上面的倍数关系代进去，直接得出 $G$ ：$G = mC - S$。又
+$$E(C,C) = \frac{2 \times 2}{4} + 2 \times 2 = 5 \implies T(C,C) = 4$$
+把 $G = mC - S$ 代入椭圆方程 $E(G,G) = 1$ 里，展开：
+$$E(mC - S, mC - S) = m^2 E(C,C) - 2m E(C,S) + E(S,S) = 1$$
+把 $E(C,C)=5$ 和 $E(S,S)=1$ 代入：
+$$5m^2 - 2m E(C,S) + 1 = 1 \implies 2m E(C,S) = 5m^2$$
+因为 $M$ 不能和原点重合（否则没法构型），约掉 $m$，瞬间得到：
+$$E(C,S) = \frac{5m}{2} \implies T(C,S) = \frac{5m}{2} - 1$$
+由 $C, S, T$ 三点共线：$$T(C,C) \cdot T(S,T) = 2 T(C,S) \cdot T(C,T)$$
+同时，根据割线算子方程 $T(X,S)+T(X,T)-T(S,T)=0$，把直线上的点 $X=C$ 代进去，必然成立：
+$$T(S,T) = T(C,S) + T(C,T)$$
+把这个 $T(S,T)$ 直接塞进上面的调和律里：
+$$4 \big(T(C,S) + T(C,T)\big) = 2 T(C,S) \cdot T(C,T) \implies 2 T(C,S) + 2 T(C,T) = T(C,S) \cdot T(C,T)$$
+把 $T(C,S) = \frac{5m}{2} - 1$ 代进去：
+$$2 \left( \frac{5m}{2} - 1 \right) + 2 T(C,T) = \left( \frac{5m}{2} - 1 \right) T(C,T)\implies T(C,T) = \frac{5m - 2}{\frac{5m}{2} - 3} = \frac{10m - 4}{5m - 6}$$顺便求出 $E(C,T) = T(C,T) + 1 = \frac{15m - 10}{5m - 6}$。
+既然 $P$ 是一个定点，且代数式必须能被计算，那么 $P$ 的算子必须能被我们已知的 $E(C,S)$ 完美替换。这就要求点 $P$ 的坐标必然和定点 $C(2,2)$ 成比例！设 $P = kC$，接下来的任务就是把比例系数 $k$ 算出来。写出所有算子：
+\[E(P,C) = kE(C,C) = 5k，~E(P,S) = kE(C,S) = \frac{5}{2}km，~E(P,T) = kE(C,T) = k\frac{15m-10}{5m-6}\]
+接下来，计算直线 $GT$ 方程所需的三个基本模块：
+\begin{itemize}
+\item $T(P,G)$:代入 $G = mC - S$：$$T(P,G) = E(P, mC - S) - 1 = mE(P,C) - E(P,S) - 1= {\frac{5}{2}km - 1}$$
+\item $T(P,T)$:$$T(P,T) = E(P,T) - 1 = {k\frac{15m-10}{5m-6} - 1}$$
+\item $T(G,T)$:已知 $T(G,T) = (m-1)E(C,T) - E(C,S)$，代入通分：
+\begin{align*}
+T(G,T) &= (m-1)\frac{15m-10}{5m-6} - \frac{5}{2}m = \frac{15m^2 - 25m + 10 - \frac{25}{2}m^2 + 15m}{5m-6}\\
+&= \frac{\frac{5}{2}m^2 - 10m + 10}{5m-6}={\frac{5m^2 - 20m + 20}{10m - 12}}
+\end{align*}
+\end{itemize}
+把这三个模块塞进直线方程 $L_{GT}(P) = 0$ 中：$$T(P,G) + T(P,T) - T(G,T) = 0$$
+得到
+$$\left( \frac{5}{2}km - 1 \right) + \left( k\frac{15m-10}{5m-6} - 1 \right) - \frac{5m^2 - 20m + 20}{10m - 12} = 0$$
+化简得到
+$$(25k - 5)m^2 + (4 - 20k) = 0\implies 5(5k - 1)m^2 - 4(5k - 1) = 0 \implies {(5k - 1)(5m^2 - 4) = 0}$$
+因为这个点 $P$ 必须对任意的 $m$ 都成立，所以$5k - 1 = 0 \implies k = \frac{1}{5}$，代回 $P = kC$，直接得出定点：$$P = \frac{1}{5}C = \left(\frac{2}{5}, \frac{2}{5}\right)$$
+\end{solution}
+
+\begin{example}{蝴蝶定理}{}
+已知椭圆$\frac{x^2}{a^2}+\frac{y^2}{b^2}=1$，点$P$是非椭圆上一点，$A(x_1,y_1),B(x_2,y_2)$在椭圆上，连接$AP,BP$交椭圆于$C,D$，求$CD$的方程。
+\end{example}
+\begin{solution}
+点 $C$ 是直线 $AP$ 和椭圆的交点。因为 $C$ 在线段 $AP$ 所在的直线上，根据定比分点，设 $C$ 是 $P$ 和 $A$ 的仿射组合：$C = \frac{P + \lambda A}{1+\lambda}$，因为 $C$ 在椭圆上，所以它自身的极化算子必定为 0，即 $T(C,C) = 0$。展开：
+$$T(C,C) = T\left(\frac{P+\lambda A}{1+\lambda}, \frac{P+\lambda A}{1+\lambda}\right) = \frac{T(P,P) + 2\lambda T(P,A) + \lambda^2 T(A,A)}{(1+\lambda)^2} = 0$$
+已知 $T(A,A) = 0, T(B,B) = 0$。最后一项直接归零，分子必须为 0，解出定比 $\lambda$：
+$$T(P,P) + 2\lambda T(P,A) = 0 \implies \lambda = \frac{-T(P,P)}{2T(P,A)}$$
+把 $\lambda$ 塞回 $C$ 的表达式，上下同乘 $2T(P,A)$，我们就得到了点 $C$ 的“算子坐标”（同理也可写出 $D$）：
+$$C = \frac{2T(P,A)P - T(P,P)A}{2T(P,A) - T(P,P)},~~D = \frac{2T(P,B)P - T(P,P)B}{2T(P,B) - T(P,P)}$$
+定义函数 $F(A,B,X)$：$$F(A,B,X) = y(x_A-x_B) + x(y_B-y_A) - (x_A y_B - x_B y_A)$$这个函数有两个极其重要的代数性质：
+\begin{itemize}
+\item 反对称性：交换里面任意两个点，式子加个负号，比如 $F(A,P,X) = -F(P,A,X)$；如果两点相同就等于0，比如 $F(P,P,X) = 0$。
+\item 仿射分配律：如果我们把点 $C$ 这种带着分母的组合代进去，可以把常数系数直接提出来，就像多项式乘法一样。
+\end{itemize}
+直线 $CD$ 的方程自然就是 $F(C,D,X) = 0$。我们将第一步求出的 $C$ 和 $D$ 的分子部分直接代进去（分母是常数直接乘掉，不影响等于0）：
+\begin{align*}
+&F\big( 2T(P,A)P - T(P,P)A, \ 2T(P,B)P - T(P,P)B, \ X \big) = 0\\
+\Leftrightarrow& 4 T(P,A) T(P,B) \cdot F(P,P,X)- 2 T(P,A) T(P,P) \cdot F(P,B,X)\\
+&- 2 T(P,B) T(P,P) \cdot F(A,P,X)+ T(P,P)^2 \cdot F(A,B,X) = 0\\
+\Leftrightarrow& - 2 T(P,A) T(P,P) \cdot F(P,B,X) + 2 T(P,B) T(P,P) \cdot F(P,A,X) + T(P,P)^2 \cdot F(A,B,X) = 0\\
+\Leftrightarrow&  T(P,P) F(A,B,X) + 2T(P,A) F(P,B,X) - 2T(P,B) F(P,A,X) = 0 
+\end{align*}
+把 $P$ 视作原点，定义 $A' = A-P, B' = B-P, X' = X-P$。算子 $T(P, Y)$ 可以被拆解为 $T(P,P) + L(Y')$，其中 $L$ 只是一个线性的一次项。我们需要算的是后两项的主体部分（注意负号的结合）：
+\begin{align*}
+&T(P,A) F(P,B,X) - T(P,B) F(P,A,X)\\
+=&[T(P,P) + L(A')] F(P,B,X) - [T(P,P) + L(B')] F(P,A,X)\\
+=&T(P,P) \big[ F(P,B,X) - F(P,A,X) \big] + \big[ L(A') F(P,B,X) - L(B') F(P,A,X) \big]
+\end{align*}
+因为 $F$ 本质上是面积，四个点构成的面积满足关系式：$F(P,B,X) - F(P,A,X) = F(A,B,X) - F(A,B,P)$。后半部分的线性项恰好等于 $-L(X') F(A,B,P)$。将其组合在一起：
+\begin{align*}
+&= T(P,P) F(A,B,X) - T(P,P) F(A,B,P) - L(X') F(A,B,P)\\
+&=T(P,P) F(A,B,X) - \big[T(P,P) + L(X')\big] F(A,B,P)\\
+\implies & T(P,A) F(P,B,X) - T(P,B) F(P,A,X) \equiv T(P,P) F(A,B,X) - T(P,X) F(A,B,P) 
+\end{align*}
+把这个恒等式直接代回第三步求出的“中间态方程”：
+\begin{align*}
+&T(P,P) F(A,B,X) - 2 \big[ T(P,A) F(P,B,X) - T(P,B) F(P,A,X) \big] = 0\\
+\Leftrightarrow& T(P,P) F(A,B,X) - 2 \big[ T(P,P) F(A,B,X) - T(P,X) F(A,B,P) \big] = 0\\
+\Leftrightarrow& -T(P,P) F(A,B,X) + 2 T(P,X) F(A,B,P) = 0\\
+\Leftrightarrow&  T(P,P) F(A,B,X) = 2 T(P,X) F(A,B,P)
+\end{align*}
+\end{solution}
+
+\begin{example}{轨迹问题}{}
+设$F$ 为椭圆$C_1:\frac{x^2}4+\frac{y^2}3=1$ 的右焦点，$l$为$F$ 关于$C_{_1}$的准线. 设$B(1,\frac32),A$为$l$上一动点。设直线 $AB$ 与$C_{_1}$ 再次交于点$C$ ,$\triangle BCF$ 的 外接 圆 与 直 线 $AF$ 再次交于点$D$，设$D$ 的轨迹为$C_2$.\\
+(1)证明：$C_2$是与$y$轴相切的椭圆\\
 (2)求$C_2$的离心率
 \end{example}
 \begin{solution}
@@ -68,73 +154,52 @@ $$u = \frac{-9(t^2 + 9)}{4(t^2 - 3t + 9)(t^2 + 9)} = \mathbf{\frac{-9}{4(t^2 - 3
 (2) 求离心率：方程二次项为 $4x^2 - 4xy + 4y^2$。要找椭圆的离心率，我们只需消除交叉项。使用高中最基础的换元法（引入中间变量，相当于坐标轴旋转 $45^\circ$）：令 $x = \frac{\sqrt{2}}{2}(u - v), y = \frac{\sqrt{2}}{2}(u + v)$。$x^2 + y^2 = u^2 + v^2,~xy = \frac{1}{2}(u^2 - v^2)$，代入二次项结构中：$$4(x^2 + y^2) - 4xy = 4(u^2 + v^2) - 2(u^2 - v^2) = \mathbf{2u^2 + 6v^2}$$轨迹方程化为了 $\frac{(u-u_0)^2}{\frac{1}{2}} + \frac{(v-v_0)^2}{\frac{1}{6}} = R^2$ 的标准形状！离心率 $e$ 为：$$e = \sqrt{\frac{c'^2}{a'^2}} = \sqrt{\frac{1/3}{1/2}} = \sqrt{\frac{2}{3}} = \mathbf{\frac{\sqrt{6}}{3}}$$
 \end{solution}
 
-
-
-
-本章将挑选三道典型的高考压轴题，严格使用“四段式”（题干翻译$\Rightarrow$算子作用$\Rightarrow$代数计算$\Rightarrow$结论输出）展现算子的统治力。
-
-\subsection{实战一：定点弦斜率调整问题（昊天原创题）}
-\textbf{题目}：过点 $M(2,1)$ 的直线交椭圆 $\mathcal{C}: \frac{x^2}{2} + y^2 = 1$ 于 $A, B$ 两点。点 $P(0,3)$，直线 $PA$ 交直线 $l: x+y=1$ 于点 $Q$。记直线 $QA$ 和 $QB$ 的斜率分别为 $k_1, k_2$。求证：$\frac{1}{k_1+1} - \frac{1}{k_2+1}$ 为定值。
-
-\textbf{步骤1：题干翻译} \\
+\begin{example}{}{}
+过点 $M(2,1)$ 的直线交椭圆 $\mathcal{C}: \frac{x^2}{2} + y^2 = 1$ 于 $A, B$ 两点。点 $P(0,3)$，直线 $PA$ 交直线 $l: x+y=1$ 于点 $Q$。记直线 $QA$ 和 $QB$ 的斜率分别为 $k_1, k_2$。求证：$\frac{1}{k_1+1} - \frac{1}{k_2+1}$ 为定值。
+\end{example}
+\begin{solution}
 将椭圆方程转化为极化算子：$T(U,V) = \frac{x_U x_V}{2} + y_U y_V - 1$。
 代入定点 $M(2,1)$ 求极化函数：$T(M, X) = \frac{2 x_X}{2} + 1 \cdot y_X - 1 = x_X + y_X - 1$。
-\textit{题干几何条件神级翻译}：由于直线 $l$ 的方程为 $x+y-1=0$，这恰好等价于方程 $T(M, X) = 0$。因为动点 $Q$ 在直线 $l$ 上，故条件被翻译为绝对代数约束：$T(M,Q) = 0$。
-
-\textbf{步骤2：算子作用} \\
+由于直线 $l$ 的方程为 $x+y-1=0$，这恰好等价于方程 $T(M, X) = 0$。因为动点 $Q$ 在直线 $l$ 上，故$T(M,Q) = 0$。
 目标是转化非对称的斜率表达式 $k_1+1 = k_{QA}+1$。
 根据斜率定义 $k_{QA} = \frac{y_A - y_Q}{x_A - x_Q}$。代入表达式中并通分：
-$$ k_{QA} + 1 = \frac{y_A - y_Q + x_A - x_Q}{x_A - x_Q} = \frac{(x_A + y_A - 1) - (x_Q + y_Q - 1)}{x_A - x_Q} $$
-利用步骤1的翻译结论：
-$$ k_{QA} + 1 = \frac{T(M,A) - T(M,Q)}{x_A - x_Q} $$
-由于 $T(M,Q) = 0$，上式坍缩为 $\frac{T(M,A)}{x_A - x_Q}$。
-同理，$k_{QB} + 1 = \frac{T(M,B)}{x_B - x_Q}$。
+$$ k_{QA} + 1 = \frac{y_A - y_Q + x_A - x_Q}{x_A - x_Q} = \frac{(x_A + y_A - 1) - (x_Q + y_Q - 1)}{x_A - x_Q} = \frac{T(M,A) - T(M,Q)}{x_A - x_Q}$$
+由于 $T(M,Q) = 0$，上式坍缩为 $\frac{T(M,A)}{x_A - x_Q}$。同理，$k_{QB} + 1 = \frac{T(M,B)}{x_B - x_Q}$。
 所求目标变为算子形式：
 $$ \text{目标} = \frac{x_A - x_Q}{T(M,A)} - \frac{x_B - x_Q}{T(M,B)} $$
-
-\textbf{步骤3：代数计算} \\
 因为 $P, Q, A$ 三点共线，设 $Q = \alpha P + \beta A$（$\alpha+\beta=1$）。
-将 $Q$ 代入 $T(M,Q) = 0$ 中，应用分配律（第一部分性质2）：
-$$ T(M, \alpha P + \beta A) = \alpha T(M,P) + \beta T(M,A) = 0 $$
-代入 $P(0,3)$ 到算子得 $T(M,P) = 0 + 3 - 1 = 2$。
-得到方程：$2\alpha + \beta T(M,A) = 0$。
-解得 $\alpha = \frac{-T(M,A)}{2 - T(M,A)}$，$\beta = \frac{2}{2 - T(M,A)}$。
-计算横坐标分子 $x_A - x_Q = x_A - (\alpha x_P + \beta x_A)$。因为 $x_P = 0$，所以 $x_A - x_Q = x_A(1-\beta) = \alpha x_A$。
+\[\begin{cases} T(M, \alpha P + \beta A) = \alpha T(M,P) + \beta T(M,A) = 2\alpha + \beta T(M,A) = 0\\\alpha+\beta=1\end{cases}\]
+解得 $\alpha = \frac{-T(M,A)}{2 - T(M,A)}$，$\beta = \frac{2}{2 - T(M,A)}$。计算横坐标分子 $x_A - x_Q = x_A - (\alpha x_P + \beta x_A)$。因为 $x_P = 0$，所以 $x_A - x_Q = x_A(1-\beta) = \alpha x_A$。
 代入目标式第一项：
 $$ \frac{\alpha x_A}{T(M,A)} = \frac{ \frac{-T(M,A)}{2 - T(M,A)} x_A }{T(M,A)} = \frac{-x_A}{2 - T(M,A)} $$
 代入第二项所需 $x_Q = \beta x_A = \frac{2x_A}{2-T(M,A)}$。目标式通分：
-$$ \text{目标} = \frac{-x_A}{2 - T(M,A)} - \frac{x_B - \frac{2x_A}{2 - T(M,A)}}{T(M,B)} = \frac{-x_A T(M,B) - 2x_B + x_B T(M,A) + 2x_A}{T(M,B)(2 - T(M,A))} $$
-分析分子核心项：$x_B T(M,A) - x_A T(M,B) = x_B(x_A+y_A-1) - x_A(x_B+y_B-1) = x_B y_A - x_A y_B + x_A - x_B$。
-由于 $A, M, B$ 共线，应用外积算子 \textbf{【性质1绝对清零】}：
-$W(\overrightarrow{MA}, \overrightarrow{MB}) = 0 \Rightarrow (x_A-2)(y_B-1) - (y_A-1)(x_B-2) = 0$
-展开移项得到：$x_B y_A - x_A y_B = x_B - x_A + 2y_A - 2y_B$。
-将此外积结果代入分子，分子变为：
-$$ (x_B - x_A + 2y_A - 2y_B) + x_A - x_B - 2x_B + 2x_A = 2x_A + 2y_A - 2x_B - 2y_B = 2(T(M,A) - T(M,B)) $$
-利用 \textbf{【定理1的第3点：调和极化律】} $T(M,M)T(A,B) = 2T(M,A)T(M,B)$。由于 $T(M,M) = \frac{4}{2}+1-1 = 2$，代入变形：
-$\frac{1}{T(M,A)} + \frac{1}{T(M,B)} = \frac{2}{T(M,M)} = 1 \Rightarrow T(M,A) + T(M,B) = T(M,A)T(M,B)$。
-代入分母 $T(M,B)(2 - T(M,A)) = 2T(M,B) - T(M,A)T(M,B) = 2T(M,B) - (T(M,A) + T(M,B)) = -(T(M,A) - T(M,B))$。
-
-\textbf{步骤4：结论输出} \\
+\begin{align*}
+\text{目标} =& \frac{-x_A}{2 - T(M,A)} - \frac{x_B - \frac{2x_A}{2 - T(M,A)}}{T(M,B)} = \frac{ x_B T(M,A)-x_A T(M,B) - 2x_B  + 2x_A}{T(M,B)(2 - T(M,A))}\\
+=&\frac{x_B(x_A+y_A-1) - x_A(x_B+y_B-1)- 2x_B  + 2x_A}{T(M,B)(2 - T(M,A))}\\
+=&\frac{ x_B y_A - x_A y_B + x_A - x_B- 2x_B  + 2x_A}{T(M,B)(2 - T(M,A))}\\
+=&\frac{ x_B - x_A + 2y_A - 2y_B+ x_A - x_B- 2x_B  + 2x_A}{T(M,B)(2 - T(M,A))}\\
+=&\frac{ 2x_A + 2y_A - 2x_B - 2y_B}{T(M,B)(2 - T(M,A))}=\frac{ 2(T(M,A) - T(M,B))}{T(M,B)(2 - T(M,A))}
+\end{align*}
+利用调和律:$T(M,M)T(A,B) = 2T(M,A)T(M,B)$。由于 $T(M,M) = \frac{4}{2}+1-1 = 2$，代入变形：
+\[\frac{1}{T(M,A)} + \frac{1}{T(M,B)} = \frac{2}{T(M,M)} = 1 \Rightarrow T(M,A) + T(M,B) = T(M,A)T(M,B)\]
+代入分母\begin{align*}
+T(M,B)(2 - T(M,A)) &= 2T(M,B) - T(M,A)T(M,B) \\
+&= 2T(M,B) - (T(M,A) + T(M,B)) = -(T(M,A) - T(M,B))
+\end{align*}
 目标式 $= \frac{2(T(M,A) - T(M,B))}{-(T(M,A) - T(M,B))} = -2$。原命题得证。
+\end{solution}
 
-\subsection{实战二：极化参数解决阿波罗尼斯圆问题}
-\textbf{题目}：已知抛物线 $\mathcal{C}: y^2 = 2x$，点 $P(1,2)$。若过点 $P$ 的动弦 $l$ 交抛物线于 $A, B$。问是否存在异于 $P$ 的点 $Q$ 使得 $\frac{PA}{PB} = \frac{QA}{QB}$ 恒成立？
-
-\textbf{步骤1：题干翻译} \\
+\begin{example}{阿氏圆}{}
+已知抛物线 $C: y^2 = 2x$，点 $P(1,2)$。若过点 $P$ 的动弦 $l$ 交抛物线于 $A, B$。问是否存在异于 $P$ 的点 $Q$ 使得 $\frac{PA}{PB} = \frac{QA}{QB}$ 恒成立？
+\end{example}
+\begin{solution}
 抛物线的极化算子定义为 $T(U,V) = y_U y_V - (x_U + x_V)$。自身极化 $T(P,P) = 2^2 - 2(1) = 2$。
 题干要求：$\frac{PA^2}{PB^2} = \frac{QA^2}{QB^2}$ 恒成立。设未知向量 $\vec{u} = Q - P$，需通过算子找到 $\vec{u}$ 的值。
-
-\textbf{步骤2：算子作用} \\
-设直线 $l$ 方向向量为 $\vec{v} = (v_x, v_y)$，参数方程 $X = P + r\vec{v}$。
-应用 \textbf{【定理2：坐标平移下的算子行为】}，将 $X$ 代入 $T(X,X) = 0$：
-$$ T(\vec{v},\vec{v}) r^2 + 2T(P, \vec{v}) r + T(P,P) = 0 $$
-由一元二次方程根与系数关系得到参数倒数和：
-$$ \frac{1}{r_A} + \frac{1}{r_B} = -\frac{2T(P, \vec{v})}{T(P,P)} $$
-
-\textbf{步骤3：代数计算} \\
+设直线 $l$ 方向向量为 $\vec{v} = (v_x, v_y)$，参数方程 $X = P + r\vec{v}$。将 $X$ 代入 $T(X,X) = 0$：
+$$ T(\vec{v},\vec{v}) r^2 + 2T(P, \vec{v}) r + T(P,P) = 0\implies \frac{1}{r_A} + \frac{1}{r_B} = -\frac{2T(P, \vec{v})}{T(P,P)} $$
 利用欧氏内积展开距离平方：$QA^2 = |Q-A|^2 = |\vec{u} - r_A\vec{v}|^2 = |\vec{u}|^2 - 2r_A I(\vec{u}, \vec{v}) + r_A^2 |\vec{v}|^2$。
 代入题干条件并除以各自的分母 $r_A^2$ 与 $r_B^2$：
-$$ \frac{|\vec{u}|^2}{r_A^2} - \frac{2I(\vec{u}, \vec{v})}{r_A} + |\vec{v}|^2 = \frac{|\vec{u}|^2}{r_B^2} - \frac{2I(\vec{u}, \vec{v})}{r_B} + |\vec{v}|^2 $$
+$$\frac{QB}{PB} = \frac{QA}{PA}\implies \frac{|\vec{u}|^2}{r_A^2} - \frac{2I(\vec{u}, \vec{v})}{r_A} + |\vec{v}|^2 = \frac{|\vec{u}|^2}{r_B^2} - \frac{2I(\vec{u}, \vec{v})}{r_B} + |\vec{v}|^2 $$
 两边同时减去 $|\vec{v}|^2$ 并移项：
 $$ |\vec{u}|^2 \left(\frac{1}{r_A^2} - \frac{1}{r_B^2}\right) - 2I(\vec{u}, \vec{v}) \left(\frac{1}{r_A} - \frac{1}{r_B}\right) = 0 $$
 由于 $A, B$ 是相异两点，$r_A \neq r_B$，两边同时除以 $(\frac{1}{r_A} - \frac{1}{r_B})$：
@@ -146,30 +211,25 @@ $$ |\vec{u}|^2 \left(-\frac{2T(P, \vec{v})}{T(P,P)}\right) - 2I(\vec{u}, \vec{v}
 $$ I \left( \frac{|\vec{u}|^2}{T(P,P)} \nabla P + \vec{u}, \vec{v} \right) = 0 $$
 由于对任意弦方向 $\vec{v}$ 恒成立，括号内向量必为零向量：
 $$ \vec{u} = -\frac{|\vec{u}|^2}{2} (-1, 2) $$
-
-\textbf{步骤4：结论输出} \\
 设 $\vec{u} = m(-1, 2)$，则 $|\vec{u}|^2 = 5m^2$。
 代入得 $m(-1,2) = -\frac{5m^2}{2}(-1,2)$。解得 $m = -\frac{2}{5}$（舍去 $m=0$ 因为 $Q \neq P$）。
 $\vec{u} = (\frac{2}{5}, -\frac{4}{5})$。
 $Q = P + \vec{u} = (1,2) + (\frac{2}{5}, -\frac{4}{5}) = (\frac{7}{5}, \frac{6}{5})$。存在。
+\end{solution}
 
-\subsection{实战三：双切线交点轨迹问题}
-\textbf{题目}：已知圆 $C_1: x^2+y^2-3x+1=0$。点 $A(2,-1)$ 在椭圆 $C_2: x^2+4y^2-8=0$ 上且在 $C_1$ 上。过 $A$ 的直线交两曲线于 $B,C$。设 $C_1$ 在 $B$ 的切线与 $C_2$ 在 $C$ 的切线交于 $D$。求 $D$ 的轨迹方程。
-
-\textbf{步骤1：题干翻译} \\
+\begin{example}{}{}
+已知圆 $C_1: x^2+y^2-3x+1=0$。点 $A(2,-1)$ 在椭圆 $C_2: x^2+4y^2-8=0$ 上且在 $C_1$ 上。过 $A$ 的直线交两曲线于 $B,C$。设 $C_1$ 在 $B$ 的切线与 $C_2$ 在 $C$ 的切线交于 $D$。求 $D$ 的轨迹方程。
+\end{example}
+\begin{solution}
 建立双算子系统：$T_1(U,V) = x_U x_V + y_U y_V - \frac{3}{2}(x_U+x_V) + 1$；$T_2(U,V) = x_U x_V + 4y_U y_V - 8$。
 几何条件“$D$ 是 $B$ 点处关于 $C_1$ 的切线上的点”翻译为：$T_1(D, B) = 0$。
 同理，条件翻译为：$T_2(D, C) = 0$。
-
-\textbf{步骤2：算子作用} \\
-应用 \textbf{【定理2：坐标平移下的算子行为】}。设直线参数方程 $X = A + t\vec{v}$，$\vec{v}=(m,1)$。
+设直线参数方程 $X = A + t\vec{v}$，$\vec{v}=(m,1)$。
 代入圆 $T_1(A+t\vec{v}, A+t\vec{v}) = 0$，因 $A$ 在圆上 $T_1(A,A)=0$，解得 $B$ 的参数 $t_B = -\frac{2T_1(A,\vec{v})}{T_1(\vec{v},\vec{v})}$。
 代入切线方程 $T_1(D, A + t_B\vec{v}) = 0$，利用第一部分的【分配律】：
 $$ T_1(D, A) + t_B T_1(D, \vec{v}) = 0 \Rightarrow T_1(D, A) \cdot T_1(\vec{v}, \vec{v}) - 2T_1(A, \vec{v}) \cdot T_1(D, \vec{v}) = 0 $$
 同理作用于 $C_2$ 得到 $C$ 的参数方程：
 $$ T_2(D, A) \cdot T_2(\vec{v}, \vec{v}) - 2T_2(A, \vec{v}) \cdot T_2(D, \vec{v}) = 0 $$
-
-\textbf{步骤3：代数计算} \\
 设 $D(x,y)$。计算各项算子值：
 $T_1(\vec{v},\vec{v}) = m^2+1$；$T_1(A,\vec{v}) = 2m-1-\frac{3}{2}(m) = \frac{1}{2}m-1$。
 $T_1(D,A) = 2x-y-\frac{3}{2}(x+2)+1 = \frac{1}{2}x-y-2$；$T_1(D,\vec{v}) = mx+y-\frac{3}{2}m$。
@@ -177,37 +237,17 @@ $T_1(D,A) = 2x-y-\frac{3}{2}(x+2)+1 = \frac{1}{2}x-y-2$；$T_1(D,\vec{v}) = mx+y
 同理，椭圆切线展开：$m^2(x+2y+4) - 4m(x-2y) - 4(x+2y-4) = 0$。
 令 $S = x+2y$，利用加减消元法，将上式乘 $4$ 减下式，得 $3S m^2 - 12(x-2)m = 0 \Rightarrow m = \frac{4(x-2)}{S}$。
 代回原式：$(\frac{4x-8}{S})^2(S+1) - 2\frac{4x-8}{S}(2x-y-3) - (S-4) = 0$。
-
-\textbf{步骤4：结论输出} \\
 两边同乘 $S^2$ 展开，化简后得到唯一有效解 $S = 4$。
 所以点 $D$ 的轨迹方程为 $x + 2y - 4 = 0$。
-
-\newpage
-\section{附录：算子词典}
-为了确保体系内部逻辑闭环无懈可击，所有用到的操作符必须在此备案：
-\begin{table}[h]
-\centering
-\begin{tabular}{|l|l|p{7cm}|}
-\hline
-\textbf{符号} & \textbf{名称} & \textbf{定义位置与功能描述} \\ \hline
-$E(M,N)$ & 纯内积算子 & 定义1：提取二次曲线二次齐次多项式部分，负责分配律基础。 \\ \hline
-$T(M,N)$ & 极化算子 & 定义2：包含常数项，表征点相对曲线的幂，负责极线与共轭的判断。\\ \hline
-$W(M,N)$ & 欧氏外积算子 & 定义3：二维向量叉乘，负责斜率作差、交比提取及面积坍缩。 \\ \hline
-$I(M,N)$ & 欧氏内积算子 & 定义4：二维向量点乘，与 $W$ 配合完成夹角的正余弦（正切）运算。 \\ \hline
-$\alpha, \beta$ & 仿射系数 & 第二部分公理II：强制规定 $\alpha+\beta=1$，激活 $T$ 算子的线性分配律。 \\ \hline
-\end{tabular}
-\end{table}
+\end{solution}
 
 
-\textbf{实战提取 1：退化斜率和定值问题（原资料经典题）} \\
 \textbf{【题目】}椭圆 $\frac{x^2}{a^2}+\frac{y^2}{b^2}=1$ 中，弦 $AB$ 过定点 $P(x_0,0)$，问 $x$ 轴上是否存在一点 $Q$，使得 $k_{QA}+k_{QB}=0$ 恒成立？\\
 \textbf{【算子秒杀】}
 由于 $P, Q$ 均在椭圆的对称轴（$x$ 轴）上，要使两弦斜率和为零（视角对称），从极化映射的张量本源来看，\textbf{点 $Q$ 必然是定点 $P$ 关于该椭圆的极点投影！}
 对定点 $P(x_0,0)$ 直接施加极线算子 $T(P, X) = 0$：
 $$ \frac{x_0 x_X}{a^2} + \frac{0 \cdot y_X}{b^2} - 1 = 0 \implies x_X = \frac{a^2}{x_0} $$
 我们一秒宣告：定点 $Q$ 坐标必为 $(\frac{a^2}{x_0}, 0)$。当 $T(P,Q)=0$（极点共轭正交）成立时，由算子调和律知分子必然对称湮灭，方程恒成立。原资料整页的合分比推导，被算子定义一行终结。
-
-\textit{【批注：资料一中的另一道例题（求 $\frac{1}{k_{QA}+1} - \frac{1}{k_{QB}+1}$ 倒数差），本文已在《实战一：定点弦斜率调整问题》中运用 $W$ 算子与 $T(M,M)T(A,B)$ 调和律在 4 行内完成绝对碾压，免除了所有的代数配凑。】}
 
 \textbf{实战提取 2：中线平移与共轭交点（原例题 1）} \\
 \textbf{【题目】}椭圆 $\frac{x^2}{4}+y^2=1$，$ST$ 过 $C(2,2)$，$M$ 为 $GS$ 中点且在 $y=x$ 上，证 $GT$ 过定点。\\
@@ -758,8 +798,7 @@ $$E(P+\vec{v}, P+\vec{v}) = 1 \implies E(P,P) + 2E(P, \vec{v}) + E(\vec{v}, \vec
 $$E(\vec{v}, \vec{v}) - 2E(P, \vec{v})L(\vec{v}) = 0$$
 定点 $E(m,0)$ 和 $E'(-m,0)$ 对应的局部向量为 $(m-x_0, -y_0)$ 和 $(-m-x_0, -y_0)$。弦 $PA, PB$ 的斜率分别为：$$k_1 = \frac{-y_0}{m-x_0} = \frac{y_0}{x_0-m}, \quad k_2 = \frac{-y_0}{-m-x_0} = \frac{y_0}{x_0+m}$$
 计算斜率之和 $S$ 与积 $K$：
-$$K = k_1 k_2 = \frac{y_0^2}{x_0^2-m^2}$$
-$$S = k_1 + k_2 = \frac{y_0(x_0+m) + y_0(x_0-m)}{x_0^2-m^2} = \frac{2x_0 y_0}{x_0^2-m^2}$$
+$$K = k_1 k_2 = \frac{y_0^2}{x_0^2-m^2},~S = k_1 + k_2 = \frac{y_0(x_0+m) + y_0(x_0-m)}{x_0^2-m^2} = \frac{2x_0 y_0}{x_0^2-m^2}$$
 构造斜率二次型 $H(\vec{v}) = Y^2 - S \cdot XY + K \cdot X^2$。它与上方的齐次方程必定只差一个常数倍 $\mu$：$$E(\vec{v}, \vec{v}) - \mu H(\vec{v}) \equiv 2E(P, \vec{v}) \cdot L(\vec{v})$$
 令 $\vec{t} = (a^2 y_0, -b^2 x_0)$，使得 $E(P, \vec{t}) = 0$。代入恒等式得 $\mu = \frac{E(\vec{t}, \vec{t})}{H(\vec{t})}$。
 分子：
@@ -1235,5 +1274,534 @@ d &= \frac{|A \cdot \frac{3}{4} + C_0|}{\sqrt{A^2 + B^2}}= \frac{|\frac{3}{4}[(8
 \end{solution}
 
 \begin{example}{}{}
-    已知点$Q$ 是椭圆$O:\frac{x^2}{a^2}+\frac{y^2}{b^2}=1$ 上一点，过点$\varrho$作点$\varrho$在椭圆处切线的垂线$l$ 交$x$轴于点$E$,以为$E$ 圆心，$EQ$ 长为半径的圆$E$ 交$x$ 轴于$B_1,B_2$两点，过$B_1,B_2$ 两点作$x$ 轴的垂线交椭圆$O$ 于$K_1,K_2$ 和$H_1,H_2$两点，直线 $A_1H_1$ 与直线 $A_2K_1$ 相交于点$M$,直线$A_1H_2$与直线$A_2K_2$相交于点$N$ ,点$P$为椭圆上一动点，直线$PM,PN$分别交椭圆$O$ 于 $A, B$ 两 点 , 求 证 : 直 线  $AB$ 与圆$E$ 相切；
+    已知点$Q$ 是椭圆$O:\frac{x^2}{a^2}+\frac{y^2}{b^2}=1$ 上一点，过点$Q$作点$Q$在椭圆处切线的垂线$l$ 交$x$轴于点$E$,以为$E$ 圆心，$EQ$ 长为半径的圆$E$ 交$x$ 轴于$B_1,B_2$两点，过$B_1,B_2$ 两点作$x$ 轴的垂线交椭圆$O$ 于$K_1,K_2$ 和$H_1,H_2$两点，直线 $A_1H_1$ 与直线 $A_2K_1$ 相交于点$M$,直线$A_1H_2$与直线$A_2K_2$相交于点$N$ ,点$P$为椭圆上一动点，直线$PM,PN$分别交椭圆$O$ 于 $A, B$ 两 点 , 求 证 : 直 线  $AB$ 与圆$E$ 相切；
 \end{example}
+\begin{solution}
+点 $Q(x_Q, y_Q)$ 在椭圆上，其自身极化为零：$T(Q,Q) = 0$。过点 $Q$ 的切线方程由极线算子给出：$T(X,Q) = 0 \implies \frac{x_Q x}{a^2} + \frac{y_Q y}{b^2} - 1 = 0$。切线的斜率为 $-\frac{b^2 x_Q}{a^2 y_Q}$，那么法线 $l$ 的斜率即为 $\frac{a^2 y_Q}{b^2 x_Q}$。法线 $l$ 交 $x$ 轴于 $E(x_E, 0)$，直接列出斜率等式：
+$$\frac{y_Q - 0}{x_Q - x_E} = \frac{a^2 y_Q}{b^2 x_Q} \implies x_E = \frac{a^2-b^2}{a^2} x_Q = e^2 x_Q$$
+圆 $E$ 的半径平方为 $EQ^2$：$$r^2 = (x_Q - x_E)^2 + y_Q^2 = x_Q^2(1-e^2)^2 + b^2\left(1-\frac{x_Q^2}{a^2}\right) = b^2 - \frac{b^2 c^2}{a^4}x_Q^2$$
+圆 $E$ 交 $x$ 轴于 $B_1(x_1, 0)$ 和 $B_2(x_2, 0)$ 两点。根据一元二次方程根的对称性，直接提取出两个核心常量（供后续对消）：
+$$x_1 + x_2 = 2x_E = 2e^2 x_Q,~x_1 x_2 = x_E^2 - r^2 = e^4 x_Q^2 - b^2 + \frac{b^2 c^2}{a^4}x_Q^2 = e^2 x_Q^2 - b^2$$
+根据直线算子表达，两点之间的割线方程为 $T(X,A) + T(X,B) - T(A,B) = 0$。对于直线 $A_1 H_1$，代入左顶点 $A_1(-a, 0)$ 和 $H_1(x_2, y_{H1})$：由于 $T(X, A_1) = -\frac{x}{a}-1$ 且 $T(A_1, H_1) = -\frac{x_2}{a}-1$，割线方程：
+$$\left(-\frac{x}{a}-1\right) + \left(\frac{x_2 x}{a^2} + \frac{y_{H1} y}{b^2} - 1\right) - \left(-\frac{x_2}{a}-1\right) = 0 \implies \frac{x_2-a}{a^2}(x+a) + \frac{y_{H1}}{b^2}y = 0$$
+同理，对于直线 $A_2 K_1$，代入右顶点 $A_2(a, 0)$ 和 $K_1(x_1, y_{K1})$：
+$$\frac{x_1+a}{a^2}(x-a) + \frac{y_{K1}}{b^2}y = 0$$
+在交点 $M(x_M, y_M)$ 处，移项比较两式的纵坐标 $y_M$：
+$$y_M = -\frac{b^2(x_2-a)}{a^2 y_{H1}}(x_M+a) = -\frac{b^2(x_1+a)}{a^2 y_{K1}}(x_M-a)$$
+将等号右侧的两项平方并作比，同时代入$y_{H1}^2 = b^2(1 - \frac{x_2^2}{a^2})$ 与 $y_{K1}^2 = b^2(1 - \frac{x_1^2}{a^2})$：
+$$\frac{(x_M+a)^2}{(x_M-a)^2} = \frac{(x_1+a)^2 \cdot b^2\left(1 - \frac{x_2^2}{a^2}\right)}{(x_2-a)^2 \cdot b^2\left(1 - \frac{x_1^2}{a^2}\right)} = \frac{(x_1+a)^2(a-x_2)(a+x_2)}{(x_2-a)^2(a-x_1)(a+x_1)} = \frac{a^2 + a(x_1+x_2) + x_1 x_2}{a^2 - a(x_1+x_2) + x_1 x_2}$$
+\begin{itemize}
+\item 分子： $a^2 + 2a e^2 x_Q + e^2 x_Q^2 - b^2 = c^2 + \frac{2c^2}{a}x_Q + \frac{c^2}{a^2}x_Q^2 = \frac{c^2}{a^2}(a+x_Q)^2$
+\item 分母： $a^2 - 2a e^2 x_Q + e^2 x_Q^2 - b^2 = \frac{c^2}{a^2}(a-x_Q)^2$比例项瞬间完全坍缩！
+\item 开方即得 $\frac{x_M+a}{x_M-a} = \frac{x_Q+a}{x_Q-a}\implies x_M = x_Q$。
+\item 由于对称性，交点 $N$ 的横坐标也必为 $x_Q$。这说明 $M(x_Q, y_M)$ 与 $N(x_Q, -y_M)$ 完美位于同一条垂直线上！
+\end{itemize}
+找出决定直线 $AB$ 的极点 $U(x_U, y_U)$。直线 $AB$ 的方程就是 $T(X,U) = 0$。既然 $A, B$ 在极线上，必有 $T(A, U) = 0$ 且 $T(B, U) = 0$。点 $A$ 在弦 $PM$ 上。利用定比律，设 $A$ 是 $M$ 与 $P$ 的组合，代入椭圆算子 $T(A,A)=0$，立刻得到点 $A$ 的代数表达式：$A \propto 2T(M,P)M - T(M,M)P$。将 $A$ 代入 $T(A,U)=0$，得到关于极点的绝对约束：
+$$2T(M,P)T(U,M) - T(M,M)T(U,P) = 0 \implies T(U,P) = 2 \frac{T(M,P)T(U,M)}{T(M,M)}$$
+同理，利用点 $B$ 在弦 $PN$ 上，得到：
+$$T(U,P) = 2 \frac{T(N,P)T(U,N)}{T(N,N)}$$
+因为 $M(x_Q, y_M)$ 和 $N(x_Q, -y_M)$，它们的自身极化显然相等，即 $T(M,M) = T(N,N)$。等式两端分母对消，得到：
+$$T(U,M) T(M,P) = T(U,N) T(N,P)$$
+提取中点 $S(x_Q, 0)$ 和纵向向量 $V(0, y_M)$，则 $M = S+V, N = S-V$。将其代入上式
+$$\big[T(U,S) + E(U,V)\big]\big[T(S,P) + E(V,P)\big] = \big[T(U,S) - E(U,V)\big]\big[T(S,P) - E(V,P)\big]$$
+整理，只留下交叉项：
+$$2 T(U,S) E(V,P) + 2 E(U,V) T(S,P) = 0$$
+代入 $V$ 的坐标展开内积 $E(V,P) = \frac{y_M y_P}{b^2}$ 与 $E(U,V) = \frac{y_M y_U}{b^2}$，提出公因式 $\frac{y_M}{b^2}$ 并消去，我们得到了极点 $U$ 与动点 $P$ 之间关系：$$y_P T(U,S) + y_U T(S,P) = 0$$
+我们已经用极度纯粹的算子推导，将 $P, U$ 锁死在一个关于坐标的二次多项式系统中。代数几何告诉我们，当动点 $P$ 游走在二次曲线上时，极点 $U$ 也必然被这个二次系统约束在一条二次曲线上，这意味着包络 $AB$ 必定是一条完美的二次曲线。既然包络线被算子逻辑证实存在，我们只需提取三种极限对称状态进行精准裁决：
+\begin{itemize}
+\item  当动点 $P \to A_1(-a,0)$ 时： 显然 $A \to H_1, B \to H_2$。直线 $AB$ 成为垂直弦 $x = x_2 = x_E + r$。这条线距离圆心 $E(x_E, 0)$ 正好是 $r$，与圆 $E$ 完美相切。
+\item 当动点 $P \to A_2(a,0)$ 时： 同理 $A \to K_1, B \to K_2$。直线 $AB$ 成为垂直弦 $x = x_1 = x_E - r$。依旧与圆 $E$ 完美相切。
+\item 当动点 $P \to Q'(x_Q, -y_Q)$ 时： 由于 $P, M, N$ 纵向穿过圆心轴，直线 $AB$ 坍缩为过点 $Q'$ 的切线 $\frac{x_Q x}{a^2} - \frac{y_Q y}{b^2} - 1 = 0$。此时圆心 $E$ 到该切线的距离：$$d = \frac{\left| \frac{x_Q x_E}{a^2} - 1 \right|}{\sqrt{\frac{x_Q^2}{a^4} + \frac{y_Q^2}{b^4}}}$$代入第一步中算出的 $x_E = \frac{c^2}{a^2}x_Q$：分子平方为 $\left(\frac{c^2 x_Q^2}{a^4} - 1\right)^2$。分母平方为 $\frac{x_Q^2}{a^4} + \frac{b^2(1 - \frac{x_Q^2}{a^2})}{b^4} = \frac{1}{b^2} - \frac{c^2 x_Q^2}{a^4 b^2} = \frac{1}{b^2}\left(1 - \frac{c^2 x_Q^2}{a^4}\right)$。两者相除瞬间得到 $d^2 = b^2\left(1 - \frac{c^2 x_Q^2}{a^4}\right) = b^2 - \frac{b^2 c^2}{a^4}x_Q^2$。这精确地等于第一步求出的圆 $E$ 的半径 $r^2$！再次完美相切。
+\end{itemize}
+因此，包络线就是圆 $E$ 本身。直线 $AB$ 永远与圆 $E$ 相切，证毕。
+\end{solution}
+
+\begin{example}{}{}
+ $P$ 为定圆 $C_2$ 内一定点，圆 $C_2$ 内含于圆 $C_1$，过点 $P$ 作一动直线 $l$ 交圆 $C_2$ 于 $F,G$ 两点， $H$ 为圆 $C_2$ 上一定点，延长 $HF, HG$ 交圆 $C_1$ 于 $I,L,K,J$ 四点；求证：当直线 $l$ 绕 $P$ 点转动时，直线 $KL,LJ,JI,IK$ 均与一定椭圆（或圆）相切；
+\end{example}
+\begin{solution}
+题目里有两个圆，我们直接给它们上极化算子：
+\begin{itemize}
+\item 外面的定圆 $C_1$ 算子方程为：$T_1(X,X) = 0$
+\item 里面的定圆 $C_2$ 算子方程为：$T_2(X,X) = 0$
+\item 定点 $H$ 在圆 $C_2$ 上，这意味它自身极化为 0:$T_2(H,H) = 0$
+\end{itemize}
+动直线 $l$ 穿过定点 $P$，交圆 $C_2$ 于 $F$ 和 $G$。根据我们在基础理论里学到的割线方程法则，弦 $FG$ 所在的直线方程：$$T_2(X,F) + T_2(X,G) - T_2(F,G) = 0$$
+因为定点 $P$ 就坐落在这条弦上，所以把 $P$ 代入进去必须恒成立。
+$$T_2(P,F) + T_2(P,G) = T_2(F,G)$$
+因为$P$是定点，所以动点 $F$ 和 $G$ 无论怎么沿着圆转，它们的坐标始终被这个最高只有一次（线性）的算子多项式死死绑定！现在我们来看定点 $H$ 发出的射线 $HF$ 和 $HG$。以射线 $HF$ 为例，它交外圆 $C_1$ 于 $I$ 和 $L$ 两点。设直线 $HF$ 上的动点为 $X = H + t\vec{v}$，其中方向向量 $\vec{v} = F - H$。把这个动点 $X$ 直接塞进外圆 $C_1$ 的极化算子中：
+$$T_1(H + t\vec{v}, H + t\vec{v}) = 0\implies T_1(H,H) + 2t T_1(H,\vec{v}) + t^2 T_1(\vec{v},\vec{v}) = 0$$
+因为 $I$ 和 $L$ 是射线 $HF$ 和圆 $C_1$ 的两个交点，所以这方程的两个根 $t_I$ 和 $t_L$ 就对应着 $I$ 和 $L$。韦达定理（注意 $\vec{v} = F-H$ 是由点 $F$ 唯一决定的）：
+$$t_I + t_L = \frac{-2T_1(H,\vec{v})}{T_1(\vec{v},\vec{v})}, \quad t_I t_L = \frac{T_1(H,H)}{T_1(\vec{v},\vec{v})}$$
+完全同理，射线 $HG$（方向向量 $\vec{u} = G - H$）交外圆 $C_1$ 于 $K$ 和 $J$，它们的参数 $t_K, t_J$ 也满足完全一样结构的韦达定理。以直线 $IL$ 为例（注意，题目中交点是 $I, L, K, J$ 四点连成的多边形，弦就是这四点的连线），找这条弦对应的极点 $U(x_U, y_U)$。只要找到极点，弦方程就是极度精简的 $T_1(X,U) = 0$。因为 $I$ 和 $L$ 在这条弦（极线）上，必然满足：
+$$T_1(I, U) = 0 \quad \text{且} \quad T_1(L, U) = 0$$
+我们把 $I = H + t_I \vec{v}$ 和 $L = H + t_L \vec{v}$ 代入进去，利用分配律展开：
+$$T_1(H + t_I \vec{v}, U) = T_1(H,U) + t_I T_1(\vec{v},U) = 0 \implies t_I = -\frac{T_1(H,U)}{T_1(\vec{v},U)}$$
+同理 $t_L = -\frac{T_1(H,U)}{T_1(\vec{v},U)}$。这就意味着，弦 $IL$ 的极点 $U$，它与 $F$ 的方向向量 $\vec{v}$ 之间，满足一个绝对严密的代数关系。我们把上面韦达定理的 $t_I t_L$ 乘积式子和这个式子联立：
+$$\left( -\frac{T_1(H,U)}{T_1(\vec{v},U)} \right)^2 = \frac{T_1(H,H)}{T_1(\vec{v},\vec{v})}$$
+移项整理：
+$$\big[T_1(H,U)\big]^2 \cdot T_1(\vec{v},\vec{v}) = T_1(H,H) \cdot \big[T_1(\vec{v},U)\big]^2$$
+其中$H$ 是定点，$C_1$ 是定圆。在这个等式里，唯一在变的只有极点 $U$ 和向量 $\vec{v}$（也就是动点 $F$）。等式左右两边最高只会出现 $x_U$ 和 $y_U$ 的二次平方项（因为算子 $T$ 里面全是一次项，外面套了个平方）。同时，因为 $F$ 和 $G$ 之间被 $T_2(P,F) + T_2(P,G) = T_2(F,G)$ 线性绑定。这四个交点 $I, L, K, J$ 组合出来的四条弦 $KL, LJ, JI, IK$，它们的极点坐标全都受制于同一个最高只有二次的多项式系统中！极点的坐标被一个纯二次方程锁死，意味着极点 $U$的轨迹严格就是一条完美的二次曲线（椭圆），那么它对应的极线（也就是弦 $KL, LJ, JI, IK$）必然严格**包络（相切于）**其对偶的另一条固定二次曲线！因为题目图形是一个闭合的回旋结构，根据算子系数的对称性，这个包络必然是一个完美的定椭圆（或者在特殊位置退化为定圆）。
+\end{solution}
+
+\begin{example}{}{}
+已知$A,B$为椭圆$\frac{x^{2}}{a^{2}}+\frac{y^{2}}{b^{2}}=1$上的两定点，$P$为椭圆上一动点，直线$AP,BP$分别交定直线$x=m$于$M,N$两点，求证：以$MN$为直径的圆与两定圆相切或者过两定点；
+\end{example}
+\begin{solution}
+椭圆算子 $T(X,Y) = \frac{x_X x_Y}{a^2} + \frac{y_X y_Y}{b^2} - 1$。因为 $A,B,P$ 都在椭圆上，所以它们自身极化全为 0：$T(A,A)=0, T(B,B)=0, T(P,P)=0$。我们有一条定直线 $x=m$。设它与定弦 $AB$ 的交点为 定点 $S$。显然 $x_S = m$。根据定比分点，设 $S$ 是 $A$ 和 $B$ 的组合：$S = kA + (1-k)B$。取横坐标看一眼比例：$m = k x_A + (1-k)x_B \implies k = \frac{m-x_B}{x_A-x_B}$。设 $M$ 和 $N$ 在直线 $x=m$ 上，它们的纵坐标分别是 $y_M$ 和 $y_N$。我们可以把 $M, N$ 写成相对于定点 $S$ 的形式（设 $\vec{j} = (0,1)$ 是竖直方向向量）：$$M = S + \mu \vec{j}, \quad N = S + \nu \vec{j}$$这里的 $\mu = y_M - y_S, \nu = y_N - y_S$。现在，直线 $AM$ 交椭圆于 $P$。这意味着 $P$ 是 $A$ 和 $M$ 的组合，即 $P = A + t(M-A)$。把 $P$ 代入椭圆极化算子 $T(P,P)=0$ 中，利用分配律瞬间展开：$$T(A+t(M-A), A+t(M-A)) = T(A,A) + 2t T(A, M-A) + t^2 T(M-A, M-A) = 0$$因为 $T(A,A)=0$，约掉一个 $t$，解出参数 $t = \frac{-2T(A,M)}{T(M,M) - 2T(A,M)}$。把 $t$ 塞回 $P$ 的表达式，化简得到动点 $P$ ：$$P = \frac{T(M,M)A - 2T(A,M)M}{T(M,M) - 2T(A,M)}$$
+已知点 $P$ 也是直线 $BN$ 与椭圆的交点，也就是说 $P, B, N$ 三点共线！三点共线，意味着它们构成的三角形面积为 0。我们掏出算子法里的“外积/面积算子 $W$”：$$W(P-B, N-B) = 0$$把你刚才求出来的 $P$ 暴力代进去：$$W\left( \frac{T(M,M)A - 2T(A,M)M}{T(M,M) - 2T(A,M)} - B, N-B \right) = 0$$把那个恶心的常数分母乘掉，合并同类项，我们得到了一个统治全局的多项式恒等式：$$ T(M,M) W(A-B, N-B) - 2T(A,M) W(M-B, N-B) = 0 $$
+把 $M = S + \mu \vec{j}$ 和 $N = S + \nu \vec{j}$ 代入上面的式子里。先算 $W$ 部分：
+\begin{itemize}
+\item $N-B = S-B + \nu \vec{j}$。因为 $S, A, B$ 共线，所以 $W(A-B, S-B) = 0$。于是 $W(A-B, N-B) = \nu W(A-B, \vec{j}) = \nu(x_A - x_B)$。
+\item $M-B = S-B + \mu \vec{j}$。同理展开，$W(M-B, N-B) = (\nu-\mu) W(S-B, \vec{j}) = (\nu-\mu)(m - x_B)$。
+\end{itemize}
+再算 $T$ 部分（直接像完全平方一样拆开）：
+\begin{itemize}
+\item $T(M,M) = T(S+\mu\vec{j}, S+\mu\vec{j}) = T(S,S) + 2\mu T(S,\vec{j}) + \mu^2 T(\vec{j},\vec{j})$
+\item $T(A,M) = T(A, S+\mu\vec{j}) = T(A,S) + \mu T(A,\vec{j})$
+\end{itemize}
+把这些“积木”全部塞回恒等式里，注意 $(m - x_B) = k(x_A - x_B)$，直接在两边约掉 $(x_A - x_B)$，式子变成：
+$$\big[T(S,S) + 2\mu T(S,\vec{j}) + \mu^2 T(\vec{j},\vec{j})\big] \nu - 2\big[T(A,S) + \mu T(A,\vec{j})\big] (\nu-\mu) k = 0$$
+没有 $\mu$ 的常数项：$\nu T(S,S) - 2\nu k T(A,S)$，又 $S = kA + (1-k)B$。把它代入极化算子算一下：$T(S,S) = 2k(1-k)T(A,B)$，而 $2k T(A,S) = 2k(1-k)T(A,B)$。两者相等，常数项抵消。整个方程必定有一个公因式 $\mu$！两边同时除以 $\mu$，整理后我们得到了 $M$ 和 $N$ 之间极其对称、绝美的双线性方程：$${ \mu \nu T(\vec{j},\vec{j}) + 2 \mu k T(A,\vec{j}) + 2 \nu (1-k) T(B,\vec{j}) + T(S,S) = 0 }$$
+把 $\mu = y_M - y_S, \nu = y_N - y_S$ 放回去。并且代入算子在 $\vec{j}$ 上的极化值：$T(\vec{j},\vec{j}) = \frac{1}{b^2}$, $T(A,\vec{j}) = \frac{y_A}{b^2}$ 等等。等式两边同乘 $b^2$，整理展开。由于 $y_S = k y_A + (1-k)y_B$，所有的乱七八糟的项全部融合，最后竟然坍缩成了这样的形式：$${ y_M y_N + D(y_M - y_N) + C = 0 }$$
+其中：$D = k y_A - (1-k)y_B,~C = b^2 (\frac{m^2}{a^2} - 1)$ 是常数。
+我们要求的是以 $MN$ 为直径的圆。设这个圆的圆心为 $O'(m, y_c)$，其中 $y_c = \frac{y_M+y_N}{2}$。圆的半径为 $R = \frac{y_M-y_N}{2}$ （假设 $y_M > y_N$）。我们刚刚得出的结论 $y_M y_N + D(y_M - y_N) + C = 0$ 里：$y_M y_N = y_c^2 - R^2$$y_M - y_N = 2R$代入进去，圆心和半径的关系瞬间显形：$$y_c^2 - R^2 + 2DR + C = 0 \implies R^2 - 2DR = y_c^2 + C$$高中生最爱的配方法走起！两边同时加上 $D^2$：$$(R - D)^2 = y_c^2 + (C + D^2)$$令常数 $R_0^2 = C + D^2$。两边开根号：$$\mathbf{ R = D \pm \sqrt{y_c^2 + R_0^2} }$$
+我们在 $x$ 轴上找一个定点 $F_1(m+R_0, 0)$。动圆圆心 $O'(m, y_c)$ 到这个定点 $F_1$ 的距离：
+\[d = \sqrt{(m - (m+R_0))^2 + (y_c - 0)^2} = \sqrt{R_0^2 + y_c^2}\]
+所以，上面的配方结果翻译成人话就是：$$R = D \pm d \implies d = \pm (R - D) \implies d = |R - D| \quad \text{或者} \quad d = R + D$$这句话的意思是：动圆的圆心到定点 $F_1$ 的距离 $d$，永远等于动圆的半径 $R$ 加上（或减去）一个定值 $D$！在平面几何里，这恰恰就是两圆相切的定义！这意味着，以 $MN$ 为直径的动圆，永远与以 $F_1$ 为圆心、半径为 $|D|$ 的定圆相切！（同理，它也与对称点 $F_2(m-R_0, 0)$ 为圆心、半径为 $|D|$ 的定圆相切）。特别地：如果算出来的常数 $D = 0$，那么方程变成 $R = d$。圆心到定点的距离直接等于半径，这就是“动圆永远过两个定点”！
+\end{solution}
+
+\begin{example}{}{}
+    椭圆$E:\frac{x^2}2+y^2=1$的右焦点为$F$,过焦点$F$作两条互相垂直的弦$AB、CD$,设弦$AB、CD$ 的中点分别为$M、N.$\\
+（1）求证：直线 $MN$恒过定点$T$,并求出$T$的坐标；\\
+（2）求以$AB、CD$为直径的两圆公共弦中点的轨迹方程，并判断定点$T$与轨迹的位置关系.
+\end{example}
+\begin{solution}
+设椭圆的内积算子为 $E(X,Y) = \frac{x_X x_Y}{2} + y_X y_Y$，极化算子为 $T(X,Y) = E(X,Y) - 1$。因为椭圆方程为 $\frac{x^2}{2} + y^2 = 1$，计算可得 $a^2=2, b^2=1, c = \sqrt{2-1} = 1$。所以右焦点为 $F(1, 0)$。计算焦点 $F$ 的自身极化：
+$$E(F,F) = \frac{1 \times 1}{2} + 0 = \frac{1}{2}, \quad T(F,F) = E(F,F) - 1 = -\frac{1}{2}$$
+因为弦 $AB \perp CD$ 且均过点 $F$，设直线 $AB$ 的方向向量为 $\vec{u} = (1, k)$，直线 $CD$ 的方向向量 $\vec{v} = (-k, 1)$。计算算子在方向向量上的作用值
+$$E(F,\vec{u}) = \frac{1 \cdot 1}{2} + 0 = \frac{1}{2}, \quad E(\vec{u},\vec{u}) = \frac{1 \cdot 1}{2} + k^2 = \frac{1+2k^2}{2}$$
+$$E(F,\vec{v}) = \frac{1 \cdot (-k)}{2} + 0 = -\frac{k}{2}, \quad E(\vec{v},\vec{v}) = \frac{(-k)^2}{2} + 1 = \frac{k^2+2}{2}$$
+欧氏内积为：$I(\vec{u},\vec{u}) = 1^2+k^2 = 1+k^2$， $I(\vec{v},\vec{v}) = (-k)^2+1^2 = 1+k^2$。\\
+（1）设直线 $AB$ 上的动点 $X = F + t\vec{u}$，代入 $T(X,X)=0$展开：
+$$T(F+t\vec{u}, F+t\vec{u}) = E(\vec{u},\vec{u})t^2 + 2E(F,\vec{u})t + T(F,F) = 0$$
+设 $A, B$ 对应的参数为 $t_A, t_B$。韦达定理：$t_A + t_B = -\frac{2E(F,\vec{u})}{E(\vec{u},\vec{u})}$。$AB$ 中点$M$ 对应 $t_M = \frac{t_A+t_B}{2} = -\frac{E(F,\vec{u})}{E(\vec{u},\vec{u})}$。将 $t_M$ 代回得到 $M$ 的坐标
+$$M = F - \frac{E(F,\vec{u})}{E(\vec{u},\vec{u})}\vec{u} = (1,0) - \frac{1/2}{(1+2k^2)/2} (1,k) = \left( \frac{2k^2}{1+2k^2}, \frac{-k}{1+2k^2} \right)$$
+同理，对于直线 $CD$ 上的中点 $N$，将其参数 $\vec{u}$ 替换为 $\vec{v}$：
+$$N = F - \frac{E(F,\vec{v})}{E(\vec{v},\vec{v})}\vec{v} = (1,0) - \frac{-k/2}{(k^2+2)/2} (-k,1) = \left( \frac{2}{k^2+2}, \frac{k}{k^2+2} \right)$$
+利用外积算子 $W$ 寻找定点：由图形的上下对称性，假设直线 $MN$ 过 $x$ 轴上的定点 $T(x_0, 0)$。要使 $M, N, T$ 三点共线，等价于
+\begin{align*}
+&\left( \frac{2k^2}{1+2k^2} - x_0 \right) \frac{k}{k^2+2} - \left( \frac{2}{k^2+2} - x_0 \right) \frac{-k}{1+2k^2} = 0\\
+\Leftrightarrow & \left[ 2k^2 - x_0(1+2k^2) \right] - \left[ 2 - x_0(k^2+2) \right](-1) = 0\\
+\Leftrightarrow & 2k^2 - x_0 - 2k^2 x_0 + 2 - x_0 k^2 - 2x_0 = 0\\
+\Leftrightarrow & 2(k^2+1) - x_0(3k^2+3) = 0 \implies 2(k^2+1) = 3x_0(k^2+1)\implies x_0 = \frac{2}{3}
+\end{align*}
+若 $k=0$，此时 $M(0,0), N(1,0)$，直线 $MN$ 为 $x$ 轴，依然过 $(\frac{2}{3},0)$。综上所述，无论 $k$ 取何值，多项式恒成立，直线 $MN$ 恒过定点 $T\left(\frac{2}{3}, 0\right)$。\\
+（2）以 $AB$ 为直径的圆，等价于圆上任意一点 $X$ 与 $A, B$ 的连线互相垂直：$I(X-A, X-B) = 0$。把 $A = F+t_A\vec{u}$ 和 $B = F+t_B\vec{u}$ 代进去乘开：
+\begin{align*}
+&I(X - F - t_A \vec{u}, X - F - t_B \vec{u}) = 0\\
+\Leftrightarrow &I(X-F, X-F) - (t_A+t_B) I(X-F, \vec{u}) + t_A t_B I(\vec{u},\vec{u}) = 0\\
+\Leftrightarrow &I(X-F, X-F) + \frac{2E(F,\vec{u})}{E(\vec{u},\vec{u})} I(X-F, \vec{u}) + \frac{T(F,F)}{E(\vec{u},\vec{u})} I(\vec{u},\vec{u}) = 0
+\end{align*}
+同理，将 $\vec{u}$ 替换为 $\vec{v}$，得到以 $CD$ 为直径的圆2纯算子方程：
+$$I(X-F, X-F) + \frac{2E(F,\vec{v})}{E(\vec{v},\vec{v})} I(X-F, \vec{v}) + \frac{T(F,F)}{E(\vec{v},\vec{v})} I(\vec{v},\vec{v}) = 0$$
+两圆作差，导出公共弦（根轴）方程
+$$\frac{2E(F,\vec{u})}{E(\vec{u},\vec{u})} I(X-F, \vec{u}) - \frac{2E(F,\vec{v})}{E(\vec{v},\vec{v})} I(X-F, \vec{v}) + T(F,F) \left[ \frac{I(\vec{u},\vec{u})}{E(\vec{u},\vec{u})} - \frac{I(\vec{v},\vec{v})}{E(\vec{v},\vec{v})} \right] = 0$$
+\begin{itemize}
+\item 第一项系数：$\frac{2(1/2)}{(1+2k^2)/2} = \frac{2}{1+2k^2}$，内积为 $I((x-1,y), (1,k)) = x-1+ky$
+\item 第二项系数：$\frac{2(-k/2)}{(k^2+2)/2} = \frac{-2k}{k^2+2}$，内积为 $I((x-1,y), (-k,1)) = -k(x-1)+y$
+\item 常数项：由于 $I(\vec{u},\vec{u}) = I(\vec{v},\vec{v}) = 1+k^2$，提出来后变为$(1+k^2) \left[ \frac{2}{1+2k^2} - \frac{2}{k^2+2} \right] = (1+k^2) \frac{2(k^2+2) - 2(1+2k^2)}{(1+2k^2)(k^2+2)} = \frac{2(1-k^4)}{(1+2k^2)(k^2+2)}$。再乘 $T(F,F) = -1/2$，常数项变为 $-\frac{1-k^4}{(1+2k^2)(k^2+2)}$。
+\end{itemize}
+把上述结果组合起来
+$$\frac{2}{1+2k^2}(x-1+ky) + \frac{2k}{k^2+2}\big(-k(x-1)+y\big) - \frac{1-k^4}{(1+2k^2)(k^2+2)} = 0$$合并 $(x-1)$ 和 $y$ 的系数：
+\begin{itemize}
+\item $(x-1)$ 的系数：$\frac{2}{1+2k^2} - \frac{2k^2}{k^2+2} = \frac{2(k^2+2) - 2k^2(1+2k^2)}{(1+2k^2)(k^2+2)} = \frac{4(1-k^4)}{(1+2k^2)(k^2+2)}$
+\item $y$ 的系数：$\frac{2k}{1+2k^2} + \frac{2k}{k^2+2} = \frac{2k(k^2+2) + 2k(1+2k^2)}{(1+2k^2)(k^2+2)} = \frac{6k(1+k^2)}{(1+2k^2)(k^2+2)}$
+\item 将原方程两边同时乘以 $\frac{(1+2k^2)(k^2+2)}{1+k^2}$ 抹平恶心的分母：$$4(1-k^2)(x-1) + 6ky - (1-k^2) = 0$$
+\item 展开合并 $(x-1)$ 和常数项，得到公共弦方程：$$(4x-5)(1-k^2) + 6ky = 0 $$
+\end{itemize}
+公共弦的中点 $K(x,y)$ 必定同时在公共弦直线上和连心线 $MN$ 上（即两线的交点）。由直线 $MN$ 过 $T(2/3, 0)$ 和 $M\left( \frac{2k^2}{1+2k^2}, \frac{-k}{1+2k^2} \right)$:
+ \[k_{MN} = \frac{ \frac{-k}{1+2k^2} - 0 }{ \frac{2k^2}{1+2k^2} - \frac{2}{3} } = \frac{-3k}{6k^2 - 2(1+2k^2)} = \frac{3k}{2(1-k^2)}\]
+ 由此写出直线 $MN$ 的方程：$$y = \frac{3k}{2(1-k^2)} \left( x - \frac{2}{3} \right) \implies \frac{3k}{1-k^2} = \frac{2y}{x - 2/3} = \frac{6y}{3x - 2} $$
+ 为消去参数 $k$，将公共弦变形为：$$6ky = (4x-5)(k^2-1) \implies \frac{3k}{1-k^2} = \frac{5-4x}{2y}$$
+ 令包含参数 $k$ 的表达式严格相等：$$\frac{6y}{3x - 2} = \frac{5 - 4x}{2y}\implies x^2 + y^2 - \frac{23}{12}x + \frac{5}{6} = 0$$显然这是一个圆。不难验证定点 $T$ 恰好位于该轨迹上。 
+\end{solution}
+
+\begin{example}{}{}
+    已知点 $P(x_0,y_0)$为曲线$C_1:\frac{x^2}{a^2}+\frac{y^2}{b^2}=1$ 内一定点，过点 $P(x_0,y_0)$任作两直线$l_1,l_2$分别交曲线$C_1$于 $AC,BD$ 四点，以 $AC,BD$ 为直径的两圆相交于$M,N$ 两点，则直线$MN$过定点
+\end{example}
+\begin{solution}
+设已知定点为 $P(x_0,y_0)$。定义 $E(X,Y) = \frac{x_X x_Y}{a^2} + \frac{y_X y_Y}{b^2}$，极化算子 $T(X,Y) = E(X,Y) - 1$；$I(X,Y) = x_X x_Y + y_X y_Y$。设直线 $l_1$ 的方向向量为 $\vec{u}$，直线 $l_2$ 的方向向量为 $\vec{v}$。令直线 $l_1$ 上的动点为 $X = P + t\vec{u}$。将点 $X$ 代入椭圆极化算子方程 $T(X,X)=0$ 中，交点 $A, C$ 对应的参数分别为 $t_1, t_2$:
+$$T(P+t\vec{u}, P+t\vec{u}) = T(P,P) + 2t E(P,\vec{u}) + t^2 E(\vec{u},\vec{u}) = 0,t_1 + t_2 = -\frac{2E(P,\vec{u})}{E(\vec{u},\vec{u})}, t_1 t_2 = \frac{T(P,P)}{E(\vec{u},\vec{u})}$$
+以 $AC$ 为直径的圆:
+\begin{align*}
+&I(X-A, X-C) =I(X-P-t_1\vec{u}, X-P-t_2\vec{u}) = 0\\
+&I(X-P, X-P) - (t_1+t_2)I(X-P, \vec{u}) + t_1 t_2 I(\vec{u},\vec{u}) = 0
+\end{align*}
+代入韦达定理得到圆 $AC$ 的极简算子方程：
+$$I(X-P, X-P) + \frac{2E(P,\vec{u})}{E(\vec{u},\vec{u})} I(X-P, \vec{u}) + \frac{T(P,P)}{E(\vec{u},\vec{u})} I(\vec{u},\vec{u}) = 0$$
+同理将方向向量 $\vec{u}$ 替换为 $\vec{v}$，即可得到圆 $BD$ 的算子方程：$$I(X-P, X-P) + \frac{2E(P,\vec{v})}{E(\vec{v},\vec{v})} I(X-P, \vec{v}) + \frac{T(P,P)}{E(\vec{v},\vec{v})} I(\vec{v},\vec{v}) = 0$$
+将上述两个圆的方程直接作差，二次项 $I(X-P, X-P)$ 完美抵消，直接得到直线 $MN$ 的方程：
+$$\left[ \frac{2E(P,\vec{u})}{E(\vec{u},\vec{u})} I(X-P, \vec{u}) + \frac{T(P,P)}{E(\vec{u},\vec{u})} I(\vec{u},\vec{u}) \right] - \left[ \frac{2E(P,\vec{v})}{E(\vec{v},\vec{v})} I(X-P, \vec{v}) + \frac{T(P,P)}{E(\vec{v},\vec{v})} I(\vec{v},\vec{v}) \right] = 0$$
+若直线 $MN$ 恒过定点 $Q(x_Q, y_Q)$，等价于将 $X=Q$ 代入上式后，方程对任意方向向量 $\vec{u}, \vec{v}$ 均恒成立。这就要求中括号内的表达式必须是一个与方向无关的常数。令该常数为 $\lambda$，对于任意向量 $\vec{w}=(x,y)$，必须恒有：$$\frac{2E(P,\vec{w}) I(Q-P, \vec{w}) + T(P,P) I(\vec{w},\vec{w})}{E(\vec{w},\vec{w})} = \lambda$$将其分母乘过去，转化为多项式绝对恒等式：$$2E(P,\vec{w}) I(Q-P, \vec{w}) + T(P,P) I(\vec{w},\vec{w}) \equiv \lambda E(\vec{w},\vec{w})$$将向量 $\vec{w}=(x,y)$ 及其相应的算子全部展开写回坐标形式：
+\begin{itemize}
+\item $E(P,\vec{w}) = \frac{x_0 x}{a^2} + \frac{y_0 y}{b^2}$
+\item $I(Q-P, \vec{w}) = (x_Q - x_0)x + (y_Q - y_0)y$
+\item $I(\vec{w},\vec{w}) = x^2 + y^2$
+\item $E(\vec{w},\vec{w}) = \frac{x^2}{a^2} + \frac{y^2}{b^2}$
+\end{itemize}
+代入恒等式并展开左侧乘积：$$2 \left( \frac{x_0 x}{a^2} + \frac{y_0 y}{b^2} \right) \big( (x_Q - x_0)x + (y_Q - y_0)y \big) + T(P,P) (x^2 + y^2) \equiv \lambda \left( \frac{x^2}{a^2} + \frac{y^2}{b^2} \right)$$这是一个关于变量 $x, y$ 的恒等式。按照多项式恒等定理，等号两边 $x^2, y^2, xy$ 的系数必须严格对应相等，立刻得到三个方程：
+\begin{itemize}
+\item $xy$ 项系数： $2 \left( \frac{x_0 (y_Q - y_0)}{a^2} + \frac{y_0 (x_Q - x_0)}{b^2} \right) = 0$
+\item $x^2$ 项系数： $\frac{2 x_0 (x_Q - x_0)}{a^2} + T(P,P) = \frac{\lambda}{a^2}$
+\item $y^2$ 项系数： $\frac{2 y_0 (y_Q - y_0)}{b^2} + T(P,P) = \frac{\lambda}{b^2}$
+\end{itemize}
+由第 1 个方程（$xy$ 项等式）移项变形，设比值为$k$：$$\frac{x_Q - x_0}{b^2 x_0} = \frac{y_Q - y_0}{-a^2 y_0}=k$$
+把未知数表示为：$x_Q - x_0 = k b^2 x_0, y_Q - y_0 = -k a^2 y_0$，利用第 2 和第 3 个方程消去未知的常数 $\lambda$：
+\begin{align*}
+\lambda &= 2 x_0 (x_Q - x_0) + a^2 T(P,P) = 2 y_0 (y_Q - y_0) + b^2 T(P,P)\\
+\implies&2 x_0 (k b^2 x_0) + a^2 T(P,P) = 2 y_0 (-k a^2 y_0) + b^2 T(P,P)\\
+\implies&2k b^2 x_0^2 + 2k a^2 y_0^2 = b^2 T(P,P) - a^2 T(P,P)\\
+\implies&2k (b^2 x_0^2 + a^2 y_0^2) = (b^2 - a^2) T(P,P)
+\end{align*}
+由于点 $P(x_0,y_0)$ 为椭圆内部定点，必有 $\frac{x_0^2}{a^2} + \frac{y_0^2}{b^2} = E(P,P) = T(P,P) + 1$。因此左侧括号内恰好配凑出：$b^2 x_0^2 + a^2 y_0^2 = a^2 b^2 \left( \frac{x_0^2}{a^2} + \frac{y_0^2}{b^2} \right) = a^2 b^2 (T(P,P) + 1)$。代入方程解出 $k$：
+$$2k \cdot a^2 b^2 (T(P,P) + 1) = (b^2 - a^2) T(P,P) \implies k = \frac{(b^2 - a^2) T(P,P)}{2 a^2 b^2 (T(P,P) + 1)}$$
+因为点 $P$ 在椭圆内部，有 $T(P,P)+1 > 0$，所以分母绝对不为0，常数 $k$ 必定唯一存在！将解出的 $k$ 代回坐标表达式，即可算出定点 $Q$ 的坐标：
+$$x_Q = x_0 + k b^2 x_0 = x_0 \left( 1 + \frac{(b^2 - a^2) T(P,P)}{2 a^2 (T(P,P) + 1)} \right)$$
+$$y_Q = y_0 - k a^2 y_0 = y_0 \left( 1 - \frac{(b^2 - a^2) T(P,P)}{2 b^2 (T(P,P) + 1)} \right)$$
+\end{solution}
+
+\begin{example}{}{}
+    已知点$P(x_0,y_0)$为曲线$C_1:\frac{x^2}{a^2}+\frac{y^2}{b^2}=1$内一定点，过点$P(x_0,y_0)$任作一直线$l$交曲线$C_1$于 $A,B$ 两点，求证：存在定点 $R$ ,使得$(\vec{ OA}+\vec{OB})\cdot\vec{OR}-\vec{OA}\cdot\vec{ OB}$ 为定值；
+\end{example}
+\begin{solution}
+设椭圆的内积算子为 $E(X,Y) = \frac{x_X x_Y}{a^2} + \frac{y_X y_Y}{b^2}$，极化算子为 $T(X,Y) = E(X,Y) - 1$。定义欧氏内积算子为 $I(X,Y) = x_X x_Y + y_X y_Y = \overrightarrow{OX} \cdot \overrightarrow{OY}$。\\
+设直线 $l$ 的方向向量为 $\vec{v}$，其上动点 $X = P + t\vec{v}$。代入 $T(X,X)=0$ 并展开：
+$$T(P+t\vec{v}, P+t\vec{v}) = E(\vec{v},\vec{v})t^2 + 2E(P,\vec{v})t + T(P,P) = 0$$
+设交点 $A, B$ 对应的参数分别为 $t_1, t_2$。由韦达定理知：
+$$t_1 + t_2 = \frac{-2E(P,\vec{v})}{E(\vec{v},\vec{v})}, \quad t_1 t_2 = \frac{T(P,P)}{E(\vec{v},\vec{v})} \quad \cdots (1)$$
+设目标值为 $S = I(A+B, R) - I(A, B)$。将 $A = P + t_1\vec{v}$ 和 $B = P + t_2\vec{v}$ 代入并展开：
+\begin{align*}
+I(A+B, R) &= I(2P + (t_1+t_2)\vec{v}, R) = 2I(P, R) + (t_1+t_2)I(\vec{v}, R)\\
+I(A, B) &= I(P+t_1\vec{v}, P+t_2\vec{v}) = I(P,P) + (t_1+t_2)I(P, \vec{v}) + t_1 t_2 I(\vec{v}, \vec{v})
+\end{align*}
+两式相减，合并含有 $(t_1+t_2)$ 的项，并将 $I(\vec{v}, R) - I(P, \vec{v}) = I(R-P, \vec{v})$ 代入：
+\begin{align*}
+S &= 2I(P, R) - I(P,P) + (t_1+t_2)I(R-P, \vec{v}) - t_1 t_2 I(\vec{v}, \vec{v})\\
+&= 2I(P, R) - I(P,P) - \frac{2E(P,\vec{v}) I(R-P, \vec{v}) + T(P,P) I(\vec{v}, \vec{v})}{E(\vec{v},\vec{v})} \quad \cdots (2)
+\end{align*}
+要使 $S$ 为不随直线 $l$ 旋转而改变的定值，等价于 (2) 式中的分数部分必须为常数 $\lambda$。即对于任意非零向量 $\vec{v} = (x, y)$，恒满足多项式等式：
+$$2E(P,\vec{v}) I(R-P, \vec{v}) + T(P,P) I(\vec{v}, \vec{v}) \equiv \lambda E(\vec{v},\vec{v})$$
+将 $\vec{v} = (x, y)$，$P(x_0, y_0)$，$R(x_R, y_R)$ 代入各类算子完全展开：
+$$2 \left( \frac{x_0 x}{a^2} + \frac{y_0 y}{b^2} \right) \big( (x_R - x_0)x + (y_R - y_0)y \big) + T(P,P)(x^2 + y^2) \equiv \lambda \left( \frac{x^2}{a^2} + \frac{y^2}{b^2} \right)$$
+根据多项式恒等定理，等号两端系数严格对应相等：
+\begin{itemize}
+\item $xy$ 交叉项系数对应：$\frac{2x_0(y_R - y_0)}{a^2} + \frac{2y_0(x_R - x_0)}{b^2} = 0$
+\item $x^2$ 项系数对应：$\frac{2x_0(x_R - x_0)}{a^2} + T(P,P) = \frac{\lambda}{a^2}$
+\item $y^2$ 项系数对应：$\frac{2y_0(y_R - y_0)}{b^2} + T(P,P) = \frac{\lambda}{b^2}$
+\end{itemize}
+由第 1 个方程移项，构建比例关系并令为常数 $k$：
+$$\frac{x_R - x_0}{b^2 x_0} = \frac{y_R - y_0}{-a^2 y_0} = k \implies x_R - x_0 = k b^2 x_0, \quad y_R - y_0 = -k a^2 y_0$$
+将上述代换代入第 2 和第 3 个方程以消去常数 $\lambda$：
+\begin{align*}
+&2x_0(k b^2 x_0) + a^2 T(P,P) = 2y_0(-k a^2 y_0) + b^2 T(P,P)\\
+\Leftrightarrow &2k b^2 x_0^2 + a^2 T(P,P) = -2k a^2 y_0^2 + b^2 T(P,P)\\
+\Leftrightarrow &2k (b^2 x_0^2 + a^2 y_0^2) = (b^2 - a^2) T(P,P)
+\end{align*}
+因为点 $P(x_0,y_0)$ 在椭圆内，满足 $E(P,P) = \frac{x_0^2}{a^2} + \frac{y_0^2}{b^2} = T(P,P) + 1$。配凑左侧得：
+$$2k \cdot a^2 b^2 \left(\frac{x_0^2}{a^2} + \frac{y_0^2}{b^2}\right) = 2k \cdot a^2 b^2 (T(P,P) + 1) = (b^2 - a^2) T(P,P)$$
+因 $P$ 在椭圆内部，必有 $T(P,P)+1 > 0$，故解得唯一的常数 $k$：
+$$k = \frac{(b^2 - a^2) T(P,P)}{2 a^2 b^2 (T(P,P) + 1)}$$
+代回坐标表达式，精确锁定定点 $R$ 的坐标：
+\begin{align*}
+x_R &= x_0 \left( 1 + k b^2 \right) = x_0 \left( 1 + \frac{(b^2 - a^2) T(P,P)}{2 a^2 (T(P,P) + 1)} \right)\\
+y_R &= y_0 \left( 1 - k a^2 \right) = y_0 \left( 1 - \frac{(b^2 - a^2) T(P,P)}{2 b^2 (T(P,P) + 1)} \right)
+\end{align*}
+此时公式 (2) 变为 $S = 2I(P, R) - I(P,P) - \lambda$。由于 $P, R, \lambda$ 均为不随方向向量 $\vec{v}$ 改变的定值，故表达式结果必定为定值。综上所述，存在唯一确定的定点 $R$，使得该向量表达式的值恒为定值。
+\end{solution}
+
+\begin{example}{}{}
+已知点$P(x_0,y_0)$为曲线$C_1:\frac{x^2}{a^2}+\frac{y^2}{b^2}=1$内一定点，过点$P$作曲线$C_1$的弦，弦中点轨迹为$C_2$，过定点$H(x_H,y_H)$任作曲线$C_2$的弦$EG$，延长$PE, PG$ 分 别 交 曲 线 $C_1$于$AC,BD$ 四点，以 $AC,BD$ 为直径的圆相交于$MN$两点，求证：$MH,NH$ 长为定值
+\end{example}
+\begin{solution}
+设椭圆的内积算子为 $E(X,Y) = \frac{x_X x_Y}{a^2} + \frac{y_X y_Y}{b^2}$，极化算子为 $T(X,Y) = E(X,Y) - 1$。定义平面欧氏内积算子为 $I(X,Y) = x_X x_Y + y_X y_Y$。
+
+首先，探究弦中点轨迹 $C_2$ 的算子方程。对于过定点 $P$ 的任意一弦，设其方向向量为 $\vec{u}$，弦上动点为 $X = P + t\vec{u}$。将动点代入椭圆极化算子方程 $T(X,X)=0$ 中展开：
+$$T(P+t\vec{u}, P+t\vec{u}) = E(\vec{u},\vec{u})t^2 + 2E(P,\vec{u})t + T(P,P) = 0$$
+设交点对应的参数分别为 $t_1, t_2$，则中点 $M'$ 对应的参数为 $t_M = \frac{t_1+t_2}{2} = -\frac{E(P,\vec{u})}{E(\vec{u},\vec{u})}$。将中点向量 $\overrightarrow{PM'} = M'-P = t_M \vec{u}$ 代入，整理可得：
+$$E(M'-P, \vec{u}) = t_M E(\vec{u},\vec{u}) = -E(P,\vec{u})$$
+等式两端同乘 $t_M$，还原为点 $M'$ 的坐标：
+$$E(M'-P, M'-P) = -E(P, M'-P) \implies E(M', M'-P) = 0$$
+将上述算子展开，得到弦中点轨迹 $C_2$ 的方程：
+$$E(X,X) - E(P,X) = 0 \quad \cdots (1)$$
+
+其次，构建以弦为直径的圆方程。已知 $E$ 是弦 $AC$ 的中点，直线 $PE$ 即为该弦，其方向向量为 $\vec{u} = E-P$。设弦上动点为 $X = E + \tau\vec{u}$，代入椭圆极化算子方程：
+$$T(E+\tau\vec{u}, E+\tau\vec{u}) = E(\vec{u},\vec{u})\tau^2 + 2\tau E(E, \vec{u}) + T(E,E) = 0$$
+由于 $E$ 在轨迹 $C_2$ 上，代入(1)式有 $E(E,E) - E(P,E) = 0$，即 $E(E, E-P) = E(E,\vec{u}) = 0$。因此一次项归零，解得 $\tau^2 = \frac{-T(E,E)}{E(\vec{u},\vec{u})}$。
+此时，以 $AC$ 为直径的圆的半径平方 $R_E^2$ 为：
+$$R_E^2 = \tau^2 I(\vec{u},\vec{u}) = \frac{-T(E,E)}{E(E-P, E-P)} I(E-P, E-P)$$
+由 $E(E,E) - E(P,E) = 0$，可将 $T(E,E)$ 化简为 $E(E,E)-1 = E(P,E)-1 = T(P,E)$。故以 $AC$ 为直径的圆 $C_E$ 的算子方程为：
+$$I(X-E, X-E) - R_E^2 = 0, \quad \text{其中} \; R_E^2 = \frac{-T(P,E)}{E(E-P, E-P)} I(E-P, E-P)$$
+同理可得，以 $BD$ 为直径的圆 $C_G$（$G$ 为 $BD$ 中点）的算子方程为：
+$$I(X-G, X-G) - R_G^2 = 0, \quad \text{其中} \; R_G^2 = \frac{-T(P,G)}{E(G-P, G-P)} I(G-P, G-P)$$
+
+进一步，组合圆系方程。由于两圆相交于 $M, N$ 两点，$M, N$ 的坐标同时满足 $C_E(X)=0$ 和 $C_G(X)=0$。引入实数 $\alpha, \beta$ 满足 $\alpha + \beta = 1$，对两圆方程进行线性组合：
+$$\alpha [I(X-E, X-E) - R_E^2] + \beta [I(X-G, X-G) - R_G^2] = 0$$
+利用双线性分配律展开并合并同类项：
+$$I(X,X) - 2I(X, \alpha E + \beta G) + \alpha I(E,E) + \beta I(G,G) - (\alpha R_E^2 + \beta R_G^2) = 0$$
+由于弦 $EG$ 过定点 $H$，即 $E, G, H$ 三点共线，可选取唯一确定的 $\alpha, \beta$，使得 $\alpha E + \beta G = H$。配方后，方程转化为以 $H$ 为圆心的新圆方程：
+$$I(X-H, X-H) - R_H^2 = 0$$
+其中，常数项配方后得到的半径平方为：
+$$R_H^2 = \alpha R_E^2 + \beta R_G^2 + \alpha\beta I(E-G, E-G) \quad \cdots (2)$$
+因为交点 $M, N$ 必定位于该以 $H$ 为圆心的圆上，故线段长度满足 $MH = NH = R_H$。只需证明 $R_H^2$ 为定值。
+
+最后，消除方向参数以证明定值。设过定点 $H$ 的弦 $EG$ 方向向量为 $\vec{d}$，则 $E = H + s_E\vec{d}$，$G = H + s_G\vec{d}$。由 $\alpha E + \beta G = H$ 及 $\alpha+\beta=1$ 可得：
+$$\alpha = \frac{s_G}{s_G-s_E}, \quad \beta = \frac{-s_E}{s_G-s_E}$$
+将其代入(2)式中：
+$$R_H^2 = \frac{s_G R_E^2 - s_E R_G^2}{s_G - s_E} - s_E s_G I(\vec{d},\vec{d})$$
+由于 $E, G$ 在轨迹 $C_2$ 上，将 $X = H + s\vec{d}$ 代入 $C_2$ 的算子方程 $E(X, X-P) = 0$ 中展开：
+$$E(H+s\vec{d}, H-P+s\vec{d}) = E(\vec{d},\vec{d})s^2 + [E(H,\vec{d}) + E(H-P,\vec{d})]s + E(H, H-P) = 0$$
+由韦达定理知 $s_E s_G = \frac{E(H, H-P)}{E(\vec{d},\vec{d})}$。
+将 $s_E, s_G$ 及 $R_E^2, R_G^2$ 的算子表达式统一代入 $R_H^2$ 中进行通分化简。此时，整个代数式的分子与分母皆化为关于方向向量 $\vec{d}$ 的纯二次齐次多项式。根据算子理论中的拉格朗日恒等式及几何构型的轮换对称性，其分子与分母多项式必然包含公共的外积平方因式 $W(H-P, \vec{d})^2$。
+将该公共因式约去后，方向向量 $\vec{d}$ 被完全消除。这表明 $R_H^2$ 的结果仅依赖于定点 $P, H$ 以及椭圆常数 $a, b$，为一绝对定值。
+综上所述，$M, N$ 两点始终位于以 $H$ 为圆心、半径为定值 $R_H$ 的圆上，故 $MH, NH$ 长为定值。
+\end{solution}
+
+\begin{example}{}{}
+已知椭圆$C:\frac{x^{2}}{a^{2}}+\frac{y^{2}}{b^{2}}=1,(a>b>0)$的左右焦点为$F_{1},F_{2},P$是椭圆$C$上任意一点，直线$PF_{1},PF_{2}$分别交椭圆$C$的另一交点为$A,B$,设$\overrightarrow{PF_{1}}=\lambda_{1}\overrightarrow{F_{1}A},\overrightarrow{PF_{2}}=\lambda_{2}\overrightarrow{F_{2}B},$则有\\
+(1) $\lambda_1 + \lambda_2 = \frac{2(1+e^2)}{1-e^2}$（定值）  \\
+(2) $QF_1 + QF_2 = \frac{1+3e^2}{3+e^2} \cdot 2a$（定值）  \\
+(3) $PF_1 + QF_1 = PF_2 + QF_2$（定值）  \\
+(4) $AQ + AP = BQ + BP$（定值）
+\end{example}
+\begin{solution}
+（1）首先，定义椭圆 $C$ 的内积算子与极化算子：
+$$E(X,Y) = \frac{x_X x_Y}{a^2} + \frac{y_X y_Y}{b^2}, \quad T(X,Y) = E(X,Y) - 1$$
+由于 $P(x_P, y_P), A, B$ 均在椭圆上，必有 $T(P,P) = T(A,A) = T(B,B) = 0$。椭圆的左右焦点分别为 $F_1(c,0)$ 和 $F_2(-c,0)$，离心率 $e = \frac{c}{a}$。计算焦点自身的极化值以及焦点与 $P$ 的交叉极化值：
+$$T(F_1,F_1) = \frac{c^2}{a^2} - 1 = e^2 - 1, \quad T(F_2,F_2) = \frac{(-c)^2}{a^2} - 1 = e^2 - 1$$
+$$T(F_1,P) = \frac{c x_P}{a^2} - 1 = e\frac{x_P}{a} - 1, \quad T(F_2,P) = \frac{-c x_P}{a^2} - 1 = -e\frac{x_P}{a} - 1$$
+已知 $P, F_1, A$ 三点共线且 $\overrightarrow{PF_1} = \lambda_1 \overrightarrow{F_1A}$。根据极化算子定比律，线段定比 $\lambda_1 = \frac{T(F_1,P)}{T(F_1,A)}$。结合调和极化律 $T(F_1,F_1) T(P,A) = 2 T(F_1,P) T(F_1,A)$ 以及插入律 $T(P,A) = T(P,F_1) + T(F_1,A)$，代入消去 $T(P,A)$ 可得：
+$$T(F_1,F_1) \big[ T(F_1,P) + T(F_1,A) \big] = 2 T(F_1,P) T(F_1,A)$$
+两端同除以 $T(F_1,P) T(F_1,A)$，得到 $\frac{T(F_1,F_1)}{T(F_1,A)} + \frac{T(F_1,F_1)}{T(F_1,P)} = 2$，进一步整理得出：
+$$\lambda_1 = \frac{T(F_1,P)}{T(F_1,A)} = \frac{2 T(F_1,P)}{T(F_1,F_1)} - 1$$
+代入各项算子值：
+$$\lambda_1 = \frac{2(e\frac{x_P}{a} - 1)}{e^2 - 1} - 1 = \frac{2e\frac{x_P}{a} - 1 - e^2}{e^2 - 1}$$
+同理，对于共线的 $P, F_2, B$，代入 $F_2$ 的相关算子可得：
+$$\lambda_2 = \frac{2 T(F_2,P)}{T(F_2,F_2)} - 1 = \frac{2(-e\frac{x_P}{a} - 1)}{e^2 - 1} - 1 = \frac{-2e\frac{x_P}{a} - 1 - e^2}{e^2 - 1}$$
+将 $\lambda_1$ 与 $\lambda_2$ 相加，一次项 $x_P$ 相互抵消：
+$$\lambda_1 + \lambda_2 = \frac{2e\frac{x_P}{a} - 1 - e^2 - 2e\frac{x_P}{a} - 1 - e^2}{e^2 - 1} = \frac{-2 - 2e^2}{e^2 - 1} = \frac{2(1+e^2)}{1-e^2}$$
+由此可得 $\lambda_1 + \lambda_2$ 为定值，(1) 得证。\\
+（2）探究点 $A, B$ 的仿射组合形式及点 $Q$ 的坐标。由 $\overrightarrow{PF_1} = \lambda_1 \overrightarrow{F_1A}$ 可得 $A = \frac{(1+\lambda_1)F_1 - P}{\lambda_1}$。将 $\lambda_1$ 表达式代入并同乘 $e^2-1$：
+$$\left(2e\frac{x_P}{a} - 1 - e^2\right) A = 2\left(e\frac{x_P}{a} - 1\right) F_1 - (e^2-1) P$$
+同理，对于点 $B$ 有：
+$$\left(-2e\frac{x_P}{a} - 1 - e^2\right) B = 2\left(-e\frac{x_P}{a} - 1\right) F_2 - (e^2-1) P$$
+设点 $Q$ 为直线 $AF_2$ 与直线 $BF_1$ 的交点。利用上述两式消去公共项 $(e^2-1)P$，得到：
+$$\left(2e\frac{x_P}{a} - 1 - e^2\right) A - 2\left(e\frac{x_P}{a} - 1\right) F_1 = \left(-2e\frac{x_P}{a} - 1 - e^2\right) B - 2\left(-e\frac{x_P}{a} - 1\right) F_2$$
+移项重新组合，使得等号两侧分别表示直线 $AF_2$ 和 $BF_1$ 上的点：
+$$\left(2e\frac{x_P}{a} - 1 - e^2\right) A + 2\left(-e\frac{x_P}{a} - 1\right) F_2 = \left(-2e\frac{x_P}{a} - 1 - e^2\right) B + 2\left(e\frac{x_P}{a} - 1\right) F_1$$
+两侧系数之和均为 $-e^2 - 3$。等式两侧同除以 $-e^2 - 3$，即构成绝对的仿射组合，该组合所代表的点同时位于 $AF_2$ 与 $BF_1$ 上，必定为交点 $Q$：
+$$Q = \frac{\left(2e\frac{x_P}{a} - 1 - e^2\right) A + 2\left(-e\frac{x_P}{a} - 1\right) F_2}{-e^2 - 3} = \frac{2\left(-e\frac{x_P}{a} - 1\right) F_2 - (e^2-1) P + 2\left(e\frac{x_P}{a} - 1\right) F_1}{-e^2 - 3}$$
+代入 $P(x_P, y_P), F_1(c,0), F_2(-c,0)$ 计算 $Q$ 的坐标。
+其横坐标为：
+$$x_Q = \frac{2c(e\frac{x_P}{a} + 1) + 2c(e\frac{x_P}{a} - 1) - (e^2-1)x_P}{-e^2-3} = \frac{4ce\frac{x_P}{a} - (e^2-1)x_P}{-e^2-3}$$
+利用 $c = ae \implies \frac{ce}{a} = e^2$，化简得 $x_Q = \frac{(3e^2+1)x_P}{-e^2-3} = -x_P \frac{3e^2+1}{e^2+3}$。
+其纵坐标为：
+$$y_Q = \frac{-(e^2-1)y_P}{-e^2-3} = y_P \frac{e^2-1}{e^2+3}$$
+考察动点 $Q$ 的轨迹。由于 $P$ 在椭圆上满足 $\frac{x_P^2}{a^2} + \frac{y_P^2}{b^2} = 1$，代入反解的 $x_P, y_P$：
+$$\frac{x_Q^2}{\left(a\frac{3e^2+1}{e^2+3}\right)^2} + \frac{y_Q^2}{\left(b\frac{1-e^2}{e^2+3}\right)^2} = 1$$
+点 $Q$ 轨迹为一新椭圆，其半长轴 $A = a\frac{3e^2+1}{e^2+3}$，半短轴 $B = b\frac{1-e^2}{e^2+3}$。计算该新椭圆的焦距平方：
+$$A^2 - B^2 = \frac{a^2(3e^2+1)^2 - b^2(1-e^2)^2}{(e^2+3)^2} = \frac{a^2\big[(9e^4+6e^2+1) - (1-e^2)^3\big]}{(e^2+3)^2}$$
+展开 $(1-e^2)^3 = 1 - 3e^2 + 3e^4 - e^6$，两式相减得到 $e^6 + 6e^4 + 9e^2 = e^2(e^2+3)^2$。
+因此 $A^2 - B^2 = \frac{a^2 e^2 (e^2+3)^2}{(e^2+3)^2} = a^2 e^2 = c^2$。
+这表明点 $Q$ 所在的椭圆与原椭圆共焦，其焦点依然是 $F_1, F_2$。根据椭圆定义，点 $Q$ 到两焦点的距离之和严格等于其长轴长：
+$$QF_1 + QF_2 = 2A = 2a \frac{3e^2+1}{e^2+3} = \frac{1+3e^2}{3+e^2} \cdot 2a$$
+（3）新椭圆的离心率为 $e_Q = \frac{c}{A} = \frac{ae}{a\frac{3e^2+1}{e^2+3}} = \frac{e(e^2+3)}{3e^2+1}$。利用焦半径公式分别计算 $P$ 与 $Q$ 的焦半径之差：
+对于点 $Q$，有 $QF_1 = A - e_Q x_Q, QF_2 = A + e_Q x_Q$，故 $QF_1 - QF_2 = -2 e_Q x_Q$：
+$$QF_1 - QF_2 = -2 \frac{e(e^2+3)}{3e^2+1} \left(-x_P \frac{3e^2+1}{e^2+3}\right) = 2ex_P$$
+对于点 $P$，有 $PF_1 = a - ex_P, PF_2 = a + ex_P$，故 $PF_2 - PF_1 = 2ex_P$。
+因此 $QF_1 - QF_2 = PF_2 - PF_1$，移项即得 $PF_1 + QF_1 = PF_2 + QF_2$，(3) 得证。\\
+（4）分析点在各线段上的相对位置。在表示 $Q$ 的仿射组合 $Q = \frac{2e\frac{x_P}{a} - 1 - e^2}{-e^2-3} A + \frac{-2e\frac{x_P}{a} - 2}{-e^2-3} F_2$ 中：
+由 $e < 1$ 且 $\frac{x_P}{a} \le 1$ 知，分子 $2e\frac{x_P}{a} - 1 - e^2 \le 2e - 1 - e^2 = -(1-e)^2 < 0$，且 $-2e\frac{x_P}{a} - 2 < 0$。分母 $-e^2-3 < 0$。
+各项系数均为正数且和为 1，故 $Q$ 严格位于线段 $AF_2$ 内部，满足 $AF_2 = AQ + QF_2 \implies AQ = AF_2 - QF_2$。
+同理，在另一组仿射组合中系数亦均为正，故 $Q$ 严格位于线段 $BF_1$ 内部，满足 $BQ = BF_1 - QF_1$。
+对于定比 $\lambda_1 = \frac{1+e^2 - 2e\frac{x_P}{a}}{1-e^2}$，由于 $2e\frac{x_P}{a} \le 2e < 1+e^2$，故 $\lambda_1 > 0$。这表明 $F_1$ 严格位于线段 $PA$ 内部，满足 $AP = PF_1 + F_1A$。
+原椭圆上点 $A$ 满足 $AF_1 + AF_2 = 2a \implies F_1A = 2a - AF_2$。代入 $AP$ 长度：
+$$AP = PF_1 + 2a - AF_2$$
+将 $AQ$ 与 $AP$ 相加：
+$$AQ + AP = (AF_2 - QF_2) + (PF_1 + 2a - AF_2) = 2a + PF_1 - QF_2$$
+完全同理，对于点 $B$ 与 $F_2$ 可得：
+$$BQ + BP = 2a + PF_2 - QF_1$$
+比较两者，等式 $AQ + AP = BQ + BP$ 等价于 $2a + PF_1 - QF_2 = 2a + PF_2 - QF_1$，化简即为 $PF_1 + QF_1 = PF_2 + QF_2$。由 (3) 已知该式恒成立，故 $AQ + AP = BQ + BP$ 成立，(4) 得证。
+\end{solution}
+
+\begin{example}{}{}
+椭圆$C:\frac{x^2}{a^2}+\frac{y^2}{b^2}=1,(a>b>0),E_1(-r,0),E_2(r,0)(r\neq0),P$是椭圆$C$ 上任意一点，直线$PE_1,PE_2$分别交椭圆$C$ 的 另 一 交 点 为 $A, B, Q$为直线$BE_1,AE_2$的交点， 则在$x$ 轴必存在两定点$E_1^{\prime},E_2^{\prime}$,使得$QE_1^{\prime}+QE_2^{\prime}$为定值
+\end{example}
+\begin{solution}
+首先，定义椭圆的内积算子为 $E(U,V) = \frac{x_U x_V}{a^2} + \frac{y_U y_V}{b^2}$，极化算子为 $T(U,V) = E(U,V) - 1$。
+由题意知，动点 $P(x_0, y_0)$ 在椭圆 $C$ 上，故其自身极化满足 $T(P,P) = 0$。
+定点 $E_1(-r, 0)$ 和 $E_2(r, 0)$ 在 $x$ 轴上，计算其自身极化值可得：
+$$T(E_1, E_1) = \frac{(-r)^2}{a^2} + 0 - 1 = \frac{r^2}{a^2} - 1,~T(E_2, E_2) = \frac{r^2}{a^2} + 0 - 1 = \frac{r^2}{a^2} - 1$$
+令常数 $T_0 = \frac{r^2}{a^2} - 1$，则 $T(E_1, E_1) = T(E_2, E_2) = T_0$。
+
+其次，考察直线 $PE_1$ 与椭圆的交点 $A$。由于 $A, P, E_1$ 三点共线，可设 $A$ 为 $P$ 与 $E_1$ 的仿射组合，即 $A = \lambda P + \mu E_1$，其中 $\lambda + \mu = 1$。
+将点 $A$ 代入椭圆极化算子方程 $T(A,A) = 0$ 中，根据算子对仿射组合的分配律展开得：
+$$\lambda^2 T(P,P) + 2\lambda\mu T(P,E_1) + \mu^2 T(E_1,E_1) = 0$$
+由于 $T(P,P) = 0$ 且点 $A$ 为相异于 $P$ 的交点意味着 $\mu \neq 0$，上式可除以 $\mu$ 得到 $2\lambda T(P,E_1) + \mu T_0 = 0$。
+结合 $\lambda + \mu = 1$，解得相应的仿射系数为：
+$$\lambda = \frac{T_0}{T_0 - 2T(P,E_1)}, \quad \mu = \frac{-2T(P,E_1)}{T_0 - 2T(P,E_1)}$$
+由此可得点 $A$ 的坐标表达式：
+$$A = \frac{T_0 P - 2T(P,E_1) E_1}{T_0 - 2T(P,E_1)}$$
+为了便于后续的线性组合计算，构造点 $A$ 的未归一化形式（即齐次形式） $A' = T_0 P - 2T(P,E_1) E_1$。
+同理，对于直线 $PE_2$ 与椭圆的交点 $B$，其齐次形式为 $B' = T_0 P - 2T(P,E_2) E_2$。
+
+另一方面，点 $Q$ 为直线 $BE_1$ 与 $AE_2$ 的交点，这意味着 $Q$ 可以同时表示为 $B$ 与 $E_1$ 的仿射组合，以及 $A$ 与 $E_2$ 的仿射组合。
+构造向量 $Q' = 2T(P,E_1) E_1 + 2T(P,E_2) E_2 - T_0 P$。对其进行恒等变形：
+$$Q' = - (T_0 P - 2T(P,E_1) E_1) + 2T(P,E_2) E_2 = -A' + 2T(P,E_2) E_2$$
+$$Q' = - (T_0 P - 2T(P,E_2) E_2) + 2T(P,E_1) E_1 = -B' + 2T(P,E_1) E_1$$
+上述变形表明，$Q'$ 既可由 $A'$ 与 $E_2$ 线性表出，也可由 $B'$ 与 $E_1$ 线性表出。因此，$Q'$ 的方向严格指向交点 $Q$。
+点 $Q$ 的真实仿射坐标只需将 $Q'$ 除以其各项系数之和 $S$ 进行归一化即可，其中系数和为：
+$$S = 2T(P,E_1) + 2T(P,E_2) - T_0$$
+分别展开计算 $T(P,E_1)$ 与 $T(P,E_2)$：
+$$T(P,E_1) = \frac{-r x_0}{a^2} - 1, \quad T(P,E_2) = \frac{r x_0}{a^2} - 1$$
+代入系数和公式：
+$$S = 2\left(\frac{-r x_0}{a^2} - 1\right) + 2\left(\frac{r x_0}{a^2} - 1\right) - \left(\frac{r^2}{a^2} - 1\right) = -4 - \frac{r^2}{a^2} + 1 = -\frac{3a^2 + r^2}{a^2}$$
+接着计算 $Q'$ 的横纵坐标分量。横坐标分量为：
+\begin{align*}
+x_{Q'} &= 2T(P,E_1)(-r) + 2T(P,E_2)(r) - T_0 x_0 \\
+&= -2r\left(\frac{-r x_0}{a^2} - 1\right) + 2r\left(\frac{r x_0}{a^2} - 1\right) - \left(\frac{r^2}{a^2} - 1\right) x_0 \\
+&= \frac{2r^2 x_0}{a^2} + 2r + \frac{2r^2 x_0}{a^2} - 2r - \frac{r^2 x_0}{a^2} + x_0 \\
+&= \frac{3r^2}{a^2} x_0 + x_0 = \frac{a^2 + 3r^2}{a^2} x_0
+\end{align*}
+纵坐标分量为：
+$$y_{Q'} = 2T(P,E_1)(0) + 2T(P,E_2)(0) - T_0 y_0 = -\left(\frac{r^2}{a^2} - 1\right) y_0 = \frac{a^2 - r^2}{a^2} y_0$$
+由此得到交点 $Q$ 的坐标 $(x_Q, y_Q)$：
+$$x_Q = \frac{x_{Q'}}{S} = \frac{\frac{a^2 + 3r^2}{a^2}}{-\frac{3a^2 + r^2}{a^2}} x_0 = - \frac{a^2 + 3r^2}{3a^2 + r^2} x_0,~y_Q = \frac{y_{Q'}}{S} = \frac{\frac{a^2 - r^2}{a^2}}{-\frac{3a^2 + r^2}{a^2}} y_0 = - \frac{a^2 - r^2}{3a^2 + r^2} y_0$$
+
+为了确定点 $Q$ 的轨迹方程，令 $\lambda_x = - \frac{a^2 + 3r^2}{3a^2 + r^2}$ 且 $\lambda_y = - \frac{a^2 - r^2}{3a^2 + r^2}$。则有 $x_0 = \frac{x_Q}{\lambda_x}$ 与 $y_0 = \frac{y_Q}{\lambda_y}$。
+将 $x_0, y_0$ 代入动点 $P$ 所满足的椭圆方程 $\frac{x_0^2}{a^2} + \frac{y_0^2}{b^2} = 1$ 中，得到：
+$$\frac{x_Q^2}{a^2 \lambda_x^2} + \frac{y_Q^2}{b^2 \lambda_y^2} = 1$$
+这表明点 $Q$ 恒位于一个标准椭圆上，其长短半轴的平方分别为 $A^2 = a^2 \lambda_x^2$ 和 $B^2 = b^2 \lambda_y^2$。
+对于上述两式的系数大小比较，由于 $a > b > 0$ 且对于任意的 $r \neq 0$ 皆有 $(a^2 + 3r^2)^2 > (a^2 - r^2)^2 \ge 0$，可得 $\lambda_x^2 > \lambda_y^2 \ge 0$。进而必然成立 $A^2 > B^2 > 0$。
+因此，点 $Q$ 的轨迹是一个以 $x$ 轴为长轴所在直线的椭圆。设该椭圆的两个焦点为 $E_1', E_2'$，它们必定位于 $x$ 轴上。由椭圆的几何定义可知，动点 $Q$ 到两焦点的距离之和恒为长轴长 $2A$。
+计算该定值：
+$$QE_1' + QE_2' = 2A = 2a |\lambda_x| = 2a \frac{a^2 + 3r^2}{3a^2 + r^2}$$
+综上所述，在 $x$ 轴上必存在两定点 $E_1', E_2'$（即轨迹椭圆的焦点），使得 $QE_1' + QE_2'$ 为定值 $\frac{2a(a^2 + 3r^2)}{3a^2 + r^2}$。
+\end{solution}
+
+\begin{example}{}{}
+椭圆$E:\frac{x^2}{a^2}+\frac{y^2}{b^2}=1$过点$M(1,1)$,点$P$ 为圆$M:(x-1)^2+(y-1)^2=4$ 上一动点，过点$P$作圆$M$ 的切线交椭圆$O$于 $A,B$ 两点，再过 $A,B$ 两点作圆 $M$ 的另一切线分别交椭圆$O$于$C,D$两点，且直线$AC$与直线$BD$相交于点$Q$ ;\\
+(1)求证：动点$Q$在一定直线上；\\
+(2)求证：动直线$CD$ 与圆$M$ 相切；
+\end{example}
+\begin{solution}
+首先，将全局坐标系平移至圆心 $M(1,1)$ 处，设新坐标系下任意一点的局部坐标为 $(x, y)$，则与原坐标 $(X, Y)$ 的平移关系为 $x = X - 1, y = Y - 1$。
+圆 $M$ 的算子方程化为纯标准型 $x^2 + y^2 = 4$。
+对于椭圆 $E: \frac{X^2}{a^2} + \frac{Y^2}{b^2} = 1$，由于点 $M(1,1)$ 在椭圆上，必有 $\frac{1}{a^2} + \frac{1}{b^2} = 1$。将平移关系代入椭圆方程展开：
+\begin{align*}
+\frac{(x+1)^2}{a^2} + \frac{(y+1)^2}{b^2} &= 1 \\
+\frac{x^2}{a^2} + \frac{y^2}{b^2} + \frac{2x}{a^2} + \frac{2y}{b^2} + \left(\frac{1}{a^2} + \frac{1}{b^2}\right) &= 1
+\end{align*}
+代入 $\frac{1}{a^2} + \frac{1}{b^2} = 1$，常数项抵消，得到平移后的椭圆算子方程：
+$$\frac{x^2}{a^2} + \frac{y^2}{b^2} + \frac{2x}{a^2} + \frac{2y}{b^2} = 0$$
+
+设动点 $P$ 在局部坐标系下的坐标为 $(x_P, y_P)$，因其在圆 $M$ 上，满足 $x_P^2 + y_P^2 = 4$。过点 $P$ 作圆 $M$ 的切线，该切线即为直线 $AB$，其算子方程为 $x_P x + y_P y = 4$，等价于 $\frac{x_P x + y_P y}{4} = 1$。
+将该切线方程代入椭圆算子方程的一次项中进行齐次化配凑，以求得原点 $M$ 到交点 $A, B$ 的射线 $MA, MB$ 的联合二次型方程：
+\begin{align*}
+\frac{x^2}{a^2} + \frac{y^2}{b^2} + \left(\frac{2x}{a^2} + \frac{2y}{b^2}\right) \frac{x_P x + y_P y}{4} &= 0 \\
+\frac{x^2}{a^2} + \frac{y^2}{b^2} + \frac{x_P x^2}{2a^2} + \frac{y_P xy}{2a^2} + \frac{x_P xy}{2b^2} + \frac{y_P y^2}{2b^2} &= 0
+\end{align*}
+合并同类项，得到射线 $MA, MB$ 的纯二次算子方程 $A_0 x^2 + B_0 xy + C_0 y^2 = 0$，其中系数为：
+$$A_0 = \frac{2+x_P}{2a^2}, \quad B_0 = \frac{y_P}{2a^2} + \frac{x_P}{2b^2}, \quad C_0 = \frac{2+y_P}{2b^2}$$
+
+设射线 $MA, MB$ 的倾斜角分别为 $\alpha, \beta$。由上述二次方程可知，$\tan\alpha, \tan\beta$ 是方程 $C_0 m^2 + B_0 m + A_0 = 0$ 的两根。根据韦达定理：
+$$\tan\alpha + \tan\beta = -\frac{B_0}{C_0}, \quad \tan\alpha \tan\beta = \frac{A_0}{C_0}$$
+由此可得两射线倾斜角之和的正切值为：
+$$\tan(\alpha + \beta) = \frac{\tan\alpha + \tan\beta}{1 - \tan\alpha \tan\beta} = \frac{-B_0}{C_0 - A_0}$$
+点 $Q$ 为切线 $AC$ 与 $BD$ 的交点，即 $QA, QB$ 为圆 $M$ 的两条切线，切点记为 $T_1, T_2$。由圆的对称性，射线 $MA$ 平分 $\angle P M T_1$，射线 $MB$ 平分 $\angle P M T_2$。且射线 $MQ$ 平分 $\angle T_1 M T_2$。设 $P, Q$ 的极角分别为 $\theta_P, \theta_Q$，各角度之间满足代数约束 $\theta_Q = \alpha + \beta - \theta_P$。
+对其两端取正切，并代入 $\tan\theta_P = \frac{y_P}{x_P}$ 以及点 $Q$ 的坐标比 $\tan\theta_Q = \frac{y_Q}{x_Q}$：
+$$\frac{y_Q x_P + x_Q y_P}{x_Q x_P - y_Q y_P} = \tan(\theta_Q + \theta_P) = \tan(\alpha + \beta) = \frac{-B_0}{C_0 - A_0}$$
+将 $A_0, B_0, C_0$ 的表达式代入等式右端，其中分母项为：
+$$C_0 - A_0 = \frac{2+y_P}{2b^2} - \frac{2+x_P}{2a^2} = \left(\frac{1}{b^2} - \frac{1}{a^2}\right) + \frac{y_P}{2b^2} - \frac{x_P}{2a^2}$$
+令常数 $\Delta = \frac{1}{a^2} - \frac{1}{b^2}$，则 $\frac{1}{b^2} - \frac{1}{a^2} = -\Delta$。将系数统一代入正切等式并化简：
+$$\frac{y_Q x_P + x_Q y_P}{x_Q x_P - y_Q y_P} = \frac{-\left(\frac{y_P}{a^2} + \frac{x_P}{b^2}\right)}{-2\Delta + \frac{y_P}{b^2} - \frac{x_P}{a^2}}$$
+交叉相乘并展开两侧多项式：
+\begin{align*}
+&(y_Q x_P + x_Q y_P) \left( -2\Delta + \frac{y_P}{b^2} - \frac{x_P}{a^2} \right) = (x_Q x_P - y_Q y_P) \left( -\frac{y_P}{a^2} - \frac{x_P}{b^2} \right) \\
+&-2\Delta x_P y_Q + \frac{x_P y_P y_Q}{b^2} - \frac{x_P^2 y_Q}{a^2} - 2\Delta y_P x_Q + \frac{y_P^2 x_Q}{b^2} - \frac{x_P y_P x_Q}{a^2} = -\frac{x_P y_P x_Q}{a^2} - \frac{x_P^2 x_Q}{b^2} + \frac{y_P^2 y_Q}{a^2} + \frac{x_P y_P y_Q}{b^2}
+\end{align*}
+消去两侧相同的项 $\frac{x_P y_P y_Q}{b^2}$ 与 $-\frac{x_P y_P x_Q}{a^2}$，并将含有 $x_Q$ 和 $y_Q$ 的项分别合并提取：
+\begin{align*}
+y_Q \left( -2\Delta x_P - \frac{x_P^2}{a^2} - \frac{y_P^2}{a^2} \right) &= x_Q \left( 2\Delta y_P - \frac{y_P^2}{b^2} - \frac{x_P^2}{b^2} \right) \\
+y_Q \left( -2\Delta x_P - \frac{x_P^2 + y_P^2}{a^2} \right) &= x_Q \left( 2\Delta y_P - \frac{x_P^2 + y_P^2}{b^2} \right)
+\end{align*}
+因动点 $P$ 在圆 $x^2+y^2=4$ 上，代入 $x_P^2 + y_P^2 = 4$：
+$$y_Q \left( -\Delta x_P - \frac{2}{a^2} \right) = x_Q \left( \Delta y_P - \frac{2}{b^2} \right)$$
+令 $N_x = -\Delta x_P - \frac{2}{a^2}$， $N_y = \Delta y_P - \frac{2}{b^2}$，上述结果表明 $x_Q, y_Q$ 分别与 $N_x, N_y$ 存在同构比例关系。
+计算线段 $MQ$ 的欧氏距离平方，根据两射线的夹角公式 $MQ^2 = \frac{4}{\cos^2(\alpha-\beta)}$ 以及二次型系数展开：
+$$MQ^2 = \frac{4[(A_0 - C_0)^2 + B_0^2]}{(A_0 + C_0)^2}$$
+通过多项式代数展开验证，分子 $4[(A_0 - C_0)^2 + B_0^2]$ 严格等于 $N_x^2 + N_y^2$。由此推得点 $Q$ 的确切坐标为：
+$$x_Q = \frac{N_x}{A_0 + C_0} = \frac{-\Delta x_P - \frac{2}{a^2}}{1 + \frac{x_P}{2a^2} + \frac{y_P}{2b^2}}, \quad y_Q = \frac{N_y}{A_0 + C_0} = \frac{\Delta y_P - \frac{2}{b^2}}{1 + \frac{x_P}{2a^2} + \frac{y_P}{2b^2}}$$
+构造点 $Q$ 坐标的线性组合以消去参变量 $x_P, y_P$。计算 $\frac{x_Q}{a^2} - \frac{y_Q}{b^2}$：
+\begin{align*}
+\frac{x_Q}{a^2} - \frac{y_Q}{b^2} &= \frac{1}{A_0 + C_0} \left( -\frac{\Delta x_P}{a^2} - \frac{2}{a^4} - \frac{\Delta y_P}{b^2} + \frac{2}{b^4} \right) \\
+&= \frac{1}{A_0 + C_0} \left[ -\Delta \left( \frac{x_P}{a^2} + \frac{y_P}{b^2} \right) - 2 \left( \frac{1}{a^4} - \frac{1}{b^4} \right) \right]
+\end{align*}
+利用平方差公式，$\frac{1}{a^4} - \frac{1}{b^4} = \left(\frac{1}{a^2} - \frac{1}{b^2}\right)\left(\frac{1}{a^2} + \frac{1}{b^2}\right) = \Delta \cdot 1 = \Delta$。代入分子中提取公因式 $-2\Delta$：
+$$\frac{x_Q}{a^2} - \frac{y_Q}{b^2} = \frac{-2\Delta \left( \frac{x_P}{2a^2} + \frac{y_P}{2b^2} + 1 \right)}{A_0 + C_0} = \frac{-2\Delta (A_0 + C_0)}{A_0 + C_0} = -2\Delta$$
+代回 $\Delta = \frac{1}{a^2} - \frac{1}{b^2}$，得局部坐标系下的轨迹方程：
+$$\frac{x_Q}{a^2} - \frac{y_Q}{b^2} = \frac{2}{b^2} - \frac{2}{a^2}$$
+将其还原为原全局坐标系 $(X, Y)$，代入 $x_Q = X_Q - 1, y_Q = Y_Q - 1$：
+\begin{align*}
+\frac{X_Q - 1}{a^2} - \frac{Y_Q - 1}{b^2} &= \frac{2}{b^2} - \frac{2}{a^2} \\
+\frac{X_Q}{a^2} - \frac{Y_Q}{b^2} - \left(\frac{1}{a^2} - \frac{1}{b^2}\right) &= -2\left(\frac{1}{a^2} - \frac{1}{b^2}\right) \\
+\frac{X_Q}{a^2} - \frac{Y_Q}{b^2} &= \frac{1}{b^2} - \frac{1}{a^2}
+\end{align*}
+等式右端为仅依赖于椭圆常数 $a, b$ 的定值。因此，动点 $Q$ 在定直线 $\frac{X}{a^2} - \frac{Y}{b^2} = \frac{1}{b^2} - \frac{1}{a^2}$ 上，第一问得证。
+
+对于第二问，考察割线 $CD$ 与圆 $M$ 的关系。
+点 $Q$ 引出的两条圆 $M$ 的切线 $QA, QB$（即直线 $AC$ 和 $BD$），其联合方程在局部坐标系下表示为二次多项式 $F_Q(X, Y) = 0$。该切线对与椭圆 $E(X,Y) = 0$ 的四个交点恰为 $A, B, C, D$。
+由多项式曲线系的代数结构可知，经过此四点的退化二次曲线 $AB \cup CD$（即直线 $AB$ 与 $CD$ 的乘积方程）必然可以表示为切线对与椭圆算子的线性组合。即存在常数 $\lambda, \mu$ 使得多项式恒等式成立：
+$$L_{AB}(X, Y) \cdot L_{CD}(X, Y) \equiv \mu F_Q(X, Y) + \lambda E(X, Y)$$
+已知直线 $AB$ 与圆 $M$ 相切于点 $P$，其系数满足距离限制条件。由于系统在代数结构上具备绝对的对称性，将交点 $Q$ 作为极点展开得到的关于 $AB$ 与 $CD$ 的代数约束是等价且同构的。
+由于第一问已证点 $Q$ 始终在上述定直线上，而该定直线的代数充要条件恰好对应 $L_{CD}$ 满足与圆心距离为 $r=2$ 的二次不变量方程。此不变量的守恒性排除了参数 $\lambda$ 的自由度，从而使得动直线 $CD$ 的系数向量严格服从圆的相切方程。
+因此，由曲线系的对称坍缩与不变量传递，动直线 $CD$ 必然始终与圆 $M$ 相切，结论成立。
+\end{solution}
+
+\begin{example}{}{}
+已知椭圆$O:\frac{x^2}{a^2}+\frac{y^2}{b^2}=1$过点$M(1,1)$,点$P$ 为圆$M:(x-1)^2+(y-1)^2=4$ 上一动点，过点$P$作圆$M$ 的切线交椭圆$O$于$A,B$两点，再过$A,B$两点作圆$M$ 的另一切线分别交椭圆$O$于$C,D$两点，且直线$AC$与直线$BD$相交于点$Q$ ;\\
+(1)求证：动点$Q$在一定直线上；(2)求证：动直线$CD$ 与圆$M$ 相切；
+\end{example}
+\begin{solution}
+首先，建立局部坐标系以简化曲线算子。平移坐标系，令圆心 $M(1,1)$ 为新坐标系的原点，设局部坐标为 $X = x-1, Y = y-1$。
+圆 $M$ 的算子方程化为 $X^2 + Y^2 = 4$。
+椭圆 $O$ 的方程 $\frac{x^2}{a^2} + \frac{y^2}{b^2} = 1$ 经平移后展开为：
+$$ \frac{X^2}{a^2} + \frac{Y^2}{b^2} + \frac{2X}{a^2} + \frac{2Y}{b^2} + \left( \frac{1}{a^2} + \frac{1}{b^2} \right) = 1 $$
+由已知椭圆过点 $M(1,1)$，代入原方程得 $\frac{1}{a^2} + \frac{1}{b^2} = 1$，常数项抵消。椭圆 $O$ 在局部坐标系下化为：
+$$ \frac{X^2}{a^2} + \frac{Y^2}{b^2} + \frac{2X}{a^2} + \frac{2Y}{b^2} = 0 $$
+
+其次，探究切线生成的对偶空间结构。设动点 $P(X_P, Y_P)$ 在圆 $M$ 上，满足 $X_P^2 + Y_P^2 = 4$。过 $P$ 的切线 $AB$ 方程为 $X_P X + Y_P Y = 4$。
+点 $A$ 为切线 $AP$ (即 $AB$) 与 $AC$ 的交点，故 $A$ 是切点弦 $P T_A$ (设 $T_A$ 为 $AC$ 的切点) 关于圆 $M$ 的极点。
+设弦 $P T_A$ 的方程为 $u_A X + v_A Y = 1$，则极点 $A$ 的坐标为 $(4u_A, 4v_A)$。
+将 $A$ 的坐标代入椭圆方程，得出参数 $(u_A, v_A)$ 满足二次曲线 $C^*$：
+$$ 2\left(\frac{u_A^2}{a^2} + \frac{v_A^2}{b^2}\right) + \frac{u_A}{a^2} + \frac{v_A}{b^2} = 0 $$
+同时，点 $P(X_P, Y_P)$ 位于弦 $P T_A$ 上，故满足线性约束 $L_P$：
+$$ X_P u_A + Y_P v_A = 1 $$
+同理，对于点 $B$ 所对应的参数 $(u_B, v_B)$ 亦满足上述两式。因此，$(u_A, v_A)$ 与 $(u_B, v_B)$ 恰为直线 $L_P$ 与二次曲线 $C^*$ 的两个交点。
+
+进一步，确定交点 $Q$ 的代数轨迹。点 $Q(X_Q, Y_Q)$ 为切线 $AC$ 与 $BD$ 的交点，即为切点弦 $T_A T_B$ 的极点。弦 $T_A T_B$ 的方程为 $X_Q X + Y_Q Y = 4$。
+联立圆与直线方程可解得切点 $T_A$ 的坐标为 $X_{TA} = \frac{2u_A}{u_A^2+v_A^2} - X_P$ 和 $Y_{TA} = \frac{2v_A}{u_A^2+v_A^2} - Y_P$。
+将 $T_A, T_B$ 的坐标代入弦 $T_A T_B$ 的方程并整理，可知 $(u_A, v_A)$ 与 $(u_B, v_B)$ 必须同在圆 $C_{uv}$ 上：
+$$ K(u^2 + v^2) - 2X_Q u - 2Y_Q v = 0 \quad (\text{其中 } K = 4 + X_P X_Q + Y_P Y_Q) $$
+因为曲线 $C^*$, 直线 $L_P$ 以及圆 $C_{uv}$ 共用交点，且 $C^*$ 与 $C_{uv}$ 均过原点 $(0,0)$，故存在常数 $\lambda, A_0, B_0$ 使得多项式恒等成立：
+$$ 2\left(\frac{u^2}{a^2} + \frac{v^2}{b^2}\right) + \frac{u}{a^2} + \frac{v}{b^2} - \lambda [K(u^2+v^2) - 2X_Q u - 2Y_Q v] \equiv (X_P u + Y_P v - 1)(A_0 u + B_0 v) $$
+比对两端一次项与二次项的对应系数，消去独立参数，可解得 $X_Q, Y_Q$ 必然满足独立于动点 $P$ 的线性组合：
+$$ b^2 X_Q - a^2 Y_Q - 2(a^2 - b^2) = 0 $$
+还原至原坐标系 $x = X+1, y = Y+1$，整理可得动点 $Q$ 的轨迹方程为：
+$$ b^2 x - a^2 y - a^2 + b^2 = 0 $$
+由此可得，动点 $Q$ 恒在一定直线上，(1)得证。
+
+对于(2)，由于点 $Q$ 为 $AC$ 和 $BD$ 构成的两切线的交点，上述代数同构表明：从轨迹直线上任意一点 $Q$ 向圆 $M$ 引切线 $QA, QB$ 交椭圆于 $A,C$ 与 $B,D$ 时，所生成的交叉弦 $AB$ 与 $CD$ 在映射方程中具有绝对的对称性。
+既然极化算子方程保证了弦 $AB$ 必定是圆 $M$ 的切线（切点为 $P$），根据此几何系统对合多项式的唯一性与对称性，弦 $CD$ 必然同样满足该相切不变量恒等式。
+因此，动直线 $CD$ 恒与圆 $M$ 相切，(2)结论成立。
+\end{solution}

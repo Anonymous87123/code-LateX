@@ -209,6 +209,46 @@ $$ \frac{W(\overrightarrow{PC}, \overrightarrow{PA})}{W(\overrightarrow{PC}, \ov
 $$ \frac{k_{PA}-k_{PC}}{k_{PB}-k_{PC}} \frac{x_A-x_P}{x_B-x_P} = -\lambda = \frac{\overrightarrow{AC}}{\overrightarrow{BC}} $$
 \textit{【全局批注：传统解法中令人望而生畏的“合分比技巧”，其本质仅仅是二维向量叉乘（$W$ 算子）在仿射共线条件下的线性分配律！算子法将数页纸的坐标泥沼，化简为了三行优雅的代数对消。】}
 
+\begin{conclusion}{斜率调整法}{}
+椭圆$\frac{x^2}{a^2}+\frac{y^2}{b^2}=1$上有$P(x_0,y_0),A(x_1,y_1),B(x_2,y_2)$三个点，令$k_1=k_{PA},k_2=k_{PB}$，那么
+    $$\frac{a^2}{b^2} k_1 k_2 - \frac{x_1 + x_2}{y_1 - y_2}(k_1 - k_2) + 1 = 0 $$
+\end{conclusion}
+已知椭圆上有三个定点 $P(x,y)$、$A(x_1,y_1)$、$B(x_2,y_2)$。弦 $PA$ 和 $PB$ 的斜率 $k_1, k_2$ 。定义两个方向向量：$\vec{u} = A - P$，所以 $k_1 = \frac{u_y}{u_x}$$\vec{v} = B - P$，所以 $k_2 = \frac{v_y}{v_x}$我试着把这两个斜率相减：
+$$k_1 - k_2 = \frac{u_y}{u_x} - \frac{v_y}{v_x} = \frac{u_y v_x - v_y u_x}{u_x v_x}=\frac{-W(\vec{u}, \vec{v})}{u_x v_x}$$
+为了凑出 $\frac{u_y v_y}{u_x v_x}$ 也就是 $k_1 k_2$，直接给内积算子提取公因式 $u_x v_x$：
+$$E(\vec{u}, \vec{v}) = u_x v_x \left( \frac{1}{a^2} + \frac{1}{b^2} \frac{u_y v_y}{u_x v_x} \right) = u_x v_x \left( \frac{1}{a^2} + \frac{k_1 k_2}{b^2} \right)\implies a^2 E(\vec{u}, \vec{v}) = u_x v_x \left( 1 + \frac{a^2}{b^2} k_1 k_2 \right)$$
+两个结果相除：$$\frac{\frac{a^2}{b^2} k_1 k_2 + 1}{k_1 - k_2} = \frac{a^2 E(\vec{u}, \vec{v})}{-W(\vec{u}, \vec{v})}$$
+\begin{itemize}
+\item 引入 $A, B$ 的中点 $M = \frac{A+B}{2}$，这意味 $A+B = 2M$。
+\item 先拆解分子 $E(\vec{u}, \vec{v})$：
+\begin{align*}
+E(A-P, B-P) &= E(A,B)+ E(P,P) - (E(A,P) + E(B,P)) \\
+&= E(A,B)+ E(P,P) -E(A+B, P)=E(A,B)+ E(P,P)-2E(M, P)\\
+&= (2E(M,M) - 1) - 2E(M,P) + 1 =  {2E(M, M-P)}
+\end{align*}
+\item 再拆解分母 $W(\vec{u}, \vec{v})$：同样用分配律展开：
+\begin{align*}
+W(A-P, B-P) &= W(A,B) - W(A,P) - W(P,B) + W(P,P)\\
+&= W(A,B) - W(A,P) + W(B,P)=W(A,B)-W(A-B, P)\\
+&=W\left(M + \frac{A-B}{2},M - \frac{A-B}{2}\right)- W(A-B, P) \\
+&=  W(A-B, M) - W(A-B, P) =W(A-B, M-P)
+\end{align*}
+\end{itemize}
+现在我们把化简好的分子分母放回我们的比例中：
+$$\frac{a^2 E(\vec{u}, \vec{v})}{-W(\vec{u}, \vec{v})} = \frac{2a^2 E(M, M-P)}{-W(A-B, M-P)}$$
+把分子写成坐标形式：
+$$2a^2 \left( \frac{x_M (x_M - x_P)}{a^2} + \frac{y_M (y_M - y_P)}{b^2} \right) = 2 \left( x_M (x_M - x_P) + \frac{a^2}{b^2}y_M (y_M - y_P) \right)$$
+核心卡点： 我们怎么处理 $x_M$？别忘了 $A,B$ 在椭圆上，根据椭圆“点差法”（也就是极化共轭差分律）：$E(M, A-B) = 0 \implies \frac{x_M (x_A - x_B)}{a^2} + \frac{y_M (y_A - y_B)}{b^2} = 0$移项得到一个代换神器：$x_M = - \frac{a^2}{b^2} y_M \frac{y_A - y_B}{x_A - x_B}$。我们把这个 $x_M$ 仅仅代入到分子第一项的前面那个 $x_M$ 中：
+\begin{align*}
+\text{分子} &= 2 \left( {- \frac{a^2}{b^2} y_M \frac{y_A - y_B}{x_A - x_B}} (x_M - x_P) + \frac{a^2}{b^2} y_M (y_M - y_P) \right)\\
+&=2 \frac{a^2}{b^2} \frac{y_M}{x_A - x_B} \Big[ -(y_A - y_B)(x_M - x_P) + (x_A - x_B)(y_M - y_P) \Big]\\
+&= \frac{2a^2 y_M}{b^2 (x_A - x_B)} W(A-B, M-P)
+\end{align*}
+所以
+$$\frac{ \frac{2a^2 y_M}{b^2 (x_A - x_B)} W(A-B, M-P) }{ -W(A-B, M-P) } = - \frac{2a^2 y_M}{b^2 (x_A - x_B)}$$
+把 $2y_M = y_A + y_B$ 代回上面的结果：$$\text{右侧} = - \frac{a^2(y_A + y_B)}{b^2(x_A - x_B)}$$
+最后一次借用点差法 $\frac{x_A + x_B}{a^2}(x_A - x_B) + \frac{y_A + y_B}{b^2}(y_A - y_B) = 0$，移项可得：$$- \frac{a^2(y_A + y_B)}{b^2(x_A - x_B)} = \frac{x_A + x_B}{y_A - y_B} = \frac{x_1 + x_2}{y_1 - y_2}$$现在，我们把第三步的等式左边，和刚刚化简到底的右边连起来：$$\frac{\frac{a^2}{b^2} k_1 k_2 + 1}{k_1 - k_2} = \frac{x_1 + x_2}{y_1 - y_2}\implies\frac{a^2}{b^2} k_1 k_2 - \frac{x_1 + x_2}{y_1 - y_2}(k_1 - k_2) + 1 = 0 $$
+
 \begin{conclusion}{算子拉格朗日恒等式}{}
 对于平面上任意两个向量 $\vec{u}, \vec{v}$，其欧氏外积 $W$ 与椭圆内积 $E$ 永远满足以下绝对恒等关联：
 $$ \big[W(\vec{u},\vec{v})\big]^2 = a^2 b^2 \Big[ E(\vec{u},\vec{u})E(\vec{v},\vec{v}) - \big[E(\vec{u},\vec{v})\big]^2 \Big] $$
