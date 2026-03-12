@@ -702,7 +702,7 @@ $$f'(x)=1-\frac{a+1}x+\frac a{x^2}=\frac{x^2-(a+1)x+a}{x^2}=\frac{(x-1)(x-a)}{x^
 由于每个根在各自单调区间内且 $f'(x_i)\neq 0$，可对 $f(x_i(c))=c$ 作隐函数求导，对 $P(c)=x_1x_2x_3,\ln P(c)=\ln x_1+\ln x_2+\ln x_3$，求导得：
 \[f'(x_i)\,x_i'(c)=1\implies x_i'(c)=\frac{1}{f'(x_i)},~~\frac{P'(c)}{P(c)}=\sum_{i=1}^3\frac{x_i'(c)}{x_i}=\sum_{i=1}^3\frac{1}{x_i f'(x_i)}\]
 注意到 $H(x) = x \cdot (f(x) - c),H'(x) = 1 \cdot (f(x) - c) + x \cdot f'(x)=x f'(x)$，所以如下变形：
-\[f(x_i)=c\Leftrightarrow x_if(x_i)-cx_i=0\Leftrightarrow \frac{x_if(x_i)-c}{a+1}=h_c(x)=0\Leftrightarrow x_i\ln x_i=\frac{x_i^2-cx_i-a}{a+1}\]
+\[f(x_i)=c\Leftrightarrow x_if(x_i)-cx_i=0\Leftrightarrow \frac{x_if(x_i)-cx_i}{a+1}=h_c(x)=0\Leftrightarrow x_i\ln x_i=\frac{x_i^2-cx_i-a}{a+1}\]
 于是\[h_c(x)=-\frac{x}{a+1}(f(x)-c)\Rightarrow h_c'(x_i)=-\frac{x_i}{a+1}f'(x_i)\quad(\text{因 }f(x_i)=c)\]
 于是
 \[\frac{P'(c)}{P(c)}=-\dfrac{1}{a+1}\left(\frac{1}{h_c'(x_1)}+\frac{1}{h_c'(x_2)}+\frac{1}{h_c'(x_3)}\right)\]
@@ -726,14 +726,14 @@ $$f'(x)=1-\frac{a+1}x+\frac a{x^2}=\frac{x^2-(a+1)x+a}{x^2}=\frac{(x-1)(x-a)}{x^
 =& \int_0^\infty\left[ -\frac{1}{u+t} \right]_{u=1}^{u=x} \dd t= \int_0^\infty \left( \frac{1}{1+t} - \frac{1}{x+t} \right) \mathrm{d}t\\
 g(x)=x\ln x=&\int_0^\infty\left(\frac{x}{1+t}-1+\frac{t}{x+t}\right)\dd t
 \end{align*}
-注意对固定 $t>0$，$\frac{x}{1+t}-1$ 关于 $x$ 是一次函数，用二次式去拟合时，不会贡献余项（三次因子）；产生三次因子余项的来源只有 $\frac{t}{x+t}$。于是考虑$\frac{t}{x+t}$的插值，我们的目标是算出它被 $x_1, x_2, x_3$ 三点插值后的“核心误差因子” $q(x)$。在代数上，$q(x)$ 对应的正是三阶差商，记作 $f[x_1, x_2, x_3, x]$。计算一阶差商：
+注意对固定 $t>0$，$\frac{x}{1+t}-1$ 关于 $x$ 是一次函数，用二次式去拟合时，不会贡献余项（三次因子）；产生三次因子余项的来源只有 $\frac{t}{x+t}$。于是考虑$\frac{t}{x+t}$的插值，我们的目标是算出它被 $x_1, x_2, x_3$ 三点插值后的一种“误差项” $q(x)$。根据牛顿插值公式，$q(x)$ 对应的正是三阶差商，记作 $f[x_1, x_2, x_3, x]$。计算一阶差商：
 \begin{align*}
 f[x_1, x_2] =& \frac{f(x_2) - f(x_1)}{x_2 - x_1}=\frac{\frac{1}{x_2+t} - \frac{1}{x_1+t}}{x_2-x_1}=\frac1{x_2-x_1}\frac{(x_1+t) - (x_2+t)}{(x_1+t)(x_2+t)}\\
 =&\frac1{x_2-x_1}\frac{-(x_2 - x_1)}{(x_1+t)(x_2+t)}=\frac{-1}{(x_1+t)(x_2+t)}\\
 f[x_1, x_2, x_3] =& \frac{f[x_2, x_3] - f[x_1, x_2]}{x_3 - x_1}=\frac{ \frac{-1}{(x_2+t)(x_3+t)} - \frac{-1}{(x_1+t)(x_2+t)}}{x_3 - x_1}=\frac{\frac{1}{x_2+t} \left[ \frac{1}{x_1+t} - \frac{1}{x_3+t} \right]}{x_3-x_1}\\
 =&\frac{\frac{1}{x_2+t} \left[ \frac{(x_3+t) - (x_1+t)}{(x_1+t)(x_3+t)} \right]}{x_3-x_1}=\frac{\frac{x_3 - x_1}{(x_1+t)(x_2+t)(x_3+t)}}{x_3-x_1}=\frac{1}{(x_1+t)(x_2+t)(x_3+t)}
 \end{align*}
-同理，三阶差商$f[x_1, x_2, x_3, x]$为$\frac{-1}{(t+x_1)(t+x_2)(t+x_3)(t+x)}$，对每个 $t$ 的余项积分后可得到（可由拉格朗日插值余项对 $\frac{t}{x+t}$ 直接计算）：
+同理，三阶差商$f[x_1, x_2, x_3, x]$为$\frac{-1}{(t+x_1)(t+x_2)(t+x_3)(t+x)}$，因为我们实际要求的是 $\frac{t}{x+t} = t \cdot f(x)$ 的差商，而 $t$ 相对于 $x$ 是常数，积分后可得到：
 \[q(x)= -\int_{0}^{\infty}\frac{t\dd t}{(t+x_1)(t+x_2)(t+x_3)(t+x)}\]
 因此 $q(x)<0$。设
 \[
@@ -770,8 +770,7 @@ s(x)=-q(x)>0,\phi(x)=\frac{1}{s(x)}=-\frac{1}{q(x)},w(t):=\frac{t}{(t+x_1)(t+x_2
 代回 $\phi=-1/q,m>0$ 并整理得
 \[\theta\frac1{q(x_1)}-\frac1{q(x_2)}+(1-\theta)\frac1{q(x_3)}>0\implies \sum_{i=1}^3\frac{1}{p'(x_i)q(x_i)}>0
 \implies\frac{P'(c)}{P(c)}<0\]
-即$P(c)=x_1(c)x_2(c)x_3(c)$在$(f(a),1-a)$上严格递减，所以$P(c)>\lim_{t\uparrow 1-a}P(t)=r$，即$x_1x_2x_3>r$，$P>r>a$ 且 $f$ 在 $(a,\infty)$ 上递增，从而
-$f(x_1x_2x_3)=f(P)>f(r)=1-a$，证毕。
+即$P(c)=x_1(c)x_2(c)x_3(c)$在$(f(a),1-a)$上严格递减，至此不难得到$f(x_1x_2x_3)=f(P)>f(r)=1-a$。
 \end{solution}  
 
 

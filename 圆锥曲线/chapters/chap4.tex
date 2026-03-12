@@ -1,19 +1,17 @@
-\chapter{比值代换法}
-\section{原始算子的定义与算术性质}
-\begin{definition}{椭圆内积算子 $E$}{}
+\chapter{算子代换法}
+\section{算子的定义与算术性质}
+\begin{definition}{算子 $E$}{}
     针对椭圆方程，定义输入为任意两点 $M(x_M, y_M)$ 与 $N(x_N, y_N)$ 的二元函数（输出为实数）：
 $$ E(M, N) = \frac{x_M x_N}{a^2} + \frac{y_M y_N}{b^2} $$
 \end{definition}
-显然，$E(M,N)=E(N,M)$满足交换律，下证$E$满足分配律：
-
-设存在任意三点 $A(x_A, y_A), B(x_B, y_B), C(x_C, y_C)$。设点 $P$ 是 $A$ 和 $B$ 的仿射组合，即存在实数 $\alpha, \beta$，使得 $x_P = \alpha x_A + \beta x_B$ 且 $y_P = \alpha y_A + \beta y_B$。
+显然，$E(M,N)=E(N,M)$满足交换律，下证$E$满足分配律。设存在任意三点 $A(x_A, y_A), B(x_B, y_B), C(x_C, y_C)$。设点 $P$ 是 $A$ 和 $B$ 的仿射组合，即存在实数 $\alpha, \beta$，使得 $x_P = \alpha x_A + \beta x_B$ 且 $y_P = \alpha y_A + \beta y_B$。
 \begin{align*}
 E(P, C) &= E( \alpha A + \beta B, C) \\
 &=\frac{(\alpha x_A + \beta x_B)x_C}{a^2} + \frac{(\alpha y_A + \beta y_B)y_C}{b^2}  = \frac{\alpha x_A x_C}{a^2} + \frac{\beta x_B x_C}{a^2} + \frac{\alpha y_A y_C}{b^2} + \frac{\beta y_B y_C}{b^2} \\
 &= \alpha \left( \frac{x_A x_C}{a^2} + \frac{y_A y_C}{b^2} \right) + \beta \left( \frac{x_B x_C}{a^2} + \frac{y_B y_C}{b^2} \right) =\alpha E(A,C) + \beta E(B,C) 
 \end{align*}
-
-\begin{definition}{极化算子 $T$ }{}
+又由于交换律，另外一种情况不证自明。
+\begin{definition}{算子 $T$ }{}
 定义包含曲线边界信息的极化算子，当 $M$ 与 $N$ 重合且位于椭圆上时，$T(M,M)=0$。
 $$ T(M, N) = E(M, N) - 1 = \frac{x_M x_N}{a^2} + \frac{y_M y_N}{b^2} - 1 $$
 \end{definition}
@@ -23,25 +21,61 @@ $$ T(M, N) = E(M, N) - 1 = \frac{x_M x_N}{a^2} + \frac{y_M y_N}{b^2} - 1 $$
   &=\alpha E(A,C) + \beta E(B,C) - 1 =\alpha E(A,C) + \beta E(B,C)-\alpha - \beta\\
   &= \alpha E(A,C) - \alpha + \beta E(B,C) - \beta= \alpha T(A,C) + \beta T(B,C)
 \end{align*}
-
-\begin{definition}{欧氏外积算子 $W$}{}
-    为了处理共线、斜率以及面积，引入二维向量叉乘算子。对于以原点为起点的两个位置向量 $\overrightarrow{OM} = (x_M, y_M)$ 与 $\overrightarrow{ON} = (x_N, y_N)$，定义：
+\begin{definition}{外积算子 $W$}{}
+对于以原点为起点的两个位置向量 $\overrightarrow{OM} = (x_M, y_M)$ 与 $\overrightarrow{ON} = (x_N, y_N)$，定义：
 $$ W(M, N) = x_M y_N - x_N y_M $$
 \end{definition}
-证明 $W$ 的反对称性：$W(M,N) = x_M y_N - x_N y_M = -(x_N y_M - x_M y_N) = -W(N,M)$（根据提取公因式 $-1$）。进一步，由 $W(M,M) = -W(M,M)$，两边同时加上 $W(M,M)$ 得到 $2W(M,M) = 0 \Rightarrow W(M,M) = 0$。
-\textit{【批注：该算子的绝对值代表由 $\overrightarrow{OM}$ 和 $\overrightarrow{ON}$ 构成的平行四边形的有向面积。】}
+\begin{itemize}
+\item $W(M,N) = x_M y_N - x_N y_M = -(x_N y_M - x_M y_N) = -W(N,M)$（根据提取公因式 $-1$）。
+\item 由 $W(M,M) = -W(M,M)$，两边同时加上 $W(M,M)$ 得到 $2W(M,M) = 0 \Rightarrow W(M,M) = 0$。
+\item 由 $W(M,M) = -W(M,M)$，两边同时加上 $W(M,M)$ 得到 $2W(M,M) = 0 \Rightarrow W(M,M) = 0$。
+\item 分配律：设存在任意三点（或位置向量） $A(x_A, y_A), B(x_B, y_B), C(x_C, y_C)$。设 $P$ 是 $A$ 和 $B$ 的线性组合，即存在实数 $\alpha, \beta$，使得 $x_P = \alpha x_A + \beta x_B$ 且 $y_P = \alpha y_A + \beta y_B$。对于第一变元，代入算子定义并展开：
+\begin{align*}W(P, C) &= W(\alpha A + \beta B, C)= (\alpha x_A + \beta x_B)y_C - x_C(\alpha y_A + \beta y_B) \\&= \alpha x_A y_C + \beta x_B y_C - \alpha x_C y_A - \beta x_C y_B \\&= \alpha (x_A y_C - x_C y_A) + \beta (x_B y_C - x_C y_B) \\&= \alpha W(A, C) + \beta W(B, C)\end{align*}
+\item 进一步，结合已证的反对称性 $W(M,N) = -W(N,M)$，可直接推导算子 $W$ 对第二变元也同样满足分配律（无需再次代入繁琐的坐标）：
+\begin{align*}W(C, P) &= W(C, \alpha A + \beta B) = -W(\alpha A + \beta B, C)= -\big(\alpha W(A, C) + \beta W(B, C)\big) \\&= \alpha \big(-W(A, C)\big) + \beta \big(-W(B, C)\big) = \alpha W(C, A) + \beta W(C, B)\end{align*}
+\end{itemize}
 
-设存在任意三点（或位置向量） $A(x_A, y_A), B(x_B, y_B), C(x_C, y_C)$。设 $P$ 是 $A$ 和 $B$ 的线性组合，即存在实数 $\alpha, \beta$，使得 $x_P = \alpha x_A + \beta x_B$ 且 $y_P = \alpha y_A + \beta y_B$。对于第一变元，代入算子定义并展开：
-\begin{align*}W(P, C) &= W(\alpha A + \beta B, C) \\&= (\alpha x_A + \beta x_B)y_C - x_C(\alpha y_A + \beta y_B) \\&= \alpha x_A y_C + \beta x_B y_C - \alpha x_C y_A - \beta x_C y_B \\&= \alpha (x_A y_C - x_C y_A) + \beta (x_B y_C - x_C y_B) \\&= \alpha W(A, C) + \beta W(B, C)\end{align*}
-进一步，结合已证的反对称性 $W(M,N) = -W(N,M)$，可直接推导算子 $W$ 对第二变元也同样满足分配律（无需再次代入繁琐的坐标）：
-\begin{align*}W(C, P) &= W(C, \alpha A + \beta B) \&= -W(\alpha A + \beta B, C) \\&= -\big(\alpha W(A, C) + \beta W(B, C)\big) \\&= \alpha \big(-W(A, C)\big) + \beta \big(-W(B, C)\big) \\&= \alpha W(C, A) + \beta W(C, B)\end{align*}
-
-\begin{definition}{欧氏内积算子 $I$}{}
-处理角度与长度时使用标准点积：
+\begin{definition}{内积算子 $I$}{}
 $$ I(M, N) = x_M x_N + y_M y_N $$
 \end{definition}
+\begin{itemize}
+    \item 对称性：$I(M,N) = I(N,M)$，即内积算子满足交换律。
+    \item 对第一变元的线性性：对于任意实数 $\alpha,\beta$ 及点 $A,B,C$，有
+    $$ I(\alpha A + \beta B, C) = \alpha I(A,C) + \beta I(B,C). $$
+    \item 对第二变元的线性性：结合对称性与第一变元的线性性，可得
+    $$ I(C, \alpha A + \beta B) = \alpha I(C,A) + \beta I(C,B). $$
+    \item 自内积与模长的关系：$I(M,M) = x_M^2 + y_M^2 = |OM|^2$，即点 $M$ 到原点距离的平方。
+    \item 与标准内积的联系：$I(M,N) = \overrightarrow{OM} \cdot \overrightarrow{ON}$，即欧几里得空间中的点积。
+\end{itemize}
 
-\section{核心结论与推导证明}
+\begin{definition}{直线算子$F$}{}
+    对于三点共线的$A(x_A,y_A),B(x_B,y_B),X(x,y)$，直线算子
+    \[F_{AB}(X)=y(x_A-x_B)+x(y_B-y_A)-(x_Ay_B-x_By_A)\]
+\end{definition}
+\begin{itemize}
+    \item 对称性：$F_{AB}(X)$ 关于前两个变元是反对称的，即
+    $$ F_{AB}(X) = -F(B,A,X). $$
+    特别地，$F(A,A,X)=0$ 恒成立。
+    \item 退化性：$F_{AB}(X)=0$ 当且仅当点 $X$ 位于直线 $AB$ 上。且 $F(A,B,A)=F(A,B,B)=0$。
+    \item 三线性：将点视为向量（坐标），算子 $F$ 对每个变元都是线性的。即对任意实数 $\alpha,\beta$ 及任意点（或向量）$A,A',B,B',X,X'$，有
+    \begin{align*}
+        F(\alpha A+\beta A',\,B,\,X) &= \alpha F_{AB}(X) + \beta F(A',B,X), \\
+        F(A,\,\alpha B+\beta B',\,X) &= \alpha F_{AB}(X) + \beta F(A,B',X), \\
+        F(A,\,B,\,\alpha X+\beta X') &= \alpha F_{AB}(X) + \beta F(A,B,X').
+    \end{align*}
+    \item 与外积算子 $W$ 的关系：
+    $$ F_{AB}(X) = y(x_A-x_B) + x(y_B-y_A) - W(A,B), $$
+    其中 $W(A,B)=x_Ay_B-x_By_A$。更紧凑地，利用三阶行列式可写为
+    $$ F_{AB}(X) = -\begin{vmatrix}
+        x & y & 1 \\
+        x_A & y_A & 1 \\
+        x_B & y_B & 1
+    \end{vmatrix}. $$
+    \item 轮换性质：由行列式的完全反对称性，有
+    $$ F_{AB}(X) = F(B,X,A) = F(X,A,B) = -F(B,A,X) = -F(A,X,B) = -F(X,B,A). $$
+\end{itemize}
+
+\section{核心结论推导证明}
 
 \begin{conclusion}{定比律，插入律，调和律}{}
 已知二次曲线 $C$ 上有两点 $A, B$。直线 $AB$ 上有一动点 $P$ 满足 $\overrightarrow{AP} = \lambda \overrightarrow{PB}$。则必然成立：
@@ -53,8 +87,7 @@ $$ I(M, N) = x_M x_N + y_M y_N $$
 \end{enumerate}
 \end{conclusion}
 定比分点有$ x_P = \frac{x_A+\lambda x_B}{1+\lambda},y_P=\frac{y_A+\lambda y_B}{1+\lambda}$
-由于点 $A, B$ 在曲线 $\mathcal{C}$ 上，所以$T(A,A) = T(B,B) = 0$。
-
+由于点 $A, B$ 在曲线 $\mathcal{C}$ 上，所以$T(A,A) = T(B,B) = 0$。\\
 \textbf{证明插入律：}用定比点差法：
 \begin{align*}
 &T(P,A) = T(\frac{A+\lambda B}{1+\lambda},A)=\frac{1}{1+\lambda} T(A,A) +\frac{\lambda}{1+\lambda} T(B,A)=\frac{\lambda}{1+\lambda} T(B,A)=\beta T(A,B)\\
@@ -83,7 +116,8 @@ $$ T(P,P) = \frac{2 T(P,A) T(P,B)}{T(P,A) + T(P,B)} $$
 \begin{conclusion}{差分律（中点共轭律）}{}
 已知二次曲线 $C$ 上有两点 $A, B$。直线 $AB$ 上一动点 $P$ 满足 $\overrightarrow{AP} = \lambda \overrightarrow{PB}$。则：
 $$ E(P, \overrightarrow{BA}) = T(P,A) - T(P,B) = \frac{\lambda - 1}{\lambda + 1} T(A,B) $$
-\textbf{推论（秒杀点差法）：}当 $P$ 为弦 $AB$ 的中点时，必然成立 $E(P, \overrightarrow{BA}) = 0$。
+\textbf{点差法：}当 $P$ 为弦 $AB$ 的中点时，必然成立 $E(P, \overrightarrow{BA}) = 0$。将其展开为坐标形式即：
+$$ \frac{x_P(x_A-x_B)}{a^2} + \frac{y_P(y_A-y_B)}{b^2} = 0 \implies k_{OP} \cdot k_{AB} = -\frac{b^2}{a^2} $$
 \end{conclusion}
 
 \textbf{证明差分律：}
@@ -92,9 +126,6 @@ $$ E(P, \overrightarrow{BA}) = T(P,A) - T(P,B) = \frac{\lambda - 1}{\lambda + 1}
 T(P,A) - T(P,B) &= \frac{\lambda}{1+\lambda} T(A,B) - \frac{1}{1+\lambda} T(A,B) = \frac{\lambda - 1}{\lambda + 1} T(A,B)\\
 T(P,A) - T(P,B) &= \big(E(P,A) - 1\big) - \big(E(P,B) - 1\big) = E(P,A) - E(P,B)=E(P, \overrightarrow{BA})
 \end{align*}
-\textit{【批注：差分律是解析几何中“点差法”的算子化降维表达。当动点 $P$ 移动到弦 $AB$ 中点时，定比 $\lambda = 1$，等式右侧直接归零，得到 $E(P, \overrightarrow{BA}) = 0$。将其展开为坐标形式即：
-$$ \frac{x_P(x_A-x_B)}{a^2} + \frac{y_P(y_A-y_B)}{b^2} = 0 \implies k_{OP} \cdot k_{AB} = -\frac{b^2}{a^2} $$
-我们仅用一行算子减法，就直接跨越了传统解题中设坐标、代入方程、作差、因式分解等极其繁琐的步骤，得到了大名鼎鼎的中点弦定理（垂径定理）！】}
 
 \begin{conclusion}{非对称分式的内积坍缩定理}{}
 椭圆上两点 $A, B$ 坐标为$(x_1,y_1),(x_2,y_2)$，中点为$M$，弦 $AB$ 对应的极点（即过 $A,B$ 的切线交点）为 $P$
@@ -204,10 +235,7 @@ W(\overrightarrow{PC}, \overrightarrow{PA}) &= W\left(\frac{\overrightarrow{PA} 
 W(\overrightarrow{PC}, \overrightarrow{PB}) &= W\left(\frac{\overrightarrow{PA} + \lambda \overrightarrow{PB}}{1+\lambda}, \overrightarrow{PB}\right) = \frac{1}{1+\lambda} W(\overrightarrow{PA}, \overrightarrow{PB})
 \end{align*}
 将上述两式相除，外积项 $W(\overrightarrow{PA}, \overrightarrow{PB})$ 完美抵消，比例直接坍缩为 $-\lambda$：
-$$ \frac{W(\overrightarrow{PC}, \overrightarrow{PA})}{W(\overrightarrow{PC}, \overrightarrow{PB})} = -\lambda = -\frac{T(C,A)}{T(C,B)} $$
-移项整理即得：
-$$ \frac{k_{PA}-k_{PC}}{k_{PB}-k_{PC}} \frac{x_A-x_P}{x_B-x_P} = -\lambda = \frac{\overrightarrow{AC}}{\overrightarrow{BC}} $$
-\textit{【全局批注：传统解法中令人望而生畏的“合分比技巧”，其本质仅仅是二维向量叉乘（$W$ 算子）在仿射共线条件下的线性分配律！算子法将数页纸的坐标泥沼，化简为了三行优雅的代数对消。】}
+$$ \frac{W(\overrightarrow{PC}, \overrightarrow{PA})}{W(\overrightarrow{PC}, \overrightarrow{PB})} = -\lambda = -\frac{T(C,A)}{T(C,B)} \implies\frac{k_{PA}-k_{PC}}{k_{PB}-k_{PC}} \frac{x_A-x_P}{x_B-x_P} = -\lambda = \frac{\overrightarrow{AC}}{\overrightarrow{BC}} $$
 
 \begin{conclusion}{斜率调整法}{}
 椭圆$\frac{x^2}{a^2}+\frac{y^2}{b^2}=1$上有$P(x_0,y_0),A(x_1,y_1),B(x_2,y_2)$三个点，令$k_1=k_{PA},k_2=k_{PB}$，那么
@@ -288,20 +316,13 @@ $$ |t_1 - t_2| = \frac{\sqrt{4\big[E(P, \vec{v})\big]^2 - 4E(\vec{v}, \vec{v})T(
 已知椭圆上有两点 $A, B$。则由原点 $O$ 与 $A,B$ 构成的三角形面积，完全由这两点的极化算子唯一决定：
 $$ S_{\triangle OAB} = \frac{1}{2} ab \sqrt{-T(A,B) \big(T(A,B)+2\big)} $$
 \end{conclusion}
-
-\textbf{【面积坍缩推导】：}
 三角形面积等于外积绝对值的一半：$S_{\triangle OAB} = \frac{1}{2} |W(A,B)|$。
 既然 $A, B$ 都在椭圆上，那么把它们代入极化算子必定等于 0：$T(A,A)=0 \implies E(A,A) = 1$。同理 $E(B,B) = 1$。
 代入刚证的拉格朗日恒等式：
 $$ \big[W(A,B)\big]^2 = a^2 b^2 \big(1 \times 1 - E(A,B)^2\big) = a^2 b^2 \big(1 - E(A,B)^2\big) $$
 我们把内积算子 $E$ 换回更基础的极化算子 $T$，即代入 $E(A,B) = T(A,B) + 1$：
 $$ 1 - \big(T(A,B)+1\big)^2 = 1 - \big(T(A,B)^2 + 2T(A,B) + 1\big) = -T(A,B)\big(T(A,B)+2\big) $$
-开根号并乘以 $1/2$，\textbf{公式瞬间成型！面积被极化算子单向锁死，没有任何求坐标的死算！}
-
-\vspace{0.5cm}
-
-接下来，迎接算子理论在度量几何上最璀璨的明珠：\textbf{椭圆内接三角形面积公式}。
-它将展现出与古希腊“海伦公式”完全同构的绝美对称！
+开根号并乘以 $1/2$，得证。
 
 \begin{conclusion}{内接三角形的“算子海伦公式”}{}
 已知椭圆内接三角形 $\triangle ABC$。
@@ -309,10 +330,8 @@ $$ 1 - \big(T(A,B)+1\big)^2 = 1 - \big(T(A,B)^2 + 2T(A,B) + 1\big) = -T(A,B)\big
 $$ t_1 = -T(B,C), \quad t_2 = -T(A,C), \quad t_3 = -T(A,B) $$
 则该三角形的面积，完完全全由这三个算子常数决定，呈现出绝对对称的代数多项式：
 $$ S_{\triangle ABC} = \frac{1}{2} a b \sqrt{ 2t_1 t_2 + 2t_2 t_3 + 2t_3 t_1 - t_1^2 - t_2^2 - t_3^2 } $$
-（神级补充：由于 $A,B,C$ 同在一个椭圆上，必定满足三角恒等式约束，上述根号内的长多项式在代数上\textbf{严格恒等于 $2t_1 t_2 t_3$}！因此，面积迎来了不可思议的终极坍缩：$S_{\triangle ABC} = \frac{\sqrt{2}}{2} ab \sqrt{t_1 t_2 t_3}$）。
+由于 $A,B,C$ 同在一个椭圆上，必定满足三角恒等式约束，上述根号内的长多项式在代数上等于 $2t_1 t_2 t_3$。因此，$S_{\triangle ABC} = \frac{\sqrt{2}}{2} ab \sqrt{t_1 t_2 t_3}$）。
 \end{conclusion}
-
-\textbf{【体验算子分配律的极致暴力美学推导】：}
 内接三角形的面积为两条边向量外积的一半：$S_{\triangle ABC} = \frac{1}{2} \big| W(B-A, C-A) \big|$。
 设向量 $\vec{u} = B-A, \vec{v} = C-A$。我们再次调用拉格朗日恒等式：
 $$ \big[W(\vec{u}, \vec{v})\big]^2 = a^2 b^2 \Big[ E(\vec{u}, \vec{u}) E(\vec{v}, \vec{v}) - \big[E(\vec{u}, \vec{v})\big]^2 \Big] $$
@@ -378,13 +397,8 @@ T(P,R) &= T\left(P, \frac{\alpha_1 A - \alpha_2 C}{m}\right) = \frac{1}{m} \big[
 &= \frac{-2E(M, \vec{v})}{T(M,M)} \quad \text{(外积面积因子瞬间约去)} \\
 &= \frac{1}{t_P} + \frac{1}{t_Q} \quad \text{(完美闭环：回归弦 } PQ \text{ 的极化倒数和)}
 \end{align*}
-
-\textit{【批注：推导中触发的底衬替换，基于一个极度纯粹的线性代数事实——在二维平面中，不平行的两方向向量 $\vec{u}, \vec{w}$ 必然构成一组基底。任意向量 $\vec{v}$ 均可唯一分解为 $\vec{v} = \alpha\vec{u} + \beta\vec{w}$。等式两边分别与 $\vec{w}$ 和 $\vec{u}$ 作外积 $W$，利用自身外积归零的反对称性，立得面积投影系数 $\alpha = \frac{W(\vec{v}, \vec{w})}{W(\vec{u}, \vec{w})}, \beta = \frac{W(\vec{u}, \vec{v})}{W(\vec{u}, \vec{w})}$。算子 $E$ 惊人的线性空间包容度，让这场基于面积比例的克莱姆法则（Cramer's Rule）分解，在代数推演的胃里被毫无痕迹地完美消化！】}
-
 因为参数均对应于同一基准向量 $\vec{v}$ 所在的同一直线，参数倒数和等价于有向线段倒数和，得到：
 $$ \frac{1}{MX} + \frac{1}{MY} = \frac{1}{MP} + \frac{1}{MQ} $$
-\textbf{坎迪定理证毕！}
-
 \textbf{蝴蝶定理}：当 $M$ 为弦 $PQ$ 中点时，由极化\textbf{差分律（中点共轭律推论）}立得 $E(M, \vec{v}) = 0$。代入上述等式的中心枢纽，右侧瞬间归零，即 $\frac{1}{x} + \frac{1}{y} = 0 \implies x = -y$，直接证明 $M$ 也是 $XY$ 的中点。
 
 \begin{conclusion}{帕斯卡定理（Pascal's Theorem）}{}
@@ -448,63 +462,57 @@ $$ \underbrace{\left( \frac{\overrightarrow{KP}}{\overrightarrow{PM}} \frac{\ove
 由于 $A_1 \sim A_6$ 构成内接六边形，交点 $P', Q', R'$ 恰为三组对边的交点。应用上述已证的\textbf{帕斯卡定理}，极点 $P', Q', R'$ 必定共线于某一直线 $\mathcal{L}$。
 终极对偶：既然极点 $P', Q', R'$ 皆共线于 $\mathcal{L}$，那么它们对应的极线（即三条主对角线 $V_1V_4, V_2V_5, V_3V_6$）必然\textbf{共点于直线 $\mathcal{L}$ 的极点}！\textbf{布列安桑定理证毕！}
 
-\section{解释仿新齐次化}
-设二次曲线的对称双线性型为 $E(\vec{u}, \vec{v})$。给定曲线上一点 $P(x_0, y_0)$，引入平移向量 $\vec{v} = (X, Y) = (x-x_0, y-y_0)$。剥离常数项将动点表示为 $\vec{x} = P + \vec{v}$。利用分配律，原曲线方程 $E(P+\vec{v}, P+\vec{v}) = 1$ 可转化为：$$E(\vec{v}, \vec{v}) + 2E(P, \vec{v}) + E(P, P) = 1$$
-由于 $P$ 在曲线上，满足 $E(P, P) = 1$，常数项消去，方程在以 $P$ 为原点的新坐标系下纯化为：
-$$\underbrace{E(X, Y)}_{\text{二次齐次项}} + 2\underbrace{T(X, Y)}_{\text{一次线性项}} = 0$$
+\section{算子齐次化}
+
+设二次曲线为 $E(\vec{u}, \vec{v})$。曲线上一点 $P(x_0, y_0)$，引入平移向量 $\vec{v} = (X, Y) = (x-x_0, y-y_0)$。剥离常数项将动点表示为 $P + \vec{v}$。利用分配律，原曲线方程 $E(P+\vec{v}, P+\vec{v}) = 1$ 展开：
+$$E(\vec{v}, \vec{v}) + 2E(P, \vec{v}) + E(P, P)=E(\vec{v}, \vec{v}) + 2E(P, \vec{v}) = 1$$
+对于$E(\vec{v}, \vec{v})= \frac{X^2}{a^2} + \frac{Y^2}{b^2} $，不妨记作$E(X,Y)$，$T(X,Y)$ 代表 Tangent，切线
+$$\underbrace{E(X, Y)}_{\text{二次齐次项}} + 2\underbrace{T(X, Y)}_{\text{一次线性项}} = 0\Longleftrightarrow\underbrace{\left( \frac{X^2}{a^2} + \frac{Y^2}{b^2} \right)}_{E(\vec{v}, \vec{v}) \text{ 的展开}} + 2 \underbrace{\left( \frac{x_0 X}{a^2} + \frac{y_0 Y}{b^2} \right)}_{E(P, \vec{v}) \text{ 的展开}} = 0$$
 这里的 $T(X, Y) = E(P, \vec{v})$ 实际上是曲线在 $P$ 点的切向算子。设我们要找的割线 $AB$ 方程为 $L(X,Y) + 1 = 0$。如果我们将它与曲线方程齐次化：
 \begin{align*}
- &E(X,Y) + 2T(X,Y) \cdot \mathbf{1} = 0 \Leftrightarrow  E(X,Y) + 2T(X,Y) \cdot \mathbf{\big[-L(X,Y)\big]} = 0\\
+ &E(X,Y) + 2T(X,Y) \cdot {1} = 0 \Leftrightarrow  E(X,Y) + 2T(X,Y) \cdot {\big[-L(X,Y)\big]} = 0\\
  \Leftrightarrow &E(X,Y) - 2T(X,Y) \cdot L(X,Y) = 0
 \end{align*}
 这在几何上代表了射线 $PA$ 和 $PB$；再设由斜率和 $S=k_1+k_2$ 与积 $K=k_1k_2$ 构成的纯二次型：
 $$ H(\vec{v}) =(Y-k_1X)(Y-k_2X)= Y^2 - S \cdot XY + K \cdot X^2 = 0 $$
 它们必须是成比例的（成倍数关系）！设这个比例常数为 $\mu$，我们得到：
-$$ E(X,Y) - 2T(X,Y) \cdot L(X,Y) \equiv \mu H(X,Y) $$
-移一下项，把已知量放在一边，未知量（直线 $L$）留在另一边：
-$$ E(X,Y) - \mu H(X,Y) \equiv 2T(X,Y) \cdot L(X,Y) $$
-翻译成白话：曲线的二次项减去缩放后的斜率算子，得到的多项式必定能被切线 $2T$ 完美整除！商出来的结果 $L(X,Y)$，直接就能拼出那条笔直的割线 $AB$！
+$$ E(X,Y) - 2T(X,Y) \cdot L(X,Y) \equiv \mu H(X,Y) \Leftrightarrow E(X,Y) - \mu H(X,Y) \equiv 2T(X,Y) \cdot L(X,Y) $$
+曲线的二次项减去缩放后的斜率算子，得到的多项式必定能被切线 $2T$ 完美整除！商出来的结果 $L(X,Y)$，直接就能拼出那条笔直的割线 $AB$，而缩放的比例可以通过必要性探路得到：
+例如椭圆 $\frac{x^2}{4} + y^2 = 1$。基点为上顶点 $P_2(0,1)$，设两交点与基点连线的斜率和为 $S$。
 \begin{itemize}
-\item 当基点是顶点时，切线 $2T$ 只有一个变量（比如只有 $X$）。我们根本不需要找 $\mu$，直接从曲线方程中把 $Y^2$ 提出来，暴力代入斜率算子 $H$ 中！代入后，所有项必定都含有公因式 $X$，把 $X$ 约掉，直线方程瞬间掉出！
-\item 当基点是一般点时，切线 $2T$ 既有 $X$ 又有 $Y$。怎么求那个神奇的缩放倍数 $\mu$？
-直接取与切线平行的方向向量 $\vec{t}$！代入恒等式，右边的 $2T(\vec{t})$ 瞬间归零！
-$\mu = \dfrac{E(\vec{t}, \vec{t})}{ H(\vec{t})}$ 一秒算出！再对比 $X^2$ 和 $Y^2$ 的系数，直线秒出，毫无联立痕迹！
+\item 曲线展开：平移坐标系至 $P_2(0,1)$，得 $X^2/4 + (Y+1)^2 = 1 \implies X^2/4 + Y^2 + 2Y = 0 \implies X^2 = -4Y^2 - 8Y$。
+\item 代入降次：齐次化斜率方程 $H = Y^2 - SXY + KX^2 = 0$，将 $X^2$ 表达式代入得 $Y^2 - SXY + K(-4Y^2 - 8Y) = 0$。
+\item 提取直线：方程两边同除以非零因子 $Y$，得 $(1-4K)Y - SX - 8K = 0$，即 $SX + (4K-1)Y + 8K = 0$。
+\item 定点计算：将直线方程按参数 $K$ 整理为 $K(4Y+8) + (SX-Y) = 0$。令 $4Y+8=0$ 且 $SX-Y=0$，解得局部坐标 $X=-2/S, Y=-2$。还原为绝对坐标，即直线系恒过定点 $(-2/S, -1)$。若已知直线过定点 $(2,-1)$，则可反推得 $S=-1$。
 \end{itemize}
-例如椭圆 $\frac{x^2}4 + y^2 = 1$。上顶点 $P_2(0,1)$，$S = -1$。
+椭圆 $x^2/4 + y^2/3 = 1$。基点为右顶点 $M(2,0)$，已知斜率积 $K = -1$。
 \begin{itemize}
-\item 曲线展开：$X^2/4 + (Y+1)^2 = 1 \implies X^2/4 + Y^2 + 2Y = 0 \implies X^2 = -4Y^2 - 8Y$。
-\item 代入降次： $H=Y^2-SXY+KX^2 \implies Y^2 - (-1)XY + K(-4Y^2 - 8Y) = 0$。
-\item 提公因式：同除以 $X$ 得 $(K - 9/4)X - S \cdot Y + 9 = 0$。
-\item 定点输出：还原坐标后代入 $D(-2,3)$，局部坐标 $X=0, Y=3$。得 $-3S + 9 = 0 \implies S = 3$。中点纵坐标即为斜率和 $S=3$。定点 $(0,3)$。
+\item 曲线展开：平移坐标系至 $M(2,0)$，得 $(X+2)^2/4 + Y^2/3 = 1 \implies X^2/4 + X + Y^2/3 = 0 \implies Y^2 = -3X - \frac{3}{4}X^2$。
+\item 代入降次：代入斜率方程 $H = Y^2 - SXY + KX^2 = 0$，得 $(-3X - \frac{3}{4}X^2) - SXY + KX^2 = 0$。
+\item 提取直线：方程两边同除以非零因子 $X$，得 $(K - \frac{3}{4})X - SY - 3 = 0$。代入已知条件 $K = -1$，得 $-\frac{7}{4}X - SY - 3 = 0$。
+\item 定点计算：由于此直线方程的非 $S$ 项不含 $Y$，故独立于参数 $S$ 恒过局部定点。令 $Y=0$，解得 $X = -12/7$。还原为绝对坐标 $x = 2 - 12/7 = 2/7$，即直线恒过定点 $\left(\frac{2}{7}, 0\right)$。
 \end{itemize}
-椭圆 $x^2/4 + y^2/3 = 1$。右顶点 $M(2,0)$。直径 $\implies K = -1$。
+点差法得中点轨迹 $3x^2+4y^2-3x=0$。基点为焦点 $F(1,0)$（代入可知恰为该曲线顶点），已知互相垂直 $K = -1$。
 \begin{itemize}
-\item 曲线展开：$X^2/4 + X + Y^2/3 = 0 \implies Y^2 = -3X - \frac{3}{4}X^2$。
-\item 代入降次：$H = Y^2 - SXY + KX^2 \implies (-3X - \frac{3}{4}X^2) - S \cdot XY - X^2 = 0 $。
-\item 提公因式：$-\frac{7}{4}X - S \cdot Y - 3 = 0$。
-\item 定点输出：独立于 $S \implies Y=0, X = -12/7 \implies x = \frac27$。定点 $\left(\frac27,0\right)$。
+\item 曲线展开：平移坐标系至 $F(1,0)$，令 $x=X+1, y=Y$，方程化为 $3(X+1)^2 + 4Y^2 - 3(X+1) = 0 \implies 3X^2 + 3X + 4Y^2 = 0 \implies Y^2 = -\frac{3}{4}X^2 - \frac{3}{4}X$。
+\item 代入降次：代入斜率方程 $H = Y^2 - SXY + KX^2 = 0$，得 $(-\frac{3}{4}X^2 - \frac{3}{4}X) - SXY - X^2 = 0$。
+\item 提取直线：两边同除以非零因子 $X$ 并整理，得 $(K - \frac{3}{4})X - SY - \frac{3}{4} = 0$。代入 $K = -1$ 得 $-\frac{7}{4}X - SY - \frac{3}{4} = 0 \implies 7X + 4SY + 3 = 0$。
+\item 定点计算：令 $Y=0$，解得局部坐标 $X = -3/7$。还原为绝对坐标 $x = 1 - 3/7 = 4/7$，即直线恒过定点 $\left(\frac{4}{7}, 0\right)$。
 \end{itemize}
-点差法得中点轨迹 $3x^2+4y^2-3x=0$。焦点 $F(1,0)$ 恰为顶点！互相垂直 $K = -1$。
+抛物线 $y^2 = 4x$。一般基点 $M(1,2)$，已知斜率和 $S=2$。
 \begin{itemize}
-\item 曲线展开：平移至 $F(1,0)$，化为 $3X^2/4 + Y^2 + 3X/4 = 0 \implies Y^2 = -\frac{3}{4}X^2 - \frac{3}{4}X$
-\item 代入提公因式：$(-\frac{3}{4}X^2 - \frac{3}{4}X) - S \cdot XY - X^2 = 0 \xrightarrow{\div X} -\frac{7}{4}X - S \cdot Y - \frac{3}{4} = 0 \implies 7X + 4S Y + 3 = 0$
-\item 定点输出：$Y=0 \implies X = -3/7 \implies x = 4/7$。定点 $(4/7,0)$。
+\item 算子提取：平移坐标系至 $M(1,2)$，曲线方程化为 $(Y+2)^2 = 4(X+1) \implies Y^2 - 4X + 4Y = 0$。提取二次齐次项 $E(X,Y) = Y^2$，切线算子 $2T(X,Y) = -4X + 4Y$。斜率算子 $H(X,Y) = Y^2 - 2XY + KX^2$。
+\item 缩放比例 $\mu$：切线 $-4X + 4Y = 0$ 的方向向量为 $\vec{t} = (1, 1)$。代入算子得 $E(1,1) = 1$，$H(1,1) = 1^2 - 2(1)(1) + K(1)^2 = K - 1$。由此可得 $\mu = E(1,1) / H(1,1) = \frac{1}{K-1}$。
+\item 系数比对：设商式 $L(X,Y) = uX + vY$。由恒等式 $E - \mu H \equiv 2T \cdot L$，展开得 $Y^2 - \mu(Y^2 - 2XY + KX^2) \equiv (-4X + 4Y)(uX + vY)$。对比各项系数：$X^2$ 系数得 $-\mu K = -4u \implies u = \frac{\mu K}{4}$；$Y^2$ 系数得 $1 - \mu = 4v \implies v = \frac{1 - \mu}{4}$。
+\item 定点计算：直线方程为 $uX + vY + 1 = 0 \implies \mu KX + (1-\mu)Y + 4 = 0$。代入 $\mu = \frac{1}{K-1}$ 并同乘 $K-1$，得 $KX + (K-2)Y + 4(K-1) = 0$。按参数 $K$ 整理得 $K(X + Y + 4) - (2Y + 4) = 0$。令 $2Y+4=0$ 且 $X+Y+4=0$，解得局部定点 $X=-2, Y=-2$。还原为绝对坐标 $x = -1, y = 0$，即直线恒过定点 $(-1, 0)$。
 \end{itemize}
-抛物线 $y^2 = 4x$。一般基点 $M(1,2)$。斜率和 $S=2$。
+椭圆 $x^2/6 + y^2/3 = 1$。基点 $A(2,1)$，割线交点连线恒过定点 $P(1,-2)$（对应局部坐标 $X=-1, Y=-3$），求解斜率和 $S = k_{AM}+k_{AN}$ 的值。
 \begin{itemize}
-\item 提取算子：平移后 $E = Y^2$。切线算子 $2T = -4X + 4Y$。斜率算子 $H = Y^2 - 2XY + K X^2$。
-\item 求缩放倍数 $\mu$：切线 $-4X + 4Y = 0$ 的方向向量 $\vec{t} = (1, 1)$。代入：$E(1,1) = 1$。$H(1,1) = 1^2 - 2(1)(1) + K(1) = K - 1$。$\mu = E / H = \frac{1}{K-1}$。
-\item 系数比对出直线：设商 $L(X,Y) = uX + vY$。$E - \mu H \equiv 2T \cdot L \implies Y^2 - \mu(Y^2 - 2XY + K X^2) \equiv (-4X + 4Y)(uX + vY)$.看 $X^2$ 系数：$-\mu K = -4u \implies u = \frac{\mu K}{4}$。看 $Y^2$ 系数：$1 - \mu = 4v \implies v = \frac{1 - \mu}{4}$。
-\item 定点输出：直线为 $uX + vY + 1 = 0 \implies \mu K X + (1-\mu)Y + 4 = 0$。把 $\mu$ 塞进去同乘 $K-1$：$K X + (K-2)Y + 4K - 4 = 0$。按 $K$ 整理：$K(X + Y + 4) - (2Y + 4) = 0$。定点：$Y=-2, X=-2 \implies$ 还原得 $x = -1, y = 0$。定点 $(-1, 0)$。
-\end{itemize}
-椭圆 $x^2/6 + y^2/3 = 1$。基点 $A(2,1)$，弦过定点 $P(1,-2)$（局部 $X=-1, Y=-3$）。
-目标式化简后等价于求 $S = k_{AM}+k_{AN}$ 的值。
-\begin{itemize}
-\item 提取算子：$E = X^2/6 + Y^2/3$。切线算子 $2T = 2X/3 + 2Y/3$。
-\item 求缩放倍数 $\mu$：切线 $X + Y = 0 \implies$ 方向向量 $\vec{t} = (1, -1)$。$E(1, -1) = 1/6 + 1/3 = 1/2$。$H(1, -1) = 1 + S + K$。$\mu = \frac{1/2}{1+S+K}$。
-\item 系数比对出直线：$E - \mu H \equiv 2T \cdot L \implies X^2/6 + Y^2/3 - \mu(Y^2 - S XY + K X^2) \equiv (\frac{2}{3}X + \frac{2}{3}Y)(uX + vY)$.看 $X^2$ 系数：$1/6 - \mu K = \frac{2}{3}u \implies u = \frac{1}{4} - \frac{3}{2}\mu K$。看 $Y^2$ 系数：$1/3 - \mu = \frac{2}{3}v \implies v = \frac{1}{2} - \frac{3}{2}\mu$。
-\item 逆向同构裁决：直线过 $(-1, -3)$，代入 $u(-1) + v(-3) + 1 = 0 \implies -u - 3v + 1 = 0$。$-(\frac{1}{4} - \frac{3}{2}\mu K) - 3(\frac{1}{2} - \frac{3}{2}\mu) + 1 = 0$。合并常数项：$-1/4 - 3/2 + 1 = -3/4$。
-合并 $\mu$ 项：$\frac{3}{2}\mu K + \frac{9}{2}\mu = \frac{3}{2}\mu(K+3)$。得到 $\frac{3}{2}\mu(K+3) = 3/4 \implies \mu(K+3) = 1/2$。把 $\mu$ 放回去见证奇迹：$\frac{K+3}{2(1+S+K)} = \frac{1}{2} \implies K+3 = 1+S+K \implies \mathbf{S = 2}$！未知数 $K$ 完美死锁对消！代入原式计算，答案瞬间锁定为 $1/2$。
+\item 算子提取：平移坐标系至 $A(2,1)$，提取二次齐次项 $E(X,Y) = X^2/6 + Y^2/3$，切线算子 $2T(X,Y) = \frac{2}{3}X + \frac{2}{3}Y$。斜率算子 $H(X,Y) = Y^2 - SXY + KX^2$。
+\item 缩放比例 $\mu$：切线 $X + Y = 0$ 的方向向量为 $\vec{t} = (1, -1)$。代入算子得 $E(1, -1) = 1/6 + 1/3 = 1/2$，$H(1, -1) = 1 + S + K$。由此可得 $\mu = \frac{1/2}{1+S+K}$。
+\item 系数比对：由恒等式 $E - \mu H \equiv 2T \cdot L$，设 $L(X,Y) = uX + vY$。对比各项系数：$X^2$ 系数得 $1/6 - \mu K = \frac{2}{3}u \implies u = \frac{1}{4} - \frac{3}{2}\mu K$；$Y^2$ 系数得 $1/3 - \mu = \frac{2}{3}v \implies v = \frac{1}{2} - \frac{3}{2}\mu$。
+\item 定点代入：已知直线过局部坐标 $(-1, -3)$，代入直线方程 $uX + vY + 1 = 0$ 得 $-u - 3v + 1 = 0$。代入 $u, v$ 的表达式，得 $-(\frac{1}{4} - \frac{3}{2}\mu K) - 3(\frac{1}{2} - \frac{3}{2}\mu) + 1 = 0$。合并常数项与 $\mu$ 的同类项，得 $-3/4 + \frac{3}{2}\mu(K+3) = 0 \implies \mu(K+3) = 1/2$。
+\item 消元求解：将 $\mu = \frac{1/2}{1+S+K}$ 代回等式，得到 $\frac{K+3}{2(1+S+K)} = \frac{1}{2} \implies K+3 = 1+S+K$。参数 $K$ 在等式两侧自然消去，最终解得 ${S = 2}$。
 \end{itemize}
 
 \section{解释“参数方程法”}
@@ -517,8 +525,8 @@ $\mu = \dfrac{E(\vec{t}, \vec{t})}{ H(\vec{t})}$ 一秒算出！再对比 $X^2$ 
 $$ \frac{x_0}{a}\left(\frac{1-t^2}{1+t^2}\right) + \frac{y_0}{b}\left(\frac{2t}{1+t^2}\right) = 1 $$两边同乘 $(1+t^2)$，并按 $t$ 的降幂合并同类项，我们得到了一个关于 $t$ 的标准一元二次方程：$$ \left(1 + \frac{x_0}{a}\right)t^2 - \left(\frac{2y_0}{b}\right)t + \left(1 - \frac{x_0}{a}\right) = 0 $$
 因为 $M_1(t_1), M_2(t_2)$ 都在这条极线上，这意味着$t_1, t_2$ 正好是这个一元二次方程的两个根。韦达定理：
 \begin{align*}
-    t_1 t_2 &= \frac{1 - x_0/a}{1 + x_0/a} \implies t_1 t_2 \left(1 + \frac{x_0}{a}\right) = 1 - \frac{x_0}{a} \implies \mathbf{x_0 = a\frac{1-t_1t_2}{1+t_1t_2}} \\
-    t_1 + t_2 &= \frac{2y_0/b}{1 + x_0/a} \implies \text{将} 1+\frac{x_0}{a} = \frac{2}{1+t_1t_2} \text{ 代入解纵坐标：} \mathbf{y_0 = b\frac{t_1+t_2}{1+t_1t_2}}
+    t_1 t_2 &= \frac{1 - x_0/a}{1 + x_0/a} \implies t_1 t_2 \left(1 + \frac{x_0}{a}\right) = 1 - \frac{x_0}{a} \implies {x_0 = a\frac{1-t_1t_2}{1+t_1t_2}} \\
+    t_1 + t_2 &= \frac{2y_0/b}{1 + x_0/a} \implies \text{将} 1+\frac{x_0}{a} = \frac{2}{1+t_1t_2} \text{ 代入解纵坐标：} {y_0 = b\frac{t_1+t_2}{1+t_1t_2}}
 \end{align*}
 把上面刚求出的 $x_0, y_0$ 放进极线方程 $E(P_{12}, X) = 1$：
 $$ \frac{1-t_1t_2}{1+t_1t_2} \frac{x}{a} + \frac{t_1+t_2}{1+t_1t_2} \frac{y}{b} = 1 $$
@@ -528,60 +536,364 @@ T(P_{12}, P_{12}) &= \left(\frac{1-t_1t_2}{1+t_1t_2}\right)^2 + \left(\frac{t_1+
 &= \frac{(1 - 2t_1t_2 + t_1^2t_2^2) + (t_1^2 + 2t_1t_2 + t_2^2) - (1+2t_1t_2+t_1^2t_2^2)}{(1+t_1t_2)^2} \\
 &= \frac{t_1^2 + t_2^2 - 2t_1t_2}{(1+t_1t_2)^2} = \left(\frac{t_1-t_2}{1+t_1t_2}\right)^2 \equiv C^2
 \end{align*}
-原来教辅书上所谓能够秒杀弦长的等效判别式 $\Delta_0$（或叫缩放常数 $C^2$），在代数上精确恒等于 $\left(\frac{t_1-t_2}{1+t_1t_2}\right)^2$。而在几何本质上，它\textbf{根本不是凭空凑出来的代数巧合，它仅仅代表了极点 $P_{12}$ 相对于椭圆的极化位置能量 $T(P_{12},P_{12})$}。借助第二部分我们早已证过的《万能算子弦长公式》，无论遇到多么复杂的割线问题，弦长都可以被极点瞬间统一表达：$$ |M_1 M_2| = \frac{2ab \sqrt{T(P_{12},P_{12})}}{E(P_{12},P_{12})} \sqrt{A^2+B^2} $$这宣告了传统有理参数流派的终结：所有的参数代换推导、复杂的直线方程构型，全部都被无缝吸纳，并降维成了极化算子系统下关于“极点”最基础的加减乘除与韦达定理！
+等效判别式 $\Delta_0$（或叫缩放常数 $C^2$），在代数上等于 $\left(\frac{t_1-t_2}{1+t_1t_2}\right)^2$。而在几何本质上，它代表了极点 $P_{12}$ 相对于椭圆的极化位置能量 $T(P_{12},P_{12})$.
 
-\section{二次曲线系}
+\section{同解法}
 
-在传统的圆锥曲线难题（尤其是压轴题和竞赛题）中，处理“曲线系”（如求过交点的曲线、双切线、外切线对等）往往需要设出极其冗长的多项式方程 $S_1 + \lambda S_2 = 0$，还要去苦苦寻找那把解开系数的钥匙（如死算判别式、韦达定理）。这不仅让学生陷入待定系数法的苦海，也让人望而生畏。
-
-要构造复杂的曲线系，我们首先要把各种直线的方程写成算子的形式。在算子的视界里，我们彻底告别算斜率 $k$、设两点式，直线的方程可以直接一秒写出：
 \begin{conclusion}{直线系统的极简算子表达}{}
-已知二次曲线的方程为 $\mathcal{C}: T(X,X)=0$。
+已知二次曲线的方程为 ${C}: T(X,X)=0$。
 \begin{enumerate}
-    \item \textbf{割线方程}：曲线上有两点 $A, B$，经过 $A,B$ 的直线方程直接就是：$$ L_{AB}(X) \equiv T(X,A) + T(X,B) - T(A,B) = 0 $$
-    \item \textbf{切线方程}：曲线上点 $A$ 处的切线方程极度精简为：$$ T(X,A) = 0 $$
-    \item \textbf{切点弦方程（极线）}：从曲线外一点 $P$ 引两条切线，切点为 $A,B$。过这两个切点的直线（切点弦）方程为：$$ T(X,P) = 0 $$
-    \item \textbf{中点弦方程（秒杀点差法）}：过曲线内一点 $P$ 作一条弦，若 $P$ 恰好是这条弦的中点，则该弦所在的直线方程直接就是：$$ T(X,P) = T(P,P) $$
+    \item \textbf{割线方程$AB$}：$ F_{AB}(X) = T(X,A) + T(X,B) - T(A,B) = 0 $
+    \item \textbf{点 $A$ 处的切线方程}：$ T(X,A) = 0 $
+    \item \textbf{切点弦方程（极线）}：从曲线外一点 $P$ 引两条切线，切点为 $A,B$：$AB: T(X,P) = 0 $
+    \item \textbf{中点弦方程（秒杀点差法）}：过曲线内一点 $P$ 作一条弦，若 $P$ 恰好是这条弦的中点，则该弦方程:$ T(X,P) = T(P,P) $
 \end{enumerate}
 \end{conclusion}
-\textbf{纯白话极简证明（绝不死记硬背）：}
 \begin{itemize}
-\item \textbf{为什么第1个式子就是割线？} 验证一条直线只需要把点代入。我们把动点 $X$ 换成 $A$ 代入方程左边，得到 $T(A,A) + T(A,B) - T(A,B)$。因为点 $A$ 在曲线上，自身极化必然有 $T(A,A)=0$。原式变成 $0 + T(A,B) - T(A,B) = 0$，完美成立！同理，代入 $X=B$ 也等于 $0$。两点确定一条直线，搞定！
-\item \textbf{为什么第2个式子是切线？} 想象割线上的点 $B$ 慢慢靠近点 $A$，直到重合。上面的割线方程就变成了 $T(X,A) + T(X,A) - T(A,A) = 0$。因为 $T(A,A)=0$，方程化简为 $2T(X,A) = 0 \implies T(X,A) = 0$。顺理成章！
-\item \textbf{为什么第3个式子是切点弦？} 刚才说了，切线 $PA$ 的方程是 $T(X,A)=0$。因为外面的点 $P$ 在这条切线上，把 $X=P$ 代入必然成立，得到 $T(P,A)=0$。根据算子的乘法交换律，这就等价于 $T(A,P)=0$！同理，从另一条切线 $PB$ 可以得到 $T(B,P)=0$。既然点 $A$ 和点 $B$ 的坐标都完美满足方程 $T(X,P)=0$，且它是个关于 $X$ 的一次方程，那它当然就是切点弦 $AB$ 的方程！
-\item \textbf{为什么第4个式子是中点弦？} 设直线上任意一点 $X = P + \vec{v}$，即方向向量 $\vec{v} = X - P$。因为 $P$ 是中点，交点参数方程的两根之和必为 $0$（韦达定理），这就要求一次项系数为 $0$，即 $E(P, \vec{v}) = 0$。
+\item 直线上任意动点 $X$ 都必定是 $A, B$ 的仿射组合，即 $X = \alpha A + \beta B$，且必定满足恒等约束 $\alpha + \beta = 1$。
+我们对 $X$ 分别用 $A$ 和 $B$ 进行极化“探测”，利用分配律展开：
+\begin{align*}
+    T(X,A) &= T(\alpha A + \beta B, A) = \alpha T(A,A) + \beta T(B,A) = \beta T(A,B) \\
+    T(X,B) &= T(\alpha A + \beta B, B) = \alpha T(A,B) + \beta T(B,B) = \alpha T(A,B)
+\end{align*}
+为了利用 $\alpha + \beta = 1$ 这个仿射不变量消去参数，我们将两式直接相加：
+$$ T(X,A) + T(X,B) = (\alpha + \beta) T(A,B) = 1 \cdot T(A,B) $$
+移项即得 $T(X,A) + T(X,B) - T(A,B) = 0$。
+\item 切线:想象割线上的点 $B$ 慢慢靠近点 $A$，直到重合。上面的割线方程就变成了 $T(X,A) + T(X,A) - T(A,A) = 0$。因为 $T(A,A)=0$，方程化简为 $2T(X,A) = 0 \implies T(X,A) = 0$。顺理成章！
+\item 切点弦:切线 $PA$ 的方程是 $T(X,A)=0$。因为外面的点 $P$ 在这条切线上，把 $X=P$ 代入必然成立，得到 $T(P,A)=0$。根据算子的乘法交换律，这就等价于 $T(A,P)=0$！同理，从另一条切线 $PB$ 可以得到 $T(B,P)=0$。既然点 $A$ 和点 $B$ 的坐标都完美满足方程 $T(X,P)=0$，且它是个关于 $X$ 的一次方程，那它当然就是切点弦 $AB$ 的方程！
+\item 中点弦:设直线上任意一点 $X = P + \vec{v}$，即方向向量 $\vec{v} = X - P$。因为 $P$ 是中点，交点参数方程的两根之和必为 $0$（韦达定理），这就要求一次项系数为 $0$，即 $E(P, \vec{v}) = 0$。
 代入展开：$E(P, X-P) = 0 \implies E(P,X) - E(P,P) = 0$。
 把内积 $E$ 换成极化 $T$（利用恒等式 $E = T + 1$），两边的 $1$ 直接抵消，瞬间得到 $T(X,P) = T(P,P)$。满篇平方差因式分解的“点差法”被一行秒杀！
 \end{itemize}
-在了解了直线的算子表达后，我们可以直接把直线和二次曲线“拼装”起来。原理非常朴素：如果点 $M$ 既在原曲线上（代入等于0），又在直线上（代入等于0），那么它代入“原曲线 $+\ \lambda \times$ 直线”必定还是 $0+0=0$。
+
 \begin{conclusion}{四大经典交点曲线系一键生成}{}
 设原二次曲线为 $\mathcal{C}: T(X,X)=0$。
 \begin{enumerate}
-    \item \textbf{四交点系}：过 $\mathcal{C}$ 上 $A, B, C, D$ 四点的新二次曲线族：$$ T(X,X) + \lambda \cdot \underbrace{L_{AB}(X)}_{\text{割线}AB} \cdot \underbrace{L_{CD}(X)}_{\text{割线}CD} = 0 $$
-    \item \textbf{三交一切系}：在 $A$ 点相切，且过 $C, D$ 的曲线系（让上面公式中的 $B \to A$）：$$ T(X,X) + \lambda \cdot \underbrace{T(X,A)}_{\text{A的切线}} \cdot L_{CD}(X) = 0 $$
-    \item \textbf{双切线系}：与 $\mathcal{C}$ 在 $A, B$ 两点发生双重相切的曲线系（设切点弦 $AB$ 对应的极点为 $P$）：$$ T(X,X) + \lambda \cdot \big[T(X,P)\big]^2 = 0 $$
+    \item \textbf{四交点系}：过 $C$ 上 $A, B, C, D$ 四点的新二次曲线族：$$ T(X,X) + \lambda \cdot \underbrace{F_{AB}(X)}_{\text{割线}AB} \cdot \underbrace{F_{CD}(X)}_{\text{割线}CD} = 0 $$
+    \item \textbf{三交一切系}：在 $A$ 点相切，且过 $C, D$ 的曲线系（让上面公式中的 $B \to A$）：$$ T(X,X) + \lambda \cdot \underbrace{T(X,A)}_{\text{A的切线}} \cdot \underbrace{F_{CD}(X)}_{\text{割线}CD}  = 0 $$
+    \item \textbf{双切线系}：与 $C$ 在 $A, B$ 两点发生双重相切的曲线系（设切点弦 $AB$ 对应的极点为 $P$）：$$ T(X,X) + \lambda \cdot \big[T(X,P)\big]^2 = 0 $$
     \item \textbf{超密切系}：在 $A$ 点发生四阶接触（极限相切）的曲线系（让双切系中 $P \to A$）：$$ T(X,X) + \lambda \cdot \big[T(X,A)\big]^2 = 0 $$
 \end{enumerate}
 \end{conclusion}
-在方程 $T(X,X) + \lambda \big[T(X,P)\big]^2 = 0$ 中，加上平方，意味着直线在这两个交点处不仅函数值为 $0$，更是“重根”。在一元二次方程的几何意义中，重根就代表着不仅相交，而且相切！我们只用了初中的完全平方思想，就避开了大学里的高阶导数，保证了新曲线在这个点绝对不会“穿透”原曲线，只能发生完美的“双重相切”。
 
-\textbf{高阶相切的代数秒杀证明：}
-对于四交点系，直接将 $A,B,C,D$ 代入，由于 $T(A,A)=0$ 且 $L_{AB}(A)=0$，方程 $0+\lambda \cdot 0 = 0$ 显然恒成立。
-此处重点展示算子理论如何秒杀几何上极难证明的\textbf{双切线系}的高阶相切性：
-设过切点 $A$ 的直线上有动点 $X = A + t\vec{v}$，我们研究该射线与新曲线系 $F(X) = T(X,X) + \lambda [T(X,P)]^2 = 0$ 的相交参数 $t$。
-利用已证的《直线参数方程》，展开原曲线部分：
-$$ T(A+t\vec{v}, A+t\vec{v}) = T(A,A) + 2t E(A,\vec{v}) + t^2 E(\vec{v},\vec{v}) $$
-对于极线算子部分，利用平移分配律：
-$$ T(P, A+t\vec{v}) = E(P, A+t\vec{v}) - 1 = \big(E(P,A) - 1\big) + tE(P,\vec{v}) = T(P,A) + tE(P,\vec{v}) $$
-关键截断发生！因为 $P$ 为切点弦的极点，点 $A$ 在极线上必有 $T(P,A)=0$。极线部分平方后直接坍缩为纯二次项：$\lambda \big[0 + t E(P,\vec{v})\big]^2 = \lambda t^2 [E(P,\vec{v})]^2$。
-合并参数多项式：
-$$ 2t E(A,\vec{v}) + t^2 \left( E(\vec{v},\vec{v}) + \lambda [E(P,\vec{v})]^2 \right) = 0 $$
-若该直线为新曲线系在 $A$ 处的切线，该参数方程必须有重根 $t=0$，即一次项系数必须严格为 $0$：
-$$ 2E(A,\vec{v}) = 0 \implies E(A,\vec{v}) = 0 \implies T(X, A) = 0 $$
-这正是原曲线在 $A$ 处的切线！新曲线系完美继承了原二次曲线的切向。
-\textit{【批注：未用任何微积分求导，而是利用极线算子固有的截断条件 $T(P,A)=0$ 瞬间扫清交叉项。这就是算子代数的绝对统治力。】}
+\begin{example}{}{}
+椭圆外一点$P$向椭圆做两条切线，切线对的联合方程？
+\end{example}
+\begin{solution}
+设点 $X$ 为从点 $P$ 引出的切线上异于 $P$ 的任意一点。此时直线 $PX$ 与椭圆有且仅有一个交点。
+设直线 $PX$ 上的动点可表示为 $Y = P + t\vec{v}$，其中方向向量为 $\vec{v} = X - P$。
+将点 $Y$ 的坐标代入椭圆极化方程 $T(Y,Y) = 0$ 中，利用双线性分配律展开可得
+\[ T(P + t\vec{v}, P + t\vec{v}) = E(\vec{v},\vec{v})t^2 + 2E(P,\vec{v})t + T(P,P) = 0. \]
+由于直线 $PX$ 为椭圆的切线，该关于 $t$ 的一元二次方程必然存在两个相等的实数根。因此，其判别式 $\Delta$ 必须为零，即
+\[ \Delta = 4\big[E(P,\vec{v})\big]^2 - 4E(\vec{v},\vec{v})T(P,P) = 0. \]
+化简可得 $\big[E(P,\vec{v})\big]^2 = E(\vec{v},\vec{v})T(P,P)$。
+将方向向量 $\vec{v} = X - P$ 代入内积算子中展开。对于一次项，有
+\[ E(P, \vec{v}) = E(P, X - P) = E(P,X) - E(P,P) = T(P,X) - T(P,P). \]
+对于二次项，有
+\[ E(\vec{v}, \vec{v}) = E(X - P, X - P) = E(X,X) - 2E(P,X) + E(P,P) = T(X,X) - 2T(P,X) + T(P,P). \]
+将上述展开式代回判别式为零的等式中，得到
+\[ \big[T(P,X) - T(P,P)\big]^2 = \big[T(X,X) - 2T(P,X) + T(P,P)\big] T(P,P). \]
+将等式两边完全展开，可得
+\[ T(P,X)^2 - 2T(P,P)T(P,X) + T(P,P)^2 = T(P,P)T(X,X) - 2T(P,P)T(P,X) + T(P,P)^2. \]
+消去等式两边相同的同类项 $-2T(P,P)T(P,X)$ 与 $T(P,P)^2$，最终得到切线对的联合算子方程为
+\[ T(P,X)^2 - T(P,P)T(X,X) = 0. \]
+\end{solution}
 
-在高考压轴题中，经常会遇到“直线交椭圆于 $A, B$ 两点，证明 $OA \perp OB$（原点张角为90度）”这类问题。传统解法需要设直线方程 $lx+my=1$，再把它代入椭圆方程展开，也就是所谓的“齐次化配凑”，极其容易算错。但在算子体系中，这只是一行优雅的代换。
+\begin{example}{}{}
+过椭圆$E(X,Y)=1$上一点$P(x_0,y_0)$引弦$PA,PB$，试用$x_0,y_0,F(P,A,X),F(P,B,X)$表示弦$AB$方程。
+\end{example}
+\begin{solution}
+已知椭圆方程为 $T(X,X) = 0$。由于点 $P(x_0,y_0)$ 在椭圆上，其极化自内积满足 $T(P,P) = 0$。
+过点 $P$ 的两条割线方程可分别表示为 $F(P,A,X)=0$ 与 $F(P,B,X)=0$。
+考虑经过点 $P, P$（即在点 $P$ 处与椭圆相切）以及点 $A, B$ 的二次曲线系。根据四交点曲线系原理，该曲线系必定可由原椭圆方程与退化线对 $PA \cup PB$ 的方程线性组合而成。同时，该曲线系也包含了由点 $P$ 处的切线 $T(P,X)=0$ 与割线 $L_{AB}(X)=0$ 构成的退化二次曲线。因此，必然存在唯一实常数 $\mu$，使得如下多项式恒等式成立：
+\[ T(X,X) - \mu F(P,A,X)F(P,B,X) \equiv T(P,X) L_{AB}(X). \]
+为求解常数 $\mu$，在切线 $T(P,X)=0$ 上选取一点 $Q$，使得 $Q \neq P$。由椭圆在点 $P$ 处的切线方向向量为 $\vec{t} = (a^2 y_0, -b^2 x_0)$，可构造切线上一点
+\[ Q = P + \vec{t} = (x_0 + a^2 y_0, y_0 - b^2 x_0). \]
+将点 $X = Q$ 代入恒等式。由于点 $Q$ 位于切线 $T(P,X)=0$ 上，必有 $T(P,Q) = 0$，等式右侧归零，从而有
+\[ T(Q,Q) - \mu F(P,A,Q)F(P,B,Q) = 0. \]
+对于 $T(Q,Q)$，利用双线性平移展开可得
+\[ T(Q,Q) = T(P+\vec{t}, P+\vec{t}) = T(P,P) + 2E(P,\vec{t}) + E(\vec{t},\vec{t}). \]
+由于 $T(P,P)=0$ 且 $\vec{t}$ 为切线方向向量满足 $E(P,\vec{t})=0$，可直接计算得 $T(Q,Q) = E(\vec{t},\vec{t}) = a^2b^2$。
+将此结果代入，由于点 $Q$ 不在割线 $PA$ 与 $PB$ 上，有 $F(P,A,Q)F(P,B,Q) \neq 0$，解得
+\[ \mu = \frac{a^2b^2}{F(P,A,Q)F(P,B,Q)}. \]
+将求得的常数 $\mu$ 代回原恒等式，并隔离出未知函数 $L_{AB}(X)$，得到弦 $AB$ 的算子方程为
+\[ L_{AB}(X) = \frac{F(P,A,Q) F(P,B,Q) T(X,X) - a^2b^2 F(P,A,X) F(P,B,X)}{F(P,A,Q) F(P,B,Q) T(P,X)} = 0. \]
+由此即得到弦 $AB$ 的直线方程表达式。
+\end{solution}
+
+\begin{example}{}{}
+过非椭圆一点$P(x_0,y_0)$引割线$PAB,PCD$，试用$x_0,y_0,F_{AB}(X),F_{CD}(X),T(P,X)$表示割线$AC,BD$的方程。
+\end{example}
+\begin{solution}
+设过极点 $P$ 的割线 $PAB$ 和 $PCD$ 的算子方程分别为 $F_{AB}(X) = 0$ 与 $F_{CD}(X) = 0$。
+选取平面内相交于点 $P$ 的三条不重合直线对应的算子 $T(P,X), F_{AB}(X)$ 与 $F_{CD}(X)$ 作为一次线性函数空间的基底。
+由于对角割线 $AC$ 不经过点 $P$，其算子方程可唯一地表示为
+\[ F_{AC}(X) = T(P,X) + \mu_1 F_{AB}(X) + \mu_2 F_{CD}(X) = 0. \]
+首先，将点 $X = A$ 代入该基底方程。因点 $A$ 位于割线 $PAB$ 上，满足 $F(A,B,A) = 0$。方程化简为 $T(P,A) + \mu_2 F(C,D,A) = 0$，解得 $\mu_2 = -\frac{T(P,A)}{F(C,D,A)}$。
+其次，将点 $X = C$ 代入基底方程。因点 $C$ 位于割线 $PCD$ 上，满足 $F(C,D,C) = 0$。方程化简为 $T(P,C) + \mu_1 F(A,B,C) = 0$，解得 $\mu_1 = -\frac{T(P,C)}{F(A,B,C)}$。
+令 $k_1 = \frac{T(P,C)}{F(A,B,C)}$ 且 $k_2 = \frac{T(P,A)}{F(C,D,A)}$，则割线 $AC$ 的方程为
+\[ F_{AC}(X) \equiv T(P,X) - k_1 F_{AB}(X) - k_2 F_{CD}(X) = 0. \]
+接下来探讨直线 $BD$ 与直线 $AC$ 的透射映射关系。点 $B$ 为直线 $PA$ 与椭圆的交点，故点 $B$ 可表示为 $P$ 与 $A$ 的仿射组合。设 $B = \frac{P + \lambda A}{1+\lambda}$。
+由于点 $B$ 位于椭圆上，必须满足 $T(B,B) = 0$。利用算子的双线性分配律展开可得
+\[ \frac{T(P,P) + 2\lambda T(P,A) + \lambda^2 T(A,A)}{(1+\lambda)^2} = 0. \]
+已知点 $A$ 在椭圆上，有 $T(A,A) = 0$。由于 $B \neq A$，必有 $\lambda \neq 0$，等式化简为 $T(P,P) + 2\lambda T(P,A) = 0$，解得 $\lambda = -\frac{T(P,P)}{2T(P,A)}$。
+将其代入仿射组合公式并同乘分母，得到点 $B$ 的齐次坐标形式为 $B \propto 2T(P,A)P - T(P,P)A$。
+设直线 $BD$ 的方程为一次算子 $F_{BD}(X) = 0$。将点 $B$ 的坐标代入方程中，利用一次算子的线性分配律，可得
+\[ F_{BD}\big( 2T(P,A)P - T(P,P)A \big) = 2T(P,A)F_{BD}(P) - T(P,P)F_{BD}(A) = 0. \]
+根据极化算子的对称性 $T(P,A)=T(A,P)$，上式表明点 $A$ 满足如下关于动点 $X$ 的一次线性方程
+\[ 2F_{BD}(P)T(P,X) - T(P,P)F_{BD}(X) = 0. \]
+同理，点 $D$ 为直线 $PC$ 与椭圆的交点，可推知点 $D$ 的齐次坐标满足 $D \propto 2T(P,C)P - T(P,P)C$。将其代入 $F_{BD}(D) = 0$，同理可证点 $C$ 亦满足上述一次线性方程。
+由于点 $A$ 与点 $C$ 均满足该方程，且两点不重合，则该方程必定等价于过这两点的直线 $AC$ 的方程 $F_{AC}(X) = 0$。
+利用几何对称性，将该透射映射关系反向应用，直线 $BD$ 的方程可由直线 $AC$ 的拉回映射得出，即
+\[ F_{BD}(X) \propto 2F_{AC}(P)T(P,X) - T(P,P)F_{AC}(X) = 0. \]
+计算常数 $F_{AC}(P)$ 的值。将点 $P$ 代入 $F_{AC}(X)$ 的表达式中，由于点 $P$ 同时位于直线 $AB$ 与 $CD$ 上，满足 $F(A,B,P) = 0$ 且 $F(C,D,P) = 0$，代入后可得
+\[ F_{AC}(P) = T(P,P) - 0 - 0 = T(P,P). \]
+将 $F_{AC}(P) = T(P,P)$ 与 $F_{AC}(X)$ 的完整表达式代入 $F_{BD}(X)$ 的恒等式中，有
+\[ F_{BD}(X) \propto 2T(P,P)T(P,X) - T(P,P) \left[ T(P,X) - k_1 F_{AB}(X) - k_2 F_{CD}(X) \right] = 0. \]
+由于点 $P$ 位于椭圆外，满足极化自内积 $T(P,P) \neq 0$。将等式两边同除以 $T(P,P)$ 并合并同类项，得到
+\[ 2T(P,X) - T(P,X) + k_1 F_{AB}(X) + k_2 F_{CD}(X) = 0. \]
+最终得出对角割线 $BD$ 的方程为
+\[ F_{BD}(X) \equiv T(P,X) + k_1 F_{AB}(X) + k_2 F_{CD}(X) = 0. \]
+\end{solution}
+
+\begin{example}{蝴蝶定理}{}
+已知椭圆$\frac{x^2}{a^2}+\frac{y^2}{b^2}=1$，点$P$是非椭圆上一点，$A(x_1,y_1),B(x_2,y_2)$在椭圆上，连接$AP,BP$交椭圆于$C,D$，求$CD$的方程。
+\end{example}
+\begin{solution}
+设点 $C$ 为直线 $AP$ 与椭圆的交点。由于 $P, A, C$ 三点共线，可设点 $C$ 为 $P$ 与 $A$ 的仿射组合 $C = \frac{P + \lambda A}{1+\lambda}$。
+由于点 $C$ 位于椭圆上，其极化自内积必须为零，即 $T(C,C) = 0$。利用双线性分配律展开，可得
+\[ \frac{T(P,P) + 2\lambda T(P,A) + \lambda^2 T(A,A)}{(1+\lambda)^2} = 0. \]
+已知点 $A$ 在椭圆上，有 $T(A,A) = 0$。由于 $C \neq A$，必有 $\lambda \neq 0$。等式化简为 $T(P,P) + 2\lambda T(P,A) = 0$，解得常数 $\lambda = -\frac{T(P,P)}{2T(P,A)}$。
+将 $\lambda$ 的值代回仿射组合公式并同乘分母化简，可得点 $C$ 的齐次坐标形式为
+\[ C \propto 2T(P,A)P - T(P,P)A. \]
+同理，由于点 $B, P, D$ 共线且 $B, D$ 在椭圆上，通过完全对称的步骤可求得点 $D$ 的齐次坐标为
+\[ D \propto 2T(P,B)P - T(P,P)B. \]
+设待求弦 $CD$ 的算子方程为一次线性方程 $L_{CD}(X) = 0$。
+将点 $C$ 的齐次坐标代入该方程，利用一次算子的线性分配律，可得
+\[ L_{CD}(C) = L_{CD}\big(2T(P,A)P - T(P,P)A\big) = 2T(P,A)L_{CD}(P) - T(P,P)L_{CD}(A) = 0. \]
+根据极化算子的对称性 $T(P,A) = T(A,P)$，整理上式可得点 $A$ 满足如下关于动点 $X$ 的一次线性方程：
+\[ 2L_{CD}(P)T(P,X) - T(P,P)L_{CD}(X) = 0. \]
+同理，将点 $D$ 的齐次坐标代入 $L_{CD}(D) = 0$ 中，展开可得
+\[ 2T(P,B)L_{CD}(P) - T(P,P)L_{CD}(B) = 0. \]
+这表明点 $B$ 亦满足上述同一一次线性方程。
+由于直线 $AB$ 上的两个不同点 $A$ 和 $B$ 均满足该方程，且该方程为一次线性方程，因此该方程必定等价于过 $A, B$ 两点的直线 $AB$ 的算子方程。由此可建立起弦对射的拉回恒等式：
+\[ L_{AB}(X) \propto 2L_{CD}(P)T(P,X) - T(P,P)L_{CD}(X). \]
+利用点集透射映射的对合对称性，将上述推导反向应用，直线 $CD$ 的方程可由直线 $AB$ 的算子函数唯一表示为：
+\[ L_{CD}(X) \propto 2L_{AB}(P)T(P,X) - T(P,P)L_{AB}(X) = 0. \]
+设已知弦 $AB$ 的方程为面积算子 $L_{AB}(X) = F_{AB}(X) = 0$。将其函数表达式以及其在定点 $P$ 处的取值 $L_{AB}(P) = F(A,B,P)$ 代入上述映射方程中，可得：
+\[ 2 F(A,B,P) T(P,X) - T(P,P) F_{AB}(X) = 0. \]
+移项整理，最终得出弦 $CD$ 的方程为
+\[ T(P,P) F_{AB}(X) = 2 T(P,X) F(A,B,P). \]
+\end{solution}
+
+\begin{example}{}{}
+已知 \(A,B,C,D\) 为椭圆 \(\frac{x^2}{4} + \frac{y^2}{3} = 1\) 上四点，\(AC \cap BD = Q, Q(1,1)\)，且 \(\overrightarrow{AQ} = 2\overrightarrow{QC}, \overrightarrow{BQ} = 2\overrightarrow{QD}\)，求直线 \(CD，BC\) 方程；
+\end{example}
+\begin{solution}
+对于已知二次曲线椭圆 $\frac{x^2}{4} + \frac{y^2}{3} = 1$，定义其内积算子 $E(M, N) = \frac{x_M x_N}{4} + \frac{y_M y_N}{3}$ 与外积算子 $W(M, N) = x_M y_N - x_N y_M$。椭圆方程等价于 $E(X, X) = 1$。
+对于定点 $Q(1,1)$，代入算子定义可得其内积常数为 $E(Q, Q) = \frac{1}{4} + \frac{1}{3} = \frac{7}{12}$。\\
+（1）首先求解直线 $CD$ 的方程。由已知条件 $\overrightarrow{AQ} = 2\overrightarrow{QC}$ 可知 $A = 3Q - 2C$。代入 $E(A,A) = 1$可得
+\begin{align*}
+E(3Q - 2C, 3Q - 2C) &= 9E(Q,Q) - 12E(Q,2C) + 4E(C,C)\\
+&= 9E(Q,Q) - 24E(Q,C) + 4 = 1 \\
+\implies& 8E(Q,C) - 3E(Q,Q) - 1 = 0
+\end{align*}
+同理点 $D$ 同样满足 $8E(Q,D) - 3E(Q,Q) - 1 = 0$。
+由于点 $C$ 与点 $D$ 为椭圆上相异两点，且均满足关于动点 $X$ 的一次线性方程，故直线 $CD$ 的方程即为
+\[ 8E(Q,X) - 3E(Q,Q) - 1 = 0 \]
+将 $E(Q,Q) = \frac{7}{12}$ 代入，得$16E(Q,X) - 11 = 0$。展开 $E(Q,X) = \frac{x}{4} + \frac{y}{3}$，可得 $16\left(\frac{x}{4} + \frac{y}{3}\right) - 11 = 0$。即$12x + 16y - 33 = 0$。\\
+（2）其次求解直线 $BC$ 的方程。对此我们必须先求$AB$方程。由前述 $A = 3Q - 2C$ 移项可得 $C = \frac{3}{2}Q - \frac{1}{2}A$。将其代入 $E(C,C) = 1$ 展开，并注意$E(A,A) = 1$
+\[  9E(Q,Q) - 6E(Q,A) + E(A,A) = 4\Leftrightarrow 2E(Q,A) - 3E(Q,Q) + 1 = 0 \]
+同理，由 $D = \frac{3}{2}Q - \frac{1}{2}B$ 结合 $E(D,D) = 1$ 可得 $2E(Q,B) - 3E(Q,Q) + 1 = 0$。因此 $AB$ 的方程为 $2E(Q,X) - 3E(Q,Q) + 1 = 0$。代入 $E(Q,Q) = \frac{7}{12}$ 化简得 $8E(Q,X) - 3 = 0$。\\
+（3）引入参数 $\lambda$，过椭圆上 $A, B, C, D$ 四点的所有二次曲线
+\begin{align*}
+& E(X,X) - 1 + \lambda \big( 8E(Q,X) - 3 \big)\big( 16E(Q,X) - 11 \big) = 0\\
+\Longleftrightarrow & E(X,X) - 1 + \lambda \left( 128E(Q,X)^2 - 136E(Q,X) + 33 \right) = 0
+\end{align*}
+根据拉格朗日恒等式，内积算子与外积算子满足绝对代数关系
+\[ W(Q,X)^2 = a^2b^2 \Big( E(Q,Q)E(X,X) - E(Q,X)^2 \Big)=12 \Big( E(Q,Q)E(X,X) - E(Q,X)^2 \Big)\]
+代入 $E(Q,Q) = \frac{7}{12}$，得到
+\[ W(Q,X)^2 = 12 \left( \frac{7}{12}E(X,X) - E(Q,X)^2 \right) = 7E(X,X) - 12E(Q,X)^2. \]
+由此反解出纯二次项 $E(X,X)$：
+\[ E(X,X) = \frac{12}{7}E(Q,X)^2 + \frac{1}{7}W(Q,X)^2. \]
+将其代入四交点曲线系方程中，合并关于 $E(Q,X)$ 的同类项，方程可转化为
+\[ \left( \frac{12}{7} + 128\lambda \right) E(Q,X)^2 - 136\lambda E(Q,X) + (33\lambda - 1) + \frac{1}{7}W(Q,X)^2 = 0\]
+当该曲线系退化为交叉直线对 $AD \cup BC$ 时，方程在实数域内必然可分解为两个一次多项式的乘积。由于上述方程中不存在 $E(Q,X)$ 与 $W(Q,X)$ 的交叉项，关于 $E(Q,X)$ 的二次三项式部分必须构成完全平方式的相反数，即要求其判别式 $\Delta$ 必须为 $0$：
+\[ \Delta = (-136\lambda)^2 - 4 \left( \frac{12}{7} + 128\lambda \right) (33\lambda - 1) = 0. \]
+方程两边同除以 $4$ 并展开乘积，得
+\[ 4624\lambda^2 - \left( 4224\lambda^2 + \frac{396}{7}\lambda - 128\lambda - \frac{12}{7} \right) = 0. \]
+化简合并同类项可得 $400\lambda^2 + \frac{500}{7}\lambda + \frac{12}{7} = 0$，等式两边同乘 $\frac{7}{4}$ 化为 $700\lambda^2 + 125\lambda + 3 = 0$。
+解此一元二次方程，其判别式为 $125^2 - 4 \times 700 \times 3 = 15625 - 8400 = 7225$。求得两根分别为 $\lambda_1 = -\frac{1}{35}$ 与 $\lambda_2 = -\frac{3}{20}$。
+考察该曲线系，其中亦包含由对角线 $AC$ 与 $BD$ 构成的退化曲线。由于两对角线相交于点 $Q$，当 $X=Q$ 时，具有外积 $W(Q,Q) = 0$ 且内积 $E(Q,Q) = \frac{7}{12}$。将 $\lambda = -\frac{3}{20}$ 代入该二次多项式中验证可知，其在 $E(Q,X) = \frac{7}{12}$ 时取得恒等极值 $0$，由此判定 $\lambda = -\frac{3}{20}$ 对应对角线线系 $AC \cup BD$。因此，交叉相交直线对 $AD \cup BC$ 对应的代数系参数唯一确定为 $\lambda_1 = -\frac{1}{35}$。
+将 $\lambda = -\frac{1}{35}$ 代回关于 $E(Q,X)$ 的多项式各项系数中：
+二次项系数化为 $\frac{12}{7} + 128\left(-\frac{1}{35}\right) = -\frac{68}{35}$；
+一次项系数化为 $-136\left(-\frac{1}{35}\right) = \frac{136}{35}$；
+常数项化为 $33\left(-\frac{1}{35}\right) - 1 = -\frac{68}{35}$。
+提取公因式 $-\frac{68}{35}$，该多项式配方形式化为 $-\frac{68}{35}\left(E(Q,X)^2 - 2E(Q,X) + 1\right) = -\frac{68}{35}(E(Q,X) - 1)^2$。
+联合算子方程由此得以极简表达为
+\[ -\frac{68}{35}(E(Q,X) - 1)^2 + \frac{1}{7}W(Q,X)^2 = 0. \]
+等式两边同乘 $35$ 得 $5W(Q,X)^2 - 68(E(Q,X) - 1)^2 = 0$，运用平方差公式分解为两个一次项：
+\[ \sqrt{5}W(Q,X) \pm 2\sqrt{17}(E(Q,X) - 1) = 0. \]
+代入坐标基底下外积算子 $W(Q,X) = y - x$ 以及内积算子项 $E(Q,X) - 1 = \frac{x}{4} + \frac{y}{3} - 1 = \frac{3x+4y-12}{12}$，可得
+\[ \sqrt{5}(y - x) \pm 2\sqrt{17}\left(\frac{3x+4y-12}{12}\right) = 0. \]
+两边同乘 $6$ 化简为 $6\sqrt{5}(y - x) \pm \sqrt{17}(3x+4y-12) = 0$。合并变量 $x$ 与 $y$ 的系数，整理得
+\[ (3\sqrt{17} \mp 6\sqrt{5})x + (4\sqrt{17} \pm 6\sqrt{5})y - 12\sqrt{17} = 0. \]
+基于椭圆对称性及定比分点比例的等价性，该退化曲线对表示直线 $AD$ 与 $BC$。由此可得直线 $BC$ 的解析式。
+\end{solution}
+
+\begin{example}{}{}
+    已知 \(P\) 为椭圆 \(C: \frac{x^2}{4} + \frac{y^2}{3} = 1\) 上一动点，过点 \(P\) 作圆 \(O: x^2 + y^2 = 1\) 的两条切线分别交椭圆 \(C\) 于 \(A,B\) 两点，求证：直线 \(OP\) 与直线 \(AB\) 的斜率之积为定值；
+\end{example}
+\begin{solution}
+首先，设点 $P(x_0, y_0)$ 满足方程 $\frac{x_0^2}{4} + \frac{y_0^2}{3} = 1$。
+对于圆 $O: x^2 + y^2 = 1$，定义其极化算子为 $T_O(M, N) = x_M x_N + y_M y_N - 1$。
+根据切线极化算子等式，过点 $P$ 向圆 $O$ 作出的两条切线 $PA, PB$ 的联合二次多项式方程可表示为
+\[ T_O(P, X)^2 - T_O(P, P)T_O(X, X)=(x_0 x + y_0 y - 1)^2 - (x_0^2 + y_0^2 - 1)(x^2 + y^2 - 1) = 0\]
+将上述方程的左侧进行完全展开，
+\begin{align*}
+& (x_0^2 x^2 + y_0^2 y^2 + 1 + 2x_0 y_0 xy - 2x_0 x - 2y_0 y) \\
+& - (x_0^2 x^2 + x_0^2 y^2 - x_0^2 + y_0^2 x^2 + y_0^2 y^2 - y_0^2 - x^2 - y^2 + 1) = 0.
+\end{align*}
+合并同类项，化简可得退化二次多项式方程
+\[ (1 - y_0^2)x^2 + (1 - x_0^2)y^2 + 2x_0 y_0 xy - 2x_0 x - 2y_0 y + x_0^2 + y_0^2 = 0. \]
+存在实数 $\lambda$，使得对平面内所有坐标 $(x, y)$，如下多项式恒等式成立：
+\begin{align*}
+& (1 - y_0^2)x^2 + (1 - x_0^2)y^2 + 2x_0 y_0 xy - 2x_0 x - 2y_0 y + x_0^2 + y_0^2 + \lambda\left(\frac{x^2}{4} + \frac{y^2}{3} - 1\right) \\
+& \equiv \left(\frac{x_0}{4} x + \frac{y_0}{3} y - 1\right)(Ax + By + C_0).
+\end{align*}
+进一步，展开该恒等式的右侧，
+\[ \frac{A x_0}{4}x^2 + \frac{B y_0}{3}y^2 + \left(\frac{B x_0}{4} + \frac{A y_0}{3}\right)xy + \left(\frac{C_0 x_0}{4} - A\right)x + \left(\frac{C_0 y_0}{3} - B\right)y - C_0. \]
+通过比较恒等式两侧同次项对应的系数，可求解参数 $A, B, C_0$。
+\begin{itemize}
+\item 对于常数项，左侧为 $x_0^2 + y_0^2 - \lambda$，右侧为 $-C_0$，得到 $\lambda = x_0^2 + y_0^2 + C_0$。
+\item 对于 $x$ 的一次项，左侧为 $-2x_0$，右侧为 $\frac{C_0 x_0}{4} - A$，解得 $A = x_0\left(\frac{C_0}{4} + 2\right)$。
+\item 对于 $y$ 的一次项，左侧为 $-2y_0$，右侧为 $\frac{C_0 y_0}{3} - B$，解得 $B = y_0\left(\frac{C_0}{3} + 2\right)$。
+\item 对于 $xy$ 的交叉项，左侧为 $2x_0 y_0$，右侧为 $\frac{B x_0}{4} + \frac{A y_0}{3}$。将所求得的 $A$ 与 $B$ 的表达式代入，可得
+\begin{align*}
+2x_0 y_0 &= \frac{x_0}{4} y_0 \left(\frac{C_0}{3} + 2\right) + \frac{y_0}{3} x_0 \left(\frac{C_0}{4} + 2\right) \\
+&= x_0 y_0 \left( \frac{C_0}{12} + \frac{1}{2} + \frac{C_0}{12} + \frac{2}{3} \right) \\
+&= x_0 y_0 \left( \frac{C_0}{6} + \frac{7}{6} \right).
+\end{align*}
+当 $x_0 y_0 \neq 0$ 时，等式两端约去非零因子 $x_0 y_0$，得到
+\[ 2 = \frac{C_0}{6} + \frac{7}{6}. \]
+解得 $C_0 = 5$。
+\item 对于 $x_0 y_0 = 0$ 的情形，由 $\frac{x_0^2}{4} + \frac{y_0^2}{3} = 1$ 可知，当 $x_0 = 0$ 时 $y_0^2 = 3$。比较 $x^2$ 项系数，左侧为 $1 - y_0^2 + \frac{\lambda}{4} = -2 + \frac{3 + C_0}{4}$，右侧为 $0$，解得 $C_0 = 5$。当 $y_0 = 0$ 时 $x_0^2 = 4$。比较 $y^2$ 项系数，左侧为 $1 - x_0^2 + \frac{\lambda}{3} = -3 + \frac{4 + C_0}{3}$，右侧为 $0$，同样解得 $C_0 = 5$。综上所述，常数 $C_0 = 5$ 恒成立。
+将 $C_0 = 5$ 代回 $A, B$ 的表达式，分别求得 $A = \frac{13}{4} x_0$ 与 $B = \frac{11}{3} y_0$。
+\end{itemize}
+因此，割线 $AB$ 的直线方程为 $\frac{13}{4} x_0 x + \frac{11}{3} y_0 y + 5 = 0$。将等号两侧同乘 $12$，可化为一般式
+\[ 39x_0 x + 44y_0 y + 60 = 0. \]
+基于该直线方程，可得直线 $AB$ 的斜率为 $k_{AB} = -\frac{39x_0}{44y_0}$。
+已知直线 $OP$ 的斜率为 $k_{OP} = \frac{y_0}{x_0}$。将两斜率相乘，计算可得
+\[ k_{OP} \cdot k_{AB} = \frac{y_0}{x_0} \cdot \left(-\frac{39x_0}{44y_0}\right) = -\frac{39}{44}. \]
+该乘积为不依赖于点 $P$ 的常数，故直线 $OP$ 与直线 $AB$ 的斜率之积为定值，命题得证。
+\end{solution}
+
+
+\begin{example}{}{}
+已知 \(A,B,C,D\) 为椭圆 \(E: \frac{x^2}{2} + y^2 = 1\) 上四点，直线 \(AC, BD\) 均过点 \(F_2(1,0)\)，
+\begin{enumerate}
+\item 若直线 \(AB\) 斜率为 1，求证：直线 \(CD\) 过定点；
+\item 若直线 \(AB\) 过点 \(F_1(-1,0)\)，求证：\(\frac{k_{AB}}{k_{CD}}\) 为定值；
+\end{enumerate}
+\end{example}
+\begin{solution}
+对于椭圆 $E: \frac{x^2}{2} + y^2 = 1$，定义其极化算子为 $T(M, N) = \frac{x_M x_N}{2} + y_M y_N - 1$。点 $A, B, C, D$ 均在椭圆上，满足$T(A,A) = T(B,B) = T(C,C) = T(D,D) = 0$。记定点 $F_2(1,0)$ 为 $P$，已知直线 $AC$ 与 $BD$ 均过点 $P$。
+由于点 $A, P, C$ 共线，点 $C$ 可表示为 $P$ 与 $A$ 的仿射组合，设 $C = \frac{P + \lambda A}{1+\lambda}$。将其代入$T(C,C) = 0$展开，可得
+\begin{align*}
+\frac{1}{(1+\lambda)^2} \left[ T(P,P) + 2\lambda T(P,A) + \lambda^2 T(A,A) \right] = 0\implies \lambda = -\frac{T(P,P)}{2T(P,A)}
+\end{align*}
+设直线 $CD$ 的方程为一次线性多项式方程 $L_{CD}(X) = 0$。将点 $C$ 的坐标表达式代入，由一次函数对组合点的线性分配律可得
+\begin{align*}
+L_{CD}(C) = L_{CD}\left(\frac{P + \lambda A}{1+\lambda}\right) = \frac{L_{CD}(P) + \lambda L_{CD}(A)}{1+\lambda} = 0
+\end{align*}
+即 $L_{CD}(P) + \lambda L_{CD}(A) = 0$。将 $\lambda$ 的表达式代入，可得
+\begin{align*}
+L_{CD}(P) - \frac{T(P,P)}{2T(P,A)} L_{CD}(A) = 0.
+\end{align*}
+等式两边同乘 $2T(P,A)$，并利用极化算子的交换律 $T(P,A) = T(A,P)$，可将其重写为
+\begin{align*}
+2L_{CD}(P)T(P,A) - T(P,P)L_{CD}(A) = 0.
+\end{align*}
+这表明，点 $A$ 的坐标满足关于变元 $X$ 的一次线性多项式方程
+\begin{align*}
+2L_{CD}(P)T(P,X) - T(P,P)L_{CD}(X) = 0.
+\end{align*}
+同理，由于点 $B, P, D$ 共线且 $B, D$ 均在椭圆上，由完全对称的推导过程可得点 $B$ 亦满足上述同一个关于 $X$ 的一次线性方程。
+由于该方程为关于 $X$ 的一次线性方程，且直线 $AB$ 上的两相异点 $A, B$ 均满足该方程，故该方程即为直线 $AB$ 的算子方程 $L_{AB}(X) = 0$。
+因此，存在非零常数 $\mu$，使得对于平面内任意一点 $X$，恒有
+\begin{align*}
+L_{AB}(X) = \mu \left[ 2L_{CD}(P)T(P,X) - T(P,P)L_{CD}(X) \right].
+\end{align*}
+令 $X = P$ 代入该恒等式，可得
+\begin{align*}
+L_{AB}(P) &= \mu \left[ 2L_{CD}(P)T(P,P) - T(P,P)L_{CD}(P) \right]= \mu T(P,P) L_{CD}(P).
+\end{align*}
+由此解得 $\mu L_{CD}(P) = \frac{L_{AB}(P)}{T(P,P)}$。
+将此等量整体代回恒等式，分离出包含 $L_{CD}(X)$ 的项，得到
+\begin{align*}
+L_{AB}(X) = 2\frac{L_{AB}(P)}{T(P,P)} T(P,X) - \mu T(P,P) L_{CD}(X).
+\end{align*}
+移项可得
+\begin{align*}
+\mu T(P,P) L_{CD}(X) = 2\frac{L_{AB}(P)}{T(P,P)} T(P,X) - L_{AB}(X).
+\end{align*}
+等式两边同乘非零常数 $T(P,P)$，可得直线 $CD$ 的算子方程等价表示为
+\begin{align*}
+2L_{AB}(P) T(P,X) - T(P,P) L_{AB}(X) = 0.
+\end{align*}
+对于基点 $P(1,0)$，代入极化算子计算可得
+\begin{align*}
+T(P,P) &= \frac{1 \times 1}{2} + 0 - 1 = -\frac{1}{2}, \\
+T(P,X) &= \frac{1 \cdot x}{2} + 0 \cdot y - 1 = \frac{x-2}{2}.
+\end{align*}
+将其代入所推导的直线 $CD$ 等效方程中，可得
+\begin{align*}
+2L_{AB}(1,0)\left(\frac{x-2}{2}\right) - \left(-\frac{1}{2}\right) L_{AB}(X) = 0.
+\end{align*}
+化简得
+\begin{align*}
+L_{AB}(1,0)(x - 2) + \frac{1}{2} L_{AB}(X) = 0.
+\end{align*}
+方程两边同乘 $2$，得到联系两直线方程的核心恒等关系：
+\begin{align*}
+2L_{AB}(1,0)(x - 2) + L_{AB}(X) = 0.
+\end{align*}
+当直线 $AB$ 的斜率为 $1$ 时，设直线 $AB$ 的方程为 $L_{AB}(X) = x - y + m = 0$。
+将定点 $P(1,0)$ 代入，可得常数项 $L_{AB}(1,0) = 1 - 0 + m = m + 1$。
+将 $L_{AB}(1,0)$ 与 $L_{AB}(X)$ 代入核心恒等关系中，得到
+\begin{align*}
+2(m+1)(x - 2) + (x - y + m) = 0\implies(3x - y - 4) + m(2x - 3) = 0.
+\end{align*}
+若该直线方程对于满足条件的任意实数 $m$ 均成立，则必有
+\begin{align*}
+\begin{cases}
+2x - 3 = 0 \\
+3x - y - 4 = 0
+\end{cases}
+\end{align*}
+由第一式解得 $x = \frac{3}{2}$，代入第二式可得 $3\left(\frac{3}{2}\right) - y - 4 = 0$，解得 $y = \frac{1}{2}$。
+由此可得，直线 $CD$ 恒过定点 $\left(\frac{3}{2}, \frac{1}{2}\right)$。
+当直线 $AB$ 过点 $F_1(-1,0)$ 时，设其方程为 $L_{AB}(X) = k(x + 1) - y = 0$，即 $kx - y + k = 0$。
+将定点 $P(1,0)$ 代入，可得常数项 $L_{AB}(1,0) = k(1) - 0 + k = 2k$。
+将其代入直线 $CD$ 的核心恒等关系中，得到
+\begin{align*}
+2(2k)(x - 2) + (kx - y + k) = 0.
+\end{align*}
+展开并化简得
+\begin{align*}
+4kx - 8k + kx - y + k = 0,
+\end{align*}
+即
+\begin{align*}
+5kx - y - 7k = 0.
+\end{align*}
+由此可知，直线 $CD$ 的方程化为 $y = 5kx - 7k$，其斜率为 $k_{CD} = 5k$。
+结合直线 $AB$ 的斜率 $k_{AB} = k$，当 $k \neq 0$ 时，可得两者斜率的比值为
+\begin{align*}
+\frac{k_{AB}}{k_{CD}} = \frac{k}{5k} = \frac{1}{5}.
+\end{align*}
+综上所述，比值 $\frac{k_{AB}}{k_{CD}}$ 为定值 $\frac{1}{5}$。
+\end{solution}
 
 \begin{conclusion}{弦对原点张角的“齐次化”联合方程}{}
     已知不经过原点的直线交椭圆于 $A, B$ 两点。设这条直线对应的极点为 $M$，也就是直线方程可以写成标准形式：$E(M,X) = 1$。那么，连接原点与交点的两条射线 $OA, OB$ 构成了一个“退化曲线”（两相交直线），它的方程只需一步即可写出：$$ E(X,X) - \big[E(M,X)\big]^2 = 0 $$
@@ -618,6 +930,6 @@ $$ \Delta = \big[2T(P,X)\big]^2 - 4 \cdot T(P,P) \cdot T(X,X) = 0 $$把 4 约掉
 令两边的系数之差相加等于 0：
 $$ \left( \frac{x_P^2}{a^4} - \frac{T(P,P)}{a^2} \right) + \left( \frac{y_P^2}{b^4} - \frac{T(P,P)}{b^2} \right) = 0 \implies \frac{x_P^2}{a^4} + \frac{y_P^2}{b^4} = T(P,P)\left(\frac{1}{a^2} + \frac{1}{b^2}\right) $$
 把 $P$ 点的自身极化能量 $T(P,P) = \frac{x_P^2}{a^2} + \frac{y_P^2}{b^2} - 1$ 完整代入右侧，像初中乘法一样乘进去拆开：
-$$ \frac{x_P^2}{a^4} + \frac{y_P^2}{b^4} = \mathbf{\left(\frac{x_P^2}{a^4}\right)} + \frac{x_P^2}{a^2 b^2} + \frac{y_P^2}{a^2 b^2} + \mathbf{\left(\frac{y_P^2}{b^4}\right)} - \left(\frac{1}{a^2} + \frac{1}{b^2}\right) $$
+$$ \frac{x_P^2}{a^4} + \frac{y_P^2}{b^4} = {\left(\frac{x_P^2}{a^4}\right)} + \frac{x_P^2}{a^2 b^2} + \frac{y_P^2}{a^2 b^2} + {\left(\frac{y_P^2}{b^4}\right)} - \left(\frac{1}{a^2} + \frac{1}{b^2}\right) $$
 看到了吗？最复杂的最高次分数项 $\frac{x_P^2}{a^4}$ 和 $\frac{y_P^2}{b^4}$ 再次在等号两边奇迹般地完美抵消（加粗部分）！
 方程瞬间精简为：$$ 0 = \frac{x_P^2 + y_P^2}{a^2 b^2} - \frac{a^2+b^2}{a^2 b^2} $$两边同乘 $a^2b^2$，得到极简的最终轨迹方程：$$ x_P^2 + y_P^2 = a^2 + b^2 $$
