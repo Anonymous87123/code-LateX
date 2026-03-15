@@ -464,6 +464,32 @@ $$ \underbrace{\left( \frac{\overrightarrow{KP}}{\overrightarrow{PM}} \frac{\ove
 
 \section{算子齐次化}
 
+以椭圆为例，设椭圆上定点$P(x_0,y_0)$引出弦$PA,PB$，设$AB:m(x-x_0)+n(y-y_0)=1$
+\begin{align*}
+\frac{x^2}{a^2}+\frac{y^2}{b^2}=1\Leftrightarrow &\frac{(x-x_0+x_0)^2}{a^2}+\frac{(y-y_0+y_0)^2}{b^2}=1\\
+\Leftrightarrow & \frac{(x-x_0)^2}{a^2}+\frac{(y-y_0)^2}{b^2}+2\left(\frac{x_0(x-x_0)}{a^2}+\frac{y_0(y-y_0)}{b^2}\right)=0\\
+\Leftrightarrow & \frac{(x-x_0)^2}{a^2}+\frac{(y-y_0)^2}{b^2}+2\left(\tfrac{x_0(x-x_0)}{a^2}+\tfrac{y_0(y-y_0)}{b^2}\right)(m(x-x_0)+n(y-y_0))=0\\
+\frac{x^2}{a^2}+\frac{y^2}{b^2}=1\Leftrightarrow & (y-y_0-k_1(x-x_0))(y-y_0-k_2(x-x_0))=0\\
+\Leftrightarrow &(y-y_0)^2-(k_1+k_2)(x-x_0)(y-y_0)+k_1k_2(x-x_0)^2
+\end{align*}
+所以
+\begin{align*}
+&\frac{(x-x_0)^2}{a^2}+\frac{(y-y_0)^2}{b^2}+2\left(\tfrac{x_0(x-x_0)}{a^2}+\tfrac{y_0(y-y_0)}{b^2}\right)(m(x-x_0)+n(y-y_0))\\
+=&\mu\left[(y-y_0)^2-(k_1+k_2)(x-x_0)(y-y_0)+k_1k_2(x-x_0)^2\right]\\
+\implies &\frac{(x-x_0)^2}{a^2}+\frac{(y-y_0)^2}{b^2}-\mu\left[(y-y_0)^2-(k_1+k_2)(x-x_0)(y-y_0)+k_1k_2(x-x_0)^2\right]\\
+=&-2\left(\frac{x_0(x-x_0)}{a^2}+\frac{y_0(y-y_0)}{b^2}\right)(m(x-x_0)+n(y-y_0))
+\end{align*}
+令$(x-x_0,y-y_0)=\left(-\frac{y_0}{b^2},\frac{x_0}{a^2}\right)$可使$\frac{x_0(x-x_0)}{a^2}+\frac{y_0(y-y_0)}{b^2}=0$，所以
+\begin{align*}
+\mu&=\frac{\frac{(x-x_0)^2}{a^2}+\frac{(y-y_0)^2}{b^2}}{(y-y_0)^2-(k_1+k_2)(x-x_0)(y-y_0)+k_1k_2(x-x_0)^2}\\
+&=\frac{\frac{1}{a^2}+\frac{1}{b^2}\left(-\frac{b^2x_0}{a^2y_0}\right)^2}{\left(-\frac{b^2x_0}{a^2y_0}\right)^2+(k_1+k_2)\frac{b^2x_0}{a^2y_0}+k_1k_2}=\frac{a^2 b^2}{b^4 x_0^2 + a^2 b^2 x_0 y_0(k_1+k_2) + a^4 y_0^2 k_1 k_2}\\
+\frac{1}{\mu} & = \frac{b^2 x_0^2}{a^2} + x_0 y_0(k_1+k_2) + \frac{a^2 y_0^2}{b^2} k_1 k_2
+\end{align*}
+
+
+
+
+
 设二次曲线为 $E(\vec{u}, \vec{v})$。曲线上一点 $P(x_0, y_0)$，引入平移向量 $\vec{v} = (X, Y) = (x-x_0, y-y_0)$。剥离常数项将动点表示为 $P + \vec{v}$。利用分配律，原曲线方程 $E(P+\vec{v}, P+\vec{v}) = 1$ 展开：
 $$E(\vec{v}, \vec{v}) + 2E(P, \vec{v}) + E(P, P)=E(\vec{v}, \vec{v}) + 2E(P, \vec{v}) = 1$$
 对于$E(\vec{v}, \vec{v})= \frac{X^2}{a^2} + \frac{Y^2}{b^2} $，不妨记作$E(X,Y)$，$T(X,Y)$ 代表 Tangent，切线
@@ -894,6 +920,83 @@ L_{AB}(1,0)(x - 2) + \frac{1}{2} L_{AB}(X) = 0.
 \end{align*}
 综上所述，比值 $\frac{k_{AB}}{k_{CD}}$ 为定值 $\frac{1}{5}$。
 \end{solution}
+
+\begin{example}{}{}
+已知 \(R,S\) 是 \(x\) 轴上两定点，过 \(S\) 的直线交椭圆 \(\frac{x^2}{a^2} + \frac{y^2}{b^2} = 1\) 于 \(A,B\) 两点，分别延长 \(AR,BR\) 再次交椭圆于 \(D,C\) 两点。求证：直线 \(CD\) 过定点；
+\end{example}
+\begin{solution}
+定义针对椭圆 $\frac{x^2}{a^2} + \frac{y^2}{b^2} = 1$ 的极化算子为 $T(M, N) = \frac{x_M x_N}{a^2} + \frac{y_M y_N}{b^2} - 1$。
+对于该椭圆上的任意一点 $X$，恒有极化自内积方程 $T(X, X) = 0$ 成立。
+已知直线 $AB$ 经过定点 $S(s, 0)$，设其方程为关于横纵坐标的一次多项式算子方程 $L_{AB}(X) = 0$。由于点 $S$ 位于直线 $AB$ 上，必定满足等式 $L_{AB}(S) = 0$。\\
+根据题意，点 $R, A, D$ 三点共线。可将点 $A$ 表示为定点 $R$ 与点 $D$ 的仿射组合。设存在实数 $\lambda$，使得：
+\[ A = \frac{R + \lambda D}{1+\lambda} \]
+由于点 $A$ 位于椭圆上，将其仿射组合表达式代入椭圆的极化自内积算子中，并利用双线性分配律展开：
+\[ T\left(\frac{R + \lambda D}{1+\lambda}, \frac{R + \lambda D}{1+\lambda}\right) = \frac{T(R, R) + 2\lambda T(R, D) + \lambda^2 T(D, D)}{(1+\lambda)^2} = 0. \]
+已知点 $D$ 亦位于椭圆上，满足 $T(D, D) = 0$。代入上式，分子部分化简为：
+\[ T(R, R) + 2\lambda T(R, D) = 0. \]
+由于直线 $AR$ 与椭圆交于相异两点 $A, D$，故 $\lambda \neq 0$ 且 $T(R, D) \neq 0$。解得仿射参数为：
+\[ \lambda = -\frac{T(R, R)}{2T(R, D)}. \]
+将其代回点 $A$ 的仿射组合形式中，分子与分母同乘 $2T(R, D)$，得到点 $A$ 的算子化齐次坐标表示：
+\[ A = \frac{2T(R, D)R - T(R, R)D}{2T(R, D) - T(R, R)}. \]
+由于点 $A$ 位于直线 $AB$ 上，将上述坐标表达式代入直线 $AB$ 的算子方程 $L_{AB}(A) = 0$ 中。利用一次线性算子 $L_{AB}(X)$ 保持仿射组合不变的性质，将其恒等展开：
+\[ \frac{2T(R, D)L_{AB}(R) - T(R, R)L_{AB}(D)}{2T(R, D) - T(R, R)} = 0. \]
+等式两端同乘非零分母，得到点 $D$ 所满足的一个一阶线性关系式：
+\[ 2L_{AB}(R)T(R, D) - T(R, R)L_{AB}(D) = 0. \]
+另一方面，点 $R, B, C$ 三点同样共线，点 $B, C$ 均位于椭圆上，且点 $B$ 位于直线 $AB$ 上。通过完全对称的代数推导过程，点 $C$ 必定满足与之结构一致的约束条件：
+\[ 2L_{AB}(R)T(R, C) - T(R, R)L_{AB}(C) = 0. \]
+上述两式表明，椭圆上的相异两点 $C$ 与 $D$ 均满足关于动点 $X$ 的同一个一次线性方程：
+\[ 2L_{AB}(R)T(R, X) - T(R, R)L_{AB}(X) = 0. \]
+因平面内两相异点唯一确定一条直线，该等式即为经过点 $C, D$ 的直线 $CD$ 的算子方程，记为：
+\[ L_{CD}(X) = 2L_{AB}(R)T(R, X) - T(R, R)L_{AB}(X) = 0. \]
+为求证直线 $CD$ 恒过定点，即探求一固定点 $T$，使得无论满足 $L_{AB}(S) = 0$ 的直线的算子 $L_{AB}$ 如何变化，恒有 $L_{CD}(T) = 0$ 成立。
+已知定点 $R(r, 0)$ 与 $S(s, 0)$ 均位于 $x$ 轴上。假设待求定点 $T$ 亦位于 $x$ 轴上，则点 $T$ 可表示为 $R$ 与 $S$ 的仿射组合。
+设 $T = \alpha S + \beta R$，其中 $\alpha + \beta = 1$。
+将点 $T$ 的表达式代入直线 $AB$ 的算子方程中，由线性分配性质展开得：
+\[ L_{AB}(T) = \alpha L_{AB}(S) + \beta L_{AB}(R). \]
+代入条件 $L_{AB}(S) = 0$，上式化简为 $L_{AB}(T) = \beta L_{AB}(R)$。
+同时，将点 $T$ 代入极化算子中展开：
+\[ T(R, T) = \alpha T(R, S) + \beta T(R, R). \]
+将 $L_{AB}(T)$ 与 $T(R, T)$ 共同代入直线 $CD$ 的方程 $L_{CD}(T) = 0$ 中：
+\[ 2L_{AB}(R)\big[\alpha T(R, S) + \beta T(R, R)\big] - T(R, R)\big[\beta L_{AB}(R)\big] = 0. \]
+对于一般情形下不经过点 $R$ 的割线 $AB$，有 $L_{AB}(R) \neq 0$。将等式两端同除以 $L_{AB}(R)$，提取出不含动直线参数的独立等式：
+\[ 2\alpha T(R, S) + 2\beta T(R, R) - \beta T(R, R) = 0 \implies 2\alpha T(R, S) + \beta T(R, R) = 0. \]
+结合 $\alpha + \beta = 1$，将 $\alpha = 1 - \beta$ 代入得到：
+\[ 2(1 - \beta) T(R, S) + \beta T(R, R) = 0 \implies \beta \big[2T(R, S) - T(R, R)\big] = 2T(R, S). \]
+解得对应的仿射参数：
+\[ \beta = \frac{2T(R, S)}{2T(R, S) - T(R, R)}, \quad \alpha = 1 - \beta = \frac{-T(R, R)}{2T(R, S) - T(R, R)}. \]
+由于参数 $\alpha$ 与 $\beta$ 仅由定点 $R, S$ 的位置参数与椭圆的极化自内积常数决定，完全独立于直线 $AB$ 的变动状态，因此点 $T$ 为一固定点。\\
+进一步计算定点 $T$ 的具体坐标。将 $S(s, 0)$ 与 $R(r, 0)$ 代入极化算子：
+\[ T(R, S) = \frac{rs}{a^2} - 1, \quad T(R, R) = \frac{r^2}{a^2} - 1. \]
+计算参数的分母部分：
+\[ 2T(R, S) - T(R, R) = 2\left(\frac{rs}{a^2} - 1\right) - \left(\frac{r^2}{a^2} - 1\right) = \frac{2rs - r^2 - a^2}{a^2}. \]
+由于 $R, S$ 的纵坐标均为 $0$，点 $T$ 的纵坐标 $y_T = \alpha \cdot 0 + \beta \cdot 0 = 0$。点 $T$ 的横坐标 $x_T$ 计算如下：
+\begin{align*}
+x_T &= \alpha s + \beta r = \frac{-s T(R, R) + 2r T(R, S)}{2T(R, S) - T(R, R)} \\
+&= \frac{-s\left(\frac{r^2 - a^2}{a^2}\right) + 2r\left(\frac{rs - a^2}{a^2}\right)}{\frac{2rs - r^2 - a^2}{a^2}} \\
+&= \frac{-sr^2 + sa^2 + 2r^2s - 2ra^2}{2rs - r^2 - a^2} \\
+&= \frac{r^2s + a^2s - 2a^2r}{2rs - r^2 - a^2}.
+\end{align*}
+将分子与分母同时乘 $-1$，整理得：
+\[ x_T = \frac{2a^2r - a^2s - r^2s}{a^2 + r^2 - 2rs}. \]
+由此可得，在 $a^2 + r^2 - 2rs \neq 0$ 时，直线 $CD$ 恒经过 $x$ 轴上的定点 $\left( \frac{2a^2r - a^2s - r^2s}{a^2 + r^2 - 2rs}, 0 \right)$。结论成立。\\
+最后，计算并验证直线 $CD$ 与 $AB$ 的斜率比值。
+设直线 $AB$ 的方程为 $x = my + s$，其斜率为 $k_{AB} = \frac{1}{m}$。该直线的算子函数等价表示为 $L_{AB}(X) = x_X - m y_X - s$。
+代入定点 $R(r, 0)$ 得到 $L_{AB}(R) = r - s$。对于动点 $X(x, y)$，有 $L_{AB}(X) = x - my - s$。
+将其代入直线 $CD$ 的全局算子方程中：
+\[ 2(r - s)\left(\frac{rx}{a^2} - 1\right) - \left(\frac{r^2 - a^2}{a^2}\right)(x - my - s) = 0. \]
+等号两端同乘 $a^2$ 展开：
+\[ 2(r - s)(rx - a^2) - (r^2 - a^2)(x - my - s) = 0. \]
+提取并合并关于 $x$ 与 $y$ 的同类项系数。对于 $x$ 的系数：
+\[ 2r(r - s) - (r^2 - a^2) = 2r^2 - 2rs - r^2 + a^2 = r^2 - 2rs + a^2. \]
+对于 $y$ 的系数：
+\[ -(r^2 - a^2)(-m) = m(r^2 - a^2). \]
+由此得到直线 $CD$ 的一般方程为 $(r^2 - 2rs + a^2)x + m(r^2 - a^2)y + C = 0$（常数项记为 $C$）。其斜率 $k_{CD}$ 为：
+\[ k_{CD} = -\frac{r^2 - 2rs + a^2}{m(r^2 - a^2)} = \frac{a^2 + r^2 - 2rs}{m(a^2 - r^2)}. \]
+两直线斜率相除，参数 $m$ 自然消去，得到两者的斜率比值为：
+\[ \frac{k_{CD}}{k_{AB}} = \frac{\frac{a^2 + r^2 - 2rs}{m(a^2 - r^2)}}{\frac{1}{m}} = \frac{a^2 + r^2 - 2rs}{a^2 - r^2}. \]
+综上，各项结论均严密成立。
+\end{solution}
+
 
 \begin{conclusion}{弦对原点张角的“齐次化”联合方程}{}
     已知不经过原点的直线交椭圆于 $A, B$ 两点。设这条直线对应的极点为 $M$，也就是直线方程可以写成标准形式：$E(M,X) = 1$。那么，连接原点与交点的两条射线 $OA, OB$ 构成了一个“退化曲线”（两相交直线），它的方程只需一步即可写出：$$ E(X,X) - \big[E(M,X)\big]^2 = 0 $$
