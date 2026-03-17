@@ -1,40 +1,83 @@
-\contentsline {section}{\numberline {1}前情提要：2019年前的协同进化算法}{3}{section.1}%
-\contentsline {subsection}{\numberline {1.1}协同进化算法的引入与初期的优势}{3}{subsection.1.1}%
-\contentsline {subsection}{\numberline {1.2}协同进化算法的原理}{4}{subsection.1.2}%
-\contentsline {section}{\numberline {2}协同进化算法的协作者选择策略}{7}{section.2}%
-\contentsline {subsection}{\numberline {2.1}个体适应度分配与子问题资源分配}{9}{subsection.2.1}%
-\contentsline {subsection}{\numberline {2.2}协同进化算法的实现}{10}{subsection.2.2}%
-\contentsline {subsection}{\numberline {2.3}协同进化算法的基准测试问题、理论分析与控制参数}{10}{subsection.2.3}%
-\contentsline {subsection}{\numberline {2.4}协同进化算法的病态问题}{11}{subsection.2.4}%
-\contentsline {section}{\numberline {3}20-26年协同进化算法综述}{12}{section.3}%
-\contentsline {subsection}{\numberline {3.1}“问题分解”到底分解什么}{13}{subsection.3.1}%
-\contentsline {subsection}{\numberline {3.2}“适应度评估（FEs）”为什么这么金贵}{13}{subsection.3.2}%
-\contentsline {subsection}{\numberline {3.3}“差分分组（DG）”怎么工作的}{13}{subsection.3.3}%
-\contentsline {subsection}{\numberline {3.4}四重挑战：传统分解技术的硬边界}{13}{subsection.3.4}%
-\contentsline {section}{\numberline {4}差分分组的高效改良与理论拓荒（2020-2022）}{14}{section.4}%
-\contentsline {subsection}{\numberline {4.1}高效自适应差分分组（EADG, 2022）}{14}{subsection.4.1}%
-\contentsline {subsection}{\numberline {4.2}双差分分组（DDG, 2022）}{16}{subsection.4.2}%
-\contentsline {section}{\numberline {5}面向复杂结构的分解技术：从平权到分层（2022-2024）}{17}{section.5}%
-\contentsline {subsection}{\numberline {5.1}重叠增强差分分组（OEDG, 2024）}{17}{subsection.5.1}%
-\contentsline {subsection}{\numberline {5.2}基于贡献度的协同进化（CBCC-O, 2020）}{19}{subsection.5.2}%
-\contentsline {subsection}{\numberline {5.3}分层差分分组（HDG, 2024）}{20}{subsection.5.3}%
-\contentsline {section}{\numberline {6}学习型分解与古典融合的范式转移（2024-2026）}{21}{section.6}%
-\contentsline {subsection}{\numberline {6.1}基于学习的协同进化（LCC, 2025）}{22}{subsection.6.1}%
-\contentsline {subsection}{\numberline {6.2}复合可分性分组（CSG, 2026）}{23}{subsection.6.2}%
-\contentsline {section}{\numberline {7}其他值得关注的新方法与预研趋势（2023-2026）}{24}{section.7}%
-\contentsline {subsection}{\numberline {7.1}基于变量重要性的动态协同进化（DCCVI, 2025）}{24}{subsection.7.1}%
-\contentsline {subsection}{\numberline {7.2}基于图神经网络的分解（GNN-based Decomposition）}{25}{subsection.7.2}%
-\contentsline {subsection}{\numberline {7.3}时空图持续跟踪（Spatiotemporal Graph Continuous Tracking）}{25}{subsection.7.3}%
-\contentsline {subsection}{\numberline {7.4}多臂老虎机资源感知调度（Multi-armed Bandit Resource-Aware Scheduling）}{25}{subsection.7.4}%
-\contentsline {section}{\numberline {8}横向对比与元分析：解构表象背后的权衡}{26}{section.8}%
-\contentsline {subsection}{\numberline {8.1}隐式的“开销-精度”权衡曲线}{26}{subsection.8.1}%
-\contentsline {subsection}{\numberline {8.2}问题类型光谱的覆盖边界}{26}{subsection.8.2}%
-\contentsline {subsection}{\numberline {8.3}假设的隐蔽性与脆弱性}{27}{subsection.8.3}%
-\contentsline {subsection}{\numberline {8.4}理论保证 vs. 工程实效的割裂}{27}{subsection.8.4}%
-\contentsline {subsection}{\numberline {8.5}综合对比表}{28}{subsection.8.5}%
-\contentsline {section}{\numberline {9}未来展望}{28}{section.9}%
-\contentsline {subsection}{\numberline {9.1}方向一：神经引导与符号推演的混合架构（Neuro-Symbolic Decomposition）}{28}{subsection.9.1}%
-\contentsline {subsection}{\numberline {9.2}方向二：针对动态重叠环境的时空图持续跟踪（Spatiotemporal Graph Continuous Tracking）}{29}{subsection.9.2}%
-\contentsline {subsection}{\numberline {9.3}方向三：资源感知的自适应保真度分解（Resource-Aware Adaptive Fidelity Decomposition）}{30}{subsection.9.3}%
-\contentsline {subsection}{\numberline {9.4}三个方向的协同关系}{31}{subsection.9.4}%
-\contentsline {section}{\numberline {10}结语：围绕可解释性这个门槛}{31}{section.10}%
+\contentsline {section}{\numberline {1}引言：协同进化算法基础}{4}{section.1}%
+\contentsline {subsection}{\numberline {1.1}符号定义}{4}{subsection.1.1}%
+\contentsline {subsection}{\numberline {1.2}算法引入与初期优势}{4}{subsection.1.2}%
+\contentsline {subsection}{\numberline {1.3}基本流程（以CCGA为例）}{4}{subsection.1.3}%
+\contentsline {subsection}{\numberline {1.4}问题可分解性定义}{5}{subsection.1.4}%
+\contentsline {section}{\numberline {2}问题分解与变量分组策略}{6}{section.2}%
+\contentsline {subsection}{\numberline {2.1}静态变量分组}{6}{subsection.2.1}%
+\contentsline {subsection}{\numberline {2.2}随机变量分组}{6}{subsection.2.2}%
+\contentsline {subsection}{\numberline {2.3}基于交互学习的变量分组}{7}{subsection.2.3}%
+\contentsline {subsection}{\numberline {2.4}基于领域知识的变量分组}{8}{subsection.2.4}%
+\contentsline {subsection}{\numberline {2.5}重叠与层次变量分组}{8}{subsection.2.5}%
+\contentsline {subsection}{\numberline {2.6}混合变量分组}{8}{subsection.2.6}%
+\contentsline {section}{\numberline {3}协作机制设计}{9}{section.3}%
+\contentsline {subsection}{\numberline {3.1}协作者选择策略}{9}{subsection.3.1}%
+\contentsline {subsubsection}{\numberline {3.1.1}用于单目标优化问题的协作者选择策略}{9}{subsubsection.3.1.1}%
+\contentsline {subsubsection}{\numberline {3.1.2}用于多目标优化问题的协作者选择策略}{10}{subsubsection.3.1.2}%
+\contentsline {subsection}{\numberline {3.2}个体适应度分配}{10}{subsection.3.2}%
+\contentsline {subsection}{\numberline {3.3}子问题计算资源分配}{11}{subsection.3.3}%
+\contentsline {section}{\numberline {4}算法实现与理论分析}{11}{section.4}%
+\contentsline {subsection}{\numberline {4.1}在不同元启发式算法中的实现}{11}{subsection.4.1}%
+\contentsline {subsection}{\numberline {4.2}并行实现}{11}{subsection.4.2}%
+\contentsline {subsection}{\numberline {4.3}基准测试问题}{12}{subsection.4.3}%
+\contentsline {subsection}{\numberline {4.4}理论分析}{12}{subsection.4.4}%
+\contentsline {subsection}{\numberline {4.5}关键控制参数}{12}{subsection.4.5}%
+\contentsline {section}{\numberline {5}协同进化算法的病态问题}{13}{section.5}%
+\contentsline {section}{\numberline {6}承上启下章节}{13}{section.6}%
+\contentsline {subsection}{\numberline {6.1}适应度评估的计算代价}{14}{subsection.6.1}%
+\contentsline {subsection}{\numberline {6.2}差分分组的基本原理}{14}{subsection.6.2}%
+\contentsline {subsection}{\numberline {6.3}四重挑战：驱动技术演进的根本动力}{15}{subsection.6.3}%
+\contentsline {section}{\numberline {7}差分分组的高效改良与理论拓荒（2020-2022）}{15}{section.7}%
+\contentsline {subsection}{\numberline {7.1}高效自适应差分分组（EADG, 2022）}{15}{subsection.7.1}%
+\contentsline {subsubsection}{\numberline {7.1.1}设计思想与技术突破}{16}{subsubsection.7.1.1}%
+\contentsline {subsubsection}{\numberline {7.1.2}操作流程}{16}{subsubsection.7.1.2}%
+\contentsline {subsubsection}{\numberline {7.1.3}理论支撑}{16}{subsubsection.7.1.3}%
+\contentsline {subsubsection}{\numberline {7.1.4}局限性与适用范围}{17}{subsubsection.7.1.4}%
+\contentsline {subsection}{\numberline {7.2}双差分分组（DDG, 2022）}{17}{subsection.7.2}%
+\contentsline {subsubsection}{\numberline {7.2.1}设计思想与技术突破}{17}{subsubsection.7.2.1}%
+\contentsline {subsubsection}{\numberline {7.2.2}操作流程}{17}{subsubsection.7.2.2}%
+\contentsline {subsubsection}{\numberline {7.2.3}理论支撑}{18}{subsubsection.7.2.3}%
+\contentsline {subsubsection}{\numberline {7.2.4}局限性与适用范围}{18}{subsubsection.7.2.4}%
+\contentsline {section}{\numberline {8}面向复杂结构的分解技术：从平权到分层（2022-2024）}{18}{section.8}%
+\contentsline {subsection}{\numberline {8.1}重叠增强差分分组（OEDG, 2024）}{19}{subsection.8.1}%
+\contentsline {subsubsection}{\numberline {8.1.1}设计思想与技术突破}{19}{subsubsection.8.1.1}%
+\contentsline {subsubsection}{\numberline {8.1.2}操作流程}{20}{subsubsection.8.1.2}%
+\contentsline {subsubsection}{\numberline {8.1.3}理论支撑}{20}{subsubsection.8.1.3}%
+\contentsline {subsubsection}{\numberline {8.1.4}局限性与适用范围}{21}{subsubsection.8.1.4}%
+\contentsline {subsection}{\numberline {8.2}基于贡献度的协同进化（CBCC-O, 2020）}{21}{subsection.8.2}%
+\contentsline {subsubsection}{\numberline {8.2.1}设计思想与技术突破}{21}{subsubsection.8.2.1}%
+\contentsline {subsubsection}{\numberline {8.2.2}操作流程}{22}{subsubsection.8.2.2}%
+\contentsline {subsubsection}{\numberline {8.2.3}理论支撑}{22}{subsubsection.8.2.3}%
+\contentsline {subsubsection}{\numberline {8.2.4}局限性与适用范围}{22}{subsubsection.8.2.4}%
+\contentsline {subsection}{\numberline {8.3}分层差分分组（HDG, 2024）}{23}{subsection.8.3}%
+\contentsline {subsubsection}{\numberline {8.3.1}设计思想与技术突破}{23}{subsubsection.8.3.1}%
+\contentsline {subsubsection}{\numberline {8.3.2}操作流程}{23}{subsubsection.8.3.2}%
+\contentsline {subsubsection}{\numberline {8.3.3}理论支撑}{24}{subsubsection.8.3.3}%
+\contentsline {subsubsection}{\numberline {8.3.4}局限性与适用范围}{25}{subsubsection.8.3.4}%
+\contentsline {section}{\numberline {9}学习型分解与古典融合的范式转移（2024-2026）}{25}{section.9}%
+\contentsline {subsection}{\numberline {9.1}基于学习的协同进化（LCC, 2025）}{25}{subsection.9.1}%
+\contentsline {subsubsection}{\numberline {9.1.1}设计思想与技术突破}{25}{subsubsection.9.1.1}%
+\contentsline {subsubsection}{\numberline {9.1.2}状态空间设计}{26}{subsubsection.9.1.2}%
+\contentsline {subsubsection}{\numberline {9.1.3}动作空间与奖励函数}{26}{subsubsection.9.1.3}%
+\contentsline {subsubsection}{\numberline {9.1.4}离线训练与在线执行}{26}{subsubsection.9.1.4}%
+\contentsline {subsubsection}{\numberline {9.1.5}理论支撑与局限性}{27}{subsubsection.9.1.5}%
+\contentsline {subsection}{\numberline {9.2}复合可分性分组（CSG, 2026）}{27}{subsection.9.2}%
+\contentsline {subsubsection}{\numberline {9.2.1}设计思想与技术突破}{27}{subsubsection.9.2.1}%
+\contentsline {subsubsection}{\numberline {9.2.2}理论支撑}{28}{subsubsection.9.2.2}%
+\contentsline {subsubsection}{\numberline {9.2.3}局限性与适用范围}{28}{subsubsection.9.2.3}%
+\contentsline {section}{\numberline {10}其他值得关注的新方法与预研趋势（2023-2026）}{29}{section.10}%
+\contentsline {subsection}{\numberline {10.1}基于变量重要性的动态协同进化（DCCVI, 2025）}{29}{subsection.10.1}%
+\contentsline {subsection}{\numberline {10.2}基于图神经网络的分解（GNN-based Decomposition）}{29}{subsection.10.2}%
+\contentsline {subsection}{\numberline {10.3}时空图持续跟踪（Spatiotemporal Graph Continuous Tracking）}{30}{subsection.10.3}%
+\contentsline {subsection}{\numberline {10.4}多臂老虎机资源感知调度（Multi-armed Bandit Resource-Aware Scheduling）}{30}{subsection.10.4}%
+\contentsline {section}{\numberline {11}横向对比与元分析}{30}{section.11}%
+\contentsline {subsection}{\numberline {11.1}开销-精度权衡曲线}{31}{subsection.11.1}%
+\contentsline {subsection}{\numberline {11.2}问题类型光谱的覆盖边界}{31}{subsection.11.2}%
+\contentsline {subsection}{\numberline {11.3}假设的隐蔽性与脆弱性}{31}{subsection.11.3}%
+\contentsline {subsection}{\numberline {11.4}理论保证与工程实效的割裂}{33}{subsection.11.4}%
+\contentsline {section}{\numberline {12}未来展望}{33}{section.12}%
+\contentsline {subsection}{\numberline {12.1}方向一：神经引导与符号推演的混合架构（Neuro-Symbolic Decomposition）}{33}{subsection.12.1}%
+\contentsline {subsection}{\numberline {12.2}方向二：针对动态重叠环境的时空图持续跟踪（Spatiotemporal Graph Continuous Tracking）}{34}{subsection.12.2}%
+\contentsline {subsection}{\numberline {12.3}方向三：资源感知的自适应保真度分解（Resource-Aware Adaptive Fidelity Decomposition）}{34}{subsection.12.3}%
+\contentsline {subsection}{\numberline {12.4}三个方向的协同关系}{34}{subsection.12.4}%
+\contentsline {section}{\numberline {13}结语}{34}{section.13}%
