@@ -1,0 +1,188 @@
+%这里简单概述下问题：
+% 1. 我想要根据标题长度切换不同的装饰样式，目前无论长度如何都没法切换成功
+
+% 2. 我想要底部装饰采用blur shadow而非drop shadow, 目前报错
+
+% 3. 我想要使得背景的渐变颜色更加柔和，也就是增加middle部分（猜的，但是应该也只能这样了），目前一旦盒子跨页，就会出现背景中间很白，怪怪的，出现了背景颜色断层，目前的背景颜色逻辑貌似是在盒子跨页后，上下部分各画各的，都把top color和bottom color来上一遍，颜色的过度太生硬了且出现了断层，与shade[top/middle/bottom color] 这种比起来还有点差距，希望能有个更好点的方案
+\documentclass[12pt]{book}
+\usepackage[margin=2cm]{geometry}
+\RequirePackage{cncolours,newtx}
+\RequirePackage{etoolbox} % 判断函数
+\RequirePackage{tikz,calc} %%页面样式设计核心包 %提供\pgfonlayer命令
+\usetikzlibrary{cd,calc,shadows,shadows.blur,hobby,intersections, decorations.markings, decorations.pathreplacing,spy,arrows,shapes,fadings,trees,mindmap,patterns,shapes.arrows,shapes.symbols,tikzmark,shapes.geometric,graphs, quotes, angles,decorations.pathmorphing,through,shadings,backgrounds,positioning,fit,arrows.meta,shapes.misc,decorations.shapes}
+\pgfdeclarelayer{background} %背景%底层
+\pgfdeclarelayer{foreground} %上层
+\pgfdeclarelayer{top} %顶部
+\pgfdeclarelayer{bottom} %底部
+\pgfsetlayers{bottom,background,main,foreground,top}
+\RequirePackage[most]{tcolorbox}
+\tcbuselibrary{breakable, skins,theorems,minted}
+
+\makeatletter
+\tcbset{my@basic@tcbthm/.style={detach title,}}
+\newcommand{\@my@newtcbtheorem@n}[1]{\ERROR}
+\newcommand{\@my@newtcbtheorem@nn}[2]{%
+   \@ifundefined{#1}{\@my@newtcbtheorem{#1}{#2}}{\@my@renewtcbtheorem{#1}{#2}}}
+\newcommand{\@my@newtcbtheorem}[2]{%
+   \edef\my@curr@thmenvname{#1}% 它保存当前定理环境的名称
+   \mytcbtheoremset{#2}%
+   \NewTColorBox{#1}{ O{} O{} o }
+   {my@basic@tcbthm, my@#1@tcbthmstyle, title={##2}, IfNoValueF={##3}{label={##3}}, ##1}}
+\newcommand{\@my@renewtcbtheorem}[2]{\edef\my@curr@thmenvname{#1}\mytcbtheoremset{#2}}
+
+% 键值设置
+\pgfkeys{/mytcbtheorem/.is family}
+\newcommand{\mytcbtheoremset}{\pgfqkeys{/mytcbtheorem}}
+\mytcbtheoremset{
+name/.code=\@namedef{\my@curr@thmenvname @name}{#1}, %无效
+counter/.code=\@namedef{my@\my@curr@thmenvname @counter}{#1}\newcounter{#1}[chapter], % 计数器遇到subsection就会自动归零 % https://zhuanlan.zhihu.com/p/57454848#circle=on
+the counter/.code=\@namedef{the\@nameuse{my@\my@curr@thmenvname @counter}}{#1},
+autoref name/.code=\@namedef{\@nameuse{my@\my@curr@thmenvname @counter}autorefname}{#1},
+style/.code=\tcbset{my@\my@curr@thmenvname @tcbthmstyle/.style={#1}},
+thmcolor/.code=\@namedef{\my@curr@thmenvname @thmcolor}{#1}, %无效
+lemcolor/.code=\@namedef{\my@curr@thmenvname @lemcolor}{#1}, %无效
+}
+% 存储键值 (LaTeX3)
+\ExplSyntaxOn
+\cs_new_protected:Npn \mynewtheorem
+{ \keyval_parse:NNn \@my@newtheorem@n \@my@newtheorem@nn }
+\cs_new_protected:Npn \mynewtcbtheorem
+{ \keyval_parse:NNn \@my@newtcbtheorem@n \@my@newtcbtheorem@nn }
+\ExplSyntaxOff
+
+% /* ------------------ Second theorem style overlay settings ----------------- */
+%%定义标题文字长度%%
+\newlength{\thmtcbtextlen}
+%%设置临界长度%%
+\newlength{\thmcriticstarlen}
+\setlength{\thmcriticstarlen}{\linewidth}
+
+%
+\newcommand{\my@lemma@overlay@unbroken}[2]{
+   %%============== First ==============%%
+   \def\rad{7pt}%
+   \settowidth{\thmtcbtextlen}{\hspace*{10pt}#1.\ \ifdefvoid{\tcbtitletext}{}{(\itshape\tcbtitletext)}}
+   \begin{scope}
+      \path[fill=#2, blur shadow={shadow blur steps=10,shadow xshift=-1pt, shadow yshift=-1pt,shadow blur radius=1.5pt,shadow opacity=35}
+      ]node[append after command={
+               ([xshift=-1.5*\rad]thmname.north west) to[out=0,in=180,looseness=1] ([xshift=2.5*\rad]thmname.south west) --([xshift=-\rad]thmname.south east) to[out=0,in=180,looseness=1] ([xshift=3*\rad]thmname.north east) --cycle},
+         text=white,font=\bfseries,align=center,inner ysep=1.5mm,minimum height=0.6cm,right] (thmname) at ([xshift=\rad,yshift=-.7*\rad]frame.north west) {\hspace*{10pt}#1.\ \ifdefvoid{\tcbtitletext}{}{(\itshape\tcbtitletext)}};
+      \pgfextractx{\thmtcbtextlen}{%
+         \pgfpointdiff
+            {\pgfpointanchor{thmname}{west}}
+            {\pgfpointanchor{thmname}{east}}}
+      %%============== 两边的阴影/折叠部分 ==============%%
+      \begin{pgfonlayer}{bottom}
+         % 左侧翅膀样式一
+         % \shade[left color=#2!20, right color=#2!80!black]
+         % ([xshift=-1.5*\rad]thmname.north west)
+         % to[out=180, in=0] ++(-2*\rad, -\rad)
+         % -| +(5*\rad,\rad)
+         % -- cycle;
+         % /* -------------------------------------------------------------------------- */
+         % 左侧翅膀样式二：镜像翻转为向上折叠效果
+         \shade[left color=#2!20, right color=#2!80!black]
+         ([shift={(-.5*\rad,-\rad)}]thmname.north west)
+         to[out=180, in=0] ++(-2*\rad, \rad) % 将 -\rad 改为 \rad，使其向上延伸
+         -| +(5*\rad, -\rad)                 % 将 \rad 改为 -\rad，使其向下回到主体水平线
+         -- cycle;
+         % 右侧翅膀：完全镜像处理
+         % \shade[right color=#2!20, left color=#2!80!black]
+         % ([xshift=3*\rad]thmname.north east) % 注意这里起点需对应你核心代码中的 3*\rad
+         % to[out=0, in=180] ++(2*\rad, -\rad) % 镜像：out 180->0, in 0->180, x -2->2
+         % -| +(-5*\rad,\rad)                % 镜像：x 5->-5
+         % -- cycle;
+         % ===== 右翅膀按条件切换 =====
+         %判断标题文字长度与临界长度的关系
+         \ifdim\thmtcbtextlen>\thmcriticstarlen
+            %-------- 右侧小翅膀：上下翻转版本 --------
+            \shade[right color=#2!20, left color=#2!80!black]
+               ([xshift=2*\rad,yshift=-1*\rad]thmname.north east)
+               to[out=0, in=180] ++(2*\rad, \rad)
+               -| +(-5*\rad,-\rad)
+               -- cycle;
+         \else
+            % -------- 右侧小翅膀：原版本 --------
+            \shade[right color=#2!20, left color=#2!80!black]
+               ([xshift=3*\rad]thmname.north east)
+               to[out=0, in=180] ++(2*\rad, -\rad)
+               -| +(-5*\rad,\rad)
+               -- cycle;
+         \fi
+      \end{pgfonlayer}
+   \end{scope}
+   %
+   %%============== End ==============%%
+   \def\tlen{1.5cm}
+   \def\Rad{3.5pt}
+   \def\theight{0.5cm}
+   \begin{scope} % 底部装饰
+      \path[fill=#2,
+      % drop shadow={opacity=0.3,shadow xshift=.3pt}
+      blur shadow={shadow blur steps=10,shadow xshift=-1pt, shadow yshift=-1pt,shadow blur radius=1.5pt,shadow opacity=35} %一旦改成这个就会丢失上面的两个翅膀
+      ]
+      ([xshift=-2*\rad,yshift=-5pt]frame.south east) coordinate (SE)  to[out=0,in=180] +(4*\rad,5pt+\theight) --([shift={(-\tlen+4*\rad,5pt+\theight)}]SE) to[out=180,in=0] +(-4*\rad,-5pt-\theight) --cycle;
+      \begin{pgfonlayer}{bottom}
+         % 左侧翅膀：镜像翻转为向上折叠效果
+         \shade[left color=#2!20, right color=#2!80!black]
+         ([shift={(-1.35*\tlen+\Rad,-5pt)}]frame.south east)
+         to[out=180, in=0] ++(-2*\rad, \rad) % 将 -\rad 改为 \rad，使其向上延伸
+         -| +(5*\rad, -\rad)                 % 将 \rad 改为 -\rad，使其向下回到主体水平线
+         -- cycle;
+      \end{pgfonlayer}
+   \end{scope}
+}
+
+\mynewtcbtheorem{
+theorem={
+      counter=tcbthm,
+      the counter=\thesection.\arabic{tcbthm},
+      autoref name=\bfseries Theorem,
+      style={
+          arc=0mm,breakable,enhanced,
+                   % 针对跨页片段的特殊处理
+         extras first={
+               bottom=3mm, % 第一段的底部不需要留白
+            },
+         extras middle={
+               top=3mm,    % 中间段的顶部不需要留白
+               bottom=0mm, % 中间段的底部不需要留白
+            },
+         extras last={
+               top=0mm,    % 最后一段的顶部不需要留白
+            },
+         % 建议同时加入以下设置以确保彻底消除干扰
+         pad at break=2mm,
+         bottomsep at break=0mm,
+         topsep at break=2mm,
+          interior style={top color=黛绿!9 ,middle color=黛绿!6, bottom color=黛绿!3},arc=3pt,boxrule=0pt,top=6mm,bottom=5mm,
+          fuzzy shadow={-0.6mm}{0.6mm}{0mm}{0.3mm}{white!50!gray},% 上
+          fuzzy shadow={0.6mm}{-0.6mm}{0mm}{0.3mm}{fill=white!40!gray},%下
+          opacityframe=0, opacityback=0.98,
+          fontupper=\itshape,step={tcbthm},
+          before pre=\smallskip, after app=\smallskip,
+          overlay unbroken=\my@lemma@overlay@unbroken{Theorem\ \thetcbthm}{黛绿},
+          overlay first=\my@lemma@overlay@first{Theorem\ \thetcbthm}{黛绿},
+          overlay last=\my@lemma@overlay@last{黛绿},
+        }
+    },
+}
+\makeatother
+\begin{document}
+\chapter{Test}
+\begin{theorem}[][Semidefinite vanishing theorem for vector bundle of rank $k$ (General Case)][thm:Semidefinite vanishing theorem for vector bundle of rank $k$ (General Case)]
+   Let $M$ be a compact complex manifold, and assume that there exists a hermitian metric on $E$, whose curvature tensor $\Theta$ satisfies the following condition at each point of $M$.
+        
+   For any $\zeta\in C^r-0$, the quadratic form in $\eta,\Theta(\zeta,\eta)$, has at least $n-k_1$ positive eigenvalues and at least $k_2$ negative eigenvalues. Then 
+    \[H^q(M,\Omega(S^\mu E\otimes D))=0\]
+    for any $q\not\in (k_1,\ldots,k_2)$ if $\mu\geq 0$.
+\end{theorem}
+
+\begin{theorem}[][Semidefinite vanishing theorem for vector bundle][thm:Semidefinite vanishing theorem for vector bundle of rank $k$ (General Case)]
+   Let $M$ be a compact complex manifold, and assume that there exists a hermitian metric on $E$, whose curvature tensor $\Theta$ satisfies the following condition at each point of $M$.
+        
+   For any $\zeta\in C^r-0$, the quadratic form in $\eta,\Theta(\zeta,\eta)$, has at least $n-k_1$ positive eigenvalues and at least $k_2$ negative eigenvalues. Then 
+    \[H^q(M,\Omega(S^\mu E\otimes D))=0\]
+    for any $q\not\in (k_1,\ldots,k_2)$ if $\mu\geq 0$.
+\end{theorem}
+\end{document}

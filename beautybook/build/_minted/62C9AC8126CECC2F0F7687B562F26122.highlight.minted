@@ -1,0 +1,39 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+\PYG{n}{db\PYGZus{}source}\PYG{o}{=\PYGZsh{}}\PYG{+w}{ }\PYG{k}{CREATE}\PYG{+w}{ }\PYG{n}{PUBLICATION}\PYG{+w}{ }\PYG{n}{all\PYGZus{}tables\PYGZus{}pub}\PYG{+w}{ }\PYG{k}{FOR}\PYG{+w}{ }\PYG{k}{ALL}\PYG{+w}{ }\PYG{n}{TABLES}\PYG{p}{;}
+\PYG{k}{CREATE}\PYG{+w}{ }\PYG{n}{PUBLICATION}
+
+\PYG{c+c1}{\PYGZhy{}\PYGZhy{} 查看一下复制槽}
+\PYG{c+c1}{\PYGZhy{}\PYGZhy{} 订阅者连接到发布者并创建一个复制插槽}
+\PYG{c+c1}{\PYGZhy{}\PYGZhy{} 其信息在 pg\PYGZus{}replication\PYGZus{}slots 表中查看下}
+\PYG{n}{db\PYGZus{}source}\PYG{o}{=\PYGZsh{}}\PYG{+w}{ }\PYG{k}{select}\PYG{+w}{ }\PYG{o}{*}\PYG{+w}{ }\PYG{k}{from}\PYG{+w}{ }\PYG{n}{pg\PYGZus{}replication\PYGZus{}slots}\PYG{p}{;}
+\PYG{n}{slot\PYGZus{}name}\PYG{+w}{           }\PYG{o}{|}\PYG{+w}{ }\PYG{n}{sub\PYGZus{}all\PYGZus{}tables}
+\PYG{n}{plugin}\PYG{+w}{              }\PYG{o}{|}\PYG{+w}{ }\PYG{n}{pgoutput}
+\PYG{n}{slot\PYGZus{}type}\PYG{+w}{           }\PYG{o}{|}\PYG{+w}{ }\PYG{n}{logical}
+\PYG{n}{datoid}\PYG{+w}{              }\PYG{o}{|}\PYG{+w}{ }\PYG{l+m+mi}{17445}
+\PYG{k}{database}\PYG{+w}{            }\PYG{o}{|}\PYG{+w}{ }\PYG{n}{db\PYGZus{}source}
+\PYG{k}{temporary}\PYG{+w}{           }\PYG{o}{|}\PYG{+w}{ }\PYG{n}{f}
+\PYG{n}{active}\PYG{+w}{              }\PYG{o}{|}\PYG{+w}{ }\PYG{n}{f}
+\PYG{n}{active\PYGZus{}pid}\PYG{+w}{          }\PYG{o}{|}\PYG{+w}{ }\PYG{err}{¤}
+\PYG{n}{xmin}\PYG{+w}{                }\PYG{o}{|}\PYG{+w}{ }\PYG{err}{¤}
+\PYG{n}{catalog\PYGZus{}xmin}\PYG{+w}{        }\PYG{o}{|}\PYG{+w}{ }\PYG{l+m+mi}{1452}
+\PYG{n}{restart\PYGZus{}lsn}\PYG{+w}{         }\PYG{o}{|}\PYG{+w}{ }\PYG{l+m+mi}{0}\PYG{o}{/}\PYG{l+m+mi}{75062}\PYG{n}{A8}
+\PYG{n}{confirmed\PYGZus{}flush\PYGZus{}lsn}\PYG{+w}{ }\PYG{o}{|}\PYG{+w}{ }\PYG{l+m+mi}{0}\PYG{o}{/}\PYG{l+m+mi}{75062}\PYG{n}{A8}
+\PYG{n}{wal\PYGZus{}status}\PYG{+w}{          }\PYG{o}{|}\PYG{+w}{ }\PYG{n}{reserved}
+\PYG{n}{safe\PYGZus{}wal\PYGZus{}size}\PYG{+w}{       }\PYG{o}{|}\PYG{+w}{ }\PYG{err}{¤}
+\PYG{n}{two\PYGZus{}phase}\PYG{+w}{           }\PYG{o}{|}\PYG{+w}{ }\PYG{n}{f}
+\PYG{n}{conflicting}\PYG{+w}{         }\PYG{o}{|}\PYG{+w}{ }\PYG{n}{f}
+
+\PYG{c+c1}{\PYGZhy{}\PYGZhy{} 查看一下发布信息}
+\PYG{c+c1}{\PYGZhy{}\PYGZhy{} 当创建一个发布时，发布的信息可以从 pg\PYGZus{}publication 表中查看}
+\PYG{n}{db\PYGZus{}source}\PYG{o}{=\PYGZsh{}}\PYG{+w}{ }\PYG{k}{select}\PYG{+w}{ }\PYG{o}{*}\PYG{+w}{ }\PYG{k}{from}\PYG{+w}{ }\PYG{n}{pg\PYGZus{}publication}\PYG{p}{;}
+\PYG{o}{\PYGZhy{}}\PYG{p}{[}\PYG{+w}{ }\PYG{n}{RECORD}\PYG{+w}{ }\PYG{l+m+mi}{1}\PYG{+w}{ }\PYG{p}{]}\PYG{o}{+}\PYG{c+c1}{\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}}
+\PYG{n}{oid}\PYG{+w}{          }\PYG{o}{|}\PYG{+w}{ }\PYG{l+m+mi}{16395}
+\PYG{n}{pubname}\PYG{+w}{      }\PYG{o}{|}\PYG{+w}{ }\PYG{n}{all\PYGZus{}tables\PYGZus{}pub}
+\PYG{n}{pubowner}\PYG{+w}{     }\PYG{o}{|}\PYG{+w}{ }\PYG{l+m+mi}{10}
+\PYG{n}{puballtables}\PYG{+w}{ }\PYG{o}{|}\PYG{+w}{ }\PYG{n}{t}
+\PYG{n}{pubinsert}\PYG{+w}{    }\PYG{o}{|}\PYG{+w}{ }\PYG{n}{t}
+\PYG{n}{pubupdate}\PYG{+w}{    }\PYG{o}{|}\PYG{+w}{ }\PYG{n}{t}
+\PYG{n}{pubdelete}\PYG{+w}{    }\PYG{o}{|}\PYG{+w}{ }\PYG{n}{t}
+\PYG{n}{pubtruncate}\PYG{+w}{  }\PYG{o}{|}\PYG{+w}{ }\PYG{n}{t}
+\PYG{n}{pubviaroot}\PYG{+w}{   }\PYG{o}{|}\PYG{+w}{ }\PYG{n}{f}
+\end{MintedVerbatim}
