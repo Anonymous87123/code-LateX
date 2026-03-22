@@ -5,7 +5,41 @@
 
 先数一数原题给了多少条件，然后数一数要拟合什么点，拟合到多少阶，把所有点的要拟合阶数（包括0阶）相加，减去1，就是插值多项式的次数，余项比插值多项式的次数高1阶。然后根据余项的阶数和原函数的光滑性条件，判断是属于什么类型。
 \section{插值法}
-\newpage
+
+\begin{example}{}{}
+$f(x)$满足$f(0) = f'(0) = 0, f''(x) = \cos f(x)\ (x \in \mathbb{R})$，
+\text{证明：}
+\begin{enumerate}
+    \item[(1)] $f(x) \leqslant \pi$.
+    \item[(2)] $f'(x) > \sin\left(\sqrt{2}\right) \ \left(x \in \left[\sqrt{2},\ \frac{\pi}{\sqrt{2}}\right]\right)$
+\end{enumerate}
+\end{example}
+\begin{solution}
+（1）由$f''(x) = \cos f(x)$得$2f'(x)f''(x) = 2f'(x)\cos f(x)$，两边积分：
+$$\int 2f'(x)f''(x) dx = \int 2f'(x)\cos f(x) dx\implies(f'(x))^2 = 2\sin f(x) + C$$
+代入初始条件 $f(0) = 0, f'(0) = 0$得到$ C = 0$，因此$(f'(x))^2 = 2\sin f(x)$。
+由$(f'(x))^2 \geqslant 0$ 恒成立，必须满足$\sin f(x) \geqslant 0$，因为 $f(0) = 0$，且函数 $f(x)$ 在 $\mathbb{R}$ 上可导连续，它的值域必须是一个连续的区间。在包含 0 的情况下，满足 $\sin y \geqslant 0$ 的最大连通区间是 $[0, \pi]$。因此，对于任意 $x \in \mathbb{R}$，都有 $f(x) \in [0, \pi]$，即 $f(x) \leqslant \pi$ 成立。\\
+（2）对于$x \in \left[\sqrt{2},\ \frac{\pi}{\sqrt{2}}\right]$，
+我们知道 $f(0) = 0, f''(0) = 1 > 0$，所以从$x=0$开始的一段区间内，$f(x)$ 是单调递增的，此时 $f'(x) = \sqrt{2\sin f(x)}>0$。
+利用 $f''(x) = \cos f(x) \leqslant 1$ 积分两次得到的上限：$$f(x) \leqslant \frac{x^2}{2}$$
+把区间的最右端 $x = \frac{\pi}{\sqrt{2}}$ 代入这个上限
+$$f\left(\frac{\pi}{\sqrt{2}}\right) \leqslant \frac{\left(\frac{\pi}{\sqrt{2}}\right)^2}{2} = \frac{\pi^2}{4}<\pi$$
+既然在整个区间 $(0, \frac{\pi}{\sqrt{2}}]$ 内都有 $f(x) < \pi$，那么 $\sin f(x)$ 就不会降为 $0$，$f'(x)$ 就不会等于 $0$ 或变成负数。所以这段区间内恒有$f(x)$单增。又因为 $\sin y$ 在 $[0, \pi]$ 上是向下凸的，它在两端较低，在中间 $y = \frac{\pi}{2}$ 时取得最高点。这意味着 $f'(x) = \sqrt{2\sin f(x)}$ 在该区间的最小值，必然在其两端点处取得。所以下面来估计一下 $f'(\sqrt{2}) $和 $f'\left(\frac{\pi}{\sqrt{2}}\right)$ 的下界。\\
+由于$\sin\sqrt2$很接近1，先看$f'\left(\frac{\pi}{\sqrt{2}}\right)$的估值，不妨再直接考虑估计$f\left(\frac{\pi}{\sqrt{2}}\right)$，已知对于 $u \in \left[0, \frac{\pi}{2}\right]$，有 $\sin u \geqslant \dfrac{2u}{\pi}$。由 
+\[\dd x = \dfrac{\dd f}{\sqrt{2\sin f}}\implies x = \int_0^{f(x)} \frac{\dd u}{\sqrt{2\sin u}}\]
+假设 $f\left(\frac{\pi}{\sqrt{2}}\right) < \frac{\pi}{2}$，则：
+$$\frac{\pi}{\sqrt{2}} = \int_0^{f(\frac{\pi}{\sqrt{2}})} \frac{\dd u}{\sqrt{2\sin u}} < \int_0^{\frac{\pi}{2}} \frac{\dd u}{\sqrt{2\sin u}} \leqslant \int_0^{\frac{\pi}{2}} \frac{\dd u}{\sqrt{4u/\pi}} = \frac{\sqrt{\pi}}{2} \left[ 2u^{\frac{1}{2}} \right]_0^{\frac{\pi}{2}} = \frac{\pi}{\sqrt{2}}$$
+这就导出了矛盾 $\frac{\pi}{\sqrt{2}} < \frac{\pi}{\sqrt{2}}$。因此 $f\left(\frac{\pi}{\sqrt{2}}\right) \geqslant \frac{\pi}{2}$。所以当 $x = \frac{\pi}{\sqrt{2}}$ 时，$f(x)$ 落在了$\sin x$的递减区间内，如果我们需要找到$\sin f\left(\frac{\pi}{\sqrt{2}}\right)$的下界，就要找到$f\left(\frac{\pi}{\sqrt{2}}\right)$的上界，利用$f(x) \leqslant \frac{x^2}{2}$得到上限为：$f\left(\frac{\pi}{\sqrt{2}}\right) \leqslant \frac{\pi^2}{4}$。因此：$$\sin f\left(\frac{\pi}{\sqrt{2}}\right) \geqslant \sin\left(\frac{\pi^2}{4}\right) > \sin\left(\frac{5\pi}{6}\right) = \frac{1}{2}$$
+所以不难放缩得到
+$$f'\left(\frac{\pi}{\sqrt{2}}\right) = \sqrt{2\sin f\left(\frac{\pi}{\sqrt{2}}\right)} > \sqrt{2 \times\sin\left(\frac{\pi^2}{4}\right)}>\sqrt{2 \times\sin\frac{5\pi}{6}} = 1$$
+然后证明在区间左端点处 $f'(x) > 1$利用$\cos y \geqslant 1 - \frac{y^2}{2}$，并结合$f(x) \leqslant \frac{x^2}{2}$，可得：
+$$f''(x) = \cos f(x) \geqslant 1 - \frac{f(x)^2}{2} \geqslant 1 - \frac{x^4}{8}\implies f'(x) \geqslant x - \frac{x^5}{40}$$
+将 $x = \sqrt{2}$ 代入上式：$$f'(\sqrt{2}) \geqslant \sqrt{2} - \frac{(\sqrt{2})^5}{40} = \sqrt{2} - \frac{4\sqrt{2}}{40} = \frac{9\sqrt{2}}{10}$$因为 $\frac{9\sqrt{2}}{10} = \sqrt{1.62} > 1$，所以 $f'(\sqrt{2}) > 1$。
+最终得出：$$f'(x) > 1 > \sin(\sqrt{2}) \quad \left(x \in \left[\sqrt{2},\ \frac{\pi}{\sqrt{2}}\right]\right)$$证毕。
+\end{solution}
+
+
+
 \begin{example}{$\int_a^bf\left(x\right)dx=\left(b-a\right)f\left(\frac{a+b}{2}\right)+\frac{1}{24}\left(b-a\right)^3f''\left(\xi\right)$}{}
 $f(x)\in C^2[a,b]$，证明存在$\xi\in(a,b)$使得\[\int_a^bf\left(x\right)dx=\left(b-a\right)f\left(\frac{a+b}{2}\right)+\frac{1}{24}\left(b-a\right)^3f''\left(\xi\right)\]
 \end{example}
