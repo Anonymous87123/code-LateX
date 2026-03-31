@@ -2507,6 +2507,366 @@ P\{|X-\mu|<1\} = P\left\{\left|\frac{X-\mu}{\sigma}\right|<\frac{1}{\sigma}\righ
 \end{solution}
 
 
+\section{一维随机变量函数的分布} \label{sec:random-variable-function}
+
+\subsection{基本概念} \label{subsec:function-concept}
+
+设 $X$ 为随机变量，函数 $y = g(x)$ 在随机变量 $X$ 的取值范围内有定义，则以随机变量 $X$ 作为自变量的函数 $Y = g(X)$ 也是一个随机变量，称为随机变量 $X$ 的\textbf{函数}。例如：
+\[
+Y = aX^2 + bX + c,\quad Y = |X-a|,\quad Y = \begin{cases} X, & X \le 1, \\ 1, & X > 1 \end{cases}
+\]
+等都是随机变量的函数。本节主要研究如何由已知随机变量 $X$ 的分布来求其函数 $Y = g(X)$ 的分布。
+
+\begin{note}
+随机变量的函数在概率论与数理统计中具有重要应用。例如，在物理实验中，我们可能直接测量的是电压 $X$，但关心的却是功率 $Y = X^2/R$；在金融领域，资产的收益率经过某种变换后得到新的随机变量。因此，掌握随机变量函数的分布求法是解决实际问题的关键。
+\end{note}
+
+\subsection{离散型随机变量函数的分布} \label{subsec:discrete-to-discrete}
+
+设 $X$ 为离散型随机变量，其概率分布为
+\[
+P\{X = x_i\} = p_i,\quad i=1,2,\dots
+\]
+则 $X$ 的函数 $Y = g(X)$ 也是离散型随机变量。若 $g(x_i)$ 的值互不相同，则 $Y$ 的分布律为
+\[
+P\{Y = g(x_i)\} = p_i,\quad i=1,2,\dots
+\]
+即
+\[
+Y \sim \begin{pmatrix} g(x_1) & g(x_2) & \cdots \\ p_1 & p_2 & \cdots \end{pmatrix}.
+\]
+
+如果有若干个 $g(x_i)$ 的值相同，则需要将这些相同值对应的概率相加合并。具体来说，若 $g(x_{i_1}) = g(x_{i_2}) = \cdots = g(x_{i_k}) = y_j$，则
+\[
+P\{Y = y_j\} = \sum_{t=1}^{k} P\{X = x_{i_t}\} = \sum_{t=1}^{k} p_{i_t}.
+\]
+
+\begin{property}\label{prop:discrete-function}
+离散型随机变量函数的分布求解步骤：
+\begin{enumerate}
+    \item 确定 $Y = g(X)$ 的所有可能取值 $y_j$；
+    \item 对每个 $y_j$，找出所有满足 $g(x_i) = y_j$ 的 $x_i$；
+    \item 将相应的概率 $p_i$ 相加，得到 $P\{Y = y_j\}$。
+\end{enumerate}
+\end{property}
+
+\subsection{连续型随机变量函数的分布} \label{subsec:continuous-function}
+
+设 $X$ 为连续型随机变量，其概率密度函数为 $f_X(x)$，分布函数为 $F_X(x)$。对于连续型随机变量 $X$ 的函数 $Y = g(X)$，需要根据 $Y$ 的类型（离散型或连续型）采用不同的方法。
+
+\subsubsection{当 $Y$ 为离散型时} \label{subsubsec:continuous-to-discrete}
+
+若 $Y = g(X)$ 只能取有限个或可列个值，则 $Y$ 是离散型随机变量。此时应先确定 $Y$ 的所有可能取值，然后通过 $X$ 的概率分布计算 $Y$ 取各个值的概率。
+
+具体来说，若 $Y$ 的可能取值为 $y_1, y_2, \dots, y_n, \dots$，则
+\[
+P\{Y = y_j\} = P\{g(X) = y_j\} = \int_{\{x: g(x) = y_j\}} f_X(x) \,\mathrm{d}x.
+\]
+这通常涉及到对 $X$ 的取值空间按 $g(x)$ 的取值进行划分。
+
+\subsubsection{当 $Y$ 为连续型时} \label{subsubsec:continuous-to-continuous}
+
+若 $Y = g(X)$ 的取值充满一个区间（或若干区间的并），则 $Y$ 是连续型随机变量。此时主要有两种求解方法：分布函数法（定义法）和公式法。
+
+\paragraph{方法一：分布函数法（通用方法）} \label{par:distribution-function-method}
+根据分布函数的定义，先求 $Y$ 的分布函数 $F_Y(y)$，再对 $y$ 求导得到概率密度 $f_Y(y)$。
+
+具体步骤如下：
+\begin{enumerate}
+    \item 对任意实数 $y$，求 $Y$ 的分布函数：
+    \[
+    F_Y(y) = P\{Y \le y\} = P\{g(X) \le y\} = \int_{\{x: g(x) \le y\}} f_X(x) \,\mathrm{d}x.
+    \]
+    这一步的关键是解不等式 $g(x) \le y$，确定积分区域 $\{x: g(x) \le y\}$。
+    
+    \item 对 $F_Y(y)$ 关于 $y$ 求导（在可导点处）：
+    \[
+    f_Y(y) = F_Y'(y).
+    \]
+    
+    \item 检查 $f_Y(y)$ 是否满足概率密度函数的基本条件：非负性和归一性。
+\end{enumerate}
+
+\begin{note}
+分布函数法是求连续型随机变量函数分布的最通用方法，无论 $g(x)$ 是单调还是非单调、是连续还是分段连续，都适用。虽然计算过程可能相对复杂，但其思想直观、逻辑严密，是理解随机变量函数分布的基础。
+\end{note}
+
+\paragraph{方法二：公式法（单调函数情形）} \label{par:formula-method}
+当 $y = g(x)$ 是严格单调函数时，可以使用公式法更快捷地求得 $Y$ 的概率密度。
+
+\begin{theorem}[随机变量函数的密度公式] \label{thm:function-density-formula}
+设连续型随机变量 $X$ 的概率密度为 $f_X(x)$，函数 $y = g(x)$ 在 $X$ 的取值区间 $(a,b)$ 上严格单调且可导，其反函数为 $x = h(y)$，且 $h(y)$ 连续可导。则 $Y = g(X)$ 的概率密度为
+\[
+f_Y(y) = \begin{cases}
+f_X[h(y)] \cdot |h'(y)|, & \alpha < y < \beta, \\
+0, & \text{其他},
+\end{cases}
+\]
+其中 $(\alpha, \beta)$ 是函数 $y = g(x)$ 的值域，即
+\[
+\alpha = \min\left\{\lim_{x \to a^+} g(x), \lim_{x \to b^-} g(x)\right\}, \quad \beta = \max\left\{\lim_{x \to a^+} g(x), \lim_{x \to b^-} g(x)\right\}.
+\]
+\end{theorem}
+
+\begin{proof}
+考虑 $g(x)$ 严格单调递增的情形（单调递减类似）：
+\[
+F_Y(y) = P\{Y \le y\} = P\{g(X) \le y\} = P\{X \le h(y)\} = F_X[h(y)].
+\]
+两边对 $y$ 求导，由链式法则得
+\[
+f_Y(y) = F_Y'(y) = f_X[h(y)] \cdot h'(y).
+\]
+由于 $h'(y) > 0$（递增情形），故 $f_Y(y) = f_X[h(y)] \cdot |h'(y)|$。对于单调递减情形，$h'(y) < 0$，此时
+\[
+F_Y(y) = P\{g(X) \le y\} = P\{X \ge h(y)\} = 1 - F_X[h(y)],
+\]
+求导后得 $f_Y(y) = -f_X[h(y)] \cdot h'(y) = f_X[h(y)] \cdot |h'(y)|$。综上，公式成立。
+\end{proof}
+
+\begin{remark}
+公式法的适用条件：
+\begin{enumerate}
+    \item $g(x)$ 必须是严格单调函数（递增或递减）；
+    \item $g(x)$ 在 $X$ 的取值区间内可导；
+    \item 若 $g(x)$ 在若干区间上分段单调，则需要在每个单调区间上分别应用公式法，然后将结果相加（这实际上等价于分布函数法）。
+\end{enumerate}
+当 $g(x)$ 不满足严格单调条件时，必须使用分布函数法。
+\end{remark}
+
+\subsection{一般情形} \label{subsec:general-case}
+
+若 $X$ 既非离散型也非连续型（或形式未知），则只能使用分布函数的定义来求 $Y$ 的分布：
+\[
+F_Y(y) = P\{Y \le y\} = P\{g(X) \le y\}.
+\]
+这种方法不依赖于 $X$ 的具体类型，具有完全的通用性。
+
+\section{典型例题}
+
+\begin{exercise}[线性变换与平方变换] \label{exer:2-18}
+设连续型随机变量 $X$ 的概率密度函数为
+\[
+f_X(x) = \begin{cases}
+1, & -\dfrac{1}{2} < x < \dfrac{1}{2}, \\[6pt]
+0, & \text{其他},
+\end{cases}
+\]
+求下列随机变量 $Y$ 的概率密度函数：
+\begin{enumerate}
+    \item[(1)] $Y = a + bX$, 其中 $b \neq 0$；
+    \item[(2)] $Y = X^2$；
+    \item[(3)] $Y = |X|$。
+\end{enumerate}
+\end{exercise}
+
+\begin{solution}
+(1) \textbf{线性变换}：使用公式法最为简便。函数 $y = a + bx$ 是严格单调函数，其反函数为 $x = h(y) = \dfrac{y-a}{b}$，导数为 $h'(y) = \dfrac{1}{b}$。
+
+当 $b > 0$ 时：
+\[
+f_Y(y) = f_X\!\left(\frac{y-a}{b}\right) \cdot \frac{1}{b}, \quad \text{当 } -\frac{1}{2} < \frac{y-a}{b} < \frac{1}{2}.
+\]
+解得 $a - \dfrac{b}{2} < y < a + \dfrac{b}{2}$。因此
+\[
+f_Y(y) = \begin{cases}
+\dfrac{1}{b}, & a - \dfrac{b}{2} < y < a + \dfrac{b}{2}, \\[6pt]
+0, & \text{其他}.
+\end{cases}
+\]
+
+当 $b < 0$ 时，$|h'(y)| = -\dfrac{1}{b}$，得到
+\[
+f_Y(y) = \begin{cases}
+-\dfrac{1}{b}, & a + \dfrac{b}{2} < y < a - \dfrac{b}{2}, \\[6pt]
+0, & \text{其他}.
+\end{cases}
+\]
+可以统一表示为 $f_Y(y) = \dfrac{1}{|b|}$，在区间 $\left(a - \dfrac{|b|}{2}, a + \dfrac{|b|}{2}\right)$ 上。
+
+(2) \textbf{平方变换}：函数 $y = x^2$ 在 $(-\dfrac{1}{2}, \dfrac{1}{2})$ 上不是单调函数，必须使用分布函数法。
+
+由于 $Y = X^2 \ge 0$，当 $y \le 0$ 时，$F_Y(y) = 0$。
+
+当 $0 < y < \dfrac{1}{4}$ 时：
+\[
+F_Y(y) = P\{X^2 \le y\} = P\{-\sqrt{y} \le X \le \sqrt{y}\} = \int_{-\sqrt{y}}^{\sqrt{y}} 1 \, \mathrm{d}x = 2\sqrt{y}.
+\]
+
+当 $y \ge \dfrac{1}{4}$ 时，$F_Y(y) = 1$。
+
+求导得概率密度：
+\[
+f_Y(y) = \begin{cases}
+\dfrac{1}{\sqrt{y}}, & 0 < y < \dfrac{1}{4}, \\[6pt]
+0, & \text{其他}.
+\end{cases}
+\]
+
+(3) \textbf{绝对值变换}：同样使用分布函数法。由于 $Y = |X| \ge 0$，当 $y < 0$ 时，$F_Y(y) = 0$。
+
+当 $0 \le y < \dfrac{1}{2}$ 时：
+\[
+F_Y(y) = P\{|X| \le y\} = P\{-y \le X \le y\} = \int_{-y}^{y} 1 \, \mathrm{d}x = 2y.
+\]
+
+当 $y \ge \dfrac{1}{2}$ 时，$F_Y(y) = 1$。
+
+求导得：
+\[
+f_Y(y) = \begin{cases}
+2, & 0 \le y < \dfrac{1}{2}, \\[6pt]
+0, & \text{其他}.
+\end{cases}
+\]
+\end{solution}
+
+\begin{exercise}[离散型随机变量的函数] \label{exer:2-19}
+设随机变量 $X$ 的分布律为
+\[
+P\{X=-1\} = \frac{1}{4},\quad P\{X=0\} = \frac{1}{2},\quad P\{X=1\} = \frac{1}{4},
+\]
+求 $Y = X^2$ 的分布。
+\end{exercise}
+
+\begin{solution}
+$Y = X^2$ 的可能取值为 $0$ 和 $1$。
+
+当 $Y=0$ 时：
+\[
+P\{Y=0\} = P\{X^2=0\} = P\{X=0\} = \frac{1}{2}.
+\]
+
+当 $Y=1$ 时：
+\[
+P\{Y=1\} = P\{X^2=1\} = P\{X=1 \text{或} X=-1\} = P\{X=1\} + P\{X=-1\} = \frac{1}{4} + \frac{1}{4} = \frac{1}{2}.
+\]
+
+因此，$Y$ 的分布律为
+\[
+Y \sim \begin{pmatrix} 0 & 1 \\[4pt] \dfrac{1}{2} & \dfrac{1}{2} \end{pmatrix}.
+\]
+\end{solution}
+
+\begin{exercise}[概率积分变换] \label{exer:2-20}
+设随机变量 $X$ 的分布函数 $F_X(x)$ 是严格单调增加函数，其反函数 $F_X^{-1}(y)$ 存在，$Y = F_X(X)$。证明：$Y$ 服从区间 $(0,1)$ 上的均匀分布。
+\end{exercise}
+
+\begin{proof}
+由于 $F_X(x) \in [0,1]$，故 $Y$ 的取值范围是 $(0,1)$。
+
+当 $y < 0$ 时，$F_Y(y) = P\{Y \le y\} = 0$。
+
+当 $0 \le y < 1$ 时：
+\[
+F_Y(y) = P\{F_X(X) \le y\} = P\{X \le F_X^{-1}(y)\} = F_X[F_X^{-1}(y)] = y.
+\]
+
+当 $y \ge 1$ 时，$F_Y(y) = 1$。
+
+综上，$Y$ 的分布函数为
+\[
+F_Y(y) = \begin{cases}
+0, & y < 0, \\
+y, & 0 \le y < 1, \\
+1, & y \ge 1,
+\end{cases}
+\]
+这正是均匀分布 $U(0,1)$ 的分布函数，故 $Y \sim U(0,1)$。
+\end{proof}
+
+\begin{remark}
+概率积分变换是统计模拟和假设检验中的重要工具。它表明，任何连续型随机变量都可以通过其分布函数变换为标准均匀分布。反之，若 $U \sim U(0,1)$，则 $X = F_X^{-1}(U)$ 服从分布 $F_X(x)$。这为随机数生成提供了理论基础。
+\end{remark}
+
+\begin{exercise}[分段随机变量的函数] \label{exer:2-21}
+在区间 $(0,2)$ 上随机取一点，将该区间分成两段，较短一段的长度记为 $X$，较长一段的长度记为 $Y$。令 $Z = \dfrac{Y}{X}$。
+
+(1) 求 $X$ 的概率密度；
+(2) 求 $Z$ 的概率密度。
+\end{exercise}
+
+\begin{solution}
+(1) 设随机点的坐标为 $V \sim U(0,2)$，则 $X = \min\{V, 2-V\}$。显然 $0 \le X \le 1$。
+
+当 $x < 0$ 时，$F_X(x) = 0$；当 $x \ge 1$ 时，$F_X(x) = 1$。
+
+当 $0 \le x < 1$ 时：
+\[
+\begin{aligned}
+F_X(x) &= P\{\min\{V, 2-V\} \le x\} = 1 - P\{\min\{V, 2-V\} > x\} \\
+&= 1 - P\{x < V < 2-x\} = 1 - \frac{2-x-x}{2} = x.
+\end{aligned}
+\]
+
+因此
+\[
+f_X(x) = \begin{cases}
+1, & 0 < x < 1, \\[4pt]
+0, & \text{其他}.
+\end{cases}
+\]
+
+(2) 由于 $Y = 2 - X$，故 $Z = \dfrac{Y}{X} = \dfrac{2-X}{X} = \dfrac{2}{X} - 1$。当 $X \in (0,1)$ 时，$Z \in (1, +\infty)$。
+
+函数 $z = \dfrac{2}{x} - 1$ 在 $(0,1)$ 上严格单调递减，反函数为 $x = \dfrac{2}{1+z}$，导数为 $\dfrac{\mathrm{d}x}{\mathrm{d}z} = -\dfrac{2}{(1+z)^2}$。
+
+由公式法：
+\[
+f_Z(z) = f_X\!\left(\frac{2}{1+z}\right) \cdot \left|-\frac{2}{(1+z)^2}\right| = \frac{2}{(1+z)^2}, \quad z > 1.
+\]
+
+故
+\[
+f_Z(z) = \begin{cases}
+\dfrac{2}{(1+z)^2}, & z > 1, \\[6pt]
+0, & \text{其他}.
+\end{cases}
+\]
+\end{solution}
+
+\begin{exercise}[分段密度函数的变换] \label{exer:2-22}
+设随机变量 $X$ 的概率密度为
+\[
+f_X(x) = \begin{cases}
+\dfrac{1}{2}, & -1 < x < 0, \\[6pt]
+\dfrac{1}{4}, & 0 \le x < 2, \\[6pt]
+0, & \text{其他},
+\end{cases}
+\]
+令 $Y = X^2$，求 $Y$ 的概率密度 $f_Y(y)$。
+\end{exercise}
+
+\begin{solution}
+使用分布函数法。由于 $Y = X^2 \ge 0$，当 $y < 0$ 时，$F_Y(y) = 0$。
+
+当 $0 \le y < 1$ 时：
+\[
+\begin{aligned}
+F_Y(y) &= P\{-\sqrt{y} \le X \le \sqrt{y}\} \\
+&= P\{-\sqrt{y} \le X < 0\} + P\{0 \le X \le \sqrt{y}\} \\
+&= \frac{1}{2}\sqrt{y} + \frac{1}{4}\sqrt{y} = \frac{3}{4}\sqrt{y}.
+\end{aligned}
+\]
+
+当 $1 \le y < 4$ 时（注意 $-1 < x < 0$ 对应 $0 < y < 1$，而 $0 \le x < 2$ 对应 $0 \le y < 4$）：
+\[
+F_Y(y) = P\{-1 < X < 0\} + P\{0 \le X \le \sqrt{y}\} = \frac{1}{2} + \frac{1}{4}\sqrt{y}.
+\]
+
+当 $y \ge 4$ 时，$F_Y(y) = 1$。
+
+求导得概率密度：
+\[
+f_Y(y) = \begin{cases}
+\dfrac{3}{8\sqrt{y}}, & 0 < y < 1, \\[6pt]
+\dfrac{1}{8\sqrt{y}}, & 1 \le y < 4, \\[6pt]
+0, & \text{其他}.
+\end{cases}
+\]
+
+此题体现了当 $X$ 的密度函数分段定义时，$Y = g(X)$ 的分布需要分段讨论，特别注意变换后不同区间的合并与拆分。
+\end{solution}
 
 
 
@@ -2521,30 +2881,14 @@ P\{|X-\mu|<1\} = P\left\{\left|\frac{X-\mu}{\sigma}\right|<\frac{1}{\sigma}\righ
 
 
 
-\section{章标标题}
 
-本模板内置 2 套\textit{章标题显示风格}，包含 \lstinline{hang}（默认）与 \lstinline{display} 两种风格，区别在于章标题单行显示（\lstinline{hang}）与双行显示（\lstinline{display}），本说明使用了 \lstinline{hang}。调用方式为
-\begin{lstlisting}
-\documentclass[hang]{elegantbook} %or
-\documentclass[titlestyle=hang]{elegantbook}
-\end{lstlisting}
 
-在章标题内，章节编号默认是以数字显示，也即{\kaishu 第 1 章}，{\kaishu 第 2 章}等等，如果想要把数字改为中文，可以使用
-\begin{lstlisting}
-\documentclass[chinese]{elegantbook} %or
-\documentclass[scheme=chinese]{elegantbook}
-\end{lstlisting}
 
-\section{数学环境简介}
 
-在我们这个模板中，我们定义了两种不同的定理模式 \lstinline{mode}，包括简单模式（\lstinline{simple}）和炫彩模式（\lstinline{fancy}），默认为 \lstinline{fancy} 模式，不同模式的选择为
-\begin{lstlisting}
-\documentclass[simple]{elegantbook} %or
-\documentclass[mode=simple]{elegantbook}
-\end{lstlisting}
 
-本模板定义了四大类环境
 
+
+\subsection{定理类环境的使用}
 \begin{itemize}
   \item \textit{定理类环境}，包含标题和内容两部分，全部定理类环境的编号均以章节编号。根据格式的不同分为 3 种
     \begin{itemize}
@@ -2556,9 +2900,6 @@ P\{|X-\mu|<1\} = P\left\{\left|\frac{X-\mu}{\sigma}\right|<\frac{1}{\sigma}\righ
   \item \textit{提示类环境}，有 \textbf{note} 环境，特点是：无编号，有引导符。
   \item \textit{结论类环境}，有 \textbf{conclusion、assumption、property、remark、solution} 环境\footnote{本模板还添加了一个 result 选项，用于隐藏 \lstinline{solution} 和 \lstinline{proof} 环境，默认为显示（\lstinline{result=answer}），隐藏使用 \lstinline{result=noanswer}。}，三者均以粗体的引导词为开头，和普通段落格式一致。
 \end{itemize}
-
-\subsection{定理类环境的使用}
-
 由于本模板使用了 \lstinline{tcolorbox} 宏包来定制定理类环境，所以和普通的定理环境的使用有些许区别，定理的使用方法如下：
 \begin{lstlisting}
 \begin{theorem}{theorem name}{label}
