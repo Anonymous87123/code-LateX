@@ -591,10 +591,10 @@ P(C\overline{A}\,\overline{B}\cup\overline{C}AB) = P(C)+P(AB) = 0.2+0.25 = 0.45.
 
 \begin{exercise}[提高]\label{exer:1-50}
 设 \(A,B\) 为任意两个随机事件，则（\quad）。\par
-A. \(P(AB)\le P(A)P(B)\)\quad
-B. \(P(AB)\ge P(A)P(B)\)\quad
-C. \(P(AB)\le \dfrac{P(A)+P(B)}{2}\)\quad
-D. \(P(AB)\ge \dfrac{P(A)+P(B)}{2}\)
+\begin{tabular}{ll}
+A. \(P(AB)\le P(A)P(B)\) & B.\(P(AB)\ge P(A)P(B)\) \\[4pt]
+C. \(P(AB)\le \dfrac{P(A)+P(B)}{2}\) & D. \(P(AB)\ge \dfrac{P(A)+P(B)}{2}\)
+\end{tabular}
 \end{exercise}
 
 \begin{solution}
@@ -1354,10 +1354,8 @@ P(Y=k\mid X=n) = \mathrm{C}_n^k\,p^k\,(1-p)^{n-k}.
 
 (2) 由全概率公式：
 \begin{align*}
-P(Y=k) &= \sum_{n=k}^{\infty} P(Y=k\mid X=n)\,P(X=n) \\
-&= \sum_{n=k}^{\infty} \mathrm{C}_n^k\,p^k\,(1-p)^{n-k}\,\frac{\lambda^n}{n!}\,e^{-\lambda} \\
-&= \frac{p^k\,e^{-\lambda}\,\lambda^k}{k!}\sum_{n=k}^{\infty}\frac{[\lambda(1-p)]^{n-k}}{(n-k)!} \\
-&= \frac{(\lambda p)^k}{k!}\,e^{-\lambda}\,e^{\lambda(1-p)} = \frac{(\lambda p)^k}{k!}\,e^{-\lambda p}.
+P(Y=k) &= \sum_{n=k}^{\infty} P(Y=k\mid X=n)\,P(X=n) = \sum_{n=k}^{\infty} \mathrm{C}_n^k\,p^k\,(1-p)^{n-k}\,\frac{\lambda^n}{n!}\,e^{-\lambda} \\
+&= \frac{p^k\,e^{-\lambda}\,\lambda^k}{k!}\sum_{n=k}^{\infty}\frac{[\lambda(1-p)]^{n-k}}{(n-k)!} = \frac{(\lambda p)^k}{k!}\,e^{-\lambda}\,e^{\lambda(1-p)} = \frac{(\lambda p)^k}{k!}\,e^{-\lambda p}.
 \end{align*}
 即 \(Y\sim P(\lambda p)\)。
 \end{solution}
@@ -1637,7 +1635,7 @@ P\{X=1\} = \mathrm{C}_3^1\, p\,(1-p)^2 = 3p(1-p)^2.
 \end{note}
 
 \begin{exercise}\label{exer:1-25}
-在四次独立试验中，事件 \(A\) 至少发生一次的概率为 \(\dfrac{80}{81}\)，则事件 \(A\) 在每次试验中发生的概率为（\quad）。\par
+在四次独立试验中，事件 \(A\) 至少发生一次的概率为 \(\dfrac{80}{81}\)，则事件 \(A\) 在每次试验中发生的概率为（\quad）。\quad 
 A. \(\dfrac{1}{3}\)\quad
 B. \(\dfrac{2}{3}\)\quad
 C. \(\dfrac{2}{3}\sqrt[4]{5}\)\quad
@@ -2010,6 +2008,31 @@ F(x) = \begin{cases}
 该分布函数连续但不绝对连续（因 $\int_0^1 F'(x)\,\mathrm{d}x = \dfrac{1}{2} \neq 1$），故对应的随机变量既非离散型又非连续型。
 \end{note}
 
+\begin{exercise}[分布函数性质判断] \label{exer:2-32}
+已知 $F(x)$ 是分布函数，下列函数：
+\begin{enumerate}
+    \item[(1)] $aF(x)$ （$a>0, a\neq1$）；
+    \item[(2)] $F(x)+F(-x)$；
+    \item[(3)] $F(x)-F(-x)$；
+    \item[(4)] $F(x)\cdot F(-x)$。
+\end{enumerate}
+其中\textbf{不能作为}分布函数的个数是（\quad）。
+\begin{tabular}{llll}
+A. 1 & B. 2 & C. 3 & D. 4
+\end{tabular}
+\end{exercise}
+\begin{solution}
+应用分布函数的充要条件求解。由于
+\begin{itemize}
+    \item (1) $aF(+\infty)=a\neq1$；
+    \item (2) $F(-\infty)+F(+\infty)=1\neq0$；
+    \item (3) $F(-\infty)-F(+\infty)=-1\neq0$；
+    \item (4) $F(+\infty)\cdot F(-\infty)=0\neq1$；
+\end{itemize}
+故(1)、(2)、(3)、(4)都不能作为分布函数，答案选 \textbf{(D)}。
+\end{solution}
+
+
 \begin{exercise}\label{exer:2-4}
 设连续型随机变量 $X$ 的分布函数为
 \[
@@ -2077,6 +2100,56 @@ F(x) = P\{X \le x\} = \sum_{x_i \le x} P\{X = x_i\} = \begin{cases}
 \]
 \end{solution}
 
+\begin{exercise}\label{exer:2-25}
+已知离散型随机变量 $X$ 的分布律为 $P\{X=k\} = c(0.75)^k,\ k=1,2,3,\dots$，则常数 $c$ 的值为\underline{\hspace{2cm}}。
+\end{exercise}
+
+\begin{solution}
+应填 $\dfrac{1}{3}$。
+
+由离散型随机变量分布律的归一性：
+\[
+\sum_{k=1}^{+\infty} P\{X=k\} = \sum_{k=1}^{+\infty} c\cdot(0.75)^k = c \cdot \frac{0.75}{1-0.75} = 3c = 1,
+\]
+解得 $c = \dfrac{1}{3}$。
+\end{solution}
+
+\begin{exercise}\label{exer:2-26}
+设随机变量 $X$ 的分布函数为
+\[
+F(x) = \begin{cases}
+0, & x<-1, \\
+0.4, & -1 \le x<1, \\
+0.8, & 1 \le x<3, \\
+1, & x \ge 3.
+\end{cases}
+\]
+求：(1) $X$ 的分布律；(2) $P\{X<2 \mid X \neq 1\}$。
+\end{exercise}
+
+\begin{solution}
+(1) 根据离散型随机变量的性质：$P\{X=k\} = F(k) - F(k^-)$。
+\begin{align*}
+P\{X=-1\} &= F(-1) - F(-1^-) = 0.4 - 0 = 0.4, \\
+P\{X=1\} &= F(1) - F(1^-) = 0.8 - 0.4 = 0.4, \\
+P\{X=3\} &= F(3) - F(3^-) = 1 - 0.8 = 0.2.
+\end{align*}
+故 $X$ 的分布律为：
+\[
+\begin{array}{c|ccc}
+X & -1 & 1 & 3 \\
+\hline
+P & 0.4 & 0.4 & 0.2
+\end{array}
+\]
+(2) 由条件概率公式：
+\[
+P\{X<2 \mid X \neq 1\} = \frac{P\{X<2,\, X \neq 1\}}{P\{X \neq 1\}} = \frac{P\{X=-1\}}{1-P\{X=1\}} = \frac{0.4}{0.6} = \frac{2}{3}.
+\]
+\end{solution}
+
+
+
 \begin{exercise}\label{exer:2-6}
 已知 $X$ 的分布函数为 $F(x)$，概率密度为 $f(x)$。当 $x \le 0$ 时，$f(x)$ 连续且 $f(x) = F(x)$。若 $F(0) = 1$，求 $f(x)$。
 \end{exercise}
@@ -2129,6 +2202,62 @@ F(x) = \begin{cases}
 \end{cases}
 \]
 \end{solution}
+
+\begin{exercise}\label{exer:2-23}
+下列函数中，可以作为某个随机变量的概率密度函数的是（\quad）。
+\begin{align*}
+&\text{A. } f(x) = \begin{cases} 2(1-|x|), & |x| \le 1 \\ 0, & |x|>1 \end{cases}
+&&\text{B. } f(x) = \begin{cases} \frac{1}{\sqrt{2\pi}\sigma} e^{-\frac{(x-\mu)^2}{2\sigma^2}}, & x \ge 0 \\ 0, & x<0 \end{cases} \\
+&\text{C. } f(x) = \begin{cases} x, & -1<x<0 \\ \frac{3}{4}x, & 0 \le x<2 \\ 0, & \text{其他} \end{cases}
+&&\text{D. } f(x) = \begin{cases} \lambda e^{-\lambda x}, & x>0 \\ 0, & x \le 0 \end{cases} \ (\lambda>0)
+\end{align*}
+\end{exercise}
+
+\begin{solution}
+应选 D。
+
+逐条验证概率密度函数的充要条件（非负性和归一性）：
+\begin{itemize}
+    \item A：$\displaystyle\int_{-\infty}^{\infty} f(x)\,\mathrm{d}x = 2\int_0^1 2(1-x)\,\mathrm{d}x = 4\left[x-\frac{x^2}{2}\right]_0^1 = 2 \neq 1$，错误；
+    \item B：正态分布的概率密度在 $x<0$ 时截断为0，但 $\displaystyle\int_0^{+\infty} f(x)\,\mathrm{d}x = \frac{1}{2} \neq 1$，错误；
+    \item C：当 $-1<x<0$ 时，$x<0$，故 $f(x)=x<0$，不满足非负性，错误；
+    \item D：指数分布的标准形式，满足 $\displaystyle\int_0^{+\infty} \lambda e^{-\lambda x}\,\mathrm{d}x = 1$，正确。
+\end{itemize}
+\end{solution}
+
+\begin{exercise}\label{exer:2-24}
+设随机变量 $X$ 的概率密度为
+\[
+f(x) = \begin{cases} A\sin x, & 0 \le x \le \pi \\ 0, & \text{其他} \end{cases}
+\]
+求：(1) 系数 $A$；(2) $X$ 的分布函数 $F(x)$；(3) $P\{0<X<1\}$。
+\end{exercise}
+
+\begin{solution}
+(1) 由归一性条件：
+\[
+\int_{0}^{\pi} A\sin x\,\mathrm{d}x = A[-\cos x]_{0}^{\pi} = A(1+1) = 2A = 1,
+\]
+解得 $A = \dfrac{1}{2}$。\\
+(2) 当 $x < 0$ 时，$F(x) = 0$；当 $0 \le x < \pi$ 时，
+\[
+F(x) = \int_{0}^{x} \frac{1}{2}\sin t\,\mathrm{d}t = \frac{1}{2}[-\cos t]_{0}^{x} = \frac{1}{2}(1-\cos x);
+\]
+当 $x \ge \pi$ 时，$F(x) = 1$。故
+\[
+F(x) = \begin{cases}
+0, & x<0, \\[6pt]
+\dfrac{1}{2}(1-\cos x), & 0 \le x < \pi, \\[6pt]
+1, & x \ge \pi.
+\end{cases}
+\]
+(3)
+\[
+P\{0<X<1\} = \int_{0}^{1} \frac{1}{2}\sin t\,\mathrm{d}t = \frac{1}{2}(1-\cos 1).
+\]
+\end{solution}
+
+
 
 \begin{exercise}\label{exer:2-8}
 设 $F_1(x), F_2(x)$ 是随机变量的分布函数，$f_1(x), f_2(x)$ 是相应的概率密度，则下列选项中正确的是（\quad）。\\
@@ -2506,6 +2635,166 @@ P\{|X-\mu|<1\} = P\left\{\left|\frac{X-\mu}{\sigma}\right|<\frac{1}{\sigma}\righ
 其中 $\Phi(u)$ 为单调增加函数，而 $u = \frac{1}{\sigma}$ 随 $\sigma$ 增大而单调减少，故 $\Phi\left(\frac{1}{\sigma}\right)$ 单调减少，从而 $2\Phi\left(\frac{1}{\sigma}\right)-1$ 单调减少，故选择 (B)。
 \end{solution}
 
+\begin{exercise}[提高]\label{exer:2-27}
+假设某段时间内来百货公司的顾客数服从参数为 $\lambda$ 的泊松分布，而每位顾客购买电视机的概率均为 $p$，且顾客之间是否购买电视机相互独立。求该段时间内百货公司售出 $k$ 台电视机的概率（假设每位顾客至多买一台电视机）。
+\end{exercise}
+
+\begin{solution}
+设 $A_i$ 表示这段时间内到达百货公司的顾客数为 $i\ (i=0,1,2,\dots)$，则 $P(A_i) = \dfrac{\lambda^i}{i!}e^{-\lambda}$。
+当顾客数为 $i$ 时，售出的电视机数 $Y|A_i \sim B(i,p)$，故
+\[
+P\{Y=k \mid A_i\} = \mathrm{C}_i^k\, p^k(1-p)^{i-k}, \quad k \le i.
+\]
+由全概率公式：
+\begin{align*}
+P\{Y=k\} &= \sum_{i=0}^{\infty} P(A_i)\,P\{Y=k \mid A_i\} \\
+&= \sum_{i=k}^{\infty} \frac{\lambda^i}{i!}e^{-\lambda} \cdot \frac{i!}{(i-k)!k!}\, p^k(1-p)^{i-k} \\
+&= \frac{e^{-\lambda}(\lambda p)^k}{k!} \sum_{i=k}^{\infty} \frac{[\lambda(1-p)]^{i-k}}{(i-k)!}.
+\end{align*}
+令 $m = i-k$，则
+\[
+\sum_{i=k}^{\infty} \frac{[\lambda(1-p)]^{i-k}}{(i-k)!} = \sum_{m=0}^{\infty} \frac{[\lambda(1-p)]^m}{m!} = e^{\lambda(1-p)}.
+\]
+因此
+\[
+P\{Y=k\} = \frac{e^{-\lambda}(\lambda p)^k}{k!} \cdot e^{\lambda(1-p)} = \frac{(\lambda p)^k}{k!} e^{-\lambda p}, \quad k=0,1,2,\dots.
+\]
+即 $Y \sim P(\lambda p)$。这表明：若顾客数服从泊松分布，每位顾客独立地以概率 $p$ 购买，则购买总数仍服从泊松分布，参数变为 $\lambda p$。
+\end{solution}
+
+\begin{exercise}\label{exer:2-28}
+设某医院门诊的内科看病窗口有 5 个，患者平均就诊时间为 10 分钟，假定每个患者的就诊时间服从指数分布。求：
+\begin{enumerate}
+    \item[(1)] 患者就诊时间超过 10 分钟的概率；
+    \item[(2)] 若某时刻 5 个窗口都有病人就诊，则恰有 2 人的看病时间超过 10 分钟的概率。
+\end{enumerate}
+\end{exercise}
+
+\begin{solution}
+由题意，平均就诊时间为 10 分钟，故 $\dfrac{1}{\lambda}=10$，即 $\lambda=0.1$。记患者就诊时间为 $X$，则 $X \sim E(0.1)$。\\
+(1) 
+\[
+P\{X \ge 10\} = \int_{10}^{\infty} 0.1\, e^{-0.1x}\,\mathrm{d}x = e^{-1}.
+\]
+(2) 设 5 个窗口都有病人就诊时，恰有 2 人看病时间超过 10 分钟为事件 $B$。每位患者就诊时间超过 10 分钟的概率为 $e^{-1}$，则
+\[
+P(B) = \mathrm{C}_5^2\, (e^{-1})^2\, (1-e^{-1})^3 = 10\, e^{-2}\,(1-e^{-1})^3.
+\]
+\end{solution}
+
+\begin{exercise}\label{exer:2-29}
+设随机变量 $X$ 在区间 $(0,8)$ 上服从均匀分布。
+\begin{enumerate}
+    \item[(1)] 求方程 $y^2 + 2y + X = 0$ 有实根的概率；
+    \item[(2)] 若对随机变量 $X$ 进行 4 次独立观察，记 $Y$ 为上述方程有实根的次数，求 $Y$ 的数学期望和方差。
+\end{enumerate}
+\end{exercise}
+
+\begin{solution}
+(1) 方程有实根的条件为判别式 $\Delta = 2^2 - 4X \ge 0$，即 $X \le 1$。由均匀分布性质：
+\[
+P\{X \le 1\} = \frac{1-0}{8} = \frac{1}{8}.
+\]
+(2) 易知 $Y \sim B\!\left(4,\dfrac{1}{8}\right)$，故
+\[
+E(Y) = np = 4 \times \frac{1}{8} = \frac{1}{2}, \quad D(Y) = np(1-p) = 4 \times \frac{1}{8} \times \frac{7}{8} = \frac{7}{16}.
+\]
+\end{solution}
+
+\begin{exercise}[二项分布参数求解] \label{exer:2-33}
+设 $X\sim B(2,p)$，$Y\sim B(4,p)$，且 $P(X\geq1)=\dfrac{5}{9}$，则 $P(Y\geq1)=$（\quad）。
+\begin{tabular}{llll}
+A. $\dfrac{65}{81}$ & B. $\dfrac{16}{81}$ & C. 1 & D. $\dfrac{4}{7}$
+\end{tabular}
+\end{exercise}
+
+\begin{solution}
+由题设 $P(X\geq1)=\dfrac{5}{9}=1-P(X=0)=1-\mathrm{C}_2^0p^0(1-p)^2$，即 $(1-p)^2=\dfrac{4}{9}$，解得 $p=\dfrac{1}{3}$，从而有
+\[
+P(Y\geq1)=1-P(Y=0)=1-\mathrm{C}_4^0p^0(1-p)^4=1-\left(\frac{2}{3}\right)^4=\frac{65}{81},
+\]
+答案选 \textbf{(A)}。
+\end{solution}
+
+\begin{exercise}[正态分布标准差比较] \label{exer:2-34}
+设随机变量 $X$ 服从正态分布 $N(\mu_1,\sigma_1^2)$，随机变量 $Y$ 服从正态分布 $N(\mu_2,\sigma_2^2)$，$\sigma_1,\sigma_2>0$，且 $P\{|X-\mu_1|<1\}>P\{|Y-\mu_2|<1\}$，则必有（\quad）。
+\begin{tabular}{ll}
+A. $\sigma_1<\sigma_2$ & B. $\sigma_1>\sigma_2$ \\
+C. $\mu_1<\mu_2$ & D. $\mu_1>\mu_2$
+\end{tabular}
+\end{exercise}
+
+\begin{solution}
+正态分布标准化：
+\[
+P\left\{\frac{|X-\mu_1|}{\sigma_1}<\frac{1}{\sigma_1}\right\}>P\left\{\frac{|Y-\mu_2|}{\sigma_2}<\frac{1}{\sigma_2}\right\},
+\]
+\[
+2\Phi\left(\frac{1}{\sigma_1}\right)-1 > 2\Phi\left(\frac{1}{\sigma_2}\right)-1 \implies \Phi\left(\frac{1}{\sigma_1}\right)>\Phi\left(\frac{1}{\sigma_2}\right),
+\]
+由 $\Phi(x)$ 单调递增，得 $\dfrac{1}{\sigma_1}>\dfrac{1}{\sigma_2}$，即 $\sigma_1<\sigma_2$，答案选 \textbf{(A)}。
+\end{solution}
+
+\begin{exercise}[分布函数计算] \label{exer:2-35}
+设随机变量 $X$ 的分布函数
+\[
+F(x)=
+\begin{cases}
+0, & x<0, \\
+\dfrac{1}{2}, & 0\leq x<1, \\
+1-e^{-x}, & x\geq1,
+\end{cases}
+\]
+则 $P\{0\leq X\leq1\}=\underline{\hspace{2cm}}$，$P\{0<X<1\}=\underline{\hspace{2cm}}$。
+\end{exercise}
+
+\begin{solution}
+\[
+\begin{aligned}
+P\{0\leq X\leq1\}&=F(1)-F(0^-)=1-e^{-1}; \\
+P\{0<X<1\}&=F(1^-)-F(0)=\frac{1}{2}-\frac{1}{2}=0.
+\end{aligned}
+\]
+答案：$\boldsymbol{1-e^{-1}}$；$\boldsymbol{0}$。
+\end{solution}
+
+\begin{exercise}[离散型分布求解] \label{exer:2-36}
+离散型随机变量 $X$ 的分布函数为
+\[
+F(x)=
+\begin{cases}
+0, & x<-1, \\
+0.4, & -1\leq x<2, \\
+0.8, & 2\leq x<3, \\
+1, & x\geq3,
+\end{cases}
+\]
+则 $X$ 的分布列为$\underline{\hspace{2cm}}$，$P\{X\leq3.2\}=\underline{\hspace{2cm}}$，方程 $x^2+Xx+1=0$ 有实根的概率为$\underline{\hspace{2cm}}$。
+\end{exercise}
+
+\begin{solution}
+由分布函数可得分布列：
+\[
+P\{X=-1\}=F(-1)-F(-1^-)=0.4-0=0.4,
+\]
+\[
+P\{X=2\}=F(2)-F(2^-)=0.8-0.4=0.4,
+\]
+\[
+P\{X=3\}=F(3)-F(3^-)=1-0.8=0.2.
+\]
+故分布列：$X\sim\begin{pmatrix}-1 & 2 & 3 \\ 0.4 & 0.4 & 0.2\end{pmatrix}$。
+
+$P\{X\leq3.2\}=1$（因为最大取值为3）。
+
+方程有实根 $\Leftrightarrow \Delta=X^2-4\geq0 \Leftrightarrow X\geq2$ 或 $X\leq-2$（后者不可能），
+\[
+P(X\geq2)=P\{X=2\}+P\{X=3\}=0.4+0.2=0.6.
+\]
+答案：分布列如上；$\boldsymbol{1}$；$\boldsymbol{0.6}$。
+\end{solution}
+
+
 
 \section{一维随机变量函数的分布} \label{sec:random-variable-function}
 
@@ -2868,9 +3157,60 @@ f_Y(y) = \begin{cases}
 此题体现了当 $X$ 的密度函数分段定义时，$Y = g(X)$ 的分布需要分段讨论，特别注意变换后不同区间的合并与拆分。
 \end{solution}
 
+\begin{exercise}\label{exer:2-30}
+设随机变量 $X$ 服从参数为 2 的指数分布，求 $Y=1-e^{-2X}$ 的概率密度 $f_Y(y)$。
+\end{exercise}
 
+\begin{solution}
+由题意，$X \sim E(2)$，概率密度为 $f_X(x) = \begin{cases} 2e^{-2x}, & x>0 \\ 0, & x \le 0 \end{cases}$。\\
+函数 $y = 1-e^{-2x}$ 在 $x>0$ 上严格单调递增，值域为 $(0,1)$。反函数为 $x = -\dfrac{1}{2}\ln(1-y)$，导数为
+\[
+\frac{\mathrm{d}x}{\mathrm{d}y} = \frac{1}{2(1-y)}.
+\]
+由公式法：
+\begin{align*}
+f_Y(y) &= f_X\!\left(-\frac{1}{2}\ln(1-y)\right) \cdot \left|\frac{1}{2(1-y)}\right| \\
+&= 2e^{-2 \cdot \left[-\frac{1}{2}\ln(1-y)\right]} \cdot \frac{1}{2(1-y)} \\
+&= 2(1-y) \cdot \frac{1}{2(1-y)} = 1, \quad 0 < y < 1.
+\end{align*}
+故
+\[
+f_Y(y) = \begin{cases}
+1, & 0 < y < 1, \\[4pt]
+0, & \text{其他}.
+\end{cases}
+\]
+即 $Y \sim U(0,1)$。
+\end{solution}
 
+\begin{exercise}\label{exer:2-31}
+设随机变量 $X \sim N(4,16)$，求 $Y=|X-4|$ 的概率密度 $f_Y(y)$。
+\end{exercise}
 
+\begin{solution}
+令 $Z = X-4$，则 $Z \sim N(0,16)$，概率密度为 $f_Z(z) = \dfrac{1}{\sqrt{32\pi}} e^{-\frac{z^2}{32}}$。
+
+函数 $y = |z|$ 在 $(-\infty,+\infty)$ 上不是严格单调函数，使用分布函数法。
+
+由于 $Y = |Z| \ge 0$，当 $y \le 0$ 时，$F_Y(y) = 0$。
+
+当 $y > 0$ 时：
+\begin{align*}
+F_Y(y) &= P\{|Z| \le y\} = P\{-y \le Z \le y\} = F_Z(y) - F_Z(-y).
+\end{align*}
+
+求导得：
+\[
+f_Y(y) = F_Z'(y) - F_Z'(-y) \cdot (-1) = f_Z(y) + f_Z(-y) = \frac{2}{\sqrt{32\pi}} e^{-\frac{y^2}{32}}.
+\]
+故
+\[
+f_Y(y) = \begin{cases}
+\dfrac{1}{\sqrt{8\pi}} e^{-\frac{y^2}{32}}, & y > 0, \\[6pt]
+0, & y \le 0.
+\end{cases}
+\]
+\end{solution}
 
 
 
