@@ -2151,116 +2151,375 @@ D. $f_1(x) \cdot f_2(x)$ 是概率密度
 \end{solution}
 
 
+\section{常见离散型随机变量及分布}
+
+\subsection{(0-1)分布} \label{subsec:0-1-dist}
+\begin{definition}[(0-1)分布]
+随机变量 $X$ 只可能取 0 与 1 两个值，它的分布律为
+\[
+P\{X = k\} = p^k (1-p)^{1-k},\quad k=0,1\ (0 < p < 1).
+\]
+则称 $X$ 服从参数为 $p$ 的(0-1)分布，记为 $X \sim B(1,p)$。
+\end{definition}
+
+\begin{note}
+(0-1)分布是描述伯努利试验结果的计数变量——事件发生计为1，不发生计为0。它是所有离散型分布的基础。
+\end{note}
+
+\subsection{二项分布} \label{subsec:binomial-dist}
+\begin{definition}[二项分布]
+若随机变量 $X$ 的分布律为
+\[
+P\{X = k\} = \mathrm{C}_n^k p^k (1-p)^{n-k},\quad k=0,1,\dots,n,
+\]
+其中 $0 < p < 1$，则称 $X$ 服从参数为 $(n,p)$ 的二项分布，记为 $X \sim B(n,p)$。
+\end{definition}
+
+\begin{property}\label{prop:binomial-trans}
+若 $X \sim B(n,p)$，则令 $Y = n - X$，有 $Y \sim B(n,1-p)$。
+\end{property}
+
+\begin{note}
+二项分布描述了$n$重独立伯努利试验中事件$A$发生的次数。当$n=1$时，二项分布退化为(0-1)分布。
+\end{note}
+
+\subsection{泊松分布} \label{subsec:poisson-dist}
+\begin{definition}[泊松分布]
+若随机变量 $X$ 的分布律为
+\[
+P\{X = k\} = \frac{\lambda^k}{k!} e^{-\lambda},\quad \lambda > 0;\ k=0,1,2,\dots,
+\]
+则称 $X$ 服从参数为 $\lambda$ 的泊松分布，记为 $X \sim P(\lambda)$。
+\end{definition}
+
+\begin{theorem}[泊松定理] \label{thm:poisson-approx}
+设 $\lambda > 0$ 是一个常数，$n$ 是任意正整数，设 $\lim_{n \to \infty} np_n = \lambda$，则对于任一固定的非负整数 $k$，有
+\[
+\lim_{n \to \infty} \mathrm{C}_n^k p_n^k (1-p_n)^{n-k} = \frac{\lambda^k e^{-\lambda}}{k!}.
+\]
+\end{theorem}
+
+\begin{note}
+泊松定理表明：当$n$很大，$p$很小，且$\lambda = np$适中时，二项分布可用泊松分布近似，即
+\[
+\mathrm{C}_n^k p^k (1-p)^{n-k} \approx \frac{\lambda^k}{k!} e^{-\lambda}.
+\]
+一般地，当$n \ge 20,\ p \le 0.05$时，用泊松近似公式逼近二项分布效果比较好，特别当$n \ge 100,\ np \le 10$时，逼近效果更佳。这一结论在计算机出现前极大简化了二项分布的计算。
+\end{note}
+
+\subsection{几何分布} \label{subsec:geometric-dist}
+\begin{definition}[几何分布]
+若随机变量 $X$ 的分布律为
+\[
+P\{X = k\} = (1-p)^{k-1} p,\quad k=1,2,\dots;\ 0 < p < 1,
+\]
+则称 $X$ 服从参数为 $p$ 的几何分布，记为 $X \sim G(p)$。
+\end{definition}
+
+\begin{note}
+几何分布描述了在$n$重伯努利试验中，事件$A$首次出现所需的试验次数。它具有与指数分布类似的无记忆性。
+\end{note}
+
+\subsection{超几何分布} \label{subsec:hypergeo-dist}
+\begin{definition}[超几何分布]
+若随机变量 $X$ 的分布律为
+\[
+P\{X=k\} = \frac{\mathrm{C}_M^k \mathrm{C}_{N-M}^{n-k}}{\mathrm{C}_N^n},\quad \max\{0,n-N+M\} \le k \le \min\{M,n\},
+\]
+其中 $M,N,n$ 为正整数且 $M \le N,\ n \le N$，则称 $X$ 服从参数为 $(n,N,M)$ 的超几何分布，记为 $X \sim H(n,N,M)$。
+\end{definition}
+
+\begin{note}
+超几何分布描述的是不放回抽样场景：设总体中有$N$个产品，其中$M$个不合格品。若从中随机不放回地抽取$n$个，则其中不合格品的个数$X$服从超几何分布。当$n \ll N$时（抽取个数远小于总体），每次抽取后总体不合格品率$p=\frac{M}{N}$改变甚微，此时不放回抽样可近似看作放回抽样，超几何分布可用二项分布$H(n,N,M) \approx B(n,\frac{M}{N})$近似。
+\end{note}
+
+\subsection{极值分布} \label{subsec:extreme-dist}
+\begin{property}\label{prop:extreme-value}
+对于 $n$ 个相互独立的随机变量 $\xi_1,\xi_2,\dots,\xi_n$，其分布函数分别为 $F_1(x),F_2(x),\dots,F_n(x)$，则：
+\begin{itemize}
+    \item 最大值 $\eta_1 = \max\{\xi_1,\xi_2,\dots,\xi_n\}$ 的分布函数为
+    \[
+    F_{\eta_1}(x) = P\{\eta_1 \le x\} = P\left(\bigcap_{k=1}^n \xi_k \le x\right) = \prod_{k=1}^n F_k(x);
+    \]
+    \item 最小值 $\eta_2 = \min\{\xi_1,\xi_2,\dots,\xi_n\}$ 的分布函数为
+    \[
+    F_{\eta_2}(x) = P\{\eta_2 \le x\} = 1 - P\{\eta_2 > x\} = 1 - P\left(\bigcap_{k=1}^n \xi_k > x\right) = 1 - \prod_{k=1}^n (1-F_k(x)).
+    \]
+\end{itemize}
+\end{property}
 
 
+\section{常见连续型随机变量及分布}
+
+\subsection{均匀分布} \label{subsec:uniform-dist}
+\begin{definition}[均匀分布]
+若随机变量 $X$ 的概率密度为
+\[
+f(x) = \begin{cases}
+\frac{1}{b-a}, & a < x < b, \\
+0, & \text{其他},
+\end{cases}
+\]
+则称 $X$ 在区间 $(a,b)$ 内服从均匀分布，记为 $X \sim U(a,b)$。其分布函数为
+\[
+F(x) = \begin{cases}
+0, & x < a, \\
+\frac{x-a}{b-a}, & a \le x < b, \\
+1, & x \ge b.
+\end{cases}
+\]
+\end{definition}
+
+\begin{note}
+均匀分布描述了随机变量$X$在区间$(a,b)$内任意子区间取值的概率只与子区间长度成正比，与其位置无关。几何概型是均匀分布的实际背景。
+\end{note}
+
+\subsection{指数分布} \label{subsec:exp-dist}
+\begin{definition}[指数分布]
+若随机变量 $X$ 的概率密度为
+\[
+f(x) = \begin{cases}
+\lambda e^{-\lambda x}, & x > 0, \\
+0, & x \le 0,
+\end{cases}
+\]
+其中 $\lambda > 0$，则称 $X$ 服从参数为 $\lambda$ 的指数分布，记为 $X \sim E(\lambda)$。其分布函数为
+\[
+F(x) = \begin{cases}
+1 - e^{-\lambda x}, & x \ge 0, \\
+0, & x < 0.
+\end{cases}
+\]
+\end{definition}
+
+\begin{property}[无记忆性] \label{prop:memoryless}
+指数分布具有无记忆性：对于任意 $s,t > 0$，有
+\[
+P\{X > s + t \mid X > s\} = P\{X > t\}.
+\]
+这意味着，对于一个已经工作了$s$小时的元件，其再工作至少$t$小时的概率，与从最开始起就至少工作$t$小时的概率相同。
+\end{property}
+
+\subsection{正态分布} \label{subsec:normal-dist}
+\begin{definition}[正态分布]
+若随机变量 $X$ 的概率密度为
+\[
+f(x) = \frac{1}{\sqrt{2\pi}\sigma} \exp\left\{-\frac{(x-\mu)^2}{2\sigma^2}\right\},\quad -\infty < x < +\infty,
+\]
+其中 $\mu$ 为常数，$\sigma > 0$ 为常数，则称 $X$ 服从参数为 $(\mu,\sigma^2)$ 的正态分布，记为 $X \sim N(\mu,\sigma^2)$。
+\end{definition}
+
+\begin{definition}[标准正态分布] \label{def:std-normal}
+当 $\mu = 0,\ \sigma = 1$ 时，称 $X$ 服从标准正态分布，记为 $X \sim N(0,1)$。其概率密度和分布函数分别记为
+\[
+\varphi(x) = \frac{1}{\sqrt{2\pi}} e^{-\frac{x^2}{2}},\quad \Phi(x) = \int_{-\infty}^x \varphi(t) dt.
+\]
+\end{definition}
+
+\begin{property}\label{prop:normal-properties}
+标准正态分布具有以下性质：
+\begin{enumerate}
+    \item $\Phi(0) = \frac{1}{2},\ \Phi(-a) = 1 - \Phi(a)$；
+    \item 若 $X \sim N(\mu,\sigma^2)$，则 $F(x) = \Phi\left(\frac{x-\mu}{\sigma}\right)$；
+    \item 若 $X \sim N(\mu,\sigma^2)$，则 $\frac{X-\mu}{\sigma} \sim N(0,1)$；
+    \item 若 $X \sim N(\mu,\sigma^2)$，则 $P\{X \le \mu\} = P\{X > \mu\} = \frac{1}{2}$；
+    \item $P\{a < X < b\} = \Phi\left(\frac{b-\mu}{\sigma}\right) - \Phi\left(\frac{a-\mu}{\sigma}\right)$。
+\end{enumerate}
+\end{property}
 
 
+\section{常见分布的期望与方差}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-\section{颜色主题}
-
-\begin{table}[htbp]
-  \caption{ElegantBook 模板中的颜色主题\label{tab:color thm}}
-  \centering
-  \begin{tabular}{ccccccc}
-  \toprule
-    & \textcolor{structure1}{green} 
-    & \textcolor{structure2}{cyan} 
-    & \textcolor{structure3}{blue}
-    & \textcolor{structure4}{gray} 
-    & \textcolor{structure5}{black} 
-    & 主要使用的环境\\
-  \midrule
-    structure & \ccr{structure1}
-    & \ccr{structure2}
-    & \ccr{structure3} 
-    & \ccr{structure4} 
-    & \ccr{structure5} 
-    & chapter \ section \ subsection \\
-    main      & \ccr{main1}
-    & \ccr{main2}
-    & \ccr{main3}
-    & \ccr{main4}
-    & \ccr{main5}
-    & definition \ exercise \ problem \\
-    second    & \ccr{second1}
-    & \ccr{second2}
-    & \ccr{second3}
-    & \ccr{second4}
-    & \ccr{second5}
-    & theorem \ lemma \ corollary\\
-    third     & \ccr{third1}
-    & \ccr{third2}
-    & \ccr{third3}
-    & \ccr{third4}
-    & \ccr{third5}
-    & proposition\\
-  \bottomrule
-  \end{tabular}
+\begin{table}[h]
+\centering
+\caption{常见分布的数学期望与方差} \label{tab:dist-expect-var}
+\begin{tabular}{c|c|c|c}
+\toprule
+名称与记号 & 分布列或概率密度 & 数学期望 & 方差 \\
+\midrule
+(0-1) 分布 $B(1,p)$ & $P\{X=1\}=p,\ P\{X=0\}=1-p$ & $p$ & $p(1-p)$ \\
+二项分布 $B(n,p)$ & $P\{X=k\}=\mathrm{C}_n^k p^k (1-p)^{n-k}$ & $np$ & $np(1-p)$ \\
+泊松分布 $P(\lambda)$ & $P\{X=k\}=e^{-\lambda}\frac{\lambda^k}{k!}$ & $\lambda$ & $\lambda$ \\
+几何分布 $G(p)$ & $P\{X=k\}=(1-p)^{k-1}p$ & $\frac{1}{p}$ & $\frac{1-p}{p^2}$ \\
+超几何分布 $H(n,N,M)$ & $P\{X=k\}=\frac{\mathrm{C}_M^k \mathrm{C}_{N-M}^{n-k}}{\mathrm{C}_N^n}$ & $\frac{nM}{N}$ & $\frac{nM}{N}\left(1-\frac{M}{N}\right)\frac{N-n}{N-1}$ \\
+均匀分布 $U(a,b)$ & $f(x)=\frac{1}{b-a},\ a < x < b$ & $\frac{a+b}{2}$ & $\frac{(b-a)^2}{12}$ \\
+指数分布 $E(\lambda)$ & $f(x)=\lambda e^{-\lambda x},\ x > 0$ & $\frac{1}{\lambda}$ & $\frac{1}{\lambda^2}$ \\
+正态分布 $N(\mu,\sigma^2)$ & $f(x)=\frac{1}{\sqrt{2\pi}\sigma}e^{-\frac{(x-\mu)^2}{2\sigma^2}}$ & $\mu$ & $\sigma^2$ \\
+\bottomrule
+\end{tabular}
 \end{table}
 
-如果需要自定义颜色的话请选择 \lstinline{nocolor} 选项或者使用 \lstinline{color=none}，然后在导言区定义 structurecolor、main、second、third 颜色，具体方法如下：
-\begin{lstlisting}[tabsize=4]
-\definecolor{structurecolor}{RGB}{0,0,0}
-\definecolor{main}{RGB}{70,70,70}    
-\definecolor{second}{RGB}{115,45,2}    
-\definecolor{third}{RGB}{0,80,80}
-\end{lstlisting}
 
-\section{封面}
+\section{典型例题}
 
-\subsection{封面个性化}
+\begin{exercise}\label{exer:2-9}
+设 $X$ 服从泊松分布，且 $P\{X=1\} = P\{X=2\}$，则 $P\{X=4\} = \underline{\hspace{2cm}}$。
+\end{exercise}
 
-从 3.10 版本开始，封面更加弹性化，用户可以自行选择输出的内容，包括 \lstinline{\title} 在内的所有封面元素都可为空。目前封面的元素有
+\begin{solution}
+由泊松分布的分布律 $P\{X = k\} = \frac{\lambda^k}{k!} e^{-\lambda}$，由条件 $P\{X=1\}=P\{X=2\}$得
+\[
+\lambda e^{-\lambda} = \frac{\lambda^2 e^{-\lambda}}{2} \implies \lambda = 2.
+\]
+因此
+\[
+P\{X=4\} = \frac{2^4 e^{-2}}{4!} = \frac{2}{3} e^{-2}.
+\]
+\end{solution}
 
-\begin{table}[htbp]
-  \centering
-  \caption{封面元素信息}
-  \begin{tabular}{p{0.07\textwidth}p{0.15\textwidth}|p{0.07\textwidth}p{0.15\textwidth}|p{0.07\textwidth}p{0.15\textwidth}}
-    \toprule
-    信息 & 命令 & 信息 & 命令 & 信息 & 命令 \\
-    \midrule
-    标题 & \lstinline|\title| & 副标题 & \lstinline|\subtitle| & 作者 & \lstinline|\author| \\
-    机构 & \lstinline|\institute| & 日期 &  \lstinline|\date| & 版本 & \lstinline|\version| \\
-    箴言 & \lstinline|\extrainfo| & 封面图 & \lstinline|\cover| & 徽标 & \lstinline|\logo| \\
-    \bottomrule
-  \end{tabular}
-\end{table}
+\begin{exercise}\label{exer:2-10}
+设随机变量 $X$ 服从参数为 $\lambda(\lambda>0)$ 的指数分布，且 $P\{X \le 1\} = \frac{1}{2}$。
+\begin{enumerate}
+    \item[(1)] 求参数 $\lambda$；
+    \item[(2)] 求 $P\{X > 2 \mid X > 1\}$。
+\end{enumerate}
+\end{exercise}
 
-另外，额外增加一个 \lstinline{\bioinfo} 命令，有两个选项，分别是信息标题以及信息内容。比如需要显示{\kaishu User Name：111520}，则可以使用 
-\begin{lstlisting}
-\bioinfo{User Name}{115520}
-\end{lstlisting}
+\begin{solution}
+(1) 根据指数分布的分布函数，$P\{X \le 1\} = 1 - e^{-\lambda} = \frac{1}{2}$，解得 $\lambda = \ln 2$。
 
-封面中间位置的色块的颜色可以使用下面命令进行修改：
-\begin{lstlisting}
-\definecolor{customcolor}{RGB}{32,178,170}
-\colorlet{coverlinecolor}{customcolor}
-\end{lstlisting}
+(2) 由无记忆性，
+\[
+P\{X > 2 \mid X > 1\} = P\{X > 1\} = 1 - P\{X \le 1\} = \frac{1}{2}.
+\]
+或者直接计算：
+\[
+P\{X > 2 \mid X > 1\} = \frac{P\{X > 2\}}{P\{X > 1\}} = \frac{e^{-2\ln 2}}{e^{-\ln 2}} = e^{-\ln 2} = \frac{1}{2}.
+\]
+\end{solution}
 
-\subsection{封面图}
+\begin{exercise}\label{exer:2-11}
+设随机变量 $X \sim N(10,\sigma^2)$，且 $P\{10 < X < 20\} = 0.35$，则 $P\{X < 0\} = \underline{\hspace{2cm}}$。
+\end{exercise}
 
-本模板使用的封面图片来源于 \href{https://pixabay.com/en/tea-time-poetry-coffee-reading-3240766/}{pixabay.com}\footnote{感谢 China\TeX{} 提供免费图源网站，另外还推荐 \href{https://www.pexels.com/}{pexels.com}。}，图片完全免费，可用于任何场景。封面图片的尺寸为 $1280 \times 1024$, 更换图片的时候请\textbf{严格}按照封面图片尺寸进行裁剪。推荐一个免费的在线图片裁剪网站 \href{https://www.fotor.com/cn}{fotor.com}。用户 QQ 群内有一些合适尺寸的封面，欢迎取用。
+\begin{solution}
+由正态分布的对称性，
+\[
+P\{10 < X < 20\} = \Phi\left(\frac{20-10}{\sigma}\right) - \Phi(0) = \Phi\left(\frac{10}{\sigma}\right) - 0.5 = 0.35,
+\]
+得 $\Phi\left(\frac{10}{\sigma}\right) = 0.85$。因此
+\[
+P\{X < 0\} = \Phi\left(\frac{0-10}{\sigma}\right) = 1 - \Phi\left(\frac{10}{\sigma}\right) = 0.15.
+\]
+\end{solution}
 
-\subsection{徽标}
+\begin{exercise}\label{exer:2-12}
+设随机变量 $X$ 服从正态分布 $N(0,\sigma^2)$，对给定的 $\alpha(0<\alpha<1)$，数 $u_\alpha$ 满足 $P\{X>u_\alpha\} = \alpha$，若 $P\{|X|<x\} = \alpha$，则 $x$ 等于（\quad）。
+(A) $u_{\frac{\alpha}{2}}$ \quad (B) $u_{\frac{1-\alpha}{2}}$ \quad (C) $u_{1-\frac{\alpha}{2}}$ \quad (D) $u_{1-\alpha}$
+\end{exercise}
 
-本文用到的 Logo 比例为 1:1，也即正方形图片，在更换图片的时候请选择合适的图片进行替换。
+\begin{solution}
+应选 (B)。由 $P\{|X|<x\} = \alpha$ 可得
+\[
+P\{-x < X < x\} = \Phi(x/\sigma) - \Phi(-x/\sigma) = 2\Phi(x/\sigma) - 1 = \alpha,
+\]
+即 $\Phi(x/\sigma) = \frac{1+\alpha}{2}$。而 $P\{X>u_{(1-\alpha)/2}\} = \frac{1-\alpha}{2}$，故 $x = u_{\frac{1-\alpha}{2}}$。
+\end{solution}
 
-\subsection{自定义封面}
+\begin{exercise}\label{exer:2-13}
+设随机变量 $X$ 满足 $1 \le X \le 4$，且 $P\{X=1\} = \frac{1}{4}$，$P\{X=4\} = \frac{1}{4}$，当 $X$ 在区间 $(1,4)$ 内取值时，$X$ 服从均匀分布，求 $X$ 的分布函数 $F(x)$。
+\end{exercise}
 
-另外，如果使用自定义的封面，比如 Adobe illustrator 或者其他软件制作的 A4 PDF 文档，请把 \lstinline{\maketitle} 注释掉，然后借助 \lstinline{pdfpages} 宏包将自制封面插入即可。如果使用 \lstinline{titlepage} 环境，也是类似。如果需要 2.x 版本的封面，请参考 \href{https://github.com/EthanDeng/etitlepage}{etitlepage}。
+\begin{solution}
+当 $x < 1$ 时，$F(x) = 0$；
+当 $1 \le x < 4$ 时，
+\[
+\begin{aligned}
+F(x) &= P\{X \le 1\} + P\{1 < X \le x\} \\
+&= \frac{1}{4} + \frac{x-1}{4-1} \cdot \frac{1}{2} = \frac{5 + 2x}{12};
+\end{aligned}
+\]
+当 $x \ge 4$ 时，$F(x) = 1$。
+故
+\[
+F(x) = \begin{cases}
+0, & x < 1, \\
+\frac{5 + 2x}{12}, & 1 \le x < 4, \\
+1, & x \ge 4.
+\end{cases}
+\]
+\end{solution}
+
+\begin{exercise}\label{exer:2-14}
+设随机变量 $X$ 的概率密度为 $f(x) = \begin{cases} 2^{-x}\ln 2, & x > 0, \\ 0, & \text{其他}, \end{cases}$ 对 $X$ 进行独立重复的观测，直到第 2 个大于 3 的观测值出现时停止，记 $Y$ 为观测次数，求 $Y$ 的概率分布。
+\end{exercise}
+
+\begin{solution}
+记 $p$ 为"观测值大于 3"的概率，则
+\[
+p = P\{X > 3\} = \int_3^{+\infty} 2^{-x}\ln 2\,dx = \frac{1}{8}.
+\]
+依题意，$Y$ 为离散型随机变量，取值为 $2,3,\dots$，则 $Y$ 的概率分布为
+\[
+P\{Y=k\} = \mathrm{C}_{k-1}^1 p(1-p)^{k-2} \cdot p = (k-1)p^2(1-p)^{k-2} = (k-1)\left(\frac{1}{8}\right)^2\left(\frac{7}{8}\right)^{k-2},\quad k=2,3,\dots.
+\]
+\end{solution}
+
+\begin{exercise}\label{exer:2-15}
+某元件的工作寿命 $X$（小时）服从参数为 $\lambda(\lambda>0)$ 的指数分布。
+\begin{enumerate}
+    \item[(1)] 求该元件正常工作 $t$ 小时的概率；
+    \item[(2)] 已知该元件已正常工作 10 小时，求在此基础上再工作 10 小时的概率（$\lambda=0.01$）。
+\end{enumerate}
+\end{exercise}
+
+\begin{solution}
+由题意 $X \sim F(x) = \begin{cases} 1 - e^{-\lambda x}, & x \ge 0, \\ 0, & \text{其他}, \end{cases}$
+
+(1) $P\{X>t\} = 1 - F(t) = e^{-\lambda t}$。
+
+(2) 由无记忆性，
+\[
+P\{X>20 \mid X>10\} = P\{X>10\} = e^{-0.01 \times 10} = e^{-0.1}.
+\]
+或者直接计算：
+\[
+P\{X>20 \mid X>10\} = \frac{P\{X>20\}}{P\{X>10\}} = \frac{e^{-0.2}}{e^{-0.1}} = e^{-0.1}.
+\]
+\end{solution}
+
+\begin{exercise}\label{exer:2-16}
+设 $X \sim U(a,b)$（$a>0$），且 $P\{X>4\} = \frac{1}{2}$，$P\{0<X<3\} = \frac{1}{4}$，求 $a,b$ 及 $P\{1<X<5\}$。
+\end{exercise}
+
+\begin{solution}
+由 $P\{X>4\} = \frac{1}{2}$ 及均匀分布的对称性，得 $\frac{a+b}{2} = 4$，即 $a+b=8$。
+
+又 $P\{3<X<4\} = 1 - P\{X \ge 4\} - P\{X \le 3\} = 1 - \frac{1}{2} - \frac{1}{4} = \frac{1}{4}$，
+而 $P\{3<X<4\} = \frac{4-3}{b-a}$，故 $\frac{1}{b-a} = \frac{1}{4}$，得 $b-a=4$。
+
+联立 $\begin{cases} a+b=8, \\ b-a=4, \end{cases}$ 解得 $\begin{cases} a=2, \\ b=6. \end{cases}$
+
+因此 $P\{1<X<5\} = P\{2<X<5\} = \frac{5-2}{6-2} = \frac{3}{4}$。
+\end{solution}
+
+\begin{exercise}\label{exer:2-17}
+设随机变量 $X$ 服从正态分布 $N(\mu,\sigma^2)$，则随着 $\sigma$ 的增大，$P\{|X-\mu|<1\}$（\quad）。\\
+(A) 单调增加 \quad (B) 单调减少 \quad (C) 保持不变 \quad (D) 先增后减
+\end{exercise}
+
+\begin{solution}
+应选 (B)。讨论 $P\{|X-\mu|<1\}$ 的单调性应将其标准化后进行。由
+\[
+P\{|X-\mu|<1\} = P\left\{\left|\frac{X-\mu}{\sigma}\right|<\frac{1}{\sigma}\right\} = 2\Phi\left(\frac{1}{\sigma}\right) - 1,
+\]
+其中 $\Phi(u)$ 为单调增加函数，而 $u = \frac{1}{\sigma}$ 随 $\sigma$ 增大而单调减少，故 $\Phi\left(\frac{1}{\sigma}\right)$ 单调减少，从而 $2\Phi\left(\frac{1}{\sigma}\right)-1$ 单调减少，故选择 (B)。
+\end{solution}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 \section{章标标题}
 
@@ -2372,168 +2631,168 @@ D. $f_1(x) \cdot f_2(x)$ 是概率密度
 % \end{algorithm}
 
 
-\subsection{修改计数器}
+% \subsection{修改计数器}
 
-当前定理等环境计数器按章计数，如果想修改定理类环境按节计数，可以修改计数器选项 thmcnt：
+% 当前定理等环境计数器按章计数，如果想修改定理类环境按节计数，可以修改计数器选项 thmcnt：
 
-\begin{lstlisting}
-  \documentclass[section]{elegantbook} %or
-  \documentclass[thmcnt=section]{elegantbook}
-\end{lstlisting}
-
-
-\subsection{其他环境的使用}
-
-其他三种环境没有选项，可以直接使用，比如 \lstinline{example} 环境的使用方法与效果：
-\begin{lstlisting}
-\begin{example}
-   This is the content of example environment.
-\end{example}
-\end{lstlisting}
-
-这几个都是同一类环境，区别在于
-
-\begin{itemize}
-  \item 示例环境（example）、练习（exercise）与例题（problem）章节自动编号；
-  \item 注意（note），练习（exercise）环境有提醒引导符；
-  \item 结论（conclusion）等环境都是普通段落环境，引导词加粗。
-\end{itemize}
-
-\section{列表环境}
-本模板借助于 \lstinline{tikz} 定制了 \lstinline{itemize} 和 \lstinline{enumerate} 环境，其中 \lstinline{itemize} 环境修改了 3 层嵌套，而 \lstinline{enumerate} 环境修改了 4 层嵌套（仅改变颜色）。示例如下\\[2ex]
-\begin{minipage}[b]{0.49\textwidth}
-  \begin{itemize}
-    \item first item of nesti;
-    \item second item of nesti;
-      \begin{itemize}
-        \item first item of nestii;
-        \item second item of nestii;
-        \begin{itemize}
-          \item first item of nestiii;
-          \item second item of nestiii.
-        \end{itemize}   
-      \end{itemize}
-  \end{itemize}
-\end{minipage}
-\begin{minipage}[b]{0.49\textwidth}
-  \begin{enumerate}
-    \item first item of nesti;
-    \item second item of nesti;
-      \begin{enumerate}
-        \item first item of nestii;
-        \item second item of nestii;
-        \begin{enumerate}
-          \item first item of nestiii;
-          \item second item of nestiii.
-        \end{enumerate}   
-      \end{enumerate}
-  \end{enumerate}
-\end{minipage}
-
-\section{参考文献}
-文献部分，本模板调用了 biblatex 宏包，并提供了 biber（默认） 和 bibtex 两个后端选项，可以使用 \lstinline{bibend} 进行修改：
-
-\begin{lstlisting}
-  \documentclass[bibtex]{elegantbook}
-  \documentclass[bibend=bibtex]{elegantbook}
-\end{lstlisting}
-
-关于文献条目（bib item），你可以在谷歌学术，Mendeley，Endnote 中取，然后把它们添加到 \lstinline{reference.bib} 中。在文中引用的时候，引用它们的键值（bib key）即可。
-
-为了方便文献样式修改，模板引入了 \lstinline{bibstyle} 和 \lstinline{citestyle} 选项，默认均为数字格式（numeric），参考文献示例：\cite{cn1,en2,en3} 使用了中国一个大型的 P2P 平台（人人贷）的数据来检验男性投资者和女性投资者在投资表现上是否有显著差异。
-
-如果需要设置为国标 GB7714-2015，需要使用：
-\begin{lstlisting}
-  \documentclass[citestyle=gb7714-2015, bibstyle=gb7714-2015]{elegantbook} 
-\end{lstlisting}
-
-如果需要添加排序方式，可以在导言区加入
-\begin{lstlisting}
-  \ExecuteBibliographyOptions{sorting=ynt}
-\end{lstlisting}
-
-启用国标之后，可以加入 \lstinline{sorting=gb7714-2015}。
-
-\section{添加序章}
-
-如果你想在第一章前面添序章，不改变原本章节序号，可以在第一章内容前面使用 
-\begin{lstlisting}
-\chapter*{Introduction}
-\markboth{Introduction}{Introduction}
-The content of introduction.
-\end{lstlisting}
-
-\section{目录选项与深度}
-本模板添加了一个目录选项 \lstinline{toc}，可以设置目录为单栏（\lstinline{onecol}）和双栏（\lstinline{twocol}）显示，比如双栏显示可以使用
-\begin{lstlisting}
-\documentclass[twocol]{elegantbook}
-\documentclass[toc=twocol]{elegantbook}
-\end{lstlisting}
-
-默认本模板目录深度为 1，你可以在导言区使用
-\begin{lstlisting}
-\setcounter{tocdepth}{2}
-\end{lstlisting}
-将其修改为 2 级目录（章与节）显示。
+% \begin{lstlisting}
+%   \documentclass[section]{elegantbook} %or
+%   \documentclass[thmcnt=section]{elegantbook}
+% \end{lstlisting}
 
 
-\section{章节摘要}
-模板新增了一个章节摘要环境（introduction），使用示例
-\begin{lstlisting}
-\begin{introduction}
-  \item Definition of Theorem
-  \item Ask for help
-  \item Optimization Problem
-  \item Property of Cauchy Series
-  \item Angle of Corner
-\end{introduction}
-\end{lstlisting}
-效果如下：
-\begin{introduction}
-  \item Definition of Theorem
-  \item Ask for help
-  \item Optimization Problem
-  \item Property of Cauchy Series
-  \item Angle of Corner
-\end{introduction}
+% \subsection{其他环境的使用}
 
-环境的标题文字可以通过这个环境的可选参数进行修改，修改方法为：
-\begin{lstlisting}
-\begin{introduction}[Brief Introduction]
-...
-\end{introduction}
-\end{lstlisting}
+% 其他三种环境没有选项，可以直接使用，比如 \lstinline{example} 环境的使用方法与效果：
+% \begin{lstlisting}
+% \begin{example}
+%    This is the content of example environment.
+% \end{example}
+% \end{lstlisting}
 
-\section{章后习题}
-前面我们介绍了例题和练习两个环境，这里我们再加一个，章后习题（\lstinline{problemset}）环境，用于在每一章结尾，显示本章的练习。使用方法如下
+% 这几个都是同一类环境，区别在于
 
-\begin{lstlisting}
-\begin{problemset}
-  \item exercise 1
-  \item exercise 2
-  \item exercise 3
-\end{problemset}
-\end{lstlisting}
+% \begin{itemize}
+%   \item 示例环境（example）、练习（exercise）与例题（problem）章节自动编号；
+%   \item 注意（note），练习（exercise）环境有提醒引导符；
+%   \item 结论（conclusion）等环境都是普通段落环境，引导词加粗。
+% \end{itemize}
+
+% \section{列表环境}
+% 本模板借助于 \lstinline{tikz} 定制了 \lstinline{itemize} 和 \lstinline{enumerate} 环境，其中 \lstinline{itemize} 环境修改了 3 层嵌套，而 \lstinline{enumerate} 环境修改了 4 层嵌套（仅改变颜色）。示例如下\\[2ex]
+% \begin{minipage}[b]{0.49\textwidth}
+%   \begin{itemize}
+%     \item first item of nesti;
+%     \item second item of nesti;
+%       \begin{itemize}
+%         \item first item of nestii;
+%         \item second item of nestii;
+%         \begin{itemize}
+%           \item first item of nestiii;
+%           \item second item of nestiii.
+%         \end{itemize}   
+%       \end{itemize}
+%   \end{itemize}
+% \end{minipage}
+% \begin{minipage}[b]{0.49\textwidth}
+%   \begin{enumerate}
+%     \item first item of nesti;
+%     \item second item of nesti;
+%       \begin{enumerate}
+%         \item first item of nestii;
+%         \item second item of nestii;
+%         \begin{enumerate}
+%           \item first item of nestiii;
+%           \item second item of nestiii.
+%         \end{enumerate}   
+%       \end{enumerate}
+%   \end{enumerate}
+% \end{minipage}
+
+% \section{参考文献}
+% 文献部分，本模板调用了 biblatex 宏包，并提供了 biber（默认） 和 bibtex 两个后端选项，可以使用 \lstinline{bibend} 进行修改：
+
+% \begin{lstlisting}
+%   \documentclass[bibtex]{elegantbook}
+%   \documentclass[bibend=bibtex]{elegantbook}
+% \end{lstlisting}
+
+% 关于文献条目（bib item），你可以在谷歌学术，Mendeley，Endnote 中取，然后把它们添加到 \lstinline{reference.bib} 中。在文中引用的时候，引用它们的键值（bib key）即可。
+
+% 为了方便文献样式修改，模板引入了 \lstinline{bibstyle} 和 \lstinline{citestyle} 选项，默认均为数字格式（numeric），参考文献示例：\cite{cn1,en2,en3} 使用了中国一个大型的 P2P 平台（人人贷）的数据来检验男性投资者和女性投资者在投资表现上是否有显著差异。
+
+% 如果需要设置为国标 GB7714-2015，需要使用：
+% \begin{lstlisting}
+%   \documentclass[citestyle=gb7714-2015, bibstyle=gb7714-2015]{elegantbook} 
+% \end{lstlisting}
+
+% 如果需要添加排序方式，可以在导言区加入
+% \begin{lstlisting}
+%   \ExecuteBibliographyOptions{sorting=ynt}
+% \end{lstlisting}
+
+% 启用国标之后，可以加入 \lstinline{sorting=gb7714-2015}。
+
+% \section{添加序章}
+
+% 如果你想在第一章前面添序章，不改变原本章节序号，可以在第一章内容前面使用 
+% \begin{lstlisting}
+% \chapter*{Introduction}
+% \markboth{Introduction}{Introduction}
+% The content of introduction.
+% \end{lstlisting}
+
+% \section{目录选项与深度}
+% 本模板添加了一个目录选项 \lstinline{toc}，可以设置目录为单栏（\lstinline{onecol}）和双栏（\lstinline{twocol}）显示，比如双栏显示可以使用
+% \begin{lstlisting}
+% \documentclass[twocol]{elegantbook}
+% \documentclass[toc=twocol]{elegantbook}
+% \end{lstlisting}
+
+% 默认本模板目录深度为 1，你可以在导言区使用
+% \begin{lstlisting}
+% \setcounter{tocdepth}{2}
+% \end{lstlisting}
+% 将其修改为 2 级目录（章与节）显示。
 
 
-效果如下：
-\begin{problemset}
-  \item exercise 1
-  \item exercise 2
-  \item exercise 3
-  \item 测试数学公式
-  \begin{equation}
-    a^2+b^2=c_{2_{i}} (1,2) [1,23]
-  \end{equation}
-\end{problemset}
+% \section{章节摘要}
+% 模板新增了一个章节摘要环境（introduction），使用示例
+% \begin{lstlisting}
+% \begin{introduction}
+%   \item Definition of Theorem
+%   \item Ask for help
+%   \item Optimization Problem
+%   \item Property of Cauchy Series
+%   \item Angle of Corner
+% \end{introduction}
+% \end{lstlisting}
+% 效果如下：
+% \begin{introduction}
+%   \item Definition of Theorem
+%   \item Ask for help
+%   \item Optimization Problem
+%   \item Property of Cauchy Series
+%   \item Angle of Corner
+% \end{introduction}
 
-\begin{remark}
-如果你想把 \lstinline{problemset} 环境的标题改为其他文字，你可以类似于 introduction 环境修改 problemset 的可选参数。另外，目前这个环境会自动出现在目录中，但是不会出现在页眉页脚信息中（待解决）。
-\end{remark}
+% 环境的标题文字可以通过这个环境的可选参数进行修改，修改方法为：
+% \begin{lstlisting}
+% \begin{introduction}[Brief Introduction]
+% ...
+% \end{introduction}
+% \end{lstlisting}
 
-\begin{solution}
-如果你想把 \lstinline{problemset} 环境的标题改为其他文字，你可以类似于 introduction 环境修改 problemset 的可选参数。另外，目前这个环境会自动出现在目录中，但是不会出现在页眉页脚信息中（待解决）。
-\end{solution}
+% \section{章后习题}
+% 前面我们介绍了例题和练习两个环境，这里我们再加一个，章后习题（\lstinline{problemset}）环境，用于在每一章结尾，显示本章的练习。使用方法如下
+
+% \begin{lstlisting}
+% \begin{problemset}
+%   \item exercise 1
+%   \item exercise 2
+%   \item exercise 3
+% \end{problemset}
+% \end{lstlisting}
+
+
+% 效果如下：
+% \begin{problemset}
+%   \item exercise 1
+%   \item exercise 2
+%   \item exercise 3
+%   \item 测试数学公式
+%   \begin{equation}
+%     a^2+b^2=c_{2_{i}} (1,2) [1,23]
+%   \end{equation}
+% \end{problemset}
+
+% \begin{remark}
+% 如果你想把 \lstinline{problemset} 环境的标题改为其他文字，你可以类似于 introduction 环境修改 problemset 的可选参数。另外，目前这个环境会自动出现在目录中，但是不会出现在页眉页脚信息中（待解决）。
+% \end{remark}
+
+% \begin{solution}
+% 如果你想把 \lstinline{problemset} 环境的标题改为其他文字，你可以类似于 introduction 环境修改 problemset 的可选参数。另外，目前这个环境会自动出现在目录中，但是不会出现在页眉页脚信息中（待解决）。
+% \end{solution}
 
 
 
