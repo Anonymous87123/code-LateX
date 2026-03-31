@@ -103,16 +103,21 @@ P(A - B) = P(A) - P(B) \ (\text{若事件} \ A \supset B)
 \newpage
 
 \begin{introduction}
-  \item 积分定义~\ref{def:int}
-  \item Fubini 定理~\ref{thm:fubi}
-  \item 最优性原理~\ref{pro:max}
-  \item 柯西列性质~\ref{property:cauchy}
-  \item 韦达定理
+  \item 随机试验与样本空间~\ref{def:random-experiment}
+  \item 随机事件及其运算~\ref{def:random-event}
+  \item 完备事件组~\ref{def:complete-event-group}
+  \item 概率的公理化定义~\ref{def:probability-axiom}
+  \item 概率的基本性质~\ref{prop:probability-basic}
+  \item 古典概型~\ref{def:classical-prob}
+  \item 几何概型~\ref{def:geometric-prob}
+  \item 条件概率~\ref{def:conditional-prob}
+  \item 乘法公式~\ref{thm:multiplication}
+  \item 全概率公式与贝叶斯公式~\ref{thm:total-probability}
+  \item 事件的独立性~\ref{def:independence}
+  \item 伯努利概型~\ref{def:bernoulli}
 \end{introduction}
 
-\section{知识提纲}
-
-\subsection{基本概念}
+\section{基本概念}
 
 \begin{definition}[随机试验] \label{def:random-experiment}
 如果一个试验满足以下三个条件：
@@ -150,11 +155,11 @@ P(A - B) = P(A) - P(B) \ (\text{若事件} \ A \supset B)
 概念之间的联系：随机试验产生基本结果，基本结果 \(\in\) 随机事件 \(\subset\) 样本空间。随机事件在一次试验中是否发生虽然不能事先确定，但是在大量重复试验的情况下，它的发生呈现出一定的规律性，这门课程正是要研究这种规律性。
 \end{note}
 
-\subsection{事件的关系与运算}
+\section{事件的关系与运算}
 
 事件是一个集合，因此事件之间的关系和运算与集合论中集合之间的关系和运算完全类似，可以利用集合论的知识来理解事件的关系与运算。
 
-\subsubsection*{事件的关系}
+\subsection{事件的关系}
 
 \begin{enumerate}
     \item \textbf{包含}——如果事件 \(A\) 发生必导致事件 \(B\) 发生，则称事件 \(B\) 包含事件 \(A\)（或 \(A\) 被 \(B\) 包含），记为 \(A \subset B\)。也称 \(A\) 是 \(B\) 的子事件。
@@ -174,7 +179,7 @@ P(A - B) = P(A) - P(B) \ (\text{若事件} \ A \supset B)
 互斥与对立的区别：互斥只要求 \(AB = \varnothing\)，而对立还要求 \(A \cup B = \Omega\)。因此对立一定是互斥的，但互斥不一定是对立的。
 \end{note}
 
-\subsubsection*{事件的运算}
+\subsection{事件的运算}
 
 \begin{enumerate}
     \item \textbf{积事件（交）}——称"事件 \(A\) 与 \(B\) 同时发生"的事件为事件 \(A\) 与 \(B\) 的\textbf{积事件}（或交事件），记为 \(A \cap B\) 或 \(AB\)。称"有限个（或可列个）事件 \(A_1, A_2, \dots, A_n(\dots)\) 同时发生"的事件为这些事件的积事件，记为 \(\bigcap_{i=1}^{n} A_i\)（或 \(\bigcap_{i=1}^{\infty} A_i\)）。
@@ -188,7 +193,7 @@ P(A - B) = P(A) - P(B) \ (\text{若事件} \ A \supset B)
 A - B = A - AB = A\overline{B}, \quad B = \overline{A} \Leftrightarrow AB = \varnothing \text{ 且 } A \cup B = \Omega.
 \]
 
-\subsubsection*{事件的运算律}
+\subsection{事件的运算律}
 
 \begin{enumerate}
     \item \textbf{吸收律}——若 \(A \subset B\)，则 \(A \cup B = B\)，\(A \cap B = A\)。
@@ -341,13 +346,13 @@ D. (1)、(2) 均不正确
 \end{solution}
 
 
-\subsection{概率的定义}
+\section{概率的定义}
 
-\subsubsection*{描述性定义}
+\subsection{描述性定义}
 
 通常将随机事件 \(A\) 发生的可能性大小的度量（非负值）称为事件 \(A\) 发生的\textbf{概率}，记为 \(P(A)\)。
 
-\subsubsection*{统计性定义}
+\subsection{统计性定义}
 
 在相同条件下做重复试验，事件 \(A\) 出现的次数 \(k\) 和总的试验次数 \(n\) 之比 \(\frac{k}{n}\) 称为事件 \(A\) 在这 \(n\) 次试验中出现的\textbf{频率}。当试验次数 \(n\) 充分大时，频率将"稳定"于某常数 \(p\)。\(n\) 越大，频率偏离这个常数 \(p\) 的可能性越小。这个常数 \(p\) 就称为事件 \(A\) 的\textbf{概率}。
 
@@ -359,7 +364,7 @@ D. (1)、(2) 均不正确
 \end{enumerate}
 \end{note}
 
-\subsubsection*{公理化定义}
+\subsection*{公理化定义}
 
 \begin{definition}[概率的公理化定义] \label{def:probability-axiom}
 设随机试验的样本空间为 \(\Omega\)，如果对每一个事件 \(A\) 都有一个确定的实数 \(P(A)\)，且事件函数 \(P(\cdot)\) 满足：
@@ -497,8 +502,114 @@ D. \(\dfrac{9}{40}\)
 \[P = \frac{5\times4+3\times6}{8\times10} = \frac{38}{80} = \frac{19}{40}.\]
 \end{solution}
 
+\begin{exercise}\label{exer:1-45}
+已知 \(P(B)=0.5\)，\(P(A\cup B)=0.7\)，则 \(P(A\overline{B})=\underline{\hspace{2cm}}\)，\(P(\overline{A}\overline{B})=\underline{\hspace{2cm}}\)。
+\end{exercise}
 
-\subsection{古典概型}
+\begin{solution}
+应填 \(0.2\)；\(0.3\)。
+
+由加法公式：
+\[
+P(A\overline{B}) = P(A) - P(AB) = P(A\cup B) - P(B) = 0.7 - 0.5 = 0.2,
+\]
+\[
+P(\overline{A}\overline{B}) = P(\overline{A\cup B}) = 1 - P(A\cup B) = 1 - 0.7 = 0.3.
+\]
+\end{solution}
+
+\begin{exercise}\label{exer:1-46}
+对任意事件 \(A,B\)，下面结论正确的是（\quad）。\par
+A. 若 \(P(AB)=0\)，则 \(\overline{A}\,\overline{B}=\Omega\)\quad
+B. \(P(A-B)=P(A)-P(B)\)\quad
+C. \(P(A\overline{B})=P(A)-P(B)+P(\overline{A}B)\)\quad
+D. \(P(A\cup B)=P(A)+P(B)-P(A)P(B)\)
+\end{exercise}
+
+\begin{solution}
+应选 C。
+
+A 错误：\(P(AB)=0\) 不能推出 \(AB=\varnothing\)，从而不能推出 \(\overline{A}\,\overline{B}=\Omega\)。B 错误：\(P(A-B)=P(A)-P(AB)\)，一般不等于 \(P(A)-P(B)\)。D 错误：题目未说明 \(A,B\) 独立，故 \(P(AB)\neq P(A)P(B)\)。
+
+C 正确：\(P(A\overline{B})=P(A)-P(AB)\)，\(P(\overline{A}B)=P(B)-P(AB)\)，两式消去 \(P(AB)\) 得
+\[
+P(A\overline{B}) = P(A) - P(B) + P(\overline{A}B).
+\]
+\end{solution}
+
+\begin{exercise}\label{exer:1-47}
+设 \(A\) 和 \(B\) 是任意两个随机事件，则（\quad）。\par
+A. \(P(A+B)\le P(A\cup B)\le P(A)+P(B)\)\quad
+B. \(P(A)+P(B)-1\le P(AB)\le P(A\cup B)\le P(A)+P(B)\)\quad
+C. \(P(A)+P(B)-1\le P(A(A\cup B))\le P(AB)\le P(A\cup(A\cup B))\)\quad
+D. \(1-P(A)-P(B)\le P(AB)\le P(A)+P(B)\le P(A\cup B)\)
+\end{exercise}
+
+\begin{solution}
+应选 B。
+
+A 错误：\(P(A+B)=P(A\cup B)\)（概率中 "+" 即并）。C 错误：\(P(A(A\cup B))=P(A)\ge P(AB)\)。D 错误：\(P(A)+P(B)\ge P(A\cup B)\)，故 \(P(A)+P(B)\le P(A\cup B)\) 不成立。
+
+B 正确：由 \(P(AB)=P(A)+P(B)-P(A\cup B)\)：
+\begin{itemize}
+    \item 左边：\(P(A\cup B)\le 1\)，故 \(P(AB)\ge P(A)+P(B)-1\)；
+    \item 中间：\(AB\subset A\cup B\)，故 \(P(AB)\le P(A\cup B)\)；
+    \item 右边：\(P(A\cup B)\le P(A)+P(B)\)（加法公式的直接推论）。
+\end{itemize}
+\end{solution}
+
+\begin{exercise}\label{exer:1-48}
+设 \(A\) 与 \(B\) 是两个随机事件，且 \(P(AB)=0\)，则（\quad）。\par
+A. \(P(A-B)=P(A)\)\quad
+B. \(A\) 与 \(B\) 相互独立\quad
+C. \(P(A)=0\) 或 \(P(B)=0\)\quad
+D. \(A\) 与 \(B\) 互不相容
+\end{exercise}
+
+\begin{solution}
+应选 A。
+
+\(P(A-B)=P(A)-P(AB)=P(A)\)，故 A 正确。B 与条件无必然联系；C 错误（例如连续型随机变量取特定值的概率为零，但事件本身可能发生）；D 错误（\(P(AB)=0\) 是互不相容的必要条件而非充分条件）。
+\end{solution}
+
+\begin{exercise}[提高]\label{exer:1-49}
+设事件 \(A,B\) 相互独立，事件 \(B,C\) 互不相容，事件 \(A\) 与 \(C\) 不能同时发生，且 \(P(A)=P(B)=0.5\)，\(P(C)=0.2\)。则事件 \(A,B\) 和 \(C\) 中仅 \(C\) 发生或仅 \(C\) 不发生的概率为 \underline{\hspace{2cm}}。
+\end{exercise}
+
+\begin{solution}
+应填 \(0.45\)。
+
+"仅 \(C\) 发生"即 \(C\overline{A}\,\overline{B}\)。由于 \(AC=\varnothing\) 且 \(BC=\varnothing\)，故 \(C\subset\overline{A}\) 且 \(C\subset\overline{B}\)，即 \(C\subset\overline{A}\,\overline{B}\)，从而 \(C\overline{A}\,\overline{B}=C\)，\(P(C)=0.2\)。
+
+"仅 \(C\) 不发生"即 \(\overline{C}AB\)。由独立性 \(P(AB)=P(A)P(B)=0.25\)，且 \(AB\subset\overline{C}\)（因为 \(AC=\varnothing\)），故 \(\overline{C}AB=AB\)，\(P(\overline{C}AB)=0.25\)。
+
+又 \(C\) 与 \(AB\) 互斥（\(C\subset\overline{A}\)，\(AB\subset A\)），故
+\[
+P(C\overline{A}\,\overline{B}\cup\overline{C}AB) = P(C)+P(AB) = 0.2+0.25 = 0.45.
+\]
+\end{solution}
+
+\begin{exercise}[提高]\label{exer:1-50}
+设 \(A,B\) 为任意两个随机事件，则（\quad）。\par
+A. \(P(AB)\le P(A)P(B)\)\quad
+B. \(P(AB)\ge P(A)P(B)\)\quad
+C. \(P(AB)\le \dfrac{P(A)+P(B)}{2}\)\quad
+D. \(P(AB)\ge \dfrac{P(A)+P(B)}{2}\)
+\end{exercise}
+
+\begin{solution}
+应选 C。
+
+由 \(AB\subset A\) 和 \(AB\subset B\)，得 \(P(AB)\le P(A)\) 且 \(P(AB)\le P(B)\)，因此
+\[
+2P(AB)\le P(A)+P(B) \implies P(AB)\le\frac{P(A)+P(B)}{2}.
+\]
+
+A、B 的反例：当 \(A\subset B\) 时 \(P(AB)=P(A)\)，与 \(P(A)P(B)\) 无确定大小关系；当 \(AB=\varnothing\) 时 \(P(AB)=0\)。D 的反例同 A。
+\end{solution}
+
+
+\section{古典概型}
 
 \begin{definition}[古典概型] \label{def:classical-prob}
 如果随机试验的样本空间满足：
@@ -538,7 +649,7 @@ P(A) = \frac{k}{n} = \frac{\text{事件} \ A \ \text{所含基本事件的个数
 \end{enumerate}
 \end{note}
 
-\subsubsection*{随机分配问题}
+\subsection*{随机分配问题}
 
 随机分配也叫随机占位，突出一个"放"字，即将 \(n\) 个可辨质点随机地分配到 \(N\) 个盒子中，区分每盒可以容纳任意多个质点（ 不同分法的总数\(N^n\)）和最多可以容纳一个质点（不同分法的总数\(\mathrm{P}_N^n = N(N-1)\cdots(N-n+1)\)）。
 
@@ -577,7 +688,7 @@ n_C = \mathrm{C}_n^k \cdot k! \cdot (N-k)^{n-k}, \quad P(C) = \frac{\mathrm{C}_n
 许多问题的结构形式与分球入盒问题相同，都属于随机占位问题。例如生日问题（\(n\) 个人生日，相当于 \(n\) 个球随机放入 365 个盒子中，每盒可以放多个球）；住房分配问题（\(n\) 个人被分配到 \(N\) 个房间中去，每个房间可住多个人）；乘客下车问题（\(n\) 个乘客在 \(N\) 个车站下车的各种可能情况）；等等。对这些问题的求解都可以用"将 \(n\) 个球等可能地投放到 \(N\) 个盒子中"的思路来考虑。
 \end{note}
 
-\subsubsection*{简单随机抽样问题}
+\subsection*{简单随机抽样问题}
 
 设 \(\Omega = \{\omega_1, \omega_2, \dots, \omega_N\}\) 含 \(N\) 个元素，称 \(\Omega\) 为总体。如果各元素被抽到的可能性相同，则总体 \(\Omega\) 的抽样称作\textbf{简单随机抽样}，突出一个"取"字。
 
@@ -673,6 +784,23 @@ n_C = \mathrm{C}_n^k \cdot k! \cdot (N-k)^{n-k}, \quad P(C) = \frac{\mathrm{C}_n
 \[P(\text{至少 2 张同花色}) = 1 - \frac{8788}{22100} = \frac{13312}{22100} = \frac{256}{425}.\]
 \end{solution}
 
+\begin{exercise}[提高]\label{exer:1-51}
+从 1 到 9 的 9 个整数中有放回地随机取 3 次，每次取一个数，则取出的 3 个数之积能被 10 整除的概率为 \underline{\hspace{2cm}}。
+\end{exercise}
+
+\begin{solution}
+应填 \(\dfrac{52}{243}\)。
+
+积能被 10 整除当且仅当积同时含有因子 2 和因子 5。从 \(\{1,\dots,9\}\) 中，5 的倍数仅有 \(\{5\}\)，2 的倍数为 \(\{2,4,6,8\}\)。
+
+设 \(A\) 为"至少取出一个 5 的倍数"，\(B\) 为"至少取出一个 2 的倍数"。由容斥原理：
+\begin{align*}
+P(AB) &= 1 - P(\overline{A}) - P(\overline{B}) + P(\overline{A}\,\overline{B}) \\
+&= 1 - \frac{8^3}{9^3} - \frac{5^3}{9^3} + \frac{4^3}{9^3} \\
+&= 1 - \frac{512}{729} - \frac{125}{729} + \frac{64}{729} = \frac{156}{729} = \frac{52}{243}.
+\end{align*}
+\end{solution}
+
 \subsection{几何概型}
 
 \begin{definition}[几何概型] \label{def:geometric-prob}
@@ -751,9 +879,9 @@ P(A) &= \int_{1/4}^{1}\left(\frac{5}{4}-x-\frac{1}{4x}\right)\mathrm{d}x = \left
 \end{solution}
 
 
-\subsection{条件概率}
+\section{条件概率}
 
-\subsubsection{条件概率的定义}
+\subsection{条件概率的定义}
 
 \begin{definition}[条件概率] \label{def:conditional-prob}
 设 \(A, B\) 是两个事件，且 \(P(A) > 0\)，称
@@ -787,7 +915,7 @@ P(\overline{B}|A) = 1 - P(B|A), \quad P[(B-C)|A] = P(B|A) - P(BC|A).
 \]
 \end{note}
 
-\subsubsection{乘法公式}
+\subsection{乘法公式}
 
 \begin{theorem}[乘法公式] \label{thm:multiplication}
 设 \(P(A) > 0\)，则
@@ -800,7 +928,7 @@ P(A_1 A_2 \cdots A_n) = P(A_1)\,P(A_2|A_1)\,P(A_3|A_1 A_2) \cdots P(A_n|A_1 A_2 
 \]
 \end{theorem}
 
-\subsubsection{全概率公式与贝叶斯公式}
+\subsection{全概率公式与贝叶斯公式}
 
 前面已经介绍了完备事件组的概念（见定义~\ref{def:complete-event-group}），它是全概率公式和贝叶斯公式的前提条件。
 
@@ -1147,10 +1275,97 @@ P(B) &= \frac{1}{3}(0.98+0.887+0.794) = \frac{2.661}{3} = 0.887.
 \end{align*}
 \end{solution}
 
+\begin{exercise}\label{exer:1-52}
+设水杯成箱出售，每箱 12 个，每箱中含 0 个、1 个、2 个残次品的概率分别为 0.7、0.19、0.11。某人欲购一箱，售货员随机取一箱，从中任取 3 只查看，若无残次品则购买。\par
+(1) 此人购买一箱的概率；\par
+(2) 在此人购买一箱的条件下，该箱无残次品的概率。
+\end{exercise}
 
-\subsection{事件的独立性}
+\begin{solution}
+设 \(A_i\)（\(i=0,1,2\)）为"箱中有 \(i\) 件残次品"，\(B\) 为"购买此箱"（即取出的 3 只均无残次品）。
 
-\subsubsection*{独立性的定义}
+(1) 由全概率公式：
+\begin{align*}
+P(B) &= \sum_{i=0}^{2}P(A_i)\,P(B|A_i), \\
+P(B|A_0) &= 1, \quad P(B|A_1) = \frac{\mathrm{C}_{11}^3}{\mathrm{C}_{12}^3} = \frac{3}{4}, \quad P(B|A_2) = \frac{\mathrm{C}_{10}^3}{\mathrm{C}_{12}^3} = \frac{6}{11}, \\
+P(B) &= 0.7\times 1 + 0.19\times\frac{3}{4} + 0.11\times\frac{6}{11} = 0.9025.
+\end{align*}
+
+(2) 由贝叶斯公式：
+\[
+P(A_0|B) = \frac{P(A_0)\,P(B|A_0)}{P(B)} = \frac{0.7\times 1}{0.9025} = \frac{280}{361} \approx 0.7756.
+\]
+\end{solution}
+
+\begin{exercise}\label{exer:1-53}
+统计资料显示，在出口罐头导致的索赔事件中，有 50\% 是质量问题，30\% 是数量问题，20\% 是包装问题。在这三类问题各引起的索赔事件中，不经过法律诉讼而通过协商解决的概率分别为 40\%、60\% 和 75\%。\par
+(1) 索赔事件通过协商解决的概率；\par
+(2) 已知一索赔事件通过协商解决，求该事件不是包装问题的概率。
+\end{exercise}
+
+\begin{solution}
+设 \(A_1,A_2,A_3\) 分别为质量、数量、包装问题引起的索赔，\(B\) 为"通过协商解决"。
+
+(1) 由全概率公式：
+\[
+P(B) = \sum_{i=1}^{3}P(A_i)\,P(B|A_i) = 0.5\times 0.40 + 0.3\times 0.60 + 0.2\times 0.75 = 0.53.
+\]
+
+(2) 由贝叶斯公式：
+\[
+P(A_3|B) = \frac{P(A_3)\,P(B|A_3)}{P(B)} = \frac{0.2\times 0.75}{0.53} = \frac{15}{53},
+\]
+故所求概率为 \(1-P(A_3|B) = \dfrac{38}{53}\)。
+\end{solution}
+
+\begin{exercise}\label{exer:1-54}
+在某城市中，下雨和晴天的天数各占一半，而天气无论在雨天还是晴天都有 \(\dfrac{2}{3}\) 的概率预报准确。如果预报下雨，王明同学就一定带雨伞；如果预报无雨，则不带伞。设 \(A=\{\text{天下雨}\}\)，\(B=\{\text{预报有雨}\}\)，\(C=\{\text{王明带雨伞}\}\)。\par
+(1) 事件 \(\overline{A}\cap\overline{B}\cap C\)、\(\overline{A}\cap B\cap C\) 的含义是什么？哪个为不可能事件？\par
+(2) 求他带雨伞而没有下雨的概率。
+\end{exercise}
+
+\begin{solution}
+由题意：\(P(A)=\dfrac{1}{2}\)，\(P(B|A)=\dfrac{2}{3}\)（预报准确），\(P(\overline{B}|\overline{A})=\dfrac{2}{3}\)（预报准确），故 \(P(B|\overline{A})=\dfrac{1}{3}\)。又 \(P(C|B)=1\)（预报有雨必带伞），\(P(C|\overline{B})=0\)（预报无雨不带伞）。
+
+(1) \(\overline{A}\cap\overline{B}\cap C\)：天没下雨、预报无雨、却带了雨伞。由于 \(P(C|\overline{B})=0\)，这是一个\textbf{不可能事件}。\par
+\(\overline{A}\cap B\cap C\)：天没下雨、预报有雨、带了雨伞。这是可能事件。
+
+(2) "带雨伞而没有下雨"即 \(\overline{A}\cap C\)。由于 \(C\) 完全由 \(B\) 决定，\(\overline{A}\cap\overline{B}\cap C\) 为不可能事件，故
+\[
+P(\overline{A}\cap C) = P(\overline{A}\cap B\cap C) = P(\overline{A})\,P(B|\overline{A})\,P(C|\overline{A}B) = \frac{1}{2}\times\frac{1}{3}\times 1 = \frac{1}{6}.
+\]
+\end{solution}
+
+\begin{exercise}[提高]\label{exer:1-55}
+设某同学的手机在一天内收到短信数服从泊松分布 \(P(\lambda)\)，每个短信是否为垃圾短信与其到达时间独立，也与其他短信是否为垃圾短信相互独立。假设每个短信是垃圾短信的概率为 \(p\)。\par
+(1) 已知一天内收到了 \(n\) 条短信，求其中恰有 \(k\) 条垃圾短信的概率（\(0\le k\le n\)）。\par
+(2) 求一天内收到 \(k\) 条垃圾短信的概率（\(k=0,1,2,\dots\)）。
+\end{exercise}
+
+\begin{solution}
+(1) 记 \(X\) 为一天内收到短信的总数，\(Y\) 为其中垃圾短信的条数。已知 \(X=n\) 时，每条短信独立地以概率 \(p\) 为垃圾短信，故
+\[
+P(Y=k\mid X=n) = \mathrm{C}_n^k\,p^k\,(1-p)^{n-k}.
+\]
+
+(2) 由全概率公式：
+\begin{align*}
+P(Y=k) &= \sum_{n=k}^{\infty} P(Y=k\mid X=n)\,P(X=n) \\
+&= \sum_{n=k}^{\infty} \mathrm{C}_n^k\,p^k\,(1-p)^{n-k}\,\frac{\lambda^n}{n!}\,e^{-\lambda} \\
+&= \frac{p^k\,e^{-\lambda}\,\lambda^k}{k!}\sum_{n=k}^{\infty}\frac{[\lambda(1-p)]^{n-k}}{(n-k)!} \\
+&= \frac{(\lambda p)^k}{k!}\,e^{-\lambda}\,e^{\lambda(1-p)} = \frac{(\lambda p)^k}{k!}\,e^{-\lambda p}.
+\end{align*}
+即 \(Y\sim P(\lambda p)\)。
+\end{solution}
+
+\begin{note}
+泊松分布的分解定理（稀疏性）：以概率 \(p\) 独立地对泊松过程 \(P(\lambda)\) 进行"稀疏"，得到的新过程仍为泊松分布，参数变为 \(\lambda p\)。本题是全概率公式与泊松分布结合的典型应用。
+\end{note}
+
+
+\section{事件的独立性}
+
+\subsection{独立性的定义}
 
 \begin{definition}[事件的独立性] \label{def:independence}
 设 \(A, B\) 为两个事件，如果
@@ -1183,7 +1398,7 @@ P(ABC) = P(A)\,P(B)\,P(C).
 从条件概率的角度理解独立性：若 \(A, B\) 相互独立且 \(P(B) > 0\)，则 \(P(A|B) = P(A)\)。这意味着样本空间缩小为 \(B\) 后，事件 \(A\) 发生的概率并没有改变——\(B\) 的发生对 \(A\) 没有任何影响，这正是"独立"一词的含义。
 \end{note}
 
-\subsubsection*{独立性的判定}
+\subsection{独立性的判定}
 
 \begin{property}\label{prop:independence-equiv}
 \(A\) 与 \(B\) 独立（\(P(AB)=P(A)\,P(B)\)）的等价条件（设 \(0 < P(A) < 1\)）：
@@ -1221,7 +1436,7 @@ P(A\,\overline{B}) = P(A) - P(AB) = P(A) - P(A)\,P(B) = P(A)\,[1-P(B)] = P(A)\,P
 \end{note}
 
 \begin{exercise}\label{exer:1-17}
-将一枚硬币独立地掷两次，设 \(A_1=\{\text{掷第一次出现正面}\}\)，\(A_2=\{\text{掷第二次出现正面}\}\)，\(A_3=\{\text{正反面各出现一次}\}\)，\(A_4=\{\text{正面出现两次}\}\)，则事件（）。\par
+将一枚硬币独立地掷两次，设 \(A_1=\{\text{掷第一次出现正面}\}\)，\(A_2=\{\text{掷第二次出现正面}\}\)，\(A_3=\{\text{正反面各出现一次}\}\)，\(A_4=\{\text{正面出现两次}\}\)，则事件（\quad）。\par
 \begin{tabular}{ll}
 A. \(A_1,A_2,A_3\) 相互独立 & B. \(A_2,A_3,A_4\) 相互独立 \\[4pt]
 C. \(A_1,A_2,A_3\) 两两独立 & D. \(A_2,A_3,A_4\) 两两独立
@@ -1288,7 +1503,69 @@ P(A\cup B)\,P(C) &= [P(A)+P(B)-P(AB)]\,P(C) \\
 因此充要条件为 \(P(ABC)=P(AB)\,P(C)\)，即 \(AB\) 与 \(C\) 相互独立。
 \end{solution}
 
-\subsection{独立重复试验与伯努利概型}
+\begin{exercise}\label{exer:1-56}
+已知 \(A,B\) 相互独立，\(P(A)=0.5\)，\(P(B)=0.4\)，\(C=\overline{A}\cup B\)。求 \(P(\overline{C})\)，\(P(C\mid(A\cup B))\)。
+\end{exercise}
+
+\begin{solution}
+\(\overline{C}=\overline{\overline{A}\cup B}=A\,\overline{B}\)，由独立性：
+\[
+P(\overline{C}) = P(A\,\overline{B}) = P(A)(1-P(B)) = 0.5\times 0.6 = 0.3.
+\]
+
+又 \(P(A\cup B)=P(A)+P(B)-P(A)P(B)=0.5+0.4-0.2=0.7\)。注意到
+\[
+C\cap(A\cup B) = (\overline{A}\cup B)\cap(A\cup B) = B,
+\]
+故
+\[
+P(C\mid(A\cup B)) = \frac{P(B)}{P(A\cup B)} = \frac{0.4}{0.7} = \frac{4}{7}.
+\]
+\end{solution}
+
+\begin{exercise}\label{exer:1-57}
+下列命题中，正确的是（\quad）。\par
+A. 若 \(A,B\) 互不相容，则 \(\overline{A},\overline{B}\) 也互不相容\quad
+B. 若 \(A,B\) 相容，则 \(\overline{A},\overline{B}\) 也相容\quad
+C. 若 \(A,B\) 独立，则 \(\overline{A},\overline{B}\) 也独立\quad
+D. 若 \(A,B\) 独立，则 \(\overline{A},\overline{B}\) 不相容
+\end{exercise}
+
+\begin{solution}
+应选 C。
+
+由独立性 \(P(AB)=P(A)P(B)\)：
+\[
+P(\overline{A}\,\overline{B}) = P(\overline{A\cup B}) = 1-P(A)-P(B)+P(AB) = (1-P(A))(1-P(B)) = P(\overline{A})P(\overline{B}),
+\]
+故 \(\overline{A},\overline{B}\) 也独立。
+
+A 错误：例如 \(A=\varnothing\) 时 \(\overline{A}=\Omega\)，\(\overline{A}\,\overline{B}=\overline{B}\) 一般不为空。B 错误：类似地，\(\overline{A},\overline{B}\) 可相容也可不相容。D 错误：独立与相容没有必然关系。
+\end{solution}
+
+\begin{exercise}[提高]\label{exer:1-58}
+设 \(A,B,C\) 相互独立，且 \(P(A)\neq 0\)，\(0<P(C)<1\)。则下面四个事件中不独立的是（\quad）。\par
+A. \(\overline{A}\cup B\) 与 \(C\)\quad
+B. \(\overline{AC}\) 与 \(\overline{C}\)\quad
+C. \(\overline{A-B}\) 与 \(\overline{C}\)\quad
+D. \(\overline{AB}\) 与 \(\overline{C}\)
+\end{exercise}
+
+\begin{solution}
+应选 B。
+
+A、C、D 中左边的事件均由 \(A,B\) 构成，而 \(A,B\) 各自与 \(C\) 独立，因此由 \(A,B\) 经过并、交、差运算构成的新事件也与 \(C\) 独立。
+
+B 中，\(\overline{AC}\cap\overline{C}=\overline{C}\)（因为 \(\overline{AC}\supset\overline{C}\)）。若两者独立，需 \(P(\overline{AC})\,P(\overline{C})=P(\overline{C})\)，即 \(P(\overline{AC})=1\)。但
+\[
+P(\overline{AC}) = P(\overline{A})+P(\overline{C})-P(\overline{A})P(\overline{C}) < 1 \quad (\text{因为 }P(\overline{A})<1, P(\overline{C})<1),
+\]
+矛盾。故 \(\overline{AC}\) 与 \(\overline{C}\) 不独立。
+
+等价地，若独立则需 \(P(\overline{C})=P(\overline{AC}\,\overline{C})=P(\overline{C})\) 恒成立，但由独立性 \(P(AC)=P(A)P(C)>0\)，可得 \(\overline{AC}\neq\Omega\)，从而 \(P(\overline{AC})<1\)。
+\end{solution}
+
+\section{独立重复试验与伯努利概型}
 
 \begin{definition}[\(n\) 重伯努利概型] \label{def:bernoulli}
 如果随机试验满足以下条件：
@@ -1383,13 +1660,91 @@ D. \(1 - \dfrac{2}{3}\sqrt[4]{5}\)
 互不相容可简化并事件的概率计算，相互独立可简化交事件的概率计算。这里利用对偶律将事件的并转化为事件的交，从而利用独立性进行计算，这一方法经常用到。
 \end{note}
 
+\begin{exercise}\label{exer:1-59}
+设甲、乙两人轮流射击同一目标，直到射中为止，每次命中率分别为 0.3 和 0.4，甲先射击。\par
+(1) 目标是由甲射中的概率 \(p_1\)；\par
+(2) 击中目标者射击了 \(k\) 次的概率 \(p_2\)。
+\end{exercise}
+
+\begin{solution}
+(1) 甲在第一轮命中的概率为 0.3；若第一轮都未命中（概率 \(0.7\times 0.6=0.42\)），则回到初始状态。故
+\[
+p_1 = 0.3 + 0.42\times p_1 \implies p_1 = \frac{0.3}{1-0.42} = \frac{15}{29} \approx 0.5172.
+\]
+
+(2) "击中者射击了 \(k\) 次"意味着该射手在前 \(k-1\) 轮均未命中，第 \(k\) 次命中。若甲击中：前 \(k-1\) 轮甲乙均未命中（概率 \(0.42^{k-1}\)），甲第 \(k\) 次命中（概率 0.3）。若乙击中：前 \(k-1\) 轮均未命中（概率 \(0.42^{k-1}\)），甲第 \(k\) 次未命中（概率 0.7），乙第 \(k\) 次命中（概率 0.4）。故
+\[
+p_2 = 0.42^{k-1}\times 0.3 + 0.42^{k-1}\times 0.7\times 0.4 = 0.42^{k-1}\times 0.58 \quad (k=1,2,\dots).
+\]
+\end{solution}
 
 
 
 
-\begin{problemset}
+\chapter{一维随机变量及其分布}
 
-\end{problemset}
+\[
+\begin{cases}
+\text{随机变量分布函数 } F(x) = P(X \le x) \text{ 的性质}
+\begin{cases}
+(1)\ \text{单调不减} \\
+(2)\ 0 \le F(x) \le 1,\ F(-\infty)=0,\ F(+\infty)=1 \\
+(3)\ \text{右连续: } F(x+0) = F(x)
+\end{cases} \\[1em]
+\text{随机变量分类及概率分布}
+\begin{cases}
+\text{离散型: 分布律} \\
+\text{连续型: 概率密度} \\
+\text{混合型: 分布函数}
+\end{cases}
+\ \text{满足概率分布的性质} \\[1em]
+\text{常见随机变量及其分布}
+\begin{cases}
+\text{离散型}
+\begin{cases}
+(0-1)\text{分布: } P(X=k) = p^k(1-p)^{1-k}\ (k=0,1) \\
+\text{二项分布: } P(X=k) = C_n^k p^k(1-p)^{n-k}\ (k=0,1,2,\dots,n) \\
+\text{泊松分布: } P(X=k) = \frac{\lambda^k}{k!}e^{-\lambda}\ (k=0,1,2\cdots)
+\end{cases} \\[2em]
+\text{连续型}
+\begin{cases}
+\text{均匀分布}
+\begin{cases}
+X \sim U(a,b) \\
+\text{性质: 区间概率等于该区间占整个区间的比例}
+\end{cases} \\
+\text{指数分布}
+\begin{cases}
+X \sim E(\lambda) \\
+\text{性质: 无记忆性}
+\end{cases} \\
+\text{正态分布}
+\begin{cases}
+X \sim N(\mu,\sigma^2) \\
+\text{性质}
+\begin{cases}
+\text{参数含义: } \mu \text{ 为位置参数(注意对称性),} \\
+\sigma^2 \text{ 为形状参数} \\
+\text{利用标准化求解概率}
+\end{cases}
+\end{cases}
+\end{cases}
+\end{cases} \\[1em]
+\text{随机变量函数的概率分布}
+\begin{cases}
+\text{离散型: 关键取值及对应概率} \\
+\text{连续型}
+\begin{cases}
+\text{定义法: 求解函数的分布函数} \\
+\text{公式法: 适用单调的随机变量}
+\end{cases}
+\end{cases}
+\end{cases}
+\]
+
+\begin{introduction}
+
+\end{introduction}
 
 
 
@@ -1905,11 +2260,18 @@ LaTeX Error:
 \chapter{ElegantBook 写作示例}
 
 \begin{introduction}
-  \item 积分定义~\ref{def:int}
-  \item Fubini 定理~\ref{thm:fubi}
-  \item 最优性原理~\ref{pro:max}
-  \item 柯西列性质~\ref{property:cauchy}
-  \item 韦达定理
+  \item 随机试验与样本空间~\ref{def:random-experiment}
+  \item 随机事件及其运算~\ref{def:random-event}
+  \item 完备事件组~\ref{def:complete-event-group}
+  \item 概率的公理化定义~\ref{def:probability-axiom}
+  \item 概率的基本性质~\ref{prop:probability-basic}
+  \item 古典概型~\ref{def:classical-prob}
+  \item 几何概型~\ref{def:geometric-prob}
+  \item 条件概率~\ref{def:conditional-prob}
+  \item 乘法公式~\ref{thm:multiplication}
+  \item 全概率公式与贝叶斯公式~\ref{thm:total-probability}
+  \item 事件的独立性~\ref{def:independence}
+  \item 伯努利概型~\ref{def:bernoulli}
 \end{introduction}
 
 \section{Lebesgue 积分}
