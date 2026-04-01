@@ -9001,8 +9001,720 @@ DT = D(\overline{X}^2) + D\!\left(\frac{S^2}{n}\right) = \frac{2}{n^2} + \frac{2
 \]
 
 \begin{introduction}
-    \item 
+    \item 点估计的基本概念~\ref{def:point-est}
+    \item 矩估计法~\ref{subsec:mme}
+    \item 最大似然估计法~\ref{subsec:mle}
+    \item 估计量的评价标准~\ref{subsec:criteria}
 \end{introduction}
+
+\section{点估计的基本概念}
+
+\begin{definition}[点估计] \label{def:point-est}
+设总体 \(X\) 的分布函数形式已知，但含有一个或多个未知参数 \(\theta\)。利用总体 \(X\) 的一个样本 \[X_1, X_2, \dots, X_n\]
+构造一个适当的统计量 \[\hat{\theta}(X_1, X_2, \dots, X_n)\] 
+来估计未知参数 \(\theta\)，则称其为 \(\theta\) 的\textbf{估计量}。将样本观测值 \(x_1, x_2, \dots, x_n\)代入估计量，得到的数值 \[\hat{\theta}(x_1, x_2, \dots, x_n)\] 称为 \(\theta\) 的\textbf{估计值}。
+\end{definition}
+
+\begin{note}
+估计量是随机变量（样本的函数），估计值是具体的数值。常用的点估计方法有\textbf{矩估计法}和\textbf{最大似然估计法}。
+\end{note}
+
+\section{矩估计法（MME）} \label{subsec:mme}
+
+矩估计法的核心思想是\textbf{用样本矩替换总体矩}：由大数定律，样本矩依概率收敛于总体矩，因此可以用样本矩来估计总体矩，从而解出未知参数。
+
+\begin{property}[矩估计的步骤] \label{prop:mme-steps}
+设总体 \(X\) 含有 \(k\) 个未知参数 \(\theta_1, \theta_2, \dots, \theta_k\)，\(X_1, X_2, \dots, X_n\) 为样本。
+\begin{enumerate}
+    \item 计算总体的前 \(k\) 阶矩 \(\mu_j = E(X^j)\ (j=1,2,\dots,k)\)，它们是 \(\theta_1, \dots, \theta_k\) 的函数。
+    \item 计算对应的样本矩 \(A_j = \dfrac{1}{n}\displaystyle\sum_{i=1}^{n}X_i^j\ (j=1,2,\dots,k)\)。
+    \item 令 \(\mu_j = A_j\ (j=1,2,\dots,k)\)，建立 \(k\) 个方程。
+    \item 解方程组，得到 \(\hat{\theta}_1, \hat{\theta}_2, \dots, \hat{\theta}_k\) 作为矩估计量。
+\end{enumerate}
+\end{property}
+
+\begin{note}
+求矩估计时，以低阶为原则——取能解出参数的最小 \(j\) 值。例如，若一个参数可用一阶矩解出，就不必使用二阶矩。对于两个参数，通常用 \(EX\) 和 \(EX^2\)（或等价地 \(EX\) 和 \(DX\)）建立两个方程。
+\end{note}
+
+\section{最大似然估计法（MLE）} \label{subsec:mle}
+
+最大似然估计的基本思想：在参数可能的取值范围内，选取使"样本获得当前观测值的概率最大"的参数值作为估计值——"参数 \(\theta\) 为何值时，观测值出现的概率最大"。
+
+\begin{property}[最大似然估计的步骤] \label{prop:mle-steps}
+设总体 \(X\) 的分布（离散型为 \(p(x;\theta)\)，连续型为 \(f(x;\theta)\)）含有未知参数 \(\theta\)，样本观测值为 \(x_1, x_2, \dots, x_n\)。
+\begin{enumerate}
+    \item 写出\textbf{似然函数}：
+    \[
+    L(\theta) = \prod_{i=1}^{n}p(x_i;\theta)\quad\text{（离散型）}\qquad\text{或}\qquad L(\theta) = \prod_{i=1}^{n}f(x_i;\theta)\quad\text{（连续型）}.
+    \]
+    \item 取对数：\(\ln L(\theta)\)（将乘积化为求和，便于求导）。
+    \item 对 \(\theta\) 求导并令导数为零，解出 \(\hat{\theta}\)：
+    \begin{itemize}
+        \item \textbf{有驻点}：令 \(\dfrac{\mathrm{d}\ln L}{\mathrm{d}\theta} = 0\)，解出 \(\hat{\theta}\)；
+        \item \textbf{单调型（无驻点）}：\(\hat{\theta}\) 在参数范围的\textbf{边界}取得（通常是 \(\max\{X_i\}\) 或 \(\min\{X_i\}\)）；
+        \item \textbf{常数型}：\(\hat{\theta}\) 不唯一。
+    \end{itemize}
+\end{enumerate}
+\end{property}
+
+\begin{property}[最大似然估计的不变性] \label{prop:mle-inv}
+设 \(\hat{\theta}\) 是 \(\theta\) 的最大似然估计，\(u = u(\theta)\) 具有反函数，则 \(\hat{u} = u(\hat{\theta})\) 是 \(u(\theta)\) 的最大似然估计。例如，若 \(\hat{\theta}\) 是 \(\theta\) 的 MLE，则 \(e^{\hat{\theta}}\) 是 \(e^\theta\) 的 MLE。
+\end{property}
+
+
+\begin{exercise}\label{exer:7-poisson-bacteria}
+为检验某种自然水消毒设备的效果，从消毒后的水中随机抽取 50 升，化验每升水中大肠杆菌的个数（服从泊松分布），结果如下：
+\begin{center}
+\begin{tabular}{c|ccccccc}
+大肠杆菌数/升 & 0 & 1 & 2 & 3 & 4 & 5 & 6 \\
+\hline
+升数 & 17 & 20 & 10 & 2 & 1 & 0 & 0
+\end{tabular}
+\end{center}
+问：平均每升水中大肠杆菌的个数为多少时，出现上述情况的概率最大？
+\end{exercise}
+\begin{solution}
+此题等价于求泊松分布参数 \(\lambda\) 的最大似然估计。由泊松分布的 MLE 为样本均值：
+\[
+\overline{x} = \frac{0\times17+1\times20+2\times10+3\times2+4\times1}{50} = \frac{50}{50} = 1.
+\]
+故平均每升 1 个时出现上述情况的概率最大。
+\end{solution}
+
+\begin{exercise}\label{exer:7-normal-sigma2}
+设 \((X_1, X_2, \dots, X_n)\) 为取自总体 \(N(0, \sigma^2)\) 的样本，则 \(\sigma^2\) 的最大似然估计是（\quad）。\par
+A. \(S^2\)\qquad B. \(\dfrac{n-1}{n}S^2\)\qquad C. \(\overline{X}^2\)\qquad D. \(\dfrac{1}{n}\displaystyle\sum_{i=1}^{n}X_i^2\)
+\end{exercise}
+\begin{solution}
+应选 D。注意此题中 \(\mu=0\) 为已知。似然函数为
+\[
+L(\sigma^2) = \frac{1}{(\sqrt{2\pi\sigma^2})^n}\exp\!\left(-\frac{1}{2\sigma^2}\sum_{i=1}^{n}x_i^2\right)~~~~~
+\ln L = -\frac{n}{2}\ln(2\pi) - \frac{n}{2}\ln\sigma^2 - \frac{1}{2\sigma^2}\sum_{i=1}^{n}x_i^2.
+\]
+令 \(\dfrac{\partial\ln L}{\partial\sigma^2} = -\dfrac{n}{2\sigma^2} + \dfrac{1}{2(\sigma^2)^2}\displaystyle\sum_{i=1}^{n}x_i^2 = 0\)，得
+\[
+\hat{\sigma}^2 = \frac{1}{n}\sum_{i=1}^{n}X_i^2.
+\]
+\end{solution}
+
+
+\begin{proposition}
+    在数理统计中，如果一个概率分布（离散或连续均可）的概率质量函数或密度函数可以写成如下形式，它就属于单参数指数族分布：$$P(X=x; \theta) = h(x)c(\theta)\exp\{w(\theta)t(x)\}$$这里最关键的是 $t(x)$，它被称为充分统计量（Sufficient Statistic）。在几何分布和上述的二项分布中，我们总能把公式化简，使得 $t(x) = x$。而 $t(x)=x$ 会导致矩估计和最大似然估计相等。
+\end{proposition}
+\begin{proof}
+\begin{enumerate}
+    \item 写出对数似然函数：$$\ln L(\theta) = \sum_{i=1}^n \ln P(X_i; \theta) = \sum_{i=1}^n \ln h(X_i) + n\ln c(\theta) + w(\theta)\sum_{i=1}^n X_i$$
+    \item 求导寻找最大似然估计（MLE）：将对数似然函数对 $\theta$ 求导并令其等于0：$$\frac{\mathrm{d}\ln L}{\mathrm{d}\theta} = n\frac{c'(\theta)}{c(\theta)} + w'(\theta)\sum_{i=1}^n X_i = 0$$等式两边同除以 $n \cdot w'(\theta)$，我们得到 MLE 的核心方程：$$-\frac{c'(\theta)}{c(\theta)w'(\theta)} = \frac{1}{n}\sum_{i=1}^n X_i = \overline{X}$$
+    \item 再来看看理论期望（总体一阶矩）：在数理统计中有一个基础定理（正则条件下对数似然导数的期望为0），即 $E\left[ \frac{\mathrm{d}\ln P(X; \theta)}{\mathrm{d}\theta} \right] = 0$。代入单样本的导数 $\frac{c'(\theta)}{c(\theta)} + w'(\theta)X$，取期望得到：$$\frac{c'(\theta)}{c(\theta)} + w'(\theta)E(X) = 0 \implies E(X) = -\frac{c'(\theta)}{c(\theta)w'(\theta)}$$
+    \item 见证奇迹的时刻：把期望 $E(X)$ 代回第2步的 MLE 核心方程中，MLE 的求解方程竟然变成了：$$E(X) = \overline{X}$$而这，恰恰就是一阶矩估计的定义！
+\end{enumerate}
+结论： 只要总体分布属于指数族分布，并且其自然充分统计量就是 $X$ 本身，那么通过最大似然估计求导得到的方程，在数学恒等变换后，一定会变成 $E(X) = \overline{X}$。所以，MLE 和 MME 必然殊途同归，结果完全一致。
+\end{proof}
+
+\begin{exercise}\label{exer:7-geometric}
+设总体 \(X\) 的分布律为 \(P(X=x) = p(1-p)^{x-1}\ (x=1,2,\dots)\)，其中 \(p\ (0<p<1)\) 未知。\(X_1, \dots, X_n\) 为样本，求 \(p\) 的矩估计量和最大似然估计量。
+\end{exercise}
+\begin{solution}
+几何分布的数学期望
+\begin{align*}
+E(X) = \sum_{x=1}^\infty x \cdot p(1-p)^{x-1} = p \sum_{x=1}^\infty x(1-p)^{x-1} = p \cdot \frac{1}{[1-(1-p)]^2} = p \cdot \frac{1}{p^2} = \frac{1}{p}
+\end{align*}
+矩估计的核心思想是用样本矩代替总体矩，建立方程求解未知参数。对于单参数问题，我们用一阶原点矩（期望）来求解
+即：
+$$E(X) = \overline{X},~~~\text{其中}\overline{X} = \frac{1}{n}\sum_{i=1}^n X_i\implies \frac1p=\overline{X}\implies \hat{p}_{\text{矩}} = \frac1{\overline{X}}$$
+\textbf{最大似然估计}是想找到一个参数值 $\hat{p}$，使得当前样本出现的概率最大（即似然函数取最大值），似然函数是样本的联合概率（离散型），即所有样本观测值概率的乘积：
+\begin{align*}
+L(p) &= \prod_{i=1}^n P(X=x_i) = \prod_{i=1}^n \left[ p(1-p)^{x_i-1} \right]=  p^n \cdot (1-p)^{\left( \sum_{i=1}^n x_i \right) - n}\\
+\ln L(p) &= n\ln p + \left( \sum_{i=1}^n X_i - n \right) \ln(1-p)\\
+\frac{\mathrm{d}}{\mathrm{d}p} \ln L(p) &= \frac{n}{p} - \frac{\sum_{i=1}^n X_i - n}{1-p} = 0\implies n(1-p) = p\left( \sum_{i=1}^n X_i - n \right),~n = p\sum_{i=1}^n X_i
+\end{align*}
+故 \(\hat{p} = \frac{1}{\overline{X}}\)
+\end{solution}
+
+\begin{exercise}\label{exer:7-discrete-3val}
+设总体 \(X\) 的概率分布为 \(P\{X=0\} = \theta^2\)，\(P\{X=1\} = 2\theta(1-\theta)\)，\(P\{X=2\} = (1-\theta)^2\)，其中 \(\theta\ (0 < \theta < 1/2)\) 是未知参数。利用样本值 2, 0, 2, 2, 1, 0, 2, 2，求 \(\theta\) 的矩估计值和最大似然估计值。
+\end{exercise}
+\begin{solution}
+\textbf{矩估计}：
+\[
+EX = 2\theta(1-\theta) + 2(1-\theta)^2 = 2-2\theta.
+\]
+\(\overline{x} = \frac{11}{8}\)，令 \(2-2\theta = \frac{11}{8}\)，解得 \(\hat{\theta}_{\text{矩}} = \frac{5}{16}\)。\\
+\textbf{最大似然估计}：样本值中 \(X=0\) 出现2次，\(X=1\) 出现1次，\(X=2\) 出现5次。
+\[
+L(\theta) = \theta^4\cdot2\theta(1-\theta)\cdot(1-\theta)^{10} = 2\theta^5(1-\theta)^{11}.
+\]
+\[
+\ln L = \ln 2 + 5\ln\theta + 11\ln(1-\theta),\quad \frac{\mathrm{d}\ln L}{\mathrm{d}\theta} = \frac{5}{\theta} - \frac{11}{1-\theta} = 0.
+\]
+解得 \(\hat{\theta}_{\text{MLE}} = \frac{5}{16}\)。
+\end{solution}
+
+\begin{exercise}\label{exer:7-discrete-123}
+设总体 \(X\) 的分布列如下：
+\begin{center}
+\begin{tabular}{c|ccc}
+\(X\) & 1 & 2 & 3 \\
+\hline
+\(P\) & \(\theta^2\) & \(2\theta(1-\theta)\) & \((1-\theta)^2\)
+\end{tabular}
+\end{center}
+其中 \(\theta\) 为未知参数，样本观测值为 \(X_1=1, X_2=2, X_3=1\)。求 \(\theta\) 的矩估计值和最大似然估计值。
+\end{exercise}
+\begin{solution}
+\textbf{矩估计}：
+\[
+EX = 1\cdot\theta^2 + 2\cdot2\theta(1-\theta) + 3(1-\theta)^2 = 3-2\theta.
+\]
+\(\overline{x} = \frac{4}{3}\)，令 \(3-2\theta = \frac{4}{3}\)，得 \(\hat{\theta}_{\text{矩}} = \frac56\)。\\
+\textbf{最大似然估计}：
+\[
+L(\theta) = \theta^2 \cdot 2\theta(1-\theta) \cdot \theta^2 = 2\theta^5(1-\theta).
+\]
+\(\ln L = \ln 2 + 5\ln\theta + \ln(1-\theta)\)，令 \(\dfrac{5}{\theta} - \dfrac{1}{1-\theta} = 0\)，得 \(\hat{\theta}_{\text{MLE}} = \frac56\)。
+\end{solution}
+
+\begin{note}
+    几何分布和二项分布都属于指数族分布。下面给出一些别的例子。
+\end{note}
+
+\begin{exercise}\label{exer:7-discrete-4val}
+设总体 \(X\) 的概率分布为
+\begin{center}
+\begin{tabular}{c|cccc}
+\(X\) & 0 & 1 & 2 & 3 \\
+\hline
+\(P\) & \(\theta^2\) & \(2\theta(1-\theta)\) & \(\theta^2\) & \(1-2\theta\)
+\end{tabular}
+\end{center}
+其中 \(\theta\ (0 < \theta < 1/2)\) 是未知参数。从总体 \(X\) 中抽取容量为 8 的样本，其样本值为 3, 1, 3, 0, 3, 1, 2, 3。求 \(\theta\) 的矩估计值和最大似然估计值。
+\end{exercise}
+\begin{solution}
+\textbf{矩估计}：总体仅含一个参数，用一阶矩。
+\[
+EX = 0\cdot\theta^2 + 1\cdot2\theta(1-\theta) + 2\cdot\theta^2 + 3(1-2\theta) = 3-4\theta.
+\]
+令 \(3-4\theta = \overline{X}\)，\(\overline{x} = \dfrac{3+1+3+0+3+1+2+3}{8} = 2\)，故$\hat{\theta}_{\text{矩}} = \dfrac{3-2}{4} = \dfrac{1}{4}$.\\
+\textbf{最大似然估计}：样本值中 \(X=0\) 出现1次，\(X=1\) 出现2次，\(X=2\) 出现1次，\(X=3\) 出现4次。
+\[
+L(\theta) = \theta^2\cdot[2\theta(1-\theta)]^2\cdot\theta^2\cdot(1-2\theta)^4 = 4\theta^6(1-\theta)^2(1-2\theta)^4.
+\]
+\[
+\ln L(\theta) = \ln 4 + 6\ln\theta + 2\ln(1-\theta) + 4\ln(1-2\theta).
+\]
+令 \(\dfrac{\mathrm{d}\ln L}{\mathrm{d}\theta} = \dfrac{6}{\theta} - \dfrac{2}{1-\theta} - \dfrac{8}{1-2\theta} = 0\)，化简得 \(12\theta^2 - 14\theta + 3 = 0\)。解得$\theta = \dfrac{14\pm\sqrt{196-144}}{24} = \dfrac{7\pm\sqrt{13}}{12}$因为 \(\dfrac{7+\sqrt{13}}{12} > \dfrac{1}{2}\)（不合题意），故
+\[
+\hat{\theta}_{\text{MLE}} = \frac{7-\sqrt{13}}{12}.
+\]
+\end{solution}
+
+
+\begin{exercise}\label{exer:7-discrete-0123}
+设总体 \(X\) 的分布列为
+\begin{center}
+\begin{tabular}{c|cccc}
+\(X\) & 0 & 1 & 2 & 3 \\
+\hline
+\(P\) & \(\dfrac{\theta(1-\theta)}{2}\) & \(\theta^2\) & \(\dfrac{\theta(1-\theta)}{2}\) & \(1-\theta\)
+\end{tabular}
+\end{center}
+其中 \(\theta\ (0 < \theta < 1)\) 未知。样本观测值为 0, 0, 1, 2, 2, 3, 3, 3, 0, 2。求 \(\theta\) 的矩估计值与最大似然估计值。
+\end{exercise}
+\begin{solution}
+频数统计：\(X=0\) 出现3次，\(X=1\) 出现1次，\(X=2\) 出现3次，\(X=3\) 出现3次。\(\overline{x} = 1.6\)。
+\textbf{矩估计}：
+\[
+EX = \theta^2 + \theta(1-\theta) + 3(1-\theta) = 3-2\theta.
+\]
+令 \(3-2\theta = 1.6\)，得 \(\hat{\theta}_{\text{矩}} = 0.7\)。\\
+\textbf{最大似然估计}：
+\[
+L(\theta) = \left[\frac{\theta(1-\theta)}{2}\right]^{\!3}\theta^2\!\left[\frac{\theta(1-\theta)}{2}\right]^{\!3}(1-\theta)^3 = \frac{1}{64}\,\theta^8(1-\theta)^9.
+\]
+\(\ln L = 8\ln\theta + 9\ln(1-\theta) - \ln 64\)，令 \(\dfrac{8}{\theta} - \dfrac{9}{1-\theta} = 0\)，得 \(\hat{\theta}_{\text{MLE}} = \dfrac{8}{17}\)。
+\end{solution}
+
+\begin{remark}
+以上是离散型的，我们再来看一下连续型的。
+\end{remark}
+
+\begin{exercise}\label{exer:7-poisson-tri}
+设总体 \(X\) 服从泊松分布 \(P(\theta)\)，总体 \(Y\) 具有密度函数 \(f(y,\lambda) = \dfrac{6y}{\lambda^3}(\lambda-y)\ (0 < y < \lambda)\)。\(X_1, \dots, X_n\) 及 \(Y_1, \dots, Y_n\) 分别为来自 \(X\) 和 \(Y\) 的样本。\par
+(1) 求 \(\theta\) 的最大似然估计 \(\hat{\theta}\)；~~(2) 求 \(\lambda\) 的矩估计 \(\hat{\lambda}\)；~~(3) 求 \(\hat{\lambda}\) 的方差。
+\end{exercise}
+\begin{solution}
+(1) 即 \(P(X=x) = e^{-\theta}\dfrac{\theta^x }{x!},\ \theta > 0\)，泊松分布的似然函数：
+\[
+L(\theta) = \prod_{i=1}^{n}\frac{\theta^{x_i}e^{-\theta}}{x_i!} = e^{-n\theta}\,\theta^{\sum x_i}\prod_{i=1}^{n}\frac{1}{x_i!}.
+\]
+\[
+\ln L = -n\theta + \sum x_i\ln\theta + C,\quad \frac{\partial\ln L}{\partial\theta} = -n + \frac{\sum x_i}{\theta} = 0\implies \hat{\theta} = \overline{X}
+\]
+(2) \[EY = \displaystyle\int_0^\lambda y\cdot\frac{6y}{\lambda^3}(\lambda-y)\,\mathrm{d}y = \frac{6}{\lambda^3}\!\left[\lambda\int_0^\lambda y^2\,\mathrm{d}y - \int_0^\lambda y^3\,\mathrm{d}y\right] = \frac{6}{\lambda^3}\!\left(\frac{\lambda^4}{3}-\frac{\lambda^4}{4}\right) = \frac{\lambda}{2}\]
+令 \(\dfrac{\lambda}{2} = \overline{Y}\)，得 \(\hat{\lambda} = 2\overline{Y}\)。\\
+(3) \[EY^2 = \displaystyle\int_0^\lambda \frac{6y^3}{\lambda^3}(\lambda-y)\,\mathrm{d}y = \frac{6}{\lambda^3}\!\left(\frac{\lambda^5}{4}-\frac{\lambda^5}{5}\right) = \frac{3\lambda^2}{10}\]
+\(DY = EY^2 - (EY)^2 = \dfrac{3\lambda^2}{10} - \dfrac{\lambda^2}{4} = \dfrac{\lambda^2}{20}\)。
+\(D(\hat{\lambda}) = D(2\overline{Y}) = \dfrac{4}{n}\,DY = \dfrac{\lambda^2}{5n}\)。
+\end{solution}
+
+\begin{note}
+对于单调型似然函数（\(\ln L\) 关于 \(\theta\) 单调），\(\hat{\theta}\) 通常在参数范围的边界取得。常见模式：若 \(L(\theta)\) 关于 \(\theta\) 单调递减，则 \(\hat{\theta} = \max\{X_i\}\)；若单调递增，则 \(\hat{\theta} = \min\{X_i\}\)。
+\end{note}
+
+\begin{exercise}[单减取最大，单增取最小]\label{exer:7-unif-theta}
+设总体 \(X\) 的概率密度为
+\[
+f(x;\theta) = \begin{cases} \dfrac{1}{1-\theta}, & \theta \leq x \leq 1, \\[4pt] 0, & \text{其他}, \end{cases}
+\]
+其中 \(\theta\) 为未知参数，\(X_1, X_2, \dots, X_n\) 为简单随机样本。\par
+(1) 求 \(\theta\) 的矩估计量；\par
+(2) 求 \(\theta\) 的最大似然估计量。
+\end{exercise}
+
+\begin{solution}
+(1) 总体 \(X \sim U(\theta, 1)\)，\(EX = \dfrac{1+\theta}{2}\)。令 \(\dfrac{1+\theta}{2} = \overline{X}\)，得 \(\hat{\theta}_{\text{矩}} = 2\overline{X}-1\)。\\
+(2) 似然函数为
+\[
+L(\theta) = \frac{1}{(1-\theta)^n},\quad \text{约束条件：}\theta \leq \min\{x_1, \dots, x_n\},\ x_i \leq 1.
+\]
+\(L(\theta)\) 关于 \(\theta\) 单调递增（分母 \(1-\theta\) 递减），故当 \(\theta = \min\{X_1, \dots, X_n\}\) 时 \(L\) 最大：
+\[
+\hat{\theta}_{\text{MLE}} = \min\{X_1, X_2, \dots, X_n\}.
+\]
+\end{solution}
+
+
+
+
+\begin{exercise}\label{exer:7-rayleigh}
+设某种产品的使用寿命 \(T\) 的分布函数 \(F(t)\) 满足方程
+\[
+F'(t) + \frac{2t}{\theta^2}[F(t)-1] = 0,\quad t \geq 0,\quad F(0) = 0,
+\]
+其中 \(\theta > 1\) 为未知参数。产品性能 \(Q(\theta) = \dfrac{\theta^2}{2}\ln\theta - \dfrac{3}{4}\theta^2 + \theta\)。\par
+(1) 求 \(P\{T > t\}\) 与 \(P\{T > s+t \mid T > s\}\)（\(s,t > 0\)）；\par
+(2) 任取 \(n\) 个产品做寿命试验，测得寿命 \(t_1, \dots, t_n\)，求 \(\theta\) 的最大似然估计值 \(\hat{\theta}\)；\par
+(3) 求 \(Q\) 的最大似然估计值 \(\hat{Q}\)。
+\end{exercise}
+
+\begin{solution}
+\textbf{先求 \(F(t)\)}。微分方程 \(F'(t) + \dfrac{2t}{\theta^2}F(t) = \dfrac{2t}{\theta^2}\) 是一阶线性 ODE，积分因子为 \(e^{t^2/\theta^2}\)：
+\[
+F(t)\,e^{t^2/\theta^2} = \int e^{t^2/\theta^2}\,\mathrm{d}\!\left(\frac{t^2}{\theta^2}\right) + C = e^{t^2/\theta^2} + C.
+\]
+由 \(F(0)=0\) 得 \(C=-1\)，故
+\[
+F(t) = 1 - e^{-t^2/\theta^2}\quad(t \geq 0).
+\]
+(1) \(P\{T > t\} = e^{-t^2/\theta^2}\)。
+\[
+P\{T > s+t \mid T > s\} = \frac{P\{T > s+t\}}{P\{T > s\}} = \frac{e^{-(s+t)^2/\theta^2}}{e^{-s^2/\theta^2}} = e^{-(t^2+2st)/\theta^2}.
+\]
+(2) 密度 \(f(t;\theta) = F'(t) = \dfrac{2t}{\theta^2}\,e^{-t^2/\theta^2}\ (t > 0)\)。
+\[
+L(\theta) = \theta^{-2n}\cdot 2^n\!\left(\prod_{i=1}^{n}t_i\right)e^{-\sum t_i^2/\theta^2},\quad
+\ln L = n\ln 2 - 2n\ln\theta + \sum\ln t_i - \frac{1}{\theta^2}\sum t_i^2.
+\]
+令 \(\dfrac{\mathrm{d}\ln L}{\mathrm{d}\theta} = -\dfrac{2n}{\theta} + \dfrac{2}{\theta^3}\sum t_i^2 = 0\)，得 \(\hat{\theta} = \left(\dfrac{1}{n}\sum_{i=1}^{n}t_i^2\right)^{\!1/2}\)。\\
+(3) 由不变性原则，\(Q'(\theta) = \theta\ln\theta - \theta + 1\)，且 \(Q'(\theta) = \ln\theta > 0\ (\theta > 1)\)，故 \(Q(\theta)\) 有反函数。
+\[
+\hat{Q} = Q(\hat{\theta}) = \frac{\hat{\theta}^2}{2}\ln\hat{\theta} - \frac{3}{4}\hat{\theta}^2 + \hat{\theta}.
+\]
+\end{solution}
+
+
+
+\section{估计量的评价标准} \label{subsec:criteria}
+
+\begin{definition}[无偏性] \label{def:unbiased}
+若 \(E\hat{\theta} = \theta\)，则称 \(\hat{\theta}\) 为 \(\theta\) 的\textbf{无偏估计量}。
+\end{definition}
+
+
+
+\begin{exercise}\label{exer:7-sigma2-unbiased}
+设 \(X_1, \dots, X_n\) 和 \(Y_1, \dots, Y_m\) 分别是来自总体 \(X \sim N(\mu_1, \sigma^2)\) 和 \(Y \sim N(\mu_2, \sigma^2)\) 的简单随机样本，样本方差分别为 \(S_X^2, S_Y^2\)。则 \(\sigma^2\) 的无偏估计是（\quad）。\par
+A. \(S_X^2 + S_Y^2\)\quad B. \((m-1)S_X^2 + (n-1)S_Y^2\)\quad C. \(\dfrac{S_X^2+S_Y^2}{m+n-2}\)\quad D. \(\dfrac{(m-1)S_X^2+(n-1)S_Y^2}{m+n-2}\)
+\end{exercise}
+\begin{solution}
+应选 D。\(E(S_X^2) = E(S_Y^2) = \sigma^2\)。选项 D 中：
+\[
+E\!\left(\frac{(m-1)S_X^2+(n-1)S_Y^2}{m+n-2}\right) = \frac{(m-1)\sigma^2+(n-1)\sigma^2}{m+n-2} = \sigma^2.
+\]
+\end{solution}
+
+
+
+\begin{exercise}\label{exer:7-lambda2-unbiased}
+设 \(X_1, X_2, \dots, X_n\) 是取自总体 \(P(\lambda)\) 的样本，\(\overline{X}\) 为样本均值，则 \(\lambda^2\) 的一个无偏估计为（\quad）。\par
+A. \(\overline{X}^2-\overline{X}\)\qquad B. \(\overline{X}^2+\overline{X}\)\qquad C. \(\overline{X}^2-\dfrac{1}{n}\overline{X}\)\qquad D. \(\overline{X}^2+\dfrac{1}{n}\overline{X}\)
+\end{exercise}
+\begin{solution}
+应选 C。泊松分布 \(EX = \lambda\)，\(DX = \lambda\)。\(E(\overline{X}^2) = D(\overline{X})+(E\overline{X})^2 = \dfrac{\lambda}{n}+\lambda^2\)。
+\[
+E\!\left(\overline{X}^2 - \frac{1}{n}\overline{X}\right) = \left(\frac{\lambda}{n}+\lambda^2\right) - \frac{\lambda}{n} = \lambda^2.
+\]
+\end{solution}
+
+
+
+\begin{exercise}\label{exer:7-pareto}
+设总体 \(X\) 的分布函数为
+\[
+F(x,\alpha,\beta) = \begin{cases} 1-\left(\dfrac{\alpha}{x}\right)^{\!\beta}, & x > \alpha, \\ 0, & x \leq \alpha, \end{cases}
+\]
+其中 \(\alpha > 0\)，\(\beta > 1\)，\(X_1, \dots, X_n\) 为样本。\par
+(1) 当 \(\alpha=1\) 时，求 \(\beta\) 的矩估计和最大似然估计；\par
+(2) 当 \(\beta=2\) 时，求 \(\alpha\) 的最大似然估计并讨论它的无偏性。
+\end{exercise}
+\begin{solution}
+密度 \(f(x) = \beta\,\alpha^\beta\,x^{-(\beta+1)}\ (x > \alpha)\)。\\
+(1) \(\alpha=1\) 时，\(f(x) = \beta\,x^{-(\beta+1)}\ (x > 1)\)。
+\[
+EX = \int_1^\infty x\cdot\beta\,x^{-(\beta+1)}\,\mathrm{d}x = \frac{\beta}{\beta-1}.
+\]
+矩估计：令 \(\dfrac{\beta}{\beta-1} = \overline{X}\)，得 \(\hat{\beta}_{\text{矩}} = \dfrac{\overline{X}}{\overline{X}-1}\)。\\
+似然函数 \(L(\beta) = \beta^n\!\left(\prod X_i\right)^{-(\beta+1)}\)，\(\ln L = n\ln\beta - (\beta+1)\sum\ln X_i\)。令 \(n/\beta - \sum\ln X_i = 0\)，得 \(\hat{\beta}_{\text{MLE}} = \dfrac{n}{\sum\ln X_i}\)。\\
+(2) \(\beta=2\) 时，\(f(x) = 2\alpha^2 x^{-3}\ (x > \alpha)\)。约束 \(\alpha \leq X_{(1)}\)。\\
+\(\ln L = n\ln 2 + 2n\ln\alpha - 3\sum\ln X_i\)，\(\dfrac{\partial\ln L}{\partial\alpha} = \dfrac{2n}{\alpha} > 0\)，故 \(L\) 关于 \(\alpha\) 递增，\(\hat{\alpha} = X_{(1)}\)。\\
+对于 Pareto(\(\alpha\),2)，\(E(X_{(1)}) = \dfrac{2n\alpha}{2n-1} \neq \alpha\)，故 \(\hat{\alpha}\) 是有偏估计。
+\end{solution}
+
+
+\begin{exercise}\label{exer:7-mono-3x2}
+设总体 \(X\) 的概率密度为 \(f(x,\theta) = \dfrac{3x^2}{\theta^3}\ (0 \leq x \leq \theta)\)，其中 \(\theta > 0\) 未知，\(X_1, \dots, X_n\) 为简单随机样本。\par
+(1) 求 \(\theta\) 的矩估计量 \(\hat{\theta}_1\) 和最大似然估计量 \(\hat{\theta}_2\)；\par
+(2) 判断 \(\hat{\theta}_2\) 是否是 \(\theta\) 的无偏估计量。
+\end{exercise}
+\begin{solution}
+(1) \(EX = \displaystyle\int_0^\theta \frac{3x^3}{\theta^3}\,\mathrm{d}x = \frac{3\theta}{4}\)。令 \(\dfrac{3\theta}{4} = \overline{X}\)，得 \(\hat{\theta}_1 = \dfrac{4}{3}\overline{X}\)。似然函数 \(L(\theta) = \dfrac{3^n\prod x_i^2}{\theta^{3n}}\) 关于 \(\theta\) 单减，故
+\[
+\hat{\theta}_2 = \max\{X_1, X_2, \dots, X_n\}.
+\]
+(2) 由于样本同分布，$P(X_i \le x) = P(X \le x) = F_X(x)$，对于样本最大值，分布函数公式为：
+\begin{align*}
+F_{\max}(x) &= P\left(\max\{X_1,X_2,\dots,X_n\} \leq x\right) = P\left(X_1 \leq x,\ X_2 \leq x,\ \dots,\ X_n \leq x\right)\\
+&= \prod_{i=1}^n P(X_i \leq x) = \prod_{i=1}^n F_X(x) = \left[F_X(x)\right]^n
+\end{align*}
+求总体 $X$ 的分布函数 $F_X(x)$
+$$F_X(x) =
+\begin{cases}
+0, & x<0 \\
+\displaystyle \int_{0}^{x} \frac{3t^2}{\theta^3} dt = \frac{x^3}{\theta^3}, & 0\leq x\leq\theta \\
+1, & x>\theta
+\end{cases}$$
+代入最大值分布公式，当 $0\leq x\leq\theta$ 时：
+$$F_{\hat{\theta}_2}(x) = \left(F_X(x)\right)^n = \left(\frac{x^3}{\theta^3}\right)^n = \left(\frac{x}{\theta}\right)^{3n}$$
+当 $x<0$ 时 $F=0$，$x>\theta$ 时 $F=1$。密度是分布函数的导数：
+$$f_{\hat{\theta}_2}(x) = F'_{\hat{\theta}_2}(x) =\begin{cases}\displaystyle \frac{3n x^{3n-1}}{\theta^{3n}}, & 0\leq x\leq\theta \\0, & \text{其他}\end{cases}$$
+根据期望公式 $E(\hat{\theta}_2) = \int_{-\infty}^{+\infty} x f_{\hat{\theta}_2}(x) dx$：
+$$\begin{aligned}
+E(\hat{\theta}_2) &= \int_{0}^{\theta} x \cdot \frac{3n x^{3n-1}}{\theta^{3n}} dx = \frac{3n}{\theta^{3n}} \int_{0}^{\theta} x^{3n} dx = \frac{3n}{\theta^{3n}} \cdot \left. \frac{x^{3n+1}}{3n+1} \right|_{0}^{\theta} = \frac{3n}{\theta^{3n}} \cdot \frac{\theta^{3n+1}}{3n+1} = \frac{3n}{3n+1} \theta
+\end{aligned}$$
+故 \(\hat{\theta}_2\) 是\textbf{有偏}估计量。
+\begin{note}
+作为对比，\(\hat{\theta}_1 = \dfrac{4}{3}\overline{X}\) 满足 \(E(\hat{\theta}_1) = \dfrac{4}{3}\cdot\dfrac{3\theta}{4} = \theta\)，是无偏的。
+\end{note}
+\end{solution}
+
+
+
+\begin{exercise}\label{exer:7-exp4-shift}
+设总体 \(X\) 的密度函数为
+\[
+f_X(x,\theta) = \begin{cases} 4\,e^{-4(x-\theta)}, & x \geq \theta, \\ 0, & \text{其他}, \end{cases}
+\]
+\(X_1, \dots, X_n\) 为来自总体 \(X\) 的样本。\par
+(1) 求 \(\theta\) 的最大似然估计 \(\hat{\theta}\)；\par
+(2) \(\hat{\theta}\) 是否为无偏估计？如果不是，修正为无偏估计。
+\end{exercise}
+\begin{solution}
+(1) 构造似然函数：
+$$L(\theta) = \prod_{i=1}^n 4 e^{-4(X_i-\theta)} = 4^n e^{-4\sum_{i=1}^n X_i + 4n\theta}, \quad \theta \leq X_{(1)} = \min\{X_i\}$$
+$L(\theta)$ 关于 $\theta$ 严格单调递增，因此在定义域右端点取最大值，故最大似然估计量：
+$$\hat{\theta} = X_{(1)} = \min\{X_1,X_2,\dots,X_n\}$$
+(2) 我们先做一个变量平移：令 $Y_i = X_i - \theta$，则当 $X_i \geq \theta$ 时，$Y_i \geq 0$，代入密度函数：
+  $$  f_{Y_i}(y) = f_X(y+\theta,\theta) = 4 e^{-4y}, \quad y \geq 0  $$
+  这正是参数为 $\lambda=4$ 的指数分布：$Y_i \sim \text{Exp}(4)$，且 $Y_1,Y_2,\dots,Y_n$ 独立同分布。
+样本最小值 $X_{(1)} = \min\{X_i\} = \min\{Y_i+\theta\} = \theta + \min\{Y_i\}$，因此：
+  $$  X_{(1)} - \theta = \min\{Y_1,Y_2,\dots,Y_n\}  $$
+  即：$\boldsymbol{X_{(1)} - \theta}$ 是 $n$ 个独立 $\text{Exp}(4)$ 变量的最小值。单个 $\text{Exp}(4)$ 的分布函数：$F_Y(y) = 1 - e^{-4y},\ y\geq0$，$n$ 个独立变量的最小值的分布函数：
+  $$  F_{\min Y}(y) = P(\min Y_i \leq y) = 1 - P(\min Y_i > y) = 1 - [1-F_Y(y)]^n = 1 - e^{-4ny}  $$
+  这正是参数为 $\lambda=4n$ 的指数分布：$\min Y_i \sim \text{Exp}(4n)$。根据指数分布的期望公式：若 $Z \sim \text{Exp}(\lambda)$，则 $E(Z) = \frac{1}{\lambda}$。因此：
+  $$  E\left(\min Y_i\right) = \frac{1}{4n}  $$
+由 $X_{(1)} = \theta + \min Y_i$，两边取期望：
+\begin{align*}
+E(\hat{\theta}) = E(X_{(1)}) = E\left(\theta + \min Y_i\right) = \theta + E\left(\min Y_i\right) = \theta + \frac{1}{4n}\neq \theta
+\end{align*}
+因此 $\hat{\theta} = X_{(1)}$ 是有偏估计量，偏差为 $\frac{1}{4n}$，我们只需要把偏差减掉，构造新的估计量：
+$$
+\hat{\theta}_{\text{unbiased}} = X_{(1)} - \frac{1}{4n}
+$$
+验证无偏性：
+$$
+E\left(\hat{\theta}_{\text{unbiased}}\right) = E\left(X_{(1)} - \frac{1}{4n}\right) = \left(\theta + \frac{1}{4n}\right) - \frac{1}{4n} = \theta
+$$
+修正后的估计量是 $\theta$ 的无偏估计。
+\end{solution}
+\begin{note}
+题目中的 $f_X(x,\theta)$ 是位置参数型指数分布（也叫平移指数分布）：标准指数分布 $\text{Exp}(\lambda)$ 是 $f(x) = \lambda e^{-\lambda x},\ x\geq0$； 平移 $\theta$ 后，分布变为 $f(x) = \lambda e^{-\lambda(x-\theta)},\ x\geq\theta$，$\theta$ 是位置参数（分布的左端点）。对于这类位置参数、支撑集为 $[\theta,+\infty)$的分布，极大似然估计一定是样本最小值，这是通用结论。
+\end{note}
+
+
+\begin{definition}[有效性] \label{def:efficiency}
+若 \(\hat{\theta}_1, \hat{\theta}_2\) 都是 \(\theta\) 的无偏估计量，且 \(D\hat{\theta}_1 < D\hat{\theta}_2\)，则称 \(\hat{\theta}_1\) 比 \(\hat{\theta}_2\) \textbf{有效}。
+\end{definition}
+
+
+
+
+
+\begin{definition}[一致性（相合性）] \label{def:consistent}
+若 \(\hat{\theta}\xrightarrow{P}\theta\)（即对任意 \(\varepsilon > 0\)，\(\lim_{n\to\infty}P\{|\hat{\theta}-\theta| < \varepsilon\} = 1\)），则称 \(\hat{\theta}\) 为 \(\theta\) 的\textbf{一致估计量}（或\textbf{相合估计量}）。
+\end{definition}
+
+\begin{note}
+验证一致性常用的两种方法：
+\begin{enumerate}
+    \item \textbf{切比雪夫不等式}：若 \(D\hat{\theta} \to 0\)（当 \(n\to\infty\)），则 \(P\{|\hat{\theta}-\theta| \geq \varepsilon\} \leq D\hat{\theta}/\varepsilon^2 \to 0\)。
+    \item \textbf{辛钦大数定律}：若 \(\hat{\theta}\) 是样本值的函数且可表示为独立同分布随机变量的均值，则可直接得出依概率收敛。
+\end{enumerate}
+\end{note}
+
+\begin{definition}[均方误差] \label{def:mse}
+设 \(\hat{\theta}\) 为参数 \(\theta\) 的估计量，称
+\[
+\mathrm{MSE}(\hat{\theta}) = E(\hat{\theta} - \theta)^2
+\]
+为 \(\hat{\theta}\) 关于 \(\theta\) 的\textbf{均方误差}（Mean Squared Error, MSE）。
+\end{definition}
+
+\begin{property}[均方误差的分解] \label{prop:mse-decomp}
+均方误差可分解为偏差的平方与方差之和：
+\[
+\mathrm{MSE}(\hat{\theta}) = [E(\hat{\theta}) - \theta]^2 + D(\hat{\theta}) = \mathrm{Bias}^2(\hat{\theta}) + D(\hat{\theta}).
+\]
+\begin{proof}
+\[
+E(\hat{\theta}-\theta)^2 = E\!\left[(\hat{\theta}-E\hat{\theta})+(E\hat{\theta}-\theta)\right]^2 = D(\hat{\theta}) + [E(\hat{\theta})-\theta]^2.
+\]
+交叉项 \(2E[(\hat{\theta}-E\hat{\theta})(E\hat{\theta}-\theta)] = 0\)。
+\end{proof}
+\end{property}
+
+\begin{note}
+均方误差综合考虑了估计量的\textbf{偏差}和\textbf{方差}：
+\begin{itemize}
+    \item 若 \(\hat{\theta}\) 是无偏估计（\(E\hat{\theta}=\theta\)），则 \(\mathrm{MSE}(\hat{\theta}) = D(\hat{\theta})\)，此时均方误差最小等价于方差最小（即有效性）。
+    \item 若 \(\hat{\theta}_1, \hat{\theta}_2\) 为 \(\theta\) 的估计量（不一定无偏），且 \(\mathrm{MSE}(\hat{\theta}_1) \leq \mathrm{MSE}(\hat{\theta}_2)\)，则称 \(\hat{\theta}_1\) 在均方误差意义下比 \(\hat{\theta}_2\) 有效。
+    \item 一个有偏但方差很小的估计量，其均方误差可能\textbf{优于}无偏但方差较大的估计量。
+\end{itemize}
+\end{note}
+
+
+\begin{exercise}\label{exer:7-shifted-exp}
+设总体 \(X\) 的概率密度为
+\[
+f(x) = \begin{cases} e^{\theta-x}, & x > \theta, \\ 0, & x \leq \theta, \end{cases}
+\]
+\(\theta\) 未知，\(X_1, \dots, X_n\) 为样本。\par
+(1) 求 \(\theta\) 的矩估计量 \(\hat{\theta}_M\) 和最大似然估计量 \(\hat{\theta}_L\)；\par
+(2) 比较 \(\hat{\theta}_M\) 与 \(\hat{\theta}_L\) 的优劣。
+\end{exercise}
+\begin{solution}
+(1) \(EX = \displaystyle\int_\theta^\infty x\,e^{\theta-x}\,\mathrm{d}x = \theta + 1\)。令 \(\theta+1 = \overline{X}\)，得 \(\hat{\theta}_M = \overline{X}-1\)。
+\(L(\theta) = e^{n\theta-\sum X_i}\)，关于 \(\theta\) 递增（\(\theta \leq X_{(1)}\)），故 \(\hat{\theta}_L = X_{(1)}\)。\\
+(2) \(\hat{\theta}_M\) 无偏，\(D(\hat{\theta}_M) = D(\overline{X}) = 1/n\)（因为 \(DX = 1\)），故 \(\mathrm{MSE}_M = 1/n\)。\\
+\(X_{(1)}-\theta\) 为 \(n\) 个 \(\mathrm{Exp}(1)\) 的最小值，\(E(X_{(1)}-\theta) = 1/n\)，\(D(X_{(1)}-\theta) = 1/n^2\)。故 \(E(\hat{\theta}_L) = \theta + 1/n\)，\(D(\hat{\theta}_L) = 1/n^2\)，
+\[
+\mathrm{MSE}_L = \left(\frac{1}{n}\right)^{\!2} + \frac{1}{n^2} = \frac{2}{n^2}.
+\]
+当 \(n > 2\) 时，\(2/n^2 < 1/n\)，\(\hat{\theta}_L\) 的均方误差更小，更优。
+\end{solution}
+
+
+
+\subsection{无偏性}
+
+\begin{exercise}\label{exer:7-unbiased-judge}
+设 \(X_1, X_2, X_3\) 是总体的样本，则下列统计量不是总体均值 \(\mu\) 的无偏估计量的是（\quad）。\par
+A. \(\dfrac{1}{3}(X_1+X_2+X_3)\)\qquad B. \(\dfrac{1}{3}X_1+\dfrac{1}{6}X_2+\dfrac{1}{2}X_3\)\par
+C. \(\dfrac{1}{6}X_1+\dfrac{1}{3}X_2+\dfrac{1}{2}X_3\)\qquad D. \(\dfrac{1}{6}X_1+\dfrac{1}{6}X_2+\dfrac{1}{3}X_3\)
+\end{exercise}
+
+\begin{solution}
+应选 D。
+
+A: 系数和 \(\frac{1}{3}+\frac{1}{3}+\frac{1}{3}=1\) \(\checkmark\)。\quad B: \(\frac{1}{3}+\frac{1}{6}+\frac{1}{2}=1\) \(\checkmark\)。\quad C: \(\frac{1}{6}+\frac{1}{3}+\frac{1}{2}=1\) \(\checkmark\)。\quad D: \(\frac{1}{6}+\frac{1}{6}+\frac{1}{3}=\frac{2}{3} \neq 1\) \(\times\)。
+\end{solution}
+
+\begin{exercise}\label{exer:7-unbiased-c}
+设 \(X_1, X_2, \dots, X_n\) 是来自分布 \(f(x;\theta) = \dfrac{3x^2}{\theta^3}\ (0 \leq x \leq \theta)\) 的简单随机样本。若统计量 \(g(X_1, \dots, X_n) = c\overline{X}\) 为 \(\theta\) 的无偏估计，则常数 \(c =\,\underline{\hspace{2cm}}\)。
+\end{exercise}
+\begin{solution}
+应填 \(\dfrac{4}{3}\)。\(EX = \dfrac{3\theta}{4}\)，\(E(c\overline{X}) = c\cdot\dfrac{3\theta}{4} = \theta\)，故 \(c = \dfrac{4}{3}\)。
+\end{solution}
+
+\begin{exercise}\label{exer:7-exp-mle}
+设总体 \(X\) 具有概率密度
+\[
+f(x,\theta) = \begin{cases} \dfrac{1}{\theta}\,e^{-x/\theta}, & x > 0\ (\theta > 0), \\ 0, & x \leq 0, \end{cases}
+\]
+其中 \(\theta\) 未知，\(X_1, \dots, X_n\) 为样本。求 \(\theta\) 的最大似然估计 \(\hat{\theta}\)，并证明 \(\hat{\theta}\) 是 \(\theta\) 的无偏估计。
+\end{exercise}
+\begin{solution}
+似然函数 \(L(\theta) = \theta^{-n}e^{-\sum X_i/\theta}\)，\(\ln L = -n\ln\theta - \sum X_i/\theta\)。\\
+令 \(-n/\theta + \sum X_i/\theta^2 = 0\)，得 \(\hat{\theta} = \overline{X}\)。\\
+指数分布 \(EX = \theta\)，故 \(E(\hat{\theta}) = E(\overline{X}) = \theta\)，\(\hat{\theta}\) 是 \(\theta\) 的无偏估计。
+\end{solution}
+
+
+\begin{exercise}\label{exer:7-unbiased-diff}
+设 \(X_1, X_2, \dots, X_n\) 是来自正态总体 \(X \sim N(\mu, \sigma^2)\) 的简单随机样本，为使
+\[
+D = k\sum_{i=1}^{n-1}(X_{i+1}-X_i)^2
+\]
+成为总体方差 \(\sigma^2\) 的无偏估计量，则 \(k =\,\underline{\hspace{2cm}}\)。\par
+A. \(\dfrac{1}{n-1}\)\quad B. \(\dfrac{1}{n}\)\quad C. \(\dfrac{1}{2(n-1)}\)\quad D. \(\dfrac{1}{2n}\)
+\end{exercise}
+
+\begin{solution}
+应选 C。
+
+\(E(X_{i+1}-X_i)^2 = E(X_{i+1}^2) + E(X_i^2) - 2E(X_i)E(X_{i+1}) = 2(\sigma^2+\mu^2) - 2\mu^2 = 2\sigma^2\)。
+
+\(ED = k\cdot(n-1)\cdot 2\sigma^2 = 2k(n-1)\sigma^2\)。令 \(ED = \sigma^2\)，得 \(k = \dfrac{1}{2(n-1)}\)。
+\end{solution}
+
+
+
+
+\begin{exercise}\label{exer:7-two-normal-mle}
+设 \(X_1, \dots, X_m\) 是取自总体 \(N(1, \sigma^2)\) 的简单随机样本，\(Y_1, \dots, Y_n\) 是取自总体 \(N(2, \sigma^2)\) 的简单随机样本。\par
+(1) 求联合密度函数；\par
+(2) 求 \(\sigma^2\) 的最大似然估计 \(\hat{\sigma}^2\)；\par
+(3) \(\hat{\sigma}^2\) 是否为 \(\sigma^2\) 的无偏估计？
+\end{exercise}
+\begin{solution}
+(1) 设 \(T = \displaystyle\sum_{i=1}^{m}(X_i-1)^2 + \sum_{j=1}^{n}(Y_j-2)^2\)，则
+\[
+f = (2\pi\sigma^2)^{-(m+n)/2}\,\exp\!\left\{-\frac{T}{2\sigma^2}\right\}.
+\]
+(2) \(\ln f = -\dfrac{m+n}{2}\ln(2\pi\sigma^2) - \dfrac{T}{2\sigma^2}\)，令 \(\dfrac{\partial\ln f}{\partial\sigma^2} = -\dfrac{m+n}{2\sigma^2}+\dfrac{T}{2(\sigma^2)^2}=0\)，得
+\[
+\hat{\sigma}^2 = \frac{1}{m+n}\!\left[\sum_{i=1}^{m}(X_i-1)^2+\sum_{j=1}^{n}(Y_j-2)^2\right].
+\]
+(3) 是。\(E\!\left[\sum(X_i-1)^2\right] = m\sigma^2\)，\(E\!\left[\sum(Y_j-2)^2\right] = n\sigma^2\)，故
+\[
+E(\hat{\sigma}^2) = \frac{(m+n)\sigma^2}{m+n} = \sigma^2. 
+\]
+\end{solution}
+
+
+\begin{exercise}\label{exer:7-laplace}
+设总体 \(X\) 的概率密度为 \(f(x) = \dfrac{1}{2\theta}\,e^{-|x|/\theta}\ (-\infty < x < \infty)\)，其中 \(\theta > 0\) 未知，\(X_1, \dots, X_n\) 为样本。\par
+(1) 求 \(\theta\) 的最大似然估计量 \(\hat{\theta}\)；\par
+(2) 证明 \(\hat{\theta}\) 是 \(\theta\) 的无偏估计量；\par
+(3) 证明 \(\hat{\theta}\) 是 \(\theta\) 的一致估计量。
+\end{exercise}
+\begin{solution}
+(1) \(L(\theta) = (2\theta)^{-n}e^{-\sum|X_i|/\theta}\)，\(\ln L = -n\ln(2\theta) - \sum|X_i|/\theta\)。\\
+令 \(-n/\theta + \sum|X_i|/\theta^2 = 0\)，得 \(\hat{\theta} = \dfrac{1}{n}\sum_{i=1}^{n}|X_i|\)。\\
+(2) Laplace 分布的 \(E|X| = \theta\)，故 \(E(\hat{\theta}) = \theta\) \(\checkmark\)。\\
+(3) \(|X_1|, |X_2|, \dots, |X_n|\) 独立同分布，\(E|X_i| = \theta\)。由辛钦大数定律：
+\[
+\hat{\theta} = \frac{1}{n}\sum|X_i| \xrightarrow{P} E|X| = \theta. 
+\]
+\end{solution}
+
+
+
+
+
+
+\subsection{有效性}
+
+\begin{exercise}\label{exer:7-efficiency}
+设总体 \(X \sim N(\mu, \sigma^2)\)，\(X_1, X_2, X_3\) 是来自总体 \(X\) 的简单随机样本，记
+\[
+\hat{\mu}_1 = \frac{1}{5}X_1 + \frac{3}{10}X_2 + \frac{1}{2}X_3,\quad
+\hat{\mu}_2 = \frac{1}{3}X_1 + \frac{1}{4}X_2 + \frac{5}{12}X_3,\quad
+\hat{\mu}_3 = \frac{1}{3}X_1 + \frac{1}{6}X_2 + \frac{1}{2}X_3.
+\]
+证明 \(\hat{\mu}_1, \hat{\mu}_2, \hat{\mu}_3\) 都是 \(\mu\) 的无偏估计，并指出哪一个最有效。
+\end{exercise}
+
+\begin{solution}
+验证无偏性（系数之和均为1）：
+\(E\hat{\mu}_1 = \left(\dfrac{1}{5}+\dfrac{3}{10}+\dfrac{1}{2}\right)\mu = \mu\)，\(\quad E\hat{\mu}_2 = \left(\dfrac{1}{3}+\dfrac{1}{4}+\dfrac{5}{12}\right)\mu = \mu\)，\(\quad E\hat{\mu}_3 = \left(\dfrac{1}{3}+\dfrac{1}{6}+\dfrac{1}{2}\right)\mu = \mu\)。\ \checkmark
+
+比较方差：
+\[
+D\hat{\mu}_1 = \left(\frac{1}{25}+\frac{9}{100}+\frac{1}{4}\right)\sigma^2 = \frac{38}{100}\sigma^2,\quad
+D\hat{\mu}_2 = \left(\frac{1}{9}+\frac{1}{16}+\frac{25}{144}\right)\sigma^2 = \frac{50}{144}\sigma^2,
+\]
+\[
+D\hat{\mu}_3 = \left(\frac{1}{9}+\frac{1}{36}+\frac{1}{4}\right)\sigma^2 = \frac{14}{36}\sigma^2.
+\]
+换算：\(\dfrac{38}{100}=0.380\)，\(\dfrac{50}{144}\approx 0.347\)，\(\dfrac{14}{36}\approx 0.389\)。\(\dfrac{50}{144} < \dfrac{38}{100} < \dfrac{14}{36}\)，故 \(\hat{\mu}_2\) 最有效。
+\end{solution}
+
+\begin{exercise}\label{exer:7-eff-N01}
+设总体 \(X \sim N(0,1)\)，\(X_1, X_2\) 是从总体抽取的一个样本，下列四个无偏估计量中最有效的是（\quad）。\par
+A. \(\mu_1 = X_1\)\qquad B. \(\mu_2 = \dfrac{2}{3}X_1+\dfrac{1}{3}X_2\)\qquad C. \(\mu_3 = \dfrac{1}{4}X_1+\dfrac{3}{4}X_2\)\qquad D. \(\mu_4 = \dfrac{1}{2}X_1+\dfrac{1}{2}X_2\)
+\end{exercise}
+\begin{solution}
+应选 D。\(D\mu_1 = 1\)，\(D\mu_2 = \dfrac{4}{9}+\dfrac{1}{9} = \dfrac{5}{9}\)，\(D\mu_3 = \dfrac{1}{16}+\dfrac{9}{16} = \dfrac{5}{8}\)，\(D\mu_4 = \dfrac{1}{2}\)。\\
+\(\dfrac{1}{2} < \dfrac{5}{9} < \dfrac{5}{8} < 1\)，故 \(\mu_4\) 最有效。
+\end{solution}
+
+
+\begin{exercise}\label{exer:7-u0-compare}
+设样本 \(X_1, X_2, X_3\) 来自总体 \(U(0,\theta)\)，则估计量 \(\hat{\theta}_1=2\overline{X}\)，\(\hat{\theta}_2=X_1+X_2\)，\(\hat{\theta}_3=\dfrac{2}{5}X_1+\dfrac{4}{5}(X_2+X_3)\) 中，哪一个较优？
+\end{exercise}
+\begin{solution}
+三个估计量均无偏（系数之和均为1）。\(DX = \theta^2/12\)。
+\[
+D\hat{\theta}_1 = 4D(\overline{X}) = \frac{4\theta^2}{12\cdot3} = \frac{\theta^2}{9},
+\quad
+D\hat{\theta}_2 = 2\cdot\frac{\theta^2}{12} = \frac{\theta^2}{6},
+\]
+\[
+D\hat{\theta}_3 = \left(\frac{4}{25}+\frac{16}{25}+\frac{16}{25}\right)\frac{\theta^2}{12} = \frac{36\theta^2}{300} = \frac{3\theta^2}{25}.
+\]
+\(\dfrac{\theta^2}{9} < \dfrac{3\theta^2}{25} < \dfrac{\theta^2}{6}\)，故 \(\hat{\theta}_1 = 2\overline{X}\) 最优（方差最小）。
+\end{solution}
+
+
+\subsection{一致性}
+
+\begin{exercise}\label{exer:7-consistent}
+设 \(X_1, X_2, \dots, X_n\) 是来自总体 \(X\) 的简单随机样本，\(EX = \mu\)，\(DX = \sigma^2\)。证明统计量
+\[
+Y = \frac{2}{n(n+1)}\sum_{i=1}^{n}iX_i
+\]
+是 \(\mu\) 的无偏相合估计量。
+\end{exercise}
+
+\begin{solution}
+\textbf{无偏性}：
+\[
+EY = \frac{2}{n(n+1)}\sum_{i=1}^{n}i\,EX_i = \frac{2\mu}{n(n+1)}\cdot\frac{n(n+1)}{2} = \mu.
+\]
+
+\textbf{一致性}：由 \(\sum i^2 = \dfrac{n(n+1)(2n+1)}{6}\)，
+\[
+DY = \left[\frac{2}{n(n+1)}\right]^{\!2}\sigma^2\sum_{i=1}^{n}i^2 = \frac{4\sigma^2}{n^2(n+1)^2}\cdot\frac{n(n+1)(2n+1)}{6} = \frac{2(2n+1)}{3n(n+1)}\,\sigma^2.
+\]
+
+由切比雪夫不等式，对任意 \(\varepsilon > 0\)：
+\[
+P\{|Y-\mu| < \varepsilon\} \geq 1 - \frac{DY}{\varepsilon^2} = 1 - \frac{2(2n+1)\sigma^2}{3n(n+1)\varepsilon^2}.
+\]
+令 \(n\to\infty\)，右端 \(\to 1\)，故 \(Y\xrightarrow{P}\mu\)，\(Y\) 是 \(\mu\) 的相合估计量。
+\end{solution}
+
 
 
 % \subsection{定理类环境的使用}
