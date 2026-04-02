@@ -6885,6 +6885,14 @@ g'(c) = -2EX + 2c \stackrel{\text{令}}{=} 0,
 得 \(c = EX\)。又 \(g''(c) = 2 > 0\)，故 \(c = EX\) 是 \(g(c)\) 的最小值点。
 \end{proof}
 
+\begin{proposition}[均值的期望与方差][]
+    若总体 $X$ 的期望为 $\mu$，方差为 $\sigma^2$，$X_1,\dots,X_n$ 是简单随机样本，样本均值为 $\overline{X}$，则：$$\boldsymbol{E(\overline{X}) = \mu}, \quad \boldsymbol{D(\overline{X}) = \frac{\sigma^2}{n}}$$
+\end{proposition}
+\begin{proof} 
+    \[ E(\overline{X}) = E\!\left(\frac{1}{n}\sum_{i=1}^{n}X_i\right) = \frac{1}{n}\sum_{i=1}^{n}EX_i = \frac{1}{n}\cdot n\mu = \mu. \] 
+    由于简单随机样本中 \(X_1, \dots, X_n\) 相互独立，故 \[ D(\overline{X}) = D\!\left(\frac{1}{n}\sum_{i=1}^{n}X_i\right) = \frac{1}{n^2}\sum_{i=1}^{n}DX_i = \frac{1}{n^2}\cdot n\sigma^2 = \frac{\sigma^2}{n}. \] 
+\end{proof}
+
 \begin{exercise}\label{exer:4-8-exye}
 对于任意两个随机变量 \(X\) 和 \(Y\)，若 \(E(XY) = EXEY\)，则（\quad）。\par
 A. \(X,Y\) 相互独立\quad B. \(X,Y\) 不相互独立\quad C. \(D(XY) = DX \cdot DY\)\quad D. \(D(X+Y) = DX + DY\)
@@ -6996,6 +7004,85 @@ f_U(u) = F_U'(u) = \begin{cases} \dfrac{2-u}{2}, & 0 < u < 2, \\[4pt] 0, & \text
 \begin{note}
 表中仅列出各分布概率密度（或分布律）的非零区域。
 \end{note}
+
+\begin{proof}[\(0\text{-}1\) 分布]
+\(P\{X=1\}=p,\ P\{X=0\}=1-p\)。
+\[EX = 1\cdot p + 0\cdot(1-p) = p.\]
+\[EX^2 = 1^2\cdot p + 0^2\cdot(1-p) = p.\]
+\[DX = EX^2 - (EX)^2 = p - p^2 = p(1-p).\]
+\end{proof}
+
+\begin{proof}[\(B(n,p)\)]
+设 \(X_i\ (i=1,\dots,n)\) 相互独立，均服从 \(0\text{-}1\) 分布，则 \(X = X_1+X_2+\cdots+X_n \sim B(n,p)\)。
+\[EX = \sum_{i=1}^{n}EX_i = np,\qquad DX = \sum_{i=1}^{n}DX_i = np(1-p).\]
+\end{proof}
+
+\begin{proof}[\(P(\lambda)\)]
+\[EX = \sum_{k=0}^{\infty}k\cdot\frac{\lambda^k e^{-\lambda}}{k!} = \sum_{k=1}^{\infty}\frac{\lambda^k e^{-\lambda}}{(k-1)!} = \lambda e^{-\lambda}\sum_{k=0}^{\infty}\frac{\lambda^k}{k!} = \lambda e^{-\lambda}\cdot e^{\lambda} = \lambda.\]
+\[EX^2 = \sum_{k=0}^{\infty}k^2\cdot\frac{\lambda^k e^{-\lambda}}{k!} = \sum_{k=1}^{\infty}k\cdot\frac{\lambda^k e^{-\lambda}}{(k-1)!} = \sum_{k=1}^{\infty}[(k-1)+1]\frac{\lambda^k e^{-\lambda}}{(k-1)!}\]
+\[= \sum_{k=2}^{\infty}(k-1)\frac{\lambda^k e^{-\lambda}}{(k-1)!} + \sum_{k=1}^{\infty}\frac{\lambda^k e^{-\lambda}}{(k-1)!} = \lambda^2 e^{-\lambda}\sum_{k=2}^{\infty}\frac{\lambda^{k-2}}{(k-2)!} + \lambda = \lambda^2 + \lambda.\]
+\[DX = EX^2 - (EX)^2 = \lambda^2 + \lambda - \lambda^2 = \lambda.\]
+\end{proof}
+
+\begin{proof}[\(G(p)\)]
+令 \(q=1-p\)，利用幂级数求导技巧：
+\[\sum_{k=1}^{\infty}kq^{k-1} = \frac{\mathrm{d}}{\mathrm{d}q}\!\left(\sum_{k=0}^{\infty}q^k\right) = \frac{\mathrm{d}}{\mathrm{d}q}\!\left(\frac{1}{1-q}\right) = \frac{1}{(1-q)^2} = \frac{1}{p^2},
+\]
+\[
+\sum_{k=1}^{\infty}k^2 q^{k-1} = \frac{\mathrm{d}}{\mathrm{d}q}\!\left(\sum_{k=1}^{\infty}kq^k\right) = \frac{\mathrm{d}}{\mathrm{d}q}\!\left(\frac{q}{(1-q)^2}\right) = \frac{1+q}{(1-q)^3} = \frac{2-p}{p^3}.
+\]
+\[
+EX = \sum_{k=1}^{\infty}k\,p\,q^{k-1} = p\cdot\frac{1}{p^2} = \frac{1}{p}.
+\]
+\[
+EX^2 = \sum_{k=1}^{\infty}k^2\,p\,q^{k-1} = p\cdot\frac{2-p}{p^3} = \frac{2-p}{p^2}.
+\]
+\[
+DX = EX^2 - (EX)^2 = \frac{2-p}{p^2} - \frac{1}{p^2} = \frac{1-p}{p^2}.
+\]
+\end{proof}
+
+\begin{proof}[\(U(a,b)\)]
+\[
+EX = \int_a^b x\cdot\frac{1}{b-a}\,\mathrm{d}x = \frac{1}{b-a}\cdot\frac{b^2-a^2}{2} = \frac{a+b}{2}.
+\]
+\[
+EX^2 = \int_a^b x^2\cdot\frac{1}{b-a}\,\mathrm{d}x = \frac{1}{b-a}\cdot\frac{b^3-a^3}{3} = \frac{a^2+ab+b^2}{3}.
+\]
+\[
+DX = EX^2 - (EX)^2 = \frac{a^2+ab+b^2}{3} - \frac{(a+b)^2}{4} = \frac{4(a^2+ab+b^2)-3(a^2+2ab+b^2)}{12} = \frac{(b-a)^2}{12}.
+\]
+\end{proof}
+
+\begin{proof}[\(E(\lambda)\)]
+利用分部积分（\(\int_0^\infty x^n e^{-\lambda x}\,\mathrm{d}x = n!/\lambda^{n+1}\)）：
+\[
+EX = \int_0^\infty x\cdot\lambda e^{-\lambda x}\,\mathrm{d}x = \lambda\cdot\frac{1}{\lambda^2} = \frac{1}{\lambda}.
+\]
+\[
+EX^2 = \int_0^\infty x^2\cdot\lambda e^{-\lambda x}\,\mathrm{d}x = \lambda\cdot\frac{2}{\lambda^3} = \frac{2}{\lambda^2}.
+\]
+\[
+DX = EX^2 - (EX)^2 = \frac{2}{\lambda^2} - \frac{1}{\lambda^2} = \frac{1}{\lambda^2}.
+\]
+\end{proof}
+
+\begin{proof}[\(\chi^2(n)\)]
+由定义，\(\chi^2 = X_1^2+X_2^2+\cdots+X_n^2\)，其中 \(X_i \sim N(0,1)\) 且相互独立。
+\[
+E(\chi^2) = \sum_{i=1}^{n}E(X_i^2) = n\cdot 1 = n.
+\]
+\[
+D(\chi^2) = \sum_{i=1}^{n}D(X_i^2).
+\]
+利用 \(X_i \sim N(0,1)\)：\(E(X_i^2)=1,\ E(X_i^4)=3\)（由正态分布的四阶矩公式），故
+\[
+D(X_i^2) = E(X_i^4) - [E(X_i^2)]^2 = 3 - 1 = 2.
+\]
+\[
+D(\chi^2) = 2n.
+\]
+\end{proof}
 
 
 \section{协方差与相关系数}
@@ -7612,21 +7699,7 @@ E(XY) = EX \cdot EY = 1 \times 0 = 0.
 \]
 \end{solution}
 
-\section{矩}
 
-\begin{definition}[矩] \label{def:moments}
-设 \(X, Y\) 为随机变量，\(k, l\) 为正整数。
-\begin{enumerate}
-    \item 称 \(E(X^k)\) 为 \(X\) 的\textbf{\(k\) 阶原点矩}。
-    \item 称 \(E[(X - EX)^k]\) 为 \(X\) 的\textbf{\(k\) 阶中心矩}。
-    \item 称 \(E(X^k Y^l)\) 为 \(X\) 与 \(Y\) 的\textbf{\(k+l\) 阶混合原点矩}。
-    \item 称 \(E[(X - EX)^k (Y - EY)^l]\) 为 \(X\) 与 \(Y\) 的\textbf{\(k+l\) 阶混合中心矩}。
-\end{enumerate}
-\end{definition}
-
-\begin{note}
-从矩的定义可以看出：数学期望 \(EX\) 是 \(X\) 的一阶原点矩，方差 \(DX\) 是 \(X\) 的二阶中心矩，协方差 \(\mathrm{Cov}(X,Y)\) 是 \(X\) 与 \(Y\) 的二阶混合中心矩。
-\end{note}
 
 
 \chapter{大数定律和中心极限定理}
@@ -9021,6 +9094,20 @@ DT = D(\overline{X}^2) + D\!\left(\frac{S^2}{n}\right) = \frac{2}{n^2} + \frac{2
 
 \section{矩估计法（MME）} \label{subsec:mme}
 
+\begin{definition}[矩] \label{def:moments}
+设 \(X, Y\) 为随机变量，\(k, l\) 为正整数。
+\begin{enumerate}
+    \item 称 \(E(X^k)\) 为 \(X\) 的\textbf{\(k\) 阶原点矩}。
+    \item 称 \(E[(X - EX)^k]\) 为 \(X\) 的\textbf{\(k\) 阶中心矩}。
+    \item 称 \(E(X^k Y^l)\) 为 \(X\) 与 \(Y\) 的\textbf{\(k+l\) 阶混合原点矩}。
+    \item 称 \(E[(X - EX)^k (Y - EY)^l]\) 为 \(X\) 与 \(Y\) 的\textbf{\(k+l\) 阶混合中心矩}。
+\end{enumerate}
+\end{definition}
+
+\begin{note}
+从矩的定义可以看出：数学期望 \(EX\) 是 \(X\) 的一阶原点矩，方差 \(DX\) 是 \(X\) 的二阶中心矩，协方差 \(\mathrm{Cov}(X,Y)\) 是 \(X\) 与 \(Y\) 的二阶混合中心矩。
+\end{note}
+
 矩估计法的核心思想是\textbf{用样本矩替换总体矩}：由大数定律，样本矩依概率收敛于总体矩，因此可以用样本矩来估计总体矩，从而解出未知参数。
 
 \begin{property}[矩估计的步骤] \label{prop:mme-steps}
@@ -9271,10 +9358,9 @@ f(x;\theta) = \begin{cases} \dfrac{1}{1-\theta}, & \theta \leq x \leq 1, \\[4pt]
 (1) 求 \(\theta\) 的矩估计量；\par
 (2) 求 \(\theta\) 的最大似然估计量。
 \end{exercise}
-
 \begin{solution}
 (1) 总体 \(X \sim U(\theta, 1)\)，\(EX = \dfrac{1+\theta}{2}\)。令 \(\dfrac{1+\theta}{2} = \overline{X}\)，得 \(\hat{\theta}_{\text{矩}} = 2\overline{X}-1\)。\\
-(2) 似然函数为
+(2) 似然函数为\footnote{密度为 0 的区间直接被过滤了，否则整个乘积为 0，似然函数取最小值，不可能对应最大似然估计。}
 \[
 L(\theta) = \frac{1}{(1-\theta)^n},\quad \text{约束条件：}\theta \leq \min\{x_1, \dots, x_n\},\ x_i \leq 1.
 \]
@@ -9316,8 +9402,8 @@ P\{T > s+t \mid T > s\} = \frac{P\{T > s+t\}}{P\{T > s\}} = \frac{e^{-(s+t)^2/\t
 L(\theta) = \theta^{-2n}\cdot 2^n\!\left(\prod_{i=1}^{n}t_i\right)e^{-\sum t_i^2/\theta^2},\quad
 \ln L = n\ln 2 - 2n\ln\theta + \sum\ln t_i - \frac{1}{\theta^2}\sum t_i^2.
 \]
-令 \(\dfrac{\mathrm{d}\ln L}{\mathrm{d}\theta} = -\dfrac{2n}{\theta} + \dfrac{2}{\theta^3}\sum t_i^2 = 0\)，得 \(\hat{\theta} = \left(\dfrac{1}{n}\sum_{i=1}^{n}t_i^2\right)^{\!1/2}\)。\\
-(3) 由不变性原则，\(Q'(\theta) = \theta\ln\theta - \theta + 1\)，且 \(Q'(\theta) = \ln\theta > 0\ (\theta > 1)\)，故 \(Q(\theta)\) 有反函数。
+令 \(\dfrac{\mathrm{d}\ln L}{\mathrm{d}\theta} = -\dfrac{2n}{\theta} + \dfrac{2}{\theta^3}\sum t_i^2 = 0\)，得 \(\hat{\theta} = \displaystyle\left(\dfrac{1}{n}\sum_{i=1}^{n}t_i^2\right)^{\!1/2}\)。\\
+(3) 由不变性原则，\(Q'(\theta) = \theta\ln\theta - \theta + 1>0\)，故 \(Q(\theta)\) 有反函数。
 \[
 \hat{Q} = Q(\hat{\theta}) = \frac{\hat{\theta}^2}{2}\ln\hat{\theta} - \frac{3}{4}\hat{\theta}^2 + \hat{\theta}.
 \]
@@ -9332,31 +9418,89 @@ L(\theta) = \theta^{-2n}\cdot 2^n\!\left(\prod_{i=1}^{n}t_i\right)e^{-\sum t_i^2
 \end{definition}
 
 
+\begin{proposition}[系数和为1]
+若估计量形式为：
+\[
+\hat \mu = a_1 X_1 + a_2 X_2 + \dots + a_n X_n
+\]
+则
+\[
+\hat\mu \text{ 是 } \mu \text{ 的无偏估计} \iff a_1+a_2+\dots+a_n=1
+\]
+\end{proposition}
+\begin{proof}
+\[
+E(\hat{\mu}) = E\!\left(\sum_{i=1}^{n}a_i X_i\right) = \sum_{i=1}^{n}a_i\,EX_i = \sum_{i=1}^{n}a_i\,\mu = \left(\sum_{i=1}^{n}a_i\right)\mu.
+\]
+故 \(E(\hat{\mu})=\mu \iff \displaystyle\sum_{i=1}^{n}a_i = 1\)。
+\end{proof}
 
-\begin{exercise}\label{exer:7-sigma2-unbiased}
-设 \(X_1, \dots, X_n\) 和 \(Y_1, \dots, Y_m\) 分别是来自总体 \(X \sim N(\mu_1, \sigma^2)\) 和 \(Y \sim N(\mu_2, \sigma^2)\) 的简单随机样本，样本方差分别为 \(S_X^2, S_Y^2\)。则 \(\sigma^2\) 的无偏估计是（\quad）。\par
-A. \(S_X^2 + S_Y^2\)\quad B. \((m-1)S_X^2 + (n-1)S_Y^2\)\quad C. \(\dfrac{S_X^2+S_Y^2}{m+n-2}\)\quad D. \(\dfrac{(m-1)S_X^2+(n-1)S_Y^2}{m+n-2}\)
+\begin{exercise}\label{exer:7-unbiased-judge}
+设 \(X_1, X_2, X_3\) 是总体的样本，则下列统计量不是总体均值 \(\mu\) 的无偏估计量的是（\quad）。\par
+A. \(\dfrac{1}{3}(X_1+X_2+X_3)\)~~~ B. \(\dfrac{1}{3}X_1+\dfrac{1}{6}X_2+\dfrac{1}{2}X_3\)~~~
+C. \(\dfrac{1}{6}X_1+\dfrac{1}{3}X_2+\dfrac{1}{2}X_3\)~~~ D. \(\dfrac{1}{6}X_1+\dfrac{1}{6}X_2+\dfrac{1}{3}X_3\)
 \end{exercise}
 \begin{solution}
-应选 D。\(E(S_X^2) = E(S_Y^2) = \sigma^2\)。选项 D 中：
+应选 D。无偏估计要求系数之和为 1。
+\end{solution}
+
+\begin{exercise}\label{exer:7-unbiased-c}
+设 \(X_1, X_2, \dots, X_n\) 是来自分布 \(f(x;\theta) = \dfrac{3x^2}{\theta^3},0 \leq x \leq \theta\) 的简单随机样本。若统计量 \(g(X_1, \dots, X_n) = c\overline{X}\) 为 \(\theta\) 的无偏估计，则常数 \(c\)为？
+\end{exercise}
+\begin{solution}
+应填 \(\dfrac{4}{3}\)。\(EX = \dfrac{3\theta}{4}\)，\(E(c\overline{X}) = c\cdot\dfrac{3\theta}{4} = \theta\)，故 \(c = \dfrac{4}{3}\)。
+\end{solution}
+
+\begin{exercise}\label{exer:7-exp-mle}
+设总体 \(X\) 具有概率密度
 \[
-E\!\left(\frac{(m-1)S_X^2+(n-1)S_Y^2}{m+n-2}\right) = \frac{(m-1)\sigma^2+(n-1)\sigma^2}{m+n-2} = \sigma^2.
+f(x,\theta) = \begin{cases} \dfrac{1}{\theta}\,e^{-x/\theta}, & x > 0\ (\theta > 0), \\ 0, & x \leq 0, \end{cases}
 \]
+其中 \(\theta\) 未知，\(X_1, \dots, X_n\) 为样本。求 \(\theta\) 的最大似然估计 \(\hat{\theta}\)，并证明 \(\hat{\theta}\) 是 \(\theta\) 的无偏估计。
+\end{exercise}
+\begin{solution}
+似然函数 \(L(\theta) = \theta^{-n}e^{-\sum X_i/\theta}\)，\(\ln L = -n\ln\theta - \sum X_i/\theta\)。
+令 \(-n/\theta + \sum X_i/\theta^2 = 0\)，得 \(\hat{\theta} = \overline{X}\)。\\
+指数分布 \(EX = \theta\)，故 \(E(\hat{\theta}) = E(\overline{X}) = \theta\)，\(\hat{\theta}\) 是 \(\theta\) 的无偏估计。
+\end{solution}
+
+
+\begin{exercise}\label{exer:7-unbiased-diff}
+设 \(X_1, X_2, \dots, X_n\) 是来自正态总体 \(X \sim N(\mu, \sigma^2)\) 的简单随机样本，为使
+\[
+D = k\sum_{i=1}^{n-1}(X_{i+1}-X_i)^2
+\]
+成为总体方差 \(\sigma^2\) 的无偏估计量，则 \(k =\,\underline{\hspace{2cm}}\)。
+\end{exercise}
+\begin{solution}
+\(E(X_{i+1}-X_i)^2 = E(X_{i+1}^2) + E(X_i^2) - 2E(X_i)E(X_{i+1}) = 2(\sigma^2+\mu^2) - 2\mu^2 = 2\sigma^2\)。
+
+\(ED = k\cdot(n-1)\cdot 2\sigma^2 = 2k(n-1)\sigma^2\)。令 \(ED = \sigma^2\)，得 \(k = \dfrac{1}{2(n-1)}\)。
 \end{solution}
 
 
 
-\begin{exercise}\label{exer:7-lambda2-unbiased}
-设 \(X_1, X_2, \dots, X_n\) 是取自总体 \(P(\lambda)\) 的样本，\(\overline{X}\) 为样本均值，则 \(\lambda^2\) 的一个无偏估计为（\quad）。\par
-A. \(\overline{X}^2-\overline{X}\)\qquad B. \(\overline{X}^2+\overline{X}\)\qquad C. \(\overline{X}^2-\dfrac{1}{n}\overline{X}\)\qquad D. \(\overline{X}^2+\dfrac{1}{n}\overline{X}\)
+
+\begin{exercise}\label{exer:7-two-normal-mle}
+设 \(X_1, \dots, X_m\) 是取自总体 \(N(1, \sigma^2)\) 的简单随机样本，\(Y_1, \dots, Y_n\) 是取自总体 \(N(2, \sigma^2)\) 的简单随机样本。\par
+(1) 求联合密度函数；\par
+(2) 求 \(\sigma^2\) 的最大似然估计 \(\hat{\sigma}^2\)；\par
+(3) \(\hat{\sigma}^2\) 是否为 \(\sigma^2\) 的无偏估计？
 \end{exercise}
 \begin{solution}
-应选 C。泊松分布 \(EX = \lambda\)，\(DX = \lambda\)。\(E(\overline{X}^2) = D(\overline{X})+(E\overline{X})^2 = \dfrac{\lambda}{n}+\lambda^2\)。
+(1) 设 \(T = \displaystyle\sum_{i=1}^{m}(X_i-1)^2 + \sum_{j=1}^{n}(Y_j-2)^2\)，则
 \[
-E\!\left(\overline{X}^2 - \frac{1}{n}\overline{X}\right) = \left(\frac{\lambda}{n}+\lambda^2\right) - \frac{\lambda}{n} = \lambda^2.
+f = (2\pi\sigma^2)^{-(m+n)/2}\,\exp\!\left\{-\frac{T}{2\sigma^2}\right\}.
+\]
+(2) \(\ln f = -\dfrac{m+n}{2}\ln(2\pi\sigma^2) - \dfrac{T}{2\sigma^2}\)，令 \(\dfrac{\partial\ln f}{\partial\sigma^2} = -\dfrac{m+n}{2\sigma^2}+\dfrac{T}{2(\sigma^2)^2}=0\)，得
+\[
+\hat{\sigma}^2 = \frac{1}{m+n}\!\left[\sum_{i=1}^{m}(X_i-1)^2+\sum_{j=1}^{n}(Y_j-2)^2\right].
+\]
+(3) 是。\(E\!\left[\sum(X_i-1)^2\right] = m\sigma^2\)，\(E\!\left[\sum(Y_j-2)^2\right] = n\sigma^2\)，故
+\[
+E(\hat{\sigma}^2) = \frac{(m+n)\sigma^2}{m+n} = \sigma^2. 
 \]
 \end{solution}
-
 
 
 \begin{exercise}\label{exer:7-pareto}
@@ -9375,7 +9519,8 @@ F(x,\alpha,\beta) = \begin{cases} 1-\left(\dfrac{\alpha}{x}\right)^{\!\beta}, & 
 EX = \int_1^\infty x\cdot\beta\,x^{-(\beta+1)}\,\mathrm{d}x = \frac{\beta}{\beta-1}.
 \]
 矩估计：令 \(\dfrac{\beta}{\beta-1} = \overline{X}\)，得 \(\hat{\beta}_{\text{矩}} = \dfrac{\overline{X}}{\overline{X}-1}\)。\\
-似然函数 \(L(\beta) = \beta^n\!\left(\prod X_i\right)^{-(\beta+1)}\)，\(\ln L = n\ln\beta - (\beta+1)\sum\ln X_i\)。令 \(n/\beta - \sum\ln X_i = 0\)，得 \(\hat{\beta}_{\text{MLE}} = \dfrac{n}{\sum\ln X_i}\)。\\
+似然函数 \[L(\beta) = \beta^n\!\left(\prod X_i\right)^{-(\beta+1)},~~~\ln L = n\ln\beta - (\beta+1)\sum\ln X_i\]
+令 \(n/\beta - \sum\ln X_i = 0\)，得 \(\hat{\beta}_{\text{MLE}} = \dfrac{n}{\sum\ln X_i}\)。\\
 (2) \(\beta=2\) 时，\(f(x) = 2\alpha^2 x^{-3}\ (x > \alpha)\)。约束 \(\alpha \leq X_{(1)}\)。\\
 \(\ln L = n\ln 2 + 2n\ln\alpha - 3\sum\ln X_i\)，\(\dfrac{\partial\ln L}{\partial\alpha} = \dfrac{2n}{\alpha} > 0\)，故 \(L\) 关于 \(\alpha\) 递增，\(\hat{\alpha} = X_{(1)}\)。\\
 对于 Pareto(\(\alpha\),2)，\(E(X_{(1)}) = \dfrac{2n\alpha}{2n-1} \neq \alpha\)，故 \(\hat{\alpha}\) 是有偏估计。
@@ -9461,12 +9606,133 @@ $$
 题目中的 $f_X(x,\theta)$ 是位置参数型指数分布（也叫平移指数分布）：标准指数分布 $\text{Exp}(\lambda)$ 是 $f(x) = \lambda e^{-\lambda x},\ x\geq0$； 平移 $\theta$ 后，分布变为 $f(x) = \lambda e^{-\lambda(x-\theta)},\ x\geq\theta$，$\theta$ 是位置参数（分布的左端点）。对于这类位置参数、支撑集为 $[\theta,+\infty)$的分布，极大似然估计一定是样本最小值，这是通用结论。
 \end{note}
 
+\begin{proposition}[样本方差的无偏性]
+    样本方差 $S^2$ 是总体方差 $\sigma^2$ 的无偏估计，这个结论对“任意”具有有限方差的总体分布都成立
+\end{proposition}
+\begin{proof}
+首先给出样本方差的定义\[S^2 = \frac{1}{n-1}\sum_{i=1}^n (X_i - \overline{X})^2\]
+令$Y_i = X_i - \mu$，则总体满足$Y_i \sim N(0,\sigma^2)$，样本均值$\overline{X} = \frac{1}{n}\sum_{i=1}^n X_i$，偏差平方和为：
+\[\sum_{i=1}^n (X_i - \overline{X})^2= \sum_{i=1}^n [(X_i - \mu) - (\overline{X} - \mu)]^2
+= \sum_{i=1}^n (Y_i - \overline{Y})^2\]
+其中$\overline{Y} = \frac{1}{n}\sum_{i=1}^n Y_i$，展开：
+\begin{align*}
+\sum_{i=1}^n (Y_i - \overline{Y})^2&= \sum_{i=1}^n (Y_i^2 - 2Y_i\overline{Y} + \overline{Y}^2) = \sum Y_i^2 - 2\overline{Y}\sum Y_i + n\overline{Y}^2\\
+&= \sum Y_i^2 - 2\overline{Y}(n\overline{Y}) + n\overline{Y}^2 = \sum Y_i^2 - 2n\overline{Y}^2 + n\overline{Y}^2 = \sum Y_i^2 - n\overline{Y}^2
+\end{align*}
+所以$$\sum_{i=1}^n (X_i - \overline{X})^2= \sum_{i=1}^n Y_i^2 - n\overline{Y}^2$$
+求期望：
+\begin{align*}
+E\left(\sum (X_i-\overline{X})^2\right)&= E\left(\sum Y_i^2 - n\overline{Y}^2\right) =E(\sum Y_i^2) - E(n\overline{Y}^2) \\
+&= \sum_{i=1}^n E(Y_i^2)- E(n\overline{Y}^2)= n E(Y_i^2)- E(n\overline{Y}^2)
+\end{align*}
+由于$$\overline{Y} = \frac{1}{n}\sum_{i=1}^n Y_i \sim N\left(0,\frac{\sigma^2}{n}\right)$$所以
+$$E(\overline{Y}^2) = D(\overline{Y}) + [E(\overline{Y})]^2 = \frac{\sigma^2}{n} + 0 = \frac{\sigma^2}{n}\implies E(n\overline{Y}^2) = n \cdot \frac{\sigma^2}{n} = \sigma^2$$
+所以\[n E(Y_i^2)- E(n\overline{Y}^2) = n\sigma^2 - \sigma^2 = (n-1)\sigma^2\]
+又$$S^2 = \frac{1}{n-1}\sum_{i=1}^n (X_i - \overline{X})^2$$
+两边取期望：
+$$
+\begin{aligned}
+E(S^2)&= E\left( \frac{1}{n-1}\sum (X_i-\overline{X})^2 \right) = \frac{1}{n-1} E\left(\sum (X_i-\overline{X})^2\right) = \frac{1}{n-1} \cdot (n-1)\sigma^2 = \sigma^2
+\end{aligned}
+$$
+\end{proof}
+
+\begin{exercise}\label{exer:7-sigma2-unbiased}
+设 \(X_1, \dots, X_n\) 和 \(Y_1, \dots, Y_m\) 分别是来自总体 \(X \sim N(\mu_1, \sigma^2)\) 和 \(Y \sim N(\mu_2, \sigma^2)\) 的简单随机样本，样本方差分别为 \(S_X^2, S_Y^2\)。则 \(\sigma^2\) 的无偏估计是（\quad）。\par
+A. \(S_X^2 + S_Y^2\)\quad B. \((m-1)S_X^2 + (n-1)S_Y^2\)\quad C. \(\dfrac{S_X^2+S_Y^2}{m+n-2}\)\quad D. \(\dfrac{(m-1)S_X^2+(n-1)S_Y^2}{m+n-2}\)
+\end{exercise}
+\begin{solution}
+应选 D。\(E(S_X^2) = E(S_Y^2) = \sigma^2\)。选项 D 中：
+\[
+E\!\left(\frac{(m-1)S_X^2+(n-1)S_Y^2}{m+n-2}\right) = \frac{(m-1)\sigma^2+(n-1)\sigma^2}{m+n-2} = \sigma^2.
+\]
+\end{solution}
+
+
+\begin{proposition}[泊松分布无偏估计的不唯一性]
+    设 $X_1, X_2, \dots, X_n$ 是来自泊松总体 $P(\lambda)$ 的简单随机样本，那么样本均值 $\overline{X}$ 和样本方差 $S^2$ 都是未知参数 $\lambda$ 的无偏估计。
+\end{proposition}
+\begin{proof}
+    根据泊松分布的性质，总体期望和总体方差相等，均等于参数 $\lambda$。即：$$E(X) = \lambda, \quad D(X) = \lambda$$对于样本均值 $\overline{X}$，利用期望的线性性质：
+    $$E(\overline{X}) = E\left(\frac{1}{n}\sum_{i=1}^n X_i\right) = \frac{1}{n}\sum_{i=1}^n E(X_i) = \frac{1}{n} \cdot n\lambda = \lambda$$
+    因此，$\overline{X}$ 是 $\lambda$ 的无偏估计。而样本方差 $S^2$总是总体方差的无偏估计：$$E(S^2) = D(X) = \lambda$$因此，$S^2$ 也是 $\lambda$ 的无偏估计。（注：虽然两者都是无偏估计，但在实际应用中我们通常使用 $\overline{X}$，因为可以进一步证明 $\overline{X}$ 的方差比 $S^2$ 的方差更小，即 $\overline{X}$ 是更有效的估计量）。
+\end{proof}
+
+\begin{exercise}
+    设 $X_1,X_2,\dots,X_n$ 是取自总体 $P(\lambda)$ 的样本，$\overline{X}$ 为样本均值，则 $\lambda^2$ 的一个无偏估计为（\quad）。\\
+A. $\overline{X}^2 - \overline{X}$\qquad B. $\overline{X}^2 + \overline{X}$\qquad C. $\overline{X}^2 - \dfrac{1}{n}\overline{X}$\qquad D. $\overline{X}^2 + \dfrac{1}{n}\overline{X}$
+\end{exercise}
+\begin{solution}
+应选 C。泊松分布 $EX = \lambda$，$DX = \lambda$。
+$$E(\overline{X}^2) = D(\overline{X}) + (E\overline{X})^2 = \frac{\lambda}{n} + \lambda^2,~~E\left(\overline{X}^2 - \frac{1}{n}\overline{X}\right) = \left(\frac{\lambda}{n} + \lambda^2\right) - \frac{\lambda}{n} = \lambda^2$$
+\end{solution}
+
+\begin{proposition}[均匀分布参数的无偏估计]
+    设 $X_1, X_2, \dots, X_n$ 是来自均匀总体 $U(0, \theta)$ 的简单随机样本，次序统计量最大值 \[X_{(n)} = \max(X_1, \dots, X_n)\]是 $\theta$ 的极大似然估计量，但它是有偏的。经过修正后的统计量 $T = \frac{n+1}{n}X_{(n)}$ 才是 $\theta$ 的无偏估计。
+\end{proposition}
+\begin{proof}
+    首先求出最大值 $X_{(n)}$ 的分布。因为样本相互独立，所以 $X_{(n)} \le x$ 等价于所有的 $X_i \le x$：$$F_{X_{(n)}}(x) = P(X_{(n)} \le x) = \prod_{i=1}^n P(X_i \le x) = \left(\frac{x}{\theta}\right)^n \quad (0 < x < \theta)$$对其求导，得到 $X_{(n)}$ 的概率密度函数：$$f_{X_{(n)}}(x) = \frac{n}{\theta^n}x^{n-1} \quad (0 < x < \theta)$$接下来求 $X_{(n)}$ 的数学期望：$$E(X_{(n)}) = \int_0^\theta x \cdot \frac{n}{\theta^n}x^{n-1} dx = \frac{n}{\theta^n} \int_0^\theta x^n dx = \frac{n}{\theta^n} \cdot \frac{\theta^{n+1}}{n+1} = \frac{n}{n+1}\theta$$由于 $E(X_{(n)}) \ne \theta$，所以极大似然估计量 $X_{(n)}$ 是有偏的（它总是倾向于低估总体的上限 $\theta$）。
+    为了消除偏差，我们在等式两边同乘 $\frac{n+1}{n}$：$$E\left(\frac{n+1}{n}X_{(n)}\right) = \frac{n+1}{n} \cdot \frac{n}{n+1}\theta = \theta$$因此，修正后的估计量 $T = \frac{n+1}{n}X_{(n)}$ 是总体参数 $\theta$ 的无偏估计量。
+\end{proof}
+
 
 \begin{definition}[有效性] \label{def:efficiency}
 若 \(\hat{\theta}_1, \hat{\theta}_2\) 都是 \(\theta\) 的无偏估计量，且 \(D\hat{\theta}_1 < D\hat{\theta}_2\)，则称 \(\hat{\theta}_1\) 比 \(\hat{\theta}_2\) \textbf{有效}。
 \end{definition}
 
 
+
+
+
+\begin{exercise}\label{exer:7-efficiency}
+设总体 \(X \sim N(\mu, \sigma^2)\)，\(X_1, X_2, X_3\) 是来自总体 \(X\) 的简单随机样本，记
+\[
+\hat{\mu}_1 = \frac{1}{5}X_1 + \frac{3}{10}X_2 + \frac{1}{2}X_3,\quad
+\hat{\mu}_2 = \frac{1}{3}X_1 + \frac{1}{4}X_2 + \frac{5}{12}X_3,\quad
+\hat{\mu}_3 = \frac{1}{3}X_1 + \frac{1}{6}X_2 + \frac{1}{2}X_3.
+\]
+证明 \(\hat{\mu}_1, \hat{\mu}_2, \hat{\mu}_3\) 都是 \(\mu\) 的无偏估计，并指出哪一个最有效。
+\end{exercise}
+
+\begin{solution}
+验证无偏性（系数之和均为1）：
+\[E\hat{\mu}_1 = \left(\dfrac{1}{5}+\dfrac{3}{10}+\dfrac{1}{2}\right)\mu =E\hat{\mu}_2 = \left(\dfrac{1}{3}+\dfrac{1}{4}+\dfrac{5}{12}\right)\mu = E\hat{\mu}_3 = \left(\dfrac{1}{3}+\dfrac{1}{6}+\dfrac{1}{2}\right)\mu = \mu\]
+比较方差：
+\[
+D\hat{\mu}_1 = \left(\frac{1}{25}+\frac{9}{100}+\frac{1}{4}\right)\sigma^2 = \frac{38}{100}\sigma^2,\quad
+D\hat{\mu}_2 = \left(\frac{1}{9}+\frac{1}{16}+\frac{25}{144}\right)\sigma^2 = \frac{50}{144}\sigma^2,
+\]
+\[
+D\hat{\mu}_3 = \left(\frac{1}{9}+\frac{1}{36}+\frac{1}{4}\right)\sigma^2 = \frac{14}{36}\sigma^2.
+\]
+换算：\(\dfrac{38}{100}=0.380\)，\(\dfrac{50}{144}\approx 0.347\)，\(\dfrac{14}{36}\approx 0.389\)。\(\dfrac{50}{144} < \dfrac{38}{100} < \dfrac{14}{36}\)，故 \(\hat{\mu}_2\) 最有效。
+\end{solution}
+
+\begin{exercise}\label{exer:7-eff-N01}
+设总体 \(X \sim N(0,1)\)，\(X_1, X_2\) 是从总体抽取的一个样本，下列四个无偏估计量中最有效的是（\quad）。\par
+A. \(\mu_1 = X_1\)\qquad B. \(\mu_2 = \dfrac{2}{3}X_1+\dfrac{1}{3}X_2\)\qquad C. \(\mu_3 = \dfrac{1}{4}X_1+\dfrac{3}{4}X_2\)\qquad D. \(\mu_4 = \dfrac{1}{2}X_1+\dfrac{1}{2}X_2\)
+\end{exercise}
+\begin{solution}
+应选 D。\(D\mu_1 = 1\)，\(D\mu_2 = \dfrac{4}{9}+\dfrac{1}{9} = \dfrac{5}{9}\)，\(D\mu_3 = \dfrac{1}{16}+\dfrac{9}{16} = \dfrac{5}{8}\)，\(D\mu_4 = \dfrac{1}{2}\)。\\
+\(\dfrac{1}{2} < \dfrac{5}{9} < \dfrac{5}{8} < 1\)，故 \(\mu_4\) 最有效。
+\end{solution}
+
+
+\begin{exercise}\label{exer:7-u0-compare}
+设样本 \(X_1, X_2, X_3\) 来自总体 \(U(0,\theta)\)，则估计量 \(\hat{\theta}_1=2\overline{X}\)，\(\hat{\theta}_2=X_1+X_2\)，\(\hat{\theta}_3=\dfrac{2}{5}X_1+\dfrac{4}{5}(X_2+X_3)\) 中，哪一个较优？
+\end{exercise}
+\begin{solution}
+三个估计量均无偏（系数之和均为1）。\(DX = \theta^2/12\)。
+\[
+D\hat{\theta}_1 = 4D(\overline{X}) = \frac{4\theta^2}{12\cdot3} = \frac{\theta^2}{9},
+\quad
+D\hat{\theta}_2 = 2\cdot\frac{\theta^2}{12} = \frac{\theta^2}{6},
+\]
+\[
+D\hat{\theta}_3 = \left(\frac{4}{25}+\frac{16}{25}+\frac{16}{25}\right)\frac{\theta^2}{12} = \frac{36\theta^2}{300} = \frac{3\theta^2}{25}.
+\]
+\(\dfrac{\theta^2}{9} < \dfrac{3\theta^2}{25} < \dfrac{\theta^2}{6}\)，故 \(\hat{\theta}_1 = 2\overline{X}\) 最优（方差最小）。
+\end{solution}
 
 
 
@@ -9481,6 +9747,49 @@ $$
     \item \textbf{辛钦大数定律}：若 \(\hat{\theta}\) 是样本值的函数且可表示为独立同分布随机变量的均值，则可直接得出依概率收敛。
 \end{enumerate}
 \end{note}
+
+
+\begin{exercise}\label{exer:7-laplace}
+设总体 \(X\) 的概率密度为 \(f(x) = \dfrac{1}{2\theta}\,e^{-|x|/\theta}\ (-\infty < x < \infty)\)，其中 \(\theta > 0\) 未知，\(X_1, \dots, X_n\) 为样本。\par
+(1) 求 \(\theta\) 的最大似然估计量 \(\hat{\theta}\)；\par
+(2) 证明 \(\hat{\theta}\) 是 \(\theta\) 的无偏估计量；\par
+(3) 证明 \(\hat{\theta}\) 是 \(\theta\) 的一致估计量。
+\end{exercise}
+\begin{solution}
+(1) \(L(\theta) = (2\theta)^{-n}e^{-\sum|X_i|/\theta}\)，\(\ln L = -n\ln(2\theta) - \sum|X_i|/\theta\)。\\
+令 \(-n/\theta + \sum|X_i|/\theta^2 = 0\)，得 \(\hat{\theta} = \dfrac{1}{n}\sum_{i=1}^{n}|X_i|\)。\\
+(2) Laplace 分布的 \(E|X| = \theta\)，故 \(E(\hat{\theta}) = \theta\) \(\checkmark\)。\\
+(3) \(|X_1|, |X_2|, \dots, |X_n|\) 独立同分布，\(E|X_i| = \theta\)。由辛钦大数定律：
+\[
+\hat{\theta} = \frac{1}{n}\sum|X_i| \xrightarrow{P} E|X| = \theta. 
+\]
+\end{solution}
+
+
+\begin{exercise}\label{exer:7-consistent}
+设 \(X_1, X_2, \dots, X_n\) 是来自总体 \(X\) 的简单随机样本，\(EX = \mu\)，\(DX = \sigma^2\)。证明统计量
+\[
+Y = \frac{2}{n(n+1)}\sum_{i=1}^{n}iX_i
+\]
+是 \(\mu\) 的无偏相合估计量。
+\end{exercise}
+\begin{solution}
+\textbf{无偏性}：
+\[
+EY = \frac{2}{n(n+1)}\sum_{i=1}^{n}i\,EX_i = \frac{2\mu}{n(n+1)}\cdot\frac{n(n+1)}{2} = \mu.
+\]
+\textbf{一致性}：由 \(\sum i^2 = \dfrac{n(n+1)(2n+1)}{6}\)，
+\[
+DY = \left[\frac{2}{n(n+1)}\right]^{\!2}\sigma^2\sum_{i=1}^{n}i^2 = \frac{4\sigma^2}{n^2(n+1)^2}\cdot\frac{n(n+1)(2n+1)}{6} = \frac{2(2n+1)}{3n(n+1)}\,\sigma^2.
+\]
+由切比雪夫不等式，对任意 \(\varepsilon > 0\)：
+\[
+P\{|Y-\mu| < \varepsilon\} \geq 1 - \frac{DY}{\varepsilon^2} = 1 - \frac{2(2n+1)\sigma^2}{3n(n+1)\varepsilon^2}.
+\]
+令 \(n\to\infty\)，右端 \(\to 1\)，故 \(Y\xrightarrow{P}\mu\)，\(Y\) 是 \(\mu\) 的相合估计量。
+\end{solution}
+
+
 
 \begin{definition}[均方误差] \label{def:mse}
 设 \(\hat{\theta}\) 为参数 \(\theta\) 的估计量，称
@@ -9534,186 +9843,76 @@ f(x) = \begin{cases} e^{\theta-x}, & x > \theta, \\ 0, & x \leq \theta, \end{cas
 \end{solution}
 
 
+\chapter{区间估计}
 
-\subsection{无偏性}
 
-\begin{exercise}\label{exer:7-unbiased-judge}
-设 \(X_1, X_2, X_3\) 是总体的样本，则下列统计量不是总体均值 \(\mu\) 的无偏估计量的是（\quad）。\par
-A. \(\dfrac{1}{3}(X_1+X_2+X_3)\)\qquad B. \(\dfrac{1}{3}X_1+\dfrac{1}{6}X_2+\dfrac{1}{2}X_3\)\par
-C. \(\dfrac{1}{6}X_1+\dfrac{1}{3}X_2+\dfrac{1}{2}X_3\)\qquad D. \(\dfrac{1}{6}X_1+\dfrac{1}{6}X_2+\dfrac{1}{3}X_3\)
-\end{exercise}
-
-\begin{solution}
-应选 D。
-
-A: 系数和 \(\frac{1}{3}+\frac{1}{3}+\frac{1}{3}=1\) \(\checkmark\)。\quad B: \(\frac{1}{3}+\frac{1}{6}+\frac{1}{2}=1\) \(\checkmark\)。\quad C: \(\frac{1}{6}+\frac{1}{3}+\frac{1}{2}=1\) \(\checkmark\)。\quad D: \(\frac{1}{6}+\frac{1}{6}+\frac{1}{3}=\frac{2}{3} \neq 1\) \(\times\)。
-\end{solution}
-
-\begin{exercise}\label{exer:7-unbiased-c}
-设 \(X_1, X_2, \dots, X_n\) 是来自分布 \(f(x;\theta) = \dfrac{3x^2}{\theta^3}\ (0 \leq x \leq \theta)\) 的简单随机样本。若统计量 \(g(X_1, \dots, X_n) = c\overline{X}\) 为 \(\theta\) 的无偏估计，则常数 \(c =\,\underline{\hspace{2cm}}\)。
-\end{exercise}
-\begin{solution}
-应填 \(\dfrac{4}{3}\)。\(EX = \dfrac{3\theta}{4}\)，\(E(c\overline{X}) = c\cdot\dfrac{3\theta}{4} = \theta\)，故 \(c = \dfrac{4}{3}\)。
-\end{solution}
-
-\begin{exercise}\label{exer:7-exp-mle}
-设总体 \(X\) 具有概率密度
+% 单个正态总体（完整保留所有内容，优化行距和排版）
 \[
-f(x,\theta) = \begin{cases} \dfrac{1}{\theta}\,e^{-x/\theta}, & x > 0\ (\theta > 0), \\ 0, & x \leq 0, \end{cases}
-\]
-其中 \(\theta\) 未知，\(X_1, \dots, X_n\) 为样本。求 \(\theta\) 的最大似然估计 \(\hat{\theta}\)，并证明 \(\hat{\theta}\) 是 \(\theta\) 的无偏估计。
-\end{exercise}
-\begin{solution}
-似然函数 \(L(\theta) = \theta^{-n}e^{-\sum X_i/\theta}\)，\(\ln L = -n\ln\theta - \sum X_i/\theta\)。\\
-令 \(-n/\theta + \sum X_i/\theta^2 = 0\)，得 \(\hat{\theta} = \overline{X}\)。\\
-指数分布 \(EX = \theta\)，故 \(E(\hat{\theta}) = E(\overline{X}) = \theta\)，\(\hat{\theta}\) 是 \(\theta\) 的无偏估计。
-\end{solution}
-
-
-\begin{exercise}\label{exer:7-unbiased-diff}
-设 \(X_1, X_2, \dots, X_n\) 是来自正态总体 \(X \sim N(\mu, \sigma^2)\) 的简单随机样本，为使
-\[
-D = k\sum_{i=1}^{n-1}(X_{i+1}-X_i)^2
-\]
-成为总体方差 \(\sigma^2\) 的无偏估计量，则 \(k =\,\underline{\hspace{2cm}}\)。\par
-A. \(\dfrac{1}{n-1}\)\quad B. \(\dfrac{1}{n}\)\quad C. \(\dfrac{1}{2(n-1)}\)\quad D. \(\dfrac{1}{2n}\)
-\end{exercise}
-
-\begin{solution}
-应选 C。
-
-\(E(X_{i+1}-X_i)^2 = E(X_{i+1}^2) + E(X_i^2) - 2E(X_i)E(X_{i+1}) = 2(\sigma^2+\mu^2) - 2\mu^2 = 2\sigma^2\)。
-
-\(ED = k\cdot(n-1)\cdot 2\sigma^2 = 2k(n-1)\sigma^2\)。令 \(ED = \sigma^2\)，得 \(k = \dfrac{1}{2(n-1)}\)。
-\end{solution}
-
-
-
-
-\begin{exercise}\label{exer:7-two-normal-mle}
-设 \(X_1, \dots, X_m\) 是取自总体 \(N(1, \sigma^2)\) 的简单随机样本，\(Y_1, \dots, Y_n\) 是取自总体 \(N(2, \sigma^2)\) 的简单随机样本。\par
-(1) 求联合密度函数；\par
-(2) 求 \(\sigma^2\) 的最大似然估计 \(\hat{\sigma}^2\)；\par
-(3) \(\hat{\sigma}^2\) 是否为 \(\sigma^2\) 的无偏估计？
-\end{exercise}
-\begin{solution}
-(1) 设 \(T = \displaystyle\sum_{i=1}^{m}(X_i-1)^2 + \sum_{j=1}^{n}(Y_j-2)^2\)，则
-\[
-f = (2\pi\sigma^2)^{-(m+n)/2}\,\exp\!\left\{-\frac{T}{2\sigma^2}\right\}.
-\]
-(2) \(\ln f = -\dfrac{m+n}{2}\ln(2\pi\sigma^2) - \dfrac{T}{2\sigma^2}\)，令 \(\dfrac{\partial\ln f}{\partial\sigma^2} = -\dfrac{m+n}{2\sigma^2}+\dfrac{T}{2(\sigma^2)^2}=0\)，得
-\[
-\hat{\sigma}^2 = \frac{1}{m+n}\!\left[\sum_{i=1}^{m}(X_i-1)^2+\sum_{j=1}^{n}(Y_j-2)^2\right].
-\]
-(3) 是。\(E\!\left[\sum(X_i-1)^2\right] = m\sigma^2\)，\(E\!\left[\sum(Y_j-2)^2\right] = n\sigma^2\)，故
-\[
-E(\hat{\sigma}^2) = \frac{(m+n)\sigma^2}{m+n} = \sigma^2. 
-\]
-\end{solution}
-
-
-\begin{exercise}\label{exer:7-laplace}
-设总体 \(X\) 的概率密度为 \(f(x) = \dfrac{1}{2\theta}\,e^{-|x|/\theta}\ (-\infty < x < \infty)\)，其中 \(\theta > 0\) 未知，\(X_1, \dots, X_n\) 为样本。\par
-(1) 求 \(\theta\) 的最大似然估计量 \(\hat{\theta}\)；\par
-(2) 证明 \(\hat{\theta}\) 是 \(\theta\) 的无偏估计量；\par
-(3) 证明 \(\hat{\theta}\) 是 \(\theta\) 的一致估计量。
-\end{exercise}
-\begin{solution}
-(1) \(L(\theta) = (2\theta)^{-n}e^{-\sum|X_i|/\theta}\)，\(\ln L = -n\ln(2\theta) - \sum|X_i|/\theta\)。\\
-令 \(-n/\theta + \sum|X_i|/\theta^2 = 0\)，得 \(\hat{\theta} = \dfrac{1}{n}\sum_{i=1}^{n}|X_i|\)。\\
-(2) Laplace 分布的 \(E|X| = \theta\)，故 \(E(\hat{\theta}) = \theta\) \(\checkmark\)。\\
-(3) \(|X_1|, |X_2|, \dots, |X_n|\) 独立同分布，\(E|X_i| = \theta\)。由辛钦大数定律：
-\[
-\hat{\theta} = \frac{1}{n}\sum|X_i| \xrightarrow{P} E|X| = \theta. 
-\]
-\end{solution}
-
-
-
-
-
-
-\subsection{有效性}
-
-\begin{exercise}\label{exer:7-efficiency}
-设总体 \(X \sim N(\mu, \sigma^2)\)，\(X_1, X_2, X_3\) 是来自总体 \(X\) 的简单随机样本，记
-\[
-\hat{\mu}_1 = \frac{1}{5}X_1 + \frac{3}{10}X_2 + \frac{1}{2}X_3,\quad
-\hat{\mu}_2 = \frac{1}{3}X_1 + \frac{1}{4}X_2 + \frac{5}{12}X_3,\quad
-\hat{\mu}_3 = \frac{1}{3}X_1 + \frac{1}{6}X_2 + \frac{1}{2}X_3.
-\]
-证明 \(\hat{\mu}_1, \hat{\mu}_2, \hat{\mu}_3\) 都是 \(\mu\) 的无偏估计，并指出哪一个最有效。
-\end{exercise}
-
-\begin{solution}
-验证无偏性（系数之和均为1）：
-\(E\hat{\mu}_1 = \left(\dfrac{1}{5}+\dfrac{3}{10}+\dfrac{1}{2}\right)\mu = \mu\)，\(\quad E\hat{\mu}_2 = \left(\dfrac{1}{3}+\dfrac{1}{4}+\dfrac{5}{12}\right)\mu = \mu\)，\(\quad E\hat{\mu}_3 = \left(\dfrac{1}{3}+\dfrac{1}{6}+\dfrac{1}{2}\right)\mu = \mu\)。\ \checkmark
-
-比较方差：
-\[
-D\hat{\mu}_1 = \left(\frac{1}{25}+\frac{9}{100}+\frac{1}{4}\right)\sigma^2 = \frac{38}{100}\sigma^2,\quad
-D\hat{\mu}_2 = \left(\frac{1}{9}+\frac{1}{16}+\frac{25}{144}\right)\sigma^2 = \frac{50}{144}\sigma^2,
-\]
-\[
-D\hat{\mu}_3 = \left(\frac{1}{9}+\frac{1}{36}+\frac{1}{4}\right)\sigma^2 = \frac{14}{36}\sigma^2.
-\]
-换算：\(\dfrac{38}{100}=0.380\)，\(\dfrac{50}{144}\approx 0.347\)，\(\dfrac{14}{36}\approx 0.389\)。\(\dfrac{50}{144} < \dfrac{38}{100} < \dfrac{14}{36}\)，故 \(\hat{\mu}_2\) 最有效。
-\end{solution}
-
-\begin{exercise}\label{exer:7-eff-N01}
-设总体 \(X \sim N(0,1)\)，\(X_1, X_2\) 是从总体抽取的一个样本，下列四个无偏估计量中最有效的是（\quad）。\par
-A. \(\mu_1 = X_1\)\qquad B. \(\mu_2 = \dfrac{2}{3}X_1+\dfrac{1}{3}X_2\)\qquad C. \(\mu_3 = \dfrac{1}{4}X_1+\dfrac{3}{4}X_2\)\qquad D. \(\mu_4 = \dfrac{1}{2}X_1+\dfrac{1}{2}X_2\)
-\end{exercise}
-\begin{solution}
-应选 D。\(D\mu_1 = 1\)，\(D\mu_2 = \dfrac{4}{9}+\dfrac{1}{9} = \dfrac{5}{9}\)，\(D\mu_3 = \dfrac{1}{16}+\dfrac{9}{16} = \dfrac{5}{8}\)，\(D\mu_4 = \dfrac{1}{2}\)。\\
-\(\dfrac{1}{2} < \dfrac{5}{9} < \dfrac{5}{8} < 1\)，故 \(\mu_4\) 最有效。
-\end{solution}
-
-
-\begin{exercise}\label{exer:7-u0-compare}
-设样本 \(X_1, X_2, X_3\) 来自总体 \(U(0,\theta)\)，则估计量 \(\hat{\theta}_1=2\overline{X}\)，\(\hat{\theta}_2=X_1+X_2\)，\(\hat{\theta}_3=\dfrac{2}{5}X_1+\dfrac{4}{5}(X_2+X_3)\) 中，哪一个较优？
-\end{exercise}
-\begin{solution}
-三个估计量均无偏（系数之和均为1）。\(DX = \theta^2/12\)。
-\[
-D\hat{\theta}_1 = 4D(\overline{X}) = \frac{4\theta^2}{12\cdot3} = \frac{\theta^2}{9},
-\quad
-D\hat{\theta}_2 = 2\cdot\frac{\theta^2}{12} = \frac{\theta^2}{6},
-\]
-\[
-D\hat{\theta}_3 = \left(\frac{4}{25}+\frac{16}{25}+\frac{16}{25}\right)\frac{\theta^2}{12} = \frac{36\theta^2}{300} = \frac{3\theta^2}{25}.
-\]
-\(\dfrac{\theta^2}{9} < \dfrac{3\theta^2}{25} < \dfrac{\theta^2}{6}\)，故 \(\hat{\theta}_1 = 2\overline{X}\) 最优（方差最小）。
-\end{solution}
-
-
-\subsection{一致性}
-
-\begin{exercise}\label{exer:7-consistent}
-设 \(X_1, X_2, \dots, X_n\) 是来自总体 \(X\) 的简单随机样本，\(EX = \mu\)，\(DX = \sigma^2\)。证明统计量
-\[
-Y = \frac{2}{n(n+1)}\sum_{i=1}^{n}iX_i
-\]
-是 \(\mu\) 的无偏相合估计量。
-\end{exercise}
-
-\begin{solution}
-\textbf{无偏性}：
-\[
-EY = \frac{2}{n(n+1)}\sum_{i=1}^{n}i\,EX_i = \frac{2\mu}{n(n+1)}\cdot\frac{n(n+1)}{2} = \mu.
+\begin{cases}
+\text{单个正态 } X\sim N(\mu,\sigma^2) \\
+\text{置信水平为 } 1-\alpha
+\end{cases}
+\Rightarrow
+\begin{cases}
+\text{总体均值 } \mu:
+\begin{cases}
+\sigma^2 \text{ 已知}: & \left( \overline{X} - \dfrac{\sigma}{\sqrt{n}} z_{\frac{\alpha}{2}}, \overline{X} + \dfrac{\sigma}{\sqrt{n}} z_{\frac{\alpha}{2}} \right)\\[4pt]
+\sigma^2 \text{ 未知}: & \left( \overline{X} - \dfrac{S}{\sqrt{n}} t_{\frac{\alpha}{2}}(n-1), \overline{X} + \dfrac{S}{\sqrt{n}} t_{\frac{\alpha}{2}}(n-1) \right)
+\end{cases}\\[8pt]
+\text{总体方差 } \sigma^2:
+\begin{cases}
+\mu \text{ 已知}: & \left( \dfrac{\sum_{i=1}^n (X_i-\mu)^2}{\chi_{\frac{\alpha}{2}}^2(n)}, \dfrac{\sum_{i=1}^n (X_i-\mu)^2}{\chi_{1-\frac{\alpha}{2}}^2(n)} \right)\\[4pt]
+\mu \text{ 未知}: & \left( \dfrac{(n-1)S^2}{\chi_{\frac{\alpha}{2}}^2(n-1)}, \dfrac{(n-1)S^2}{\chi_{1-\frac{\alpha}{2}}^2(n-1)} \right)
+\end{cases}
+\end{cases}
 \]
 
-\textbf{一致性}：由 \(\sum i^2 = \dfrac{n(n+1)(2n+1)}{6}\)，
+\vspace{1em}
 \[
-DY = \left[\frac{2}{n(n+1)}\right]^{\!2}\sigma^2\sum_{i=1}^{n}i^2 = \frac{4\sigma^2}{n^2(n+1)^2}\cdot\frac{n(n+1)(2n+1)}{6} = \frac{2(2n+1)}{3n(n+1)}\,\sigma^2.
+\begin{aligned}
+&\text{两个正态 } \\
+&X_1 \sim N(\mu_1,\sigma_1^2);\\
+& X_2 \sim N(\mu_2,\sigma_2^2) \\
+&\text{置信水平为 }1-\alpha
+\end{aligned}
+\;
+\left\{
+\begin{aligned}
+&\text{总体均值差 } (\mu_1-\mu_2): \\
+&\qquad
+\begin{cases}
+\sigma_1^2,\sigma_2^2 \text{ 已知}: \\[2pt]
+\quad (\bar X_1-\bar X_2) \pm z_{\alpha/2} \sqrt{\sigma_1^2/n_1+\sigma_2^2/n_2};\\[8pt]
+\sigma_1^2=\sigma_2^2=\sigma^2,\;\sigma^2 \text{ 未知}: \\[2pt]
+\quad(\bar X_1-\bar X_2) \pm t_{\alpha/2}(n_1+n_2-2)\,S_w\sqrt{1/n_1+1/n_2};
+\end{cases}
+\\[12pt]
+&\text{总体方差比 } \bigl( \sigma_1^2/\sigma_2^2 \bigr): \\
+&\qquad
+\begin{cases}
+\mu_1,\mu_2 \text{ 已知}: \\[2pt]
+\quad\Bigl( \frac{\frac1{n_1}\sum_{i=1}^{n_1}(X_i-\mu_1)^2}{\frac1{n_2}\sum_{j=1}^{n_2}(X_j-\mu_2)^2}
+\cdot\frac1{F_{\alpha/2}(n_1,n_2)},\;
+\frac{\frac1{n_1}\sum_{i=1}^{n_1}(X_i-\mu_1)^2}{\frac1{n_2}\sum_{j=1}^{n_2}(X_j-\mu_2)^2}
+\cdot\frac1{F_{1-\alpha/2}(n_1,n_2)} \Bigr) \\[8pt]
+\mu_1,\mu_2 \text{ 未知}: \\[2pt]
+\quad\Bigl( \frac{S_1^2}{S_2^2}\cdot\frac1{F_{\alpha/2}(n_1-1,n_2-1)},\;
+\frac{S_1^2}{S_2^2}\cdot\frac1{F_{1-\alpha/2}(n_1-1,n_2-1)} \Bigr)
+\end{cases}
+\end{aligned}
+\right.
 \]
 
-由切比雪夫不等式，对任意 \(\varepsilon > 0\)：
-\[
-P\{|Y-\mu| < \varepsilon\} \geq 1 - \frac{DY}{\varepsilon^2} = 1 - \frac{2(2n+1)\sigma^2}{3n(n+1)\varepsilon^2}.
-\]
-令 \(n\to\infty\)，右端 \(\to 1\)，故 \(Y\xrightarrow{P}\mu\)，\(Y\) 是 \(\mu\) 的相合估计量。
-\end{solution}
+
+\begin{introduction}
+\item 
+\end{introduction}
+
+
+
+
+
+
 
 
 
