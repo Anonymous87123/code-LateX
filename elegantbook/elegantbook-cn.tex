@@ -18,6 +18,7 @@
 
 % 本文档命令
 \usepackage{array}
+
 \newcommand{\ccr}[1]{\makecell{{\color{#1}\rule{1cm}{1cm}}}}
 
 % 修改标题页的橙色带
@@ -9905,16 +9906,740 @@ f(x) = \begin{cases} e^{\theta-x}, & x > \theta, \\ 0, & x \leq \theta, \end{cas
 
 
 \begin{introduction}
-\item 
+  \item 区间估计的基本概念：双侧置信区间与单侧置信区间
+  \item 构造置信区间的基本原理与枢轴量法
+  \item 正态总体参数（均值、方差）的区间估计
 \end{introduction}
 
+\section{区间估计的基本概念}
+
+对于未知参数 $\theta$，除了求出它的点估计外，我们往往还希望给出一个合理的范围，并知道这个范围包含参数 $\theta$ 真值的可信程度。这样的范围通常以区间的形式给出，这种估计形式被称为\textbf{区间估计}。
+
+\begin{definition}[置信区间与置信水平] \label{def:confidence_interval}
+设 $\theta$ 是总体 $X$ 的分布函数中的一个未知参数，对于给定的显著性水平 $\alpha\ (0<\alpha<1)$，如果由样本 $X_1,X_2,\dots,X_n$ 确定的两个统计量 $\underline{\theta}=\underline{\theta}(X_1,X_2,\dots,X_n)$ 和 $\overline{\theta}=\overline{\theta}(X_1,X_2,\dots,X_n)$，满足 $\underline{\theta} < \overline{\theta}$，且对于任意的 $\theta \in \Theta$ 均有：
+\begin{equation}
+P\{\underline{\theta}<\theta<\overline{\theta}\} \ge 1-\alpha
+\end{equation}
+则称随机区间 $(\underline{\theta},\overline{\theta})$ 是 $\theta$ 的置信度（或置信水平）为 $1-\alpha$ 的\textbf{双侧置信区间}。其中，$\underline{\theta}$ 和 $\overline{\theta}$ 分别称为置信度为 $1-\alpha$ 的\textbf{置信下限}和\textbf{置信上限}。
+
+特别地，如果满足 $P\{\theta < \underline{\theta}\} = P\{\theta > \overline{\theta}\} = \frac{\alpha}{2}$，则称这种置信区间为\textbf{等尾置信区间}。
+\end{definition}
+
+在实际应用中，有时我们只关心参数的下界或上界（例如零件的寿命越长越好，废品率越低越好），此时就需要使用单侧置信区间。
+
+\begin{definition}[单侧置信区间] \label{def:one_sided_confidence_interval}
+对于给定值 $\alpha\ (0<\alpha<1)$，若由样本确定的统计量 $\underline{\theta}$ 满足 $P\{\theta > \underline{\theta}\} \ge 1-\alpha$，则称 $(\underline{\theta},+\infty)$ 是 $\theta$ 的置信水平为 $1-\alpha$ 的\textbf{单侧置信区间}，$\underline{\theta}$ 称为\textbf{单侧置信下限}。
+
+同理，若由样本确定的统计量 $\overline{\theta}$ 满足 $P\{\theta < \overline{\theta}\} \ge 1-\alpha$，则称 $(-\infty,\overline{\theta})$ 是 $\theta$ 的置信水平为 $1-\alpha$ 的\textbf{单侧置信区间}，$\overline{\theta}$ 称为\textbf{单侧置信上限}。
+\end{definition}
+
+\begin{note}
+若总体 $X$ 为连续型随机变量，我们通常要求上述概率严格等于 $1-\alpha$；若 $X$ 为离散型随机变量，则使其尽可能地接近（且不小于） $1-\alpha$。
+\end{note}
+
+\section{构造置信区间的基本原理}
+
+构造置信区间最常用的方法是\textbf{枢轴量法}。枢轴量是一个由样本和未知参数共同构成的函数，其最大的特点是\textbf{它的分布完全已知，不依赖于任何未知参数}。下面我们以正态分布均值的区间估计为例，说明枢轴量法的基本步骤。
+
+\begin{exercise}[正态总体均值的区间估计] \label{ex:pivotal_quantity}
+设总体 $X\sim N(\mu,\sigma^2)$，其中方差 $\sigma^2$ 已知，均值 $\mu$ 未知。现有一组来自 $X$ 的样本 $X_1,X_2,\dots,X_n$，求 $\mu$ 的置信水平为 $1-\alpha$ 的置信区间。
+\end{exercise}
+
+\begin{proof}
+首先，寻找一个包含未知参数 $\mu$ 的枢轴量 $W=W(X_1,X_2,\dots,X_n;\mu)$。由于样本均值 $\overline{X} \sim N(\mu, \sigma^2/n)$，我们可以对其进行标准化，得到：
+\begin{equation*}
+W=\frac{\overline{X}-\mu}{\sigma/\sqrt{n}}\sim N(0,1)
+\end{equation*}
+由于标准正态分布 $N(0,1)$ 不依赖于任何未知参数，因此 $W$ 就是一个理想的枢轴量。
+
+其次，根据枢轴量的已知分布和给定的置信水平 $1-\alpha$，利用分位数的定义，寻找常数 $a$ 和 $b$，使得 $P\{a<W<b\}=1-\alpha$。通常我们取等尾情况，即利用标准正态分布的上 $\alpha/2$ 分位点 $z_{\alpha/2}$：
+\begin{equation*}
+P\left\{-z_{\alpha/2} < \frac{\overline{X}-\mu}{\sigma/\sqrt{n}} < z_{\alpha/2}\right\}=1-\alpha
+\end{equation*}
+
+最后，从不等式中解出未知参数 $\mu$，即得到：
+\begin{equation*}
+P\left\{\overline{X}-\frac{\sigma}{\sqrt{n}}z_{\alpha/2} < \mu < \overline{X}+\frac{\sigma}{\sqrt{n}}z_{\alpha/2}\right\}=1-\alpha
+\end{equation*}
+由此，我们得到了 $\mu$ 的置信水平为 $1-\alpha$ 的置信区间为：
+\begin{equation*}
+\left(\overline{X}-\frac{\sigma}{\sqrt{n}}z_{\alpha/2},\ \overline{X}+\frac{\sigma}{\sqrt{n}}z_{\alpha/2}\right)
+\end{equation*}
+\end{proof}
+
+除了上述 $\sigma^2$ 已知时 $\mu$ 的区间估计外，我们还可以利用类似的方法推导其他常见参数的置信区间。
+
+\begin{exercise}[正态总体均值的区间估计（方差未知）] \label{ex:ci_mu_unknown_var}
+设总体 $X\sim N(\mu,\sigma^2)$，其中均值 $\mu$ 和方差 $\sigma^2$ 均未知。现有一组来自 $X$ 的独立样本 $X_1,X_2,\dots,X_n$，样本均值为 $\overline{X}$，样本方差为 $S^2$。求 $\mu$ 的置信水平为 $1-\alpha$ 的置信区间。
+\end{exercise}
+
+\begin{proof}
+由于 $\sigma^2$ 未知，我们不能再使用包含 $\sigma$ 的枢轴量。考虑到样本方差 $S^2$ 是 $\sigma^2$ 的无偏估计，我们构造如下枢轴量：
+\begin{equation*}
+W=\frac{\overline{X}-\mu}{S/\sqrt{n}}\sim t(n-1)
+\end{equation*}
+该统计量服从自由度为 $n-1$ 的 $t$ 分布，完全不依赖于未知参数。
+
+根据 $t$ 分布的对称性，利用上 $\alpha/2$ 分位点 $t_{\alpha/2}(n-1)$，我们有：
+\begin{equation*}
+P\left\{-t_{\alpha/2}(n-1) < \frac{\overline{X}-\mu}{S/\sqrt{n}} < t_{\alpha/2}(n-1)\right\}=1-\alpha
+\end{equation*}
+
+从中解出 $\mu$，即得到：
+\begin{equation*}
+P\left\{\overline{X}-\frac{S}{\sqrt{n}}t_{\alpha/2}(n-1) < \mu < \overline{X}+\frac{S}{\sqrt{n}}t_{\alpha/2}(n-1)\right\}=1-\alpha
+\end{equation*}
+由此得到 $\mu$ 的置信水平为 $1-\alpha$ 的置信区间为：
+\begin{equation*}
+\left(\overline{X}-\frac{S}{\sqrt{n}}t_{\alpha/2}(n-1),\ \overline{X}+\frac{S}{\sqrt{n}}t_{\alpha/2}(n-1)\right)
+\end{equation*}
+\end{proof}
+
+\begin{exercise}[正态总体方差的区间估计（均值未知）] \label{ex:ci_var_unknown_mu}
+设总体 $X\sim N(\mu,\sigma^2)$，其中均值 $\mu$ 和方差 $\sigma^2$ 均未知。现有一组来自 $X$ 的独立样本 $X_1,X_2,\dots,X_n$，样本方差为 $S^2$。求方差 $\sigma^2$ 的置信水平为 $1-\alpha$ 的置信区间。
+\end{exercise}
+
+\begin{proof}
+此时我们要估计的参数是 $\sigma^2$。根据正态总体样本方差的抽样分布性质，我们知道：
+\begin{equation*}
+W=\frac{(n-1)S^2}{\sigma^2} \sim \chi^2(n-1)
+\end{equation*}
+由于 $\chi^2$ 分布不依赖于未知参数 $\mu$ 和 $\sigma^2$，因此 $W$ 就是一个理想的枢轴量。
+
+由于 $\chi^2$ 分布是不对称的，我们分别在其两端各取 $\alpha/2$ 的概率面积。利用 $\chi^2$ 分布的上 $\alpha/2$ 和 $1-\alpha/2$ 分位点，我们有：
+\begin{equation*}
+P\left\{\chi^2_{1-\alpha/2}(n-1) < \frac{(n-1)S^2}{\sigma^2} < \chi^2_{\alpha/2}(n-1)\right\}=1-\alpha
+\end{equation*}
+
+对不等式进行变形，取倒数并同乘 $(n-1)S^2$，解出 $\sigma^2$：
+\begin{equation*}
+P\left\{\frac{(n-1)S^2}{\chi^2_{\alpha/2}(n-1)} < \sigma^2 < \frac{(n-1)S^2}{\chi^2_{1-\alpha/2}(n-1)}\right\}=1-\alpha
+\end{equation*}
+由此得到 $\sigma^2$ 的置信区间为：
+\begin{equation*}
+\left(\frac{(n-1)S^2}{\chi^2_{\alpha/2}(n-1)},\ \frac{(n-1)S^2}{\chi^2_{1-\alpha/2}(n-1)}\right)
+\end{equation*}
+\end{proof}
+
+对于两个正态总体 $X \sim N(\mu_1, \sigma_1^2)$ 和 $Y \sim N(\mu_2, \sigma_2^2)$，我们同样可以利用类似的方法构造枢轴量，来估计它们的均值差或方差比。
+
+\begin{exercise}[两正态总体均值差的区间估计（方差相等且未知）] \label{ex:ci_diff_mu_unknown_var}
+设有两个独立的正态总体 $X \sim N(\mu_1, \sigma^2)$ 和 $Y \sim N(\mu_2, \sigma^2)$，方差相等但具体数值未知。分别抽取容量为 $n_1$ 和 $n_2$ 的独立样本，求均值差 $\mu_1-\mu_2$ 的置信水平为 $1-\alpha$ 的置信区间。
+\end{exercise}
+
+\begin{proof}
+要估计 $\mu_1-\mu_2$，一个自然的无偏估计量是 $\overline{X}-\overline{Y}$。由于两总体方差相同，我们可以利用两个样本的方差 $S_1^2$ 和 $S_2^2$ 构造联合样本方差 $S_w^2$：
+\begin{equation*}
+S_w^2 = \frac{(n_1-1)S_1^2 + (n_2-1)S_2^2}{n_1+n_2-2}
+\end{equation*}
+由此，我们构造出不含未知参数的枢轴量：
+\begin{equation*}
+W=\frac{(\overline{X}-\overline{Y})-(\mu_1-\mu_2)}{S_w\sqrt{\frac{1}{n_1}+\frac{1}{n_2}}} \sim t(n_1+n_2-2)
+\end{equation*}
+
+利用 $t$ 分布的对称性和上 $\alpha/2$ 分位点，我们有：
+\begin{equation*}
+P\left\{-t_{\alpha/2} < \frac{(\overline{X}-\overline{Y})-(\mu_1-\mu_2)}{S_w\sqrt{\frac{1}{n_1}+\frac{1}{n_2}}} < t_{\alpha/2}\right\}=1-\alpha
+\end{equation*}
+（这里简记 $t_{\alpha/2}$ 为 $t_{\alpha/2}(n_1+n_2-2)$）。
+
+从中解出 $\mu_1-\mu_2$，得到置信区间为：
+\begin{equation*}
+\left((\overline{X}-\overline{Y}) - t_{\alpha/2}(n_1+n_2-2)S_w\sqrt{\frac{1}{n_1}+\frac{1}{n_2}},\ (\overline{X}-\overline{Y}) + t_{\alpha/2}(n_1+n_2-2)S_w\sqrt{\frac{1}{n_1}+\frac{1}{n_2}}\right)
+\end{equation*}
+\end{proof}
+
+\begin{exercise}[两正态总体方差比的区间估计（均值未知）] \label{ex:ci_ratio_var_unknown_mu}
+设有两个独立的正态总体 $X \sim N(\mu_1, \sigma_1^2)$ 和 $Y \sim N(\mu_2, \sigma_2^2)$，其均值均未知。求方差比 $\sigma_1^2/\sigma_2^2$ 的置信水平为 $1-\alpha$ 的置信区间。
+\end{exercise}
+
+\begin{proof}
+根据两个样本方差的比值，可以构造服从 $F$ 分布的统计量。为了让其成为枢轴量，我们将包含未知参数的部分分离出来：
+\begin{equation*}
+W=\frac{S_1^2/\sigma_1^2}{S_2^2/\sigma_2^2} = \frac{S_1^2}{S_2^2}\cdot\frac{\sigma_2^2}{\sigma_1^2} \sim F(n_1-1, n_2-1)
+\end{equation*}
+
+利用 $F$ 分布的上 $\alpha/2$ 和 $1-\alpha/2$ 分位点，我们有：
+\begin{equation*}
+P\left\{F_{1-\alpha/2}(n_1-1, n_2-1) < \frac{S_1^2}{S_2^2}\cdot\frac{\sigma_2^2}{\sigma_1^2} < F_{\alpha/2}(n_1-1, n_2-1)\right\}=1-\alpha
+\end{equation*}
+
+将其变形，提取出 $\sigma_1^2/\sigma_2^2$。取倒数时不等号反向：
+\begin{equation*}
+P\left\{\frac{S_1^2}{S_2^2} \cdot \frac{1}{F_{\alpha/2}(n_1-1, n_2-1)} < \frac{\sigma_1^2}{\sigma_2^2} < \frac{S_1^2}{S_2^2} \cdot \frac{1}{F_{1-\alpha/2}(n_1-1, n_2-1)}\right\}=1-\alpha
+\end{equation*}
+由于 $F$ 分布的性质有 $F_{1-\alpha/2}(n_1-1, n_2-1) = 1/F_{\alpha/2}(n_2-1, n_1-1)$，因此上界可以进一步化简为 $\frac{S_1^2}{S_2^2} \cdot F_{\alpha/2}(n_2-1, n_1-1)$。
+
+由此得到 $\sigma_1^2/\sigma_2^2$ 的置信区间为：
+\begin{equation*}
+\left(\frac{S_1^2}{S_2^2}\cdot\frac{1}{F_{\alpha/2}(n_1-1,n_2-1)},\ \frac{S_1^2}{S_2^2}\cdot F_{\alpha/2}(n_2-1,n_1-1)\right)
+\end{equation*}
+\end{proof}
+
+\section{常见的参数置信区间总结}
+
+利用上述枢轴量法，我们推导出了现实中最常见的正态总体（包括单个和两个正态总体）在不同情况下的参数置信区间。为了便于查阅，我们将相关公式归纳为表~\ref{tab:confidence_intervals}。
+
+\begin{table}[htbp]
+\centering
+\caption{常见的正态总体参数置信区间（置信度为 $1-\alpha$）}
+\label{tab:confidence_intervals}
+\renewcommand{\arraystretch}{1.5}
+\begin{tabular}{lllc}
+\toprule
+\textbf{总体条件} & \textbf{待估参数} & \textbf{枢轴量及分布} & \textbf{置信区间} \\
+\midrule
+\multicolumn{4}{c}{\textbf{单个正态总体 $X \sim N(\mu, \sigma^2)$}} \\
+\midrule
+$\sigma^2$ 已知 & $\mu$ & $\frac{\overline{X}-\mu}{\sigma/\sqrt{n}} \sim N(0,1)$ & $\left(\overline{X}-\frac{\sigma}{\sqrt{n}}z_{\alpha/2},\ \overline{X}+\frac{\sigma}{\sqrt{n}}z_{\alpha/2}\right)$ \\
+$\sigma^2$ 未知 & $\mu$ & $\frac{\overline{X}-\mu}{S/\sqrt{n}} \sim t(n-1)$ & $\left(\overline{X}-\frac{S}{\sqrt{n}}t_{\alpha/2}(n-1),\ \overline{X}+\frac{S}{\sqrt{n}}t_{\alpha/2}(n-1)\right)$ \\
+$\mu$ 未知 & $\sigma^2$ & $\frac{(n-1)S^2}{\sigma^2} \sim \chi^2(n-1)$ & $\left(\frac{(n-1)S^2}{\chi^2_{\alpha/2}(n-1)},\ \frac{(n-1)S^2}{\chi^2_{1-\alpha/2}(n-1)}\right)$ \\
+$\mu$ 已知 & $\sigma^2$ & $\frac{\sum(X_i-\mu)^2}{\sigma^2} \sim \chi^2(n)$ & $\left(\frac{\sum(X_i-\mu)^2}{\chi^2_{\alpha/2}(n)},\ \frac{\sum(X_i-\mu)^2}{\chi^2_{1-\alpha/2}(n)}\right)$ \\
+\midrule
+\multicolumn{4}{c}{\textbf{两个正态总体 $X \sim N(\mu_1, \sigma_1^2), Y \sim N(\mu_2, \sigma_2^2)$}} \\
+\midrule
+$\sigma_1^2,\sigma_2^2$ 已知 & $\mu_1-\mu_2$ & 正态分布 $N(0,1)$ & $\left((\overline{X}-\overline{Y}) \pm z_{\alpha/2}\sqrt{\frac{\sigma_1^2}{n_1}+\frac{\sigma_2^2}{n_2}}\right)$ \\
+$\sigma_1^2=\sigma_2^2$ 未知 & $\mu_1-\mu_2$ & $t$ 分布 $t(n_1+n_2-2)$ & $\left((\overline{X}-\overline{Y}) \pm t_{\alpha/2}(n_1+n_2-2)S_w\sqrt{\frac{1}{n_1}+\frac{1}{n_2}}\right)$ \\
+$\mu_1,\mu_2$ 已知 & $\frac{\sigma_1^2}{\sigma_2^2}$ & $F$ 分布 $F(n_1,n_2)$ & $\left(\frac{\sum(X_i-\mu_1)^2/n_1}{\sum(Y_j-\mu_2)^2/n_2}\frac{1}{F_{\alpha/2}(n_1,n_2)},\ \frac{\sum(X_i-\mu_1)^2/n_1}{\sum(Y_j-\mu_2)^2/n_2} F_{\alpha/2}(n_2,n_1)\right)$ \\
+$\mu_1,\mu_2$ 未知 & $\frac{\sigma_1^2}{\sigma_2^2}$ & $F$ 分布 $F(n_1-1,n_2-1)$ & $\left(\frac{S_1^2}{S_2^2}\frac{1}{F_{\alpha/2}(n_1-1,n_2-1)},\ \frac{S_1^2}{S_2^2}F_{\alpha/2}(n_2-1,n_1-1)\right)$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{remark}
+上述表格中公式的推导核心在于“寻找正确的枢轴量”，因此读者不应当采用死记硬背的方式来记忆公式，而是应当通过枢轴量和分位数的定义，自行推导得出。
+\end{remark}
+
+\section{典型例题}
+
+\begin{exercise} \label{ex:ci_length}
+设总体 $X \sim N(\mu,\sigma^2)$（$\sigma^2$ 已知），则在给定样本容量 $n$ 及置信度 $1-\alpha$ 的情况下，未知参数 $\mu$ 的置信区间长度随着样本均值 $\overline{X}$ 的增加而（\qquad）。
+\begin{enumerate}
+  \item[(A)] 增加
+  \item[(B)] 减少
+  \item[(C)] 不变
+  \item[(D)] 不能确定增或减
+\end{enumerate}
+\end{exercise}
+
+\begin{solution}
+应选 (C)。
+
+在给定条件下，由表~\ref{tab:confidence_intervals} 可知，未知参数 $\mu$ 的置信区间为：
+\begin{equation*}
+\left( \overline{X} - \frac{\sigma}{\sqrt{n}} z_{\alpha/2},\ \overline{X} + \frac{\sigma}{\sqrt{n}} z_{\alpha/2} \right)
+\end{equation*}
+该置信区间的长度为 $L = 2\frac{\sigma}{\sqrt{n}} z_{\alpha/2}$。显然，区间长度 $L$ 只与总体标准差 $\sigma$、样本容量 $n$ 以及对应置信水平的分位点 $z_{\alpha/2}$ 有关，而与样本均值 $\overline{X}$ 毫无关系。因此，随着 $\overline{X}$ 的变化，置信区间的长度保持不变。
+\end{solution}
+
+\begin{exercise} \label{ex:ci_large_sample}
+设总体 $X$ 的方差为 $1$，根据来自 $X$ 的容量为 $100$ 的简单随机样本，测得样本均值为 $5$。已知标准正态分布函数值 $\Phi(1.96)=0.975$。求 $X$ 的数学期望 $\mu$ 的置信度近似等于 $0.95$ 的置信区间。
+\end{exercise}
+
+\begin{solution}
+题目中并未说明总体 $X$ 是否为正态分布，但是由于样本容量 $n=100 \ge 30$，属于大样本。根据中心极限定理，样本均值 $\overline{X}$ 近似服从正态分布，即：
+\begin{equation*}
+Z = \frac{\overline{X}-\mu}{\sigma/\sqrt{n}} = \frac{\overline{X}-\mu}{1/\sqrt{100}} \stackrel{\text{近似}}{\sim} N(0,1)
+\end{equation*}
+又因为 $\Phi(1.96)=0.975$，可知 $z_{0.025} = 1.96$，故 $P\{-1.96 < Z < 1.96\} \approx 0.95$。
+
+由此可得 $\mu$ 的近似置信区间为：
+\begin{equation*}
+\left( \overline{X} - \frac{1}{10} \times 1.96,\ \overline{X} + \frac{1}{10} \times 1.96 \right)
+\end{equation*}
+代入已知数据 $\overline{X}=5$，计算出置信区间的下限为 $4.804$，上限为 $5.196$。
+
+所以 $\mu$ 的置信区间近似为 $(4.804,\ 5.196)$。
+\end{solution}
+
+
+\begin{exercise} \label{prob:ci_1}
+对于正态总体 $X \sim N(\mu, \sigma^2)$，$\sigma^2$ \textbf{已知}，记 $L$ 是 $\mu$ 的置信度为 $0.95$ 的置信区间的长度，那么当样本容量 $n$ \underline{\qquad\qquad} 时，$L \leq \sigma$。\\
+（参考数据：$z_{0.05}=1.645$，$z_{0.025}=1.96$，$t_{0.025}(15)=1.753$，$t_{0.025}(16)=2.12$）
+\end{exercise}
+\begin{solution}
+因为 $\sigma^2$ 已知，使用正态分布作为枢轴量。置信区间长度为：
+\begin{equation*}
+L = 2 \cdot \frac{\sigma}{\sqrt{n}} z_{0.025}
+\end{equation*}
+代入 $z_{0.025}=1.96$，并令 $L \leq \sigma$：
+\begin{equation*}
+2 \cdot 1.96 \cdot \frac{\sigma}{\sqrt{n}} \leq \sigma \implies \frac{3.92}{\sqrt{n}} \leq 1 \implies \sqrt{n} \geq 3.92 \implies n \geq 15.3664
+\end{equation*}
+由于样本容量 $n$ 必须为正整数，故 $n \ge 16$。
+\end{solution}
+
+\begin{exercise} \label{prob:ci_2}
+生产一个零件所需时间 $X \sim N(\mu, \sigma^2)$。现观察了 $25$ 个零件，测得样本均值 $\overline{X}=5.5$，样本标准差 $S=1.73$。求 $\mu$ 的置信度为 $0.95$ 的置信区间 \underline{\qquad\qquad}。\\
+（参考数据：$t_{0.05}(24)=1.7109,\ t_{0.025}(24)=2.0639,\ \Phi(1.96)=0.975$）
+\end{exercise}
+\begin{solution}
+由于总体方差 $\sigma^2$ 未知，需要使用 $t$ 分布。自由度 $df = n-1 = 24$，查表得 $t_{0.025}(24)=2.0639$。
+置信区间公式为：
+\begin{equation*}
+\left( \overline{X}-\frac{S}{\sqrt{n}}t_{0.025}(24),\ \overline{X}+\frac{S}{\sqrt{n}}t_{0.025}(24) \right)
+\end{equation*}
+计算边际误差：
+\begin{equation*}
+\frac{1.73}{5} \times 2.0639 \approx 0.7141
+\end{equation*}
+下限为 $5.5 - 0.7141 = 4.7859$，上限为 $5.5 + 0.7141 = 6.2141$。故置信区间为 $(4.7859,\ 6.2141)$。
+\end{solution}
+
+\begin{exercise} \label{prob:ci_3}
+设总体 $X \sim N(\mu, \sigma^2)$，有一个容量为 $10$ 的样本，测得样本方差 $S^2=2$。求 $\sigma^2$ 的置信水平为 $0.95$ 的置信区间 \underline{\qquad\qquad}。\\
+（参考数据：$\chi^2_{0.975}(9)=2.70$，$\chi^2_{0.025}(9)=19.023$）
+\end{exercise}
+\begin{solution}
+由于 $\mu$ 未知，求 $\sigma^2$ 的置信区间使用 $\chi^2$ 分布，自由度 $df = 10-1 = 9$。
+方差的置信区间公式为：
+\begin{equation*}
+\left( \frac{(n-1)S^2}{\chi^2_{0.025}(9)},\ \frac{(n-1)S^2}{\chi^2_{0.975}(9)} \right)
+\end{equation*}
+计算分子：$(n-1)S^2 = 9 \times 2 = 18$。代入分母得到：
+\begin{equation*}
+\frac{18}{19.023} \approx 0.9462,\quad \frac{18}{2.70} \approx 6.6667
+\end{equation*}
+故置信区间为 $(0.9462,\ 6.6667)$。
+\end{solution}
+
+\begin{exercise} \label{prob:ci_4}
+已知 $X\sim N(\mu,\sigma^2)$，样本容量 $n=9$，样本均值 $\overline{X}=6$，求 $\mu$ 在置信水平 $0.95$ 下的单侧置信下限 \underline{\qquad\qquad}。\\
+（参考数据：$\Phi(1.96)=0.975,\ \Phi(1.645)=0.95$）
+\end{exercise}
+\begin{solution}
+由于需要用到 $\sigma$，我们将其视为已知。单侧置信下限的要求是 $P\{\mu \ge \underline{\mu}\} = 0.95$。
+利用标准正态分布的枢轴量，有：
+\begin{equation*}
+P\left( \frac{\overline{X}-\mu}{\sigma/\sqrt{n}} \le z_{0.05} \right) = 0.95
+\end{equation*}
+解得 $\mu \ge \overline{X} - z_{0.05}\frac{\sigma}{\sqrt{n}}$。代入数据 $\overline{X}=6, n=9, z_{0.05}=1.645$：
+\begin{equation*}
+\underline{\mu} = 6 - 1.645 \frac{\sigma}{3} \approx 6 - 0.5483\sigma
+\end{equation*}
+\end{solution}
+
+\begin{exercise} \label{prob:ci_5}
+对 $\alpha\in(0,1)$，由样本 $X_1,\dots,X_n$ 得到统计量 $\underline{\theta}$，若对一切参数 $\theta$ 均有 \underline{\qquad\qquad}，则称 $(\underline{\theta},+\infty)$ 为 $\theta$ 的置信水平为 $1-\alpha$ 的单侧置信区间，$\underline{\theta}$ 称为单侧置信下限。
+\end{exercise}
+\begin{solution}
+根据定义，单侧置信下限意味着参数真值大于等于该下限的概率不低于要求的置信水平。由于是针对连续情况下的理论定义，满足 $P(\theta \ge \underline{\theta}) \ge 1-\alpha$ 或 $P(\theta \ge \underline{\theta}) = 1-\alpha$。
+\end{solution}
 
 
 
+\begin{exercise} \label{prob:ci_6}
+设总体 $X\sim N(\mu,\sigma^2)$，有一个容量 $n=9$ 的样本，已知 $\sum_{i=1}^9 X_i=198$，$\sum_{i=1}^9 X_i^2=4372$。求 $\mu$ 与 $\sigma$ 的置信水平为 $0.95$ 的双侧置信区间（结果保留四位小数）。\\
+（参考数据：$t_{0.025}(8)=2.306$，$\chi^2_{0.975}(8)=2.180$，$\chi^2_{0.025}(8)=17.535$）
+\end{exercise}
+\begin{solution}
+首先计算样本均值和样本方差：
+\begin{equation*}
+\overline{X} = \frac{1}{n}\sum_{i=1}^9 X_i = \frac{198}{9} = 22
+\end{equation*}
+\begin{equation*}
+S^2 = \frac{1}{n-1}\left(\sum_{i=1}^9 X_i^2 - n\overline{X}^2\right) = \frac{1}{8}\left(4372 - 9 \times 22^2\right) = \frac{16}{8} = 2
+\end{equation*}
+于是样本标准差 $S = \sqrt{2} \approx 1.4142$。
+
+求 $\mu$ 的置信区间（方差未知，用 $t$ 分布）：
+自由度 $df=8$，分位点 $t_{0.025}(8)=2.306$。边际误差为 $\frac{\sqrt{2}}{3} \times 2.306 \approx 1.0871$。
+下限：$22 - 1.0871 = 20.9129$，上限：$22 + 1.0871 = 23.0871$。
+即 $\mu$ 的置信区间为 $(20.9129,\ 23.0871)$。
+
+求 $\sigma$ 的置信区间：
+先求出 $\sigma^2$ 的置信区间：
+\begin{equation*}
+\left( \frac{(n-1)S^2}{\chi^2_{0.025}(8)},\ \frac{(n-1)S^2}{\chi^2_{0.975}(8)} \right) = \left( \frac{16}{17.535},\ \frac{16}{2.180} \right) \approx (0.9125,\ 7.3395)
+\end{equation*}
+对上下限开平方，得到标准差 $\sigma$ 的置信区间：
+\begin{equation*}
+(\sqrt{0.9125},\ \sqrt{7.3395}) \approx (0.9552,\ 2.7091)
+\end{equation*}
+综上，$\mu$ 的置信区间为 $(20.9129,\ 23.0871)$，$\sigma$ 的置信区间为 $(0.9552,\ 2.7091)$。
+\end{solution}
 
 
+\chapter{假设检验}
+\[
+\begin{cases}
+\text{假设检验}
+\begin{cases}
+\text{基本思想: 随机试验中小概率事件一般不会发生} \\
+\text{基本步骤: 提出假设} \Rightarrow \text{构建统计量} \Rightarrow \text{写出拒绝域} \Rightarrow \text{检验} \\
+\text{主要检验: 双边检验或单边检验} \\
+\text{显著性检验: 仅考虑控制第一类错误的假设检验，限定第一类错误发生的最大概率为} \alpha
+\end{cases} \\
+\text{单个正态总体}
+\begin{cases}
+\text{总体均值}
+\begin{cases}
+\text{总体方差已知, } Z\text{检验，也称} U\text{检验} \\
+\text{总体方差未知, } t\text{检验}
+\end{cases} \\
+\text{总体方差}
+\begin{cases}
+\text{总体均值已知, } \chi^2(n)\text{检验} \\
+\text{总体均值未知, } \chi^2(n-1)\text{检验}
+\end{cases}
+\end{cases} \\
+\text{两个正态总体区间估计} \\
+(X \sim N(\mu_1,\sigma_1^2), Y \sim N(\mu_2,\sigma_2^2))
+\begin{cases}
+\text{总体均值差} (\mu_1-\mu_2)
+\begin{cases}
+\sigma_1^2=\sigma_2^2=\sigma^2\text{已知, } Z\text{检验} \\
+\sigma_1^2=\sigma_2^2=\sigma^2\text{未知, } t(n_1+n_2-2)\text{检验}
+\end{cases} \\
+\text{总体方差比} \left( \frac{\sigma_1^2}{\sigma_2^2} \right)
+\begin{cases}
+\mu_1=\mu_2=\mu\text{已知, } F(n_1,n_2)\text{检验} \\
+\mu_1=\mu_2=\mu\text{未知, } F(n_1-1,n_2-1)\text{检验}
+\end{cases}
+\end{cases}
+\end{cases}
+\]
+
+\begin{introduction}
+    \item 原假设与备择假设~\ref{def:hypothesis-test}
+    \item 两类错误与显著性水平~\ref{def:two-errors}
+    \item 假设检验的基本步骤~\ref{sec:ht-steps}
+    \item 正态总体参数的假设检验~\ref{sec:ht-normal}
+    \item 置信区间与假设检验的关系~\ref{sec:ht-ci}
+\end{introduction}
+
+\section{基本概念}
+
+\begin{definition}[假设检验] \label{def:hypothesis-test}
+关于总体分布中的未知参数或分布类型的每一种论断称为\textbf{统计假设}。根据样本信息去推断该假设是否成立的统计推断问题称为\textbf{假设检验}。其中需要检验的假设称为\textbf{原假设}（或零假设），记为 \(H_0\)；与 \(H_0\) 对立的假设称为\textbf{备择假设}，记为 \(H_1\)。
+\end{definition}
+
+\begin{definition}[两类错误] \label{def:two-errors}
+\begin{enumerate}
+    \item \textbf{第一类错误（弃真）}：\(H_0\) 为真时，错误地拒绝了 \(H_0\)。
+    \[
+    \alpha = P\{\text{拒绝}\, H_0 \mid H_0\text{ 为真}\}.
+    \]
+    \item \textbf{第二类错误（取伪）}：\(H_0\) 不真时，错误地接受了 \(H_0\)。
+    \[
+    \beta = P\{\text{接受}\, H_0 \mid H_1\text{ 为真}\}.
+    \]
+\end{enumerate}
+\end{definition}
+
+\begin{definition}[显著性水平与显著性检验] \label{def:significance-level}
+在假设检验中，只控制犯第一类错误的概率不超过 \(\alpha\)（\(\alpha\) 通常取 0.1, 0.05, 0.01），而不考虑第二类错误的概率，这种检验称为\textbf{显著性检验}，\(\alpha\) 称为\textbf{显著性水平}。
+\end{definition}
+
+\begin{note}
+\textbf{小概率原理}是假设检验的理论基础：概率很小的事件在一次试验中认为不会发生。若在 \(H_0\) 成立的条件下，样本观测值导致某个概率 \(\leq \alpha\) 的事件发生，则拒绝 \(H_0\)。
+\end{note}
+
+\begin{definition}[双边检验与单边检验]
+\begin{itemize}
+    \item \textbf{双边检验}：\(H_0\colon \mu = \mu_0\)，\(H_1\colon \mu \neq \mu_0\)。
+    \item \textbf{右边检验}：\(H_0\colon \mu \leq \mu_0\)，\(H_1\colon \mu > \mu_0\)。
+    \item \textbf{左边检验}：\(H_0\colon \mu \geq \mu_0\)，\(H_1\colon \mu < \mu_0\)。
+\end{itemize}
+\end{definition}
+
+\begin{note}
+原假设 \(H_0\) 与备择假设 \(H_1\) 的地位不对等：\(H_0\) 是受保护的（控制弃真概率），因此选择 \(H_0\) 需要谨慎，一般遵循以下原则：
+\begin{enumerate}
+    \item 将后果较严重的错误设为第一类错误。例如检验药品真假，\(H_0\colon\) 药品为假，\(H_1\colon\) 药品为真（误判假药为真的后果更严重）。
+    \item 若无严重后果，常选 \(H_0\) 为"维持现状"。例如检验新技术是否提高收益，\(H_0\colon\) 新技术未提高收益。
+    \item 用\textbf{反证法}思想：若要验证 \(x\) 显著高于 \(y\)，则设 \(H_0\colon x \leq y\)，拒绝 \(H_0\) 后便有充分理由认为 \(x > y\)。
+\end{enumerate}
+\end{note}
+
+\section{假设检验的步骤} \label{sec:ht-steps}
+
+\begin{property}[假设检验的四步流程]
+\begin{enumerate}
+    \item 根据问题提出 \(H_0\) 和 \(H_1\)，确定检验类型（双边/单边）。
+    \item 给定显著性水平 \(\alpha\) 和样本容量 \(n\)。
+    \item 选择\textbf{检验统计量}，确定\textbf{拒绝域}。
+    \item 由样本计算统计量的观测值，判断是否落入拒绝域，作出结论。
+\end{enumerate}
+\end{property}
+
+\begin{note}
+\textbf{拒绝域的形式与备择假设 \(H_1\) 一致}，便于记忆：
+\begin{itemize}
+    \item \(H_1\colon \theta > \theta_0\)（右边检验）\(\Longrightarrow\) 拒绝域在\textbf{右尾}；
+    \item \(H_1\colon \theta < \theta_0\)（左边检验）\(\Longrightarrow\) 拒绝域在\textbf{左尾}；
+    \item \(H_1\colon \theta \neq \theta_0\)（双边检验）\(\Longrightarrow\) 拒绝域在\textbf{双尾}。
+\end{itemize}
+接受 \(H_0\) 并不意味着 \(H_0\) 一定为真，只是没有足够证据拒绝它。
+\end{note}
 
 
+\section{正态总体参数的假设检验} \label{sec:ht-normal}
+
+\subsection{单个正态总体均值的检验}
+
+\begin{property}[Z 检验（\(\sigma^2\) 已知）]
+检验统计量 \(Z = \dfrac{\overline{X}-\mu_0}{\sigma/\sqrt{n}} \sim N(0,1)\)。
+
+\begin{center}
+\begin{tabular}{ccc}
+\toprule
+\(H_1\) & 拒绝域 \\
+\midrule
+\(\mu > \mu_0\) & \(z \geq z_\alpha\) \\[4pt]
+\(\mu < \mu_0\) & \(z \leq -z_\alpha\) \\[4pt]
+\(\mu \neq \mu_0\) & \(|z| \geq z_{\alpha/2}\) \\
+\bottomrule
+\end{tabular}
+\end{center}
+\end{property}
+
+\begin{exercise}\label{exer:9-z-test}
+某工厂生产灯泡的寿命 \(X \sim N(\mu, 200^2)\)。过去灯泡平均寿命为 1500 小时，采用新工艺后抽取 25 只，测得平均寿命为 1675 小时。问在显著性水平 \(\alpha = 0.05\) 下，新工艺是否显著提高了灯泡寿命？（\(z_{0.05}=1.65\)）
+\end{exercise}
+
+\begin{solution}
+\(H_0\colon \mu \leq 1500\)，\(H_1\colon \mu > 1500\)（右边检验，\(\alpha=0.05\)）。
+检验统计量 \(Z = \dfrac{\overline{X}-1500}{200/\sqrt{25}} \sim N(0,1)\)，拒绝域 \(z \geq z_{0.05}=1.65\)。
+\[
+z = \frac{1675-1500}{200/5} = \frac{175}{40} = 4.375 > 1.65.
+\]
+
+\(z\) 落入拒绝域，拒绝 \(H_0\)，认为新工艺显著提高了灯泡寿命。
+\end{solution}
+
+\begin{property}[t 检验（\(\sigma^2\) 未知）]
+检验统计量 \(t = \dfrac{\overline{X}-\mu_0}{S/\sqrt{n}} \sim t(n-1)\)。
+\begin{center}
+\begin{tabular}{ccc}
+\toprule
+\(H_1\) & 拒绝域 \\
+\midrule
+\(\mu > \mu_0\) & \(t \geq t_\alpha(n-1)\) \\[4pt]
+\(\mu < \mu_0\) & \(t \leq -t_\alpha(n-1)\) \\[4pt]
+\(\mu \neq \mu_0\) & \(|t| \geq t_{\alpha/2}(n-1)\) \\
+\bottomrule
+\end{tabular}
+\end{center}
+\end{property}
+
+
+\begin{exercise}\label{exer:9-t-test-two}
+某厂生产灯泡寿命 \(X \sim N(\mu, \sigma^2)\)（\(\mu, \sigma^2\) 均未知），抽取 25 只测得 \(\overline{x}=1700\)，\(s=490\)。在 \(\alpha=0.01\) 下，能否认为平均寿命为 2000 小时？
+（\(\;t_{0.005}(24)=2.7969\)）
+\end{exercise}
+
+\begin{solution}
+\(H_0\colon \mu=2000\)，\(H_1\colon \mu\neq2000\)（双边检验，\(\alpha=0.01\)）。
+\(t = \dfrac{\overline{X}-\mu_0}{S/\sqrt{n}} \sim t(24)\)，拒绝域 \(|t| \geq t_{0.005}(24)=2.7969\)。
+\[
+t = \frac{1700-2000}{490/5} = \frac{-300}{98} = -3.061,\quad |t| = 3.061 > 2.7969.
+\]
+落入拒绝域，拒绝 \(H_0\)，不能认为平均寿命为 2000 小时。
+\end{solution}
+
+\begin{exercise}\label{exer:9-t-test-right}
+某高校某专业 25 名学生高数成绩服从正态分布，样本均值 \(\overline{x}=69.5\)，标准差 \(s=15\)。在 \(\alpha=0.05\) 下，检验该专业平均成绩是否\textbf{显著高于} 70 分。（\(t_{0.05}(24)=1.711\)）
+\end{exercise}
+\begin{solution}
+\(H_0\colon \mu\leq70\)，\(H_1\colon \mu>70\)（右边检验，\(\alpha=0.05\)）。
+拒绝域 \(t \geq t_{0.05}(24)=1.711\)。
+\[
+t = \frac{69.5-70}{15/\sqrt{25}} = \frac{-0.5}{3} = -0.167 < 1.711.
+\]
+未落入拒绝域，接受 \(H_0\)，认为平均成绩没有显著高于 70 分。
+\end{solution}
+
+
+\subsection{两个正态总体均值差的检验}
+
+\begin{property}[两个正态总体均值差的检验]
+设 \(X_1,\dots,X_{n_1}\) 来自 \(N(\mu_1,\sigma_1^2)\)，\(Y_1,\dots,Y_{n_2}\) 来自 \(N(\mu_2,\sigma_2^2)\)，两组独立。
+
+\textbf{情形1}：\(\sigma_1^2, \sigma_2^2\) 已知。检验统计量
+\[
+Z = \frac{(\overline{X}-\overline{Y})-\delta}{\sqrt{\sigma_1^2/n_1+\sigma_2^2/n_2}} \sim N(0,1).
+\]
+
+\textbf{情形2}：\(\sigma_1^2=\sigma_2^2=\sigma^2\) 未知。检验统计量
+\[
+t = \frac{(\overline{X}-\overline{Y})-\delta}{S_w\sqrt{1/n_1+1/n_2}} \sim t(n_1+n_2-2),
+\]
+其中 \(S_w^2 = \dfrac{(n_1-1)S_1^2+(n_2-1)S_2^2}{n_1+n_2-2}\) 为\textbf{合并样本方差}。
+
+两种情形下，\(H_1\colon \mu_1-\mu_2 > \delta\) 对应右尾拒绝域，\(H_1\colon \mu_1-\mu_2 < \delta\) 对应左尾，\(H_1\colon \mu_1-\mu_2 \neq \delta\) 对应双尾。
+\end{property}
+
+\subsection{单个正态总体方差的检验}
+
+\begin{property}[$\chi^2\) 检验]
+\textbf{\(\mu\) 未知}时，检验统计量
+\[
+\chi^2 = \frac{(n-1)S^2}{\sigma_0^2} \sim \chi^2(n-1).
+\]
+\textbf{\(\mu\) 已知}时，检验统计量
+\[
+\chi^2 = \frac{\sum_{i=1}^{n}(X_i-\mu)^2}{\sigma_0^2} \sim \chi^2(n).
+\]
+\begin{center}
+\begin{tabular}{cc}
+\toprule
+\(H_1\) & 拒绝域（\(\mu\) 未知） \\
+\midrule
+\(\sigma^2 > \sigma_0^2\) & \(\chi^2 \geq \chi^2_\alpha(n-1)\) \\[4pt]
+\(\sigma^2 < \sigma_0^2\) & \(\chi^2 \leq \chi^2_{1-\alpha}(n-1)\) \\[4pt]
+\(\sigma^2 \neq \sigma_0^2\) & \(\chi^2 \geq \chi^2_{\alpha/2}(n-1)\) 或 \(\chi^2 \leq \chi^2_{1-\alpha/2}(n-1)\) \\
+\bottomrule
+\end{tabular}
+\end{center}
+\end{property}
+
+\begin{exercise}\label{exer:9-chi2-two}
+某厂铜线折断力 \(X \sim N(\mu, \sigma^2)\)，抽查 10 根，\(\overline{x}=575.2\)，\(s^2=68.16\)。在 \(\alpha=0.05\) 下检验 \(H_0\colon \sigma^2=64\)，\(H_1\colon \sigma^2\neq64\)。
+（\(\chi^2_{0.025}(9)=19.0\)，\(\chi^2_{0.975}(9)=2.7\)）
+\end{exercise}
+\begin{solution}
+\(\chi^2 = \dfrac{(10-1)\times68.16}{64} = \dfrac{613.44}{64} = 9.585\)。\\
+接受域：\(\chi^2_{0.975}(9)=2.7 \leq \chi^2 \leq \chi^2_{0.025}(9)=19.0\)。\\
+\(2.7 < 9.585 < 19.0\)，落入接受域，接受 \(H_0\)，认为方差为 64。
+\end{solution}
+
+\begin{exercise}\label{exer:9-chi2-left}
+测定溶液水分，10 个测定值 \(s=0.037\%\)，总体服从正态分布。在 \(\alpha=0.05\) 下检验 \(H_0\colon \sigma \geq 0.04\%\)，\(H_1\colon \sigma < 0.04\%\)。
+（\(\chi^2_{0.95}(9)=3.325\)）
+\end{exercise}
+\begin{solution}
+等价于检验 \(H_0\colon \sigma^2 \geq (0.04\%)^2\)，\(H_1\colon \sigma^2 < (0.04\%)^2\)（左边检验）。拒绝域：\(\chi^2 \leq \chi^2_{0.95}(9)=3.325\)。
+\[
+\chi^2 = \frac{(10-1)\times(0.037\%)^2}{(0.04\%)^2} = \frac{9\times0.001369}{0.0016} = 7.701 > 3.325.
+\]
+未落入拒绝域，接受 \(H_0\)。
+\end{solution}
+
+
+\subsection{两个正态总体方差比的检验}
+
+\begin{property}[F 检验]
+\(\mu_1, \mu_2\) 未知时，检验统计量
+\[
+F = \frac{S_1^2}{S_2^2} \sim F(n_1-1, n_2-1).
+\]
+\begin{center}
+\begin{tabular}{cc}
+\toprule
+\(H_1\) & 拒绝域 \\
+\midrule
+\(\sigma_1^2 > \sigma_2^2\) & \(F \geq F_\alpha(n_1-1, n_2-1)\) \\[4pt]
+\(\sigma_1^2 < \sigma_2^2\) & \(F \leq F_{1-\alpha}(n_1-1, n_2-1)\) \\[4pt]
+\(\sigma_1^2 \neq \sigma_2^2\) & \(F \geq F_{\alpha/2}\) 或 \(F \leq F_{1-\alpha/2}\) \\
+\bottomrule
+\end{tabular}
+\end{center}
+其中 \(F_{1-\alpha}(n_1-1,n_2-1) = \dfrac{1}{F_\alpha(n_2-1,n_1-1)}\)。
+\end{property}
+
+\begin{exercise}\label{exer:9-f-test}
+两个小麦品种从播种到抽穗天数如下：
+\begin{center}
+\begin{tabular}{ccccccccccc|c}
+\toprule
+品种1 & 101 & 100 & 99 & 99 & 98 & 100 & 98 & 99 & 99 & 99 & 行和 992 \\
+\midrule
+品种2 & 100 & 98 & 100 & 99 & 98 & 99 & 98 & 98 & 99 & 100 & 行和 989 \\
+\bottomrule
+\end{tabular}
+\end{center}
+在 \(\alpha=0.05\) 下：(1) 检验方差是否有显著差异；(2) 检验均值是否有显著差异。
+（\(F_{0.025}(9,9)=4.03\)，\(F_{0.975}(9,9)=0.248\)，\(t_{0.025}(18)=2.101\)）
+\end{exercise}
+\begin{solution}
+\(\overline{x}_1=99.2,\ \overline{x}_2=98.9,\ n_1=n_2=10\)。
+\[
+\sum(x_{1i}-\overline{x}_1)^2 = 7.6,\quad \sum(x_{2j}-\overline{x}_2)^2 = 6.9.
+\]
+\[
+S_1^2 = \frac{7.6}{9} \approx 0.844,\quad S_2^2 = \frac{6.9}{9} \approx 0.767.
+\]
+(1) \(H_0\colon \sigma_1^2=\sigma_2^2\)，\(H_1\colon \sigma_1^2\neq\sigma_2^2\)。\\
+\(F = S_1^2/S_2^2 = 0.844/0.767 \approx 1.100\)。拒绝域：\(F \geq 4.03\) 或 \(F \leq 0.248\)。\\
+\(0.248 < 1.100 < 4.03\)，未落入拒绝域，接受 \(H_0\)，方差无显著差异。\\
+(2) \(H_0\colon \mu_1=\mu_2\)，\(H_1\colon \mu_1\neq\mu_2\)（方差已认为相等，用 pooled t 检验）。
+\[
+S_w^2 = \frac{9\times0.844+9\times0.767}{18} = \frac{14.499}{18} \approx 0.806,\quad S_w\sqrt{\frac{2}{10}} \approx 0.898\times0.447 \approx 0.401.
+\]
+\[
+t = \frac{99.2-98.9}{0.401} \approx 0.747.
+\]
+拒绝域 \(|t| \geq t_{0.025}(18)=2.101\)。\(0.747 < 2.101\)，未落入拒绝域，接受 \(H_0\)，均值无显著差异。
+\end{solution}
+
+\section{置信区间与假设检验的关系} \label{sec:ht-ci}
+
+\begin{property}[\label{prop:ci-test-equiv}置信区间与假设检验的等价性]
+设 \((\theta_L, \theta_U)\) 为参数 \(\theta\) 的置信水平为 \(1-\alpha\) 的置信区间，则对于双边检验
+\[
+H_0\colon \theta=\theta_0,\quad H_1\colon \theta\neq\theta_0,
+\]
+“接受 \(H_0\)”等价于 “\(\theta_0\) 落在置信区间 \((\theta_L, \theta_U)\) 内”。对于单边检验也有类似的对应关系：\(H_0\colon \theta\leq\theta_0\) 的拒绝域 \(z\geq z_\alpha\) 等价于 \(\theta_0 < \theta_U\)（上置信限）。
+\end{property}
+
+\begin{exercise}\label{exer:9-ci-test}
+零件长度 \(X \sim N(\mu, \sigma^2)\)（\(\mu, \sigma^2\) 均未知），\(n=16\)，\(\overline{x}=10\)，\(s^2=0.16\)。\\
+(1) 求 \(\mu\) 的置信水平为 0.95 的置信区间；\\
+(2) 在 \(\alpha=0.05\) 下检验 \(H_0\colon \mu=9.7\)，\(H_1\colon \mu\neq9.7\)。（\(t_{0.025}(15)=2.132\)）
+\end{exercise}
+\begin{solution}
+(1) 置信区间：
+\[
+\left(10 - \frac{0.4}{4}\times2.132,\; 10 + \frac{0.4}{4}\times2.132\right) = (9.7868,\; 10.2132).
+\]
+(2) \(9.7 \notin (9.7868,\; 10.2132)\)，等价于落入拒绝域，故拒绝 \(H_0\)，认为 \(\mu\neq9.7\)。
+验证：\(\overline{x}=10 > 9.7+0.4\times2.132/4 = 9.9132\)，确实落入拒绝域。
+\end{solution}
+
+
+\section{两类错误}
+
+\begin{note}
+在固定样本容量 \(n\) 的条件下，\(\alpha\) 与 \(\beta\) 存在此消彼长的关系：\(\alpha\) 小则 \(\beta\) 大，\(\beta\) 小则 \(\alpha\) 大。\textbf{它们不满足} \(\beta=1-\alpha\)。
+实际中，总是在控制 \(\alpha\)（使弃真概率较小）的条件下尽量使 \(\beta\) 小，因为人们通常认为错误地拒绝 \(H_0\) 比错误地接受 \(H_0\) 后果更严重。
+\end{note}
+
+\begin{exercise}\label{exer:9-error-calc}
+设连续型随机变量 \(U\) 的密度分别为：
+\[
+H_0\colon f(x)=\begin{cases}1/2, & 0\leq x\leq2,\\0, & \text{其他},\end{cases}
+\quad
+H_1\colon f(x)=\begin{cases}x/2, & 0\leq x\leq2,\\0, & \text{其他}.\end{cases}
+\]
+检验规则：当 \(U>3/2\) 时拒绝 \(H_0\)。求犯第一类错误的概率 \(\alpha\) 和犯第二类错误的概率 \(\beta\)。\par
+A. \(3/4,\;7/16\)\qquad B. \(7/16,\;3/4\)\qquad C. \(9/16,\;1/4\)\qquad D. \(1/4,\;9/16\)
+\end{exercise}
+\begin{solution}
+应选 D。
+\[
+\alpha = P\!\left\{U>\tfrac{3}{2}\mid H_0\right\} = \int_{3/2}^{2}\frac{1}{2}\,\mathrm{d}x = \frac{1}{4}.
+\]
+\[
+\beta = P\!\left\{U\leq\tfrac{3}{2}\mid H_1\right\} = \int_0^{3/2}\frac{x}{2}\,\mathrm{d}x = \frac{(3/2)^2}{4} = \frac{9}{16}.
+\]
+\end{solution}
+
+\begin{exercise}\label{exer:9-error-concept1}
+在假设检验中，\(H_0\) 不成立时，检验统计量值未落入拒绝域从而接受了 \(H_0\)，这种错误称为第\textbf{二}类错误。
+\end{exercise}
+\begin{solution}
+第二类错误（取伪）：\(H_0\) 不真时接受 \(H_0\)。
+\end{solution}
+
+\begin{exercise}\label{exer:9-error-concept2}
+显著性水平 \(\alpha\) 的含义是（\quad）。\par
+A. \(H_0\) 成立，经检验被拒绝的概率\qquad B. \(H_0\) 成立，经检验不能拒绝的概率\par
+C. \(H_0\) 不成立，经检验被拒绝的概率\qquad D. \(H_0\) 不成立，经检验不能拒绝的概率
+\end{exercise}
+\begin{solution}
+应选 A。\(\alpha = P\{\text{拒绝}\,H_0 \mid H_0\text{ 为真}\}\)。
+\end{solution}
 
 % \subsection{定理类环境的使用}
 % \begin{itemize}
@@ -9924,7 +10649,7 @@ f(x) = \begin{cases} e^{\theta-x}, & x > \theta, \\ 0, & x \leq \theta, \end{cas
 %       \item \textcolor{second}{\textbf{theorem、lemma、corollary、axiom、postulate}} 环境，颜色为 \textcolor{second} {second}；
 %       \item \textcolor{third}{\textbf{proposition}} 环境，颜色为 \textcolor{third}{third}。
 %     \end{itemize}
-%   \item \textit{示例类环境}，有 \textbf{example、problem、exercise} 环境（对应于例、例题、练习），自动编号，编号以章节为单位，其中 \textbf{exercise} 有提示符。
+%   \item \textit{示例类环境}，有 \textbf{exercise、exercise、exercise} 环境（对应于例、例题、练习），自动编号，编号以章节为单位，其中 \textbf{exercise} 有提示符。
 %   \item \textit{提示类环境}，有 \textbf{note} 环境，特点是：无编号，有引导符。
 %   \item \textit{结论类环境}，有 \textbf{conclusion、assumption、property、remark、solution} 环境\footnote{本模板还添加了一个 result 选项，用于隐藏 \lstinline{solution} 和 \lstinline{proof} 环境，默认为显示（\lstinline{result=answer}），隐藏使用 \lstinline{result=noanswer}。}，三者均以粗体的引导词为开头，和普通段落格式一致。
 % \end{itemize}
@@ -10012,17 +10737,17 @@ f(x) = \begin{cases} e^{\theta-x}, & x > \theta, \\ 0, & x \leq \theta, \end{cas
 
 % \subsection{其他环境的使用}
 
-% 其他三种环境没有选项，可以直接使用，比如 \lstinline{example} 环境的使用方法与效果：
+% 其他三种环境没有选项，可以直接使用，比如 \lstinline{exercise} 环境的使用方法与效果：
 % \begin{lstlisting}
-% \begin{example}
-%    This is the content of example environment.
-% \end{example}
+% \begin{exercise}
+%    This is the content of exercise environment.
+% \end{exercise}
 % \end{lstlisting}
 
 % 这几个都是同一类环境，区别在于
 
 % \begin{itemize}
-%   \item 示例环境（example）、练习（exercise）与例题（problem）章节自动编号；
+%   \item 示例环境（exercise）、练习（exercise）与例题（exercise）章节自动编号；
 %   \item 注意（note），练习（exercise）环境有提醒引导符；
 %   \item 结论（conclusion）等环境都是普通段落环境，引导词加粗。
 % \end{itemize}
@@ -10111,7 +10836,7 @@ f(x) = \begin{cases} e^{\theta-x}, & x > \theta, \\ 0, & x \leq \theta, \end{cas
 % \begin{introduction}
 %   \item Definition of Theorem
 %   \item Ask for help
-%   \item Optimization Problem
+%   \item Optimization exercise
 %   \item Property of Cauchy Series
 %   \item Angle of Corner
 % \end{introduction}
@@ -10120,7 +10845,7 @@ f(x) = \begin{cases} e^{\theta-x}, & x > \theta, \\ 0, & x \leq \theta, \end{cas
 % \begin{introduction}
 %   \item Definition of Theorem
 %   \item Ask for help
-%   \item Optimization Problem
+%   \item Optimization exercise
 %   \item Property of Cauchy Series
 %   \item Angle of Corner
 % \end{introduction}
@@ -10133,19 +10858,19 @@ f(x) = \begin{cases} e^{\theta-x}, & x > \theta, \\ 0, & x \leq \theta, \end{cas
 % \end{lstlisting}
 
 % \section{章后习题}
-% 前面我们介绍了例题和练习两个环境，这里我们再加一个，章后习题（\lstinline{problemset}）环境，用于在每一章结尾，显示本章的练习。使用方法如下
+% 前面我们介绍了例题和练习两个环境，这里我们再加一个，章后习题（\lstinline{exerciseset}）环境，用于在每一章结尾，显示本章的练习。使用方法如下
 
 % \begin{lstlisting}
-% \begin{problemset}
+% \begin{exerciseset}
 %   \item exercise 1
 %   \item exercise 2
 %   \item exercise 3
-% \end{problemset}
+% \end{exerciseset}
 % \end{lstlisting}
 
 
 % 效果如下：
-% \begin{problemset}
+% \begin{exerciseset}
 %   \item exercise 1
 %   \item exercise 2
 %   \item exercise 3
@@ -10153,14 +10878,14 @@ f(x) = \begin{cases} e^{\theta-x}, & x > \theta, \\ 0, & x \leq \theta, \end{cas
 %   \begin{equation}
 %     a^2+b^2=c_{2_{i}} (1,2) [1,23]
 %   \end{equation}
-% \end{problemset}
+% \end{exerciseset}
 
 % \begin{remark}
-% 如果你想把 \lstinline{problemset} 环境的标题改为其他文字，你可以类似于 introduction 环境修改 problemset 的可选参数。另外，目前这个环境会自动出现在目录中，但是不会出现在页眉页脚信息中（待解决）。
+% 如果你想把 \lstinline{exerciseset} 环境的标题改为其他文字，你可以类似于 introduction 环境修改 exerciseset 的可选参数。另外，目前这个环境会自动出现在目录中，但是不会出现在页眉页脚信息中（待解决）。
 % \end{remark}
 
 % \begin{solution}
-% 如果你想把 \lstinline{problemset} 环境的标题改为其他文字，你可以类似于 introduction 环境修改 problemset 的可选参数。另外，目前这个环境会自动出现在目录中，但是不会出现在页眉页脚信息中（待解决）。
+% 如果你想把 \lstinline{exerciseset} 环境的标题改为其他文字，你可以类似于 introduction 环境修改 exerciseset 的可选参数。另外，目前这个环境会自动出现在目录中，但是不会出现在页眉页脚信息中（待解决）。
 % \end{solution}
 % \section{旁注}
 
