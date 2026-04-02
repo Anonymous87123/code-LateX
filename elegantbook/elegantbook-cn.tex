@@ -8488,6 +8488,18 @@ F(x_1, x_2, \dots, x_n) = \prod_{i=1}^{n} F(x_i).
 统计量是样本的函数，也是随机变量。统计量中绝不能出现未知参数，这是判断一个表达式是否为统计量的核心依据。
 \end{note}
 
+\begin{exercise}[统计量的判定] \label{ex:statistic_01}
+设总体 \(X \sim N(\mu,\sigma^2)\)，其中 \(\mu\) 已知，\(\sigma^2\) 未知，\(X_1,X_2,\dots,X_n\) 是简单随机样本，则下列样本函数中\textbf{不是}统计量的是（\quad）。\par
+A. \(\dfrac{1}{n}\displaystyle\sum_{i=1}^{n}X_i\)\qquad
+B. \(\max\limits_{1\leq i\leq n}\{X_i\}\)\par
+C. \(\displaystyle\sum_{i=1}^{n}\!\left(\dfrac{X_i-\mu}{\sigma}\right)^{\!2}\)\qquad
+D. \(\dfrac{1}{n}\displaystyle\sum_{i=1}^{n}(X_i-\mu)^2\)
+\end{exercise}
+\begin{solution}
+应选 C。统计量的定义是"不含任何未知参数的样本函数"。选项 C 中含有未知参数 \(\sigma\)，而 \(\mu\) 为已知参数不影响统计量的判定。
+\end{solution}
+
+
 \begin{exercise}\label{exer:6-statistic-judge}
 设总体 \(X \sim N(\mu, \sigma^2)\)，其中 \(\mu\) 未知，\(\sigma^2\) 已知，\(X_1, X_2, X_3\) 是简单随机样本，则下列表达式中不是统计量的是（\quad）。\par
 A. \(X_1 + X_2 + X_3\)\qquad B. \(\min(X_1, X_2, X_3)\)\qquad C. \(\displaystyle\sum_{i=1}^{3}\frac{X_i^2}{\sigma^2}\)\qquad D. \(\overline{X} + 2\mu\)
@@ -8649,6 +8661,27 @@ t = \frac{X}{\sqrt{Y/n}},
 \end{enumerate}
 \end{property}
 
+\begin{exercise}[\texorpdfstring{\(t\)}{t} 分布的构造] \label{ex:sampling_04}
+设 \(X_1,X_2,X_3,X_4\) 为来自 \(N(0,1/2)\) 的简单随机样本，则统计量
+\[
+Y=\frac{X_1-X_2}{\sqrt{X_3^2+X_4^2}}
+\]
+服从（\quad）。\par
+A. \(N(0,1)\)\qquad B. \(\chi^2(2)\)\qquad C. \(t(2)\)\qquad D. \(F(2,2)\)
+\end{exercise}
+\begin{solution}
+应选 C。\textbf{分子}：\(X_1-X_2\sim N(0,1/2+1/2)=N(0,1)\)，故 \(X_1-X_2\sim N(0,1)\)。\\
+\textbf{分母}：\(\sqrt{2}\,X_i\sim N(0,1)\)，从而
+\[
+(\sqrt{2}\,X_3)^2+(\sqrt{2}\,X_4)^2 = 2(X_3^2+X_4^2)\sim\chi^2(2).
+\]
+由 \(t\) 分布的定义，分子（标准正态）除以分母（\(\chi^2(2)/2\) 开方）：
+\[
+Y = \frac{X_1-X_2}{\sqrt{X_3^2+X_4^2}} = \frac{(X_1-X_2)/1}{\sqrt{2(X_3^2+X_4^2)/2}}\sim t(2).
+\]
+\end{solution}
+
+
 \begin{exercise}\label{exer:6-t-new}
 设 \(X_1, X_2, \dots, X_n\) 为来自正态分布 \(N(\mu, \sigma^2)\) 的简单随机样本，\(\overline{X}\) 和 \(S^2\) 分别为样本均值和样本方差。又设 \(X_{n+1} \sim N(\mu, \sigma^2)\) 且与 \(X_1, \dots, X_n\) 相互独立，则统计量
 \[
@@ -8707,7 +8740,6 @@ F = \frac{X/n_1}{Y/n_2},
 设 \(X_1, X_2, X_3, X_4\) 相互独立，均服从 \(N(0,1)\)。\(Z = c \times \dfrac{X_1^2/1}{X_2^2+X_3^2+X_4^2}\) 服从 \(F\) 分布，则常数 \(c =\,\underline{\hspace{2cm}}\)。\par
 A. \(3\)\quad B. \(\dfrac{1}{3}\)\quad C. \(\dfrac{2}{3}\)\quad D. \(1\)
 \end{exercise}
-
 \begin{solution}
 应选 A。\(X_1^2 \sim \chi^2(1)\)，\(X_2^2+X_3^2+X_4^2 \sim \chi^2(3)\)，且相互独立。由 \(F\) 分布的定义：
 \[
@@ -8718,7 +8750,6 @@ A. \(3\)\quad B. \(\dfrac{1}{3}\)\quad C. \(\dfrac{2}{3}\)\quad D. \(1\)
 \begin{exercise}\label{exer:6-t2-f}
 设随机变量 \(T \sim t(15)\)，则 \(T^2\) 服从的分布为\,\underline{\hspace{2cm}}。
 \end{exercise}
-
 \begin{solution}
 应填 \(F(1,15)\)。自由度为 \(n\) 的 \(t\) 分布的平方服从 \(F(1,n)\)。
 \end{solution}
@@ -8735,6 +8766,29 @@ Y = \frac{1}{X^2} = \frac{V/n}{U^2/1} \sim F(n, 1).
 \]
 \end{solution}
 
+\begin{exercise}[\texorpdfstring{\(F\)}{F} 分布系数的确定] \label{ex:sampling_03}
+设总体 \(X\sim N(\mu_1,4),\ Y\sim N(\mu_2,5)\)，\(X\) 与 \(Y\) 独立，\(X_1,\dots,X_8\) 和 \(Y_1,\dots,Y_{10}\) 分别来自 \(X\) 和 \(Y\)，\(S_X^2,S_Y^2\) 为样本方差，则（\quad）。\par
+A. \(\dfrac{2S_X^2}{5S_Y^2}\sim F(7,9)\)\qquad
+B. \(\dfrac{5S_X^2}{2S_Y^2}\sim F(7,9)\)\par
+C. \(\dfrac{4S_X^2}{5S_Y^2}\sim F(7,9)\)\qquad
+D. \(\dfrac{5S_X^2}{4S_Y^2}\sim F(7,9)\)
+\end{exercise}
+
+\begin{solution}
+应选 D。由正态总体抽样分布：
+\[
+\frac{7S_X^2}{\sigma_1^2}=\frac{7S_X^2}{4}\sim\chi^2(7),\qquad \frac{9S_Y^2}{\sigma_2^2}=\frac{9S_Y^2}{5}\sim\chi^2(9).
+\]
+构造 \(F\) 统计量时，系数需使分子分母分别除以各自自由度：
+\[
+\frac{7S_X^2/4}{9S_Y^2/5}\cdot\frac{1}{7/9}=\frac{9\cdot 7S_X^2}{7\cdot 9S_Y^2}\cdot\frac{5}{4}=\frac{5S_X^2}{4S_Y^2}\sim F(7,9).
+\]
+\textbf{一般技巧}：若 \(\dfrac{(m-1)S_1^2}{\sigma_1^2}\sim\chi^2(m{-}1)\)，\(\dfrac{(n-1)S_2^2}{\sigma_2^2}\sim\chi^2(n{-}1)\)，则
+\[
+\frac{S_1^2/S_2^2}{\sigma_1^2/\sigma_2^2}\sim F(m{-}1,n{-}1).
+\]
+此处 \(\sigma_1^2/\sigma_2^2=4/5\)，故 \(\dfrac{S_1^2/S_2^2}{4/5}=\dfrac{5S_X^2}{4S_Y^2}\sim F(7,9)\)。
+\end{solution}
 
 
 
@@ -8752,9 +8806,7 @@ Y = \frac{1}{X^2} = \frac{V/n}{U^2/1} \sim F(n, 1).
 \end{theorem}
 
 \begin{note}
-定理中结论(2)的证明涉及矩阵知识，不要求掌握，但其结论必须牢记。\textbf{注意自由度}：\(\sum(X_i-\overline{X})^2/\sigma^2\) 的自由度为 \(n-1\)（而非 \(n\)），因为 \(\overline{X}\) 消耗了一个自由度。
-
-进一步有 \(\displaystyle\frac{n(\overline{X}-\mu)^2}{S^2} \sim F(1,n-1)\)。
+定理中结论(2)的证明涉及矩阵知识，不要求掌握，但其结论必须牢记。\textbf{注意自由度}：\(\sum(X_i-\overline{X})^2/\sigma^2\) 的自由度为 \(n-1\)（而非 \(n\)），因为 \(\overline{X}\) 消耗了一个自由度。进一步有 \(\displaystyle\frac{n(\overline{X}-\mu)^2}{S^2} \sim F(1,n-1)\)。
 \end{note}
 
 \begin{exercise}\label{exer:6-s2-chi2}
@@ -8765,6 +8817,28 @@ C. \(\displaystyle\frac{1}{n-1}\sum_{i=1}^{n}(X_i-\overline{X})^2 \sim \chi^2(n-
 \begin{solution}
 应选 A。由定理，\(\dfrac{(n-1)S^2}{\sigma^2} = \displaystyle\sum_{i=1}^{n}\!\left(\frac{X_i-\overline{X}}{\sigma}\right)^{\!2} \sim \chi^2(n-1)\)，这正是选项 A。
 \end{solution}
+
+\begin{exercise}[样本方差的期望] \label{ex:statistic_05}
+设总体 \(X\) 的概率密度为 \(f(x)=\dfrac{1}{2}e^{-|x|}\)（\(-\infty<x<+\infty\)），\(X_1,X_2,\dots,X_n\) 为简单随机样本，样本方差为 \(S^2\)，则 \(E(S^2)=\)\underline{\qquad}。
+\end{exercise}
+\begin{solution}
+由 \(E(S^2)=DX\)，先计算总体矩：
+\[
+EX=\int_{-\infty}^{+\infty}x\cdot\frac{1}{2}e^{-|x|}\,\mathrm{d}x=0 \quad(\text{奇函数}).
+\]
+\[
+EX^2=\int_{-\infty}^{+\infty}x^2\cdot\frac{1}{2}e^{-|x|}\,\mathrm{d}x
+=2\int_0^{+\infty}x^2\cdot\frac{1}{2}e^{-x}\,\mathrm{d}x
+=\int_0^{+\infty}x^2\,e^{-x}\,\mathrm{d}x=\Gamma(3)=2.
+\]
+\[
+DX=EX^2-(EX)^2=2,\qquad E(S^2)=DX=2.
+\]
+\begin{note}
+这里利用了拉普拉斯分布 \(f(x)=\frac{1}{2}e^{-|x|}\) 的矩公式，其本质是 \(\text{Exp}(1)\) 分布的偶函数延拓。
+\end{note}
+\end{solution}
+
 
 \begin{exercise}\label{exer:6-normal-judge}
 设 \(X_1, X_2, \dots, X_n\) 是来自总体 \(X \sim N(\mu, \sigma^2)\) 的简单随机样本，\(\overline{X}\) 与 \(S^2\) 分别为其样本均值和样本方差，则下列结论正确的是（\quad）。\par
@@ -8882,8 +8956,6 @@ P\{S^2 < 1.8472\sigma^2\} = P\!\left\{\frac{5S^2}{\sigma^2} < 9.236\right\} = 1 
 \end{solution}
 
 
-
-
 \subsection{两个正态总体}
 
 \begin{theorem}[双正态总体抽样分布] \label{thm:normal-two}
@@ -8897,6 +8969,25 @@ P\{S^2 < 1.8472\sigma^2\} = P\!\left\{\frac{5S^2}{\sigma^2} < 9.236\right\} = 1 
     其中 \(S_w^2 = \dfrac{(n_1-1)S_1^2+(n_2-1)S_2^2}{n_1+n_2-2}\) 称为\textbf{合并样本方差}。
 \end{enumerate}
 \end{theorem}
+
+\begin{exercise}[样本均值差的分布] \label{ex:sampling_02}
+设总体 \(X\) 与 \(Y\) 相互独立且都服从 \(N(\mu,\sigma^2)\)，\(\overline{X},\overline{Y}\) 分别是来自 \(X,Y\)（容量均为 \(n\)）的样本均值，则当 \(n\) 固定时，\(P\{|\overline{X}-\overline{Y}|>\sigma\}\) 随 \(\sigma\) 的增大而（\quad）。\par
+A. 单调增大\qquad B. 单调减小\qquad C. 保持不变\qquad D. 增减不定
+\end{exercise}
+\begin{solution}
+应选 C。由独立性，\(\overline{X}\sim N\!\left(\mu,\frac{\sigma^2}{n}\right)\)，\(\overline{Y}\sim N\!\left(\mu,\frac{\sigma^2}{n}\right)\)，故
+\[
+\overline{X}-\overline{Y}\sim N\!\left(0,\frac{2\sigma^2}{n}\right).
+\]
+标准化后：
+\[
+P\{|\overline{X}-\overline{Y}|>\sigma\}
+= P\!\left\{\left|\frac{\overline{X}-\overline{Y}}{\sigma\sqrt{2/n}}\right|>\sqrt{\frac{n}{2}}\right\}
+= 2\!\left[1-\Phi\!\left(\sqrt{\frac{n}{2}}\right)\right],
+\]
+该值仅与 \(n\) 有关，与 \(\sigma\) 无关，故选 C。
+\end{solution}
+
 
 \begin{exercise}\label{exer:6-y-f-dist}
 设 \(X_1, X_2, \dots, X_{15}\) 是来自正态总体 \(N(0, 9)\) 的简单随机样本，则统计量
@@ -9125,6 +9216,38 @@ DT = D(\overline{X}^2) + D\!\left(\frac{S^2}{n}\right) = \frac{2}{n^2} + \frac{2
 求矩估计时，以低阶为原则——取能解出参数的最小 \(j\) 值。例如，若一个参数可用一阶矩解出，就不必使用二阶矩。对于两个参数，通常用 \(EX\) 和 \(EX^2\)（或等价地 \(EX\) 和 \(DX\)）建立两个方程。
 \end{note}
 
+\begin{exercise}[矩估计量的方差] \label{ex:mom_03}
+设总体 \(X\) 的概率密度为
+\[
+f(x)=
+\begin{cases}
+\dfrac{6x}{\theta^3}(\theta-x), & 0<x<\theta,\\
+0, & \text{其他},
+\end{cases}
+\]
+\(X_1,X_2,\dots,X_n\) 是简单随机样本。求：(1) \(\theta\) 的矩估计量；(2) 该矩估计量的方差。
+\end{exercise}
+\begin{solution}
+(1) 计算总体期望：
+\[
+EX=\int_0^\theta\frac{6x^2}{\theta^3}(\theta-x)\,\mathrm{d}x=\frac{6}{\theta^3}\!\left[\theta\cdot\frac{\theta^3}{3}-\frac{\theta^4}{4}\right]=\frac{6}{\theta^3}\cdot\frac{\theta^4}{12}=\frac{\theta}{2}.
+\]
+令 \(\theta/2=\overline{X}\)，得 \(\hat{\theta}=2\overline{X}\)。\\
+(2) 先求 \(DX\)：
+\[
+EX^2=\int_0^\theta\frac{6x^3}{\theta^3}(\theta-x)\,\mathrm{d}x=\frac{6}{\theta^3}\!\left[\theta\cdot\frac{\theta^4}{4}-\frac{\theta^5}{5}\right]=\frac{6}{\theta^3}\cdot\frac{\theta^5}{20}=\frac{3\theta^2}{10}.
+\]
+\[
+DX=EX^2-(EX)^2=\frac{3\theta^2}{10}-\frac{\theta^2}{4}=\frac{6\theta^2-5\theta^2}{20}=\frac{\theta^2}{20}.
+\]
+因此
+\[
+D\hat{\theta}=D(2\overline{X})=4D\overline{X}=\frac{4}{n}DX=\frac{4}{n}\cdot\frac{\theta^2}{20}=\frac{\theta^2}{5n}.
+\]
+\end{solution}
+
+
+
 \section{最大似然估计法（MLE）} \label{subsec:mle}
 
 最大似然估计的基本思想：在参数可能的取值范围内，选取使"样本获得当前观测值的概率最大"的参数值作为估计值——"参数 \(\theta\) 为何值时，观测值出现的概率最大"。
@@ -9146,9 +9269,102 @@ DT = D(\overline{X}^2) + D\!\left(\frac{S^2}{n}\right) = \frac{2}{n^2} + \frac{2
 \end{enumerate}
 \end{property}
 
+
+
 \begin{property}[最大似然估计的不变性] \label{prop:mle-inv}
 设 \(\hat{\theta}\) 是 \(\theta\) 的最大似然估计，\(u = u(\theta)\) 具有反函数，则 \(\hat{u} = u(\hat{\theta})\) 是 \(u(\theta)\) 的最大似然估计。例如，若 \(\hat{\theta}\) 是 \(\theta\) 的 MLE，则 \(e^{\hat{\theta}}\) 是 \(e^\theta\) 的 MLE。
 \end{property}
+
+
+\begin{exercise}[最大似然估计的不变性] \label{ex:mle_04}
+设总体 \(X\) 的概率密度为
+\[
+f(x)=
+\begin{cases}
+\dfrac{2x}{\alpha^2}, & 0\leq x\leq\alpha,\\
+0, & \text{其他},
+\end{cases}
+\]
+其中 \(\alpha>1\) 未知。\(X_1,X_2,\dots,X_n\) 为简单随机样本。\par
+(1) 求 \(p=P\{0<X<\sqrt{\alpha}\}\)；\par
+(2) 求 \(p\) 的最大似然估计量 \(\hat{p}\)。
+\end{exercise}
+\begin{solution}
+(1)
+\[
+p=P\{0<X<\sqrt{\alpha}\}=\int_0^{\sqrt{\alpha}}\frac{2x}{\alpha^2}\,\mathrm{d}x=\frac{1}{\alpha^2}\cdot(\sqrt{\alpha})^2=\frac{1}{\alpha}.
+\]
+(2) 当 \(0\leq x_i\leq\alpha\ (i=1,\dots,n)\) 时，
+\[
+L(\alpha)=\prod_{i=1}^{n}\frac{2x_i}{\alpha^2}=\frac{2^n\prod_{i=1}^{n}x_i}{\alpha^{2n}}.
+\]
+\(L(\alpha)\) 关于 \(\alpha\) 单调递减，约束为 \(\alpha\geq\max\{X_1,\dots,X_n\}\)，故
+\[
+\hat{\alpha}=\max\{X_1,X_2,\dots,X_n\}.
+\]
+由 MLE 的\textbf{不变性}，\(p=g(\alpha)=1/\alpha\) 的 MLE 为
+\[
+\hat{p}=\frac{1}{\hat{\alpha}}=\frac{1}{\max\{X_1,X_2,\dots,X_n\}}.
+\]
+\end{solution}
+
+\begin{exercise}[离散分布的最大似然估计] \label{ex:mle_01}
+设总体 \(X\) 的概率分布为
+\[
+P\{X=1\}=\frac{1-\theta}{2},\quad P\{X=2\}=P\{X=3\}=\frac{1+\theta}{4}.
+\]
+利用来自总体 \(X\) 的样本值 \(1,3,2,2,1,3,1,2\)，可得 \(\theta\) 的最大似然估计值为（\quad）。\par
+A. \(\dfrac{1}{4}\)\qquad B. \(\dfrac{3}{8}\)\qquad C. \(\dfrac{1}{2}\)\qquad D. \(\dfrac{5}{8}\)
+\end{exercise}
+\begin{solution}
+应选 A。样本中 \(X=1\) 出现 3 次，\(X=2\) 出现 3 次，\(X=3\) 出现 2 次。似然函数：
+\[
+L(\theta)=\left(\frac{1-\theta}{2}\right)^{\!3}\left(\frac{1+\theta}{4}\right)^{\!5}.
+\]
+对数似然函数：
+\[
+\ln L(\theta)=-3\ln 2-5\ln 4+3\ln(1-\theta)+5\ln(1+\theta).
+\]
+令导数为零：
+\[
+\frac{\mathrm{d}}{\mathrm{d}\theta}\ln L(\theta)=-\frac{3}{1-\theta}+\frac{5}{1+\theta}=0
+\implies -3(1+\theta)+5(1-\theta)=0
+\implies \theta=\frac{1}{4}.
+\]
+\end{solution}
+
+\begin{exercise}[矩估计与最大似然估计] \label{ex:est_02}
+已知总体 \(X\) 的概率密度为
+\[
+f(x)=
+\begin{cases}
+(1+\theta)x^\theta, & 0<x<1,\\
+0, & \text{其他},
+\end{cases}
+\]
+其中 \(\theta>-1\) 未知。\(X_1,X_2,\dots,X_n\) 为简单随机样本，求 \(\theta\) 的矩估计量和最大似然估计量。
+\end{exercise}
+\begin{solution}
+\textbf{矩估计。}
+\[
+\mu_1=EX=\int_0^1(1+\theta)x^{\theta+1}\,\mathrm{d}x=(1+\theta)\left[\frac{x^{\theta+2}}{\theta+2}\right]_0^1=\frac{1+\theta}{2+\theta}.
+\]
+令 \(\mu_1=\overline{X}\)，即 \(\dfrac{1+\theta}{2+\theta}=\overline{X}\)，解得
+\[
+1+\theta=(2+\theta)\overline{X}\implies \theta-\theta\overline{X}=2\overline{X}-1\implies \hat{\theta}_{\text{矩}}=\frac{2\overline{X}-1}{1-\overline{X}}.
+\]
+\textbf{最大似然估计。}似然函数
+\[
+L(\theta)=\prod_{i=1}^{n}(1+\theta)x_i^\theta=(1+\theta)^n\left(\prod_{i=1}^{n}x_i\right)^{\!\theta},\quad 0<x_i<1.
+\]
+\[
+\ln L(\theta)=n\ln(1+\theta)+\theta\sum_{i=1}^{n}\ln x_i.
+\]
+\[
+\frac{\mathrm{d}}{\mathrm{d}\theta}\ln L(\theta)=\frac{n}{1+\theta}+\sum_{i=1}^{n}\ln x_i=0
+\implies \hat{\theta}_{\text{MLE}}=-\frac{n}{\displaystyle\sum_{i=1}^{n}\ln X_i}-1.
+\]
+\end{solution}
 
 
 \begin{exercise}\label{exer:7-poisson-bacteria}
@@ -9417,6 +9633,30 @@ L(\theta) = \theta^{-2n}\cdot 2^n\!\left(\prod_{i=1}^{n}t_i\right)e^{-\sum t_i^2
 \begin{definition}[无偏性] \label{def:unbiased}
 若 \(E\hat{\theta} = \theta\)，则称 \(\hat{\theta}\) 为 \(\theta\) 的\textbf{无偏估计量}。
 \end{definition}
+
+\begin{exercise}[无偏估计的构造与验证] \label{ex:unbiased_05}
+设 \(X_1,X_2,\dots,X_n\) 是来自 \(N(\mu,\sigma^2)\) 的简单随机样本，记
+\[
+\overline{X}=\frac{1}{n}\sum_{i=1}^{n}X_i,\quad S^2=\frac{1}{n-1}\sum_{i=1}^{n}(X_i-\overline{X})^2,\quad T=\overline{X}^2-\frac{1}{n}S^2.
+\]
+证明：\(T\) 是 \(\mu^2\) 的无偏估计量。
+\end{exercise}
+\begin{solution}
+\begin{proof}
+利用 \(E(\overline{X})=\mu\)，\(D(\overline{X})=\sigma^2/n\)，\(E(S^2)=\sigma^2\)：
+\[
+ET=E\!\left(\overline{X}^2-\frac{1}{n}S^2\right)
+=E(\overline{X}^2)-\frac{1}{n}E(S^2)
+=\left[D(\overline{X})+(E\overline{X})^2\right]-\frac{\sigma^2}{n}
+=\frac{\sigma^2}{n}+\mu^2-\frac{\sigma^2}{n}=\mu^2.
+\]
+故 \(T\) 是 \(\mu^2\) 的无偏估计量。
+\end{proof}
+\begin{note}
+此题的技巧是：对 \(\overline{X}^2\) 使用 \(E(\overline{X}^2)=D(\overline{X})+(E\overline{X})^2\) 展开，再利用 \(E(S^2)=\sigma^2\) 消去方差项。此结论在数学三中也常以"求 \(ET\)"的形式出现。
+\end{note}
+\end{solution}
+
 
 
 \begin{proposition}[系数和为1]
@@ -10376,6 +10616,58 @@ S^2 = \frac{1}{n-1}\left(\sum_{i=1}^9 X_i^2 - n\overline{X}^2\right) = \frac{1}{
 
 \section{正态总体参数的假设检验} \label{sec:ht-normal}
 
+\begin{exercise}[检验统计量的表达式] \label{ex:ht_stat}
+设 \((X_1,\dots,X_n)\) 是来自 \(N(\mu,\sigma^2)\) 的样本（\(\mu,\sigma^2\) 未知），\(\overline{X}=\dfrac{1}{n}\displaystyle\sum_{i=1}^{n}X_i\)，\(Q^2=\displaystyle\sum_{i=1}^{n}(X_i-\overline{X})^2\)。检验 \(H_0\colon\mu=0\) 时，应选取的检验统计量为\underline{\qquad}（用 \(\overline{X},Q^2\) 表示）。
+\end{exercise}
+\begin{solution}
+\(\sigma^2\) 未知，对均值检验使用 \(t\) 检验。由 \(S^2=\dfrac{Q^2}{n-1}\)，\(S=\dfrac{Q}{\sqrt{n-1}}\)：
+\[
+T=\frac{\overline{X}-\mu_0}{S/\sqrt{n}}\bigg|_{\mu_0=0}
+=\frac{\overline{X}}{Q/\sqrt{n(n-1)}}=\frac{\overline{X}\sqrt{n(n-1)}}{Q}\sim t(n-1).
+\]
+\end{solution}
+
+
+以下汇总了单正态总体与双正态总体在不同条件下的常用检验统计量及其拒绝域。
+\begin{table}[htbp]
+\centering
+\caption{正态总体均值与方差的假设检验（显著性水平为 $\alpha$）} \label{tab:hypothesis_tests}
+\resizebox{\textwidth}{!}{
+\begin{tabular}{lllll}
+\toprule
+\textbf{参数} & \textbf{条件} & \textbf{原假设 $H_0$} & \textbf{检验统计量} & \textbf{拒绝域（对应右单边、左单边、双边）} \\
+\midrule
+\multirow{3}{*}{$\mu$} & \multirow{3}{*}{$\sigma^2$ 已知} & $\mu \leq \mu_0$ ($H_1: \mu > \mu_0$) & \multirow{3}{*}{$Z = \frac{\overline{X}-\mu_0}{\sigma/\sqrt{n}} \sim N(0,1)$} & $z \geq z_\alpha$ \\
+& & $\mu \geq \mu_0$ ($H_1: \mu < \mu_0$) & & $z \leq -z_\alpha$ \\
+& & $\mu = \mu_0$ ($H_1: \mu \neq \mu_0$) & & $|z| \geq z_{\frac{\alpha}{2}}$ \\
+\midrule
+\multirow{3}{*}{$\mu$} & \multirow{3}{*}{$\sigma^2$ 未知} & $\mu \leq \mu_0$ ($H_1: \mu > \mu_0$) & \multirow{3}{*}{$t = \frac{\overline{X}-\mu_0}{S/\sqrt{n}} \sim t(n-1)$} & $t \geq t_\alpha(n-1)$ \\
+& & $\mu \geq \mu_0$ ($H_1: \mu < \mu_0$) & & $t \leq -t_\alpha(n-1)$ \\
+& & $\mu = \mu_0$ ($H_1: \mu \neq \mu_0$) & & $|t| \geq t_{\frac{\alpha}{2}}(n-1)$ \\
+\midrule
+\multirow{3}{*}{$\mu_1-\mu_2$} & \multirow{3}{*}{$\sigma_1^2,\sigma_2^2$ 已知} & $\mu_1-\mu_2 \leq \delta$ & \multirow{3}{*}{$Z = \frac{(\overline{X}-\overline{Y})-\delta}{\sqrt{\frac{\sigma_1^2}{n_1}+\frac{\sigma_2^2}{n_2}}} \sim N(0,1)$} & $z \geq z_\alpha$ \\
+& & $\mu_1-\mu_2 \geq \delta$ & & $z \leq -z_\alpha$ \\
+& & $\mu_1-\mu_2 = \delta$ & & $|z| \geq z_{\frac{\alpha}{2}}$ \\
+\midrule
+\multirow{3}{*}{$\mu_1-\mu_2$} & \multirow{3}{*}{$\sigma_1^2=\sigma_2^2$ 未知} & $\mu_1-\mu_2 \leq \delta$ & \multirow{3}{*}{$t = \frac{(\overline{X}-\overline{Y})-\delta}{S_w\sqrt{\frac{1}{n_1}+\frac{1}{n_2}}} \sim t(n_1+n_2-2)$} & $t \geq t_\alpha(n_1+n_2-2)$ \\
+& & $\mu_1-\mu_2 \geq \delta$ & & $t \leq -t_\alpha(n_1+n_2-2)$ \\
+& & $\mu_1-\mu_2 = \delta$ & & $|t| \geq t_{\frac{\alpha}{2}}(n_1+n_2-2)$ \\
+\midrule
+\multirow{3}{*}{$\sigma^2$} & \multirow{3}{*}{$\mu$ 未知} & $\sigma^2 \leq \sigma_0^2$ & \multirow{3}{*}{$\chi^2 = \frac{(n-1)S^2}{\sigma_0^2} \sim \chi^2(n-1)$} & $\chi^2 \geq \chi^2_\alpha(n-1)$ \\
+& & $\sigma^2 \geq \sigma_0^2$ & & $\chi^2 \leq \chi^2_{1-\alpha}(n-1)$ \\
+& & $\sigma^2 = \sigma_0^2$ & & $\chi^2 \geq \chi^2_{\frac{\alpha}{2}}(n-1)$ 或 $\chi^2 \leq \chi^2_{1-\frac{\alpha}{2}}(n-1)$ \\
+\midrule
+\multirow{3}{*}{$\sigma_1^2 / \sigma_2^2$} & \multirow{3}{*}{$\mu_1,\mu_2$ 未知} & $\sigma_1^2 \leq \sigma_2^2$ & \multirow{3}{*}{$F = \frac{S_1^2}{S_2^2} \sim F(n_1-1,n_2-1)$} & $F \geq F_\alpha(n_1-1,n_2-1)$ \\
+& & $\sigma_1^2 \geq \sigma_2^2$ & & $F \leq F_{1-\alpha}(n_1-1,n_2-1)$ \\
+& & $\sigma_1^2 = \sigma_2^2$ & & $F \geq F_{\frac{\alpha}{2}}(n_1-1,n_2-1)$ 或 $F \leq F_{1-\frac{\alpha}{2}}(n_1-1,n_2-1)$ \\
+\bottomrule
+\end{tabular}
+}
+\end{table}
+\begin{remark} \label{rem:rejection_region}
+\textbf{记忆捷径}：仔细观察上表可知，拒绝域的不等号方向总是与备择假设$H_1$的形式（不等号方向）保持一致。
+\end{remark}
+
 \subsection{单个正态总体均值的检验}
 
 \begin{property}[Z 检验（\(\sigma^2\) 已知）]
@@ -10394,19 +10686,44 @@ S^2 = \frac{1}{n-1}\left(\sum_{i=1}^9 X_i^2 - n\overline{X}^2\right) = \frac{1}{
 \end{center}
 \end{property}
 
+\begin{exercise}[辛烷等级的左边 \texorpdfstring{\(Z\)}{Z} 检验] \label{ex:ht_z_left}
+一种燃料的辛烷等级服从正态分布，平均值为 98，标准差为 0.8。从一批新燃料中随机抽取 25 桶，样本均值为 97.7。假定新燃料辛烷等级标准差仍为 0.8，问新燃料辛烷等级平均值是否比原燃料偏低（\(\alpha=0.05\)）？
+（\(z_{0.05}=1.64\)）
+\end{exercise}
+\begin{solution}
+\(H_0\colon\mu\geq98\)，\(H_1\colon\mu<98\)（左边检验，\(\alpha=0.05\)）。
+\(\sigma=0.8\) 已知，使用 \(Z\) 检验：
+\[
+Z=\frac{\overline{X}-98}{0.8/\sqrt{25}}\sim N(0,1),\quad\text{拒绝域}\ z\leq -z_{0.05}=-1.64.
+\]
+\[
+z=\frac{97.7-98}{0.8/5}=\frac{-0.3}{0.16}=-1.875<-1.64.
+\]
+落入拒绝域，拒绝 \(H_0\)，认为新燃料辛烷等级显著偏低。
+\end{solution}
+
+
+
 \begin{exercise}\label{exer:9-z-test}
 某工厂生产灯泡的寿命 \(X \sim N(\mu, 200^2)\)。过去灯泡平均寿命为 1500 小时，采用新工艺后抽取 25 只，测得平均寿命为 1675 小时。问在显著性水平 \(\alpha = 0.05\) 下，新工艺是否显著提高了灯泡寿命？（\(z_{0.05}=1.65\)）
 \end{exercise}
-
 \begin{solution}
-\(H_0\colon \mu \leq 1500\)，\(H_1\colon \mu > 1500\)（右边检验，\(\alpha=0.05\)）。
-检验统计量 \(Z = \dfrac{\overline{X}-1500}{200/\sqrt{25}} \sim N(0,1)\)，拒绝域 \(z \geq z_{0.05}=1.65\)。
+\textbf{第一步：提出假设。}问题问"是否显著提高"，故用右边检验：
 \[
-z = \frac{1675-1500}{200/5} = \frac{175}{40} = 4.375 > 1.65.
+H_0\colon \mu \leq 1500,\quad H_1\colon \mu > 1500.
 \]
-
-\(z\) 落入拒绝域，拒绝 \(H_0\)，认为新工艺显著提高了灯泡寿命。
+\textbf{第二步：选择检验统计量。}总体方差 \(\sigma^2=200^2\) 已知，使用 \(Z\) 检验：
+\[
+Z = \frac{\overline{X}-\mu_0}{\sigma/\sqrt{n}} = \frac{\overline{X}-1500}{200/\sqrt{25}} \sim N(0,1).
+\]
+\textbf{第三步：确定拒绝域。}右边检验，\(\alpha=0.05\)，拒绝域为 \(z \geq z_{0.05}=1.65\)。\\
+\textbf{第四步：计算并判断。}将样本数据代入：
+\[
+z = \frac{1675-1500}{200/5} = \frac{175}{40} = 4.375.
+\]
+\(4.375 > 1.65\)，\(z\) 落入拒绝域，拒绝 \(H_0\)，即在 5\% 显著性水平下认为新工艺显著提高了灯泡寿命。
 \end{solution}
+
 
 \begin{property}[t 检验（\(\sigma^2\) 未知）]
 检验统计量 \(t = \dfrac{\overline{X}-\mu_0}{S/\sqrt{n}} \sim t(n-1)\)。
@@ -10428,51 +10745,116 @@ z = \frac{1675-1500}{200/5} = \frac{175}{40} = 4.375 > 1.65.
 某厂生产灯泡寿命 \(X \sim N(\mu, \sigma^2)\)（\(\mu, \sigma^2\) 均未知），抽取 25 只测得 \(\overline{x}=1700\)，\(s=490\)。在 \(\alpha=0.01\) 下，能否认为平均寿命为 2000 小时？
 （\(\;t_{0.005}(24)=2.7969\)）
 \end{exercise}
-
 \begin{solution}
-\(H_0\colon \mu=2000\)，\(H_1\colon \mu\neq2000\)（双边检验，\(\alpha=0.01\)）。
-\(t = \dfrac{\overline{X}-\mu_0}{S/\sqrt{n}} \sim t(24)\)，拒绝域 \(|t| \geq t_{0.005}(24)=2.7969\)。
+\textbf{提出假设。}问题问"能否认为平均寿命为 2000"，属于双边检验：
 \[
-t = \frac{1700-2000}{490/5} = \frac{-300}{98} = -3.061,\quad |t| = 3.061 > 2.7969.
+H_0\colon \mu = 2000,\quad H_1\colon \mu \neq 2000.
 \]
-落入拒绝域，拒绝 \(H_0\)，不能认为平均寿命为 2000 小时。
+\textbf{选择检验统计量。}\(\sigma^2\) 未知，使用 \(t\) 检验：
+\[
+t = \frac{\overline{X}-\mu_0}{S/\sqrt{n}} \sim t(n-1) = t(24).
+\]
+\textbf{确定拒绝域。}双边检验，\(\alpha=0.01\)，拒绝域为 \(|t| \geq t_{\alpha/2}(24) = t_{0.005}(24)=2.7969\)。\\
+\textbf{计算并判断。}已知 \(\overline{x}=1700,\ s=490,\ n=25\)：
+\[
+t = \frac{1700-2000}{490/\sqrt{25}} = \frac{-300}{98} = -3.061,\quad |t| = 3.061.
+\]
+\(|t| = 3.061 > 2.7969\)，落入拒绝域，拒绝 \(H_0\)，即在 1\% 显著性水平下不能认为平均寿命为 2000 小时。
 \end{solution}
+
 
 \begin{exercise}\label{exer:9-t-test-right}
 某高校某专业 25 名学生高数成绩服从正态分布，样本均值 \(\overline{x}=69.5\)，标准差 \(s=15\)。在 \(\alpha=0.05\) 下，检验该专业平均成绩是否\textbf{显著高于} 70 分。（\(t_{0.05}(24)=1.711\)）
 \end{exercise}
 \begin{solution}
-\(H_0\colon \mu\leq70\)，\(H_1\colon \mu>70\)（右边检验，\(\alpha=0.05\)）。
-拒绝域 \(t \geq t_{0.05}(24)=1.711\)。
+\textbf{提出假设。}问题问"是否\textbf{显著高于} 70 分"，故用右边检验：
 \[
-t = \frac{69.5-70}{15/\sqrt{25}} = \frac{-0.5}{3} = -0.167 < 1.711.
+H_0\colon \mu \leq 70,\quad H_1\colon \mu > 70.
 \]
-未落入拒绝域，接受 \(H_0\)，认为平均成绩没有显著高于 70 分。
+\textbf{选择检验统计量。}\(\sigma^2\) 未知，使用 \(t\) 检验：
+\[
+t = \frac{\overline{X}-\mu_0}{S/\sqrt{n}} \sim t(24).
+\]
+\textbf{确定拒绝域。}右边检验，\(\alpha=0.05\)，拒绝域为 \(t \geq t_{0.05}(24)=1.711\)。\\
+\textbf{计算并判断。}已知 \(\overline{x}=69.5,\ s=15,\ n=25\)：
+\[
+t = \frac{69.5-70}{15/\sqrt{25}} = \frac{-0.5}{3} = -0.167.
+\]
+\(-0.167 < 1.711\)，未落入拒绝域（实际上统计量为负，远小于正的临界值），接受 \(H_0\)，即在 5\% 显著性水平下没有充分证据认为平均成绩显著高于 70 分。
+\begin{note}
+从直觉上看，样本均值 \(\overline{x}=69.5\) 反而\textbf{低于} 70 分，自然不可能得出"显著高于"的结论。这提醒我们：在使用单边检验时，应先看样本数据的方向是否与 \(H_1\) 一致——若方向相反，可直接接受 \(H_0\) 而无需计算。
+\end{note}
+\end{solution}
+
+\begin{exercise}[考试成绩均值的 \texorpdfstring{\(t\)}{t} 检验] \label{ex:ht_t_two}
+设某次考试成绩服从正态分布，随机抽取 36 位考生，算得 \(\overline{x}=66.5\) 分，\(s^2=15^2\)。问在 \(\alpha=0.05\) 下，是否可以认为全体考生平均成绩为 70 分？（\(t_{0.025}(35)=2.0301\)）
+\end{exercise}
+\begin{solution}
+\(H_0\colon\mu=70\)，\(H_1\colon\mu\neq70\)（双边 \(t\) 检验，\(\alpha=0.05\)）。
+\[
+t=\frac{\overline{X}-70}{S/\sqrt{n}}\sim t(35),\quad\text{拒绝域}\ |t|\geq t_{0.025}(35)=2.0301.
+\]
+\[
+t=\frac{66.5-70}{15/\sqrt{36}}=\frac{-3.5}{2.5}=-1.4,\quad |t|=1.4<2.0301.
+\]
+未落入拒绝域，接受 \(H_0\)，可以认为平均成绩为 70 分。
+\end{solution}
+
+\begin{exercise}[电池寿命方差的双边 \texorpdfstring{\(\chi^2\)}{χ²} 检验] \label{ex:ht_chi2_battery}
+某厂电池寿命 \(X\sim N(\mu,\sigma^2)\)，正常生产时 \(\sigma^2=5000\)。现因生产条件波动较大，抽取 26 只电池测得样本方差 \(s^2=7200\)。能否判断寿命波动性有显著变化（\(\alpha=0.02\)）？
+（\(\chi^2_{0.01}(25)=44.314\)，\(\chi^2_{0.99}(25)=11.524\)）
+\end{exercise}
+\begin{solution}
+\(H_0\colon\sigma^2=5000\)，\(H_1\colon\sigma^2\neq5000\)（双边 \(\chi^2\) 检验，\(\alpha=0.02\)）。
+\[
+\chi^2=\frac{(n-1)s^2}{\sigma_0^2}=\frac{25\times7200}{5000}=36.
+\]
+接受域：\([\,\chi^2_{0.99}(25),\ \chi^2_{0.01}(25)\,]=[11.524,\ 44.314]\)。
+\(11.524<36<44.314\)，接受 \(H_0\)，不能判断波动性有显著变化。
+\end{solution}
+
+
+\begin{exercise}[机床零件标准差的 \texorpdfstring{\(\chi^2\)}{χ²} 检验] \label{ex:ht_chi2_two}
+某机床加工零件尺寸 \(X\sim N(\mu,\sigma^2)\)，抽取 10 个零件测得长度为
+\[
+5.5,\ 6.0,\ 6.2,\ 5.8,\ 5.6,\ 6.0,\ 6.4,\ 6.4,\ 6.0,\ 6.1.
+\]
+能否认为标准差为 0.4（\(\alpha=0.05\)）？
+（\(\chi^2_{0.025}(9)=19.023\)，\(\chi^2_{0.975}(9)=2.700\)）
+\end{exercise}
+\begin{solution}
+\(H_0\colon\sigma^2=0.16\)，\(H_1\colon\sigma^2\neq0.16\)（双边 \(\chi^2\) 检验）。\\
+\(\overline{x}=60.0/10=6.0\)，离差平方和：
+\[
+\sum_{i=1}^{10}(x_i-6.0)^2=0.25+0+0.04+0.04+0.16+0+0.16+0.16+0+0.01=0.82.
+\]
+\[
+\chi^2=\frac{(n-1)s^2}{\sigma_0^2}=\frac{0.82}{0.16}=5.125.
+\]
+拒绝域：\(\chi^2\leq 2.700\) 或 \(\chi^2\geq 19.023\)。
+\(2.700<5.125<19.023\)，接受 \(H_0\)，可以认为标准差为 0.4。
 \end{solution}
 
 
 \subsection{两个正态总体均值差的检验}
 
 \begin{property}[两个正态总体均值差的检验]
-设 \(X_1,\dots,X_{n_1}\) 来自 \(N(\mu_1,\sigma_1^2)\)，\(Y_1,\dots,Y_{n_2}\) 来自 \(N(\mu_2,\sigma_2^2)\)，两组独立。
-
+设 \(X_1,\dots,X_{n_1}\) 来自 \(N(\mu_1,\sigma_1^2)\)，\(Y_1,\dots,Y_{n_2}\) 来自 \(N(\mu_2,\sigma_2^2)\)，两组独立。\\
 \textbf{情形1}：\(\sigma_1^2, \sigma_2^2\) 已知。检验统计量
 \[
 Z = \frac{(\overline{X}-\overline{Y})-\delta}{\sqrt{\sigma_1^2/n_1+\sigma_2^2/n_2}} \sim N(0,1).
 \]
-
 \textbf{情形2}：\(\sigma_1^2=\sigma_2^2=\sigma^2\) 未知。检验统计量
 \[
 t = \frac{(\overline{X}-\overline{Y})-\delta}{S_w\sqrt{1/n_1+1/n_2}} \sim t(n_1+n_2-2),
 \]
-其中 \(S_w^2 = \dfrac{(n_1-1)S_1^2+(n_2-1)S_2^2}{n_1+n_2-2}\) 为\textbf{合并样本方差}。
-
+其中 \(S_w^2 = \dfrac{(n_1-1)S_1^2+(n_2-1)S_2^2}{n_1+n_2-2}\) 为\textbf{合并样本方差}。\\
 两种情形下，\(H_1\colon \mu_1-\mu_2 > \delta\) 对应右尾拒绝域，\(H_1\colon \mu_1-\mu_2 < \delta\) 对应左尾，\(H_1\colon \mu_1-\mu_2 \neq \delta\) 对应双尾。
 \end{property}
 
 \subsection{单个正态总体方差的检验}
 
-\begin{property}[$\chi^2\) 检验]
+\begin{property}[$\chi^2$ 检验]
 \textbf{\(\mu\) 未知}时，检验统计量
 \[
 \chi^2 = \frac{(n-1)S^2}{\sigma_0^2} \sim \chi^2(n-1).
@@ -10499,22 +10881,49 @@ t = \frac{(\overline{X}-\overline{Y})-\delta}{S_w\sqrt{1/n_1+1/n_2}} \sim t(n_1+
 （\(\chi^2_{0.025}(9)=19.0\)，\(\chi^2_{0.975}(9)=2.7\)）
 \end{exercise}
 \begin{solution}
-\(\chi^2 = \dfrac{(10-1)\times68.16}{64} = \dfrac{613.44}{64} = 9.585\)。\\
-接受域：\(\chi^2_{0.975}(9)=2.7 \leq \chi^2 \leq \chi^2_{0.025}(9)=19.0\)。\\
-\(2.7 < 9.585 < 19.0\)，落入接受域，接受 \(H_0\)，认为方差为 64。
+\textbf{提出假设。}检验方差是否为 64，使用双边检验：
+\[
+H_0\colon \sigma^2 = 64,\quad H_1\colon \sigma^2 \neq 64.
+\]
+\textbf{选择检验统计量。}\(\mu\) 未知，使用 \(\chi^2\) 检验：
+\[
+\chi^2 = \frac{(n-1)S^2}{\sigma_0^2} = \frac{(10-1)S^2}{64} \sim \chi^2(9).
+\]
+\textbf{确定拒绝域。}双边检验，\(\alpha=0.05\)，拒绝域为：
+\[
+\chi^2 \leq \chi^2_{0.975}(9) = 2.7 \quad\text{或}\quad \chi^2 \geq \chi^2_{0.025}(9) = 19.0.
+\]
+接受域为 \((2.7,\ 19.0)\)。\\
+\textbf{计算并判断。}
+\[
+\chi^2 = \frac{9 \times 68.16}{64} = \frac{613.44}{64} = 9.585.
+\]
+\(2.7 < 9.585 < 19.0\)，未落入拒绝域，接受 \(H_0\)，即在 5\% 显著性水平下可以认为这批铜线折断力的方差为 64。
 \end{solution}
+
 
 \begin{exercise}\label{exer:9-chi2-left}
 测定溶液水分，10 个测定值 \(s=0.037\%\)，总体服从正态分布。在 \(\alpha=0.05\) 下检验 \(H_0\colon \sigma \geq 0.04\%\)，\(H_1\colon \sigma < 0.04\%\)。
 （\(\chi^2_{0.95}(9)=3.325\)）
 \end{exercise}
 \begin{solution}
-等价于检验 \(H_0\colon \sigma^2 \geq (0.04\%)^2\)，\(H_1\colon \sigma^2 < (0.04\%)^2\)（左边检验）。拒绝域：\(\chi^2 \leq \chi^2_{0.95}(9)=3.325\)。
+\textbf{提出假设。}题目给出 \(H_0\colon \sigma \geq 0.04\%\)，需等价转化为关于 \(\sigma^2\) 的假设：
 \[
-\chi^2 = \frac{(10-1)\times(0.037\%)^2}{(0.04\%)^2} = \frac{9\times0.001369}{0.0016} = 7.701 > 3.325.
+H_0\colon \sigma^2 \geq (0.04\%)^2 = 1.6\times10^{-6},\quad H_1\colon \sigma^2 < (0.04\%)^2.
 \]
-未落入拒绝域，接受 \(H_0\)。
+这是\textbf{左边检验}。\\
+\textbf{选择检验统计量。}\(\mu\) 未知，使用 \(\chi^2\) 检验：
+\[
+\chi^2 = \frac{(n-1)S^2}{\sigma_0^2} = \frac{9\,S^2}{(0.04\%)^2} \sim \chi^2(9).
+\]
+\textbf{确定拒绝域。}左边检验，\(\alpha=0.05\)，拒绝域为 \(\chi^2 \leq \chi^2_{1-\alpha}(9) = \chi^2_{0.95}(9) = 3.325\)。\\
+\textbf{计算并判断。}已知 \(s=0.037\%\)：
+\[
+\chi^2 = \frac{9 \times (0.037\%)^2}{(0.04\%)^2} = 9 \times \left(\frac{0.037}{0.04}\right)^{\!2} = 9 \times 0.8556 = 7.701.
+\]
+\(7.701 > 3.325\)，未落入拒绝域，接受 \(H_0\)，即在 5\% 显著性水平下没有充分证据认为 \(\sigma < 0.04\%\)。
 \end{solution}
+
 
 
 \subsection{两个正态总体方差比的检验}
@@ -10553,25 +10962,101 @@ F = \frac{S_1^2}{S_2^2} \sim F(n_1-1, n_2-1).
 （\(F_{0.025}(9,9)=4.03\)，\(F_{0.975}(9,9)=0.248\)，\(t_{0.025}(18)=2.101\)）
 \end{exercise}
 \begin{solution}
-\(\overline{x}_1=99.2,\ \overline{x}_2=98.9,\ n_1=n_2=10\)。
+\textbf{准备工作}：\(n_1=n_2=10\)，\(\overline{x}_1=992/10=99.2\)，\(\overline{x}_2=989/10=98.9\)。
+计算两组的离差平方和：
 \[
-\sum(x_{1i}-\overline{x}_1)^2 = 7.6,\quad \sum(x_{2j}-\overline{x}_2)^2 = 6.9.
+\sum_{i=1}^{10}(x_{1i}-99.2)^2 = (101{-}99.2)^2\!\times\!1 + (100{-}99.2)^2\!\times\!2 + (99{-}99.2)^2\!\times\!5 + (98{-}99.2)^2\!\times\!2 = 7.6,
+\]
+\[
+\sum_{j=1}^{10}(x_{2j}-98.9)^2 = (100{-}98.9)^2\!\times\!3 + (99{-}98.9)^2\!\times\!3 + (98{-}98.9)^2\!\times\!4 = 6.9.
 \]
 \[
 S_1^2 = \frac{7.6}{9} \approx 0.844,\quad S_2^2 = \frac{6.9}{9} \approx 0.767.
 \]
-(1) \(H_0\colon \sigma_1^2=\sigma_2^2\)，\(H_1\colon \sigma_1^2\neq\sigma_2^2\)。\\
-\(F = S_1^2/S_2^2 = 0.844/0.767 \approx 1.100\)。拒绝域：\(F \geq 4.03\) 或 \(F \leq 0.248\)。\\
-\(0.248 < 1.100 < 4.03\)，未落入拒绝域，接受 \(H_0\)，方差无显著差异。\\
-(2) \(H_0\colon \mu_1=\mu_2\)，\(H_1\colon \mu_1\neq\mu_2\)（方差已认为相等，用 pooled t 检验）。
+\textbf{(1) 检验方差是否有显著差异（F 检验）。}提出假设：\(H_0\colon \sigma_1^2=\sigma_2^2\)，\(H_1\colon \sigma_1^2\neq\sigma_2^2\)（双边检验）。
+检验统计量 \(F = S_1^2/S_2^2 \sim F(9,9)\)（在 \(H_0\) 成立时）。拒绝域：\(F \geq F_{0.025}(9,9)=4.03\) 或 \(F \leq F_{0.975}(9,9)=0.248\)。
 \[
-S_w^2 = \frac{9\times0.844+9\times0.767}{18} = \frac{14.499}{18} \approx 0.806,\quad S_w\sqrt{\frac{2}{10}} \approx 0.898\times0.447 \approx 0.401.
+F = \frac{0.844}{0.767} \approx 1.100.
 \]
+\(0.248 < 1.100 < 4.03\)，未落入拒绝域，接受 \(H_0\)，认为两品种方差不显著差异。因此后续可以用等方差的 pooled \(t\) 检验。\\
+\textbf{(2) 检验均值是否有显著差异（t 检验）。}提出假设：\(H_0\colon \mu_1=\mu_2\)，\(H_1\colon \mu_1\neq\mu_2\)（双边检验）。由(1)知方差相等，使用 pooled \(t\) 检验。先计算合并样本方差：
 \[
-t = \frac{99.2-98.9}{0.401} \approx 0.747.
+S_w^2 = \frac{(n_1-1)S_1^2+(n_2-1)S_2^2}{n_1+n_2-2} = \frac{9\times0.844+9\times0.767}{18} = \frac{7.6+6.9}{18} = \frac{14.5}{18} \approx 0.806.
 \]
-拒绝域 \(|t| \geq t_{0.025}(18)=2.101\)。\(0.747 < 2.101\)，未落入拒绝域，接受 \(H_0\)，均值无显著差异。
+检验统计量：
+\[
+t = \frac{\overline{X}_1-\overline{X}_2}{S_w\sqrt{1/n_1+1/n_2}} = \frac{99.2-98.9}{\sqrt{0.806\times(0.1+0.1)}} = \frac{0.3}{\sqrt{0.1612}} = \frac{0.3}{0.401} \approx 0.747.
+\]
+拒绝域：\(|t| \geq t_{0.025}(18)=2.101\)。\(|0.747| < 2.101\)，未落入拒绝域，接受 \(H_0\)，认为两品种均值无显著差异。
+\begin{note}
+在实际应用中，检验两总体均值差时，通常\textbf{先}做 F 检验判断方差是否相等，再根据结果选择合适的 \(t\) 检验方法。
+\end{note}
 \end{solution}
+
+\begin{exercise}[绿地面积的 \texorpdfstring{\(t\)}{t} 检验与 \texorpdfstring{\(\chi^2\)}{χ²} 检验] \label{ex:ht_combo}
+为改建绿地，5 位学生独立测量面积（单位：km\(^2\)）：
+\[
+1.23,\ 1.22,\ 1.20,\ 1.26,\ 1.23.
+\]
+设测量误差服从正态分布（\(\alpha=0.05\)）\\
+(1) 以前面积 \(\mu_0=1.23\) km\(^2\)，是否有必要修改？\\
+(2) 若要求标准差不超过 \(\sigma=0.015\)，能否认为标准差显著偏大？
+（\(t_{0.025}(4)=2.7764\)，\(\chi^2_{0.05}(4)=9.488\)）
+\end{exercise}
+\begin{solution}
+\(\overline{x}=1.228\)，离差平方和 \(\sum(x_i-\overline{x})^2=0.00188\)，\(s^2=0.000470\)，\(s\approx0.0217\)。\\
+(1) \(H_0\colon\mu=1.23\)，\(H_1\colon\mu\neq1.23\)（双边 \(t\) 检验）。
+\[
+t=\frac{1.228-1.23}{0.0217/\sqrt{5}}\approx-0.206,\quad |t|<2.7764.
+\]
+接受 \(H_0\)，没有必要修改。\\
+(2) \(H_0\colon\sigma\leq0.015\)，\(H_1\colon\sigma>0.015\)（右边 \(\chi^2\) 检验）。
+\[
+\chi^2=\frac{4\times0.000470}{0.015^2}=\frac{0.00188}{0.000225}\approx8.356<9.488.
+\]
+接受 \(H_0\)，不能认为标准差显著偏大。
+\end{solution}
+
+
+\begin{exercise}[\texorpdfstring{\(F\)}{F} 检验与合并 \texorpdfstring{\(t\)}{t} 检验] \label{ex:ht_f_pooled}
+在施肥与不施肥的两块苗床上各抽取 6 株苗木，苗高数据（cm）如下：
+\begin{center}
+\begin{tabular}{ccccccc|c}
+\toprule
+施肥 & 77.3 & 79.1 & 81.0 & 79.1 & 82.1 & 77.3 & 行和 475.9 \\
+\midrule
+不施肥 & 75.5 & 76.2 & 78.1 & 72.4 & 77.4 & 76.7 & 行和 456.3 \\
+\bottomrule
+\end{tabular}
+\end{center}
+设苗高服从正态分布（\(\alpha=0.05\)）。\\
+(1) 检验两组方差是否相同；(2) 检验施肥是否显著高于不施肥。
+（\(F_{0.025}(5,5)=7.15\)，\(F_{0.975}(5,5)=0.14\)，\(t_{0.05}(10)=1.812\)）
+\end{exercise}
+\begin{solution}
+\(n_1=n_2=6\)，\(\overline{x}_1=475.9/6\approx79.317\)，\(\overline{x}_2=456.3/6=76.05\)。
+离差平方和：
+\[
+\sum(x_{1i}-\overline{x}_1)^2\approx18.808,\quad S_1^2=\frac{18.808}{5}=3.762;
+\]
+\[
+\sum(x_{2j}-\overline{x}_2)^2=20.095,\quad S_2^2=\frac{20.095}{5}=4.019.
+\]
+\textbf{(1)} \(H_0\colon\sigma_1^2=\sigma_2^2\)，\(H_1\colon\sigma_1^2\neq\sigma_2^2\)。
+\[
+F=\frac{S_1^2}{S_2^2}=\frac{3.762}{4.019}\approx0.936.
+\]
+拒绝域：\(F\geq7.15\) 或 \(F\leq0.14\)。\(0.14<0.936<7.15\)，接受 \(H_0\)，方差无显著差异。\\
+\textbf{(2)} 方差齐性成立，用 pooled \(t\) 检验。\(H_0\colon\mu_1\leq\mu_2\)，\(H_1\colon\mu_1>\mu_2\)。
+\[
+S_w^2=\frac{18.808+20.095}{10}=3.890,\quad S_w\approx1.972.
+\]
+\[
+t=\frac{79.317-76.05}{1.972\sqrt{1/6+1/6}}=\frac{3.267}{1.972/\sqrt{3}}\approx\frac{3.267}{1.139}\approx2.869.
+\]
+拒绝域 \(t\geq t_{0.05}(10)=1.812\)。\(2.869>1.812\)，拒绝 \(H_0\)，施肥苗高显著高于不施肥。
+\end{solution}
+
 
 \section{置信区间与假设检验的关系} \label{sec:ht-ci}
 
@@ -10589,12 +11074,61 @@ H_0\colon \theta=\theta_0,\quad H_1\colon \theta\neq\theta_0,
 (2) 在 \(\alpha=0.05\) 下检验 \(H_0\colon \mu=9.7\)，\(H_1\colon \mu\neq9.7\)。（\(t_{0.025}(15)=2.132\)）
 \end{exercise}
 \begin{solution}
-(1) 置信区间：
+\textbf{(1) 求置信区间。}\(\mu\) 未知，\(\sigma^2\) 未知，使用 \(t\) 分布。
+已知 \(n=16\)，\(\overline{x}=10\)，\(s=\sqrt{0.16}=0.4\)，\(t_{0.025}(15)=2.132\)。置信区间为：
 \[
-\left(10 - \frac{0.4}{4}\times2.132,\; 10 + \frac{0.4}{4}\times2.132\right) = (9.7868,\; 10.2132).
+\left(\overline{x} - \frac{s}{\sqrt{n}}\,t_{\alpha/2}(n{-}1),\quad \overline{x} + \frac{s}{\sqrt{n}}\,t_{\alpha/2}(n{-}1)\right).
 \]
-(2) \(9.7 \notin (9.7868,\; 10.2132)\)，等价于落入拒绝域，故拒绝 \(H_0\)，认为 \(\mu\neq9.7\)。
-验证：\(\overline{x}=10 > 9.7+0.4\times2.132/4 = 9.9132\)，确实落入拒绝域。
+代入计算：
+\[
+\frac{s}{\sqrt{n}}\,t_{\alpha/2}(15) = \frac{0.4}{4}\times2.132 = 0.2132.
+\]
+\[
+\text{置信区间} = (10-0.2132,\ 10+0.2132) = (9.7868,\ 10.2132).
+\]
+\textbf{(2) 假设检验。}提出假设：\(H_0\colon \mu=9.7\)，\(H_1\colon \mu\neq9.7\)（双边检验，\(\alpha=0.05\)）。
+检验统计量 \(t = \dfrac{\overline{X}-9.7}{S/\sqrt{n}} \sim t(15)\)，拒绝域 \(|t| \geq t_{0.025}(15)=2.132\)。
+\[
+t = \frac{10-9.7}{0.4/4} = \frac{0.3}{0.1} = 3.0 > 2.132.
+\]
+落入拒绝域，拒绝 \(H_0\)，认为 \(\mu\neq9.7\)。
+\textbf{等价性验证}：由命题~\ref{prop:ci-test-equiv}，接受 \(H_0\) 等价于 \(\mu_0\) 落在置信区间内。此处 \(\mu_0=9.7\)，而置信区间为 \((9.7868,\ 10.2132)\)，\(9.7 < 9.7868\)，\(\mu_0\) 在区间外，故应拒绝 \(H_0\)，与上述检验结论一致。
+\end{solution}
+
+\begin{exercise}[置信区间与假设检验的综合] \label{ex:ci_ht_01}
+根据环保条例，排放工业废水中某有害物质含量不得超过 0.5。设该含量 \(X\sim N(\mu,\sigma^2)\)，现取 5 份水样，测得含量分别为
+\[
+0.530,\ 0.542,\ 0.510,\ 0.495,\ 0.515.
+\]
+(1) 求 \(\mu\) 的置信度为 95\% 的置信区间；\\
+(2) 能否据此说明有害物质含量超过了规定标准（\(\alpha=0.05\)）？
+（\(t_{0.05}(4)=2.132\)，\(t_{0.025}(4)=2.776\)）
+\end{exercise}
+\begin{solution}
+\textbf{数据预处理。} \(n=5\)
+\[
+\overline{x}=\frac{0.530+0.542+0.510+0.495+0.515}{5}=0.5184.
+\]
+\[
+\sum_{i=1}^{5}(x_i-0.5184)^2=0.0116^2+0.0236^2+0.0084^2+0.0234^2+0.0034^2=0.001321.
+\]
+\[
+s^2=\frac{0.001321}{4}=0.000330,\quad s\approx 0.0182.
+\]
+(1) \(\sigma^2\) 未知，\(\mu\) 的 95\% 置信区间为
+\[
+\left(\overline{x}-\frac{s}{\sqrt{n}}\,t_{0.025}(4),\;\overline{x}+\frac{s}{\sqrt{n}}\,t_{0.025}(4)\right)
+=\left(0.5184-\frac{0.0182}{\sqrt{5}}\times2.776,\;0.5184+\frac{0.0182}{\sqrt{5}}\times2.776\right)
+=(0.4958,\;0.5410).
+\]
+(2) 右边检验：\(H_0\colon\mu\leq 0.5\)，\(H_1\colon\mu>0.5\)。
+\[
+t=\frac{0.5184-0.5}{0.0182/\sqrt{5}}=\frac{0.0184}{0.00813}\approx 2.264.
+\]
+拒绝域 \(t\geq t_{0.05}(4)=2.132\)。\(2.264>2.132\)，落入拒绝域，拒绝 \(H_0\)，即认为有害物质含量超过了规定标准。
+\begin{note}
+也可以利用(1)的结论：\(\mu_0=0.5\) 不在置信区间 \((0.4958,0.5410)\) 内，但此区间为\textbf{双侧}置信区间，对应\textbf{双边}检验。而本题(2)是\textbf{单边}检验，二者不完全等价，需单独计算。
+\end{note}
 \end{solution}
 
 
@@ -10604,6 +11138,43 @@ H_0\colon \theta=\theta_0,\quad H_1\colon \theta\neq\theta_0,
 在固定样本容量 \(n\) 的条件下，\(\alpha\) 与 \(\beta\) 存在此消彼长的关系：\(\alpha\) 小则 \(\beta\) 大，\(\beta\) 小则 \(\alpha\) 大。\textbf{它们不满足} \(\beta=1-\alpha\)。
 实际中，总是在控制 \(\alpha\)（使弃真概率较小）的条件下尽量使 \(\beta\) 小，因为人们通常认为错误地拒绝 \(H_0\) 比错误地接受 \(H_0\) 后果更严重。
 \end{note}
+
+\begin{exercise}[离散总体第一类错误的计算] \label{ex:error_discrete}
+设总体 \(X\) 的分布律为 \(P\{X=1\}=\theta\)，\(P\{X=0\}=1-\theta\)（\(0<\theta<1\)），\(X_1,X_2,X_3\) 为样本。对于检验
+\[
+H_0\colon\theta=0.1,\quad H_1\colon\theta>0.1,
+\]
+拒绝域为 \(\{X_1=1,\ X_2=0,\ X_3=1\}\)。求犯第一类错误的概率。
+\end{exercise}
+\begin{solution}
+第一类错误：\(H_0\) 为真时拒绝 \(H_0\) 的概率。当 \(\theta=0.1\) 时，\(X_i\) 相互独立：
+\[
+\alpha=P\{X_1=1,X_2=0,X_3=1\mid\theta=0.1\}=0.1\times0.9\times0.1=0.009.
+\]
+\end{solution}
+
+
+\begin{exercise}[正态总体两类错误的计算] \label{ex:error_normal}
+设 \(X_1,X_2,\dots,X_{20}\) 为总体 \(N(\mu,1)\) 的样本，考虑假设检验
+\[
+H_0\colon\mu=2\quad\text{vs}\quad H_1\colon\mu=3,
+\]
+拒绝域为 \(W=\{\overline{X}\geq 2.6\}\)。求犯第一类错误的概率 \(\alpha\) 和犯第二类错误的概率 \(\beta\)。
+\end{exercise}
+\begin{solution}
+\(\overline{X}\sim N(\mu,\,1/n)\)，此处 \(n=20\)，\(\overline{X}\sim N(\mu,\,1/20)\)。\\
+\textbf{第一类错误}：\(\alpha=P\{\overline{X}\geq2.6\mid\mu=2\}\)。
+标准化：令 \(Z=\dfrac{\overline{X}-2}{1/\sqrt{20}}\sim N(0,1)\)，
+\[
+\alpha=P\!\left\{Z\geq\frac{2.6-2}{1/\sqrt{20}}\right\}=P\{Z\geq 0.6\sqrt{20}\}=P\{Z\geq 1.2\sqrt{5}\}=1-\Phi(1.2\sqrt{5}).
+\]
+\textbf{第二类错误}：\(\beta=P\{\overline{X}<2.6\mid\mu=3\}\)。
+令 \(Z'=\dfrac{\overline{X}-3}{1/\sqrt{20}}\sim N(0,1)\)，
+\[
+\beta=P\!\left\{Z'<\frac{2.6-3}{1/\sqrt{20}}\right\}=P\{Z'<-0.4\sqrt{20}\}=P\{Z'<-0.8\sqrt{5}\}=\Phi(-0.8\sqrt{5}).
+\]
+\end{solution}
+
 
 \begin{exercise}\label{exer:9-error-calc}
 设连续型随机变量 \(U\) 的密度分别为：
@@ -10616,21 +11187,37 @@ H_1\colon f(x)=\begin{cases}x/2, & 0\leq x\leq2,\\0, & \text{其他}.\end{cases}
 A. \(3/4,\;7/16\)\qquad B. \(7/16,\;3/4\)\qquad C. \(9/16,\;1/4\)\qquad D. \(1/4,\;9/16\)
 \end{exercise}
 \begin{solution}
-应选 D。
-\[
-\alpha = P\!\left\{U>\tfrac{3}{2}\mid H_0\right\} = \int_{3/2}^{2}\frac{1}{2}\,\mathrm{d}x = \frac{1}{4}.
-\]
-\[
-\beta = P\!\left\{U\leq\tfrac{3}{2}\mid H_1\right\} = \int_0^{3/2}\frac{x}{2}\,\mathrm{d}x = \frac{(3/2)^2}{4} = \frac{9}{16}.
-\]
+应选 D。根据两类错误的定义：
+\begin{itemize}
+    \item \textbf{第一类错误}\(\alpha = P\{\text{拒绝}\,H_0 \mid H_0\text{ 为真}\} = P\!\left\{U>\tfrac{3}{2}\,\middle|\,H_0\right\}\)。
+    在 \(H_0\) 下，\(U\) 服从 \([0,2]\) 上的均匀分布，密度 \(f(x)=1/2\)：
+    \[
+    \alpha = \int_{3/2}^{2}\frac{1}{2}\,\mathrm{d}x = \frac{1}{2}\times\left(2-\frac{3}{2}\right) = \frac{1}{2}\times\frac{1}{2} = \frac{1}{4}.
+    \]
+    \item \textbf{第二类错误}\(\beta = P\{\text{接受}\,H_0 \mid H_1\text{ 为真}\} = P\!\left\{U\leq\tfrac{3}{2}\,\middle|\,H_1\right\}\)。
+    在 \(H_1\) 下，\(U\) 的密度 \(f(x)=x/2\)（\(0\leq x\leq2\)）：
+    \[
+    \beta = \int_0^{3/2}\frac{x}{2}\,\mathrm{d}x = \frac{1}{2}\times\frac{x^2}{2}\Bigg|_0^{3/2} = \frac{1}{4}\times\frac{9}{4} = \frac{9}{16}.
+    \]
+\end{itemize}
+故 \(\alpha=1/4\)，\(\beta=9/16\)，选 D。
 \end{solution}
+
 
 \begin{exercise}\label{exer:9-error-concept1}
 在假设检验中，\(H_0\) 不成立时，检验统计量值未落入拒绝域从而接受了 \(H_0\)，这种错误称为第\textbf{二}类错误。
 \end{exercise}
 \begin{solution}
-第二类错误（取伪）：\(H_0\) 不真时接受 \(H_0\)。
+第二类错误（取伪）：\(H_0\) 不成立（\(H_1\) 为真）时，检验统计量值未落入拒绝域，从而错误地接受了 \(H_0\)。
+\begin{note}
+要区分两类错误的关键：
+\begin{itemize}
+    \item 第一类错误：\(H_0\) 本来是对的，但你拒绝了它（"错杀好人"）。
+    \item 第二类错误：\(H_0\) 本来是错的，但你接受了它（"放走坏人"）。
+\end{itemize}
+\end{note}
 \end{solution}
+
 
 \begin{exercise}\label{exer:9-error-concept2}
 显著性水平 \(\alpha\) 的含义是（\quad）。\par
@@ -10638,8 +11225,19 @@ A. \(H_0\) 成立，经检验被拒绝的概率\qquad B. \(H_0\) 成立，经检
 C. \(H_0\) 不成立，经检验被拒绝的概率\qquad D. \(H_0\) 不成立，经检验不能拒绝的概率
 \end{exercise}
 \begin{solution}
-应选 A。\(\alpha = P\{\text{拒绝}\,H_0 \mid H_0\text{ 为真}\}\)。
+应选 A。显著性水平 \(\alpha\) 的定义是：在 \(H_0\) 成立（为真）的条件下，检验结果拒绝 \(H_0\) 的概率，即
+\[
+\alpha = P\{\text{拒绝}\,H_0 \mid H_0\text{ 为真}\}.
+\]
+逐项分析：
+\begin{itemize}
+    \item A: \(H_0\) 成立，经检验被拒绝 \(\longrightarrow\) 恰好是 \(\alpha\) 的定义 \(\checkmark\)。
+    \item B: \(H_0\) 成立，不能拒绝 \(\longrightarrow\) 这是 \(1-\alpha\)，不是 \(\alpha\) \(\times\)。
+    \item C: \(H_0\) 不成立，被拒绝 \(\longrightarrow\) 这是\textbf{检验功效} \(1-\beta\) \(\times\)。
+    \item D: \(H_0\) 不成立，不能拒绝 \(\longrightarrow\) 这是第二类错误概率 \(\beta\) \(\times\)。
+\end{itemize}
 \end{solution}
+
 
 % \subsection{定理类环境的使用}
 % \begin{itemize}
