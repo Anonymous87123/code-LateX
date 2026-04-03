@@ -413,6 +413,14 @@ D. (1)、(2) 均不正确
     \]
 \end{enumerate}
 \end{property}
+\begin{proof}[性质 1 的证明：\(P(\varnothing)=0\)]
+由公理 3（可列可加性），取 \(A_i = \varnothing\ (i=1,2,\dots)\)，则
+\[
+P\!\left(\bigcup_{i=1}^{\infty} \varnothing\right) = \sum_{i=1}^{\infty} P(\varnothing).
+\]
+左边 \(P(\varnothing) = \sum_{i=1}^{\infty} P(\varnothing)\)，即 \(P(\varnothing)\) 等于无穷多个自身的和，故只能有 \(P(\varnothing) = 0\)。
+\end{proof}
+
 \begin{note}
 概率为 0 并不意味着为空集。即 \(P(A) = 0 \nRightarrow A = \varnothing\)，而 \(A = \varnothing \Rightarrow P(A) = 0\)。同样的，$P(A) = 0$不能断言$A = \varnothing$，而$P(A) = 1$不能断言$A = \Omega$.
 \end{note}
@@ -885,6 +893,14 @@ P(B|A) = \frac{P(AB)}{P(A)}
 \end{enumerate}
 因此，概率的一切性质和公式对条件概率都适用。
 \end{property}
+\begin{proof}
+设 \(P(A) > 0\)。(1) 非负性：\(P(B|A) = P(AB)/P(A) \geqslant 0\)。\par
+(2) 规范性：\(P(\Omega|A) = P(A)/P(A) = 1\)。\par
+(3) 可列可加性：设 \(\{B_i\}\) 两两互斥，则
+\[
+P\!\left(\bigcup_{i=1}^{\infty} B_i \Big| A\right) = \frac{P\!\bigl[(\bigcup B_i)A\bigr]}{P(A)} = \frac{\sum P(B_i A)}{P(A)} = \sum P(B_i|A).
+\]
+\end{proof}
 
 \begin{note}
 对于条件概率 \(P(B|A)\)，可以理解为样本空间由原来的 \(\Omega\) 缩小为 \(A\)，即
@@ -909,6 +925,18 @@ P(AB) = P(B|A)\,P(A).
 P(A_1 A_2 \cdots A_n) = P(A_1)\,P(A_2|A_1)\,P(A_3|A_1 A_2) \cdots P(A_n|A_1 A_2 \cdots A_{n-1}).
 \]
 \end{theorem}
+\begin{proof}
+对 \(n=2\)，由条件概率的定义直接可得：
+\[
+P(AB) = P(B|A)\,P(A).
+\]
+一般情形用数学归纳法。设 \(n-1\) 时成立，则
+\begin{align*}
+P(A_1 A_2 \cdots A_n) &= P\!\bigl[(A_1 \cdots A_{n-1}) \cdot A_n\bigr] \\
+&= P(A_n | A_1 \cdots A_{n-1}) \cdot P(A_1 \cdots A_{n-1}),
+\end{align*}
+对 \(P(A_1 \cdots A_{n-1})\) 应用归纳假设即得。
+\end{proof}
 
 \subsection{全概率公式与贝叶斯公式}
 
@@ -922,10 +950,16 @@ P(A) = \sum_{i=1}^{n} P(B_i)\,P(A|B_i).
 \end{theorem}
 
 全概率公式的实质是\textbf{全集分解法}：如果事件 \(A\) 的发生总是与多个"原因" \(B_i\) 相联系，则
+\begin{proof}
+因 \(B_1, \dots, B_n\) 是完备事件组，故两两互斥且 \(B_1 \cup B_2 \cup \cdots \cup B_n = \Omega\)。于是
 \[
-A = A\Omega = A\!\left(\bigcup_{i=1}^{n} B_i\right) = \bigcup_{i=1}^{n} B_i A,
+A = A\Omega = A\!\left(\bigcup_{i=1}^{n} B_i\right) = \bigcup_{i=1}^{n} (AB_i),
 \]
-然后应用有限可加性和条件概率即可得到。
+且 \(AB_1, AB_2, \dots, AB_n\) 两两互斥。由有限可加性和条件概率的定义：
+\[
+P(A) = \sum_{i=1}^{n} P(AB_i) = \sum_{i=1}^{n} P(B_i)\,P(A|B_i).
+\]
+\end{proof}
 
 \begin{theorem}[贝叶斯公式] \label{thm:bayes}
 设 \(B_1, B_2, \dots, B_n\) 是一组完备事件组，\(A\) 为任一事件，且 \(P(A) > 0\)，\(P(B_k) > 0\ (k=1,2,\dots,n)\)，则
@@ -933,6 +967,12 @@ A = A\Omega = A\!\left(\bigcup_{i=1}^{n} B_i\right) = \bigcup_{i=1}^{n} B_i A,
 P(B_k|A) = \frac{P(B_k)\,P(A|B_k)}{P(A)} = \frac{P(B_k)\,P(A|B_k)}{\sum_{i=1}^{n} P(B_i)\,P(A|B_i)}, \quad k=1,2,\dots,n.
 \]
 \end{theorem}
+\begin{proof}
+由条件概率的定义、乘法公式和全概率公式：
+\[
+P(B_k|A) = \frac{P(AB_k)}{P(A)} = \frac{P(B_k)\,P(A|B_k)}{\displaystyle\sum_{i=1}^{n} P(B_i)\,P(A|B_i)}.
+\]
+\end{proof}
 
 \begin{note}
 全概率公式与贝叶斯公式的记忆技巧：
@@ -2342,6 +2382,19 @@ P\{X = k\} = \frac{\lambda^k}{k!} e^{-\lambda},\quad \lambda > 0;\ k=0,1,2,\dots
 \lim_{n \to \infty} \mathrm{C}_n^k p_n^k (1-p_n)^{n-k} = \frac{\lambda^k e^{-\lambda}}{k!}.
 \]
 \end{theorem}
+\begin{proof}[证明思路]
+将二项分布概率改写为
+\[
+\mathrm{C}_n^k p_n^k(1-p_n)^{n-k} = \frac{n(n-1)\cdots(n-k+1)}{k!}\,p_n^k\,(1-p_n)^{n-k}.
+\]
+令 \(np_n \to \lambda\)，则：
+\begin{itemize}
+    \item \(\dfrac{n(n-1)\cdots(n-k+1)}{n^k} \to 1\)；
+    \item \(\left(np_n\right)^k \to \lambda^k\)；
+    \item \((1-p_n)^n = \left(1-\dfrac{np_n}{n}\right)^n \to e^{-\lambda}\)（重要极限）。
+\end{itemize}
+三项相乘，取极限即得 \(\lambda^k e^{-\lambda}/k!\)。
+\end{proof}
 
 \begin{note}
 泊松定理表明：当$n$很大，$p$很小，且$\lambda = np$适中时，二项分布可用泊松分布近似，即
@@ -2662,6 +2715,13 @@ P\{X > s + t \mid X > s\} = P\{X > t\}.
 \]
 这意味着，对于一个已经工作了$s$小时的元件，其再工作至少$t$小时的概率，与从最开始起就至少工作$t$小时的概率相同。
 \end{property}
+\begin{proof}
+设 \(X \sim E(\lambda)\)，则 \(P\{X > x\} = e^{-\lambda x}\ (x \geq 0)\)。由条件概率的定义：
+\begin{align*}
+P\{X > s + t \mid X > s\} &= \frac{P\{X > s + t\}}{P\{X > s\}} \\
+&= \frac{e^{-\lambda(s+t)}}{e^{-\lambda s}} = e^{-\lambda t} = P\{X > t\}.
+\end{align*}
+\end{proof}
 
 
 \begin{exercise}\label{exer:2-28}
@@ -5639,6 +5699,13 @@ f_Z(z) = \int_{-\infty}^{+\infty}f(x, z-x)\,\mathrm{d}x = \int_{-\infty}^{+\inft
 f_Z(z) = \int_{-\infty}^{+\infty}f_X(x)\,f_Y(z-x)\,\mathrm{d}x = \int_{-\infty}^{+\infty}f_X(z-y)\,f_Y(y)\,\mathrm{d}y.
 \]
 \end{theorem}
+\begin{proof}
+由分布函数法，\(F_Z(z) = P\{X+Y \leqslant z\} = \iint_{x+y \leqslant z} f(x,y)\,\mathrm{d}x\,\mathrm{d}y\)。对内层积分做变量代换 \(u = x\)，\(y = v - u\)（即固定 \(u\)，令 \(v = u+y\)），则
+\[
+F_Z(z) = \int_{-\infty}^{z}\left[\int_{-\infty}^{+\infty} f(u, v-u)\,\mathrm{d}u\right]\mathrm{d}v.
+\]
+对 \(z\) 求导即得 \(f_Z(z) = \int_{-\infty}^{+\infty} f(x, z-x)\,\mathrm{d}x\)。独立时 \(f(x,y)=f_X(x)f_Y(y)\)，即得卷积公式。
+\end{proof}
 
 类似地，对于其他形式的函数，有如下公式：
 
@@ -6594,6 +6661,15 @@ E(U+V) = EX + EY = 0,\quad E(UV) = E(XY) = \mathrm{Cov}(X,Y) + EX \cdot EY = 0.5
     \item 若 \(X, Y\) 相互独立，则 \(E(XY) = EX \cdot EY\)。
 \end{enumerate}
 \end{property}
+\begin{proof}[性质 (4) 的证明]
+以连续型为例。\(X, Y\) 独立时联合密度 \(f(x,y) = f_X(x)\,f_Y(y)\)，故
+\begin{align*}
+E(XY) &= \iint_{\mathbb{R}^2} xy\,f(x,y)\,\mathrm{d}x\,\mathrm{d}y
+= \int_{-\infty}^{+\infty} x\,f_X(x)\,\mathrm{d}x \cdot \int_{-\infty}^{+\infty} y\,f_Y(y)\,\mathrm{d}y \\
+&= EX \cdot EY.
+\end{align*}
+离散型类似（将积分改为求和）。
+\end{proof}
 
 \begin{note}
 (1) 性质 4 的逆命题不成立，即由 \(E(XY) = EX \cdot EY\) 不能推出 \(X\) 与 \(Y\) 独立。\par
@@ -6877,6 +6953,12 @@ D(XY) &= E(X^2 Y^2) - [E(XY)]^2 = E(X^2)E(Y^2) - (EX)^2(EY)^2 \\
 \]
 又 \((EX)^2 \cdot DY + (EY)^2 \cdot DX \geqslant 0\)，所以 \(D(XY) \geqslant DX \cdot DY\)。
 \end{proof}
+\begin{proof}[性质 (1)–(5) 的证明]
+(1) \(DX = E[(X-EX)^2] \geqslant 0\)。由 \(DX \geqslant 0\)，\(E(X^2) = DX + (EX)^2 \geqslant (EX)^2\)。\par
+(2) \(D(C) = E[(C-C)^2] = 0\)。\par
+(4) \(D(aX+b) = E[(aX+b-aEX-b)^2] = E[a^2(X-EX)^2] = a^2 DX\)。\par
+(5) \(D(X\pm Y) = E[(X\pm Y - EX \mp EY)^2] = E[(X-EX)^2] + E[(Y-EY)^2] \pm 2E[(X-EX)(Y-EY)] = DX + DY \pm 2\mathrm{Cov}(X,Y)\)。特别地，若 \(X,Y\) 独立，则 \(\mathrm{Cov}(X,Y)=0\)，故 \(D(X\pm Y)=DX+DY\)。
+\end{proof}
 
 \begin{proof}[性质 7 的证明]
 令 \(g(c) = E[(X - c)^2] = E(X^2) - 2cEX + c^2\)。由
@@ -7118,6 +7200,14 @@ E(XY) = \begin{cases}
     \item 若 \(\mathrm{Cov}(X,Y) = 0\)，则 \(D(aX + bY) = a^2 DX + b^2 DY\)。更一般地，\(D(aX + bY) = a^2 DX + b^2 DY+2ab\mathrm{Cov}(X,Y) \)
 \end{enumerate}
 \end{property}
+\begin{proof}
+(1)--(4) 由定义 \(\mathrm{Cov}(X,Y)=E(XY)-EX\cdot EY\) 直接展开即可验证。\par
+(5) 双线性：利用协方差定义和期望的线性性质：
+\[
+\mathrm{Cov}(X_1+X_2,Y) = E[(X_1+X_2)Y] - E(X_1+X_2)\,EY = \mathrm{Cov}(X_1,Y)+\mathrm{Cov}(X_2,Y).
+\]
+反复应用此式即得一般形式。
+\end{proof}
 
 \begin{note}
 协方差 \(\mathrm{Cov}(X,Y)\) 是随机变量 \(X\) 与 \(Y\) 之间偏差关联程度的度量，研究的是 \(X\) 与 \(Y\) 之间的线性相依性。
@@ -7272,6 +7362,21 @@ P_j & \frac{1}{2} & \frac{1}{2} & 1
     \item 若 \((X,Y) \sim N(\mu_1, \sigma_1^2;\, \mu_2, \sigma_2^2;\, \rho)\)，则 \(X\) 与 \(Y\) 独立等价于 $X$ 与 \(Y\) 不相关。
 \end{enumerate}
 \end{property}
+\begin{proof}[性质 (1)(2) 的证明]
+考虑方差非负性：对任意实数 \(t\)，有
+\[
+D(Y - tX) = E[(Y-tX - E(Y-tX))^2] \geqslant 0.
+\]
+展开：
+\[
+DY - 2t\,\mathrm{Cov}(X,Y) + t^2 DX \geqslant 0, \quad \forall\, t \in \mathbb{R}.
+\]
+这是一个关于 \(t\) 的非负二次多项式，故判别式 \(\Delta \leqslant 0\)：
+\[
+4[\mathrm{Cov}(X,Y)]^2 - 4\,DX\cdot DY \leqslant 0 \implies \frac{[\mathrm{Cov}(X,Y)]^2}{DX \cdot DY} \leqslant 1 \implies |\rho_{XY}| \leqslant 1.
+\]
+等号成立当且仅当 \(\Delta=0\)，即存在 \(t_0\) 使 \(D(Y - t_0 X)=0\)，亦即 \(P\{Y=t_0 X + b\}=1\)（其中 \(b = EY - t_0 EX\)）。取 \(a=t_0\)，即可看出 \(\rho=1\) 时 \(a>0\)，\(\rho=-1\) 时 \(a<0\)。
+\end{proof}
 
 \begin{note}
 相关系数 \(\rho_{XY}\) 是刻画 \(X\) 与 \(Y\) 之间\textbf{线性相关程度}的度量。\(\rho_{XY} = 0\) 只表示不存在\textbf{线性}关系，但它们之间仍可能存在非线性关系。因此，\textbf{不相关不等于独立}。\footnote{不相关：没有直线关系。独立：什么关系都没有。}当 \(X\) 与 \(Y\) 相互独立时，可推出 \(X\) 与 \(Y\) 不相关；但当 \(X\) 与 \(Y\) 不相关时，\(X\) 与 \(Y\) 却不一定相互独立。
@@ -7778,6 +7883,16 @@ P\{|X - EX| \geqslant \varepsilon\} \leqslant \frac{DX}{\varepsilon^2},
 P\{|X - EX| < \varepsilon\} \geqslant 1 - \frac{DX}{\varepsilon^2}.
 \]
 \end{theorem}
+\begin{proof}
+仅对连续型给出证明（离散型类似）。设 \(X\) 的概率密度为 \(f(x)\)，则
+\begin{align*}
+DX &= E[(X-EX)^2] = \int_{-\infty}^{+\infty}(x-EX)^2\,f(x)\,\mathrm{d}x \\
+&\geqslant \int_{|x-EX|\geqslant\varepsilon}(x-EX)^2\,f(x)\,\mathrm{d}x
+\geqslant \varepsilon^2 \int_{|x-EX|\geqslant\varepsilon}f(x)\,\mathrm{d}x \\
+&= \varepsilon^2\,P\{|X-EX| \geqslant \varepsilon\}.
+\end{align*}
+两边同除以 \(\varepsilon^2\) 即得 \(P\{|X-EX| \geqslant \varepsilon\} \leqslant DX/\varepsilon^2\)。
+\end{proof}
 
 \begin{note}
 切比雪夫不等式说明了方差越小，\(X\) 的取值越集中在 \(EX\) 附近。它在理论上具有重要价值，是大数定律的理论基础，但在具体估计概率时往往比较粗糙。其中$\geqslant \varepsilon \leqslant$刚好是一个颜文字，方便读者进行记忆。
@@ -7917,6 +8032,16 @@ DX_i \leq C \quad (\text{对一切 } i \geq 1),
 \lim_{n\to\infty} P\!\left\{\left|\frac{1}{n}\sum_{i=1}^{n} X_i - \frac{1}{n}\sum_{i=1}^{n} EX_i\right| < \varepsilon\right\} = 1.
 \]
 \end{theorem}
+\begin{proof}
+令 \(\overline{X}_n = \dfrac{1}{n}\sum_{i=1}^{n} X_i\)。由期望的线性性质，\(E\overline{X}_n = \dfrac{1}{n}\sum EX_i\)。由独立性，
+\[
+D\overline{X}_n = \frac{1}{n^2}\sum_{i=1}^{n} DX_i \leq \frac{nC}{n^2} = \frac{C}{n} \xrightarrow{n\to\infty} 0.
+\]
+对 \(\overline{X}_n\) 应用切比雪夫不等式：
+\[
+P\{|\overline{X}_n - E\overline{X}_n| \geqslant \varepsilon\} \leqslant \frac{D\overline{X}_n}{\varepsilon^2} \leqslant \frac{C}{n\varepsilon^2} \xrightarrow{n\to\infty} 0.
+\]
+\end{proof}
 
 \begin{note}
 切比雪夫大数定律的意义在于：当独立随机变量的方差一致有界时，\(n\) 个随机变量的算术平均值依概率收敛于其期望的算术平均值。特别地，若 \(EX_i = \mu\)（常数），则 \(\frac{1}{n}\sum X_i \stackrel{P}{\longrightarrow} \mu\)。
@@ -7956,6 +8081,14 @@ D. \(X_1, 2^2X_2, \dots, n^2X_n, \dots\)
 \]
 即频率 \(\frac{\mu_n}{n}\) 依概率收敛于概率 \(p\)。
 \end{theorem}
+\begin{proof}
+令 \(X_i\) 表示第 \(i\) 次试验中 \(A\) 发生的次数，则 \(X_i \sim B(1,p)\)，\(EX_i = p\)，\(DX_i = p(1-p) \leq \dfrac{1}{4}\)。且 \(\mu_n = \sum_{i=1}^{n} X_i\)，\(\dfrac{\mu_n}{n} = \overline{X}_n\)。
+
+由于 \(\{X_i\}\) 相互独立，方差一致有界（\(\leq 1/4\)），由切比雪夫大数定律直接可得
+\[
+\overline{X}_n = \frac{\mu_n}{n} \xrightarrow{P} p.
+\]
+\end{proof}
 
 \begin{note}
 伯努利大数定律是切比雪夫大数定律的特例（取 \(X_i \sim B(1,p)\)），它为"频率稳定于概率"这一经验事实提供了严格的数学证明，也是用频率定义概率的理论依据。
@@ -8543,6 +8676,20 @@ A. \(T_1\)\quad B. \(T_2\)\quad C. \(T_3\)\quad D. \(T_4\)
 EX_i = \mu,\quad DX_i = \sigma^2,\quad E\overline{X} = \mu,\quad D\overline{X} = \frac{\sigma^2}{n},\quad E(S^2) = \sigma^2.
 \]
 \end{property}
+\begin{proof}
+\(E\overline{X} = \mu\) 和 \(D\overline{X} = \sigma^2/n\) 由期望和方差的性质直接可得。关键在于证明 \(E(S^2) = \sigma^2\)。令 \(Y_i = X_i - \mu\)，则
+\[
+\sum_{i=1}^{n}(X_i - \overline{X})^2 = \sum_{i=1}^{n}(Y_i - \overline{Y})^2 = \sum_{i=1}^{n} Y_i^2 - n\overline{Y}^2.
+\]
+取期望：
+\[
+E\!\left[\sum(Y_i - \overline{Y})^2\right] = n\sigma^2 - n\cdot\frac{\sigma^2}{n} = (n-1)\sigma^2.
+\]
+因此
+\[
+E(S^2) = E\!\left[\frac{1}{n-1}\sum_{i=1}^{n}(X_i-\overline{X})^2\right] = \frac{(n-1)\sigma^2}{n-1} = \sigma^2.
+\]
+\end{proof}
 
 \begin{note}
 由大数定律，样本均值和样本方差依概率收敛于总体均值和总体方差：
