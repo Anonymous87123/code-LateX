@@ -1371,7 +1371,7 @@ P(Y=k) &= \sum_{n=k}^{\infty} P(Y=k\mid X=n)\,P(X=n) = \sum_{n=k}^{\infty} \math
 \end{note}
 
 
-\begin{exercise}[提高]\label{exer:1-57}
+\begin{exercise}[提高]
 某工厂进行产品质量盲测。现有外观相同的 \(A,B\) 两个初始样本盒，\(A\) 盒装有质量指标 \(1,5,10\) 的产品各一件，\(B\) 盒装有指标 \(2,5,8\) 的产品各一件。甲、乙两名质检员先后从待选盒中随机选择一盒，再从中随机抽取一件产品比对。\par
 (1) 求甲所抽产品质量指标的数学期望；\par
 (2) 现新增 \(n\) 个均含 3 件产品的新样本盒，设指标 5 的产品为标准件。甲先从这 \(n+2\) 个盒中随机选择一个，乙再从剩下的 \(n+1\) 个盒中随机选择一个抽取。\par
@@ -1754,6 +1754,139 @@ p_1 = 0.3 + 0.42\times p_1 \implies p_1 = \frac{0.3}{1-0.42} = \frac{15}{29} \ap
 p_2 = 0.42^{k-1}\times 0.3 + 0.42^{k-1}\times 0.7\times 0.4 = 0.42^{k-1}\times 0.58 \quad (k=1,2,\dots).
 \]
 \end{solution}
+
+\section{经典概率模型拓展}
+
+本节系统介绍概率论中若干具有代表性的经典模型，它们不仅是理论研究的基石，也在实际应用中扮演着重要角色。
+
+\subsection{抽签模型（Drawing Lots Model）}
+
+\begin{definition}[抽签模型]
+设有 $N$ 个球，其中 $M$ 个为红球。$n$ 个人依次不放回地各取一球。记 $A_k = \{\text{第 }k\text{ 人抽中红球}\}$，则
+\[
+P(A_k) = \frac{M}{N}, \quad k=1,2,\dots,n.
+\]
+\end{definition}
+
+\begin{proof}
+用全概率公式展开 $P(A_2)$：
+\[
+P(A_2) = P(A_2|A_1)P(A_1) + P(A_2|\overline{A}_1)P(\overline{A}_1)
+= \frac{M-1}{N-1}\cdot\frac{M}{N} + \frac{M}{N-1}\cdot\frac{N-M}{N} = \frac{M}{N}.
+\]
+依此类推，任意位置的概率均相同。
+\end{proof}
+
+\begin{note}
+"未知即随机"——前面人的抽取结果被全概率公式的加权所抵消。这就是抓阄、抽签等场景公平性的数学保证。
+\end{note}
+
+\subsection{波利亚罐子模型（P\'olya's Urn Model）}
+
+\begin{definition}[波利亚罐子模型]
+罐中有 $w$ 个白球和 $b$ 个黑球。每次取出一球观察颜色后放回，并额外加入 $c$ 个同色球。记 $W_n, B_n$ 为第 $n$ 次操作后的白/黑球数。
+\end{definition}
+
+\begin{property}
+(1) 白球比例 $M_n = W_n/(W_n+B_n)$ 构成一个鞅：$E[M_{n+1}|M_n] = M_n$。\par
+(2) 当 $n\to\infty$ 时，$M_\infty \sim \text{Beta}(w/c,\; b/c)$。
+\end{property}
+
+\begin{note}
+"强者愈强"的正反馈过程。用于描述传染病传播、财富不平等积累等现象。
+\end{note}
+
+\subsection{赌徒破产问题（Gambler's Ruin）}
+
+\begin{definition}[赌徒破产]
+初始本金 $i$ 元，目标 $N$ 元或破产归零。每次以概率 $p$ 赢 1 元，$q=1-p$ 输 1 元。设 $P_i$ 为最终达到目标而不破产的概率。
+\end{definition}
+
+\begin{property}
+差分方程：$P_i = pP_{i+1} + qP_{i-1}$，$P_0=0$, $P_N=1$。\par
+(1) $p\neq q$：$\displaystyle P_i = \frac{1-(q/p)^i}{1-(q/p)^N}$。\par
+(2) $p=q=1/2$：$P_i = i/N$。\par
+(3) 庄家资金无限且 $p\le 1/2$ 时，破产概率为 1。
+\end{property}
+
+\subsection{生日问题（Birthday Problem）}
+
+\begin{definition}[生日问题]
+一年 365 天，$n$ 个人中至少两人生日相同的概率：
+\[
+P(\text{同日}) = 1 - \prod_{k=1}^{n-1}\left(1-\frac{k}{365}\right).
+\]
+\end{definition}
+
+\begin{center}
+\begin{tabular}{c|ccccccccc}
+$n$ & 10 & 20 & 23 & 30 & 40 & 50 & 60 \\
+\midrule
+$P$(\%) & 11.7 & 41.1 & 50.7 & 70.6 & 89.1 & 97.0 & 99.4 \\
+\end{tabular}
+\end{center}
+
+仅需 $n=23$ 即超 50\%。这是密码学哈希碰撞攻击的理论基础。
+
+\subsection{错排问题（Derangements）}
+
+\begin{definition}[错排]
+$n$ 个物品的排列中无一在原位的排列数：
+\[
+D_n = n!\sum_{k=0}^{n}\frac{(-1)^k}{k!}.
+\]
+\end{definition}
+
+当 $n\ge 5$ 时，$P(D_n)/n! \to e^{-1} \approx 36.8\%$。
+
+\subsection{三门问题（Monty Hall Problem）}
+
+\begin{theorem}[换门优势]
+选 1 号门后，主持人打开 3 号门（羊）。由贝叶斯公式：
+\[
+P(C_1|H_3)=\frac{1}{3},\quad P(C_2|H_3)=\frac{2}{3}.
+\]
+换门将胜率从 1/3 提升至 2/3。
+\end{theorem}
+
+\subsection{俄罗斯轮盘赌（Russian Roulette）}
+
+\begin{property}
+(1) 每次转动：第 $k$ 次致死 $\sim \text{Geom}(1/6)$，$P(T=k)=(5/6)^{k-1}/6$。\par
+(2) 不转动：前 $k-1$ 存活条件下，第 $k$ 次致死条件概率为 $1/(7-k)$——越往后越危险。
+\end{property}
+
+\subsection{槽式轮盘（Casino Roulette）}
+
+38 个槽，押单号赔率 35:1：
+\[
+E[X] = -\frac{2}{38}\approx -5.26\%.
+\]
+大数定律保证赌场在海量样本下的绝对盈利。"久赌必输"是数学定律。
+
+\subsection{彩票模型（Lottery Model）}
+
+匹配 $k$ 个中奖号码服从超几何分布：
+\[
+P(X=k) = \frac{\binom{K}{k}\binom{N-K}{n-k}}{\binom{N}{n}}.
+\]
+
+双色球一等奖概率约 $5.64\times10^{-8}$。人类大脑对极小概率缺乏直觉感知。
+
+\subsection{圣彼得堡悖论（St.\ Petersburg Paradox）}
+
+抛硬币直到正面出现，第 $k$ 次赢得 $2^k$ 元。期望 $E[X]=+\infty$。
+
+伯努利引入\textbf{期望效用理论}（对数效用 $U(x)=\ln x$，边际效用递减），解释了人们只愿付有限代价参与的原因。
+
+\subsection{切比雪夫不等式的紧例}
+
+构造三点分布：$P(X=\pm k\sigma)=1/(2k^2)$，$P(X=0)=1-1/k^2$。则 $\mu=0$, $\sigma^2=1$，且
+\[
+P(|X|\ge k\sigma) = \frac{1}{k^2},
+\]
+等号成立。切比雪夫界在无进一步分布假设下不可改进。
+
 
 \chapter{一维随机变量及其分布}
 
@@ -4574,9 +4707,11 @@ $p_{\cdot j}$ & $1/2$ & $1/4$ & $1/4$ & $1$ \\
 \end{center}
 独立性：$p_{11} = 1/6$，$p_{1\cdot}\cdot p_{\cdot 1} = (1/2)(1/2) = 1/4 \neq 1/6$，故 $X_1$ 与 $X_2$ \textbf{不独立}。\\
 (2) $P\{X_2=2\} = p_{\cdot 2} = 1/4$。
-\[
-P\{X_1=1 \mid X_2=2\} = \frac{p_{12}}{p_{\cdot 2}} = \frac{1/6}{1/4} = \frac{2}{3}, \quad P\{X_1=2 \mid X_2=2\} = \frac{p_{22}}{p_{\cdot 2}} = \frac{0}{1/4} = 0, \quad P\{X_1=3 \mid X_2=2\} = \frac{p_{32}}{p_{\cdot 2}} = \frac{1/12}{1/4} = \frac{1}{3}.
-\]
+\begin{align*}
+P\{X_1=1 \mid X_2=2\} =& \frac{p_{12}}{p_{\cdot 2}} = \frac{1/6}{1/4} = \frac{2}{3}\\
+P\{X_1=2 \mid X_2=2\} = &\frac{p_{22}}{p_{\cdot 2}} = \frac{0}{1/4} = 0\\
+ P\{X_1=3 \mid X_2=2\} = &\frac{p_{32}}{p_{\cdot 2}} = \frac{1/12}{1/4} = \frac{1}{3}.
+\end{align*}
 (3) $Y = X_1X_2$ 的可能取值及概率：
 \begin{align*}
 P\{Y=1\} &= P\{X_1=1,X_2=1\} = 1/6, \\
@@ -7482,16 +7617,12 @@ P = \int_0^{1/2} 12x^2(1-x)\,\mathrm{d}x + \int_{1/2}^1 12(1-x)^3\,\mathrm{d}x
 = \frac{5}{16} + \frac{3}{16} = \frac{1}{2}.
 \]
 (3)
-\[
-EX = \int_0^1 12x^3(1-x)\,\mathrm{d}x = 12\cdot B(4,2) = 12\cdot\frac{6}{60} = \frac{3}{5},\quad
-EY = \int_0^1\!\!\int_0^x 24y^2(1-x)\,\mathrm{d}y\,\mathrm{d}x = \int_0^1 8x^3(1-x)\,\mathrm{d}x = 8\cdot B(4,2) = \frac{2}{5},
-\]
-\[
-EXY = \int_0^1\!\!\int_0^x 24xy^2(1-x)\,\mathrm{d}y\,\mathrm{d}x = \int_0^1 8x^4(1-x)\,\mathrm{d}x = 8\cdot B(5,2) = 8\cdot\frac{24}{120} = \frac{4}{15},
-\]
-\[
-\mathrm{Cov}(X,Y) = \frac{4}{15} - \frac{3}{5} \times \frac{2}{5} = \frac{2}{75}.
-\]
+\begin{align*}
+EX &= \int_0^1 12x^3(1-x)\,\mathrm{d}x = 12\cdot B(4,2) = 12\cdot\frac{6}{60} = \frac{3}{5}\\
+EY &= \int_0^1\!\!\int_0^x 24y^2(1-x)\,\mathrm{d}y\,\mathrm{d}x = \int_0^1 8x^3(1-x)\,\mathrm{d}x = 8\cdot B(4,2) = \frac{2}{5}\\
+EXY &= \int_0^1\!\!\int_0^x 24xy^2(1-x)\,\mathrm{d}y\,\mathrm{d}x = \int_0^1 8x^4(1-x)\,\mathrm{d}x = 8\cdot B(5,2) = 8\cdot\frac{24}{120} = \frac{4}{15}\\
+\mathrm{Cov}(X,Y) &= \frac{4}{15} - \frac{3}{5} \times \frac{2}{5} = \frac{2}{75}.
+\end{align*}
 \end{solution}
 
 \begin{exercise}\label{exer:4-13-stick}
@@ -8349,7 +8480,7 @@ P(T_n \leq 5000) = P\!\left(\frac{T_n - 50n}{5\sqrt{n}} \leq \frac{5000 - 50n}{5
 
 令 \(t = \sqrt{n}\)，则 \(1000 - 10t^2 > 2t\)，即 \(10t^2 + 2t - 1000 < 0\)。解得 \(t < \dfrac{-2 + \sqrt{4+40000}}{20} = \dfrac{-2+2\sqrt{10001}}{20} \approx 9.950\)，故 \(n < 99.0\)。
 
-验证边界值：\(n=98\) 时 \(\dfrac{1000-980}{\sqrt{98}} = \dfrac{20}{9.90} \approx 2.02 > 2\) ✓；\(n=99\) 时 \(\dfrac{1000-990}{\sqrt{99}} = \dfrac{10}{9.95} \approx 1.005 < 2\) ✗。因此最多装 \(\mathbf{98}\) 箱。
+验证边界值：\(n=98\) 时 \(\dfrac{1000-980}{\sqrt{98}} = \dfrac{20}{9.90} \approx 2.02 > 2\) ；\(n=99\) 时 \(\dfrac{1000-990}{\sqrt{99}} = \dfrac{10}{9.95} \approx 1.005 < 2\) 。因此最多装 \(\mathbf{98}\) 箱。
 \end{solution}
 
 \begin{exercise}\label{exer:5-clt-exp-norm}
@@ -9095,9 +9226,7 @@ A. \(4n\)\quad B. \(4(n-1)\)\quad C. \(2n\)\quad D. \(2(n-1)\)
 \end{exercise}
 
 \begin{solution}
-应选 B。
-
-\(\dfrac{1}{\sigma^2}\displaystyle\sum_{i=1}^{n}(X_i-\overline{X})^2 \sim \chi^2(n-1)\)，自由度为 \(n-1\) 的 \(\chi^2\) 分布期望为 \(n-1\)，故
+应选 B。\(\dfrac{1}{\sigma^2}\displaystyle\sum_{i=1}^{n}(X_i-\overline{X})^2 \sim \chi^2(n-1)\)，自由度为 \(n-1\) 的 \(\chi^2\) 分布期望为 \(n-1\)，故
 \[
 E\!\left(\sum_{i=1}^{n}(X_i-\overline{X})^2\right) = \sigma^2(n-1) = 4(n-1).
 \]
@@ -9234,7 +9363,6 @@ A. \(\chi^2(10)\)\quad B. \(t(15)\)\quad C. \(F(10,5)\)\quad D. \(F(5,10)\)
 
 \begin{solution}
 应选 C。
-
 \[
 \chi_1^2 = \frac{2X_1^2+X_2^2+\cdots+X_{10}^2}{9}
 \]
@@ -10558,7 +10686,7 @@ P\left\{\frac{S_1^2}{S_2^2} \cdot \frac{1}{F_{\alpha/2}(n_1-1, n_2-1)} < \frac{\
 \centering
 \caption{常见的正态总体参数置信区间（置信度为 $1-\alpha$）}
 \label{tab:confidence_intervals}
-\renewcommand{\arraystretch}{1.5}
+\resizebox{\textwidth}{!}{
 \begin{tabular}{lllc}
 \toprule
 \textbf{总体条件} & \textbf{待估参数} & \textbf{枢轴量及分布} & \textbf{置信区间} \\
@@ -10578,6 +10706,7 @@ $\mu_1,\mu_2$ 已知 & $\frac{\sigma_1^2}{\sigma_2^2}$ & $F$ 分布 $F(n_1,n_2)$
 $\mu_1,\mu_2$ 未知 & $\frac{\sigma_1^2}{\sigma_2^2}$ & $F$ 分布 $F(n_1-1,n_2-1)$ & $\left(\frac{S_1^2}{S_2^2}\frac{1}{F_{\alpha/2}(n_1-1,n_2-1)},\ \frac{S_1^2}{S_2^2}F_{\alpha/2}(n_2-1,n_1-1)\right)$ \\
 \bottomrule
 \end{tabular}
+}
 \end{table}
 
 \begin{remark}
@@ -11350,11 +11479,10 @@ t = \frac{10-9.7}{0.4/4} = \frac{0.3}{0.1} = 3.0 > 2.132.
 s^2=\frac{0.001321}{4}=0.000330,\quad s\approx 0.0182.
 \]
 (1) \(\sigma^2\) 未知，\(\mu\) 的 95\% 置信区间为
-\[
-\left(\overline{x}-\frac{s}{\sqrt{n}}\,t_{0.025}(4),\;\overline{x}+\frac{s}{\sqrt{n}}\,t_{0.025}(4)\right)
-=\left(0.5184-\frac{0.0182}{\sqrt{5}}\times2.776,\;0.5184+\frac{0.0182}{\sqrt{5}}\times2.776\right)
-=(0.4958,\;0.5410).
-\]
+\begin{align*}
+&\left(\overline{x}-\frac{s}{\sqrt{n}}\,t_{0.025}(4),\;\overline{x}+\frac{s}{\sqrt{n}}\,t_{0.025}(4)\right)\\
+=&\left(0.5184-\frac{0.0182}{\sqrt{5}}\times2.776,\;0.5184+\frac{0.0182}{\sqrt{5}}\times2.776\right)=(0.4958,\;0.5410).
+\end{align*}
 (2) 右边检验：\(H_0\colon\mu\leq 0.5\)，\(H_1\colon\mu>0.5\)。
 \[
 t=\frac{0.5184-0.5}{0.0182/\sqrt{5}}=\frac{0.0184}{0.00813}\approx 2.264.
