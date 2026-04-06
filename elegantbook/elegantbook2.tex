@@ -281,11 +281,387 @@ $y+y''=5c_2\mathrm{e}^{2x}$ 与 $y'-y=-3c_2\mathrm{e}^{2x}$ 联立消去 $c_2\ma
 求抛物线族 $\displaystyle y=C_1(x-C_2)^2$ 的微分方程.
 \end{exercise}
 \begin{solution}
-该曲线族含有两个独立参数 $C_1$ 和 $C_2$，因此我们需要对原式求两次导数，以消去这两个参数，得到一个二阶微分方程。已知：$$y = C_1(x-C_2)^2 \quad \text{(式1)}$$两边对 $x$ 求一阶导数：$$y' = 2C_1(x-C_2) \quad \text{(式2)}$$两边再对 $x$ 求二阶导数：$$y'' = 2C_1 \quad \text{(式3)}$$现在利用这三个式子消去 $C_1$ 和 $C_2$：由（式3）直接得到 $C_1 = \frac{y''}{2}$。将（式2）两边平方，可以巧妙地凑出（式1）的形式：$$(y')^2 = 4C_1^2(x-C_2)^2$$$$(y')^2 = 4C_1 \cdot [C_1(x-C_2)^2]$$观察发现括号内的部分正好是 $y$，于是：$$(y')^2 = 4C_1 y$$最后，把从（式3）得到的 $2C_1 = y''$ 代入上式（即 $4C_1 = 2y''$）：$$(y')^2 = 2y'' y$$即：$$2yy'' - (y')^2 = 0$$这就是该抛物线族满足的微分方程。
+该曲线族含有两个独立参数 $C_1$ 和 $C_2$，因此我们需要对原式求两次导数，以消去这两个参数，得到一个二阶微分方程。已知：$$y = C_1(x-C_2)^2 \quad \text{(式1)}$$两边对 $x$ 求一阶导数：$$y' = 2C_1(x-C_2) \quad \text{(式2)}$$两边再对 $x$ 求二阶导数：$$y'' = 2C_1 \quad \text{(式3)}$$现在利用这三个式子消去 $C_1$ 和 $C_2$：由（式3）直接得到 $C_1 = \frac{y''}{2}$。将（式2）两边平方，可以巧妙地凑出（式1）的形式：$$(y')^2 = 4C_1^2(x-C_2)^2$$$$(y')^2 = 4C_1 \cdot [C_1(x-C_2)^2]$$观察发现括号内的部分正好是 $y$，于是：$$(y')^2 = 4C_1 y$$最后，把从（式3）得到的 $2C_1 = y''$ 代入上式（即 $4C_1 = 2y''$）：$$(y')^2 = 2y'' y\implies 2yy'' - (y')^2 = 0$$这就是该抛物线族满足的微分方程。
 \end{solution}
 
+\section{变量可分离方程及齐次方程}
 
+\begin{introduction}
+  \item 变量可分离方程的定义与解法~\ref{def:separable-ode}
+  \item 齐次方程及其标准解法~\ref{def:homogeneous-ode}
+  \item 可化为齐次方程的类型~\ref{ex:ode-quasi-homog},~\ref{ex:ode-intersect-line}
+  \item $R$--$C$ 电路应用~\ref{ex:ode-rc-circuit}
+  \item 探照灯反射镜面~\ref{ex:ode-searchlight-mirror}
+  \item 马尔萨斯增长模型与逻辑斯蒂模型~\ref{def:malthus-model},~\ref{def:logistic-model}
+  \item 牛顿冷却定律与法医应用~\ref{ex:ode-forensic-cooling}
+\end{introduction}
 
+接下来我们介绍一阶微分方程的初等解法，其核心思想是把微分方程的求解问题转化为积分问题。需要指出的是，这里并不要求积分一定能用初等函数表示。例如，方程
+$\displaystyle \frac{\mathrm{d}y}{\mathrm{d}x}=\frac{y}{x}\left(\mathrm{e}^{\frac{y}{x}}+1\right)$ 的解可以写为
+\[
+\ln|x| = \mathrm{Li}\!\left(\mathrm{e}^{-\frac{y}{x}}\right) + C,
+\]
+其中 $\mathrm{Li}(t)=\displaystyle\int\frac{\mathrm{d}t}{\ln t}$ 称为对数积分函数，属于超越函数类。
+
+我们知道，解 $n$ 次代数方程时总希望能用四则运算和方根把解表示出来——但后来证明了对五次及五次以上的代数方程，这种表示一般是不可能的。类似地，对微分方程的求解问题也有同样的限制：\textbf{一般的一阶微分方程没有初等解法}。
+
+尽管如此，若干具有特殊结构的方程类型确实可以通过初等方法求解，且这些类型涵盖了实际应用中出现的相当大一部分情形。本章将系统介绍其中的两类基本形式——变量可分离方程与齐次方程。
+
+\subsection{变量可分离方程}
+
+\begin{definition}[变量可分离方程] \label{def:separable-ode}
+形如
+\[
+\frac{\mathrm{d}y}{\mathrm{d}x}=f(x)\,\phi(y)
+\]
+的一阶方程称为\textbf{变量可分离方程}，其中 $f(x)$ 和 $\phi(y)$ 分别是 $x$ 和 $y$
+的连续函数。
+\end{definition}
+
+若 $\phi(y)\neq 0$，则上式可改写为 $\displaystyle \frac{\mathrm{d}y}{\phi(y)}=f(x)\,\mathrm{d}x$，
+两边积分得
+\[
+\int\frac{\mathrm{d}y}{\phi(y)}=\int f(x)\,\mathrm{d}x + C, \tag{5.1}
+\]
+其中 $C$ 为任意常数。(5.1) 式确定了一个隐函数关系 $y=y(x;C)$，
+对其两边微分即可验证它满足原方程。称这样的解为\textbf{隐式通解}。
+
+\begin{remark}[丢失的特解]
+若存在常数 $y_0$ 使得 $\phi(y_0)=0$，则直接代入验证可知 $y\equiv y_0$ 也是原方程的一个特解。\textbf{这类特解往往在分离变量过程中丢失，且有时不包含在通解表达式中，必须另行补上才能得到全部解}。
+\end{remark}
+
+\begin{example} \label{ex:sep-circle}
+求 $\displaystyle\frac{\mathrm{d}y}{\mathrm{d}x}=-\frac{x}{y}$ 的通解。
+\end{example}
+\begin{solution}
+将方程变形为 $y\,\mathrm{d}y=-x\,\mathrm{d}x$，两边积分：
+\[
+\int y\,\mathrm{d}y=-\int x\,\mathrm{d}x
+\;\Longrightarrow\;
+\frac{1}{2}y^{2}=-\frac{1}{2}x^{2}+C,
+\]
+即
+\[
+\boxed{x^{2}+y^{2}=C},
+\]
+其中 $C>0$ 为任意常数。这是一族以原点为圆心的同心圆。
+\end{solution}
+
+\begin{example}
+求方程 $x^{2}y\,\mathrm{d}y+\sqrt{1-y^{2}}\,\mathrm{d}x=0$ 的全部解。
+\end{example}
+\begin{solution}
+当 $1-y^{2}\neq 0$ 时，方程分离为
+$\displaystyle -\frac{y\,\mathrm{d}y}{\sqrt{1-y^{2}}}=\frac{\mathrm{d}x}{x^{2}}$，
+两边积分得 $\sqrt{1-y^{2}}=-\dfrac{1}{x}+C$，即
+\[
+\sqrt{1-y^{2}}+\frac{1}{x}=C.
+\]
+
+此外，易见 $y=\pm 1$ 也满足原方程（此时 $\sqrt{1-y^2}=0$），
+且它们不包含在上面的通解中。因此方程的\textbf{全部解}为
+\[
+\boxed{\sqrt{1-y^{2}}+\frac{1}{x}=C \quad\text{及}\quad y=\pm 1}.
+\]
+\end{solution}
+
+\begin{example}
+求 $\displaystyle\frac{\mathrm{d}y}{\mathrm{d}x}=y^{2}\cos x$ 满足初始条件 $y(0)=1$ 的特解。
+\end{example}
+\begin{solution}
+当 $y\neq 0$ 时分离变量：$\displaystyle\frac{\mathrm{d}y}{y^{2}}=\cos x\,\mathrm{d}x$，
+积分得 $-\dfrac{1}{y}=\sin x + C$，另有特解 $y\equiv 0$。
+
+代入 $y(0)=1$：$-1=0+C$，故 $C=-1$。所求特解为
+\[
+\boxed{y=\frac{1}{1-\sin x}},\qquad x\neq\frac{\pi}{2}+2k\pi.
+\]
+\end{solution}
+
+\begin{example} \label{ex:sep-linear-homog}
+求 $\displaystyle\frac{\mathrm{d}y}{\mathrm{d}x}=p(x)\,y$ 的通解，其中 $p(x)$ 是连续函数。
+\end{example}
+\begin{solution}
+当 $y\neq 0$ 时分离变量并积分：
+\[
+\int\frac{\mathrm{d}y}{y}=\int p(x)\,\mathrm{d}x
+\;\Longrightarrow\;
+\ln|y|=\int p(x)\,\mathrm{d}x+\bar{C},
+\]
+令 $C=\pm\mathrm{e}^{\bar{C}}$ 得
+\[
+\boxed{y=C\exp\!\left(\int p(x)\,\mathrm{d}x\right)}.
+\]
+此外 $y\equiv 0$ 显然也是解，且已包含在上述通解中（取 $C=0$）。\hfill$\square$
+\end{solution}
+
+\begin{note}
+此例的结果非常重要——它是后续一阶线性方程求解公式的基础。
+注意通解中的积分 $\int p(x)\,\mathrm{d}x$ 只需取一个原函数即可，常数部分已吸收到 $C$ 中。
+\end{note}
+
+\subsection{齐次方程}
+
+\begin{definition}[齐次方程] \label{def:homogeneous-ode}
+若一阶方程 $\displaystyle\frac{\mathrm{d}y}{\mathrm{d}x}=f(x,y)$ 右端的函数满足
+$f(tx,ty)=f(x,y)$ 对所有 $t\neq 0$ 成立，
+即 $f(x,y)$ 可写成仅依赖于比值 $\dfrac{y}{x}$ 的函数 $\varphi\!\left(\dfrac{y}{x}\right)$，
+则称该方程为\textbf{齐次方程}（Homogeneous Equation）。
+
+例如 $\displaystyle\frac{\mathrm{d}y}{\mathrm{d}x}=\frac{xy}{x^{2}+y^{2}}$ 是齐次的，因为
+\[
+\frac{xy}{x^{2}+y^{2}}
+=\frac{\dfrac{y}{x}}{1+\left(\dfrac{y}{x}\right)^{2}}
+=: \varphi\!\left(\frac{y}{x}\right).
+\]
+\end{definition}
+
+对于齐次方程，作代换 $u=\dfrac{y}{x}$（即 $y=ux$），由乘积法则
+$\displaystyle\frac{\mathrm{d}y}{\mathrm{d}x}=u+x\frac{\mathrm{d}u}{\mathrm{d}x}$，
+代入原方程得
+\[
+u+x\frac{\mathrm{d}u}{\mathrm{d}x}=\varphi(u)
+\quad\Longrightarrow\quad
+\frac{\mathrm{d}u}{\mathrm{d}x}=\frac{\varphi(u)-u}{x}. \tag{5.2}
+\]
+这是一个关于新未知函数 $u(x)$ 的\textbf{变量可分离方程}！
+
+\begin{property}[齐次方程的完整解法]
+\begin{enumerate}
+  \item 若 $\varphi(u)-u\neq 0$，则 (5.2) 分离为
+        $\displaystyle\frac{\mathrm{d}u}{\varphi(u)-u}=\frac{\mathrm{d}x}{x}$，
+        积分后回代 $u=\dfrac{y}{x}$ 即得通解；
+  \item 若 $\varphi(u)-u=0$ 有实根 $u_1,u_2,\dots,u_m$，
+        则直线族 $y=u_i\,x$（$i=1,\dots,m$）也是解，一般不包含在通解中；
+  \item 若 $\varphi(u)-u\equiv 0$，则 $\dfrac{\mathrm{d}u}{\mathrm{d}x}\equiv 0$，
+        解为一族过原点的直线 $y=cx$。
+\end{enumerate}
+\end{property}
+
+\begin{example}
+求 $\displaystyle\frac{\mathrm{d}y}{\mathrm{d}x}=\frac{y}{x}+\tan\frac{y}{x}$ 的通解。
+\end{example}
+\begin{solution}
+令 $u=\dfrac{y}{x}$，代入化简得 $\displaystyle\frac{\mathrm{d}u}{\mathrm{d}x}=\frac{\tan u}{x}$。
+分离变量：$\dfrac{\cos u\,\mathrm{d}u}{\sin u}=\dfrac{\mathrm{d}x}{x}$，两边积分：
+$\ln|\sin u|=\ln|x|+C_1$，即 $\sin u=Cx$。
+此外 $\tan u=0$（即 $\sin u=0$）对应 $C=0$ 的情形，已被包含。
+回代 $u=\dfrac{y}{x}$ 得通解
+\[
+\boxed{\sin\frac{y}{x}=Cx}.
+\]
+\end{solution}
+
+\begin{example}
+求解 $(x+y)\,\mathrm{d}x-(y-x)\,\mathrm{d}y=0$。
+\end{example}
+\begin{solution}
+令 $y=ux$，则 $\mathrm{d}y=x\,\mathrm{d}u+u\,\mathrm{d}x$，代入化简得
+$(1+2u-u^2)\,\mathrm{d}x+x(1-u)\,\mathrm{d}u=0$。分离变量并积分：
+$x^2(1+2u-u^2)=C$。回代并补充 $u=1\pm\sqrt{2}$ 的特解（取 $C=0$ 已包含）：
+\[
+\boxed{x^2+2xy-y^2=C}.
+\]
+\end{solution}
+
+\begin{example}
+求解 $x\,\mathrm{d}y-y\,\mathrm{d}x=\sqrt{x^{2}+y^{2}}\,\mathrm{d}x$。
+\end{example}
+\begin{solution}
+设 $x>0$（$x<0$ 推导完全类似），原方程等价于
+$\displaystyle\frac{\mathrm{d}y}{\mathrm{d}x}=\frac{y}{x}+\sqrt{1+\left(\frac{y}{x}\right)^{2}}$。
+
+令 $u=\dfrac{y}{x}$，分离变量得 $\displaystyle\frac{\mathrm{d}u}{\sqrt{1+u^2}}=\frac{\mathrm{d}x}{x}$，
+积分：$\ln\!\left(u+\sqrt{1+u^2}\right)=\ln x+C_1$，即 $u+\sqrt{1+u^2}=Cx$（$C>0$）。
+消去根号后化简可得
+\[
+\boxed{y=\frac{1}{2}\left(Cx^{2}-\frac{1}{C}\right)}.
+\]
+\end{solution}
+
+\subsection{可化为齐次方程的类型}
+
+\begin{example} \label{ex:ode-quasi-homog}
+求解方程 $\displaystyle\frac{\mathrm{d}y}{\mathrm{d}x}=\frac{a_1x+b_1y+c_1}{a_2x+b_2y+c_2}$（系数均为常数）。
+\end{example}
+\begin{solution}
+分三种情形：
+\begin{itemize}
+\item $c_1=c_2=0$：已是齐次方程，令 $u=y/x$ 即可。
+\item $\begin{vmatrix}a_1&b_1\\a_2&b_2\end{vmatrix}=0$（即 $a_1/a_2=b_1/b_2=k$）：
+分子写成 $k(a_2x+b_2y)+c_1$，令 $u=a_2x+b_2y$ 化为可分离方程。
+\item 行列式非零且 $c_1,c_2$ 不全为零：
+两直线有唯一交点 $(\alpha,\beta)$。作平移 $X=x-\alpha,\;Y=y-\beta$，
+方程变为 $\displaystyle\frac{\mathrm{d}Y}{\mathrm{d}X}=g(Y/X)$，即化为齐次方程。
+\end{itemize}
+\end{solution}
+
+\begin{example} \label{ex:ode-intersect-line}
+求解 $\displaystyle\frac{\mathrm{d}y}{\mathrm{d}x}=\frac{x-y+1}{x+y-3}$。
+\end{example}
+\begin{solution}
+联立 $\begin{cases}x-y+1=0\\x+y-3=0\end{cases}$ 得交点 $(1,2)$。
+令 $X=x-1,\;Y=y-2$ 化为 $\dfrac{\mathrm{d}Y}{\mathrm{d}X}=\dfrac{X-Y}{X+Y}$，
+再令 $Y=uX$ 分离变量积分，最终回代化简得
+\[
+\boxed{x^{2}-y^{2}+2x+6y-2xy=C}.
+\]
+\end{solution}
+
+\begin{example}
+求解初值问题
+$\begin{cases}(x^2+2xy-y^2)\mathrm{d}x+(y^2+2xy-x^2)\mathrm{d}y=0,\\ y(1)=1.\end{cases}$
+\end{example}
+\begin{solution}
+两边同除以 $x^2$ 后显式化为齐次形式。令 $y=ux$，
+经有理分式分解 $\dfrac{u^2+2u-1}{(u+1)(u^2+1)}=\dfrac{2u}{u^2+1}-\dfrac{1}{u+1}$
+积分化简得通解 $\dfrac{x^2+y^2}{x+y}=C$。
+代入 $y(1)=1$ 得 $C=1$，故特解为
+\[
+\boxed{x^{2}+y^{2}=x+y}.
+\]
+\end{solution}
+
+\begin{example}
+求解：(1) $f(xy)y\,\mathrm{d}x+g(xy)x\,\mathrm{d}y=0$；
+\quad (2) $\displaystyle\frac{\mathrm{d}y}{\mathrm{d}x}=\frac{1}{x+y}$。
+\end{example}
+\begin{solution}
+\textbf{(1)} 令 $u=xy$，则 $\mathrm{d}u=x\,\mathrm{d}y+y\,\mathrm{d}x$。代入得
+$\ln|x|+\displaystyle\int\frac{g(u)}{u[f(u)-g(u)]}\,\mathrm{d}u=C$。\\
+\textbf{(2)} 令 $u=x+y$，则 $\dfrac{\mathrm{d}u}{\mathrm{d}x}-1=\dfrac{1}{u}$，
+分离变量积分得
+\[
+\boxed{y-\ln|x+y+1|=C}\quad\text{或}\quad \boxed{x=C\mathrm{e}^{y}-y-1}.
+\]
+\end{solution}
+
+\begin{remark}
+方程中出现 $f(xy),\,f(x\pm y),\,f(x^2\pm y^2),\,f(y/x)$ 等复合结构时，
+通常应尝试相应代换 $u=xy,\,x\pm y,\,x^2\pm y^2,\,y/x$ 等，
+将方程化为可分离变量型。
+\end{remark}
+
+\subsection{应用实例}
+
+\subsubsection*{$R$--$C$ 电路充电过程}
+
+\begin{example} \label{ex:ode-rc-circuit}
+如图所示的 $R$--$C$ 电路，电容 $C$ 初始无电荷。
+合上开关 K 后电池 $E$ 对电容充电，求电压 $u_C$ 随时间的变化规律。
+\end{example}
+
+\begin{solution}
+由基尔霍夫第二定律（KVL）：$u_C + RI = E$。
+利用 $Q=Cu_C$ 和 $I=\mathrm{d}Q/\mathrm{d}t=C\,\mathrm{d}u_C/\mathrm{d}t$ 得
+$RC\,\dfrac{\mathrm{d}u_C}{\mathrm{d}t}+u_C=E$。
+
+这是可分离变量方程。结合初始条件 $u_C(0)=0$，解得
+\[
+\boxed{u_C(t)=E\left(1-\mathrm{e}^{-\frac{t}{RC}}\right)}. \tag{5.3}
+\]
+定义时间常数 $\tau=RC$：当 $t=3\tau$ 时 $u_C\approx 0.95E$，
+工程上通常认为充电基本完成。\hfill$\square$
+\end{solution}
+
+\subsubsection*{探照灯反射镜面的形状}
+
+\begin{example} \label{ex:ode-searchlight-mirror}
+制造探照灯反射镜时要求点光源发出的光经镜面反射后平行射出，
+试求反射镜面的几何形状。
+\end{example}
+
+\begin{solution}
+取光源为坐标原点，$x$ 轴平行于反射方向。设镜面由曲线 $y=f(x)$ 绕 $x$ 轴旋转而成。
+根据光学反射定律（入射角等于反射角），导出微分方程
+\[
+\frac{\mathrm{d}y}{\mathrm{d}x}=\frac{y}{x+\sqrt{x^{2}+y^{2}}}. \tag{5.4}
+\]
+
+这是齐次方程。采用代换 $v=x/y$ 将 (5.4) 分离变量并积分（计算略），最终得到
+\[
+\boxed{y^{2}=C(C+2x)},\quad C>0.
+\]
+
+这是一条抛物线！因此反射镜面为旋转抛物面 $y^{2}+z^{2}=C(C+2x)$。
+这正是抛物线的经典光学性质——来自焦点的所有光线经反射后均沿对称轴方向平行射出。\hfill$\square$
+\end{solution}
+
+\subsection{微分方程建模：增长、衰减与冷却}
+
+本节通过三个典型实际模型展示微分方程描述自然规律的威力。
+
+\subsubsection*{马尔萨斯人口增长模型}
+
+\begin{definition}[马尔萨斯模型 / Malthusian Growth] \label{def:malthus-model}
+设某孤立物种（无迁入迁出）在时刻 $t$ 的种群数量为 $P(t)$。
+假设净增长率（出生率减死亡率）为不随时间和规模变化的常数 $a$，则
+\[
+\frac{\mathrm{d}P}{\mathrm{d}t}=aP,\quad P(t_0)=P_0. \tag{5.5}
+\]
+\end{definition}
+
+由例 \ref{ex:sep-linear-homog} 立即得到解
+\[
+\boxed{P(t)=P_0\,\mathrm{e}^{a(t-t_0)}}. \tag{5.6}
+\]
+种群呈\textbf{指数增长}（或衰减，若 $a<0$）。
+
+\begin{note}
+马尔萨斯模型（1798）在预测短期、小规模种群时效果良好。历史数据表明世界人口约每 34.6 年翻一番，与模型预测高度吻合。然而长期外推却导致荒谬结论：按此速率到 2670 年地球上的人口密度将使人们互相踩着肩膀站成两层。问题出在模型忽略了\textbf{种内竞争}：个体成员之间会为有限资源而竞争。
+\end{note}
+
+\subsubsection*{逻辑斯蒂增长模型（Logistic Model）}
+
+为修正马尔萨斯模型的缺陷，引入与 $P^2$ 成正比的竞争项 $-bP^2$（$b>0$）：
+
+\begin{definition}[逻辑斯蒂模型] \label{def:logistic-model}
+\[
+\frac{\mathrm{d}P}{\mathrm{d}t}=aP-bP^{2}=aP\left(1-\frac{b}{a}P\right). \tag{5.7}
+\]
+常数 $a,b$ 称为生命系数（Vital Coefficients）。
+\end{definition}
+
+通过部分分式分解积分可得显式解：
+
+\begin{property}[逻辑斯蒂模型解及其极限行为]
+满足 $P(t_0)=P_0$ 的解为
+\[
+\boxed{P(t)=\frac{aP_0}{bP_0+(a-bP_0)\,\mathrm{e}^{-a(t-t_0)}}}. \tag{5.8}
+\]
+关键特征：
+\begin{itemize}
+  \item 当 $P_0<a/b$ 时 $P(t)$ 单调递增；当 $P_0>a/b$ 时单调递减；
+  \item 无论初值如何，均有 $\displaystyle\lim_{t\to\infty}P(t)=\frac{a}{b}$。
+\end{itemize}
+极限值 $K:=a/b$ 称为环境的\textbf{承载量}（Carrying Capacity）。
+\end{property}
+
+\subsubsection*{牛顿冷却定律与法医应用}
+
+\begin{definition}[牛顿冷却定律] \label{def:newton-cooling}
+温度为 $T(t)$ 的物体置于恒温 $m$ 的介质中，变化率正比于温差：
+\[
+\frac{\mathrm{d}T}{\mathrm{d}t}=-k(T-m),\quad k>0. 
+\]
+\end{definition}
+这个方程的通解前文已给出：$T(t)=m+C\mathrm{e}^{-kt}$。
+
+\begin{example}[法医学中的死亡时间推断] \label{ex:ode-forensic-cooling}
+尸体初始体温 $37^\circ\mathrm{C}$。2 小时后降至 $35^\circ\mathrm{C}$，
+室温恒定 $20^\circ\mathrm{C}$。下午 4 点发现时体温为 $30^\circ\mathrm{C}$。推断死亡时间。
+\end{example}
+\begin{solution}
+设 $H(t)$ 为尸体温度（$^\circ\mathrm{C}$），$t$ 从死亡时刻起算（小时）。由牛顿冷却定律：
+$\dfrac{\mathrm{d}H}{\mathrm{d}t}=-k(H-20),\; H(0)=37$。
+分离变量求解得 $H(t)=17\,\mathrm{e}^{-kt}+20$。 利用 $H(2)=35$ 确定 $k$：$35=17\,\mathrm{e}^{-2k}+20$
+$\;\Rightarrow\; k\approx 0.063$。
+将 $H=30$ 代入 (5.10)：$30=17\,\mathrm{e}^{-0.063t_*}+20$
+$\;\Rightarrow\; t_*\approx 8.4$ 小时。
+从下午 4 点往前推约 8.4 小时，死亡时间大约在\textbf{上午 7 点 36 分左右}。\hfill$\square$
+\end{solution}
+
+\section{练习}
 
 
 
