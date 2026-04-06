@@ -31,122 +31,263 @@
 \mainmatter
 
 \chapter{微分方程}
-\newpage
-\begin{exercise}
-设 $T = \sin x - \sin y = 2\sin(x-y)$，$T^2$ 的最大值是 $A$.
-设 $B = \sin^2 29^\circ + \sin^2 31^\circ + \sin 29^\circ \sin 31^\circ$，则 $100AB = \underline{\qquad}$.
-\end{exercise}
+
+\begin{introduction}
+  \item 微分方程的定义与阶~\ref{def:ode-def}
+  \item 实际问题中的微分方程模型
+  \item 微分方程的解~\ref{def:ode-solution}, \ref{def:ode-general-solution}
+  \item 定解问题与初值问题~\ref{def:ode-initial-value}
+  \item 积分曲线~\ref{def:ode-integral-curve}
+  \item 验证与求解方法
+\end{introduction}
+
+\section{微分方程的基本概念}
+
+在微积分中，我们研究的函数直接反映了现实世界中量与量之间的关系。然而，面对稍微复杂的实际问题时——例如由切线求曲线方程、物体沿直线的运动、放射性物质的衰变、人口的增长以及加热物体的冷却等——反映运动规律的函数往往不能直接写出，但却比较容易建立这些量及其导数之间的关系式。
+
+这种联系自变量、未知函数以及它们的导数或微分的方程，就称为\textbf{微分方程}（Differential Equation）。微分方程是描述自然界中变化规律的最有力数学工具之一。从天体力学到量子场论，从人口动力学到金融衍生品定价，微分方程几乎渗透到了每一个科学领域。\par
+
+本章将从基本概念出发，逐步建立对常微分方程的系统认识，为后续学习各类具体的解法打下基础。
+
+\begin{definition}[微分方程] \label{def:ode-def}
+含有未知函数的导数或微分的方程称为\textbf{微分方程}（Differential Equation）。按照未知函数的个数和类型：
+\begin{itemize}
+    \item 未知函数是一元函数的方程称为\textbf{常微分方程}(ODE)；
+    \item 未知函数是多元函数的方程称为\textbf{偏微分方程}(PDE)。
+\end{itemize}
+在微分方程中，未知函数的导数或微分的最高阶数称为该方程的\textbf{阶}（Order）。
+\end{definition}
+
+\begin{example}[一阶微分方程]
+以下均为一阶微分方程：
+\[
+\frac{\mathrm{d}y}{\mathrm{d}t}=1-y,\quad
+\frac{\mathrm{d}y}{\mathrm{d}t}+y=\sin t,\quad
+(x^2-y^2)\,\mathrm{d}x+(x^2+y^2)\,\mathrm{d}y=0.
+\]
+其中前两个为显式方程（可写成 $y' = f(x,y)$ 的形式），第三个为隐式微分方程。
+\end{example}
+
+\begin{example}[二阶微分方程]
+以下为二阶微分方程：
+\[
+\frac{\mathrm{d}^2y}{\mathrm{d}t^2}+a^2\sin t=0,\quad
+y''+y'^2-y=x.
+\]
+注意第二个方程因含 $y'^2$ 项而成为非线性方程——线性与非线性之分将在后续章节详细讨论。
+\end{example}
+
+\begin{definition}[微分方程的解] \label{def:ode-solution}
+若函数 $y=y(x)$ 代入某微分方程后使其变为恒等式，则称此函数为该方程的一个\textbf{解}（Solution）。例如 $y=\mathrm{e}^x$ 是 $\dfrac{\mathrm{d}y}{\mathrm{d}x}=y$ 的解；$s=\cos t$ 和 $s=\sin t$ 均为 $\dfrac{\mathrm{d}^2s}{\mathrm{d}t^2}+s=0$ 的解。
+\end{definition}
+
+\begin{definition}[通解] \label{def:ode-general-solution}
+若微分方程的解中所含互相独立的任意常数的个数与方程的阶数相同，则称这样的解为该方程的\textbf{通解}（General Solution）。\\
+更严格地，对于 $n$ 阶方程，若解 $y=y(x;c_1,\dots,c_n)$ 满足在某邻域内 Wronski 行列式不为零，则 $c_1,\dots,c_n$ 独立且该解为通解。\\
+\textbf{反例}：$y=(C_1+2C_2)\sin t$ 中两个常数可合并为一个，不是通解。
+\end{definition}
+
+\begin{definition}[特解与定解条件] \label{def:ode-initial-value}
+为确定通解中的任意常数而附加的条件称为\textbf{定解条件}。定解条件和微分方程共同构成一个\textbf{定解问题}。满足定解条件的解称为\textbf{特解}。\\
+反映系统初始状态的条件称为\textbf{初始条件}。初始条件与微分方程构成的定解问题称为\textbf{初值问题}（Cauchy Problem/IVP），标准形式：\\
+一阶：$\begin{cases} y'=f(x,y), \\ y(x_0)=y_0; \end{cases}$~~~~~二阶：$\begin{cases} y''=f(x,y,y'), \\ y(x_0)=y_0,\; y'(x_0)=y_0'. \end{cases}$
+\end{definition}
+
+\begin{definition}[积分曲线] \label{def:ode-integral-curve}
+微分方程解的图形（即解曲线 $y=y(x)$ 在平面上的图像）称为该方程的\textbf{积分曲线}（Integral Curve）。通解对应于积分曲线族；初值问题的几何意义则是从曲线族中找出经过定点 $(x_0, y_0)$（及指定切线方向）的那条特定曲线。
+\end{definition}
+
+\subsection{由通解反求微分方程}
+
+已知含任意常数的函数族（通解），可通过足够多次求导后联立消去常数来反推原方程。
+
+\begin{example}
+已知通解 $y=c_1\mathrm{e}^{-x}+c_2\mathrm{e}^{2x}$，求其所满足的微分方程。
+\end{example}
+
 \begin{solution}
-（1）首先求出$A$，已知$\sin x - \sin y = 2\sin(x-y)$，左侧是正弦值相减，不难想到理由和差化积：
-\begin{align*}
-&\sin x - \sin y = 2\sin\left(\frac{x-y}{2}\right)\cos\left(\frac{x+y}{2}\right),~2\sin(x-y) = 4\sin\left(\frac{x-y}{2}\right)\cos\left(\frac{x-y}{2}\right)\\
-\implies & 2\sin\left(\frac{x-y}{2}\right)\cos\left(\frac{x+y}{2}\right) = 4\sin\left(\frac{x-y}{2}\right)\cos\left(\frac{x-y}{2}\right)
-\end{align*}
-当 $\sin(\frac{x-y}{2}) = 0$ 时。此时 $T = 0$，对应的 $T^2 = 0$。当 $\sin(\frac{x-y}{2}) \neq 0$ 时。两边同时除以 $2\sin(\frac{x-y}{2})$，得到：
-$$\cos\left(\frac{x+y}{2}\right) = 2\cos\left(\frac{x-y}{2}\right)$$
-回到目标 $T^2$。根据 $T = 2\sin(x-y)$，有：
-$$T^2 = 4\sin^2(x-y) = 16\sin^2\left(\frac{x-y}{2}\right)\cos^2\left(\frac{x-y}{2}\right)$$
-所以关键就是搞清楚$\cos\left(\frac{x-y}{2}\right)$的取值范围，因为余弦函数的值域为 $[-1, 1]$，即 $-1 \le \cos(\frac{x+y}{2}) \le 1$，所以必须满足：
-$$-1 \le 2\cos\left(\frac{x-y}{2}\right) \le 1\implies\cos^2\left(\frac{x-y}{2}\right) \le \frac{1}{4}$$
-令 $u = \cos^2(\frac{x-y}{2})$，$0 \le u \le \frac{1}{4}$。将 $\sin^2(\frac{x-y}{2})$ 替换为 $(1 - u)$，则 $T^2$ 可以表示为
-$$T=f(u) = 16u(1 - u) = -16u^2 + 16u$$
-这是个开口向下的抛物线，对称轴$u = \frac{1}{2}$。由于 $u$限制在 $[0, \frac{1}{4}]$ 之间，函数在这个区间内是单调递增的。因此，当 $u = \frac{1}{4}$ 时，$T^2$ 取得最大值：$$T^2_{\max} = 16 \times \frac{1}{4} \times \left(1 - \frac{1}{4}\right) = 4 \times \frac{3}{4} = 3$$结合两种情况，$T^2$ 的最大值 $A = 3$。\\
-（2）然后求解$B$，我们需要计算：
-\begin{align*}
-B &= \sin^2 29^\circ + \sin^2 31^\circ + \sin 29^\circ \sin 31^\circ\\
-&=\frac{1 - \cos 58^\circ}{2} + \frac{1 - \cos 62^\circ}{2} + \frac{\cos(29^\circ - 31^\circ) - \cos(29^\circ + 31^\circ)}{2}\\
-&=\frac{1 - \cos 58^\circ + 1 - \cos 62^\circ + \cos(-2^\circ) - \cos 60^\circ}{2}\\
-&= \frac{2 - (\cos 58^\circ + \cos 62^\circ) + \cos 2^\circ - 0.5}{2}\\
-&= \frac{2 - 2\cos\left(\frac{120^\circ}{2}\right)\cos\left(\frac{-4^\circ}{2}\right) + \cos 2^\circ - 0.5}{2}=\frac{3}{4}
-\end{align*}
-那么$100AB=225$.
+对 $y$ 求导：
+\[
+y'=-c_1\mathrm{e}^{-x}+2c_2\mathrm{e}^{2x},~~
+y''=c_1\mathrm{e}^{-x}+4c_2\mathrm{e}^{2x}.
+\]
+$y+y''=5c_2\mathrm{e}^{2x}$ 与 $y'-y=-3c_2\mathrm{e}^{2x}$ 联立消去 $c_2\mathrm{e}^{2x}$：$3(y+y'')+5(y'-y)=0$，整理得
+\[
+\boxed{y''-y'-2y=0}.
+\]
+这是二阶常系数线性齐次方程，特征根恰为 $r_1=-1,\; r_2=2$，与出发时的通解结构吻合。
 \end{solution}
 
-\newpage
-\begin{exercise}
-在$\triangle ABC$中,角$A,B,C$所对的边分别为$a,b,c$,$BD$平分$\angle ABC$并交$AC$边于点$D$,若$\cos\angle ABC=-\dfrac{7}{25}$,$BD=2$,则下列说法正确的是(\quad )\\
-A. $\triangle ABC$的面积有最小值$\dfrac{16}{3}$~~~~B. $(a-1)c=a$\\
-C. $a+c$有最小值$\dfrac{20}{3}$~~~~D. $a+4c$有最小值$15$
+\begin{note}
+\begin{itemize}
+\item  通解一定包含所有解吗？不一定。某些方程可能存在\textbf{奇解}（Singular Solution）——不在通解表达式中的孤立解，如 Clairaut 方程 $(y')^2+f(y')=0$ 常有奇解。
+\item  所有微分方程都有通解吗？不是。$(y')^2+y^4=0$ 在实范围内仅有零解 $y\equiv 0$，不含任意常数，无传统意义上的通解。此外存在性定理保证了解在一定条件下存在，但未必能用初等函数表示。
+\end{itemize}
+\end{note}
+
+\section{练习}
+
+\begin{exercise}[相关概念]
+回答下列问题：
+\begin{itemize}
+\item 什么叫微分方程？
+\item 微分方程的阶如何定义？
+\item 什么叫微分方程的通解？通解中含多少个任意常数？
+\item 什么叫初值问题？什么叫微分方程的特解？
+\end{itemize}
 \end{exercise}
 \begin{solution}
-因为 $BD$ 平分 $\angle ABC$，所以可以将 $\triangle ABC$ 的面积拆分为两个小三角形面积之和：
-$$S_{\triangle ABC} = S_{\triangle ABD} + S_{\triangle CBD}$$
-根据三角形面积公式：
-$$\frac{1}{2}ac\sin B = \frac{1}{2}c \cdot BD \cdot \sin\frac{B}{2} + \frac{1}{2}a \cdot BD \cdot \sin\frac{B}{2}$$
-已知 $\cos B = -\frac{7}{25}$，且 $B \in (0, \pi)$，可得 $\sin B = \sqrt{1 - \left(-\frac{7}{25}\right)^2} = \frac{24}{25}$。通过半角公式求 $\sin\frac{B}{2}$：
-$$\cos B = 1 - 2\sin^2\frac{B}{2} = -\frac{7}{25} \implies \sin^2\frac{B}{2} = \frac{16}{25} \implies \sin\frac{B}{2} = \frac{4}{5}$$
-将已知量代入面积等式（其中 $BD = 2$）：
-$$\frac{1}{2}ac \cdot \frac{24}{25} = \frac{1}{2}c \cdot 2 \cdot \frac{4}{5} + \frac{1}{2}a \cdot 2 \cdot \frac{4}{5}\Longleftrightarrow\frac{12}{25}ac = \frac{4}{5}(a+c) \implies 3ac = 5(a+c)$$
 \begin{itemize}
-\item 分析选项 B：由 $3ac = 5(a+c)$ 可得 $3ac - 5c = 5a \implies c(3a - 5) = 5a \implies c = \frac{5a}{3a-5}$。这与选项中的 $(a-1)c = a$ 不符，故 B 错误。
-\item 选项 A 和 C可以放在一起分析，根据基本不等式 $a+c \ge 2\sqrt{ac}$（当且仅当 $a=c$ 时取等号），代入前面的关系式：$$3ac = 5(a+c) \ge 10\sqrt{ac}\implies 3\sqrt{ac} \ge 10 \implies \sqrt{ac} \ge \frac{10}{3} \implies ac \ge \frac{100}{9}$$
-所以$$a+c = \frac{3}{5}ac \ge \frac{3}{5} \times \frac{100}{9} = \frac{20}{3}$$当 $a = c = \frac{10}{3}$ 时取最小值，故 C 正确。然后用之前算的面积公式验证 A：$$\triangle ABC \text{ 的面积 } S = \frac{12}{25}ac \ge \frac{12}{25} \times \frac{100}{9} = \frac{16}{3}$$面积的最小值为 $\frac{16}{3}$，故 A 正确。
-\item 选项 D：已知 $3ac = 5(a+c)$，同除以 $ac$ 得：$$\frac{5}{c} + \frac{5}{a} = 3 \implies \frac{1}{a} + \frac{1}{c} = \frac{3}{5}$$
-利用常数代换求 $a+4c$ 的最小值：$$a+4c = \frac{5}{3} (a+4c) \times \frac{3}{5} = \frac{5}{3} (a+4c)\left(\frac{1}{a} + \frac{1}{c}\right)=\frac53\left(5 + \left(\frac{a}{c} + \frac{4c}{a}\right)\right)$$
-应用基本不等式：$$\frac{a}{c} + \frac{4c}{a} \ge 2\sqrt{\frac{a}{c} \cdot \frac{4c}{a}} = 4$$当且仅当 $\frac{a}{c} = \frac{4c}{a}$ 即 $a = 2c$ 时等号成立。将最小值代回原式：$$a+4c \ge \frac{5}{3} \times (5 + 4) = \frac{5}{3} \times 9 = 15$$联立 $a=2c$ 与 $\frac{1}{a}+\frac{1}{c}=\frac{3}{5}$，解得 $c=2.5, a=5$（此时满足三角形三边关系），故最小值为 15。D 正确。
+    \item 含有未知函数及其导数（或微分）的方程称为微分方程。简而言之，它表达了某个未知函数与其变化率之间的关系。
+    \item 微分方程中出现的未知函数的最高阶导数的阶数，称为该微分方程的阶。例如，含有 $\frac{\mathrm{d}^2y}{\mathrm{d}x^2}$ 且没有更高阶导数的方程就是二阶微分方程。
+    \item 如果微分方程的解中含有任意常数，且任意常数的个数与微分方程的阶数相同（且这些常数是相互独立的），这样的解称为微分方程的通解。通解中含有的任意常数个数等于微分方程的阶数。
+    \item 初值问题：附加了用来确定通解中任意常数的条件（即初始条件）的微分方程求解问题。特解：通过给定的初始条件，确定了通解中的任意常数后所得到的具体的解，不含有任意常数。
 \end{itemize}
 \end{solution}
 
-\newpage
-\begin{exercise}
-三角形$ABC$中，$h$为$BC$边上的高，$b+c=a+h$，求$\sin A$的最小值？
+\begin{exercise}[验证解]
+证明对任意常数 $P_0$，函数 $P(t)=P_0\mathrm{e}^t$ 满足微分方程 $\displaystyle \frac{\mathrm{d}P}{\mathrm{d}t}=P$。
 \end{exercise}
 \begin{solution}
-全部转化成角度，即由正弦定理将边长转化为正弦值，并结合 $h = c\sin B = b\sin C$，代入 $b+c=a+h$ 可得：
-\[ \sin B + \sin C = \sin A + \sin B\sin C \]
-移项并利用和差化积与倍角公式进行化简：
-\begin{align*}
-\sin B\sin C &= \sin B + \sin C - \sin A \\
-&= 2\sin \frac{B+C}{2}\cos \frac{B-C}{2} - \sin(B+C) \\
-&= 2\sin \frac{B+C}{2}\left(\cos \frac{B-C}{2} - \cos \frac{B+C}{2}\right) \\
-&= 4\sin \frac{B}{2}\sin \frac{C}{2}\sin \frac{B+C}{2}
-\end{align*}
-又因为 $\sin B\sin C = 4\sin \frac{B}{2}\cos \frac{B}{2}\sin \frac{C}{2}\cos \frac{C}{2}$，将上式两边同时除以 $4\sin \frac{B}{2}\sin \frac{C}{2}\cos \frac{B}{2}\cos \frac{C}{2}$，可得：
-\[ 1 = \frac{\sin \frac{B+C}{2}}{\cos \frac{B}{2}\cos \frac{C}{2}} = \frac{\sin \frac{B}{2}\cos \frac{C}{2} + \cos \frac{B}{2}\sin \frac{C}{2}}{\cos \frac{B}{2}\cos \frac{C}{2}} = \tan \frac{B}{2} + \tan \frac{C}{2} \]
-
-设 $t_1 = \tan \frac{B}{2} > 0$，$t_2 = \tan \frac{C}{2} > 0$，则 $t_1 + t_2 = 1$。
-根据基本不等式：
-\[ 0 < t_1t_2 \le \left(\frac{t_1+t_2}{2}\right)^2 = \frac{1}{4} \]
-
-设 $t = \tan \frac{A}{2}$，利用诱导公式和两角和的正切公式展开：
-\[ t = \tan \frac{A}{2} = \cot \frac{B+C}{2} = \frac{1 - \tan \frac{B}{2}\tan \frac{C}{2}}{\tan \frac{B}{2} + \tan \frac{C}{2}} = \frac{1-t_1t_2}{t_1+t_2} = 1 - t_1t_2 \]
-由 $0 < t_1t_2 \le \frac{1}{4}$ 可知：
-\[ 1 > t \ge 1 - \frac{1}{4} = \frac{3}{4} \]
-
-利用万能公式求 $\tan A$ 和 $\sin A$ 的最小值：
-\[ \tan A = \frac{2t}{1-t^2} \]
-因为 $y = \frac{2t}{1-t^2}$ 在 $t \in \left[\frac{3}{4}, 1\right)$ 上单调递增，所以当 $t = \frac{3}{4}$ 时取得最小值：
-\[ \tan A \ge \frac{2 \times \frac{3}{4}}{1 - \left(\frac{3}{4}\right)^2} = \frac{24}{7} \]
-同理，若求 $\sin A$ 的最小值：
-\[ \sin A = \frac{2t}{1+t^2} \]
-该函数在 $t \in \left[\frac{3}{4}, 1\right)$ 上同样单调递增，当 $t = \frac{3}{4}$ 时取得最小值：
-\[ \sin A \ge \frac{2 \times \frac{3}{4}}{1 + \left(\frac{3}{4}\right)^2} = \frac{24}{25} \]
+已知函数为 $P(t)=P_0\mathrm{e}^t$。对该函数关于 $t$ 求导：$$\frac{\mathrm{d}P}{\mathrm{d}t} = \frac{\mathrm{d}}{\mathrm{d}t}(P_0\mathrm{e}^t) = P_0\mathrm{e}^t$$将 $P(t)=P_0\mathrm{e}^t$ 代入上式右端，得到：$$\frac{\mathrm{d}P}{\mathrm{d}t} = P$$左端等于右端，因此函数 $P(t)=P_0\mathrm{e}^t$ 满足该微分方程。证明完毕。
 \end{solution}
 
+\begin{exercise}[求参数]
+设 $Q=C\mathrm{e}^{kt}$ 满足微分方程 $\displaystyle \frac{\mathrm{d}Q}{\mathrm{d}t}=-0.03Q$，问 $C$ 与 $k$ 为何值？
+\end{exercise}
 \begin{solution}
-设 $\triangle ABC$ 的内切圆半径为 $r$，该圆与 $AC$ 切于点 $D$。由切线长定理及三角形面积公式有：
-\[b+c-a = 2AD = 2r\cot\frac{A}{2}, h = \frac{2S_{\triangle ABC}}{a} = \frac{r(a+b+c)}{a} = r\left( 1+\frac{b+c}{a} \right).\]
-根据已知条件 $b+c=a+h$，即 $b+c-a=h$，由此可得：
-\[ 2r\cot\frac{A}{2} = r\left( 1+\frac{b+c}{a} \right) \iff 2\cot\frac{A}{2} = 1+\frac{b+c}{a}. \]
-显然上式右边大于 $2$，即 $\cot\frac{A}{2} > 1$，因此 $A$ 必为锐角。
-由正弦定理及和差化积公式可得：
-\[ \frac{a}{b+c} = \frac{\sin A}{\sin B + \sin C} = \frac{2\sin\frac{A}{2}\cos\frac{A}{2}}{2\sin\frac{B+C}{2}\cos\frac{B-C}{2}} = \frac{2\sin\frac{A}{2}\cos\frac{A}{2}}{2\cos\frac{A}{2}\cos\frac{B-C}{2}} = \frac{\sin\frac{A}{2}}{\cos\frac{B-C}{2}}. \]
-因为 $\cos\frac{B-C}{2} \le 1$，所以有：
-\[ \frac{a}{b+c} \ge \sin\frac{A}{2} \implies \frac{b+c}{a} \le \frac{1}{\sin\frac{A}{2}}. \]
-将此不等式代入前式，于是有：
-\[ 2\cot\frac{A}{2} \le 1+\frac{1}{\sin\frac{A}{2}}. \]
-将 $\cot\frac{A}{2} = \frac{\cos\frac{A}{2}}{\sin\frac{A}{2}}$ 代入并去分母即得：
-\begin{align*}
-2\cos\frac{A}{2} \le \sin\frac{A}{2}+1 &\implies 4\cos^2\frac{A}{2} \le (\sin\frac{A}{2}+1)^2 \\
-&\implies 4(1-\sin^2\frac{A}{2}) \le \sin^2\frac{A}{2} + 2\sin\frac{A}{2} + 1 \\
-&\implies 5\sin^2\frac{A}{2} + 2\sin\frac{A}{2} - 3 \ge 0 \\
-&\implies (5\sin\frac{A}{2}-3)(\sin\frac{A}{2}+1) \ge 0 \\
-&\implies \sin\frac{A}{2} \ge \frac{3}{5}.
-\end{align*}
-由 $\sin\frac{A}{2} \ge \frac{3}{5}$ 且 $A$ 为锐角，可推得 $\tan\frac{A}{2} \ge \frac{3}{4}$。
-最后，利用正切的倍角公式得出：
-\[ \tan A = \frac{2\tan\frac{A}{2}}{1-\tan^2\frac{A}{2}} \ge \frac{2 \times \frac{3}{4}}{1-\left(\frac{3}{4}\right)^2} = \frac{24}{7}. \]
+对已知函数 $Q=C\mathrm{e}^{kt}$ 关于 $t$ 求导：$$\frac{\mathrm{d}Q}{\mathrm{d}t} = C \cdot k\mathrm{e}^{kt} = k(C\mathrm{e}^{kt}) = kQ$$题目已知该函数满足微分方程：$$\frac{\mathrm{d}Q}{\mathrm{d}t} = -0.03Q$$对比两式可得：$k = -0.03$。由于该方程是一阶线性齐次微分方程，常数 $C$ 作为初始条件决定的系数，在没有给出具体初始条件的情况下，$C$ 可以是任意常数。结论： $k = -0.03$，$C$ 为任意常数。
 \end{solution}
+
+\begin{exercise}[求参数]
+设 $y=\cos\omega t$，求 $\omega$ 的值，使 $y$ 满足方程 $\displaystyle \frac{\mathrm{d}^2y}{\mathrm{d}t^2}+9y=0$。
+\end{exercise}
+\begin{solution}
+已知 $y=\cos\omega t$。求一阶导数：$$\frac{\mathrm{d}y}{\mathrm{d}t} = -\omega\sin\omega t$$求二阶导数：$$\frac{\mathrm{d}^2y}{\mathrm{d}t^2} = -\omega^2\cos\omega t$$将 $y$ 和二阶导数代入微分方程 $\frac{\mathrm{d}^2y}{\mathrm{d}t^2}+9y=0$ 中：$$-\omega^2\cos\omega t + 9\cos\omega t = 0\implies(9 - \omega^2)\cos\omega t = 0$$为了使上式对任意 $t$ 恒成立，必须满足：$$9 - \omega^2 = 0$$解得：$\omega = \pm 3$。
+\end{solution}
+
+\begin{exercise}[求参数]
+在下列各题中, 利用所给的初始条件确定函数关系中的常数:
+\begin{enumerate}
+    \item[(1)] $\displaystyle x^2-y^2=C$, $\displaystyle y|_{x=0}=5$;
+    \item[(2)] $\displaystyle y=\mathrm{e}^{2x}(C_1+C_2x)$, $\displaystyle y|_{x=0}=0,\,y'|_{x=0}=1$;
+    \item[(3)] $\displaystyle y=C_1\sin(x-C_2)$, $\displaystyle y|_{x=\pi}=1,\,y'|_{x=\pi}=0$.
+\end{enumerate}
+\end{exercise}
+\begin{solution}
+\begin{enumerate}
+    \item  将 $x=0$ 和 $y=5$ 代入方程：$$0^2 - 5^2 = C \implies C = -25$$方程为：$x^2-y^2=-25$ 或 $y^2-x^2=25$。
+    \item 首先利用 $y(0)=0$：$$0 = \mathrm{e}^0(C_1 + C_2 \cdot 0) \implies C_1 = 0$$将 $C_1=0$ 代入原函数，得 $y = C_2 x \mathrm{e}^{2x}$。对其求导：$$y' = C_2(\mathrm{e}^{2x} + 2x\mathrm{e}^{2x})$$利用 $y'(0)=1$：$$1 = C_2(\mathrm{e}^0 + 0) \implies C_2 = 1$$所以常数为 $C_1 = 0$, $C_2 = 1$。（特解为 $y=x\mathrm{e}^{2x}$）
+    \item 对原函数求导：$$y' = C_1\cos(x-C_2)$$代入初始条件：$$y(\pi) = C_1\sin(\pi-C_2) = C_1\sin C_2 = 1 \quad \text{(式1)}$$$$y'(\pi) = C_1\cos(\pi-C_2) = -C_1\cos C_2 = 0 \quad \text{(式2)}$$由（式1）知 $C_1 \neq 0$，因此由（式2）必有 $\cos C_2 = 0$。解得 $C_2 = \frac{\pi}{2} + k\pi$ ($k$ 为整数)。为了简便，取 $k=0$，即 $C_2 = \frac{\pi}{2}$。此时 $\sin(\frac{\pi}{2}) = 1$。代入（式1）得 $C_1 \cdot 1 = 1 \implies C_1 = 1$。所以常数可取为 $C_1 = 1$, $C_2 = \frac{\pi}{2}$。（特解为 $y=\sin(x-\frac{\pi}{2}) = -\cos x$）
+\end{enumerate}
+\end{solution}
+
+\begin{exercise}[函数对应微分方程]
+指出下列给出的函数满足哪个微分方程:
+\begin{center}
+\begin{tabular}{@{}lll@{}}
+\toprule
+ \textbf{函数} & \textbf{微分方程} \\
+\midrule
+(1)  $y=2\sin x$ & (a) $\displaystyle \frac{\mathrm{d}y}{\mathrm{d}x}=-2y$ \\[6pt]
+(2) $y=\sin2x$ & (b) $\displaystyle \frac{\mathrm{d}y}{\mathrm{d}x}=2y$ \\[6pt]
+(3)  $y=\mathrm{e}^{2x}$ & (c) $\displaystyle \frac{\mathrm{d}^2y}{\mathrm{d}x^2}=-y$ \\[6pt]
+(4)  $y=\mathrm{e}^{-2x}$ & (d) $\displaystyle \frac{\mathrm{d}^2y}{\mathrm{d}x^2}=-4y$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+\end{exercise}
+\begin{solution}
+    对四个给定函数求导：
+    \begin{itemize}
+    \item $y=2\sin x \implies y' = 2\cos x \implies y'' = -2\sin x = -y$，故(a) $y' = -2y$ 对应 (4)
+    \item $y=\sin2x \implies y' = 2\cos2x \implies y'' = -4\sin2x = -4y$，故(b) $y' = 2y$ 对应 (3)
+    \item $y=\mathrm{e}^{2x} \implies y' = 2\mathrm{e}^{2x} = 2y$，故(c) $y'' = -y$ 对应 (1)
+    \item $y=\mathrm{e}^{-2x} \implies y' = -2\mathrm{e}^{-2x} = -2y$，故(d) $y'' = -4y$ 对应 (2)
+    \end{itemize}
+\end{solution}
+
+\begin{exercise}[函数对应微分方程]
+指出下列哪个函数是哪个微分方程的解?
+\begin{center}
+\begin{tabular}{@{}lll@{}}
+\toprule
+\textbf{函数} & \textbf{微分方程} \\
+\midrule
+(1)  $y=\mathrm{e}^x$ & (a) $y''-y=0$ \\[6pt]
+(2)  $y=x^3$ & (b) $x^2y''+2xy'-2y=0$ \\[6pt]
+(3)  $y=\mathrm{e}^{-x}$ & (c) $x^2y''-6y=0$ \\[6pt]
+(4)  $y=x^{-2}$ & \\
+\bottomrule
+\end{tabular}
+\end{center}
+\end{exercise}
+\begin{solution}
+逐一验证左侧给出的函数：
+\begin{enumerate}
+\item $y=\mathrm{e}^x\implies y'=\mathrm{e}^x$, $y''=\mathrm{e}^x$。代入 (a) $y''-y=0$，得 $\mathrm{e}^x-\mathrm{e}^x=0$，成立。对应 (a)。
+\item $y=x^3\implies y'=3x^2$, $y''=6x$。代入 (c) $x^2y''-6y=0$，得 $x^2(6x) - 6(x^3) = 6x^3 - 6x^3 = 0$，成立。对应 (c)。
+\item $y=\mathrm{e}^{-x}\implies y'=-\mathrm{e}^{-x}$, $y''=\mathrm{e}^{-x}$。代入 (a) $y''-y=0$，得 $\mathrm{e}^{-x}-\mathrm{e}^{-x}=0$，成立。同样对应 (a)。（注：(1)和(3)都是方程(a)的解，构成了它的基础解系）
+\item $y=x^{-2}\implies y'=-2x^{-3}$, $y''=6x^{-4}$。代入 (b) $x^2y''+2xy'-2y=0$：$$x^2(6x^{-4}) + 2x(-2x^{-3}) - 2(x^{-2}) = 6x^{-2} - 4x^{-2} - 2x^{-2} = 0$$成立。对应 (b)。
+\end{enumerate}
+\end{solution}
+
+\begin{exercise}[曲线族对应微分方程]
+曲线族常常作为微分方程的解出现. 试将下列曲线与微分方程对应起来:
+\begin{center}
+\begin{tabular}{@{}lll@{}}
+\toprule
+ \textbf{曲线族} & \textbf{微分方程} \\
+\midrule
+(1) $y=x\mathrm{e}^{kx}$ & (a) $\displaystyle \frac{\mathrm{d}y}{\mathrm{d}x}=\frac{y}{x}$ \\[6pt]
+(2) $y=x^p$ & (b) $\displaystyle \frac{\mathrm{d}y}{\mathrm{d}x}=\frac{y\ln y}{x}$ \\[6pt]
+(3) $y=\mathrm{e}^{kx}$ & (c) $\displaystyle \frac{\mathrm{d}y}{\mathrm{d}x}=\frac{y}{x}\left(1+\ln\frac{y}{x}\right)$ \\[6pt]
+(4) $y=mx$ & (d) $\displaystyle \frac{\mathrm{d}y}{\mathrm{d}x}=\frac{y\ln y}{x\ln x}$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+\end{exercise}
+\begin{solution}
+我们需要通过消去曲线族中的参数（$k, p, m$）来得到微分方程：
+\begin{enumerate}
+    \item[(1)] 对于 $y=x\mathrm{e}^{kx}$，两边对 $x$ 求导得：
+    $$ \frac{\mathrm{d}y}{\mathrm{d}x} = \mathrm{e}^{kx} + kx\mathrm{e}^{kx} $$
+    由原方程可得 $\displaystyle \mathrm{e}^{kx} = \frac{y}{x}$，两边取对数得 $\displaystyle kx = \ln\frac{y}{x}$。
+    将其代入导数表达式中，得：
+    $$ \frac{\mathrm{d}y}{\mathrm{d}x} = \frac{y}{x} + \left(\ln\frac{y}{x}\right)\frac{y}{x} = \frac{y}{x}\left(1+\ln\frac{y}{x}\right) $$
+    因此，(1) 对应 (c)。
+    \item[(2)] 对于 $y=x^p$，两边对 $x$ 求导得：
+    $$ \frac{\mathrm{d}y}{\mathrm{d}x} = px^{p-1} = p\frac{x^p}{x} = p\frac{y}{x} $$
+    由原方程 $y=x^p$ 两边取自然对数得 $\ln y = p\ln x$，从而得到参数 $\displaystyle p = \frac{\ln y}{\ln x}$。
+    将 $p$ 代入导数表达式中，得：
+    $$ \frac{\mathrm{d}y}{\mathrm{d}x} = \frac{\ln y}{\ln x} \cdot \frac{y}{x} = \frac{y\ln y}{x\ln x} $$
+    因此，(2) 对应 (d)。
+    \item[(3)] 对于 $y=\mathrm{e}^{kx}$，两边对 $x$ 求导得：
+    $$ \frac{\mathrm{d}y}{\mathrm{d}x} = k\mathrm{e}^{kx} = ky $$
+    由原方程两边取自然对数得 $\ln y = kx$，从而 $\displaystyle k = \frac{\ln y}{x}$。
+    将 $k$ 代入导数表达式中，得：
+    $$ \frac{\mathrm{d}y}{\mathrm{d}x} = \frac{\ln y}{x} \cdot y = \frac{y\ln y}{x} $$
+    因此，(3) 对应 (b)。
+    \item[(4)] 对于 $y=mx$，两边对 $x$ 求导得：
+    $$ \frac{\mathrm{d}y}{\mathrm{d}x} = m $$
+    由原方程得 $\displaystyle m = \frac{y}{x}$，直接代入导数表达式得：
+    $$ \frac{\mathrm{d}y}{\mathrm{d}x} = \frac{y}{x} $$
+    因此，(4) 对应 (a)。
+\end{enumerate}
+综上所述，对应关系为：(1) --- (c)，(2) --- (d)，(3) --- (b)，(4) --- (a)。
+\end{solution}
+
+\begin{exercise}[曲线族对应微分方程]
+求抛物线族 $\displaystyle y=C_1(x-C_2)^2$ 的微分方程.
+\end{exercise}
+\begin{solution}
+该曲线族含有两个独立参数 $C_1$ 和 $C_2$，因此我们需要对原式求两次导数，以消去这两个参数，得到一个二阶微分方程。已知：$$y = C_1(x-C_2)^2 \quad \text{(式1)}$$两边对 $x$ 求一阶导数：$$y' = 2C_1(x-C_2) \quad \text{(式2)}$$两边再对 $x$ 求二阶导数：$$y'' = 2C_1 \quad \text{(式3)}$$现在利用这三个式子消去 $C_1$ 和 $C_2$：由（式3）直接得到 $C_1 = \frac{y''}{2}$。将（式2）两边平方，可以巧妙地凑出（式1）的形式：$$(y')^2 = 4C_1^2(x-C_2)^2$$$$(y')^2 = 4C_1 \cdot [C_1(x-C_2)^2]$$观察发现括号内的部分正好是 $y$，于是：$$(y')^2 = 4C_1 y$$最后，把从（式3）得到的 $2C_1 = y''$ 代入上式（即 $4C_1 = 2y''$）：$$(y')^2 = 2y'' y$$即：$$2yy'' - (y')^2 = 0$$这就是该抛物线族满足的微分方程。
+\end{solution}
+
+
+
+
+
 
 
 \end{document}
