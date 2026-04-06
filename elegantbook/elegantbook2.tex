@@ -14,7 +14,7 @@
 \setcounter{tocdepth}{3}
 
 \logo{logo-blue.png}
-\cover{751_01.png}
+\cover{cover.jpg}
 
 % 本文档命令
 \usepackage{array}
@@ -50,7 +50,7 @@
 本章将从基本概念出发，逐步建立对常微分方程的系统认识，为后续学习各类具体的解法打下基础。
 
 \begin{definition}[微分方程] \label{def:ode-def}
-含有未知函数的导数或微分的方程称为\textbf{微分方程}（Differential Equation）。按照未知函数的个数和类型：
+含有未知函数的导数或微分的方程称为\textbf{微分方程}。按照未知函数的个数和类型：
 \begin{itemize}
     \item 未知函数是一元函数的方程称为\textbf{常微分方程}(ODE)；
     \item 未知函数是多元函数的方程称为\textbf{偏微分方程}(PDE)。
@@ -283,6 +283,7 @@ $y+y''=5c_2\mathrm{e}^{2x}$ 与 $y'-y=-3c_2\mathrm{e}^{2x}$ 联立消去 $c_2\ma
 \begin{solution}
 该曲线族含有两个独立参数 $C_1$ 和 $C_2$，因此我们需要对原式求两次导数，以消去这两个参数，得到一个二阶微分方程。已知：$$y = C_1(x-C_2)^2 \quad \text{(式1)}$$两边对 $x$ 求一阶导数：$$y' = 2C_1(x-C_2) \quad \text{(式2)}$$两边再对 $x$ 求二阶导数：$$y'' = 2C_1 \quad \text{(式3)}$$现在利用这三个式子消去 $C_1$ 和 $C_2$：由（式3）直接得到 $C_1 = \frac{y''}{2}$。将（式2）两边平方，可以巧妙地凑出（式1）的形式：$$(y')^2 = 4C_1^2(x-C_2)^2$$$$(y')^2 = 4C_1 \cdot [C_1(x-C_2)^2]$$观察发现括号内的部分正好是 $y$，于是：$$(y')^2 = 4C_1 y$$最后，把从（式3）得到的 $2C_1 = y''$ 代入上式（即 $4C_1 = 2y''$）：$$(y')^2 = 2y'' y\implies 2yy'' - (y')^2 = 0$$这就是该抛物线族满足的微分方程。
 \end{solution}
+
 
 \section{变量可分离方程及齐次方程}
 
@@ -654,14 +655,2988 @@ $RC\,\dfrac{\mathrm{d}u_C}{\mathrm{d}t}+u_C=E$。
 \begin{solution}
 设 $H(t)$ 为尸体温度（$^\circ\mathrm{C}$），$t$ 从死亡时刻起算（小时）。由牛顿冷却定律：
 $\dfrac{\mathrm{d}H}{\mathrm{d}t}=-k(H-20),\; H(0)=37$。
-分离变量求解得 $H(t)=17\,\mathrm{e}^{-kt}+20$。 利用 $H(2)=35$ 确定 $k$：$35=17\,\mathrm{e}^{-2k}+20$
-$\;\Rightarrow\; k\approx 0.063$。
-将 $H=30$ 代入 (5.10)：$30=17\,\mathrm{e}^{-0.063t_*}+20$
-$\;\Rightarrow\; t_*\approx 8.4$ 小时。
+分离变量求解得 $H(t)=17\,\mathrm{e}^{-kt}+20$。 利用 $H(2)=35$ 确定 $k$：
+\[
+35=17\,\mathrm{e}^{-2k}+20 \implies k\approx 0.063
+\]
+将 $H=30$ 代入方程：
+\[
+30=17\,\mathrm{e}^{-0.063t_*}+20 \implies t_*\approx 8.4\ \text{小时}
+\]
 从下午 4 点往前推约 8.4 小时，死亡时间大约在\textbf{上午 7 点 36 分左右}。\hfill$\square$
 \end{solution}
 
 \section{练习}
+
+\subsection{A组}
+
+\begin{exercise}[相关概念]
+回答下列问题:
+\begin{enumerate}
+    \item[(1)] 变量可分离方程具有什么形状?
+    \item[(2)] 什么叫齐次方程?
+    \item[(3)] 用什么办法将齐次方程化为变量可分离方程?
+\end{enumerate}
+\end{exercise}
+\begin{solution}
+\begin{enumerate}
+    \item[(1)] 变量可分离方程是指可以表示为 
+    \[
+    \frac{\mathrm{d}y}{\mathrm{d}x} = f(x)g(y) \quad \text{或者} \quad M(x)\mathrm{d}x + N(y)\mathrm{d}y = 0 
+    \]
+    形式的一阶微分方程，其中方程的右端可以分解为一个仅含 $x$ 的函数与一个仅含 $y$ 的函数的乘积。
+    
+    \item[(2)] 若一阶方程 $\displaystyle\frac{\mathrm{d}y}{\mathrm{d}x} = f(x,y)$ 中的函数 $f(x,y)$ 满足对任意非零实数 $t$ 都有 
+    \[
+    f(tx,ty) = f(x,y)
+    \]
+    或者等价地，它可以写成仅依赖于比值 $\frac{y}{x}$ 的函数形式 $\varphi\big(\frac{y}{x}\big)$，则称该微分方程为齐次方程。
+    
+    \item[(3)] 通常采用变量代换的方法，令 $u = \frac{y}{x}$（即 $y = ux$），此时 
+    \[
+    \frac{\mathrm{d}y}{\mathrm{d}x} = u + x\frac{\mathrm{d}u}{\mathrm{d}x}
+    \]
+    将此式代入原齐次方程 $\frac{\mathrm{d}y}{\mathrm{d}x} = \varphi\big(\frac{y}{x}\big)$ 中，即可得到 
+    \[
+    u + x\frac{\mathrm{d}u}{\mathrm{d}x} = \varphi(u)
+    \]
+    进一步变形为 
+    \[
+    \frac{\mathrm{d}u}{\mathrm{d}x} = \frac{\varphi(u)-u}{x}
+    \]
+    从而转化为关于未知函数 $u(x)$ 的变量可分离方程。
+\end{enumerate}
+\end{solution}
+
+\begin{exercise}[求解方程]
+对 $k>0$ 求微分方程 $\displaystyle \frac{\mathrm{d}H}{\mathrm{d}t}=-k(H-20)$ 的通解.
+\end{exercise}
+\begin{solution}
+对方程进行变量分离，当 $H \neq 20$ 时，得
+\[
+\frac{\mathrm{d}H}{H-20} = -k\,\mathrm{d}t
+\]
+两边同时积分：
+\[
+\int \frac{\mathrm{d}H}{H-20} = \int -k\,\mathrm{d}t \implies \ln|H-20| = -kt + C_1
+\]
+化简整理可得：
+\[
+H-20 = \pm\mathrm{e}^{C_1}\mathrm{e}^{-kt}
+\]
+令 $C = \pm\mathrm{e}^{C_1}$，则通解为：
+\[
+\mathbf{H(t) = 20 + C\mathrm{e}^{-kt}}
+\]
+（注意：当 $C=0$ 时，特解 $H \equiv 20$ 也包含在上述通解之中。）
+\end{solution}
+
+\begin{exercise}[求解方程]
+求初值问题 $\displaystyle \frac{\mathrm{d}P}{\mathrm{d}t}=2P-2Pt,\,P\big|_{t=0}=5$ 的解, 并画出其图形.
+\end{exercise}
+\begin{solution}
+提取公因式，将微分方程化为变量可分离形式：
+\[
+\frac{\mathrm{d}P}{\mathrm{d}t} = 2P(1-t)
+\]
+分离变量得：
+\[
+\frac{\mathrm{d}P}{P} = 2(1-t)\,\mathrm{d}t
+\]
+两边积分：
+\[
+\ln|P| = 2t - t^2 + C_1 \implies P = C\mathrm{e}^{2t-t^2}
+\]
+将初始条件 $P(0) = 5$ 代入上式得：
+\[
+5 = C\mathrm{e}^{0} \implies C = 5
+\]
+故所求初值问题的解为：
+\[
+\mathbf{P(t) = 5\mathrm{e}^{2t-t^2}}
+\]
+\textbf{图形描述：} 此函数图象为一族类似高斯钟形曲线。对其求导发现极值点在 $t=1$ 处取得，最大值为 $P(1) = 5\mathrm{e}$。曲线在 $t=1$ 两侧对称，随着 $t \to \pm\infty$，$P(t)$ 迅速衰减趋于 $0$。
+\end{solution}
+
+\begin{exercise}[求解方程]
+求下列初值问题的解:
+\begin{enumerate}
+    \item[(1)] $\displaystyle \frac{\mathrm{d}P}{\mathrm{d}t}=0.02P,\,P(0)=20$;
+    \item[(2)] $\displaystyle \frac{\mathrm{d}y}{\mathrm{d}x}+\frac{y}{3}=0,\,y(0)=10$;
+    \item[(3)] $\displaystyle \frac{\mathrm{d}y}{\mathrm{d}x}=2y-4$, 过点 $(2,5)$;
+    \item[(4)] $\displaystyle \frac{\mathrm{d}x}{\mathrm{d}t}=t\mathrm{e}^t$, 过原点;
+    \item[(5)] $\displaystyle \frac{\mathrm{d}y}{\mathrm{d}x}=\frac{5y}{x},\,y\big|_{x=1}=3$;
+    \item[(6)] $\displaystyle \frac{\mathrm{d}u}{\mathrm{d}t}=u+ut^2,\,u(0)=5$;
+    \item[(7)] $\displaystyle \frac{\mathrm{d}\omega}{\mathrm{d}\theta}=\theta\omega^2\sin\theta^2,\,\omega(0)=1$;
+    \item[(8)] $\displaystyle x(x+1)\frac{\mathrm{d}y}{\mathrm{d}x}=y^2,\,y(1)=1$.
+\end{enumerate}
+\end{exercise}
+\begin{solution}
+\begin{enumerate}
+    \item[(1)] 分离变量并积分：
+    \[
+    \frac{\mathrm{d}P}{P} = 0.02\,\mathrm{d}t \implies \ln|P| = 0.02t + C \implies P(t) = C_1\mathrm{e}^{0.02t}
+    \]
+    由 $P(0)=20$ 得 $C_1=20$，故特解为：
+    \[
+    \mathbf{P(t) = 20\mathrm{e}^{0.02t}}
+    \]
+    
+    \item[(2)] 分离变量并积分：
+    \[
+    \frac{\mathrm{d}y}{y} = -\frac{1}{3}\mathrm{d}x \implies y = C\mathrm{e}^{-\frac{1}{3}x}
+    \]
+    由 $y(0)=10$ 得 $C=10$，故解为：
+    \[
+    \mathbf{y = 10\mathrm{e}^{-x/3}}
+    \]
+    
+    \item[(3)] 分离变量并积分：
+    \[
+    \frac{\mathrm{d}y}{y-2} = 2\,\mathrm{d}x \implies \ln|y-2| = 2x+C \implies y = 2+C_1\mathrm{e}^{2x}
+    \]
+    代入 $x=2, y=5$ 有 $5 = 2+C_1\mathrm{e}^{4} \implies C_1=3\mathrm{e}^{-4}$。故解为：
+    \[
+    \mathbf{y = 2+3\mathrm{e}^{2x-4}}
+    \]
+    
+    \item[(4)] 直接积分得：
+    \[
+    x(t) = \int t\mathrm{e}^t\,\mathrm{d}t = t\mathrm{e}^t - \mathrm{e}^t + C
+    \]
+    过原点意味着 $x(0)=0$，代入得 $0 = -1+C \implies C=1$。故解为：
+    \[
+    \mathbf{x(t) = (t-1)\mathrm{e}^t + 1}
+    \]
+    
+    \item[(5)] 分离变量并积分：
+    \[
+    \frac{\mathrm{d}y}{y} = \frac{5}{x}\mathrm{d}x \implies \ln|y| = 5\ln|x|+C \implies y = C_1x^5
+    \]
+    代入 $y|_{x=1}=3$ 得 $C_1=3$。故解为：
+    \[
+    \mathbf{y = 3x^5}
+    \]
+    
+    \item[(6)] 提取公因式 $\displaystyle \frac{\mathrm{d}u}{\mathrm{d}t} = u(1+t^2)$，分离并积分：
+    \[
+    \frac{\mathrm{d}u}{u} = (1+t^2)\mathrm{d}t \implies \ln|u| = t+\frac{1}{3}t^3+C \implies u = C_1\mathrm{e}^{t+t^3/3}
+    \]
+    由 $u(0)=5$ 得 $C_1=5$。故解为：
+    \[
+    \mathbf{u(t) = 5\mathrm{e}^{t+t^3/3}}
+    \]
+    
+    \item[(7)] 分离变量得：
+    \[
+    \frac{\mathrm{d}\omega}{\omega^2} = \theta\sin(\theta^2)\mathrm{d}\theta
+    \]
+    两边积分：
+    \[
+    -\frac{1}{\omega} = -\frac{1}{2}\cos(\theta^2)+C
+    \]
+    代入初值 $\omega(0)=1$ 得 $-1 = -1/2+C \implies C=-1/2$。故：
+    \[
+    -\frac{1}{\omega} = -\frac{1}{2}(\cos(\theta^2)+1) = -\cos^2\left(\frac{\theta^2}{2}\right)
+    \]
+    即解为：
+    \[
+    \mathbf{\omega = \sec^2\left(\frac{\theta^2}{2}\right)}
+    \]
+    
+    \item[(8)] 分离变量得：
+    \[
+    \frac{\mathrm{d}y}{y^2} = \frac{\mathrm{d}x}{x(x+1)} = \left(\frac{1}{x}-\frac{1}{x+1}\right)\mathrm{d}x
+    \]
+    积分得：
+    \[
+    -\frac{1}{y} = \ln|x| - \ln|x+1| + C = \ln\left|\frac{x}{x+1}\right| + C
+    \]
+    代入 $y(1)=1$ 得到 $-1 = \ln\frac{1}{2} + C \implies C = \ln 2 - 1$。因此：
+    \[
+    -\frac{1}{y} = \ln\left|\frac{2x}{x+1}\right| - 1
+    \]
+    故解为：
+    \[
+    \mathbf{y = \frac{1}{1-\ln\left|\frac{2x}{x+1}\right|}}
+    \]
+\end{enumerate}
+\end{solution}
+
+\begin{exercise}[求解方程]
+求微分方程 $\displaystyle \frac{\mathrm{d}y}{\mathrm{d}t}=1-y$ 的通解, 并求适合初始条件 $y\big|_{t=0}=0$ 的特解.
+\end{exercise}
+\begin{solution}
+分离变量可得：
+\[
+\frac{\mathrm{d}y}{1-y} = \mathrm{d}t
+\]
+两边同时积分得：
+\[
+-\ln|1-y| = t + C \implies 1-y = \pm\mathrm{e}^{-C}\mathrm{e}^{-t} \implies y = 1 - C_1\mathrm{e}^{-t}
+\]
+（其中 $C_1$ 为任意常数，此即为\textbf{通解}）。
+
+代入初始条件 $y\big|_{t=0} = 0$，得 $0 = 1 - C_1 \implies C_1 = 1$。
+故适合此初始条件的\textbf{特解}为：
+\[
+\mathbf{y = 1 - \mathrm{e}^{-t}}
+\]
+\end{solution}
+
+\begin{exercise}[求解齐次方程]
+求下列齐次方程的通解:
+\begin{enumerate}
+    \item[(1)] $\displaystyle x\frac{\mathrm{d}y}{\mathrm{d}x}=y\ln\frac{y}{x}$;
+    \item[(2)] $\displaystyle y^2+x^2\frac{\mathrm{d}y}{\mathrm{d}x}=xy\frac{\mathrm{d}y}{\mathrm{d}x}$;
+    \item[(3)] $\displaystyle \frac{\mathrm{d}y}{\mathrm{d}x}=2\sqrt{\frac{y}{x}}+\frac{y}{x}$;
+    \item[(4)] $\displaystyle (x^2+y^2)\mathrm{d}x-xy\mathrm{d}y=0$.
+\end{enumerate}
+\end{exercise}
+\begin{solution}
+针对齐次方程，统一令 $y=ux$，则 $y' = u + xu'$：
+\begin{enumerate}
+    \item[(1)] 原方程可化为 $\displaystyle\frac{\mathrm{d}y}{\mathrm{d}x} = \frac{y}{x}\ln\frac{y}{x}$。代入得：
+    \[
+    u + x\frac{\mathrm{d}u}{\mathrm{d}x} = u\ln u \implies x\frac{\mathrm{d}u}{\mathrm{d}x} = u(\ln u - 1)
+    \]
+    分离变量：
+    \[
+    \frac{\mathrm{d}u}{u(\ln u - 1)} = \frac{\mathrm{d}x}{x}
+    \]
+    积分得：
+    \[
+    \ln|\ln u - 1| = \ln|x| + C \implies \ln u - 1 = Cx
+    \]
+    即 $\ln\frac{y}{x} = Cx+1$，通解为：
+    \[
+    \mathbf{y = x\mathrm{e}^{Cx+1}}
+    \]
+    
+    \item[(2)] 原方程整理为 $\displaystyle\frac{\mathrm{d}y}{\mathrm{d}x} = \frac{y^2}{xy-x^2}$。代入得：
+    \[
+    u + xu' = \frac{u^2}{u-1} \implies xu' = \frac{u^2}{u-1} - u = \frac{u}{u-1}
+    \]
+    分离变量：
+    \[
+    \frac{u-1}{u}\mathrm{d}u = \frac{\mathrm{d}x}{x} \implies \left(1 - \frac{1}{u}\right)\mathrm{d}u = \frac{\mathrm{d}x}{x}
+    \]
+    积分得：
+    \[
+    u - \ln|u| = \ln|x| + C \implies \frac{y}{x} = \ln|x| + \ln\left|\frac{y}{x}\right| + C = \ln|y| + C
+    \]
+    通解为（以及特解 $y=0$）：
+    \[
+    \mathbf{y = C_1\mathrm{e}^{y/x}}
+    \]
+    
+    \item[(3)] 代入得：
+    \[
+    u + xu' = 2\sqrt{u} + u \implies xu' = 2\sqrt{u}
+    \]
+    分离变量：
+    \[
+    \frac{\mathrm{d}u}{2\sqrt{u}} = \frac{\mathrm{d}x}{x}
+    \]
+    积分得：
+    \[
+    \sqrt{u} = \ln|x| + C
+    \]
+    将 $u=y/x$ 回代得通解（另有特解 $y=0$）：
+    \[
+    \mathbf{\sqrt{\frac{y}{x}} = \ln|x| + C}
+    \]
+    
+    \item[(4)] 原方程化为 $\displaystyle\frac{\mathrm{d}y}{\mathrm{d}x} = \frac{x^2+y^2}{xy} = \frac{x}{y} + \frac{y}{x}$。代入得：
+    \[
+    u + xu' = \frac{1}{u} + u \implies xu' = \frac{1}{u}
+    \]
+    分离变量：
+    \[
+    u\,\mathrm{d}u = \frac{\mathrm{d}x}{x}
+    \]
+    积分得 $\frac{1}{2}u^2 = \ln|x| + C_1$。即 $\frac{y^2}{2x^2} = \ln|x| + C_1$，通解为：
+    \[
+    \mathbf{y^2 = 2x^2(\ln|x| + C_1)}
+    \]
+\end{enumerate}
+\end{solution}
+
+\begin{exercise}[求解齐次方程]
+求下列初值问题的解:
+\begin{enumerate}
+    \item[(1)] $\displaystyle \frac{\mathrm{d}y}{\mathrm{d}x}=\frac{x}{y}+\frac{y}{x},\,y\big|_{x=1}=2$;
+    \item[(2)] $\displaystyle (x^2+2xy-y^2)\mathrm{d}x+(y^2+2xy-x^2)\mathrm{d}y=0,\,y\big|_{x=1}=1$.
+\end{enumerate}
+\end{exercise}
+\begin{solution}
+\begin{enumerate}
+    \item[(1)] 由上一题结论可知该方程通解为：
+    \[
+    y^2 = 2x^2(\ln|x| + C)
+    \]
+    代入初值 $y(1)=2$ 得 $4 = 2(0+C) \implies C=2$。因此 $y^2 = 2x^2(\ln x + 2)$。考虑到当 $x=1$ 时 $y=2>0$，开方取正支，得到特解：
+    \[
+    \mathbf{y = x\sqrt{2\ln x + 4}}
+    \]
+    
+    \item[(2)] 将方程显式化为 $\displaystyle\frac{\mathrm{d}y}{\mathrm{d}x} = \frac{y^2-2xy-x^2}{y^2+2xy-x^2}$。令 $y=ux$，得：
+    \[
+    u+xu' = \frac{u^2-2u-1}{u^2+2u-1}
+    \]
+    移项整理得：
+    \[
+    xu' = \frac{u^2-2u-1-u(u^2+2u-1)}{u^2+2u-1} = -\frac{(u+1)(u^2+1)}{u^2+2u-1}
+    \]
+    分离变量并分解部分分式：
+    \[
+    \frac{u^2+2u-1}{(u+1)(u^2+1)}\mathrm{d}u = -\frac{\mathrm{d}x}{x} \implies \left(\frac{2u}{u^2+1} - \frac{1}{u+1}\right)\mathrm{d}u = -\frac{\mathrm{d}x}{x}
+    \]
+    积分得：
+    \[
+    \ln(u^2+1) - \ln|u+1| = -\ln|x| + C \implies \frac{u^2+1}{|u+1|}|x| = C_1
+    \]
+    回代 $u=\frac{y}{x}$，整理得 $\frac{x^2+y^2}{x+y} = C_1$。
+    代入初始条件 $y(1)=1$ 得 $\frac{1+1}{1+1} = C_1 \implies C_1 = 1$。故所求初值问题的解为：
+    \[
+    \mathbf{x^2+y^2=x+y}
+    \]
+\end{enumerate}
+\end{solution}
+
+\subsection{B组}
+
+\begin{exercise}[求解方程]
+化下列方程为齐次方程, 并求出其通解:
+\begin{enumerate}
+    \item[(1)] $\displaystyle \frac{\mathrm{d}y}{\mathrm{d}x}=\frac{y-x-2}{x+y+4}$;
+    \item[(2)] $\displaystyle (x-y-1)\mathrm{d}x+(4y+x-1)\mathrm{d}y=0$.
+\end{enumerate}
+\end{exercise}
+\begin{solution}
+\begin{enumerate}
+    \item[(1)] 联立方程组解两条直线的交点：
+    \[
+    \begin{cases} y-x-2=0 \\ x+y+4=0 \end{cases} \implies \begin{cases} x=-3 \\ y=-1 \end{cases}
+    \]
+    作平移变换 $X=x+3, Y=y+1$，方程化为齐次方程 $\displaystyle\frac{\mathrm{d}Y}{\mathrm{d}X} = \frac{Y-X}{X+Y}$。令 $Y=uX$，则：
+    \[
+    u+Xu' = \frac{u-1}{1+u} \implies Xu' = \frac{-1-u^2}{1+u}
+    \]
+    分离变量并积分：
+    \[
+    \frac{1+u}{1+u^2}\mathrm{d}u = -\frac{\mathrm{d}X}{X} \implies \arctan u + \frac{1}{2}\ln(1+u^2) = -\ln|X| + C
+    \]
+    合并对数项得 $\arctan u + \ln|X\sqrt{1+u^2}| = C$。回代 $u=Y/X$ 及原变量，得通解：
+    \[
+    \mathbf{\arctan\frac{y+1}{x+3} + \frac{1}{2}\ln\big((x+3)^2+(y+1)^2\big) = C}
+    \]
+    
+    \item[(2)] 化为标准形 $y' = -\frac{x-y-1}{x+4y-1}$。求交点：
+    \[
+    \begin{cases} x-y-1=0 \\ x+4y-1=0 \end{cases} \implies \begin{cases} x=1 \\ y=0 \end{cases}
+    \]
+    令 $X=x-1, Y=y$，则 $\displaystyle\frac{\mathrm{d}Y}{\mathrm{d}X} = \frac{Y-X}{X+4Y}$。令 $Y=uX$：
+    \[
+    u+Xu' = \frac{u-1}{1+4u} \implies Xu' = \frac{-1-4u^2}{1+4u}
+    \]
+    分离变量得：
+    \[
+    \frac{1+4u}{1+4u^2}\mathrm{d}u = -\frac{\mathrm{d}X}{X} \implies \frac{1}{2}\arctan(2u) + \frac{1}{2}\ln(1+4u^2) = -\ln|X| + C_1
+    \]
+    化简得 $\arctan(2u) + \ln\big(X^2(1+4u^2)\big) = C$。回代后得到通解：
+    \[
+    \mathbf{\arctan\frac{2y}{x-1} + \ln\big((x-1)^2+4y^2\big) = C}
+    \]
+\end{enumerate}
+\end{solution}
+
+\begin{exercise}[求解方程]
+求下列方程的通解:
+\begin{enumerate}
+    \item[(1)] $\displaystyle \sqrt{1-y^2}=3x^2yy'$;
+    \item[(2)] $\displaystyle x\mathrm{d}y-y\mathrm{d}x=\sqrt{x^2+y^2}\mathrm{d}x$.
+\end{enumerate}
+\end{exercise}
+\begin{solution}
+\begin{enumerate}
+    \item[(1)] 原方程可直接分离变量：
+    \[
+    \frac{y}{\sqrt{1-y^2}}\mathrm{d}y = \frac{1}{3x^2}\mathrm{d}x
+    \]
+    两边积分：
+    \[
+    \int (1-y^2)^{-1/2}\frac{1}{2}\mathrm{d}(y^2) = -\sqrt{1-y^2}, \quad \int x^{-2}\mathrm{d}x = -\frac{1}{x}
+    \]
+    故得 $-\sqrt{1-y^2} = -\frac{1}{3x} + C$。从而通解为：
+    \[
+    \mathbf{\sqrt{1-y^2} = \frac{1}{3x} - C}
+    \]
+    另外显然 $y=\pm 1$ 也是解。
+    
+    \item[(2)] 对方程同除以 $x^2$（假设 $x>0$），得：
+    \[
+    \frac{x\mathrm{d}y-y\mathrm{d}x}{x^2} = \frac{\sqrt{x^2+y^2}}{x^2}\mathrm{d}x \implies \mathrm{d}\left(\frac{y}{x}\right) = \frac{1}{x}\sqrt{1+\left(\frac{y}{x}\right)^2}\mathrm{d}x
+    \]
+    令 $u = \frac{y}{x}$，则有：
+    \[
+    \frac{\mathrm{d}u}{\sqrt{1+u^2}} = \frac{\mathrm{d}x}{x}
+    \]
+    积分得：
+    \[
+    \ln(u+\sqrt{1+u^2}) = \ln x + C_1 \implies u+\sqrt{1+u^2} = Cx
+    \]
+    回代 $u=\frac{y}{x}$，得：
+    \[
+    \frac{y}{x} + \sqrt{1+\frac{y^2}{x^2}} = Cx \implies y+\sqrt{x^2+y^2} = Cx^2
+    \]
+    移项平方消去根号，可化简得通解：
+    \[
+    \mathbf{y = \frac{1}{2}\left(Cx^2 - \frac{1}{C}\right)}
+    \]
+    对于 $x<0$ 推导同理，结论一致。
+\end{enumerate}
+\end{solution}
+
+\begin{exercise}[求解方程]
+由曲线上任意一点引法线, 它在纵轴上截得线段的长度等于该点到坐标原点的距离, 求此曲线的方程.
+\end{exercise}
+\begin{solution}
+设曲线方程为 $y=y(x)$。曲线上任意一点 $(x,y)$ 处的法线方程为：
+\[
+Y - y = -\frac{1}{y'}(X - x)
+\]
+令 $X=0$，得到纵轴上的截距 $Y_0 = y + \frac{x}{y'}$。
+由题意，截距的绝对值等于点到原点的距离 $\sqrt{x^2+y^2}$。由于几何关系，我们有：
+\[
+y + x\frac{\mathrm{d}x}{\mathrm{d}y} = \pm\sqrt{x^2+y^2} \implies y\mathrm{d}y + x\mathrm{d}x = \pm\sqrt{x^2+y^2}\,\mathrm{d}y
+\]
+注意到左端全微分形式：
+\[
+\frac{1}{2}\mathrm{d}(x^2+y^2) = \pm\sqrt{x^2+y^2}\,\mathrm{d}y
+\]
+令 $u = x^2+y^2$，则有 $\displaystyle\frac{\mathrm{d}u}{2\sqrt{u}} = \pm\mathrm{d}y$。积分得：
+\[
+\sqrt{u} = \pm y + C \implies \sqrt{x^2+y^2} = \pm y + C
+\]
+两边平方得：
+\[
+x^2+y^2 = y^2 \pm 2Cy + C^2 \implies x^2 = C(C \pm 2y)
+\]
+故满足条件的曲线族是一族对称轴为 $y$ 轴的抛物线，方程为：
+\[
+\mathbf{x^2 = C(C \pm 2y)}
+\]
+\end{solution}
+
+\begin{exercise}[实际应用题]
+质量为 $1\ \mathrm{kg}$ 的质点受外力的作用作直线运动, 该力和时间成正比, 和质点运动的速度成反比. 在 $t=10\ \mathrm{s}$ 时速度为 $5\ \mathrm{m/s}$, 力为 $4\ \mathrm{N}$. 问从运动开始经过 $20\ \mathrm{s}$ 后的速度是多少?
+\end{exercise}
+\begin{solution}
+设外力为 $F$，运动速度为 $v$。根据题意有 $F = k\frac{t}{v}$。
+由 $t=10, v=5, F=4$，代入可得：
+\[
+4 = k\frac{10}{5} \implies k = 2
+\]
+故 $F = \frac{2t}{v}$。根据牛顿第二定律 $F = ma$，且 $m=1\ \mathrm{kg}$，有：
+\[
+\frac{\mathrm{d}v}{\mathrm{d}t} = \frac{2t}{v}
+\]
+分离变量得 $v\,\mathrm{d}v = 2t\,\mathrm{d}t$。两边积分得到：
+\[
+\frac{1}{2}v^2 = t^2 + C \implies v^2 = 2t^2 + C_1
+\]
+将 $t=10, v=5$ 代入：
+\[
+25 = 2(100) + C_1 \implies C_1 = -175
+\]
+因此速度关系式为 $v^2 = 2t^2 - 175$。
+要求 $t=20$ 时的速度，代入得：
+\[
+v^2 = 2(20^2) - 175 = 800 - 175 = 625
+\]
+解得：
+\[
+\mathbf{v = 25\ \mathrm{m/s}}
+\]
+（由于速度方向与外力一致，取正）。
+\end{solution}
+
+\begin{exercise}[实际应用题]
+我们所使用的可耕地面积随着世界人口的增加而增加. 令 $A(t)$ 表示在 $t$ 年所使用的可耕地的总公顷数 ($1\ \mathrm{hm}=1\times10^4\ \mathrm{m}^2$).
+\begin{enumerate}
+    \item[(1)] 试解释为什么我们期望 $A(t)$ 满足微分方程 $\displaystyle \frac{\mathrm{d}A}{\mathrm{d}t}=kA$ 是合理的? 关于世界人口你作了些什么假设? 它与可耕地面积有什么关系?
+    \item[(2)] 在 1950 年, 约有 $1\times10^9\ \mathrm{hm}$ 的可耕地在使用, 到 1980 年则有 $2\times10^9\ \mathrm{hm}$. 如果可供使用的可耕地的总公顷数为 $3.2\times10^9$, 试问, 这些耕地何时被开垦并耕种完 ($t=0$ 指 1950 年)?
+\end{enumerate}
+\end{exercise}
+\begin{solution}
+\begin{enumerate}
+    \item[(1)] \textbf{合理性解释：} 假设世界人口 $P(t)$ 在此时期内不受资源极度匮乏的影响，按照马尔萨斯模型呈指数增长，即 $\frac{\mathrm{d}P}{\mathrm{d}t} = \lambda P$。同时假设人均需要使用的可耕地面积维持一个常数 $\alpha$，即 $A(t) = \alpha P(t)$。因此，$A(t)$ 的变化率也必与当前可耕地面积成正比：
+    \[
+    \frac{\mathrm{d}A}{\mathrm{d}t} = \alpha \frac{\mathrm{d}P}{\mathrm{d}t} = \alpha (\lambda P) = \lambda A
+    \]
+    若令 $k=\lambda$，即得所期望的微分方程。
+    
+    \item[(2)] 该微分方程的解为 $A(t) = A_0\mathrm{e}^{kt}$。已知 $t=0$ 时 $A(0) = 1\times 10^9$，故：
+    \[
+    A(t) = 10^9\mathrm{e}^{kt}
+    \]
+    又已知 $t=30$ 时 $A(30) = 2\times 10^9$，代入得：
+    \[
+    2\times 10^9 = 10^9\mathrm{e}^{30k} \implies \mathrm{e}^{30k} = 2 \implies k = \frac{\ln 2}{30}
+    \]
+    求何时达到 $3.2\times 10^9\ \mathrm{hm}$，即解方程 $3.2\times 10^9 = 10^9\mathrm{e}^{\frac{\ln 2}{30}t}$：
+    \[
+    \mathrm{e}^{\frac{\ln 2}{30}t} = 3.2 \implies \frac{\ln 2}{30}t = \ln 3.2 \implies t = 30 \frac{\ln 3.2}{\ln 2} \approx 30 \times 1.678 = 50.34\ (\text{年})
+    \]
+    即大约需要 $50.34$ 年，对应于 \textbf{2000年}左右这些耕地将被开垦并耕种完。
+\end{enumerate}
+\end{solution}
+
+\begin{exercise}[实际应用题]
+将一只白薯放进 $200^\circ\mathrm{C}$ 的烤炉内, 其加热情况服从牛顿加热(或冷却)定律.
+\begin{enumerate}
+    \item[(1)] 写出白薯的温度函数 $H(t)$ 所满足的微分方程;
+    \item[(2)] 若白薯放进炉内时的温度是 $20^\circ\mathrm{C}$, 求解所得的微分方程;
+    \item[(3)] 假设 30 分钟后白薯的温度为 $120^\circ\mathrm{C}$, 试确定牛顿加热定律中的比例常数 $k$.
+\end{enumerate}
+\end{exercise}
+\begin{solution}
+\begin{enumerate}
+    \item[(1)] 设比例常数为 $k$ (其中 $k>0$)。由牛顿冷却（加热）定律，白薯温度变化率与它同周围环境（烤炉）的温差成正比。微分方程为：
+    \[
+    \mathbf{\frac{\mathrm{d}H}{\mathrm{d}t} = -k(H - 200)}
+    \]
+    
+    \item[(2)] 这是一个可分离变量方程，$\frac{\mathrm{d}H}{H-200} = -k\,\mathrm{d}t$。两边积分得：
+    \[
+    \ln|H-200| = -kt + C_1 \implies H-200 = C\mathrm{e}^{-kt}
+    \]
+    代入初始条件 $H(0) = 20$，有：
+    \[
+    20 - 200 = C\mathrm{e}^0 \implies C = -180
+    \]
+    故解为：
+    \[
+    \mathbf{H(t) = 200 - 180\mathrm{e}^{-kt}}
+    \]
+    
+    \item[(3)] 代入 $t=30$ 时 $H=120$：
+    \[
+    120 = 200 - 180\mathrm{e}^{-30k} \implies 180\mathrm{e}^{-30k} = 80 \implies \mathrm{e}^{-30k} = \frac{4}{9}
+    \]
+    取对数得：
+    \[
+    -30k = \ln(4/9) \implies \mathbf{k = \frac{1}{30}\ln\frac{9}{4} \approx 0.027}
+    \]
+\end{enumerate}
+\end{solution}
+
+\begin{exercise}[实际应用题]
+放射性元素由于原子中不断放出微观粒子, 它的含量不断减少, 称为衰变. 由实验知道, 放射性元素镭的衰变率与这时镭的存量成正比(比例系数为 $k$). 设在开始时镭的存量为 $R_0$ 克, 求任意时刻 $t$ 的含量 $R(t)$. 经验材料断定, 镭经 1600 年后, 只余原质量之半, 试由此确定比例常数 $k$.
+\end{exercise}
+\begin{solution}
+根据题意列出微分方程：
+\[
+\frac{\mathrm{d}R}{\mathrm{d}t} = -kR
+\]
+这是一个基础的变量可分离方程，积分后可得通解 $R(t) = C\mathrm{e}^{-kt}$。
+利用初始条件 $R(0) = R_0$，得 $C = R_0$。故任意时刻的含量为：
+\[
+\mathbf{R(t) = R_0\mathrm{e}^{-kt}}
+\]
+代入半衰期条件 $R(1600) = \frac{1}{2}R_0$，得到：
+\[
+\frac{1}{2}R_0 = R_0\mathrm{e}^{-1600k} \implies \mathrm{e}^{-1600k} = \frac{1}{2}
+\]
+取自然对数有 $-1600k = -\ln 2$，因此比例常数：
+\[
+\mathbf{k = \frac{\ln 2}{1600} \approx 4.33\times 10^{-4}\ (\text{年}^{-1})}
+\]
+\end{solution}
+
+\begin{exercise}[实际应用题]
+设在某一溶液中有两种物质, 在反应开始时, 两种物质的量分别为 $a$ 与 $b$; 又设在时刻 $t$, 两种物质已经起反应的量相等, 记为 $x$, 利用化学反应的基本定律: 反应进行的速率与尚未起反应的量的乘积成正比(比例系数为 $k$). 求变量 $x$ 随时间 $t$ 的变化规律.
+\end{exercise}
+\begin{solution}
+由化学反应基本定律（质量作用定律），反应速率 $\frac{\mathrm{d}x}{\mathrm{d}t}$ 与两种物质尚未起反应的量 $(a-x)$ 和 $(b-x)$ 之积成正比，微分方程为：
+\[
+\frac{\mathrm{d}x}{\mathrm{d}t} = k(a-x)(b-x), \quad x(0)=0
+\]
+分离变量得：$\frac{\mathrm{d}x}{(a-x)(b-x)} = k\,\mathrm{d}t$。积分过程需根据 $a$ 与 $b$ 的大小关系分类讨论：
+
+\textbf{情形一：$a \neq b$}
+利用部分分式分解：
+\[
+\frac{1}{b-a}\left(\frac{1}{a-x} - \frac{1}{b-x}\right)\mathrm{d}x = k\,\mathrm{d}t
+\]
+两边积分：
+\[
+\frac{1}{b-a}\big(-\ln|a-x| + \ln|b-x|\big) = kt + C \implies \frac{1}{b-a}\ln\left|\frac{b-x}{a-x}\right| = kt + C
+\]
+代入 $x(0)=0$，得 $C = \frac{1}{b-a}\ln\left|\frac{b}{a}\right|$。回代化简得：
+\[
+\ln\frac{b-x}{a-x} = (b-a)kt + \ln\frac{b}{a}
+\]
+进一步解出 $x$：
+\[
+\mathbf{x(t) = \frac{ab\big(1-\mathrm{e}^{(b-a)kt}\big)}{a - b\mathrm{e}^{(b-a)kt}}}
+\]
+
+\textbf{情形二：$a = b$}
+方程变为：
+\[
+\frac{\mathrm{d}x}{(a-x)^2} = k\,\mathrm{d}t
+\]
+积分得：
+\[
+\frac{1}{a-x} = kt + C
+\]
+代入 $x(0)=0$，得 $C = \frac{1}{a}$。从而：
+\[
+\frac{1}{a-x} = kt + \frac{1}{a} = \frac{akt+1}{a}
+\]
+解得：
+\[
+\mathbf{x(t) = \frac{a^2kt}{akt+1}}
+\]
+\end{solution}
+
+\begin{exercise}[实际应用题]
+设质量为 $m$ 的炸弹在具有水平初速 $v_0$ 而不具有垂直初速的情况下在空气中降落. 现在, 我们不研究炸弹在水平方向的位移, 而只研究炸弹在重力方向的降落. 由实验知, 空气的阻力与炸弹下降的速度平方成正比: $R=\mu v^2$, 求炸弹下降的速度与时间的关系.
+\end{exercise}
+\begin{solution}
+取竖直向下为正方向。根据牛顿第二定律，炸弹竖直方向的运动方程为：
+\[
+m\frac{\mathrm{d}v}{\mathrm{d}t} = mg - \mu v^2
+\]
+这是一个可分离变量的方程。分离得：
+\[
+\frac{m\,\mathrm{d}v}{mg - \mu v^2} = \mathrm{d}t
+\]
+令极限速度 $v_T = \sqrt{\frac{mg}{\mu}}$，方程化为：
+\[
+\frac{\mathrm{d}v}{v_T^2 - v^2} = \frac{\mu}{m}\,\mathrm{d}t = \frac{g}{v_T^2}\,\mathrm{d}t
+\]
+对左边进行部分分式分解并积分：
+\[
+\frac{1}{2v_T}\int \left(\frac{1}{v_T - v} + \frac{1}{v_T + v}\right)\mathrm{d}v = \frac{g}{v_T^2}t + C \implies \frac{1}{2v_T}\ln\left|\frac{v_T+v}{v_T-v}\right| = \frac{g}{v_T^2}t + C
+\]
+代入初值 $v(0)=0$ (无垂直初速)，得 $C = \frac{1}{2v_T}\ln 1 = 0$。
+从而：
+\[
+\ln\frac{v_T+v}{v_T-v} = \frac{2g}{v_T}t \implies \frac{v_T+v}{v_T-v} = \mathrm{e}^{\frac{2g}{v_T}t}
+\]
+解得：
+\[
+v(t) = v_T\frac{\mathrm{e}^{\frac{2g}{v_T}t}-1}{\mathrm{e}^{\frac{2g}{v_T}t}+1} = v_T\tanh\left(\frac{g}{v_T}t\right)
+\]
+将 $v_T$ 的表达式代回即可得到最终形式：
+\[
+\mathbf{v(t) = \sqrt{\frac{mg}{\mu}}\tanh\left(\sqrt{\frac{\mu g}{m}}t\right)}
+\]
+\end{solution}
+
+\begin{exercise}[求解曲线]
+一曲线通过点 $(2,0)$, 且其切点和 $y$ 轴间的切线段有定长 2, 求这曲线.
+\end{exercise}
+\begin{solution}
+设所求曲线的方程为 $y=y(x)$。在任意一点 $(x,y)$ 处的切线方程为：
+\[
+Y-y = y'(X-x)
+\]
+令 $X=0$ 得该切线在 $y$ 轴上的截距 $Y_0 = y - xy'$。
+从切点 $(x,y)$ 到 $y$ 轴交点 $(0, Y_0)$ 的切线段长度为：
+\[
+d = \sqrt{x^2 + (y-Y_0)^2} = \sqrt{x^2 + (xy')^2} = |x|\sqrt{1+(y')^2}
+\]
+由题意 $d=2$，又由于曲线过点 $(2,0)$，局部有 $x>0$，故：
+\[
+x\sqrt{1+(y')^2} = 2 \implies (y')^2 = \frac{4}{x^2}-1 \implies y' = \pm\frac{\sqrt{4-x^2}}{x}
+\]
+积分求解：
+\[
+y = \pm\int \frac{\sqrt{4-x^2}}{x}\mathrm{d}x
+\]
+作三角代换令 $x = 2\sin\theta$，则 $\mathrm{d}x = 2\cos\theta\,\mathrm{d}\theta$，积分变为：
+\[
+\int \frac{2\cos\theta}{2\sin\theta} 2\cos\theta\,\mathrm{d}\theta = 2\int \frac{\cos^2\theta}{\sin\theta}\mathrm{d}\theta = 2\int \frac{1-\sin^2\theta}{\sin\theta}\mathrm{d}\theta = 2\ln|\csc\theta - \cot\theta| - 2\cos\theta + C
+\]
+将 $\sin\theta = x/2$ 回代得 $\cos\theta = \frac{\sqrt{4-x^2}}{2}$，从而：
+\[
+y = \pm \left( 2\ln\left|\frac{2-\sqrt{4-x^2}}{x}\right| + \sqrt{4-x^2} \right) + C
+\]
+由曲线过点 $(2,0)$，代入 $x=2$ 此时 $\sqrt{4-x^2}=0$：
+\[
+0 = \pm (2\ln 1 + 0) + C \implies C=0
+\]
+故该曲线的方程（曳物线的一支）为：
+\[
+\mathbf{y = \pm \left( \sqrt{4-x^2} - 2\ln\frac{2+\sqrt{4-x^2}}{x} \right)}
+\]
+\end{solution}
+
+\begin{exercise}[求解曲线]
+一曲线通过点 $(2,3)$, 它在两坐标轴间的任意切线段均被切点所平分, 求这曲线方程.
+\end{exercise}
+\begin{solution}
+切点为 $(x,y)$ 的切线方程为 $Y-y = y'(X-x)$。
+令 $Y=0$，得 $x$ 轴上的截距 $X_A = x - \frac{y}{y'}$；
+令 $X=0$，得 $y$ 轴上的截距 $Y_B = y - x y'$。
+依题意切点平分切线段，故点 $(x,y)$ 是 $(X_A, 0)$ 和 $(0, Y_B)$ 的中点，即有：
+\[
+x = \frac{X_A + 0}{2} = \frac{x - y/y'}{2}
+\]
+整理得：
+\[
+2x = x - \frac{y}{y'} \implies x = -\frac{y}{y'} \implies \frac{\mathrm{d}y}{\mathrm{d}x} = -\frac{y}{x}
+\]
+分离变量积分得：
+\[
+\frac{\mathrm{d}y}{y} = -\frac{\mathrm{d}x}{x} \implies \ln|y| = -\ln|x| + C_1 \implies xy = C
+\]
+代入经过点 $(2,3)$，得 $2 \times 3 = C \implies C=6$。
+故这曲线的方程为双曲线：
+\[
+\mathbf{xy = 6}
+\]
+\end{solution}
+
+\begin{exercise}[求解曲线]
+求曲线 $y=y(x)$, 使它正交于圆心在 $x$ 轴上且过原点的任何圆(注: 两曲线正交是指在交点处两曲线的切线互相垂直).
+\end{exercise}
+\begin{solution}
+所给已知圆族圆心在 $(a,0)$ 并过原点，方程可设为：
+\[
+(x-a)^2 + y^2 = a^2 \implies x^2+y^2 = 2ax
+\]
+对等式两边关于 $x$ 求导可消去常数 $a$（因为 $2a = \frac{x^2+y^2}{x}$）：
+\[
+2x + 2yy' = 2a = \frac{x^2+y^2}{x} \implies 2x^2 + 2xyy' = x^2+y^2 \implies y' = \frac{y^2-x^2}{2xy}
+\]
+由正交性，所求曲线在交点处的切线斜率满足 $y'_{\text{新}} \cdot y' = -1$。故所求曲线满足：
+\[
+\frac{\mathrm{d}y}{\mathrm{d}x} = \frac{2xy}{x^2-y^2}
+\]
+这是一个齐次微分方程。令 $y = ux$ 得：
+\[
+u+xu' = \frac{2u}{1-u^2} \implies xu' = \frac{u(1+u^2)}{1-u^2}
+\]
+分离变量得：
+\[
+\frac{1-u^2}{u(1+u^2)}\mathrm{d}u = \frac{\mathrm{d}x}{x}
+\]
+部分分式分解：
+\[
+\left(\frac{1}{u} - \frac{2u}{1+u^2}\right)\mathrm{d}u = \frac{\mathrm{d}x}{x}
+\]
+积分得到：
+\[
+\ln|u| - \ln(1+u^2) = \ln|x| + \ln|C| \implies \frac{u}{1+u^2} = Cx
+\]
+将 $u=y/x$ 回代：
+\[
+\frac{y/x}{1+y^2/x^2} = \frac{xy}{x^2+y^2} = Cx \implies x^2+y^2 = \frac{1}{C}y = Cy
+\]
+结果即为正交轨线族方程：
+\[
+\mathbf{x^2+y^2=Cy}
+\]
+它恰是圆心在 $y$ 轴上且过原点的所有圆。
+\end{solution}
+
+\begin{exercise}[落体问题] 
+    设跳伞运动员从跳伞塔下落后, 所受空气的阻力与速度成正比, 运动员离塔时的速度为零, 求运动员下落过程中速度和时间的函数关系.
+\end{exercise}
+\begin{solution}
+设阻力系数为 $k(k>0)$，运动员质量为 $m$。
+由牛顿第二定律，运动方程为：
+\[
+m\frac{\mathrm{d}v}{\mathrm{d}t} = mg - kv
+\]
+这可化为：
+\[
+\frac{\mathrm{d}v}{\mathrm{d}t} = g - \frac{k}{m}v = -\frac{k}{m}\left(v - \frac{mg}{k}\right)
+\]
+分离变量并积分：
+\[
+\frac{\mathrm{d}v}{v-\frac{mg}{k}} = -\frac{k}{m}\mathrm{d}t \implies \ln\left|v-\frac{mg}{k}\right| = -\frac{k}{m}t + C_1
+\]
+得 $v = \frac{mg}{k} + C\mathrm{e}^{-\frac{k}{m}t}$。
+代入初值 $v(0)=0$ 得 $0 = \frac{mg}{k} + C \implies C = -\frac{mg}{k}$。
+因此，速度和时间关系为：
+\[
+\mathbf{v(t) = \frac{mg}{k}\left(1 - \mathrm{e}^{-\frac{k}{m}t}\right)}
+\]
+\end{solution}
+
+\begin{exercise}[实际应用题]
+一电动机开动后, 每分钟温度升高 $10^\circ\mathrm{C}$, 同时将按冷却定律不断散发热量. 设电动机安置在一保持 $15^\circ\mathrm{C}$ 恒温的房间里, 求电机温度 $\theta$ 与时间 $t$ 的函数关系.
+\end{exercise}
+\begin{solution}
+设电机温度为 $\theta(t)$，散热服从牛顿冷却定律。电动机的发热使温度以常数速率增加，而散热使其温度下降，速率与温差正比。综合起来有微分方程：
+\[
+\frac{\mathrm{d}\theta}{\mathrm{d}t} = 10 - k(\theta - 15) \quad (k>0)
+\]
+其中 $10$ 是恒定发热率，$k$ 为散热系数。将其改写为变量可分离方程：
+\[
+\frac{\mathrm{d}\theta}{\mathrm{d}t} = -k\left(\theta - 15 - \frac{10}{k}\right) \implies \frac{\mathrm{d}\theta}{\theta - \left(15 + \frac{10}{k}\right)} = -k\,\mathrm{d}t
+\]
+两边积分得：
+\[
+\ln\left|\theta - \left(15 + \frac{10}{k}\right)\right| = -kt + C_1 \implies \theta = 15 + \frac{10}{k} + C\mathrm{e}^{-kt}
+\]
+若假设电动机开动时即与室温相同，有初值 $\theta(0) = 15$（一般合理预设）：
+\[
+15 = 15 + \frac{10}{k} + C \implies C = -\frac{10}{k}
+\]
+最终温度与时间的函数关系为：
+\[
+\mathbf{\theta(t) = 15 + \frac{10}{k}\big(1 - \mathrm{e}^{-kt}\big)}
+\]
+（若初值未给定为室温，则通解包含常数项 $C$）。
+\end{solution}
+
+
+\section{一阶线性微分方程}
+
+\subsection{定义与基本概念}
+\begin{definition}[一阶线性微分方程] \label{def:first-order-linear}
+若一阶微分方程关于未知函数 $y$ 及其导数 $\dfrac{\mathrm{d}y}{\mathrm{d}x}$ 都是\textbf{一次}（即线性）的，则称之为\textbf{一阶线性微分方程}。其标准形式为
+\[
+\frac{\mathrm{d}y}{\mathrm{d}x}+P(x)\,y=Q(x)
+\]
+其中 $P(x)$ 和 $Q(x)$ 是某区间 $(a,b)$ 上的已知连续函数。
+
+当 $Q(x)\equiv 0$ 时称为\textbf{线性齐次方程}；否则称为\textbf{线性非齐次方程}。
+\end{definition}
+
+\begin{note}
+标准形式 $\frac{\mathrm{d}y}{\mathrm{d}x}+P(x)\,y=Q(x)$ 中 $y'$ 的系数已被归一化为 $1$。对于一般形式 $a(x)y'+b(x)y=f(x)$（其中 $a(x) \neq 0$），只需两边同除以 $a(x)$ 即可化为标准形式，此时
+$P(x)=\dfrac{b(x)}{a(x)},\; Q(x)=\dfrac{f(x)}{a(x)}$。
+\end{note}
+
+\subsection{线性齐次方程的求解}
+
+考虑 $\frac{\mathrm{d}y}{\mathrm{d}x}+P(x)\,y=Q(x)$ 对应的齐次方程
+\[
+\frac{\mathrm{d}y}{\mathrm{d}x}+P(x)\,y=0. \tag{**}
+\]
+
+这实际上是一个变量可分离方程。当 $y \neq 0$ 时分离变量得
+$\displaystyle\frac{\mathrm{d}y}{y}=-P(x)\,\mathrm{d}x$，
+积分即有 $\ln|y|=-\int P(x)\,\mathrm{d}x+\ln|C|$，整理得到：
+
+\begin{theorem}[线性齐次方程通解] \label{thm:linear-homog-sol}
+方程 $\frac{\mathrm{d}y}{\mathrm{d}x}+P(x)\,y=0$ 的通解为
+\[
+\boxed{y=C\,\exp\!\left(-\int P(x)\,\mathrm{d}x\right)},
+\]
+其中 $C$ 为任意常数（包含零，因为 $y\equiv 0$ 显然是 $\frac{\mathrm{d}y}{\mathrm{d}x}+P(x)\,y=0$ 的解）。
+\end{theorem}
+
+若附加上初始条件 $y(x_0)=y_0$，则相应的特解为
+\[
+y=y_0\,\exp\!\left(-\int_{x_0}^{x}P(t)\,\mathrm{d}t\right).
+\]
+\begin{remark}
+此结果正是例 \ref{ex:sep-linear-homog} 中 $y'=p(x)y$ 的通解公式的直接应用——那里我们已证明 $y=C\mathrm{e}^{\int p(x)\mathrm{d}x}$。此处仅将 $p(x)$ 替换为 $-P(x)$ 即可。这也说明``变量可分离''与``线性齐次''两类方程存在交叉：所有线性齐次方程都是可分离变量的。
+\end{remark}
+
+\subsection{常数变易法与非齐次方程的通解}
+
+当 $Q(x)\not\equiv 0$ 时，我们需要求解非齐次方程 $\frac{\mathrm{d}y}{\mathrm{d}x}+P(x)\,y=Q(x)$。核心思想是法国数学家拉格朗日提出的\textbf{常数变易法}（Variation of Constants）：将对应齐次方程通解中的任意常数 $C$ ``解放''出来，视为 $x$ 的待定函数 $C(x)$。
+
+\begin{theorem}[常数变易法] \label{thm:variation-of-constants}
+令
+\[
+y=C(x)\exp\!\left(-\int P(x)\,\mathrm{d}x\right)
+\]
+其中 $C(x)$ 是新的未知函数。计算导数并代入原方程 $\frac{\mathrm{d}y}{\mathrm{d}x}+P(x)\,y=Q(x)$ 后，$C(x)$ 满足
+\[
+\frac{\mathrm{d}C}{\mathrm{d}x}=Q(x)\exp\!\left(\int P(x)\,\mathrm{d}x\right),
+\]
+积分得
+\[
+C(x)=\int Q(x)\exp\!\left(\int P(x)\,\mathrm{d}x\right)\mathrm{d}x+C_0.
+\]
+
+代回 $y=C(x)\exp\!\left(-\int P(x)\,\mathrm{d}x\right)$ 即得非齐次方程 $\frac{\mathrm{d}y}{\mathrm{d}x}+P(x)\,y=Q(x)$ 的\textbf{通解公式}：
+\[
+\boxed{
+y=\exp\!\left(-\int P(x)\,\mathrm{d}x\right)\left[\int Q(x)\exp\!\left(\int P(x)\,\mathrm{d}x\right)\mathrm{d}x+C_0\right].
+} 
+\]
+\end{theorem}
+
+\begin{property}[通解的结构]
+公式 \[y=\exp\!\left(-\int P(x)\,\mathrm{d}x\right)\left[\int Q(x)\exp\!\left(\int P(x)\,\mathrm{d}x\right)\mathrm{d}x+C_0\right]\] 可拆分为两项之和：
+\[
+\underbrace{C_0\exp\!\left(-\int P(x)\,\mathrm{d}x\right)}_{\text{齐次通解}}
+\;+\;
+\underbrace{\exp\!\left(-\int P(x)\,\mathrm{d}x\right)\int Q(x)\exp\!\left(\int P(x)\,\mathrm{d}x\right)\mathrm{d}x}_{\text{非齐次的一个特解}}.
+\]
+即：\textbf{非齐次通解 = 对应齐次通解 + 非齐次任一特解}。
+
+这个结论不仅对一阶线性方程成立，更是高阶线性方程理论的基石（叠加原理的雏形）。
+\end{property}
+
+\begin{remark}[使用建议]
+在实际解题时，不建议死记繁琐的通解公式。更高效的做法是\textbf{重复上述常数变易法的推导过程}：先求齐次通解 $\to$ 令 $C=C(x)$ 代入 $\to$ 解出 $C(x)$。这样既不容易出错，也有助于理解方法的本质。
+\end{remark}
+
+\begin{example}
+求方程 $\displaystyle\frac{\mathrm{d}y}{\mathrm{d}x}-\frac{y}{x}=x^{2}$ 的通解。
+\end{example}
+\begin{solution}
+对应齐次方程为 $\dfrac{\mathrm{d}y}{\mathrm{d}x}=\dfrac{y}{x}$，分离变量得齐次通解 $y=Cx$。
+
+常数变易：令 $y=C(x)x$，则 $\dfrac{\mathrm{d}y}{\mathrm{d}x}=C'(x)\cdot x+C(x)$。代入原方程：
+\[
+C'(x)\cdot x+C(x)-C(x)=x^{2}\quad\Longrightarrow\quad C'(x)=x,
+\]
+积分得 $C(x)=\dfrac{x^{2}}{2}+C_0$。故通解为
+\[
+\boxed{y=C_0x+\frac{x^{3}}{2}}
+\]
+\end{solution}
+
+\begin{example}
+解初值问题
+$\begin{cases}(x^{2}-1)y'+2xy=\cos x,\\ y(0)=1.\end{cases}$
+\end{example}
+\begin{solution}
+化为标准形式（注意 $x \neq \pm1$）：
+\[
+y'+\frac{2x}{x^{2}-1}\,y=\frac{\cos x}{x^{2}-1}.
+\]
+
+齐次部分：$y'+\dfrac{2x}{x^{2}-1}y=0$
+$\;\Longrightarrow\;$ $\ln|y|=-\ln|x^{2}-1|+\ln|C|$，即 $y_h=\dfrac{C}{x^{2}-1}$。
+
+常数变易：令 $y=\dfrac{C(x)}{x^{2}-1}$，代入化简后得 $C'(x)=\cos x$，
+故 $C(x)=\sin x+C_0$。通解为
+\[
+y=\frac{\sin x+C_0}{x^{2}-1}.
+\]
+
+代入 $y(0)=1$：$1=\dfrac{0+C_0}{-1}\;\Rightarrow\; C_0=-1$。特解为
+\[
+\boxed{y=\frac{1-\sin x}{1-x^{2}}}
+\]
+\end{solution}
+
+\begin{example}
+解方程 $y\ln y\,\mathrm{d}x+(x-\ln y)\,\mathrm{d}y=0$。
+\end{example}
+\begin{solution}
+若按常规写成 $\dfrac{\mathrm{d}y}{\mathrm{d}x}=-\dfrac{y\ln y}{x-\ln y}$，既非线性也非可分离。
+
+\textbf{关键观察}：交换自变量和因变量的角色！将 $x$ 视为 $y$ 的函数：
+\[
+\frac{\mathrm{d}x}{\mathrm{d}y}=-\frac{x-\ln y}{y\ln y}
+=-\frac{1}{y\ln y}\,x+\frac{1}{y},
+\]
+即
+\[
+\frac{\mathrm{d}x}{\mathrm{d}y}+\frac{1}{y\ln y}\,x=\frac{1}{y}. \tag{$\dagger$}
+\]
+
+这是以 $x=x(y)$ 为未知函数的一阶线性方程！齐次通解：$x=\dfrac{C}{\ln y}$。
+
+常数变易：令 $x=\dfrac{C(y)}{\ln y}$，代入 ($\dagger$) 得 $C'(y)=\dfrac{\ln y}{y}$，
+故 $C(y)=\dfrac{1}{2}(\ln y)^{2}+C_0$。通解为
+\[
+\boxed{x=\frac{1}{2}\ln y+\frac{C_0}{\ln y}}
+\]
+此外 $y\equiv 1$ 也是原方程的解（使 $\ln y=0$ 导致退化）。
+\end{solution}
+
+\begin{example}[质点在驱动力与阻力下的运动]
+质量为 $m$ 的质点从静止开始运动，受到与时间成正比的驱动力 $k_1 t$（与速度同向），以及与速度成正比的阻力 $k_2 v$。求速度 $v(t)$。
+\end{example}
+\begin{solution}
+由牛顿第二定律 $F=ma$ 得
+\[
+m\frac{\mathrm{d}v}{\mathrm{d}t}=k_1t-k_2v,\quad v(0)=0.
+\]
+化为标准线性形式：
+\[
+\frac{\mathrm{d}v}{\mathrm{d}t}+\frac{k_2}{m}v=\frac{k_1}{m}t.
+\]
+
+齐次通解：$v_h=C\,\mathrm{e}^{-\frac{k_2}{m}t}$。
+
+常数变易：代入非齐次方程得
+$C'(t)=\dfrac{k_1}{m}t\,\mathrm{e}^{\frac{k_2}{m}t}$，
+分部积分后
+\[
+C(t)=\frac{k_1}{k_2}t\,\mathrm{e}^{\frac{k_2}{m}t}-\frac{k_1m}{k_2^{2}}\,\mathrm{e}^{\frac{k_2}{m}t}+C_0.
+\]
+
+利用 $v(0)=0$ 定出 $C_0=\dfrac{k_1m}{k_2^{2}}$，最终得
+\[
+\boxed{v(t)=\frac{k_1}{k_2}t-\frac{k_1m}{k_2^{2}}\!\left(1-\mathrm{e}^{-\frac{k_2}{m}t}\right)}.
+\]
+\end{solution}
+
+\subsection{伯努利方程}
+
+许多非线性方程可通过适当的变量代换化为线性方程。\textbf{伯努利方程}就是其中的典型代表。
+
+\begin{definition}[伯努利方程] \label{def:bernoulli-eq}
+形如
+\[
+\frac{\mathrm{d}y}{\mathrm{d}x}+P(x)\,y=Q(x)\,y^{n},\quad n \neq 0,1 
+\]
+的方程称为\textbf{伯努利方程}，其中 $n$ 称为伯努利指数。
+\end{definition}
+
+\begin{theorem}[伯努利方程的标准化方法]
+当 $y \neq 0$ 时，以 $y^{n}$ 除 $\frac{\mathrm{d}y}{\mathrm{d}x}+P(x)\,y=Q(x)\,y^{n}$ 两边得
+\[
+y^{-n}\frac{\mathrm{d}y}{\mathrm{d}x}+P(x)\,y^{1-n}=Q(x).
+\]
+
+注意到 $\dfrac{\mathrm{d}}{\mathrm{d}x}(y^{1-n})=(1-n)y^{-n}\dfrac{\mathrm{d}y}{\mathrm{d}x}$，
+作代换 $z=y^{1-n}$，则 $\frac{\mathrm{d}y}{\mathrm{d}x}+P(x)\,y=Q(x)\,y^{n}$ 化为关于 $z$ 的\textbf{一阶线性方程}：
+\[
+\frac{\mathrm{d}z}{\mathrm{d}x}+(1-n)P(x)\,z=(1-n)Q(x). 
+\]
+
+用常数变易法或通解公式求出 $z$ 后回代 $y=z^{1/(1-n)}$ 即得原方程的通解。
+
+此外，当 $n>0$ 时 $y\equiv 0$ 也是解（可能不在通解表达式中）。
+\end{theorem}
+
+\begin{example}
+解方程 $\displaystyle\frac{\mathrm{d}y}{\mathrm{d}x}=\frac{4}{x}y+x\sqrt{y}\;(y>0,x \neq 0)$。
+\end{example}
+\begin{solution}
+这是 $n=\dfrac{1}{2}$ 的伯努利方程。令 $z=\sqrt{y}=y^{1/2}$，则
+$\dfrac{\mathrm{d}z}{\mathrm{d}x}=\dfrac{1}{2}y^{-1/2}\dfrac{\mathrm{d}y}{\mathrm{d}x}$，
+原方程化为
+\[
+\frac{\mathrm{d}z}{\mathrm{d}x}-\frac{2}{x}z=\frac{x}{2}.
+\]
+
+这是关于 $z$ 的一阶线性方程。由通解公式：
+\[
+z=\mathrm{e}^{\int\frac{2}{x}\mathrm{d}x}\!\left(C+\int\frac{x}{2}\mathrm{e}^{-\int\frac{2}{x}\mathrm{d}x}\mathrm{d}x\right)
+=x^{2}\!\left(C+\frac{1}{2}\ln|x|\right).
+\]
+
+回代 $z=\sqrt{y}$ 得通解
+\[
+\boxed{y=x^{4}\!\left(C+\frac{1}{2}\ln|x|\right)^{2}}.
+\]
+\end{solution}
+
+\subsection{黎卡提方程与刘维尔方法}
+
+形如
+\[\frac{\mathrm{d}y}{\mathrm{d}x}=P(x)\,y^{2}+Q(x)\,y+R(x) \]
+的方程称为\textbf{黎卡提方程}（Riccati Equation）。它\textbf{一般没有初等解法}；但若能通过观察或其他途径找到一个特解 $y=\phi(x)$，则可通过变量代换将其化为伯努利方程从而求出通解。
+
+\begin{theorem}[黎卡提方程的刘维尔解法] \label{thm:riccati-liouville}
+设已知黎卡提方程 $\frac{\mathrm{d}y}{\mathrm{d}x}=P(x)\,y^{2}+Q(x)\,y+R(x) $ 的一个特解 $y=\phi(x)$。作代换 $y=\phi(x)+u$，其中 $u$ 为新的未知函数，代入后化简可得
+\[
+\frac{\mathrm{d}u}{\mathrm{d}x}=\underbrace{[2P(x)\phi(x)+Q(x)]}_{\text{记为 }S(x)}u+P(x)\,u^{2}.
+\]
+
+这是关于 $u$ 的伯努利方程（指数为 2）！再令 $w=u^{-1}$ 即可化为关于 $w$ 的一阶线性方程，最终求得通解
+\[
+\boxed{y=\phi(x)+\frac{\exp\!\left(\displaystyle\int S(x)\,\mathrm{d}x\right)}{C-\displaystyle\int P(x)\exp\!\left(\int S(x)\,\mathrm{d}x\right)\mathrm{d}x}}.
+\]
+\end{theorem}
+
+\begin{remark}
+刘维尔方法的精妙之处在于：找到\textbf{一个}特解即可完全确定通解的结构。然而 ``找特解''这一步往往需要运气、直觉或特殊技巧，没有通用算法。这也是黎卡提方程在理论和应用中既重要又棘手的原因之一。
+\end{remark}
+
+\subsection{其他可化为线性方程的类型}
+
+除了标准的伯努利形式外，还有多种方程可以通过巧妙的代换纳入线性框架。
+
+\begin{example}
+求解 $y'=\dfrac{1}{x}+\mathrm{e}^{y}$。
+\end{example}
+\begin{solution}
+这不是前面讨论过的任何标准类型。但注意到方程右端含 $\mathrm{e}^{y}$，尝试以 $\mathrm{e}^{-y}$ 同乘两边：
+\[
+\mathrm{e}^{-y}\,y'-\frac{1}{x}\,\mathrm{e}^{-y}=1.
+\]
+
+令 $u=\mathrm{e}^{-y}$，则 $\dfrac{\mathrm{d}u}{\mathrm{d}x}=-\mathrm{e}^{-y}\,y'$，上式化为
+\[
+\frac{\mathrm{d}u}{\mathrm{d}x}+\frac{1}{x}u=-1,
+\]
+这是一阶线性方程。由通解公式：
+\[
+u=\mathrm{e}^{-\int\frac{1}{x}\mathrm{d}x}\!\left(-\int\mathrm{e}^{\int\frac{1}{x}\mathrm{d}x}\mathrm{d}x+C\right)
+=-\frac{x}{2}+\frac{C}{x}.
+\]
+
+回代 $u=\mathrm{e}^{-y}$ 得隐式通解
+\[
+\boxed{\mathrm{e}^{-y}=-\frac{x}{2}+\frac{C}{x}}
+\quad\Longleftrightarrow\quad
+\boxed{y=-\ln\!\left(Cx^{-1}-\frac{x}{2}\right)}
+\]
+\end{solution}
+
+\begin{example}
+求 $y'+\sin y+x\cos y+x=0$ 的通解。
+\end{example}
+\begin{solution}
+利用半角公式将方程变形：
+\[
+y'+2\sin\frac{y}{2}\cos\frac{y}{2}+(1+\cos y)\cdot x=0.
+\]
+
+注意到 $1+\cos y=2\cos^{2}\dfrac{y}{2}$，两边除以 $2\cos^{2}\dfrac{y}{2}$ 得
+\[
+\frac{1}{2\cos^{2}\frac{y}{2}}\,y'+\tan\frac{y}{2}+x=0.
+\]
+
+而 $\dfrac{\mathrm{d}}{\mathrm{d}x}\!\left(\tan\frac{y}{2}\right)=\dfrac{1}{2\cos^{2}\frac{y}{2}}\,y'$，因此方程恰好等价于
+\[
+\left(\tan\frac{y}{2}\right)'+\tan\frac{y}{2}+x=0.
+\]
+
+令 $u=\tan\dfrac{y}{2}$，则得到一阶线性方程 $u'+u+x=0$。由常数变易法：
+齐次通解 $u_h=C\mathrm{e}^{-x}$；令 $u=C(x)\mathrm{e}^{-x}$ 代入得 $C'(x)=x\mathrm{e}^{x}$，积分之 $C(x)=(x-1)\mathrm{e}^{x}+C_0$。
+
+最终通解为
+\[
+\boxed{\tan\frac{y}{2}=C\,\mathrm{e}^{-x}+(1-x)}
+\]
+\end{solution}
+
+\begin{remark}
+这两个例子的共同策略是：\textbf{识别方程中非线性项的特殊结构}（指数函数、三角函数等），然后寻找合适的因式或代换将其“吸收”进新的未知函数中，从而使整体方程变为线性形式。这种技巧需要经验积累和对各类函数组合模式的敏感度。
+\end{remark}
+
+\section{练习}
+
+\begin{exercise}[基础：直接套用公式或常数变易法]
+求解下列一阶线性方程：
+\begin{enumerate}
+  \item[(1)] $y'+y=\mathrm{e}^{-x},\; y(0)=1$
+  \item[(2)] $xy'-2y=x^{2}\ln x$
+  \item[(3)] $y'\cos x+y\sin x=\cos^{2}x,\; y(\pi)=\pi$
+\end{enumerate}
+\end{exercise}
+\begin{solution}
+求解下列一阶线性方程：
+\begin{enumerate}
+  \item[(1)] 
+此为标准形式的一阶线性微分方程，其中 $P(x)=1, Q(x)=\mathrm{e}^{-x}$。
+利用积分因子法，两边同乘 $\mathrm{e}^{\int 1 \mathrm{d}x} = \mathrm{e}^{x}$，方程化为：
+\[
+\mathrm{e}^{x}y' + \mathrm{e}^{x}y = 1 \implies (y\mathrm{e}^{x})' = 1
+\]
+两边积分得：
+\[
+y\mathrm{e}^{x} = x + C \implies y = (x+C)\mathrm{e}^{-x}
+\]
+代入初值条件 $y(0)=1$ 得到 $1 = (0+C)\mathrm{e}^{0} \implies C=1$。
+故特解为：$\mathbf{y = (x+1)\mathrm{e}^{-x}}$。
+\item[(2)]
+将方程化为标准形式：
+\[
+y' - \frac{2}{x}y = x\ln x
+\]
+这里 $P(x) = -\frac{2}{x}$，积分因子 $\mu(x) = \exp\!\left(\int-\frac{2}{x}\mathrm{d}x\right) = \mathrm{e}^{-2\ln|x|} = x^{-2}$。
+方程两边同乘 $x^{-2}$：
+\[
+x^{-2}y' - 2x^{-3}y = x^{-1}\ln x \implies (yx^{-2})' = \frac{\ln x}{x}
+\]
+两边积分（利用换元法 $\int \frac{\ln x}{x}\mathrm{d}x = \int \ln x\,\mathrm{d}(\ln x)$）：
+\[
+yx^{-2} = \frac{1}{2}(\ln x)^2 + C
+\]
+整理得通解：$\mathbf{y = x^2\left[ \frac{1}{2}(\ln x)^2 + C \right]}$。
+\item[(3)]方程两边同除以 $\cos x$ 化为标准型：
+\[
+y' + y\tan x = \cos x
+\]
+求出积分因子 $\mu(x) = \exp\!\left(\int\tan x\mathrm{d}x\right) = \exp(-\ln|\cos x|) = \sec x$。
+（也可以直接观察，原方程两边同乘 $\sec^2 x$）。
+方程两边同乘 $\sec x$ 得到：
+\[
+y'\sec x + y\sec x\tan x = 1 \implies (y\sec x)' = 1
+\]
+两边积分得到：
+\[
+y\sec x = x + C \implies y = (x+C)\cos x
+\]
+代入初值条件 $y(\pi)=\pi$，有 $\pi = (\pi+C)\cos\pi = -(\pi+C)$，解得 $C = -2\pi$。
+故特解为：$\mathbf{y = (x-2\pi)\cos x}$。
+\end{enumerate}
+\end{solution}
+
+\begin{exercise}[基础：伯努利方程]
+求解下列伯努利方程（先判断指数 $n$）：
+\begin{enumerate}
+  \item[(1)] $y'-\dfrac{1}{x}y=x^{2}y^{3}$
+  \item[(2)] $y'+\dfrac{2}{x}y=\dfrac{1}{x^{2}}y^{2}\sin x$
+  \item[(3)] $3(1+x^{2})y'-2xy=(1+x^{2})^{2}y^{4}$
+\end{enumerate}
+\end{exercise}
+\begin{solution}
+\textbf{解(1):}
+这是 $n=3$ 的伯努利方程。两边同除以 $y^3$，得：
+\[
+y^{-3}y' - \frac{1}{x}y^{-2} = x^2
+\]
+作代换 $z = y^{1-3} = y^{-2}$，则 $z' = -2y^{-3}y'$。原方程同乘 $-2$ 可化为关于 $z$ 的线性方程：
+\[
+z' + \frac{2}{x}z = -2x^2
+\]
+求出积分因子 $\mu(x) = \exp\!\left(\int \frac{2}{x}\mathrm{d}x\right) = x^2$。方程化为 $(zx^2)' = -2x^4$。
+两边积分得：$zx^2 = -\frac{2}{5}x^5 + C \implies z = Cx^{-2} - \frac{2}{5}x^3$。
+回代 $z=y^{-2}$，得通解：
+\[
+y^{-2} = Cx^{-2} - \frac{2}{5}x^3 \implies \mathbf{y^2 = \frac{5x^2}{5C - 2x^5}} \quad (\text{另外 } y=0 \text{ 也是解})
+\]
+
+\textbf{解(2):}
+这是 $n=2$ 的伯努利方程。两边同除以 $y^2$，得：
+\[
+y^{-2}y' + \frac{2}{x}y^{-1} = \frac{\sin x}{x^2}
+\]
+作代换 $z = y^{-1}$，则 $z' = -y^{-2}y'$。方程化为：
+\[
+-z' + \frac{2}{x}z = \frac{\sin x}{x^2} \implies z' - \frac{2}{x}z = -\frac{\sin x}{x^2}
+\]
+积分因子 $\mu(x) = \exp\!\left(-\int \frac{2}{x}\mathrm{d}x\right) = x^{-2}$。方程化为：
+\[
+(zx^{-2})' = -\frac{\sin x}{x^4}
+\]
+两边积分得到（右侧积分为非初等积分，保留积分号）：
+\[
+zx^{-2} = -\int \frac{\sin x}{x^4}\mathrm{d}x + C \implies z = x^2\left( C - \int \frac{\sin x}{x^4}\mathrm{d}x \right)
+\]
+回代 $z=y^{-1}$，得通解：
+\[
+\mathbf{y = \frac{1}{x^2\left( C - \displaystyle\int \frac{\sin x}{x^4}\mathrm{d}x \right)}} \quad (\text{另外 } y=0 \text{ 也是解})
+\]
+
+\textbf{解(3):}
+这是 $n=4$ 的伯努利方程。先将方程化为标准形式：
+\[
+y' - \frac{2x}{3(1+x^2)}y = \frac{1+x^2}{3}y^4
+\]
+作代换 $z = y^{1-4} = y^{-3}$，则 $z' = -3y^{-4}y'$。
+方程两边同除以 $y^4$ 并乘以 $-3$：
+\[
+-3y^{-4}y' + \frac{2x}{1+x^2}y^{-3} = -(1+x^2) \implies z' + \frac{2x}{1+x^2}z = -(1+x^2)
+\]
+积分因子 $\mu(x) = \exp\!\left(\int \frac{2x}{1+x^2}\mathrm{d}x\right) = 1+x^2$。方程化为：
+\[
+(z(1+x^2))' = -(1+x^2)^2 = -(1 + 2x^2 + x^4)
+\]
+积分得：
+\[
+z(1+x^2) = -x - \frac{2}{3}x^3 - \frac{1}{5}x^5 + C
+\]
+回代 $z=y^{-3}$，整理得通解：
+\[
+\mathbf{y^{-3} = \frac{C - x - \frac{2}{3}x^3 - \frac{1}{5}x^5}{1+x^2}} \quad (\text{另外 } y=0 \text{ 也是解})
+\]
+\end{solution}
+
+\begin{exercise}[提高：角色互换]
+解方程 $y'\,(x\ln y-1)=y\ln y$。（提示：将 $x$ 视为 $y$ 的函数）
+\end{exercise}
+\begin{solution}
+ 由于方程中关于 $y$ 及其导数高度非线性，但关于 $x$ 是线性的。我们取互为反函数的关系，视 $x$ 为未知函数，$y$ 为自变量。
+将方程改写为：
+\[
+\frac{\mathrm{d}x}{\mathrm{d}y} = \frac{x\ln y - 1}{y\ln y} = \frac{1}{y}x - \frac{1}{y\ln y}
+\]
+整理成关于 $x=x(y)$ 的一阶线性标准形式：
+\[
+\frac{\mathrm{d}x}{\mathrm{d}y} - \frac{1}{y}x = -\frac{1}{y\ln y}
+\]
+此时 $P(y) = -\frac{1}{y}$，求出积分因子：
+\[
+\mu(y) = \exp\!\left(\int -\frac{1}{y}\mathrm{d}y\right) = \frac{1}{y}
+\]
+方程两边同乘以 $\frac{1}{y}$，得：
+\[
+\frac{1}{y}\frac{\mathrm{d}x}{\mathrm{d}y} - \frac{1}{y^2}x = -\frac{1}{y^2\ln y} \implies \left(x\cdot \frac{1}{y}\right)' = -\frac{1}{y^2\ln y}
+\]
+两边对 $y$ 积分：
+\[
+\frac{x}{y} = -\int \frac{1}{y^2\ln y}\mathrm{d}y + C \implies x = y\left( C - \int \frac{1}{y^2\ln y}\mathrm{d}y \right)
+\]
+注：右侧的积分可以通过换元法转化为指数积分函数，属于超越积分，无法用初等函数有限形式表示。可保留积分号，或利用指数积分形式表达：
+\[
+\mathbf{x = Cy - y \int \frac{\mathrm{d}y}{y^2\ln y}}
+\]
+\end{solution}
+
+\begin{exercise}[提高：三角代换]
+解方程 $y'\sec x-y\tan x=\sec x\tan x$。（提示：乘以适当积分因子 $\mu(x)$ 使左端成为全微分）
+\end{exercise}
+\begin{solution}
+观察方程左端结构 $y'\sec x - y\tan x$，联想到商的导数公式或乘积的导数公式。
+我们知道 $(\cos x)' = -\sin x$。将原方程两边同时乘以 $\cos^2 x$，试图凑出全微分：
+\[
+y'\sec x\cdot\cos^2 x - y\tan x\cdot\cos^2 x = \sec x\tan x\cdot\cos^2 x
+\]
+化简得：
+\[
+y'\cos x - y\sin x = \frac{1}{\cos x}\frac{\sin x}{\cos x}\cos^2 x = \sin x
+\]
+奇迹发生了，左端恰好是函数乘积的导数：
+\[
+(y\cos x)' = \sin x
+\]
+对两边关于 $x$ 积分：
+\[
+y\cos x = -\cos x + C
+\]
+从而解出通解为：
+\[
+\mathbf{y = C\sec x - 1}
+\]
+此解法非常巧妙，完全避开了繁琐的标准积分因子公式推导。
+\end{solution}
+
+\begin{exercise}[黎卡提方程]
+验证 $y=\dfrac{1}{x}$ 是黎卡提方程 $y'=-y^{2}-\dfrac{1}{x}y+\dfrac{1}{x^2}$ 的一个特解，并由此求出通解。
+\end{exercise}
+\begin{solution}
+\textbf{验证：} 将 $y = \frac{1}{x}$ 代入方程：
+左端 $y' = -\frac{1}{x^2}$；
+右端 $=- \left(\frac{1}{x}\right)^2 - \frac{1}{x}\left(\frac{1}{x}\right) + \frac{1}{x^2} = -\frac{1}{x^2}$。
+左右两端相等，特解验证成立。
+
+\textbf{求解：} 利用刘维尔方法，设 $y = \frac{1}{x} + u(x)$，求导得 $y' = -\frac{1}{x^2} + u'$。
+代入原黎卡提方程：
+\[
+-\frac{1}{x^2} + u' = -\left(\frac{1}{x} + u\right)^2 - \frac{1}{x}\left(\frac{1}{x} + u\right) + \frac{1}{x^2}
+\]
+展开右端并消项：
+\[
+-\frac{1}{x^2} + u' = -\frac{1}{x^2} - \frac{2}{x}u - u^2 - \frac{1}{x^2} - \frac{1}{x}u + \frac{1}{x^2} \implies u' = -\frac{3}{x}u - u^2
+\]
+这是一个伯努利方程（$n=2$）。令 $w = u^{-1}$，则 $w' = -u^{-2}u'$。
+方程两边同除以 $u^2$ 并乘以 $-1$：
+\[
+-u^{-2}u' - \frac{3}{x}u^{-1} = 1 \implies w' - \frac{3}{x}w = 1
+\]
+求出积分因子 $\mu(x) = \exp\!\left(-\int \frac{3}{x}\mathrm{d}x\right) = x^{-3}$。方程化为 $(wx^{-3})' = x^{-3}$。
+两边积分得：
+\[
+wx^{-3} = \int x^{-3}\mathrm{d}x = -\frac{1}{2}x^{-2} + C \implies w = Cx^3 - \frac{x}{2}
+\]
+回代 $u = w^{-1} = \frac{1}{Cx^3 - x/2}$，进而求得最终通解：
+\[
+\mathbf{y = \frac{1}{x} + \frac{1}{Cx^3 - \frac{x}{2}} = \frac{2Cx^2 + 1}{2Cx^3 - x}}
+\]
+\end{solution}
+
+\subsection{A组}
+
+\begin{exercise}[基本概念]
+回答下列问题:
+\begin{enumerate}
+    \item[(1)] 什么叫一阶线性微分方程?
+    \item[(2)] 常数变易法的基本思想是什么?
+    \item[(3)] 如何将伯努利方程化为线性方程?
+\end{enumerate}
+\end{exercise}
+\begin{solution}
+\begin{enumerate}
+    \item[(1)] 若一个一阶微分方程中，关于未知函数 $y$ 及其一阶导数 $y'$ 都是一次的（即没有平方、高次方或作为复合函数内部的自变量等情形），则称之为一阶线性微分方程。其一般标准形式可写作 $y' + P(x)y = Q(x)$。
+    \item[(2)] 常数变易法是由拉格朗日创立的方法。其基本思想是先求解非齐次方程对应的齐次方程 $y' + P(x)y = 0$ 得到通解 $y_h = C \mathrm{e}^{-\int P(x)\mathrm{d}x}$。然后假设非齐次方程的解具有相同结构，只是将原来作为常数的 $C$ “解放”为未知函数 $C(x)$，即假设通解为 \[y = C(x) \mathrm{e}^{-\int P(x)\mathrm{d}x}\]将其代入原非齐次方程中求解出 $C(x)$，进而得到完整通解。
+    \item[(3)] 对于标准形式的伯努利方程 $y' + P(x)y = Q(x)y^n$（$n \neq 0, 1$），可将其等式两边同除以 $y^n$，得到 $y^{-n}y' + P(x)y^{1-n} = Q(x)$。然后引入新的因变量代换 $z = y^{1-n}$，利用其导数关系 $z' = (1-n)y^{-n}y'$，即可将原方程严丝合缝地化为关于 $z$ 的一阶线性微分方程：$z' + (1-n)P(x)z = (1-n)Q(x)$。
+\end{enumerate}
+\end{solution}
+
+\begin{exercise}[一阶线性微分方程求通解]
+求下列微分方程的通解:
+\begin{enumerate}
+    \item[(1)] $\displaystyle \frac{\mathrm{d}y}{\mathrm{d}x} + y\tan x = \cos x$;
+    \item[(2)] $\displaystyle \frac{\mathrm{d}y}{\mathrm{d}x} - y\cot x = 2x\sin x$;
+    \item[(3)] $\displaystyle (y^2 - 6x)\frac{\mathrm{d}y}{\mathrm{d}x} + 2y = 0$;
+    \item[(4)] $\displaystyle y' + y\cos x = \mathrm{e}^{-\sin x}$.
+\end{enumerate}
+\end{exercise}
+\begin{solution}
+\textbf{解(1):}
+这是标准的一阶线性微分方程，积分因子 $\mu(x) = \mathrm{e}^{\int \tan x\mathrm{d}x} = \sec x$。
+方程两边同乘 $\sec x$ 得到 $(y\sec x)' = \cos x \cdot \sec x = 1$。
+积分得 $y\sec x = x + C$，故通解为：
+\[
+\mathbf{y = (x+C)\cos x}
+\]
+
+\textbf{解(2):}
+积分因子 $\mu(x) = \mathrm{e}^{-\int \cot x\mathrm{d}x} = \mathrm{e}^{-\ln|\sin x|} = \csc x$。
+两边同乘 $\csc x$ 得 $(y\csc x)' = 2x\sin x \cdot \csc x = 2x$。
+积分得 $y\csc x = x^2 + C$，故通解为：
+\[
+\mathbf{y = (x^2+C)\sin x}
+\]
+
+\textbf{解(3):}
+方程关于 $y$ 不是线性的，采取角色互换策略，视 $x$ 为 $y$ 的函数。
+将方程整理为 $\displaystyle 2y\frac{\mathrm{d}x}{\mathrm{d}y} = 6x - y^2 \implies \frac{\mathrm{d}x}{\mathrm{d}y} - \frac{3}{y}x = -\frac{y}{2}$。
+这是一阶线性微分方程。积分因子 $\mu(y) = \mathrm{e}^{\int -\frac{3}{y}\mathrm{d}y} = y^{-3}$。
+方程化为 $(x y^{-3})' = -\frac{y}{2}y^{-3} = -\frac{1}{2}y^{-2}$。
+积分得 $xy^{-3} = \frac{1}{2}y^{-1} + C$，故通解为：
+\[
+\mathbf{x = Cy^3 + \frac{1}{2}y^2} \quad (\text{另外 } y=0 \text{ 也是解})
+\]
+
+\textbf{解(4):}
+积分因子 $\mu(x) = \mathrm{e}^{\int \cos x\mathrm{d}x} = \mathrm{e}^{\sin x}$。
+两边同乘 $\mathrm{e}^{\sin x}$ 得 $(y\mathrm{e}^{\sin x})' = \mathrm{e}^{-\sin x} \cdot \mathrm{e}^{\sin x} = 1$。
+积分得 $y\mathrm{e}^{\sin x} = x + C$，故通解为：
+\[
+\mathbf{y = (x+C)\mathrm{e}^{-\sin x}}
+\]
+\end{solution}
+
+\begin{exercise}[一阶线性微分方程初值问题]
+求下列初值问题的解:
+\begin{enumerate}
+    \item[(1)] $\displaystyle (x+1)y' + y = 2\mathrm{e}^{-x},\,y(1)=0$;
+    \item[(2)] $\displaystyle \frac{\mathrm{d}y}{\mathrm{d}x} - y\tan x = \sec x,\,y(0)=0$;
+    \item[(3)] $\displaystyle \frac{\mathrm{d}y}{\mathrm{d}x} + \frac{3}{x}y = \frac{2}{x^3},\,y(1)=1$;
+    \item[(4)] $\displaystyle y' + \frac{y}{x} + \mathrm{e}^x = 0,\,y(1)=0$.
+\end{enumerate}
+\end{exercise}
+\begin{solution}
+\begin{enumerate}
+    \item[(1)]观察左端即为乘积的导数形式：$((x+1)y)' = 2\mathrm{e}^{-x}$。
+两边直接积分：$(x+1)y = -2\mathrm{e}^{-x} + C$。
+代入初值 $y(1)=0$，得到 $(1+1)\cdot 0 = -2\mathrm{e}^{-1} + C \implies C = \frac{2}{\mathrm{e}}$。
+故初值问题的解为：
+\[
+\mathbf{y = \frac{2\mathrm{e}^{-1} - 2\mathrm{e}^{-x}}{x+1}}
+\]
+\item[(2)]积分因子 $\mu(x) = \mathrm{e}^{-\int \tan x\mathrm{d}x} = \cos x$。
+方程两边同乘 $\cos x$ 得到 $(y\cos x)' = \sec x \cdot \cos x = 1$。
+积分得 $y\cos x = x + C$。
+代入初值 $y(0)=0$，得 $0\cdot \cos 0 = 0 + C \implies C = 0$。
+故初值问题的解为：
+\[
+\mathbf{y = x\sec x}
+\]
+\item[(3)]积分因子 $\mu(x) = \mathrm{e}^{\int \frac{3}{x}\mathrm{d}x} = x^3$。
+两边同乘 $x^3$ 得 $(y x^3)' = \frac{2}{x^3} \cdot x^3 = 2$。
+积分得 $yx^3 = 2x + C$。
+代入初值 $y(1)=1$，得 $1\cdot 1^3 = 2\cdot 1 + C \implies C = -1$。
+故初值问题的解为：
+\[
+\mathbf{y = \frac{2x - 1}{x^3} = 2x^{-2} - x^{-3}}
+\]
+\item[(4)]积分因子 $\mu(x) = \mathrm{e}^{\int \frac{1}{x}\mathrm{d}x} = x$。
+将方程整理为 $y' + \frac{1}{x}y = -\mathrm{e}^x$，两边同乘 $x$ 得到 $(xy)' = -x\mathrm{e}^x$。
+利用分部积分法对右端积分：
+\[
+xy = -\int x\mathrm{e}^x\mathrm{d}x = -(x\mathrm{e}^x - \mathrm{e}^x) + C = (1-x)\mathrm{e}^x + C
+\]
+代入初值 $y(1)=0$，得到 $1\cdot 0 = (1-1)\mathrm{e}^1 + C \implies C=0$。
+故初值问题的解为：
+\[
+\mathbf{y = \frac{1-x}{x}\mathrm{e}^x}
+\]
+\end{enumerate}
+\end{solution}
+
+\begin{exercise}[求曲线方程]
+设一曲线通过原点, 且它在点$(x,y)$处的切线斜率等于$2x+y$. 求这曲线方程.
+\end{exercise}
+\begin{solution}
+由几何意义知，切线斜率即导数，故列出微分方程：
+\[
+y' = 2x + y \implies y' - y = 2x
+\]
+这是一阶线性微分方程，积分因子为 $\mu(x) = \mathrm{e}^{\int -1\mathrm{d}x} = \mathrm{e}^{-x}$。
+两边同乘 $\mathrm{e}^{-x}$：
+\[
+(y\mathrm{e}^{-x})' = 2x\mathrm{e}^{-x}
+\]
+通过分部积分对两边进行积分：
+\[
+y\mathrm{e}^{-x} = \int 2x\mathrm{e}^{-x}\mathrm{d}x = -2x\mathrm{e}^{-x} + \int 2\mathrm{e}^{-x}\mathrm{d}x = -2x\mathrm{e}^{-x} - 2\mathrm{e}^{-x} + C = -2(x+1)\mathrm{e}^{-x} + C
+\]
+两边同乘 $\mathrm{e}^x$ 得到通解 $y = -2(x+1) + C\mathrm{e}^x$。
+由于曲线通过原点 $(0,0)$，代入条件得到 $0 = -2(0+1) + C\mathrm{e}^0 \implies C = 2$。
+故该曲线的方程为：
+\[
+\mathbf{y = 2\mathrm{e}^x - 2x - 2}
+\]
+\end{solution}
+
+\begin{exercise}[应用题: 电路模型]
+设有一个由电阻$R=10\ \Omega$、电感$L=2\ \mathrm{H}$和电源电压$E=20\sin5t$ (V) 串联组成的电路. 开关$\mathrm{S}$合上后, 电路中有电流通过. 求电流$I$与时间$t$的函数关系. (利用回路电压定律$\displaystyle E=RI+L\frac{\mathrm{d}I}{\mathrm{d}t}$.)
+\end{exercise}
+\begin{solution}
+根据基尔霍夫电压定律列出微分方程：
+\[
+2\frac{\mathrm{d}I}{\mathrm{d}t} + 10I = 20\sin 5t \implies \frac{\mathrm{d}I}{\mathrm{d}t} + 5I = 10\sin 5t
+\]
+这是一个关于电流 $I(t)$ 的一阶线性非齐次常微分方程。积分因子 $\mu(t) = \mathrm{e}^{\int 5\mathrm{d}t} = \mathrm{e}^{5t}$。
+方程转化为：
+\[
+(I\mathrm{e}^{5t})' = 10\mathrm{e}^{5t}\sin 5t
+\]
+利用多次分部积分或欧拉公式求解右端的积分：
+\[
+\int \mathrm{e}^{5t}\sin 5t\,\mathrm{d}t = \frac{\mathrm{e}^{5t}}{5^2 + 5^2}(5\sin 5t - 5\cos 5t) = \frac{\mathrm{e}^{5t}}{10}(\sin 5t - \cos 5t)
+\]
+代入前式：
+\[
+I\mathrm{e}^{5t} = 10 \cdot \frac{\mathrm{e}^{5t}}{10}(\sin 5t - \cos 5t) + C = \mathrm{e}^{5t}(\sin 5t - \cos 5t) + C
+\]
+两边同乘 $\mathrm{e}^{-5t}$ 得到通解：
+\[
+I(t) = \sin 5t - \cos 5t + C\mathrm{e}^{-5t}
+\]
+对于 RL 串联电路，合上开关的瞬间电流无法突变，即 $I(0) = 0$。代入求特解：
+\[
+0 = \sin 0 - \cos 0 + C\mathrm{e}^0 \implies 0 = -1 + C \implies C = 1
+\]
+故电流与时间的函数关系为：
+\[
+\mathbf{I(t) = \sin 5t - \cos 5t + \mathrm{e}^{-5t}}
+\]
+\end{solution}
+
+\begin{exercise}[溶液混合问题]
+    一容器内盛有$50\ \mathrm{L}$的盐水溶液, 其中含有$10\ \mathrm{g}$的盐. 现将每升含$2\ \mathrm{g}$盐的溶液以每分钟$5\ \mathrm{L}$的速率注入容器, 并不断进行搅拌, 使混合液迅速达到均匀, 同时混合液以每分钟$3\ \mathrm{L}$的速率流出容器. 问在任一时刻$t$容器中含盐量是多少?
+\end{exercise}
+\begin{solution}
+设时刻 $t$ (分钟) 时容器中的含盐量为 $y(t)$ (克)。
+首先计算时刻 $t$ 容器内溶液的总体积 $V(t)$：初始体积为 $50\ \mathrm{L}$，每分钟流入 $5\ \mathrm{L}$，流出 $3\ \mathrm{L}$，因此净增加率为 $2\ \mathrm{L}/\text{min}$，故：
+\[
+V(t) = 50 + (5-3)t = 50 + 2t \ (\mathrm{L})
+\]
+根据质量守恒定律，盐的浓度变化率 = 流入盐的速率 - 流出盐的速率：
+流入速率 = 注入溶液浓度 $\times$ 注入速率 = $2\ \mathrm{g/L} \times 5\ \mathrm{L/min} = 10\ \mathrm{g/min}$。
+流出速率 = 容器中瞬时浓度 $\times$ 流出速率 = $\frac{y(t)}{V(t)} \times 3\ \mathrm{L/min} = \frac{3y}{50+2t}\ \mathrm{g/min}$。
+
+由此建立微分方程初值问题：
+\[
+\frac{\mathrm{d}y}{\mathrm{d}t} = 10 - \frac{3y}{50+2t}, \quad y(0) = 10
+\]
+整理为一阶线性微分方程：
+\[
+y' + \frac{3}{50+2t}y = 10
+\]
+求出积分因子：
+\[
+\mu(t) = \exp\!\left(\int \frac{3}{50+2t}\mathrm{d}t\right) = \exp\!\left(\frac{3}{2}\ln(50+2t)\right) = (50+2t)^{3/2}
+\]
+两边同乘积分因子得：
+\[
+\left(y(50+2t)^{3/2}\right)' = 10(50+2t)^{3/2}
+\]
+对 $t$ 积分：
+\[
+y(50+2t)^{3/2} = \int 10(50+2t)^{3/2}\mathrm{d}t = 10 \cdot \frac{1}{2} \cdot \frac{2}{5}(50+2t)^{5/2} + C = 2(50+2t)^{5/2} + C
+\]
+化简得通解：
+\[
+y(t) = 2(50+2t) + C(50+2t)^{-3/2}
+\]
+利用初值条件 $y(0) = 10$ 求出积分常数 $C$：
+\[
+10 = 2(50) + C(50)^{-3/2} \implies 10 = 100 + C(50)^{-3/2} \implies C = -90(50)^{3/2}
+\]
+故任一时刻 $t$ 容器中的含盐量为：
+\[
+\mathbf{y(t) = 100 + 4t - 90\left(\frac{50}{50+2t}\right)^{\!3/2}}
+\]
+\end{solution}
+
+\subsection{B组}
+
+\begin{exercise}[一阶线性微分方程初值问题]
+求微分方程的初值问题$\displaystyle y'\sec^2 y + \frac{x}{1+x^2}\tan y = x,\,y\big|_{x=0}=0$的解.
+\end{exercise}
+\begin{solution}
+注意到$y'\sec^2 y=(y\tan y)'$，作代换 $z = \tan y$，则对其求导得 $z' = y'\sec^2 y$。代入原方程后，极为完美地化解了非线性项：
+\[
+z' + \frac{x}{1+x^2}z = x
+\]
+该方程为一阶线性微分方程。计算积分因子：
+\[
+\mu(x) = \exp\!\left(\int \frac{x}{1+x^2}\mathrm{d}x\right) = \exp\!\left(\frac{1}{2}\ln(1+x^2)\right) = \sqrt{1+x^2}
+\]
+两边同乘 $\sqrt{1+x^2}$ 得到全微分形式：
+\[
+(z\sqrt{1+x^2})' = x\sqrt{1+x^2}
+\]
+积分得：
+\[
+z\sqrt{1+x^2} = \int x(1+x^2)^{1/2}\mathrm{d}x = \frac{1}{2} \cdot \frac{2}{3}(1+x^2)^{3/2} + C = \frac{1}{3}(1+x^2)^{3/2} + C
+\]
+由初值条件 $y(0)=0$ 可知此时 $z(0) = \tan 0 = 0$。代入得：
+\[
+0 \cdot \sqrt{1} = \frac{1}{3}(1)^{3/2} + C \implies C = -\frac{1}{3}
+\]
+故特解为：
+\[
+z\sqrt{1+x^2} = \frac{1}{3}(1+x^2)^{3/2} - \frac{1}{3} \implies z = \frac{1}{3}(1+x^2) - \frac{1}{3\sqrt{1+x^2}}
+\]
+最后回代 $z = \tan y$ 得到最终函数：
+\[
+\mathbf{y = \arctan\!\left[ \frac{1}{3}\left(1+x^2 - \frac{1}{\sqrt{1+x^2}}\right) \right]}
+\]
+\end{solution}
+
+\begin{exercise}[一阶线性与伯努利方程求通解]
+求下列微分方程的通解:
+\begin{enumerate}
+    \item[(1)] $\displaystyle xy' = y(2y\ln x - 1)$;
+    \item[(2)] $\displaystyle y' = x^3y^3 - xy$.
+\end{enumerate}
+\end{exercise}
+\begin{solution}
+\begin{enumerate}
+    \item[(1)] 展开整理得 $xy' = 2y^2\ln x - y \implies y' + \frac{1}{x}y = \frac{2\ln x}{x}y^2$。
+此为 $n=2$ 的伯努利方程。作代换 $z = y^{-1}$，则 $z' = -y^{-2}y'$。
+方程两边同除以 $y^2$ 并乘以 $-1$ 得：
+\[
+-y^{-2}y' - \frac{1}{x}y^{-1} = -\frac{2\ln x}{x} \implies z' - \frac{1}{x}z = -\frac{2\ln x}{x}
+\]
+积分因子 $\mu(x) = \exp\!\left(-\int \frac{1}{x}\mathrm{d}x\right) = x^{-1}$。
+转化为 $(zx^{-1})' = -\frac{2\ln x}{x^2}$。利用分部积分法：
+\[
+zx^{-1} = -2\int x^{-2}\ln x\mathrm{d}x = -2\left(-x^{-1}\ln x - \int -x^{-2}\mathrm{d}x\right) = \frac{2\ln x}{x} + \frac{2}{x} + C
+\]
+通解 $z = 2\ln x + 2 + Cx$。回代 $z = y^{-1}$ 得：
+\[
+\mathbf{y = \frac{1}{Cx + 2\ln x + 2}} \quad (\text{另外 } y=0 \text{ 也是解})
+\]
+\item[(2)] 整理为标准形式 $y' + xy = x^3y^3$。此为 $n=3$ 的伯努利方程。
+作代换 $z = y^{-2}$，则 $z' = -2y^{-3}y'$。方程两边同除以 $y^3$ 并乘以 $-2$：
+\[
+-2y^{-3}y' - 2xy^{-2} = -2x^3 \implies z' - 2xz = -2x^3
+\]
+积分因子 $\mu(x) = \exp\!\left(-\int 2x\mathrm{d}x\right) = \mathrm{e}^{-x^2}$。
+转化为 $(z\mathrm{e}^{-x^2})' = -2x^3\mathrm{e}^{-x^2}$。通过换元积分法（令 $u = x^2$）：
+\[
+z\mathrm{e}^{-x^2} = -\int 2x^3\mathrm{e}^{-x^2}\mathrm{d}x = -\int u\mathrm{e}^{-u}\mathrm{d}u = u\mathrm{e}^{-u} + \mathrm{e}^{-u} + C = (x^2+1)\mathrm{e}^{-x^2} + C
+\]
+得通解 $z = x^2 + 1 + C\mathrm{e}^{x^2}$。回代 $z = y^{-2}$：
+\[
+\mathbf{y^2 = \frac{1}{x^2 + 1 + C\mathrm{e}^{x^2}}} \quad (\text{另外 } y=0 \text{ 也是解})
+\]
+\end{enumerate}
+\end{solution}
+
+\begin{exercise}[积分方程求未知函数]
+已知连续函数$f(x)$满足条件$\displaystyle f(x) = \int_{0}^{3x} f\left(\frac{t}{3}\right)\mathrm{d}t + \mathrm{e}^{2x}$, 求$f(x)$.
+\end{exercise}
+\begin{solution}
+对积分式作换元处理，以消除积分限与被积函数参数间的耦合。
+令 $u = \frac{t}{3}$，则 $\mathrm{d}t = 3\mathrm{d}u$。当 $t=0$ 时 $u=0$；当 $t=3x$ 时 $u=x$。
+原方程化为：
+\[
+f(x) = \int_{0}^{x} f(u) \cdot 3\mathrm{d}u + \mathrm{e}^{2x} = 3\int_{0}^{x} f(t)\mathrm{d}t + \mathrm{e}^{2x}
+\]
+这是一个含有未知函数的积分方程，等式两边关于 $x$ 求导得到微分方程：
+\[
+f'(x) = 3f(x) + 2\mathrm{e}^{2x} \implies f'(x) - 3f(x) = 2\mathrm{e}^{2x}
+\]
+显然这是一阶线性非齐次常微分方程。求出积分因子 $\mu(x) = \mathrm{e}^{-3x}$：
+\[
+(f(x)\mathrm{e}^{-3x})' = 2\mathrm{e}^{2x} \cdot \mathrm{e}^{-3x} = 2\mathrm{e}^{-x}
+\]
+积分得：
+\[
+f(x)\mathrm{e}^{-3x} = \int 2\mathrm{e}^{-x}\mathrm{d}x = -2\mathrm{e}^{-x} + C \implies f(x) = -2\mathrm{e}^{2x} + C\mathrm{e}^{3x}
+\]
+为了确定 $C$，回到原积分方程中代入 $x=0$：
+\[
+f(0) = 3\int_{0}^{0} f(t)\mathrm{d}t + \mathrm{e}^{0} = 1
+\]
+由通解式求得 $f(0) = -2 + C = 1 \implies C = 3$。
+最终解得：
+\[
+\mathbf{f(x) = 3\mathrm{e}^{3x} - 2\mathrm{e}^{2x}}
+\]
+\end{solution}
+
+\begin{exercise}[积分与变量无关]
+设$f(x)$连续, 积分$\displaystyle \int_{0}^{1} [f(x) + xf(xt)]\mathrm{d}t$与$x$无关, 求$f(x)$.
+\end{exercise}
+\begin{solution}
+将题干积分分为两项处理：
+\[
+I(x) = \int_{0}^{1} f(x)\mathrm{d}t + \int_{0}^{1} xf(xt)\mathrm{d}t
+\]
+第一项由于 $f(x)$ 相对积分变量 $t$ 是常数：$\int_{0}^{1} f(x)\mathrm{d}t = f(x)$。
+第二项作变量代换，令 $u = xt$（此处视 $x$ 为参数），则 $\mathrm{d}u = x\mathrm{d}t$；当 $t=0$ 时 $u=0$，当 $t=1$ 时 $u=x$。
+\[
+\int_{0}^{1} xf(xt)\mathrm{d}t = \int_{0}^{x} f(u)\mathrm{d}u
+\]
+因此原积分式可以表示为：
+\[
+I(x) = f(x) + \int_{0}^{x} f(u)\mathrm{d}u
+\]
+由题意，该积分值与变量 $x$ 无关，即其对于 $x$ 的导数恒为 0。对方程两边求导：
+\[
+I'(x) = f'(x) + f(x) = 0
+\]
+这是一个极基础的齐次一阶线性（可分离变量）微分方程，立刻解出：
+\[
+\frac{f'(x)}{f(x)} = -1 \implies \ln|f(x)| = -x + C_1 \implies f(x) = C\mathrm{e}^{-x}
+\]
+此处的 $C$ 为任意常数。将 $f(x)$ 代回验算：$I(x) = C\mathrm{e}^{-x} + \int_0^x C\mathrm{e}^{-u}\mathrm{d}u = C\mathrm{e}^{-x} - C\mathrm{e}^{-x} + C = C$，确实为与 $x$ 无关的常数。
+故满足条件的函数族为：
+\[
+\mathbf{f(x) = C\mathrm{e}^{-x}} \quad (\text{其中 } C \text{ 为任意常数})
+\]
+\end{solution}
+
+\section{恰当微分方程与积分因子法}
+
+\subsection{解的几何本质与全微分的引入}
+
+我们要解决的是一阶微分方程。一阶微分方程的一般形式可以写成 \[\frac{\mathrm{d}y}{\mathrm{d}x} = f(x,y)\]
+\begin{enumerate}
+    \item 理论起点：隐函数求导的逆向工程：在微积分中，如果平面上有一族曲线，其方程可以隐式地表示为二元函数的一个等值线：$$u(x,y) = C$$（其中 $C$ 是任意常数）。假设 $u(x,y)$ 具有连续的偏导数。对这个方程两边同时求全微分，由全微分定理可得：$$\mathrm{d}u = \frac{\partial u}{\partial x}\mathrm{d}x + \frac{\partial u}{\partial y}\mathrm{d}y = 0$$
+    \item 标准化形式的诞生：我们将上述形式与一般的一阶微分方程的形式结合。对于任意给定的微分方程，我们总可以通过代数变形（例如去分母、移项），将其改写为对称的微分形式：$$M(x,y)\mathrm{d}x + N(x,y)\mathrm{d}y = 0$$理论推论： 如果我们能找到一个函数 $u(x,y)$，使得 $M(x,y) = \frac{\partial u}{\partial x}$ 且 $N(x,y) = \frac{\partial u}{\partial y}$，那么原方程就等价于 $\mathrm{d}u = 0$。积分后直接得到通解 $u(x,y) = C$。这种能够直接对应某个二元函数全微分的方程，我们定义为恰当微分方程。
+\end{enumerate}
+
+\subsection{判定恰当性的“克莱罗定理”}
+
+现在面临一个核心问题：随意给出一个 $M(x,y)\mathrm{d}x + N(x,y)\mathrm{d}y = 0$，我们怎么知道它是不是恰当的？我们不能盲目去寻找 $u(x,y)$，必须有一个判定标准。
+\begin{enumerate}
+    \item 寻找必要条件：假设方程是恰当的，即确实存在这样一个 $u(x,y)$，使得：$$M = \frac{\partial u}{\partial x}, \quad N = \frac{\partial u}{\partial y}$$
+    根据多元微积分中的克莱罗定理（又称二阶混合偏导数相等定理）：如果函数 $u(x,y)$ 的二阶混合偏导数连续，那么求导的顺序可以交换：$$\frac{\partial^2 u}{\partial y \partial x} = \frac{\partial^2 u}{\partial x \partial y}$$
+    将 $M$ 和 $N$ 代入上式：
+    \[\text{左边}:\frac{\partial^2 u}{\partial y \partial x} = \frac{\partial}{\partial y}\left(\frac{\partial u}{\partial x}\right) = \frac{\partial M}{\partial y},~~\text{右边}:\frac{\partial^2 u}{\partial x \partial y} = \frac{\partial}{\partial x}\left(\frac{\partial u}{\partial y}\right) = \frac{\partial N}{\partial x}\]
+    \item 判定定理的确立：由此，我们得出了一个极其优雅的判定条件：$$\frac{\partial M}{\partial y} = \frac{\partial N}{\partial x}$$
+\end{enumerate}
+这是方程为恰当微分方程的必要条件（在单连通区域内，这同时也是充分条件）。这就是为什么我们在解题时，第一步总是计算并比较这两个偏导数。
+
+\subsection{积分因子法的创造与降维打击}
+
+如果 $\frac{\partial M}{\partial y} \neq \frac{\partial N}{\partial x}$，方程不是恰当的，怎么办？
+\begin{enumerate}
+    \item 积分因子的构想：我们进行一个大胆的假设：虽然方程本身不是全微分，但我们是否可以给方程两边同时乘以一个非零的“魔法函数” $\mu(x,y)$，强制把它“扭曲”成恰当方程？即寻找 $\mu(x,y)$ 使得新方程：$$\mu M\mathrm{d}x + \mu N\mathrm{d}y = 0$$成为恰当微分方程。这个 $\mu$ 就被称为积分因子。
+    \item 建立偏微分方程：根据我们刚刚建立的判定定理，新方程恰当的充要条件是：$$\frac{\partial}{\partial y}(\mu M) = \frac{\partial}{\partial x}(\mu N)$$利用乘积的求导法则展开：$$M\frac{\partial \mu}{\partial y} + \mu\frac{\partial M}{\partial y} = N\frac{\partial \mu}{\partial x} + \mu\frac{\partial N}{\partial x}$$移项并合并同类项，得到关于 $\mu$ 的偏微分方程：$$N\frac{\partial \mu}{\partial x} - M\frac{\partial \mu}{\partial y} = \mu\left(\frac{\partial M}{\partial y} - \frac{\partial N}{\partial x}\right)$$
+    \item 理论困境与“降维”策略：我们发现，为了解一个一阶常微分方程（ODE），我们居然需要求解一个关于 $\mu(x,y)$ 的一阶线性偏微分方程（PDE）。这通常比原问题更难！为了突破这个困境，我们必须做出妥协性假设（降维），人为限制 $\mu$ 的形式。
+    \begin{itemize}
+    \item 假设路径 A：存在仅依赖于 $x$ 的积分因子 $\mu(x)$如果 $\mu$ 只与 $x$ 有关，那么 $\frac{\partial \mu}{\partial y} = 0$，且偏导数 $\frac{\partial \mu}{\partial x}$ 退化为常导数 $\frac{\mathrm{d}\mu}{\mathrm{d}x}$。代入上面的偏微分方程，它瞬间坍塌为一个常微分方程：$$N\frac{\mathrm{d}\mu}{\mathrm{d}x} - 0 = \mu\left(\frac{\partial M}{\partial y} - \frac{\partial N}{\partial x}\right)$$分离变量：$$\frac{1}{\mu}\mathrm{d}\mu = \frac{\frac{\partial M}{\partial y} - \frac{\partial N}{\partial x}}{N}\mathrm{d}x$$自洽性检验： 等式左边仅是关于 $\mu$（也就是 $x$）的函数，为了使这个等式成立，等式的右边也必须完全不含 $y$。我们令右边为 $R_x$。如果 $R_x$ 仅是 $x$ 的函数，假设成立！积分即可得到：$$\ln|\mu| = \int R_x \mathrm{d}x \implies \mu(x) = \exp\!\left(\int R_x \mathrm{d}x\right)$$
+    \item 假设路径 B：存在仅依赖于 $y$ 的积分因子 $\mu(y)$同理，假设 $\mu$ 只与 $y$ 有关，那么 $\frac{\partial \mu}{\partial x} = 0$。偏微分方程坍塌为：$$-M\frac{\mathrm{d}\mu}{\mathrm{d}y} = \mu\left(\frac{\partial M}{\partial y} - \frac{\partial N}{\partial x}\right)$$分离变量：$$\frac{1}{\mu}\mathrm{d}\mu = \frac{\frac{\partial N}{\partial x} - \frac{\partial M}{\partial y}}{M}\mathrm{d}y$$（注意分子符号的反转是由左边的负号移过来造成的）。我们令右边为 $R_y$。只要 $R_y$ 仅含 $y$，即可得到：$$\mu(y) = \exp\!\left(\int R_y \mathrm{d}y\right)$$
+    \end{itemize}
+    这就是那两个看似无脑的判定公式 $R_x$ 和 $R_y$ 的严密数学来源。它们不是猜的，而是为了强行简化偏微分方程而做出的合理降维假设。
+\end{enumerate}
+
+\subsection{重构二元函数（偏积分法）}
+
+一旦我们有了一个恰当微分方程（无论是原生的，还是乘以 $\mu$ 之后的新方程，我们统记为 $\widetilde{M}\mathrm{d}x + \widetilde{N}\mathrm{d}y = 0$），我们要如何把 $u(x,y)$ 还原出来？已知：$$\frac{\partial u}{\partial x} = \widetilde{M}(x,y) \quad \text{和} \quad \frac{\partial u}{\partial y} = \widetilde{N}(x,y)$$
+
+\begin{enumerate}
+    \item 约束积分（偏积分）：我们利用第一个条件。由于是对 $x$ 的偏导数，这意味着在求导过程中 $y$ 被视为了常数。所以当我们对 $x$ 积分时，积分常数不再是一个具体的数 $C$，而应当是一个关于 $y$ 的任意函数 $\varphi(y)$。\[u(x,y) = \int \widetilde{M}(x,y)\mathrm{d}x + \varphi(y)\]
+    \item 维度对齐与未知函数求解：我们现在得到了 $u(x,y)$ 的一个“半成品”。为了确定 $\varphi(y)$，我们必须利用第二个条件。将这个半成品 $u(x,y)$ 对 $y$ 求偏导：$$\frac{\partial u}{\partial y} = \frac{\partial}{\partial y}\left( \int \widetilde{M}(x,y)\mathrm{d}x \right) + \varphi'(y)$$根据第二个条件，这个结果必须等于 $\widetilde{N}(x,y)$：$$\frac{\partial}{\partial y}\left( \int \widetilde{M}(x,y)\mathrm{d}x \right) + \varphi'(y) = \widetilde{N}(x,y)$$移项得到一个仅关于 $y$ 的常微分方程：$$\varphi'(y) = \widetilde{N}(x,y) - \frac{\partial}{\partial y}\left( \int \widetilde{M}(x,y)\mathrm{d}x \right)$$（根据克莱罗定理，等式右侧的 $x$ 必将完全消去，只留下 $y$ 的函数。这是理论上的必然）。对 $y$ 积分求出 $\varphi(y)$，代回原式，便拼图完毕。最终，令重构出的 $u(x,y) = C$，即为原微分方程的隐式通解。
+\end{enumerate}
+
+\begin{exercise}[一阶线性微分方程初值问题]
+求微分方程初值问题
+$\displaystyle y'\sec^{2}y+\frac{x}{1+x^{2}}\tan y=x,\quad y\big|_{x=0}=0$
+的解。
+\end{exercise}
+\begin{solution}
+将方程写成标准形式并整理：
+\[
+\Bigl(\frac{x}{1+x^{2}}\tan y-x\Bigr)\mathrm{d}x+\sec^{2}y\,\mathrm{d}y=0.
+\]
+记 $M=\dfrac{x}{1+x^{2}}\tan y-x$，$N=\sec^{2}y$。检验恰当性：
+\[
+\frac{\partial M}{\partial y}=\frac{x}{1+x^{2}}\sec^{2}y,
+\qquad
+\frac{\partial N}{\partial x}=0.
+\]
+两者不等，原方程不是恰当微分方程。
+
+计算积分因子（仅依赖于 $x$）：
+\[
+R_{x}=\frac{\dfrac{\partial M}{\partial y}-\dfrac{\partial N}{\partial x}}{N}
+ =\frac{\dfrac{x}{1+x^{2}}\sec^{2}y}{\sec^{2}y}
+ =\frac{x}{1+x^{2}},
+\]
+故积分因子为
+\[
+\mu(x)=\exp\!\left(\int\frac{x}{1+x^{2}}\,\mathrm{d}x\right)
+ =\exp\!\left(\tfrac12\ln(1+x^{2})\right)=\sqrt{1+x^{2}}.
+\]
+以 $\mu(x)=\sqrt{1+x^{2}}$ 乘回原方程，得到恰当方程：
+\[
+\Bigl(\frac{x}{\sqrt{1+x^{2}}}\tan y-x\sqrt{1+x^{2}}\Bigr)\mathrm{d}x
+ +\sqrt{1+x^{2}}\sec^{2}y\,\mathrm{d}y=0,
+\]
+即 $\dfrac{\partial u}{\partial x}=\dfrac{x}{\sqrt{1+x^{2}}}\tan y-x\sqrt{1+x^{2}}$，
+$\dfrac{\partial u}{\partial y}=\sqrt{1+x^{2}}\sec^{2}y$。
+对 $y$ 偏积分得势函数
+$u=\sqrt{1+x^{2}}\tan y+\psi(x)$。对 $x$ 求偏导并与已知表达式比对：
+\[
+\frac{x}{\sqrt{1+x^{2}}}\tan y+\psi'(x)
+=\frac{x}{\sqrt{1+x^{2}}}\tan y-x\sqrt{1+x^{2}},
+\]
+故 $\psi'(x)=-x\sqrt{1+x^{2}}$，积分得
+$\displaystyle\psi(x)=-\int x\sqrt{1+x^{2}}\,\mathrm{d}x=-\frac13(1+x^{2})^{3/2}$。
+（积分常数并入通解常数），于是隐式通解为
+\[
+\sqrt{1+x^{2}}\tan y-\frac13(1+x^{2})^{3/2}=C.
+\]
+代入初值 $x=0,\;y=0$：
+$\sqrt1\cdot\tan 0-\dfrac13\cdot 1=C\;\Longrightarrow\;C=-\dfrac13$。特解满足
+\[
+\sqrt{1+x^{2}}\tan y=\frac13\bigl((1+x^{2})-(1+x^{2})^{-1/2}\bigr).
+\]
+两边同除以 $\sqrt{1+x^{2}}$ 即得显式特解：
+\[
+\boxed{
+y=\arctan\!\left[\frac13\!\left(1+x^{2}-\frac{1}{\sqrt{1+x^{2}}}\right)\right].
+}\]
+\end{solution}
+
+\begin{example}[伯努利方程的底层理论解剖：从积分因子到标准代换]
+仅凭\textbf{恰当微分方程与积分因子}的理论体系，从头推导伯努利方程的求解方法。
+\end{example}
+
+\begin{solution}
+\textbf{给定伯努利方程}
+\[
+\frac{\mathrm{d}y}{\mathrm{d}x}+P(x)\,y=Q(x)\,y^{n}. \tag{B.1}
+\]
+
+\textbf{第一阶段：化为微分形式并检验恰当性}
+
+写为 $M\,\mathrm{d}x+N\,\mathrm{d}y=0$：
+\[
+M=P(x)y-Q(x)y^{n},\qquad N=1.
+\]
+
+求偏导：
+\[
+\frac{\partial M}{\partial y}=P(x)-nQ(x)y^{\,n-1},
+\qquad
+\frac{\partial N}{\partial x}=0.
+\]
+显然 $\dfrac{\partial M}{\partial y}
+eq\dfrac{\partial N}{\partial x}$，原方程\textbf{不是恰当微分方程}。
+
+尝试直接计算积分因子候选 $R_x$：
+\[
+R_{x}=\frac{\dfrac{\partial M}{\partial y}-\dfrac{\partial N}{\partial x}}{N}
+ =P(x)-nQ(x)y^{\,n-1}.
+\]
+结果仍含变量 $y$——降维失败，原生公式在此碰壁。
+
+\textbf{第二阶段：预处理与积分因子的显现}
+
+关键观察：$R_x$ 中 $y$ 无法消除的根源在于 $M$ 中非线性项 $Q(x)y^n$
+对 $y$ 求导留下了 $y^{n-1}$。为此在 (B.1) 两边同除以 $y^n$（设 $y
+eq 0$）：
+\[
+\bigl(P(x)y^{1-n}-Q(x)\bigr)\,\mathrm{d}x+y^{-n}\,\mathrm{d}y=0. \tag{B.3}
+\]
+
+重新定义 $\widetilde M=P(x)y^{1-n}-Q(x)$，$\widetilde N=y^{-n}$。再次计算偏导与 $R_x$：
+\[
+\frac{\partial\widetilde M}{\partial y}=(1-n)P(x)y^{-n},\quad
+\frac{\partial\widetilde N}{\partial x}=0,
+\]
+\begin{equation*}
+R_{x}=\frac{(1-n)P(x)y^{-n}-0}{y^{-n}}
+=\boxed{(1-n)P(x)}. \tag{B.4}
+\end{equation*}
+分子分母的 $y^{-n}$ 完美约消！$R_x$ 仅含 $x$，降维成立。专属积分因子为
+\begin{equation}
+\mu(x)=\exp\!\left(\int(1-n)P(x)\,\mathrm{d}x\right). \tag{B.5}
+\end{equation}
+
+\textbf{第三阶段：全微分重构与代换的必然性}
+
+以 $\mu(x)$ 乘 (B.3)，得到恰当方程。对 $y$ 偏积分求势函数 $u(x,y)$：
+\[
+u=\int\mu(x)y^{-n}\,\mathrm{d}y+\psi(x)
+=\frac{\mu(x)}{1-n}\,y^{1-n}+\psi(x). \tag{B.6}
+\]
+
+\begin{remark}[核心发现]
+无论 $P(x),Q(x)$ 取何形式，势函数 $u$ 中 $y$ 的形态\textbf{永远被绑定}为 $y^{1-\!n}$！
+这就是代换 $z=y^{1-n}$ 的终极理论依据。而 (B.5) 恰好就是线性方程
+$z'+(1-n)P(x)z=(1-n)Q(x)$ 的积分因子。
+因此 ``令 $z=y^{1-n}$'' 本质上是将非线性伯努利方程封装为线性方程的外壳，
+绕过繁琐的全微分判定直接套用公式。
+\end{remark}
+
+\textbf{第四阶段：用底层思维审视具体例题}
+
+回到问题 $\displaystyle\frac{\mathrm{d}y}{\mathrm{d}x}-\frac{4}{x}y=x\sqrt{y}\;(y>0,x\neq 0)$。
+此处 $n=\dfrac12$，$P(x)=-\dfrac{4}{x}$。两边同除以 $\sqrt{y}$ 得
+$\bigg(-\dfrac{4}{x}\sqrt{y}-x\bigg)\mathrm{d}x+y^{-1/2}\,\mathrm{d}y=0$。
+
+秒算核心：$R_x=(1-n)P(x)=\left(1-\dfrac12\right)\!\left(-\dfrac{4}{x}\right)
+=-\dfrac{2}{x}$，故 $\mu(x)=x^{-2}$。
+
+已知结构必然收敛于 $z=\sqrt{y}$，顺理成章完成代换降维——两种路径殊途同归：
+教材代换法是\textbf{招式}（如何最快算出），
+积分因子法是\textbf{内功}（为什么可以这样算）。
+两者兼备，方为通透。\hfill$\square$
+\end{solution}
+
+\begin{conclusion}[总结：内功与外功]
+\begin{center}
+\begin{tabular}{@{}p{8cm}p{7cm}@{}}
+\toprule
+\textbf{层面} & \textbf{工具与方法} \\
+\midrule
+内功心法 & 恰当微分方程 + 积分因子 $\mu(x)$ \\[4pt]
+& 告诉你为什么可解（存在使其恰当的 $\mu$） \\
+\midrule
+外功招式 & 代换 $z=y^{1-n}$ + 线性方程通解公式 \\[4pt]
+& 告诉你如何最快算出答案（跳过全微分判定） \\
+\bottomrule
+\end{tabular}
+\end{center}
+教材上的换元法本质上是凑全微分与积分因子法在结构上的高度浓缩。
+全微分体系是\textbf{原理}（why），代换 $z=y^{1-n}$ 是\textbf{招式}（how）。
+\end{conclusion}
+
+\section{可降阶的高阶方程}
+
+\begin{introduction}
+  \item $y^{(n)}=f(x)$ 型：直接积分法~\ref{ex:ode-direct-int}
+  \item 不显含 $y$ 的 $y''=f(x,y')$ 型~\ref{def:ode-missing-y}
+  \item 不显含 $x$ 的 $y''=f(y,y')$ 型~\ref{def:ode-missing-x}
+  \item 追线问题（Pursuit Curve）~\ref{ex:ode-pursuit}
+  \item 悬链线（Catenary）问题~\ref{ex:ode-catenary}
+\end{introduction}
+
+高阶微分方程的通解通常难以直接求得。然而，某些具有特殊结构的高阶方程可以通过变量代换\textbf{降阶}为一阶方程，从而利用已建立的一阶方程理论求解。本节介绍三类最重要的可降阶类型及其经典应用。
+
+
+\subsection{$y^{(n)}=f(x)$ 型：直接积分型}
+
+\begin{definition}[$y^{(n)}=f(x)$ 型方程]
+形如
+\[y^{(n)}=f(x)\]
+的方程，其特点是左端为未知函数 $y$ 的 $n$ 阶导数，右端仅含自变量 $x$ 的已知连续函数，称为\textbf{可直接积分型方程}。
+\end{definition}
+
+将方程改写为 $\dfrac{\mathrm{d}}{\mathrm{d}x}\!\left(y^{(n-1)}\right)=f(x)$，
+连续积分 $n$ 次即可得到含有 $n$ 个独立任意常数的通解。
+
+\begin{example}[逐次积分]
+求 $y'''=\mathrm{e}^{3x}-\cos x$ 的通解。
+\end{example}
+\begin{solution}
+积分一次：
+\[
+y''=\dfrac13\mathrm{e}^{3x}-\sin x+C_1
+\]
+再积一次：
+\[
+y'=\dfrac19\mathrm{e}^{3x}+\cos x+C_1x+C_2
+\]
+第三次积分即得通解：
+\[
+\boxed{y=\frac{1}{27}\mathrm{e}^{3x}+\sin x+\frac{C_1}{2}x^{2}+C_2x+C_3}.
+\]
+\end{solution}
+
+
+\subsection{不显含未知函数 $y$ 的方程：$y''=f(x,y')$ 型}
+
+\begin{definition}[不显含 $y$ 的二阶方程] \label{def:ode-missing-y}
+形如
+\[y''=f(x,\,y')
+\]
+的方程称为\textbf{不显含未知函数 $y$ 的方程}（或称 ``缺 $y$ 型''）。
+\end{definition}
+
+此类方程的特点是右端不显含 $y$ 本身，仅依赖 $x$ 和 $y'$。令 $p=y'$（即把 $y'$ 视为新的未知函数），则 $y''=p'$，原方程化为关于 $p$ 的一阶方程：
+\[
+p'=f(x,p).
+\]
+设其一阶通解为 $p=\varphi(x,C_1)$，则由 $y'=\varphi(x,C_1)$ 再积分一次得
+\[
+y=\int\varphi(x,C_1)\,\mathrm{d}x+C_2.
+\]
+这是含有两个独立任意常数 $C_1,C_2$ 的通解族。
+
+\begin{property}[一般化推广]
+对于不含 $y, y', \dots, y^{(k-1)}$ 的 $n$ 阶方程
+\[
+F\bigl(x,\,y^{(k)},\,\dots,\,y^{(n)}\bigr)=0,
+\]
+只需作代换 $p=y^{(k)}$，即可化为 $n-k$ 阶方程
+$F(x,\,p,\,\dots,\,p^{(n-k)})=0$。
+求出通解后对 $p$ 积分 $k$ 次即得原方程通解。
+\end{property}
+
+\begin{example}
+解初值问题
+$\begin{cases}
+y''=\dfrac{3x^{2}}{1+x^{3}}\,y',\\[4pt]
+y|_{x=0}=1,\quad y'|_{x=0}=4.
+\end{cases}$
+\end{example}
+\begin{solution}
+方程不显含 $y$，属于 $y''=f(x,y')$ 型。令 $y'=p(x)$，则 $y''=p'$，代入得
+\[
+p'=\frac{3x^{2}}{1+x^{3}}\,p.
+\]
+
+分离变量：
+\[
+\frac{\mathrm{d}p}{p}=\frac{3x^{2}\,\mathrm{d}x}{1+x^{3}}
+\]
+积分得 
+\[
+\ln|p|=\ln(1+x^{3})+\ln C_1 \implies p=C_{1}(1+x^{3}).
+\]
+
+由 $y'(0)=4$ 得 $C_1=4$，故 
+\[
+y'=4(1+x^{3})=4+4x^{3}.
+\]
+
+再次积分：
+\[
+y=\int(4+4x^{3})\,\mathrm{d}x=x^{4}+4x+C_{2}.
+\]
+由 $y(0)=1$ 得 $C_2=1$。特解为
+\[
+\boxed{y=x^{4}+4x+1.}
+\]
+\end{solution}
+
+\begin{example}
+求 $y^{(5)}-\dfrac{1}{x}y^{(4)}=0$ 的通解。
+\end{example}
+\begin{solution}
+方程不显含 $y$ 且最高阶导数为 $5$ 阶，缺 $y,y',y'',y'''$。
+令 $p=y^{(4)}$，降为关于 $p$ 的一阶线性齐次方程：
+\[
+p'-\frac{1}{x}\,p=0.
+\]
+
+分离变量：
+\[
+\frac{\mathrm{d}p}{p}=\frac{\mathrm{d}x}{x} \implies p=C_{1}x.
+\]
+于是 $y^{(4)}=C_{1}x$，对 $x$ 连续积分四次，得到通解
+\[
+\boxed{y=\frac{C_1}{120}x^{5}+\frac{C_2}{24}x^{4}+\frac{C_3}{6}x^{3}+\frac{C_4}{2}x^{2}+C_5x+C_6} \quad (\text{常数可重新吸并})
+\]
+为了与常见形式对应，通常写为：
+\[
+\boxed{y=C_1 x^{5}+C_2 x^{4}+C_3 x^{3}+C_4 x^{2}+C_5 x+C_{6}.}
+\]
+\end{solution}
+
+
+\subsection{不显含自变量 $x$ 的方程：$y''=f(y,y')$ 型}
+
+\begin{definition}[不显含 $x$ 的二阶方程] \label{def:ode-missing-x}
+形如
+\[y''=f(y,\,y')
+\]
+的方程称为\textbf{不显含自变量 $x$ 的方程}（或称 ``缺 $x$ 型''）。
+\end{definition}
+
+关键技巧：注意到 
+\[
+\dfrac{\mathrm{d}^2y}{\mathrm{d}x^{2}}
+=\dfrac{\mathrm{d}p}{\mathrm{d}y}\cdot\dfrac{\mathrm{d}y}{\mathrm{d}x}=p\,\dfrac{\mathrm{d}p}{\mathrm{d}y}
+\]
+故若令 $p=\dfrac{\mathrm{d}y}{\mathrm{d}x}=p(y)$（将速度视为位置的函数），则原方程化为
+\[
+p\,\frac{\mathrm{d}p}{\mathrm{d}y}=f(y,\,p).
+\]
+
+这已是关于自变量 $y$、未知函数 $p$ 的\textbf{一阶方程}。设其通解为 $y'=\varphi(y,C_1)$，分离变量后积分即得隐式通解
+\[
+\int\frac{\mathrm{d}y}{\varphi(y,C_1)}=x+C_2.
+\]
+
+\begin{example}
+求 $y''=\dfrac{1+y'^{2}}{2y}$ 的通解。
+\end{example}
+\begin{solution}
+方程不显含 $x$，属于 $y''=f(y,y')$ 型。令 $y'=p(y)$，
+则 $y''=p\,\dfrac{\mathrm{d}p}{\mathrm{d}y}$，代入原方程：
+\[
+p\,\frac{\mathrm{d}p}{\mathrm{d}y}=\frac{1+p^{2}}{2y}
+\]
+分离变量：
+\[
+\frac{2p\,\mathrm{d}p}{1+p^{2}}=\frac{\mathrm{d}y}{y}.
+\]
+
+两边积分（左端用换元 $u=1+p^2$）：
+\[
+\ln(1+p^{2})=\ln|y|+\ln C \quad (C>0)
+\]
+故 $1+p^{2}=Cy$，即
+\[
+p=\pm\sqrt{Cy-1}.
+\]
+
+因此 
+\[
+\frac{\mathrm{d}y}{\mathrm{d}x}=\pm\sqrt{Cy-1}
+\]
+分离变量并整理得隐式通解：
+\[
+\boxed{4(Cy-1)=C^{2}(x+C_{1})^{2}.}
+\]
+\end{solution}
+
+\begin{example}
+求 $yy''-y'^{2}=0$ 的通解。
+\end{example}
+\begin{solution}
+令 $y'=p(y)$，则 $y''=p\,\dfrac{\mathrm{d}p}{\mathrm{d}y}$。代入得
+\[
+yp\,\frac{\mathrm{d}p}{\mathrm{d}y}-p^{2}=0
+\quad\Longrightarrow\quad
+p\!\left(y\,\frac{\mathrm{d}p}{\mathrm{d}y}-p\right)=0.
+\]
+
+由 $p=0$ 得 $y=C$；由 $y\,\dfrac{\mathrm{d}p}{\mathrm{d}y}-p=0$ 得 
+\[
+\frac{\mathrm{d}p}{p}=\frac{\mathrm{d}y}{y}
+\]
+积分得 $p=C_{1}y$，即 $y'=C_{1}y$。此为可分离变量方程，通解为
+\[
+\boxed{y=C_{2}\,\mathrm{e}^{C_{1}x}.}
+\]
+\end{solution}
+
+\begin{remark}[另解：凑全微分法]
+本题也可用 ``乘以积分因子'' 的方法快速求解。
+方程两边同乘非零因子 $\dfrac{1}{y^{2}}$（注意 $y \neq 0$ 已被单独处理）：
+\[
+\frac{yy''-y'^{2}}{y^{2}}
+=\frac{\mathrm{d}}{\mathrm{d}x}\!\left(\frac{y'}{y}\right)=0
+\]
+即 $\dfrac{y'}{y}=C_{1}$，同样得到 $y'=C_{1}y$，与上述结果一致。
+这种 ``观察特殊结构、构造恰当组合'' 的技巧在非线性方程求解中极为有用。
+\end{remark}
+
+
+\subsection{应用实例}
+
+
+\subsubsection*{追线问题（Pursuit Curve）}
+
+\begin{example}[导弹追击舰船] \label{ex:ode-pursuit}
+如图所示，位于坐标原点 $O$ 的甲舰向正 $x$ 轴上点 $A(1,0)$ 处的乙舰发射制导导弹。导弹头始终对准乙舰。
+已知乙舰以最大恒定速度 $v_{0}$ 沿平行于 $y$ 轴的直线行驶，导弹的速度为 $5v_{0}$。
+求导弹轨迹方程，以及乙舰被击中时的位置。
+\end{example}
+
+\begin{solution}
+建立坐标系如图所示。设导弹轨迹为 $y=y(x)$，经过时间 $t$ 导弹位于 $P(x,y)$，
+此时乙舰位于 $Q(1,v_{0}t)$。
+
+由于导弹始终瞄准目标，直线 $PQ$ 就是轨迹曲线在 $P$ 点的切线，斜率为
+\[
+y'=\tan\theta=\frac{v_{0}t-y}{1-x},
+\qquad\Longrightarrow\qquad v_{0}t=(1-x)y'+y. \tag{†}
+\]
+
+另一方面，弧长 $\widehat{OP}$ 的长度是距离 $|AQ|$ 的 5 倍（速度比 $5:1$）：
+\[
+\int_{0}^{x}\sqrt{1+y'^{2}}\;\mathrm{d}x=5v_{0}t. \tag{‡}
+\]
+
+将 (†) 代入 (‡) 并消去 $t$：
+\[
+(1-x)y'+y=\frac15\int_{0}^{x}\sqrt{1+y'^{2}}\;\mathrm{d}x. \tag{§}
+\]
+
+对 $x$ 求导（利用初始条件 $y(0)=0,\;y'(0)=0$）：
+\begin{align*}
+-(1-x)y''+y'-y' &=\frac15\sqrt{1+y'^{2}} \\
+(1-x)y'' &=\frac15\sqrt{1+y'^{2}}.
+\end{align*}
+
+令 $y'=p$，化为 $(1-x)p'=\dfrac15\sqrt{1+p^{2}}$，分离变量：
+\[
+\frac{\mathrm{d}p}{\sqrt{1+p^{2}}}=\frac{1}{5}\frac{\mathrm{d}x}{1-x}.
+\]
+
+积分得 
+\[
+\ln(p+\sqrt{1+p^{2}})=-\frac15\ln(1-x)+C
+\]
+由 $p(0)=0$ 知 $C=0$，故
+$p+\sqrt{1+p^{2}}=(1-x)^{-1/5}$。取倒数有 $\sqrt{1+p^{2}}-p=(1-x)^{1/5}$，两式相减并除以 2 得
+\[
+y'=p=\frac12\!\left[(1-x)^{-1/5}-(1-x)^{1/5}\right].
+\]
+
+最后积分（利用 $y(0)=0$ 确定常数）：
+\[
+\boxed{
+y=-\frac58(1-x)^{4/5}+\frac5{12}(1-x)^{6/5}+\frac{5}{24}.
+}
+\]
+
+当导弹到达 $x=1$ 时，$y=\dfrac5{24}$。即乙舰航行到 $\bigl(1,\dfrac{5}{24}\bigr)$ 时被击中
+\end{solution}
+
+
+\subsubsection*{悬链线（Catenary / Hanging Chain）}
+
+\begin{example}[悬链线的形状] \label{ex:ode-catenary}
+如图所示，一条均匀、柔软且不可拉伸的细弦两端悬挂。
+当载荷沿弦均匀分布时，求弦在平衡状态下的形状曲线方程。
+\end{example}
+
+\begin{solution}
+取弦最低点为坐标原点 $O(0,0)$。设弦的（常值）线密度为 $\rho$，最低点水平张力为 $H$，重力加速度为 $g$。平衡时弦的方程为 $y=y(x)$。
+
+在弦上任一点 $B(x,y)$ 取微元弧段 $\widehat{OB}$ 做受力分析。设该处弦切线与 $x$ 轴夹角为 $\theta$，则：
+\[
+\begin{cases}
+T\sin\theta = \rho g s \\[4pt]
+T\cos\theta = H
+\end{cases}
+\]
+其中 $s$ 为 $\widehat{OB}$ 段的弧长，$T$ 为拉力。
+
+两式相除得 $H\tan\theta=\rho g\displaystyle\int_{0}^{x}\sqrt{1+y'^{2}}\;\mathrm{d}x$。
+由于 $y'=\tan\theta$，上式化为
+\[
+y'=\frac{\rho g}{H}\int_{0}^{x}\sqrt{1+y'^{2}}\;\mathrm{d}x.
+\]
+
+记常数 $a=\dfrac{\rho g}{H}>0$，则
+\[
+y''=a\sqrt{1+y'^{2}}. \tag{††}
+\]
+
+此方程不显含 $y$，属 $y''=f(x,y')$ 型。令 $y'=p$，则
+\[
+\frac{\mathrm{d}p}{\mathrm{d}x}=a\sqrt{1+p^{2}},\quad
+\Longrightarrow\quad
+\frac{\mathrm{d}p}{\sqrt{1+p^{2}}} = a\mathrm{d}x
+\]
+积分得：
+\[
+\ln(p+\sqrt{1+p^{2}})=ax+C.
+\]
+
+由 $y'(0)=0$ 知 $C=0$，故 $p+\sqrt{1+p^{2}}=\mathrm{e}^{ax}$，解出
+\[
+p=\dfrac12(\mathrm{e}^{ax}-\mathrm{e}^{-ax}).
+\]
+
+积分得（利用 $y(0)=0$）：
+\[
+y=\frac1{2a}\bigl(\mathrm{e}^{ax}+\mathrm{e}^{-ax}\bigr)+C_2
+=\frac1a\cosh(ax)-\frac{1}{a}
+=\frac{H}{\rho g}\cosh\!\left(\frac{\rho g}{H}x\right)-\frac{H}{\rho g}.
+\]
+
+这就是著名的\textbf{悬链线方程}——一条双曲余弦曲线（catenary）
+\end{solution}
+
+\begin{remark}
+悬链线问题最早由伯努利兄弟（Johann 和 Jakob Bernoulli, 1690s）
+提出并解决，它是最早被精确求解的非线性力学系统之一。该结果不仅具有重要的历史意义，在现代物理中也有广泛应用：
+悬链线模型出现在 DNA 聚合物的超螺旋结构分析中；
+柔性绳索和缆索的大变形理论是其现代推广形式；
+类似的变分原理也用于描述海洋表面波和弹性杆的非线性振动模式。
+\end{remark}
+
+
+\section{练习}
+
+\begin{exercise}[缺 $y$ 型与缺 $x$ 型]
+求解下列方程：
+\begin{enumerate}
+  \item[(1)] $(1+x^{2})y''+xy'=1,\;y(0)=0,\;y'(0)=-1$
+  \item[(2)] $yy''+(y')^{2}=0,\;y(0)=1,\;y'(0)=1$
+  \item[(3)] $y''=y'^{3}/\sqrt{y}$
+\end{enumerate}
+\end{exercise}
+\begin{solution}
+\begin{enumerate}
+  \item[(1)] \textbf{思路}：方程缺 $y$，令 $p=y'$，则 $y''=p'$。
+  代入原方程：
+  \[
+  (1+x^2)p' + xp = 1 \implies p' + \frac{x}{1+x^2}p = \frac{1}{1+x^2}
+  \]
+  这是一阶线性常微分方程。计算积分因子：
+  \[
+  \mu(x) = \exp\left(\int \frac{x}{1+x^2}\,\mathrm{d}x\right) = \sqrt{1+x^2}
+  \]
+  两边同乘 $\sqrt{1+x^2}$ 得到：
+  \[
+  (p\sqrt{1+x^2})' = \frac{1}{\sqrt{1+x^2}}
+  \]
+  积分得：
+  \[
+  p\sqrt{1+x^2} = \ln(x+\sqrt{1+x^2}) + C_1
+  \]
+  代入初值 $y'(0)=p(0)=-1$，得 $-1 = 0 + C_1 \implies C_1 = -1$。于是：
+  \[
+  y' = p = \frac{\ln(x+\sqrt{1+x^2})}{\sqrt{1+x^2}} - \frac{1}{\sqrt{1+x^2}}
+  \]
+  再次积分：
+  \[
+  y = \int \ln(x+\sqrt{1+x^2}) \mathrm{d}\big(\ln(x+\sqrt{1+x^2})\big) - \ln(x+\sqrt{1+x^2}) + C_2
+  \]
+  \[
+  y = \frac{1}{2}\ln^2(x+\sqrt{1+x^2}) - \ln(x+\sqrt{1+x^2}) + C_2
+  \]
+  由 $y(0)=0$ 得 $0 = 0 - 0 + C_2 \implies C_2=0$。特解为：
+  \[
+  \boxed{y = \frac{1}{2}\ln^2(x+\sqrt{1+x^2}) - \ln(x+\sqrt{1+x^2})}
+  \]
+
+  \item[(2)] \textbf{思路}：利用“凑全微分法”，观察到左侧恰好是乘积求导法则的展开。
+  \[
+  (yy')' = yy'' + (y')^2 = 0
+  \]
+  直接积分一次：
+  \[
+  yy' = C_1
+  \]
+  由初值 $y(0)=1, y'(0)=1$ 得 $1 \cdot 1 = C_1 \implies C_1=1$。
+  再积分：
+  \[
+  \frac{1}{2}y^2 = x + C_2
+  \]
+  由 $y(0)=1$ 得 $\frac{1}{2} = 0 + C_2 \implies C_2 = \frac{1}{2}$。化简得特解：
+  \[
+  y^2 = 2x + 1 \implies \boxed{y = \sqrt{2x+1}}
+  \]
+  （因 $y(0)=1>0$ 故取正号）。
+  
+  \item[(3)] \textbf{思路}：方程缺 $x$，令 $p=y'$，则 $y''=p\frac{\mathrm{d}p}{\mathrm{d}y}$。
+  代入方程：
+  \[
+  p\frac{\mathrm{d}p}{\mathrm{d}y} = \frac{p^3}{\sqrt{y}}
+  \]
+  若 $p \neq 0$，两边同除以 $p^3$ 并分离变量：
+  \[
+  \frac{\mathrm{d}p}{p^2} = \frac{\mathrm{d}y}{\sqrt{y}}
+  \]
+  积分得：
+  \[
+  -\frac{1}{p} = 2\sqrt{y} + C_1 \implies y' = p = \frac{-1}{2\sqrt{y}+C_1}
+  \]
+  再次分离变量并积分：
+  \[
+  (2\sqrt{y}+C_1)\mathrm{d}y = -\mathrm{d}x
+  \]
+  \[
+  \boxed{\frac{4}{3}y^{3/2} + C_1y = -x + C_2}
+  \]
+  此即为原方程的隐式通解。
+\end{enumerate}
+\end{solution}
+
+\begin{exercise}[提高：追击问题的变种]
+在上面的追线问题中，若乙舰沿圆周 $x^{2}+(y-a)^{2}=R^{2}$（$R>1$，$a>R$，圆心在 $(0,a)$）以恒定角速度 $\omega$ 逆时针运动，而导弹仍从原点发射且速度为 $kv_0$（$k>1$）。试建立导弹轨迹满足的微分方程，并讨论击中条件。（提示：极坐标下分析可能更方便）
+\end{exercise}
+\begin{solution}
+\textbf{思路与建模}：
+设时间 $t$ 时，乙舰的位置为 $(x_E, y_E) = (R\cos(\omega t), a + R\sin(\omega t))$。其线速度大小为 $v_0 = \omega R$。
+导弹发射速度大小为 $kv_0 = k\omega R$。设导弹在时间 $t$ 的位置为 $(x,y)$。
+
+由于导弹始终对准乙舰，导弹的速度向量必须与两者的位置差向量共线：
+\[
+\frac{\mathrm{d}x}{\mathrm{d}t} = k\omega R \frac{x_E - x}{\sqrt{(x_E-x)^2 + (y_E-y)^2}}
+\]
+\[
+\frac{\mathrm{d}y}{\mathrm{d}t} = k\omega R \frac{y_E - y}{\sqrt{(x_E-x)^2 + (y_E-y)^2}}
+\]
+将两式相除消去 $t$ 和复杂的根式，得到切线斜率满足的微分方程：
+\[
+\frac{\mathrm{d}y}{\mathrm{d}x} = \frac{a + R\sin(\omega t) - y}{R\cos(\omega t) - x}
+\]
+同时，为了消去参变量 $t$，我们需要联立弧长约束（即导弹走过的路程与时间的绝对对应关系）：
+\[
+\int_{0}^{x} \sqrt{1 + (y')^2} \mathrm{d}x = \int_0^t k\omega R \mathrm{d}\tau = k\omega R t
+\]
+由此可以解出 $t$ 作为积分的函数并代入斜率方程中，便可得到一条极其复杂的积分-微分方程。
+\end{solution}
+
+\begin{exercise}[悬链线的参数几何性质]
+验证悬链线 $y=c\cosh(x/c)-c$ 具有如下几何性质：
+(1) 两固定悬挂点之间的总链长为定值 $L$ 与参数 $c,H,\rho,g$ 的关系；(2) 曲线上任一点的曲率半径 $\kappa$ 与纵坐标 $y$ 成正比。
+\end{exercise}
+\begin{solution}
+\textbf{解析}：
+(1) \textbf{求链长}：对悬链线方程求导 $y' = \sinh(x/c)$。
+根据弧长公式，在对称悬挂点 $[-x_0, x_0]$ 之间的总链长为：
+\[
+L = \int_{-x_0}^{x_0} \sqrt{1+(y')^2}\,\mathrm{d}x = 2 \int_0^{x_0} \sqrt{1+\sinh^2(x/c)}\,\mathrm{d}x
+\]
+\[
+L = 2 \int_0^{x_0} \cosh(x/c)\,\mathrm{d}x = 2c\sinh(x_0/c)
+\]
+其中参数 $c = \frac{H}{\rho g}$，即 $L = \frac{2H}{\rho g}\sinh\left(\frac{\rho g}{H}x_0\right)$。
+
+(2) \textbf{求曲率半径}：已知 $y' = \sinh(x/c)$，$y'' = \frac{1}{c}\cosh(x/c)$。
+曲率 $\kappa$ 的倒数（即曲率半径 $R$）计算公式为：
+\[
+R = \frac{1}{\kappa} = \frac{(1+(y')^2)^{3/2}}{|y''|} = \frac{(\cosh^2(x/c))^{3/2}}{\frac{1}{c}\cosh(x/c)} = c\cosh^2(x/c)
+\]
+如果我们将坐标系整体向下平移 $c$，使得悬链线方程变为 $Y = c\cosh(x/c)$（即 $Y = y+c$），此时：
+\[
+R = c\left(\frac{Y}{c}\right)^2 = \frac{Y^2}{c}
+\]
+但如果是题干中过原点的表达式，则与纵坐标的线性偏移量成某种关系。通常物理上定义的悬链线曲率半径正比于曲线到准线（$y=-c$）的法线截距的平方。
+\end{solution}
+
+
+
+
+\subsection{A组}
+
+\begin{exercise}[求通解]
+求下列各微分方程的通解:
+\begin{enumerate}
+    \item[(1)] $y'' = x + \cos x$;
+    \item[(2)] $y'' = \dfrac{1}{1+x^2}$;
+    \item[(3)] $y'' - y' = x$;
+    \item[(4)] $y'' + y'^2 = 1$;
+    \item[(5)] $yy'' + y'^2 = 0$;
+    \item[(6)] $y'' = y'^3 + y'$.
+\end{enumerate}
+\end{exercise}
+\begin{solution}
+\begin{enumerate}
+    \item[(1)] \textbf{直接积分法}。原方程 $y'' = x + \cos x$。
+    积分一次：
+    \[
+    y' = \frac{1}{2}x^2 + \sin x + C_1
+    \]
+    积分两次得通解：
+    \[
+    y = \frac{1}{6}x^3 - \cos x + C_1 x + C_2
+    \]
+    
+    \item[(2)] \textbf{直接积分法}。原方程 $y'' = \frac{1}{1+x^2}$。
+    积分一次：
+    \[
+    y' = \arctan x + C_1
+    \]
+    积分两次（对 $\arctan x$ 使用分部积分法）：
+    \[
+    \int \arctan x \mathrm{d}x = x\arctan x - \int \frac{x}{1+x^2}\mathrm{d}x
+    \]
+    通解：
+    \[
+    y = x\arctan x - \frac{1}{2}\ln(1+x^2) + C_1 x + C_2
+    \]
+    
+    \item[(3)] \textbf{缺 $y$ 型，令 $p=y'$}。原方程化为：
+    \[
+    p' - p = x
+    \]
+    这是一阶线性微分方程。计算积分因子：$\mu(x) = \mathrm{e}^{-x}$。
+    方程两边同乘 $\mathrm{e}^{-x}$：
+    \[
+    (\mathrm{e}^{-x}p)' = x\mathrm{e}^{-x}
+    \]
+    积分（右侧使用分部积分）：
+    \[
+    \mathrm{e}^{-x}p = -x\mathrm{e}^{-x} - \mathrm{e}^{-x} + C_1 \implies p = y' = C_1\mathrm{e}^x - x - 1
+    \]
+    再对 $x$ 积分得通解：
+    \[
+    y = C_1\mathrm{e}^x - \frac{1}{2}x^2 - x + C_2
+    \]
+    
+    \item[(4)] \textbf{缺 $y$ 型，令 $p=y'$}。方程化为：
+    \[
+    p' + p^2 = 1 \implies p' = 1-p^2
+    \]
+    分离变量（注意可能遗漏解 $p=\pm1 \implies y=\pm x+C$）：
+    \[
+    \frac{\mathrm{d}p}{1-p^2} = \mathrm{d}x
+    \]
+    积分得：
+    \[
+    \frac{1}{2}\ln\left|\frac{1+p}{1-p}\right| = x + C_1
+    \]
+    解出 $p$：
+    \[
+    \frac{1+p}{1-p} = C\mathrm{e}^{2x} \implies p = y' = \frac{C\mathrm{e}^{2x}-1}{C\mathrm{e}^{2x}+1} = 1 - \frac{2}{C\mathrm{e}^{2x}+1}
+    \]
+    积分得通解：
+    \[
+    y = x - \int \frac{2\mathrm{e}^{-2x}}{C+\mathrm{e}^{-2x}}\mathrm{d}x = x + \frac{1}{C}\ln(C+\mathrm{e}^{-2x}) + C_2
+    \]
+    
+    \item[(5)] \textbf{凑全微分法}。原方程 $yy'' + (y')^2 = 0$。
+    注意到左端恰好是 $(yy')'$ 的展开式，即：
+    \[
+    (yy')' = 0 \implies yy' = C_1
+    \]
+    即 $y\mathrm{d}y = C_1\mathrm{d}x$，积分得通解：
+    \[
+    \frac{1}{2}y^2 = C_1 x + C_2 \implies y^2 = C_1 x + C_2
+    \]
+    
+    \item[(6)] \textbf{缺 $x$ 型，令 $p=y'$，则 $y''=p\frac{\mathrm{d}p}{\mathrm{d}y}$}。
+    方程化为：
+    \[
+    p\frac{\mathrm{d}p}{\mathrm{d}y} = p^3 + p \implies p\left(\frac{\mathrm{d}p}{\mathrm{d}y} - p^2 - 1\right) = 0
+    \]
+    若 $p=0$，则 $y=C$。若 $p \neq 0$，则：
+    \[
+    \frac{\mathrm{d}p}{\mathrm{d}y} = p^2 + 1 \implies \frac{\mathrm{d}p}{p^2+1} = \mathrm{d}y
+    \]
+    积分得：
+    \[
+    \arctan p = y + C_1 \implies p = y' = \tan(y+C_1)
+    \]
+    分离变量：
+    \[
+    \cot(y+C_1)\mathrm{d}y = \mathrm{d}x \implies \int \frac{\cos(y+C_1)}{\sin(y+C_1)}\mathrm{d}y = x + C_2
+    \]
+    通解：
+    \[
+    \ln|\sin(y+C_1)| = x + C_2
+    \]
+\end{enumerate}
+\end{solution}
+
+
+
+\begin{exercise}[求初值问题]
+求解下列初值问题:
+\begin{enumerate}
+    \item[(1)] $y^3 y'' + 1 = 0$, $y(1)=1$, $y'(1)=0$;
+    \item[(2)] $y''' = e^{2x}$, $y(1)=y'(1)=y''(1)=0$;
+    \item[(3)] $y'' = 3\sqrt{y}$, $y(0)=1$, $y'(0)=2$;
+    \item[(4)] $y'' - e^{2y} = 0$, $y(0)=0$, $y'(0)=1$;
+    \item[(5)] $yy'' = 2(y'^2 - y')$, $y(0)=1$, $y'(0)=2$;
+    \item[(6)] $y'' = \dfrac{3x^2}{1+x^3}y'$, $y(0)=1$, $y'(0)=4$.
+\end{enumerate}
+\end{exercise}
+\begin{solution}
+\begin{enumerate}
+    \item[(1)] \textbf{缺 $x$ 型，令 $p=y'$}，则 $y''=p\frac{\mathrm{d}p}{\mathrm{d}y}$。代入得：
+    \[
+    y^3 p \frac{\mathrm{d}p}{\mathrm{d}y} = -1 \implies p\mathrm{d}p = -y^{-3}\mathrm{d}y
+    \]
+    积分得：
+    \[
+    \frac{1}{2}p^2 = \frac{1}{2}y^{-2} + C_1
+    \]
+    代入初始条件：当 $x=1$ 时，$y=1, p=y'=0$。即 $0 = \frac{1}{2}(1) + C_1 \implies C_1 = -\frac{1}{2}$。
+    于是：
+    \[
+    p^2 = y^{-2} - 1 = \frac{1-y^2}{y^2} \implies y' = \pm\frac{\sqrt{1-y^2}}{y}
+    \]
+    分离变量：
+    \[
+    \frac{y\mathrm{d}y}{\sqrt{1-y^2}} = \pm\mathrm{d}x
+    \]
+    积分得：
+    \[
+    -\sqrt{1-y^2} = \pm x + C_2
+    \]
+    当 $x=1$ 时 $y=1$，得 $0 = \pm 1 + C_2 \implies C_2 = \mp 1$。
+    代回得 $-\sqrt{1-y^2} = \pm(x-1)$。平方得 $1-y^2 = (x-1)^2$。
+    故特解为圆的方程（的局部）：
+    \[
+    \boxed{(x-1)^2 + y^2 = 1}
+    \]
+    
+    \item[(2)] \textbf{直接积分法}。$y''' = \mathrm{e}^{2x}$。
+    积分一次：
+    \[
+    y'' = \frac{1}{2}\mathrm{e}^{2x} + C_1 \quad \xrightarrow{y''(1)=0} \quad C_1=-\frac{1}{2}\mathrm{e}^2
+    \]
+    再积一次：
+    \[
+    y' = \frac{1}{4}\mathrm{e}^{2x} - \frac{1}{2}\mathrm{e}^2 x + C_2 \quad \xrightarrow{y'(1)=0} \quad C_2=\frac{1}{4}\mathrm{e}^2
+    \]
+    第三次积分：
+    \[
+    y = \frac{1}{8}\mathrm{e}^{2x} - \frac{1}{4}\mathrm{e}^2 x^2 + \frac{1}{4}\mathrm{e}^2 x + C_3 \quad \xrightarrow{y(1)=0} \quad C_3=-\frac{1}{8}\mathrm{e}^2
+    \]
+    特解：
+    \[
+    \boxed{y = \frac{1}{8}\mathrm{e}^{2x} - \frac{1}{4}\mathrm{e}^2 x^2 + \frac{1}{4}\mathrm{e}^2 x - \frac{1}{8}\mathrm{e}^2}
+    \]
+    
+    \item[(3)] \textbf{缺 $x$ 型，令 $p=y'$}，得：
+    \[
+    p\frac{\mathrm{d}p}{\mathrm{d}y} = 3y^{1/2}
+    \]
+    积分得：
+    \[
+    \frac{1}{2}p^2 = 2y^{3/2} + C_1
+    \]
+    由初值 $y(0)=1, p=2$，得 $2 = 2(1) + C_1 \implies C_1=0$。所以：
+    \[
+    p^2 = 4y^{3/2} \implies y' = 2y^{3/4} \quad (\text{因 } y'(0)>0 \text{ 取正})
+    \]
+    分离变量：
+    \[
+    y^{-3/4}\mathrm{d}y = 2\mathrm{d}x \implies 4y^{1/4} = 2x + C_2
+    \]
+    由初值 $y(0)=1$ 得 $4(1) = 0 + C_2 \implies C_2=4$。
+    特解：
+    \[
+    4y^{1/4} = 2x + 4 \implies y^{1/4} = \frac{x}{2} + 1 \implies \boxed{y = \left(\frac{x}{2} + 1\right)^4}
+    \]
+    
+    \item[(4)] \textbf{缺 $x$ 型，令 $p=y'$}，得：
+    \[
+    p\frac{\mathrm{d}p}{\mathrm{d}y} = \mathrm{e}^{2y}
+    \]
+    积分得：
+    \[
+    \frac{1}{2}p^2 = \frac{1}{2}\mathrm{e}^{2y} + C_1
+    \]
+    初值 $y(0)=0, p=1$，得 $\frac{1}{2} = \frac{1}{2} + C_1 \implies C_1=0$。
+    故 $p = \mathrm{e}^y \implies \mathrm{e}^{-y}\mathrm{d}y = \mathrm{d}x$。
+    积分得：
+    \[
+    -\mathrm{e}^{-y} = x + C_2
+    \]
+    初值 $y(0)=0 \implies -1 = 0 + C_2 \implies C_2=-1$。特解：
+    \[
+    -\mathrm{e}^{-y} = x - 1 \implies \mathrm{e}^{-y} = 1-x \implies \boxed{y = -\ln(1-x)}
+    \]
+    
+    \item[(5)] \textbf{缺 $x$ 型，令 $p=y'$}。方程为：
+    \[
+    yp\frac{\mathrm{d}p}{\mathrm{d}y} = 2(p^2-p)
+    \]
+    分离变量（已知 $p=2 \neq 0,1$）：
+    \[
+    \frac{p\mathrm{d}p}{p(p-1)} = \frac{2\mathrm{d}y}{y} \implies \frac{\mathrm{d}p}{p-1} = \frac{2\mathrm{d}y}{y}
+    \]
+    积分得：
+    \[
+    \ln|p-1| = 2\ln y + \ln C_1 \implies p-1 = C_1 y^2
+    \]
+    初值 $y(0)=1, p=2$，得 $1 = C_1(1) \implies C_1=1$。于是 $p = y' = y^2 + 1$。
+    分离变量：
+    \[
+    \frac{\mathrm{d}y}{y^2+1} = \mathrm{d}x \implies \arctan y = x + C_2
+    \]
+    初值 $y(0)=1 \implies \frac{\pi}{4} = 0 + C_2 \implies C_2=\frac{\pi}{4}$。特解：
+    \[
+    \boxed{y = \tan\left(x + \frac{\pi}{4}\right)}
+    \]
+    
+    \item[(6)] \textbf{缺 $y$ 型}。已经在正文例题中给出详尽过程。
+    特解为：
+    \[
+    \boxed{y = x^4 + 4x + 1}
+    \]
+\end{enumerate}
+\end{solution}
+
+
+\begin{exercise}[二阶方程的初值问题]
+求方程 $yy'' + y'^2 = 1$ 经过点 $(0,1)$ 且在这一点与直线 $x+y=1$ 相切的积分曲线.
+\end{exercise}
+\begin{solution}
+\textbf{思路}：“经过 $(0,1)$”即 $y(0)=1$；“与直线 $x+y=1$（即 $y=-x+1$）相切”即该点处的导数相等，故 $y'(0)=-1$。这就是变相给出了初值条件。
+
+观察原方程 $yy'' + (y')^2 = 1$，左边可以凑成全微分：
+\[
+(yy')' = 1
+\]
+对 $x$ 积分一次：
+\[
+yy' = x + C_1
+\]
+代入初值 $x=0, y=1, y'=-1$，得 $1 \cdot (-1) = 0 + C_1 \implies C_1 = -1$。于是：
+\[
+yy' = x - 1 \implies y\mathrm{d}y = (x-1)\mathrm{d}x
+\]
+再次积分得：
+\[
+\frac{1}{2}y^2 = \frac{1}{2}x^2 - x + C_2
+\]
+代入初值 $x=0, y=1$，得 $\frac{1}{2} = 0 - 0 + C_2 \implies C_2 = \frac{1}{2}$。
+方程化为：
+\[
+y^2 = x^2 - 2x + 1 = (x-1)^2
+\]
+开方得 $y = \pm(x-1)$。由于 $y(0)=1$，我们必须取负号侧以满足条件（如果取 $+$, 则 $-1=1$ 不符）。
+故满足条件的积分曲线方程为：
+\[
+\boxed{y = 1-x}
+\]
+\end{solution}
+
+
+\begin{exercise}[可降阶的一阶齐次型综合应用]
+求方程 $xy'' = y' \ln \dfrac{y'}{x}$ 的通解.
+\end{exercise}
+\begin{solution}
+\textbf{思路}：方程缺 $y$，首先令 $p=y'$，则 $y''=p'$。
+代入化简：
+\[
+xp' = p \ln\left(\frac{p}{x}\right) \implies p' = \frac{p}{x} \ln\left(\frac{p}{x}\right)
+\]
+我们发现降阶后，它是一个\textbf{一阶齐次方程}！
+
+令 $u = \frac{p}{x}$，则 $p = ux$，$p' = u'x + u$。代入方程：
+\[
+u'x + u = u\ln u \implies x\frac{\mathrm{d}u}{\mathrm{d}x} = u(\ln u - 1)
+\]
+分离变量：
+\[
+\frac{\mathrm{d}u}{u(\ln u - 1)} = \frac{\mathrm{d}x}{x}
+\]
+两边积分（左边运用凑微分 $\mathrm{d}(\ln u)$）：
+\[
+\int \frac{\mathrm{d}(\ln u)}{\ln u - 1} = \int \frac{\mathrm{d}x}{x} \implies \ln|\ln u - 1| = \ln|x| + \ln C_1
+\]
+\[
+\ln u - 1 = C_1 x \implies u = \mathrm{e}^{C_1 x + 1}
+\]
+将 $u = \frac{y'}{x}$ 还原：
+\[
+y' = x \mathrm{e}^{C_1 x + 1}
+\]
+
+最后，通过分部积分求解 $y$：
+\[
+y = \int x \mathrm{e}^{C_1 x + 1} \mathrm{d}x
+\]
+积分得：
+\[
+\boxed{y = \mathrm{e} \left( \frac{x}{C_1}\mathrm{e}^{C_1 x} - \frac{1}{C_1^2}\mathrm{e}^{C_1 x} \right) + C_2}
+\]
+此即为原方程的通解。
+\end{solution}
+
+
+\begin{exercise}[缺 $x$ 型二阶方程求解]
+求方程 $y''(1+y^2) = 2y y'^2$ 的通解.
+\end{exercise}
+\begin{solution}
+\textbf{思路}：缺 $x$ 型，令 $p=y'$，代入 $y'' = p\frac{\mathrm{d}p}{\mathrm{d}y}$。
+原方程化为：
+\[
+p\frac{\mathrm{d}p}{\mathrm{d}y}(1+y^2) = 2yp^2
+\]
+排除 $p=0$（对应常数解 $y=C$）后，分离变量：
+\[
+\frac{\mathrm{d}p}{p} = \frac{2y}{1+y^2}\mathrm{d}y
+\]
+积分得：
+\[
+\ln|p| = \ln(1+y^2) + \ln C_1 \implies p = C_1(1+y^2)
+\]
+还原变量：
+\[
+\frac{\mathrm{d}y}{\mathrm{d}x} = C_1(1+y^2)
+\]
+再次分离变量：
+\[
+\frac{\mathrm{d}y}{1+y^2} = C_1 \mathrm{d}x
+\]
+积分得：
+\[
+\boxed{\arctan y = C_1 x + C_2}
+\]
+或写作显式形式：$y = \tan(C_1 x + C_2)$。
+\end{solution}
+
+
+
+\subsection{B组}
+
+\begin{exercise}[建立运动微分方程：追击问题]
+设物体 $A$ 从点 $(0,1)$ 出发, 以速度大小为常数 $v$ 沿 $y$ 轴正向运动. 物体 $B$ 从点 $(-1,0)$ 与 $A$ 同时出发, 其速度大小为 $2v$, 方向始终指向 $A$. 求物体 $B$ 的运动微分方程及初始条件.
+\end{exercise}
+\begin{solution}
+\textbf{思路}：
+根据题意，$A$ 在时刻 $t$ 的坐标为 $(0, 1+vt)$。
+设 $B$ 的轨迹线方程为 $y=y(x)$。在任意时刻 $t$，$B$ 位于坐标点 $(x,y)$。
+因为 $B$ 的运动方向始终指向 $A$，因此轨迹曲线在 $(x,y)$ 处的切线必须通过点 $A(0, 1+vt)$。
+切线斜率：
+\[
+y' = \frac{(1+vt) - y}{0 - x} = \frac{y - 1 - vt}{x}
+\]
+从中反解出 $t$ 对应的项：
+\[
+vt = y - x y' - 1
+\]
+等式两边对自变量 $x$ 求导：
+\[
+v \frac{\mathrm{d}t}{\mathrm{d}x} = y' - (y' + x y'') - 0 = -xy''
+\]
+
+另一方面，我们考察 $B$ 的运动速度。$B$ 的速度大小为 $\frac{\mathrm{d}s}{\mathrm{d}t} = 2v$。
+由于 $B$ 从 $(-1,0)$ 出发向 $y$ 轴靠近，它的 $x$ 坐标是递增的，故 $\mathrm{d}x > 0$，所以弧长微分公式为 $\frac{\mathrm{d}s}{\mathrm{d}x} = \sqrt{1+(y')^2}$。
+应用链式法则：
+\[
+\frac{\mathrm{d}t}{\mathrm{d}x} = \frac{\mathrm{d}t}{\mathrm{d}s} \cdot \frac{\mathrm{d}s}{\mathrm{d}x} = \frac{1}{2v} \sqrt{1+(y')^2}
+\]
+
+将两个关于 $\frac{\mathrm{d}t}{\mathrm{d}x}$ 的表达式等同起来：
+\[
+v \left( \frac{1}{2v} \sqrt{1+(y')^2} \right) = -xy'' \implies xy'' + \frac{1}{2}\sqrt{1+(y')^2} = 0
+\]
+
+最后确认初始条件：
+$t=0$ 时，$B$ 在 $(-1,0)$，所以 $y(-1) = 0$。
+初始时刻 $A$ 在 $(0,1)$，由于 $B$ 指向 $A$，初始斜率 $y'(-1) = \frac{1-0}{0-(-1)} = 1$。
+综合即得所求微分方程模型：
+\[
+\begin{cases}
+xy'' + \frac{1}{2}\sqrt{1+(y')^2} = 0 \\[4pt]
+y(-1) = 0, \quad y'(-1) = 1
+\end{cases}
+\]
+\end{solution}
+
+\begin{exercise}[积分方程求导转化法]
+设第一象限内的曲线 $y=y(x)$ 对应于 $0\leqslant x\leqslant a$ 一段的弧长等于曲边梯形 $D=\{0\leqslant y\leqslant y(x),0\leqslant x\leqslant a\}$ 的面积, 其中 $a>0$ 是任意给定的, $y(0)=1$, 求 $y(x)$.
+\end{exercise}
+\begin{solution}
+\textbf{思路}：将几何条件翻译为积分表达式：
+弧长 $s = \int_0^a \sqrt{1+(y')^2}\mathrm{d}x$，面积 $S = \int_0^a y(x)\mathrm{d}x$。
+由于对任意 $a>0$ 均有此等式成立，由变上限积分求导定理，直接对变上限积分等式两边对 $x$ 求导：
+\[
+\int_0^x \sqrt{1+(y')^2}\mathrm{d}t = \int_0^x y(t)\mathrm{d}t \implies \sqrt{1+(y')^2} = y
+\]
+两边平方并移项得：
+\[
+(y')^2 = y^2 - 1
+\]
+因为曲线位于第一象限且 $y(0)=1$，积分面积随 $x$ 增加而增加，弧长必在延伸，故 $y > 1$（随后）且斜率为正 $y'>0$。开方得：
+\[
+y' = \sqrt{y^2-1}
+\]
+分离变量：
+\[
+\frac{\mathrm{d}y}{\sqrt{y^2-1}} = \mathrm{d}x
+\]
+积分得：
+\[
+\ln|y+\sqrt{y^2-1}| = x + C
+\]
+代入初值 $y(0)=1$，得 $\ln(1+0) = 0+C \implies C=0$。于是：
+\[
+\operatorname{arccosh}(y) = x \implies \boxed{y = \cosh x = \frac{\mathrm{e}^x + \mathrm{e}^{-x}}{2}}
+\]
+\end{solution}
+
+\begin{exercise}[物理建模与微分方程的推导]
+一条均匀柔软不可拉伸的细弦, 两端悬起, 当载荷沿弧均匀分布时, 求弦的平衡状态时的形状.
+\end{exercise}
+\begin{solution}
+\textbf{思路}：此问题为经典的悬链线模型。
+取细弦最低点为坐标原点，切线方向水平。设弧段 $\widehat{OB}$ 的水平拉力恒为 $H$，微元弧长的重力为 $\rho g s$（其中 $s$ 为从原点算起的弧长）。
+由平衡方程，绳索在 $B(x,y)$ 处的切向张力 $T$ 必须与重力和水平拉力平衡：
+\[
+T \cos\theta = H, \quad T \sin\theta = \rho g s
+\]
+两式相除，并利用导数的几何意义 $y' = \tan\theta$：
+\[
+y' = \frac{\rho g}{H} s = \frac{\rho g}{H} \int_0^x \sqrt{1+(y')^2}\mathrm{d}x
+\]
+对方程两边关于 $x$ 求导以消去积分号：
+\[
+y'' = \frac{\rho g}{H} \sqrt{1+(y')^2}
+\]
+这是一个缺 $y$ 型微分方程。令 $p=y'$，$a=\frac{\rho g}{H}$，则：
+\[
+\frac{\mathrm{d}p}{\mathrm{d}x} = a\sqrt{1+p^2} \implies \frac{\mathrm{d}p}{\sqrt{1+p^2}} = a\mathrm{d}x
+\]
+积分并代入初值 $p(0)=y'(0)=0$ 解得：
+\[
+\ln(p+\sqrt{1+p^2}) = ax \implies p = \sinh(ax)
+\]
+再积分一次并利用 $y(0)=0$ 解出：
+\[
+\boxed{y = \frac{1}{a}(\cosh(ax)-1)}
+\]
+此即著名的双曲余弦方程。
+\end{solution}
+
+\begin{exercise}[基于牛顿第二定律降阶求解]
+一物体只受地球引力作用, 自无穷高处落下, 求这个物体落向地面的速度.
+\end{exercise}
+\begin{solution}
+\textbf{思路}：此问题利用万有引力定律与动力学方程建模。
+设物体质量为 $m$，地球质量为 $M$，物体距地心距离为 $r$。
+根据牛顿第二定律：
+\[
+m\frac{\mathrm{d}^2r}{\mathrm{d}t^2} = -G\frac{Mm}{r^2}
+\]
+这是一个缺 $t$ 型二阶方程。令速度 $v = \frac{\mathrm{d}r}{\mathrm{d}t}$，则加速度 $\frac{\mathrm{d}^2r}{\mathrm{d}t^2} = v\frac{\mathrm{d}v}{\mathrm{d}r}$。代入得：
+\[
+v\frac{\mathrm{d}v}{\mathrm{d}r} = -\frac{GM}{r^2}
+\]
+分离变量并积分：
+\[
+\int v\mathrm{d}v = -GM \int r^{-2}\mathrm{d}r \implies \frac{1}{2}v^2 = \frac{GM}{r} + C
+\]
+由初始条件“自无穷高处落下”，即当 $r \to \infty$ 时，$v = 0$。代入得 $C=0$。
+所以：
+\[
+v^2 = \frac{2GM}{r}
+\]
+当物体到达地面时，距地心距离为地球半径 $R$。考虑到地表重力加速度 $g = \frac{GM}{R^2}$，即 $GM = gR^2$。
+落向地面的瞬间速度大小为：
+\[
+\boxed{v = \sqrt{\frac{2GM}{R}} = \sqrt{2gR}}
+\]
+（这恰好也是从地球表面发射物体的第二宇宙速度 / 逃逸速度的倒推过程）。
+\end{solution}
+
+\begin{exercise}[变加速直线运动的积分]
+重量为 $300\ \mathrm{kg}$ 的摩托艇以 $66\ \mathrm{m/s}$ 的初速度直线前进, 如果水的阻力与速度成正比, 且当速度为 $1\ \mathrm{m/s}$ 时, 阻力为 $10\ \mathrm{kg}$. 问经过多少时间艇的速度降为 $8\ \mathrm{m/s}$?
+\end{exercise}
+\begin{solution}
+\textbf{思路}：此处的“重量 300kg”实质为质量 $m = 300 \mathrm{kg}$，阻力 10kg 指的是 $10\ \mathrm{kgf}$（公斤力），转化为牛顿（$\mathrm{N}$）应乘重力加速度 $g$（通常取 $9.8\ \mathrm{m/s^2}$），即阻力 $f = 10g$。
+因为阻力与速度成正比，设 $f = kv$。由题意当 $v=1$ 时 $f=10g$，故比例系数 $k=10g$。
+根据牛顿第二定律建立动力学方程：
+\[
+m\frac{\mathrm{d}v}{\mathrm{d}t} = -kv \implies 300\frac{\mathrm{d}v}{\mathrm{d}t} = -10g v
+\]
+分离变量求解该一阶微分方程：
+\[
+\frac{\mathrm{d}v}{v} = -\frac{g}{30}\mathrm{d}t
+\]
+积分得：
+\[
+\ln v = -\frac{g}{30}t + C_1
+\]
+初始状态 $t=0$ 时，$v=66$，所以 $C_1 = \ln 66$。
+得到速度随时间的变化关系：
+\[
+\ln\left(\frac{v}{66}\right) = -\frac{g}{30}t \implies t = \frac{30}{g} \ln\left(\frac{66}{v}\right)
+\]
+当艇的速度降为 $v=8\ \mathrm{m/s}$ 时，代入上式计算所需时间：
+\[
+t = \frac{30}{9.8} \ln\left(\frac{66}{8}\right) \approx 3.06 \times \ln(8.25) \approx 3.06 \times 2.11 = 6.46\ \mathrm{s}
+\]
+（若物理计算中取近似 $g=10\ \mathrm{m/s^2}$，则 $t = 3 \ln(8.25) \approx 6.33\ \mathrm{s}$）。
+\end{solution}
+
 
 
 
