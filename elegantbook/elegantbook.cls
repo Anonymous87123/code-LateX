@@ -378,7 +378,7 @@
 %%中文结构名字
 
 
-%%   章节设置
+%%  章节设置
 \RequirePackage[center,pagestyles]{titlesec}
 \RequirePackage[title,titletoc,header]{appendix}
 
@@ -909,6 +909,7 @@
   % \newtcbtheorem[auto counter,number within=chapter]{definition}{\definitionname}{defstyle}{def}
   \DeclareTColorBox[auto counter,number within=\ELEGANT@thmcnt]{definition}{ g o t\label g }{
     common,defstyle,
+    phantom={\phantomsection\addcontentsline{lod}{definitions}{\thetcbcounter\hspace{1em}\IfValueTF{#1}{#1}{\IfValueTF{#2}{#2}{}}}},
     IfValueTF={#1}
       {title={\definitionname~\thetcbcounter\ (#1)}}
       {
@@ -920,6 +921,7 @@
   % \newtcbtheorem[auto counter,number within=chapter]{theorem}{\theoremname}{thmstyle}{thm}
   \DeclareTColorBox[auto counter,number within=\ELEGANT@thmcnt]{theorem}{ g o t\label g }{
     common,thmstyle,
+    phantom={\phantomsection\addcontentsline{loth}{theorems}{\thetcbcounter\hspace{1em}\IfValueTF{#1}{#1}{\IfValueTF{#2}{#2}{}}}},
     IfValueTF={#1}
       {title={\theoremname~\thetcbcounter\ (#1)}}
       {
@@ -995,7 +997,13 @@
 
   % declare a new theorem style
   \newtheoremstyle{defstyle}{3pt}{3pt}{\citshape}{-3pt}{
-    \bfseries\color{main}}{}{0.5em}{\thmname{#1} \thmnumber{#2} \thmnote{(#3)}}
+    \bfseries\color{main}}{}{0.5em}{\thmname{#1} \thmnumber{#2} \thmnote{(#3)}%
+    \addcontentsline{lod}{definitions}{#2\thmnote{\hspace{1em}#3}}}
+  
+  \newtheoremstyle{truethmstyle}{3pt}{3pt}{\citshape}{-3pt}{
+    \bfseries\color{second}}{}{0.5em}{\thmname{#1} \thmnumber{#2} \thmnote{(#3)}%
+    \addcontentsline{loth}{theorems}{#2\thmnote{\hspace{1em}#3}}}
+    
   \newtheoremstyle{thmstyle}{3pt}{3pt}{\citshape}{-3pt}{
     \bfseries\color{second}}{}{0.5em}{\thmname{#1} \thmnumber{#2} \thmnote{(#3)}}
   \newtheoremstyle{prostyle}{3pt}{3pt}{\citshape}{-3pt}{
@@ -1005,8 +1013,10 @@
   \theoremstyle{defstyle} % definition style
   \newtheorem{definition}{\definitionname}[\ELEGANT@thmcnt]
 
-  \theoremstyle{thmstyle} %theorem style
+  \theoremstyle{truethmstyle} % theorem ONLY style
   \newtheorem{theorem}{\theoremname}[\ELEGANT@thmcnt]
+  
+  \theoremstyle{thmstyle} % other theorem-like styles
   \newtheorem{lemma}{\lemmaname}[\ELEGANT@thmcnt]
   \newtheorem{corollary}{\corollaryname}[\ELEGANT@thmcnt]
   \newtheorem{postulate}{\postulatename}[\ELEGANT@thmcnt]
@@ -1026,6 +1036,7 @@
 \renewcommand{\theexam}{\thechapter.\arabic{exam}}
 \newenvironment{example}[1][]{
   \refstepcounter{exam}
+  \phantomsection\addcontentsline{loex}{examples}{\theexam\ifstrempty{#1}{}{\hspace{1em}#1}}%
   \par\noindent\textbf{\color{main}{\examplename} \theexam #1 }\rmfamily}{
   \par\ignorespacesafterend}
 
@@ -1064,7 +1075,17 @@
 \newenvironment{remark}{\noindent\textbf{\color{second}\remarkname}}{\par}
 \newenvironment{assumption}{\par\noindent\textbf{\color{third}\assumptionname} \citshape}{\par}
 \newenvironment{conclusion}{\par\noindent\textbf{\color{third}\conclusionname} \citshape}{\par}
-\newenvironment{property}{\par\noindent\textbf{\color{third}\propertyname} \citshape}{\par}
+
+%% Property with counter
+\newcounter{prop}[chapter]
+\setcounter{prop}{0}
+\renewcommand{\theprop}{\thechapter.\arabic{prop}}
+\newenvironment{property}[1][]{
+  \refstepcounter{prop}
+  \phantomsection\addcontentsline{lopr}{properties}{\theprop\ifstrempty{#1}{}{\hspace{1em}#1}}%
+  \par\noindent\textbf{\color{third}{\propertyname} \theprop\ #1} \citshape
+}{\par}
+
 \newenvironment{custom}[1]{\par\noindent\textbf{\color{third} #1} \citshape}{\par}
 
 \RequirePackage{multicol}
@@ -1303,10 +1324,39 @@
 \newpage%
 \if@twocolumn\hbox{}\newpage\fi\fi\fi}
 
-
 % https://tex.stackexchange.com/questions/56839/chaptername-is-used-even-for-appendix-chapters-in-toc
 \usepackage{calc}
 \usepackage[titles]{tocloft}
+
+% -------------------------------------------------------------
+% ADDED: Custom Lists for Environments (Definitions, Theorems, etc.)
+% -------------------------------------------------------------
+\providecommand{\listdefinitionname}{List of Definitions}
+\providecommand{\listtheoremname}{List of Theorems}
+\providecommand{\listexamplename}{List of Examples}
+\providecommand{\listpropertyname}{List of Properties}
+
+\ifdefstring{\ELEGANT@lang}{cn}{
+  \renewcommand{\listdefinitionname}{定义索引}
+  \renewcommand{\listtheoremname}{定理索引}
+  \renewcommand{\listexamplename}{例题索引}
+  \renewcommand{\listpropertyname}{性质索引}
+}{\relax}
+
+\newlistof{definitions}{lod}{\listdefinitionname}
+\newlistof{theorems}{loth}{\listtheoremname}
+\newlistof{examples}{loex}{\listexamplename}
+\newlistof{properties}{lopr}{\listpropertyname}
+
+\newcommand{\makeenvindex}{
+  \listofdefinitions
+  \listoftheorems
+  \listofexamples
+  \listofproperties
+}
+% -------------------------------------------------------------
+
+
 \ifdefstring{\ELEGANT@lang}{cn}{
   \renewcommand{\cftchappresnum}{\beforechap\space}
   \renewcommand{\cftchapaftersnum}{\space\afterchap}
