@@ -11962,4 +11962,1457 @@ f(x,y,z) = \begin{bmatrix} \sin(x^2-y^2) \\ \ln(x^2+z^2) \\ \dfrac{1}{\sqrt{y^2+
 
 
 
+
+
+
+% ============================================================
+% §7.4 复合函数的求导法则
+% ============================================================
+
+\section{复合函数的求导法则}
+
+\begin{introduction}
+  \item 矩阵范数的定义与次可乘性~\ref{def:matrix-norm},~\ref{prop:norm-submultiplicative}
+  \item 映射的可微性与 Jacobian 矩阵（回顾）~\ref{def:mapping-diff}
+  \item 复合映射求导的链式法则~\ref{thm:chain-rule-matrix}
+  \item 全微分形式的不变性~\ref{thm:diff-invariance}
+  \item 高阶偏导数与混合偏导数交换定理~\ref{def:hessian},~\ref{thm:mixed-pd-exchange}
+  \item 二阶全微分~\ref{def:second-total-diff}
+\end{introduction}
+
+在 §7.3 中我们建立了多元实值函数偏导数和全微分的基本理论，
+在 §7.8 中又将其推广到了向量值函数的情形。
+然而到目前为止，我们处理的都是“单层”的函数关系。
+在实际问题中，变量之间的依赖往往是\textbf{嵌套}的——
+一个函数的输出成为另一个函数的输入——
+这就需要一套系统化的工具来处理\textbf{复合函数}的求导问题。
+
+一元微积分中的链式法则 $\dfrac{d}{dt}f(g(t))=f'(g(t))\cdot g'(t)$
+简洁而优美。在多元情形下，这一法则将推广为\textbf{Jacobian 矩阵的乘法}——
+矩阵运算的引入使得复杂的多变量依赖关系得以用统一的代数语言来描述。
+
+本节首先引入矩阵范数这一辅助工具，然后系统地建立复合求导的链式法则，
+讨论全微分形式的不变性，最后将理论推进到高阶偏导数和高阶全微分。
+
+
+\subsection{矩阵范数：辅助工具}
+
+在证明链式法则时，我们需要对矩阵的“大小”进行估计。
+为此先引入矩阵范数的概念。
+
+\subsubsection*{Frobenius 范数}
+
+\begin{definition}[矩阵的 Frobenius 范数] \label{def:matrix-norm}
+设 $A=(a_{ij})_{n\times n}$ 为 $n$ 阶实方阵。定义
+\[
+\boxed{\;\|A\|:=\left(\sum_{i=1}^{n}\sum_{j=1}^{n}a_{ij}^{2}\right)^{\!1/2}\;}
+\]
+为矩阵 $A$ 的\textbf{Frobenius 范数}（Frobenius Norm），也称\textbf{Hilbert--Schmidt 范数}。
+\end{definition}
+
+\begin{note}[直观理解]
+Frobenius 范数的本质是把 $n\times n$ 矩阵“展平”成一个 $n^2$ 维向量后取欧几里得范数。
+它是 $\mathbb R^{n\times n}$ 这个 $n^2$ 维线性空间上最自然的度量。
+虽然还有其他类型的矩阵范数（如算子范数），但 Frobenius 范数因其计算简便而在微分学中最为常用。
+\end{note}
+
+\subsubsection*{范数的基本性质}
+
+\begin{property}[Frobenius 范数的基本性质] \label{prop:norm-basic}
+\begin{enumerate}
+  \item \textbf{(非负性)}: $\|A\|\geq 0$，且 $\|A\|=0\Longleftrightarrow A=O$（零矩阵）；
+  \item\textbf{(正齐次性)}: $\|kA\|=|k|\cdot\|A\|$，$\forall k\in\mathbb R$；
+  \item\textbf{(三角不等式)}: $\|A+B\|\leq\|A\|+\|B\|$。
+\end{enumerate}
+\end{property}
+
+这三条性质的验证与向量范数完全类似，直接由定义可得。
+
+\subsubsection*{次可乘性：核心不等式}
+
+\begin{property}[矩阵范数的次可乘性] \label{prop:norm-submultiplicative}
+对任意两个 $n$ 阶方阵 $A,B$，有
+\[
+\boxed{\;\|AB\|\leq\|A\|\cdot\|B\|\;}.
+\]
+\end{property}
+
+\begin{proof}
+\begin{enumerate}
+  \item \textbf{写出矩阵乘积的元素：} 
+  设 $A=(a_{ij})$，$B=(b_{ij})$，则矩阵乘积 $AB=(c_{ij})$，其中每个元素由行与列的内积给出：$c_{ij}=\sum_{k=1}^{n}a_{ik}b_{kj}$。
+  
+  \item \textbf{应用柯西-施瓦茨不等式：} 
+  对每个 $c_{ij}^2$，利用向量内积的 Cauchy--Schwarz 不等式进行放缩：
+  \[
+  c_{ij}^2=\left(\sum_{k=1}^{n}a_{ik}b_{kj}\right)^{\!2}
+  \leq\left(\sum_{k=1}^{n}a_{ik}^2\right)\!\left(\sum_{k=1}^{n}b_{kj}^2\right).
+  \]
+  
+  \item \textbf{对所有元素求和：} 
+  将上述不等式对所有的 $i$ 和 $j$ 求和，得到 Frobenius 范数的平方：
+  \begin{align*}
+  \|AB\|^2
+  &=\sum_{i=1}^{n}\sum_{j=1}^{n}c_{ij}^2\leq\sum_{i=1}^{n}\sum_{j=1}^{n}
+    \left(\sum_{k=1}^{n}a_{ik}^2\right)\!\left(\sum_{k=1}^{n}b_{kj}^2\right)\\[4pt]
+  &=\left(\sum_{i=1}^{n}\sum_{k=1}^{n}a_{ik}^2\right)\!
+    \left(\sum_{j=1}^{n}\sum_{k=1}^{n}b_{kj}^2\right)=\|A\|^2\cdot\|B\|^2.
+  \end{align*}
+  
+  \item \textbf{得出结论：} 
+  两边同时开平方即得 $\|AB\|\leq\|A\|\|B\|$。
+\end{enumerate}
+\end{proof}
+
+\begin{remark}[次可乘性的意义]
+这一不等式在链式法则的证明中扮演关键角色：
+当我们需要估计“两个线性映射复合后的余项”时，
+次可乘性使得我们可以将复合映射的误差控制在各自误差的乘积级别。
+直观地说，“误差经过矩阵乘法不会意外放大超出范数的乘积”。
+\end{remark}
+
+
+\subsection{映射的微分：回顾与衔接}
+
+在 §7.8 中我们定义了向量值函数 $f:\mathbb R^n\to\mathbb R^m$ 的可微性。
+此处为了推导链式法则的需要，对 $m=n=2$ 的特殊情形做一个简明的回顾。
+
+\begin{definition}[映射的可微性] \label{def:mapping-diff}
+设 $D\subset\mathbb R^2$ 为开集，$f:D\to\mathbb R^2$ 为映射，
+$f(\boldsymbol x)=(f_1(\boldsymbol x),f_2(\boldsymbol x))^{\mathsf T}$，$\boldsymbol x_0\in D$。
+
+若存在 $2\times 2$ 矩阵 $A$ 使得
+\[
+f(\boldsymbol x_0+\boldsymbol h)-f(\boldsymbol x_0)=A\boldsymbol h+\boldsymbol r(\boldsymbol h),
+\]
+其中余项 $\boldsymbol r(\boldsymbol h)=(r_1(\boldsymbol h),r_2(\boldsymbol h))^{\mathsf T}$ 满足高阶无穷小条件
+\[
+\lim_{\|\boldsymbol h\|\to 0}\frac{\|\boldsymbol r(\boldsymbol h)\|}{\|\boldsymbol h\|}=0,
+\]
+则称 $f$ 在 $\boldsymbol x_0$ 处\textbf{可微}，$df(\boldsymbol x_0)=A\boldsymbol h$ 为其\textbf{微分}。
+
+此时矩阵 $A$ 就是 $f$ 在 $\boldsymbol x_0$ 处的 \textbf{Jacobian 矩阵}：
+\[
+A=Jf(\boldsymbol x_0)
+=\begin{pmatrix}
+\dfrac{\partial f_1}{\partial x_1}(\boldsymbol x_0) & \dfrac{\partial f_1}{\partial x_2}(\boldsymbol x_0) \\[8pt]
+\dfrac{\partial f_2}{\partial x_1}(\boldsymbol x_0) & \dfrac{\partial f_2}{\partial x_2}(\boldsymbol x_0)
+\end{pmatrix}.
+\]
+\end{definition}
+
+
+\subsection{复合求导的链式法则}
+
+\subsubsection*{一般定理}
+
+\begin{theorem}[链式法则 / Chain Rule] \label{thm:chain-rule-matrix}
+设 $D\subset\mathbb R^k$（$k=1$ 或 $2$）为开区域，
+$f:D\to\mathbb R^2$ 在 $\boldsymbol x_0\in D$ 处可微，
+$g:f(D)\to\mathbb R$ 在 $f(\boldsymbol x_0)$ 处可微，
+则复合映射 $g\circ f$ 在 $\boldsymbol x_0$ 处可微，且
+\[
+\boxed{\;J(g\circ f)(\boldsymbol x_0)=Jg\bigl(f(\boldsymbol x_0)\bigr)\cdot Jf(\boldsymbol x_0)\;}.
+\]
+\end{theorem}
+
+\begin{proof}
+\begin{enumerate}
+  \item \textbf{写出内层映射 $f$ 的可微性展开：}
+  由于 $f$ 在 $\boldsymbol x_0$ 处可微，存在 Jacobian 矩阵 $Jf(\boldsymbol x_0)$ 使得增量为：
+  \[
+  f(\boldsymbol x_0+\boldsymbol h)-f(\boldsymbol x_0)
+  =Jf(\boldsymbol x_0)\boldsymbol h+\boldsymbol r_f(\boldsymbol h),
+  \qquad\frac{\|\boldsymbol r_f(\boldsymbol h)\|}{\|\boldsymbol h\|}\to 0.
+  \]
+  
+  \item \textbf{写出外层映射 $g$ 的可微性展开：}
+  令中间变量的增量为 $\boldsymbol k=Jf(\boldsymbol x_0)\boldsymbol h+\boldsymbol r_f(\boldsymbol h)$。
+  由于 $g$ 在 $f(\boldsymbol x_0)$ 处可微，有：
+  \[
+  g\bigl(f(\boldsymbol x_0)+\boldsymbol k\bigr)-g\bigl(f(\boldsymbol x_0)\bigr)
+  =\nabla g\cdot\boldsymbol k+r_g(\boldsymbol k),
+  \qquad\frac{|r_g(\boldsymbol k)|}{\|\boldsymbol k\|}\to 0.
+  \]
+  
+  \item \textbf{代入并构造复合映射的线性主部：}
+  将 $\boldsymbol k$ 的表达式代入 $g$ 的展开式中，得到：
+  \begin{align*}
+  (g\circ f)(\boldsymbol x_0+\boldsymbol h)-(g\circ f)(\boldsymbol x_0) 
+  &= \nabla g \cdot \bigl[Jf(\boldsymbol x_0)\boldsymbol h+\boldsymbol r_f(\boldsymbol h)\bigr] + r_g(\boldsymbol k) \\
+  &= \bigl[\nabla g \cdot Jf(\boldsymbol x_0)\bigr]\boldsymbol h + \bigl[\nabla g \cdot \boldsymbol r_f(\boldsymbol h) + r_g(\boldsymbol k)\bigr].
+  \end{align*}
+  这里 $\nabla g \cdot Jf(\boldsymbol x_0)$ 就是 $Jg(f(\boldsymbol x_0))\cdot Jf(\boldsymbol x_0)$，即我们期望的复合映射的 Jacobian 矩阵。
+  
+  \item \textbf{证明余项为高阶无穷小：}
+  剩下的任务是证明总余项 $R(\boldsymbol h) = \nabla g \cdot \boldsymbol r_f(\boldsymbol h) + r_g(\boldsymbol k)$ 满足 $R(\boldsymbol h) = o(\|\boldsymbol h\|)$。
+  利用三角不等式和矩阵范数的次可乘性（性质~\ref{prop:norm-submultiplicative}）：
+  \[
+  \frac{\|R(\boldsymbol h)\|}{\|\boldsymbol h\|} \leq \|\nabla g\| \frac{\|\boldsymbol r_f(\boldsymbol h)\|}{\|\boldsymbol h\|} + \frac{|r_g(\boldsymbol k)|}{\|\boldsymbol k\|} \frac{\|\boldsymbol k\|}{\|\boldsymbol h\|}.
+  \]
+  由于 $\frac{\|\boldsymbol r_f(\boldsymbol h)\|}{\|\boldsymbol h\|} \to 0$，第一项趋于 $0$。
+  对于第二项，$\frac{\|\boldsymbol k\|}{\|\boldsymbol h\|} \leq \|Jf(\boldsymbol x_0)\| + \frac{\|\boldsymbol r_f(\boldsymbol h)\|}{\|\boldsymbol h\|}$，此为有界量。而当 $\boldsymbol h \to 0$ 时，$\boldsymbol k \to 0$，从而 $\frac{|r_g(\boldsymbol k)|}{\|\boldsymbol k\|} \to 0$。有界量乘以无穷小仍为无穷小。
+  因此，总余项为 $o(\|\boldsymbol h\|)$，复合映射可微且链式法则成立。
+\end{enumerate}
+\end{proof}
+
+\subsubsection*{两种经典情形}
+
+链式法则的矩阵形式虽然统一而优雅，但在具体计算中，
+我们更常使用它的分量展开形式。
+
+\begin{property}[链式法则——一元复合情形] \label{prop:chain-one-var}
+设 $z=f(y_1,y_2)$，$y_1=y_1(t)$，$y_2=y_2(t)$（即 $t\to(y_1,y_2)^{\mathsf T}\to z$），则
+\[
+\boxed{\;\frac{\mathrm{d}z}{\mathrm{d}t}
+=\frac{\partial z}{\partial y_1}\frac{dy_1}{dt}
++\frac{\partial z}{\partial y_2}\frac{dy_2}{dt}\;}.
+\]
+\end{property}
+
+\begin{property}[链式法则——二元复合情形] \label{prop:chain-two-var}
+设 $z=f(y_1,y_2)$，$y_1=y_1(x_1,x_2)$，$y_2=y_2(x_1,x_2)$
+（即 $(x_1,x_2)^{\mathsf T}\to(y_1,y_2)^{\mathsf T}\to z$），则
+\[
+\boxed{
+\left(\frac{\partial z}{\partial x_1},\;\frac{\partial z}{\partial x_2}\right)
+=\left(\frac{\partial z}{\partial y_1},\;\frac{\partial z}{\partial y_2}\right)
+\begin{pmatrix}
+\dfrac{\partial y_1}{\partial x_1} & \dfrac{\partial y_1}{\partial x_2}\\[8pt]
+\dfrac{\partial y_2}{\partial x_1} & \dfrac{\partial y_2}{\partial x_2}
+\end{pmatrix}
+}.
+\]
+
+展开即为
+\[
+\frac{\partial z}{\partial x_1}
+=\frac{\partial z}{\partial y_1}\frac{\partial y_1}{\partial x_1}
++\frac{\partial z}{\partial y_2}\frac{\partial y_2}{\partial x_1},
+\qquad
+\frac{\partial z}{\partial x_2}
+=\frac{\partial z}{\partial y_1}\frac{\partial y_1}{\partial x_2}
++\frac{\partial z}{\partial y_2}\frac{\partial y_2}{\partial x_2}.
+\]
+\end{property}
+
+\begin{note}[链式法则的“记忆口诀”]
+“对每条路径分别求导，再相加”——
+从 $z$ 到 $x_1$ 有两条路径（$z\to y_1\to x_1$ 和 $z\to y_2\to x_1$），
+分别沿路径求导相乘后再求和。
+这正是全概率公式的“微积分版本”：
+$\dfrac{\partial z}{\partial x_i}=\sum\limits_{j}\dfrac{\partial z}{\partial y_j}\dfrac{\partial y_j}{\partial x_i}$。
+\end{note}
+
+\begin{note}{注意：可微性条件不可省略！}
+使用链式法则必须保证中间映射 $f$ \textbf{可微}（而不仅仅是偏导数存在）。
+例如函数
+\[
+f(x,y)=
+\begin{cases}
+\dfrac{x^2y}{x^2+y^2},&(x,y)\neq(0,0),\\[10pt]
+0,&(x,y)=(0,0),
+\end{cases}
+\]
+在 $(0,0)$ 处偏导数存在但不可微（甚至不连续），若对其直接套用链式法则将得到错误结论。
+\end{note}
+
+\subsubsection*{一般推广}
+
+\begin{property}[链式法则的一般形式] \label{prop:chain-general}
+\begin{enumerate}
+  \item[\textbf{情形一}] $z=f(x_1,\dots,x_n)$，$x_k=g_k(t)$（$k=1,\dots,n$），则
+        \[
+        \frac{\mathrm{d}z}{\mathrm{d}t}=\sum_{k=1}^{n}\frac{\partial f}{\partial x_k}\frac{dx_k}{dt}.
+        \]
+  \item[\textbf{情形二}] $z=f(x_1,\dots,x_m)$，$x_k=g_k(u_1,\dots,u_n)$（$k=1,\dots,m$），则
+        \[
+        \frac{\partial z}{\partial u_i}=\sum_{k=1}^{m}\frac{\partial f}{\partial x_k}\frac{\partial x_k}{\partial u_i},
+        \qquad i=1,\dots,n.
+        \]
+\end{enumerate}
+\end{property}
+
+
+\subsection{链式法则的计算示例}
+
+\begin{example}[一元复合：中间变量含 $t$] \label{ex:chain-1var}
+设 $z=y\sin x$，$x=t^3$，$y=5t+2$，求 $\dfrac{dz}{dt}$。
+\end{example}
+
+\begin{solution}
+\begin{enumerate}
+  \item \textbf{路径分析}：
+  变量依赖关系为 $t\to(x,y)\to z$。从 $z$ 到 $t$ 有两条复合路径：$z\to x\to t$ 和 $z\to y\to t$。
+
+  \item \textbf{应用链式法则公式}：
+  \[
+  \frac{\mathrm{d}z}{\mathrm{d}t}=\frac{\partial z}{\partial x}\frac{\mathrm{d}x}{\mathrm{d}t}
+              +\frac{\partial z}{\partial y}\frac{\mathrm{d}y}{\mathrm{d}t}.
+  \]
+
+  \item \textbf{计算各偏导数因子}：
+  对内外层分别求导：
+  \[
+  \frac{\partial z}{\partial x}=y\cos x,\quad
+  \frac{\partial z}{\partial y}=\sin x,\quad
+  \frac{\mathrm{d}x}{\mathrm{d}t}=3t^2,\quad
+  \frac{\mathrm{d}y}{\mathrm{d}t}=5.
+  \]
+
+  \item \textbf{代入并化简（统一自变量）}：
+  \begin{align*}
+  \frac{\mathrm{d}z}{\mathrm{d}t}
+  &=y\cos x\cdot 3t^2+\sin x\cdot 5\\[4pt]
+  &=3t^2(5t+2)\cos(t^3)+5\sin(t^3).
+  \end{align*}
+  最终结果为：
+  \[
+  \boxed{\frac{\mathrm{d}z}{\mathrm{d}t}=3t^2(5t+2)\cos(t^3)+5\sin(t^3)}.
+  \]
+\end{enumerate}
+\end{solution}
+
+\begin{example}[二元复合：中间变量含 $u,v$] \label{ex:chain-2var}
+设 $w=x^2e^y$，$x=4u$，$y=3u^2-2v$，求 $\dfrac{\partial w}{\partial u}$ 和 $\dfrac{\partial w}{\partial v}$。
+\end{example}
+
+\begin{solution}
+\begin{enumerate}
+  \item \textbf{路径分析}：
+  依赖关系为 $(u,v)\to(x,y)\to w$。因此对于 $u$ 和 $v$ 各自有两条路径。
+
+  \item \textbf{列出链式法则公式}：
+  \[
+  \frac{\partial w}{\partial u}
+  =\frac{\partial w}{\partial x}\frac{\partial x}{\partial u}
+  +\frac{\partial w}{\partial y}\frac{\partial y}{\partial u},
+  \qquad
+  \frac{\partial w}{\partial v}
+  =\frac{\partial w}{\partial x}\frac{\partial x}{\partial v}
+  +\frac{\partial w}{\partial y}\frac{\partial y}{\partial v}.
+  \]
+
+  \item \textbf{计算偏导数因子}：
+  外层偏导：$\dfrac{\partial w}{\partial x}=2xe^y,\quad \dfrac{\partial w}{\partial y}=x^2e^y$。\\
+  内层偏导：$\dfrac{\partial x}{\partial u}=4,\quad \dfrac{\partial x}{\partial v}=0,\quad \dfrac{\partial y}{\partial u}=6u,\quad \dfrac{\partial y}{\partial v}=-2$。
+
+  \item \textbf{代入求 $\dfrac{\partial w}{\partial u}$}：
+  \begin{align*}
+  \frac{\partial w}{\partial u}
+  &=2xe^y\cdot 4+x^2e^y\cdot 6u
+   =8xe^y+6ux^2e^y \\
+  &=8(4u) e^{3u^2-2v}+6u(16u^2) e^{3u^2-2v}\\[4pt]
+  &=(32u+96u^3)\,e^{3u^2-2v}
+   =\boxed{32u(1+3u^2)\,e^{3u^2-2v}}.
+  \end{align*}
+
+  \item \textbf{代入求 $\dfrac{\partial w}{\partial v}$}：
+  \begin{align*}
+  \frac{\partial w}{\partial v}
+  &=2xe^y\cdot 0+x^2e^y\cdot(-2)
+  =-2x^2e^y \\
+  &=-2(16u^2) e^{3u^2-2v}
+  =\boxed{-32u^2\,e^{3u^2-2v}}.
+  \end{align*}
+\end{enumerate}
+\end{solution}
+
+\begin{example}[抽象复合函数的偏导数] \label{ex:chain-abstract}
+设 $z=f\!\left(xy,\;\dfrac{x}{y}\right)$，其中 $f$ 具有连续偏导数。
+求 $\dfrac{\partial z}{\partial x}$ 和 $\dfrac{\partial z}{\partial y}$。
+\end{example}
+
+\begin{solution}
+\begin{enumerate}
+  \item \textbf{引入中间变量}：
+  令 $u=xy$，$v=\dfrac{x}{y}$，则复合形式变为清晰的 $z=f(u,v)$。
+
+  \item \textbf{求关于 $x$ 的偏导数}：
+  根据链式法则，$z$ 对 $x$ 的求导需经过 $u$ 和 $v$ 两条路径。
+  用 $f_1'$ 表示 $f$ 对第一个参数 $u$ 的偏导，用 $f_2'$ 表示对 $v$ 的偏导：
+  \begin{align*}
+  \frac{\partial z}{\partial x}=\frac{\partial f}{\partial u}\frac{\partial u}{\partial x}+\frac{\partial f}{\partial v}\frac{\partial v}{\partial x} =f_1'\cdot y+f_2'\cdot\frac{1}{y} =\boxed{yf_1'+\frac{1}{y}f_2'}.
+  \end{align*}
+
+  \item \textbf{求关于 $y$ 的偏导数}：
+  同理，对 $y$ 求导：
+  \begin{align*}
+  \frac{\partial z}{\partial y}=\frac{\partial f}{\partial u}\frac{\partial u}{\partial y}
+  +\frac{\partial f}{\partial v}\frac{\partial v}{\partial y} =f_1'\cdot x+f_2'\cdot\left(-\frac{x}{y^2}\right) =\boxed{xf_1'-\frac{x}{y^2}f_2'}.
+  \end{align*}
+\end{enumerate}
+\end{solution}
+
+\begin{note}[下标记号的约定]
+对于抽象函数 $f(u,v)$，我们常用 $f_1'$ 表示 $f$ 对第一个变量的偏导数 $\dfrac{\partial f}{\partial u}$，
+$f_2'$ 表示对第二个变量的偏导数 $\dfrac{\partial f}{\partial v}$。
+这种记号的优势在于不需要显式命名中间变量，避免了“$f_x$ 到底是对 $x$ 求偏导还是对第一个位置求偏导”
+的歧义。后续的二阶偏导数 $f_{11}''$, $f_{12}''$ 等同理。
+\end{note}
+
+
+\subsection{一阶全微分形式的不变性}
+
+链式法则的一个重要推论是\textbf{全微分形式的不变性}——
+无论 $x,y$ 是自变量还是中间变量，全微分 $dz$ 的表达式在形式上完全相同。
+
+\begin{theorem}[一阶全微分形式的不变性] \label{thm:diff-invariance}
+设 $z=f(x,y)$，无论 $x,y$ 是自变量还是中间变量，都有
+\[
+\boxed{\;dz=\frac{\partial z}{\partial x}\,dx+\frac{\partial z}{\partial y}\,dy\;}.
+\]
+\end{theorem}
+
+\begin{proof}
+\begin{enumerate}
+  \item \textbf{情形一（$x, y$ 为自变量）：}
+  此时根据全微分的定义，等式直接成立，即 $dz=\dfrac{\partial z}{\partial x}\,dx+\dfrac{\partial z}{\partial y}\,dy$。
+  
+  \item \textbf{情形二（$x, y$ 为中间变量）：}
+  设 $x=x(u,v)$，$y=y(u,v)$。由复合函数的链式法则，我们有：
+  \[
+  \frac{\partial z}{\partial u}
+  =\frac{\partial z}{\partial x}\frac{\partial x}{\partial u}
+  +\frac{\partial z}{\partial y}\frac{\partial y}{\partial u},
+  \qquad
+  \frac{\partial z}{\partial v}
+  =\frac{\partial z}{\partial x}\frac{\partial x}{\partial v}
+  +\frac{\partial z}{\partial y}\frac{\partial y}{\partial v}.
+  \]
+  
+  \item \textbf{展开 $z$ 对自变量 $u, v$ 的全微分：}
+  由于 $u, v$ 为最底层自变量，其全微分为：
+  \[
+  dz = \frac{\partial z}{\partial u}\,du + \frac{\partial z}{\partial v}\,dv.
+  \]
+  
+  \item \textbf{代入偏导数表达式并重排：}
+  \begin{align*}
+  dz &= \left(\frac{\partial z}{\partial x}\frac{\partial x}{\partial u} + \frac{\partial z}{\partial y}\frac{\partial y}{\partial u}\right)\,du + \left(\frac{\partial z}{\partial x}\frac{\partial x}{\partial v} + \frac{\partial z}{\partial y}\frac{\partial y}{\partial v}\right)\,dv\\[4pt]
+     &= \frac{\partial z}{\partial x}\left(\frac{\partial x}{\partial u}\,du+\frac{\partial x}{\partial v}\,dv\right) + \frac{\partial z}{\partial y}\left(\frac{\partial y}{\partial u}\,du+\frac{\partial y}{\partial v}\,dv\right).
+  \end{align*}
+  
+  \item \textbf{得出形式不变性结论：}
+  由于括号内的部分恰好分别是 $x(u,v)$ 和 $y(u,v)$ 的全微分 $dx$ 和 $dy$，代入后即得：
+  \[
+  dz = \frac{\partial z}{\partial x}\,dx + \frac{\partial z}{\partial y}\,dy.
+  \]
+  这说明形式确实得到了保持。
+\end{enumerate}
+\end{proof}
+
+\begin{property}[全微分的四则运算]
+利用全微分形式的不变性，可以方便地推出四则运算公式：
+\begin{align*}
+d(u+v)=du+dv,~~d(uv)=u\,dv+v\,du,~~d\!\left(\frac{u}{v}\right)=\frac{v\,du-u\,dv}{v^2}\quad(v\neq 0).
+\end{align*}
+\end{property}
+
+\begin{example}[利用全微分形式不变性求偏导] \label{ex:diff-invariance-1}
+设 $z=\sin(2x+y)$，利用全微分形式不变性求 $\dfrac{\partial z}{\partial x}$ 和 $\dfrac{\partial z}{\partial y}$。
+\end{example}
+
+\begin{solution}
+\begin{enumerate}
+  \item \textbf{计算全微分 $dz$}：
+  令中间变量 $u=2x+y$，则 $z=\sin u$。
+  利用一元函数的微分公式和全微分的线性性质：
+  \begin{align*}
+  dz &= d(\sin u) = \cos u\,du \\
+     &= \cos(2x+y)\,d(2x+y) \\
+     &= \cos(2x+y)(2\,dx+\,dy).
+  \end{align*}
+
+  \item \textbf{展开为标准全微分形式}：
+  乘开括号：
+  \[
+  dz=2\cos(2x+y)\,dx+\cos(2x+y)\,dy.
+  \]
+
+  \item \textbf{比较系数提取偏导数}：
+  由全微分定义 $dz=\dfrac{\partial z}{\partial x}\,dx+\dfrac{\partial z}{\partial y}\,dy$，与上式比较对应项系数可直接读出：
+  \[
+  \boxed{\frac{\partial z}{\partial x}=2\cos(2x+y)},\qquad
+  \boxed{\frac{\partial z}{\partial y}=\cos(2x+y)}.
+  \]
+\end{enumerate}
+\end{solution}
+
+\begin{example}[三元函数的全微分求偏导] \label{ex:diff-invariance-2}
+设 $u=\ln\sqrt{x^2+y^2+z^2}$，求 $u_x$, $u_y$, $u_z$。
+\end{example}
+
+\begin{solution}
+\begin{enumerate}
+  \item \textbf{化简函数表达式}：
+  利用对数性质将根号提出：$u=\dfrac12\ln(x^2+y^2+z^2)$。
+
+  \item \textbf{利用全微分法则计算 $du$}：
+  将括号内整体看作一个变量，应用 $d(\ln v) = \dfrac{dv}{v}$：
+  \begin{align*}
+  du &= \frac12\cdot\frac{d(x^2+y^2+z^2)}{x^2+y^2+z^2} \\[4pt]
+     &= \frac12\cdot\frac{2x\,dx+2y\,dy+2z\,dz}{x^2+y^2+z^2} \\[4pt]
+     &= \frac{x\,dx+y\,dy+z\,dz}{x^2+y^2+z^2}.
+  \end{align*}
+
+  \item \textbf{比较系数提取偏导数}：
+  比较 $du = u_x\,dx + u_y\,dy + u_z\,dz$ 可得：
+  \[
+  \boxed{u_x=\frac{x}{x^2+y^2+z^2}},\quad
+  \boxed{u_y=\frac{y}{x^2+y^2+z^2}},\quad
+  \boxed{u_z=\frac{z}{x^2+y^2+z^2}}.
+  \]
+\end{enumerate}
+\end{solution}
+
+\begin{remark}[全微分法的优势]
+利用全微分形式不变性求偏导数的方法（“先求 $dz$，再读系数”）
+特别适合变量关系复杂或对称性明显的情形。
+它避免了逐条路径分析的过程，一次性地给出所有偏导数，
+且不易出错（因为中间结果始终是“微分形式”而非孤立的偏导符号）。
+\end{remark}
+
+
+\subsection{高阶偏导数}
+
+\subsubsection*{定义与记号}
+
+\begin{definition}[二阶偏导数与 Hesse 矩阵] \label{def:hessian}
+设 $f:D\to\mathbb R$（$D\subset\mathbb R^2$ 为开区域）具有一阶偏导数 $f_x$, $f_y$。
+若 $f_x$, $f_y$ 本身也具有偏导数，则称其为 $f$ 的\textbf{二阶偏导数}：
+\begin{align*}
+\frac{\partial^2 f}{\partial x^2}&=f_{xx}
+  :=\frac{\partial}{\partial x}\!\left(\frac{\partial f}{\partial x}\right),\qquad
+\frac{\partial^2 f}{\partial y\,\partial x}=f_{xy}
+  :=\frac{\partial}{\partial y}\!\left(\frac{\partial f}{\partial x}\right),\\[8pt]
+\frac{\partial^2 f}{\partial x\,\partial y}&=f_{yx}
+  :=\frac{\partial}{\partial x}\!\left(\frac{\partial f}{\partial y}\right),\qquad
+\frac{\partial^2 f}{\partial y^2}=f_{yy}
+  :=\frac{\partial}{\partial y}\!\left(\frac{\partial f}{\partial y}\right).
+\end{align*}
+
+其中 $f_{xy}$ 和 $f_{yx}$ 称为\textbf{混合偏导数}（Mixed Partial Derivatives），
+注意求导顺序：$f_{xy}$ 表示“先对 $x$ 求偏导，再对 $y$ 求偏导”。
+
+矩阵
+\[
+H_f(\boldsymbol x_0)
+=\begin{pmatrix}
+f_{xx}(\boldsymbol x_0) & f_{xy}(\boldsymbol x_0)\\[6pt]
+f_{yx}(\boldsymbol x_0) & f_{yy}(\boldsymbol x_0)
+\end{pmatrix}
+\]
+称为 $f$ 在 $\boldsymbol x_0$ 处的\textbf{Hesse 矩阵}（Hessian Matrix）。
+\end{definition}
+
+
+\subsubsection*{混合偏导数交换定理}
+
+一个自然的问题是：$f_{xy}$ 和 $f_{yx}$ 是否总是相等？
+答案是有条件的——\textbf{连续性}是关键。
+
+\begin{theorem}[混合偏导数交换定理 / Clairaut's Theorem] \label{thm:mixed-pd-exchange}
+若 $f_{xy}$ 和 $f_{yx}$ 在点 $(x_0,y_0)$ 的某邻域内存在且在 $(x_0,y_0)$ 处\textbf{连续}，
+则
+\[
+\boxed{\;f_{xy}(x_0,y_0)=f_{yx}(x_0,y_0)\;}.
+\]
+\end{theorem}
+
+\begin{note}[证明思路]
+证明的核心工具是\textbf{二次差商}：
+考虑 $f(x_0+h,y_0+k)-f(x_0+h,y_0)-f(x_0,y_0+k)+f(x_0,y_0)$。
+对这个量分别用“先 $x$ 后 $y$”和“先 $y$ 后 $x$”两种方式应用拉格朗日中值定理，
+再令 $h,k\to 0$ 取极限并利用二阶偏导数的连续性即可得证。
+\end{note}
+
+
+\subsubsection*{计算示例}
+
+\begin{example}[二阶偏导数的完整计算] \label{ex:hessian-basic}
+设 $f(x,y)=y\cos x+3x^2e^y$，求所有二阶偏导数。
+\end{example}
+
+\begin{solution}
+\begin{enumerate}
+  \item \textbf{计算一阶偏导数}：
+  将 $y$ 视作常数对 $x$ 求导，将 $x$ 视作常数对 $y$ 求导：
+  \[
+  f_x=-y\sin x+6xe^y,\qquad f_y=\cos x+3x^2e^y.
+  \]
+
+  \item \textbf{对 $f_x$ 再求导}：
+  \begin{align*}
+  f_{xx}&=\frac{\partial}{\partial x}(-y\sin x+6xe^y)
+        =-y\cos x+6e^y,\\[4pt]
+  f_{xy}&=\frac{\partial}{\partial y}(-y\sin x+6xe^y)
+        =-\sin x+6xe^y.
+  \end{align*}
+
+  \item \textbf{对 $f_y$ 再求导}：
+  \begin{align*}
+  f_{yx}&=\frac{\partial}{\partial x}(\cos x+3x^2e^y)
+        =-\sin x+6xe^y,\\[4pt]
+  f_{yy}&=\frac{\partial}{\partial y}(\cos x+3x^2e^y)
+        =3x^2e^y.
+  \end{align*}
+
+  \item \textbf{验证交换定理}：
+  观察结果发现 $f_{xy}=f_{yx}=-\sin x+6xe^y$，因其各阶偏导均为连续初等函数，完美符合交换定理。
+\end{enumerate}
+\end{solution}
+
+\begin{example}[arctan 的二阶偏导数] \label{ex:hessian-arctan}
+设 $f(x,y)=\arctan\dfrac{y}{x}$，求所有二阶偏导数。
+\end{example}
+
+\begin{solution}
+\begin{enumerate}
+  \item \textbf{复用一阶偏导数结果}：
+  根据复合函数求导公式可得：
+  \[
+  f_x=-\frac{y}{x^2+y^2},\qquad f_y=\frac{x}{x^2+y^2}.
+  \]
+
+  \item \textbf{求 $f_{xx}$ 和 $f_{xy}$}：
+  应用商的求导法则对 $f_x$ 求导：
+  \begin{align*}
+  f_{xx}&=\frac{\partial}{\partial x}\!\left(-\frac{y}{x^2+y^2}\right)
+        =-\frac{y\cdot(-2x)}{(x^2+y^2)^2}
+        =\frac{2xy}{(x^2+y^2)^2},\\[8pt]
+  f_{xy}&=\frac{\partial}{\partial y}\!\left(-\frac{y}{x^2+y^2}\right)
+        =-\frac{1\cdot(x^2+y^2)-y\cdot(2y)}{(x^2+y^2)^2}
+        =\frac{y^2-x^2}{(x^2+y^2)^2}.
+  \end{align*}
+
+  \item \textbf{求 $f_{yx}$ 和 $f_{yy}$}：
+  对 $f_y$ 求导：
+  \begin{align*}
+  f_{yx}&=\frac{\partial}{\partial x}\!\left(\frac{x}{x^2+y^2}\right)
+        =\frac{1\cdot(x^2+y^2)-x\cdot(2x)}{(x^2+y^2)^2}
+        =\frac{y^2-x^2}{(x^2+y^2)^2},\\[8pt]
+  f_{yy}&=\frac{\partial}{\partial y}\!\left(\frac{x}{x^2+y^2}\right)
+        =\frac{x\cdot(-2y)}{(x^2+y^2)^2}
+        =-\frac{2xy}{(x^2+y^2)^2}.
+  \end{align*}
+
+  \item \textbf{结论验证}：
+  显然有 $f_{xy}=f_{yx}=\dfrac{y^2-x^2}{(x^2+y^2)^2}$。
+\end{enumerate}
+\end{solution}
+
+
+\subsubsection*{抽象复合函数的二阶偏导数}
+
+\begin{example}[抽象函数的二阶偏导数] \label{ex:chain-2nd-order}
+设 $z=f\!\left(xy,\;\dfrac{x}{y}\right)$，$f$ 具有二阶连续偏导数。
+求 $\dfrac{\partial^2 z}{\partial x^2}$，$\dfrac{\partial^2 z}{\partial x\partial y}$，$\dfrac{\partial^2 z}{\partial y^2}$。
+\end{example}
+
+\begin{solution}
+\begin{enumerate}
+  \item \textbf{重写一阶偏导数结果}：
+  令中间变量 $u=xy$，$v=\dfrac{x}{y}$。由例 \ref{ex:chain-abstract} 已得一阶偏导数为：
+  \[
+  \frac{\partial z}{\partial x}=yf_1'+\frac{1}{y}f_2',\qquad
+  \frac{\partial z}{\partial y}=xf_1'-\frac{x}{y^2}f_2'.
+  \]
+
+  \item \textbf{求 $\dfrac{\partial^2 z}{\partial x^2}$}：
+  因为 $f_1'$ 和 $f_2'$ 依然是 $u, v$ 的复合函数，对它们求 $x$ 偏导数需再次使用链式法则，即 $\dfrac{\partial f_i'}{\partial x} = f_{i1}'' u_x + f_{i2}'' v_x$。
+  \begin{align*}
+  \frac{\partial^2 z}{\partial x^2} &= \frac{\partial}{\partial x}\left(yf_1'+\frac{1}{y}f_2'\right) \\
+  &= y\frac{\partial f_1'}{\partial x} + \frac{1}{y}\frac{\partial f_2'}{\partial x} \\
+  &= y\!\left(f_{11}''\cdot y+f_{12}''\cdot\frac{1}{y}\right) + \frac{1}{y}\!\left(f_{21}''\cdot y+f_{22}''\cdot\frac{1}{y}\right) \\
+  &= y^2f_{11}''+f_{12}''+f_{21}''+\frac{1}{y^2}f_{22}''.
+  \end{align*}
+  利用连续性 $f_{12}''=f_{21}''$，合并得：
+  \[
+  \boxed{\frac{\partial^2 z}{\partial x^2}=y^2f_{11}''+2f_{12}''+\frac{1}{y^2}f_{22}''}.
+  \]
+
+  \item \textbf{求二阶混合偏导数 $\dfrac{\partial^2 z}{\partial x\partial y}$}：
+  对 $\dfrac{\partial z}{\partial x}$ 关于 $y$ 求偏导，注意这里包含乘积求导法则：
+  \begin{align*}
+  \frac{\partial^2 z}{\partial x\partial y} &= \frac{\partial}{\partial y}\left(yf_1'+\frac{1}{y}f_2'\right) \\
+  &= \left(1\cdot f_1'+y\frac{\partial f_1'}{\partial y}\right) + \left(-\frac{1}{y^2}f_2'+\frac{1}{y}\frac{\partial f_2'}{\partial y}\right) \\
+  &= f_1' + y\!\left(f_{11}''\cdot x+f_{12}''\cdot\left(-\frac{x}{y^2}\right)\right) - \frac{1}{y^2}f_2' + \frac{1}{y}\!\left(f_{21}''\cdot x+f_{22}''\cdot\left(-\frac{x}{y^2}\right)\right) \\
+  &= f_1'+xyf_{11}''-\frac{x}{y}f_{12}''-\frac{1}{y^2}f_2'+\frac{x}{y}f_{21}''-\frac{x}{y^3}f_{22}''.
+  \end{align*}
+  由于 $f_{12}''=f_{21}''$，中间两项抵消，得到：
+  \[
+  \boxed{\frac{\partial^2 z}{\partial x\partial y}=f_1'-\frac{1}{y^2}f_2'+xyf_{11}''-\frac{x}{y^3}f_{22}''}.
+  \]
+
+  \item \textbf{求 $\dfrac{\partial^2 z}{\partial y^2}$}：
+  对 $\dfrac{\partial z}{\partial y}=xf_1'-\dfrac{x}{y^2}f_2'$ 再次关于 $y$ 求偏导：
+  \begin{align*}
+  \frac{\partial^2 z}{\partial y^2} &= x\frac{\partial f_1'}{\partial y} - \left(-\frac{2x}{y^3}f_2'+\frac{x}{y^2}\frac{\partial f_2'}{\partial y}\right) \\
+  &= x\!\left(f_{11}''\cdot x+f_{12}''\cdot\left(-\frac{x}{y^2}\right)\right) + \frac{2x}{y^3}f_2' - \frac{x}{y^2}\!\left(f_{21}''\cdot x+f_{22}''\cdot\left(-\frac{x}{y^2}\right)\right) \\
+  &= x^2f_{11}''-\frac{x^2}{y^2}f_{12}''+\frac{2x}{y^3}f_2'-\frac{x^2}{y^2}f_{21}''+\frac{x^2}{y^4}f_{22}''.
+  \end{align*}
+  合并 $f_{12}''$ 与 $f_{21}''$，得到：
+  \[
+  \boxed{\frac{\partial^2 z}{\partial y^2}=\frac{2x}{y^3}f_2'+x^2f_{11}''-\frac{2x^2}{y^2}f_{12}''+\frac{x^2}{y^4}f_{22}''}.
+  \]
+\end{enumerate}
+\end{solution}
+
+\begin{example}[另一个抽象复合函数] \label{ex:chain-2nd-order-2}
+设 $z=f(2x-y,\;y\sin x)$，$f$ 具有二阶连续偏导数。
+求 $\dfrac{\partial z}{\partial x}$ 和 $\dfrac{\partial^2 z}{\partial x\partial y}$。
+\end{example}
+
+\begin{solution}
+\begin{enumerate}
+  \item \textbf{定义中间变量及一阶导数}：
+  令 $u=2x-y$，$v=y\sin x$。根据链式法则对 $x$ 求导：
+  \begin{align*}
+  \frac{\partial z}{\partial x}
+  &=f_1'\cdot\frac{\partial u}{\partial x}+f_2'\cdot\frac{\partial v}{\partial x} \\
+  &=f_1'\cdot 2+f_2'\cdot y\cos x \\
+  &=\boxed{2f_1'+y\cos x\,f_2'}.
+  \end{align*}
+
+  \item \textbf{对求得的一阶偏导关于 $y$ 求二阶混合偏导}：
+  需要分别对项 $2f_1'$ 和 $y\cos x\,f_2'$ 求 $y$ 偏导：
+  \begin{align*}
+  \frac{\partial}{\partial y}(2f_1')
+  &=2\!\left(f_{11}''\frac{\partial u}{\partial y}+f_{12}''\frac{\partial v}{\partial y}\right)\\[4pt]
+  &=2\!\left(f_{11}''\cdot(-1)+f_{12}''\cdot\sin x\right)\\[4pt]
+  &=-2f_{11}''+2\sin x\,f_{12}''.
+  \end{align*}
+  应用乘积求导法则处理后一项：
+  \begin{align*}
+  \frac{\partial}{\partial y}(y\cos x\,f_2')
+  &=\cos x\,f_2'+y\cos x\frac{\partial f_2'}{\partial y}\\[4pt]
+  &=\cos x\,f_2'+y\cos x\!\left(f_{21}''\cdot(-1)+f_{22}''\cdot\sin x\right)\\[4pt]
+  &=\cos x\,f_2'-y\cos x\,f_{21}''+y\cos x\sin x\,f_{22}''.
+  \end{align*}
+
+  \item \textbf{合并结果}：
+  利用偏导数连续性 $f_{12}''=f_{21}''$ 对合并同类项进行整理：
+  \[
+  \boxed{\frac{\partial^2 z}{\partial x\partial y}=-2f_{11}''+(2\sin x-y\cos x)f_{12}''+y\cos x\sin x\,f_{22}''+\cos x\,f_2'}.
+  \]
+\end{enumerate}
+\end{solution}
+
+
+\subsection{二阶全微分}
+
+\begin{definition}[二阶全微分] \label{def:second-total-diff}
+设 $z=f(x,y)$ 具有二阶连续偏导数。
+对一阶全微分 $dz=f_x\,dx+f_y\,dy$ 再求一次微分（视自变量微元 $dx,dy$ 为独立常数），
+得到\textbf{二阶全微分}：
+\[
+d^2z=d(dz)=f_{xx}\,dx^2+2f_{xy}\,dx\,dy+f_{yy}\,dy^2.
+\]
+其中 $dx^2=(dx)^2$，$dy^2=(dy)^2$。
+\end{definition}
+
+\begin{note}[与 Hesse 矩阵的联系]
+二阶全微分可以用二次型矩阵形式简洁地表示为
+\[
+d^2z=(dx,dy)\,H_f\begin{pmatrix}dx\\dy\end{pmatrix},
+\]
+这在多变量函数的极值判定和 Taylor 展开中起着核心作用。
+\end{note}
+
+\begin{example}[二阶全微分的计算] \label{ex:2nd-diff}
+设 $z=x\sin y$，求 $dz$ 和 $d^2z$。
+\end{example}
+
+\begin{solution}
+\begin{enumerate}
+  \item \textbf{计算一阶偏导数及一阶全微分}：
+  $\dfrac{\partial z}{\partial x}=\sin y$，$\;\dfrac{\partial z}{\partial y}=x\cos y$。
+  由此得出：
+  \[
+  dz=\sin y\,dx+x\cos y\,dy.
+  \]
+
+  \item \textbf{计算二阶偏导数}：
+  继续求二阶导数：
+  $f_{xx}=0$，$\;f_{xy}=\cos y$，$\;f_{yy}=-x\sin y$。
+
+  \item \textbf{代入二阶全微分公式}：
+  将求得的二阶导数代入定义式即得：
+  \[
+  d^2z = 0\cdot dx^2 + 2\cos y\,dx\,dy + (-x\sin y)\,dy^2
+       = \boxed{2\cos y\,dx\,dy-x\sin y\,dy^2}.
+  \]
+\end{enumerate}
+\end{solution}
+
+
+\subsection{混合偏导数不相等的反例}
+
+交换定理要求 $f_{xy}$ 和 $f_{yx}$ \textbf{连续}。
+若连续性不满足，混合偏导数可能不相等。
+
+\begin{example}[混合偏导数不相等] \label{ex:mixed-pd-unequal}
+设
+\[
+f(x,y)=
+\begin{cases}
+xy\,\dfrac{x^2-y^2}{x^2+y^2},&(x,y)\neq(0,0),\\[10pt]
+0,&(x,y)=(0,0).
+\end{cases}
+\]
+验证 $f_{xy}(0,0)\neq f_{yx}(0,0)$。
+\end{example}
+
+\begin{solution}
+\begin{enumerate}
+  \item \textbf{在坐标轴上求一阶偏导数 $f_x(0,y)$}：
+  针对非原点的纵轴上的点（此时 $y\neq 0$）：
+  应用导数的定义直接计算极限：
+  \[
+  f_x(0,y)=\lim_{h\to 0}\frac{f(h,y)-f(0,y)}{h}
+  =\lim_{h\to 0}\frac{hy\,\dfrac{h^2-y^2}{h^2+y^2}-0}{h}
+  =\lim_{h\to 0} y\cdot\frac{h^2-y^2}{h^2+y^2} = y\cdot\frac{-y^2}{y^2}=-y.
+  \]
+
+  \item \textbf{在坐标轴上求一阶偏导数 $f_y(x,0)$}：
+  针对非原点的横轴上的点（此时 $x\neq 0$）：
+  同理应用导数定义：
+  \[
+  f_y(x,0)=\lim_{k\to 0}\frac{f(x,k)-f(x,0)}{k}
+  =\lim_{k\to 0}\frac{xk\,\dfrac{x^2-k^2}{x^2+k^2}-0}{k}
+  =\lim_{k\to 0} x\cdot\frac{x^2-k^2}{x^2+k^2} = x\cdot\frac{x^2}{x^2}=x.
+  \]
+
+  \item \textbf{计算原点处的混合偏导数 $f_{xy}(0,0)$}：
+  先对 $x$ 求偏导，再对 $y$ 差商：
+  \[
+  f_{xy}(0,0)=\lim_{k\to 0}\frac{f_x(0,k)-f_x(0,0)}{k}
+  =\lim_{k\to 0}\frac{-k-0}{k}=-1.
+  \]
+
+  \item \textbf{计算原点处的混合偏导数 $f_{yx}(0,0)$}：
+  先对 $y$ 求偏导，再对 $x$ 差商：
+  \[
+  f_{yx}(0,0)=\lim_{h\to 0}\frac{f_y(h,0)-f_y(0,0)}{h}
+  =\lim_{h\to 0}\frac{h-0}{h}=1.
+  \]
+
+  \item \textbf{比对结论}：
+  发现结果不相等：
+  \[
+  \boxed{f_{xy}(0,0)=-1\neq 1=f_{yx}(0,0)}.
+  \]
+  这说明 $f_{xy}$ 和 $f_{yx}$ 在原点处必有一方或双方不连续。
+\end{enumerate}
+\end{solution}
+
+\begin{remark}[反例的启示]
+这个经典反例（归功于 Schwarz）深刻地揭示了：
+“偏导数存在”和“偏导数连续”之间存在本质差距。
+在实际应用中，当我们需要交换混合偏导数的顺序时，
+\textbf{务必先验证连续性条件}，否则可能得出错误的结论。
+\end{remark}
+
+
+\section{练习}
+
+\subsection*{A组}
+
+\begin{exercise}[基本概念问答]
+回答下列问题：
+\begin{enumerate}
+  \item[(1)] 你知道哪些情形下的求复合函数偏导数的链式法则？
+  \item[(2)] 一阶全微分形式的不变性指的是什么？
+  \item[(3)] 高阶偏导数怎样定义？
+  \item[(4)] 在什么条件下混合偏导数相等？
+  \item[(5)] 高阶全微分怎样定义？
+\end{enumerate}
+\end{exercise}
+
+\begin{solution}
+\begin{enumerate}
+  \item[(1)] \textbf{链式法则的情形：}
+  \begin{itemize}
+    \item \textbf{一元复合情形}：当最终自变量只有一个时，偏导数变为全导数（即对多条支路上的普通导数求和）。
+    \item \textbf{多元复合情形}：当变量间构成多对多的嵌套层级时，每求一个自变量的偏导，需要从因变量出发遍历所有通向该自变量的路径并对各路径中间环节偏导数相乘后求和。
+    \item \textbf{一般形式}：可用 Jacobian 矩阵相乘的形式来高度概括上述所有复杂映射链。
+  \end{itemize}
+
+  \item[(2)] \textbf{一阶全微分形式的不变性：}
+  设函数 $z = f(x, y)$，全微分恒可表达为 $dz = \dfrac{\partial z}{\partial x}\,dx + \dfrac{\partial z}{\partial y}\,dy$。其不变性是指无论 $x, y$ 本身是最底层的独立自变量，还是由其它更深层变量复合而成的中间函数，这个等式的形式始终有效，不会发生改变。
+
+  \item[(3)] \textbf{高阶偏导数的定义：}
+  多元函数对某变量求出的一阶偏导函数，如果对原各变量依然偏导数存在，则可继续求导。连续进行两次偏导运算即可得到二阶偏导数（包括两次对同变量的纯偏导，和对不同变量的混合偏导），以此类推可定义任意高阶的偏导数。
+
+  \item[(4)] \textbf{混合偏导数相等的条件：}
+  如果函数 $f(x,y)$ 的两个混合偏导数 $f_{xy}$ 和 $f_{yx}$ 在考察点 $(x_0, y_0)$ 及其某邻域内存在，并且在考察点处都是\textbf{连续}的，那么它们在此处的值一定相等。这就是 Clairaut 交换定理。
+
+  \item[(5)] \textbf{高阶全微分的定义：}
+  对函数的一阶全微分式 $dz = f_x\,dx + f_y\,dy$ 视自变量增量（如 $dx, dy$）为独立常数再次执行微分操作得到的式子称为二阶全微分，即 $d^2z = d(dz)$。依此类推递归定义更高阶的全微分。
+\end{enumerate}
+\end{solution}
+
+\begin{exercise}[链式法则求一阶导数]
+求下列函数的导数 $\dfrac{dz}{dt}$：
+\begin{center}
+\renewcommand{\arraystretch}{2}
+\begin{tabular}{p{0.48\textwidth} p{0.48\textwidth}}
+(1) $z = xy^2,\ x = e^{-t},\ y = \sin t$ & (2) $z = x\sin y + y\sin x,\ x = t^2,\ y = \ln t$ \\
+(3) $z = \ln(x^2+y^2),\ x = \dfrac{1}{t},\ y = \sqrt{t}$ & (4) $z = \sin\dfrac{x}{y},\ x = 2t,\ y = 1-t^2$ \\
+(5) $z = (x+y)e^y,\ x = 2t,\ y = 1-t^2$ & (6) $z = \arctan\dfrac{x}{y},\ x = 2t,\ y = 1-t^2$
+\end{tabular}
+\end{center}
+\end{exercise}
+
+\begin{solution}
+\begin{enumerate}
+  \item[(1)] \textbf{分析：} $z=xy^2$。先求偏导：$z_x = y^2$，$z_y = 2xy$。中间变量对 $t$ 导数：$x' = -e^{-t}$，$y' = \cos t$。
+  \textbf{代入链式公式：}
+  \begin{align*}
+  \frac{\mathrm{d}z}{\mathrm{d}t} &= z_x\frac{\mathrm{d}x}{\mathrm{d}t} + z_y\frac{\mathrm{d}y}{\mathrm{d}t} = y^2(-e^{-t}) + 2xy(\cos t) \\
+  &= (\sin^2 t)(-e^{-t}) + 2(e^{-t})(\sin t)(\cos t) \\
+  &= e^{-t}\sin t(2\cos t - \sin t).
+  \end{align*}
+
+  \item[(2)] \textbf{分析：} $z=x\sin y + y\sin x$。偏导数：$z_x = \sin y + y\cos x$，$z_y = x\cos y + \sin x$。内层导数：$x' = 2t$，$y' = \dfrac{1}{t}$。
+  \textbf{代入式中：}
+  \begin{align*}
+  \frac{\mathrm{d}z}{\mathrm{d}t} &= (\sin y + y\cos x)(2t) + (x\cos y + \sin x)\left(\frac{1}{t}\right) \\
+  &= 2t(\sin(\ln t) + \ln t\cdot \cos(t^2)) + \frac{1}{t}(t^2\cos(\ln t) + \sin(t^2)).
+  \end{align*}
+
+  \item[(3)] \textbf{分析：} $z=\ln(x^2+y^2)$。此题代入合并为一元函数再求导会更简单：
+  因为 $x = \dfrac{1}{t}$，$y = \sqrt{t}$，所以 $x^2+y^2 = \dfrac{1}{t^2} + t = \dfrac{t^3+1}{t^2}$。
+  $z = \ln\left(\dfrac{t^3+1}{t^2}\right) = \ln(t^3+1) - 2\ln t$。
+  \textbf{直接求导：}
+  \[
+  \frac{\mathrm{d}z}{\mathrm{d}t} = \frac{3t^2}{t^3+1} - \frac{2}{t} = \frac{3t^3 - 2(t^3+1)}{t(t^3+1)} = \frac{t^3-2}{t(t^3+1)}.
+  \]
+
+  \item[(4)] \textbf{分析：} $z=\sin\dfrac{x}{y}$。偏导数：$z_x = \dfrac{1}{y}\cos\dfrac{x}{y}$，$z_y = -\dfrac{x}{y^2}\cos\dfrac{x}{y}$。内层：$x'=2$，$y'=-2t$。
+  \textbf{组装链式公式：}
+  \begin{align*}
+  \frac{\mathrm{d}z}{\mathrm{d}t} &= \left(\frac{1}{y}\cos\dfrac{x}{y}\right)(2) + \left(-\frac{x}{y^2}\cos\dfrac{x}{y}\right)(-2t) 
+  = \left(\frac{2}{y} + \frac{2xt}{y^2}\right)\cos\dfrac{x}{y} \\
+  &= \left(\frac{2}{1-t^2} + \frac{4t^2}{(1-t^2)^2}\right)\cos\left(\frac{2t}{1-t^2}\right) \\
+  &= \frac{2-2t^2+4t^2}{(1-t^2)^2}\cos\left(\frac{2t}{1-t^2}\right) = \frac{2(1+t^2)}{(1-t^2)^2}\cos\left(\frac{2t}{1-t^2}\right).
+  \end{align*}
+
+  \item[(5)] \textbf{分析：} $z=(x+y)e^y$。$z_x = e^y$，$z_y = e^y + (x+y)e^y = (x+y+1)e^y$。内层：$x'=2$，$y'=-2t$。
+  \textbf{组装：}
+  \begin{align*}
+  \frac{\mathrm{d}z}{\mathrm{d}t} &= e^y(2) + (x+y+1)e^y(-2t) = 2e^y [1 - t(x+y+1)] \\
+  &= 2e^{1-t^2} [1 - t(2t + 1 - t^2 + 1)] \\
+  &= 2e^{1-t^2} (1 - 2t - 2t^2 + t^3).
+  \end{align*}
+
+  \item[(6)] \textbf{分析：} $z=\arctan\dfrac{x}{y}$。偏导：$z_x = \dfrac{1/y}{1+(x/y)^2} = \dfrac{y}{x^2+y^2}$，$z_y = \dfrac{-x/y^2}{1+(x/y)^2} = \dfrac{-x}{x^2+y^2}$。
+  $x'=2$，$y'=-2t$。
+  \textbf{代入：}
+  \begin{align*}
+  \frac{\mathrm{d}z}{\mathrm{d}t} &= \left(\frac{y}{x^2+y^2}\right)(2) + \left(\frac{-x}{x^2+y^2}\right)(-2t) = \frac{2y + 2xt}{x^2+y^2} \\
+  &= \frac{2(1-t^2) + 2(2t)t}{(2t)^2 + (1-t^2)^2} = \frac{2 - 2t^2 + 4t^2}{4t^2 + 1 - 2t^2 + t^4} \\
+  &= \frac{2(1+t^2)}{(1+t^2)^2} = \frac{2}{1+t^2}.
+  \end{align*}
+\end{enumerate}
+\end{solution}
+
+\begin{exercise}[链式法则求偏导数]
+在以下各题中求 $\dfrac{\partial z}{\partial u}$ 和 $\dfrac{\partial z}{\partial v}$：
+\begin{center}
+\renewcommand{\arraystretch}{2}
+\begin{tabular}{p{0.48\textwidth} p{0.48\textwidth}}
+(1) $z = xe^{-y} + ye^{-x},\ x = u\sin v,\ y = v\cos u$ & (2) $z = xe^y,\ x = \ln u,\ y = v$ \\
+(3) $z = \dfrac{\cos x}{y},\ x = \dfrac{v}{u},\ y = u^2-v^2$ & (4) $z = \arctan(x+y),\ x = 2u-v^2,\ y = u^2v$ \\
+(5) $z = e^{x\sin y},\ x = uv,\ y = \ln(u+v)$ & (6) $z = \arctan\dfrac{x}{y},\ x = u^2+v^2,\ y = u^2-v^2$
+\end{tabular}
+\end{center}
+\end{exercise}
+
+\begin{solution}
+由于代入自变量会导致表达式极其臃肿，通常情况此类问题允许答案用 $x,y$ 及 $u,v$ 混合表示（或在最终步指出需代入 $x, y$ 的表达式）。
+\begin{enumerate}
+  \item[(1)] \textbf{分别求一阶偏导：} $z_x = e^{-y} - ye^{-x}$，$z_y = -xe^{-y} + e^{-x}$。
+  内层偏导：$x_u = \sin v,\ x_v = u\cos v,\ y_u = -v\sin u,\ y_v = \cos u$。
+  \textbf{代入法则：}
+  \begin{align*}
+  \frac{\partial z}{\partial u} &= z_x x_u + z_y y_u = (e^{-y} - ye^{-x})\sin v + (e^{-x} - xe^{-y})(-v\sin u), \\
+  \frac{\partial z}{\partial v} &= z_x x_v + z_y y_v = (e^{-y} - ye^{-x})(u\cos v) + (e^{-x} - xe^{-y})\cos u.
+  \end{align*}
+
+  \item[(2)] \textbf{求一阶偏导：} $z_x = e^y$，$z_y = xe^y$。
+  内层偏导：$x_u = \dfrac{1}{u},\ x_v = 0,\ y_u = 0,\ y_v = 1$。
+  \textbf{代入：}
+  \begin{align*}
+  \frac{\partial z}{\partial u} &= e^y\left(\frac{1}{u}\right) + xe^y(0) = \frac{e^v}{u}, \\
+  \frac{\partial z}{\partial v} &= e^y(0) + xe^y(1) = e^v\ln u.
+  \end{align*}
+
+  \item[(3)] \textbf{求一阶偏导：} $z_x = -\dfrac{\sin x}{y}$，$z_y = -\dfrac{\cos x}{y^2}$。
+  内层：$x_u = -\dfrac{v}{u^2},\ x_v = \dfrac{1}{u},\ y_u = 2u,\ y_v = -2v$。
+  \textbf{代入：}
+  \begin{align*}
+  \frac{\partial z}{\partial u} &= \left(-\frac{\sin x}{y}\right)\left(-\frac{v}{u^2}\right) + \left(-\frac{\cos x}{y^2}\right)(2u) = \frac{v\sin x}{u^2 y} - \frac{2u\cos x}{y^2}, \\
+  \frac{\partial z}{\partial v} &= \left(-\frac{\sin x}{y}\right)\left(\frac{1}{u}\right) + \left(-\frac{\cos x}{y^2}\right)(-2v) = -\frac{\sin x}{uy} + \frac{2v\cos x}{y^2}.
+  \end{align*}
+
+  \item[(4)] \textbf{求一阶偏导：} $z_x = \dfrac{1}{1+(x+y)^2} = z_y$。
+  内层：$x_u = 2,\ x_v = -2v,\ y_u = 2uv,\ y_v = u^2$。
+  \textbf{代入提取公因子：}
+  \begin{align*}
+  \frac{\partial z}{\partial u} &= \frac{1}{1+(x+y)^2}(2) + \frac{1}{1+(x+y)^2}(2uv) = \frac{2(1+uv)}{1+(x+y)^2}, \\
+  \frac{\partial z}{\partial v} &= \frac{1}{1+(x+y)^2}(-2v) + \frac{1}{1+(x+y)^2}(u^2) = \frac{u^2-2v}{1+(x+y)^2}.
+  \end{align*}
+
+  \item[(5)] \textbf{求一阶偏导：} $z_x = (\sin y)e^{x\sin y}$，$z_y = (x\cos y)e^{x\sin y}$。
+  内层：$x_u = v,\ x_v = u,\ y_u = \dfrac{1}{u+v} = y_v$。
+  \textbf{代入：}
+  \begin{align*}
+  \frac{\partial z}{\partial u} &= e^{x\sin y}\left[ v\sin y + \frac{x\cos y}{u+v} \right], \\
+  \frac{\partial z}{\partial v} &= e^{x\sin y}\left[ u\sin y + \frac{x\cos y}{u+v} \right].
+  \end{align*}
+
+  \item[(6)] \textbf{求一阶偏导：} $z_x = \dfrac{y}{x^2+y^2}$，$z_y = \dfrac{-x}{x^2+y^2}$。
+  内层：$x_u = 2u,\ x_v = 2v,\ y_u = 2u,\ y_v = -2v$。
+  \textbf{代入：}
+  \begin{align*}
+  \frac{\partial z}{\partial u} &= \frac{y(2u) - x(2u)}{x^2+y^2} = \frac{2u(y-x)}{x^2+y^2} = \frac{2u(-2v^2)}{2u^4+2v^4} = -\frac{2uv^2}{u^4+v^4}, \\
+  \frac{\partial z}{\partial v} &= \frac{y(2v) - x(-2v)}{x^2+y^2} = \frac{2v(y+x)}{x^2+y^2} = \frac{2v(2u^2)}{2u^4+2v^4} = \frac{2u^2v}{u^4+v^4}.
+  \end{align*}
+\end{enumerate}
+\end{solution}
+
+\begin{exercise}[抽象函数链式法则推导]
+设 $u = f(x,y,z),\ x = x(s,t),\ y = y(s,t),\ z = z(s,t)$。写出求复合函数 $u = f(x(s,t),y(s,t),z(s,t))$ 的偏导数 $\dfrac{\partial u}{\partial s}$ 和 $\dfrac{\partial u}{\partial t}$ 的链式法则。
+\end{exercise}
+
+\begin{solution}
+\begin{enumerate}
+  \item \textbf{梳理变量的拓扑路径：}
+  从目标因变量 $u$ 到底层自变量 $s, t$，一共需要跨越三条并行路径，即中间变量有三个：$x, y, z$。
+  
+  \item \textbf{对 $s$ 应用法则展开求和：}
+  顺着三个中间变量对 $s$ 求导累加：
+  \[
+  \frac{\partial u}{\partial s} = \frac{\partial f}{\partial x}\frac{\partial x}{\partial s} + \frac{\partial f}{\partial y}\frac{\partial y}{\partial s} + \frac{\partial f}{\partial z}\frac{\partial z}{\partial s}.
+  \]
+  
+  \item \textbf{对 $t$ 应用法则展开求和：}
+  同理顺着三个变量对 $t$ 求导累加：
+  \[
+  \frac{\partial u}{\partial t} = \frac{\partial f}{\partial x}\frac{\partial x}{\partial t} + \frac{\partial f}{\partial y}\frac{\partial y}{\partial t} + \frac{\partial f}{\partial z}\frac{\partial z}{\partial t}.
+  \]
+\end{enumerate}
+\end{solution}
+
+\begin{exercise}[点处偏导数与全导数计算]
+设 $u = f(x,y,z) = 3xy+yz,\ x = \ln s+\cos t,\ y = 1+s\sin t,\ z = st$。
+\begin{enumerate}
+  \item[(1)] 求 $\dfrac{\partial u}{\partial s}$ 和 $\dfrac{\partial u}{\partial t}$ 在 $(s,t) = (1,\pi)$ 点的值；
+  \item[(2)] 假定 $s,t$ 还是 $w$ 的函数，即 $s = 1+\sin(\pi w),\ t = \pi w^2$，试求 $\left.\dfrac{du}{dw}\right|_{w=1}$。
+\end{enumerate}
+\end{exercise}
+
+\begin{solution}
+\begin{enumerate}
+  \item[(1)] \textbf{步骤 1：定位状态点坐标。}
+  当 $s=1, t=\pi$ 时，代入内层表达式计算中间变量：
+  $x = \ln 1 + \cos\pi = -1$；$y = 1 + 1\cdot\sin\pi = 1$；$z = 1\cdot\pi = \pi$。
+
+  \textbf{步骤 2：在目标点处计算一阶外层偏导数。}
+  $u_x = 3y \implies u_x(-1,1,\pi) = 3$。
+  $u_y = 3x + z \implies u_y(-1,1,\pi) = 3(-1) + \pi = \pi - 3$。
+  $u_z = y \implies u_z(-1,1,\pi) = 1$。
+
+  \textbf{步骤 3：在目标点处计算内层偏导数。}
+  $x_s = \dfrac{1}{s} \implies x_s(1,\pi) = 1$； $x_t = -\sin t \implies x_t(1,\pi) = 0$。
+  $y_s = \sin t \implies y_s(1,\pi) = 0$； $y_t = s\cos t \implies y_t(1,\pi) = -1$。
+  $z_s = t \implies z_s(1,\pi) = \pi$； $z_t = s \implies z_t(1,\pi) = 1$。
+
+  \textbf{步骤 4：组装求值。}
+  \begin{align*}
+  \left.\frac{\partial u}{\partial s}\right|_{(1,\pi)} &= u_x x_s + u_y y_s + u_z z_s = 3(1) + (\pi-3)(0) + 1(\pi) = \pi + 3. \\
+  \left.\frac{\partial u}{\partial t}\right|_{(1,\pi)} &= u_x x_t + u_y y_t + u_z z_t = 3(0) + (\pi-3)(-1) + 1(1) = 4 - \pi.
+  \end{align*}
+
+  \item[(2)] \textbf{步骤 1：计算新点映射。}
+  当 $w=1$ 时：$s = 1+\sin\pi = 1$；$t = \pi(1)^2 = \pi$。此点恰好为前一小问计算完毕的点！
+
+  \textbf{步骤 2：计算对 $w$ 的导数。}
+  $s_w = \pi\cos(\pi w) \implies s_w(1) = \pi(-1) = -\pi$。
+  $t_w = 2\pi w \implies t_w(1) = 2\pi$。
+
+  \textbf{步骤 3：运用全导数链式法则。}
+  利用我们在第 (1) 问已求得的 $\dfrac{\partial u}{\partial s}$ 和 $\dfrac{\partial u}{\partial t}$ 在此点的值，代入：
+  \begin{align*}
+  \left.\frac{du}{dw}\right|_{w=1} &= \frac{\partial u}{\partial s} \frac{ds}{dw} + \frac{\partial u}{\partial t} \frac{dt}{dw} \\
+  &= (\pi+3)(-\pi) + (4-\pi)(2\pi) \\
+  &= -\pi^2 - 3\pi + 8\pi - 2\pi^2 = 5\pi - 3\pi^2.
+  \end{align*}
+\end{enumerate}
+\end{solution}
+
+\begin{exercise}[抽象复合函数求导]
+求下列复合函数的偏导数：
+\begin{center}
+\renewcommand{\arraystretch}{2}
+\begin{tabular}{p{0.48\textwidth} p{0.48\textwidth}}
+(1) $z = f(\sqrt{x^2+y^2})$ & (2) $u = f(x^2+y^2+z^2)$ \\
+(3) $z = f\left(x,\dfrac{x}{y}\right)$ & (4) $u = f(x,xy,xyz)$
+\end{tabular}
+\end{center}
+\end{exercise}
+
+\begin{solution}
+约定用 $f'$ 或 $f_i'$ 记作对第 $i$ 个位置变量求导的记号。
+\begin{enumerate}
+  \item[(1)] \textbf{分析与计算：} 中间变量只有一个 $v = \sqrt{x^2+y^2}$。
+  $v_x = \dfrac{x}{\sqrt{x^2+y^2}}$，$v_y = \dfrac{y}{\sqrt{x^2+y^2}}$。
+  因此偏导数为：
+  \[
+  z_x = f'(v) \frac{x}{\sqrt{x^2+y^2}}, \qquad z_y = f'(v) \frac{y}{\sqrt{x^2+y^2}}.
+  \]
+
+  \item[(2)] \textbf{分析与计算：} 中间变量只有一个 $v = x^2+y^2+z^2$。对三个独立变量偏导完全对称：
+  \[
+  u_x = 2x f'(v), \qquad u_y = 2y f'(v), \qquad u_z = 2z f'(v).
+  \]
+
+  \item[(3)] \textbf{分析与计算：} 设第一位置变量 $u_1=x$，第二位置变量 $u_2=\dfrac{x}{y}$。
+  \begin{align*}
+  z_x &= f_1'\cdot(1) + f_2'\cdot\left(\frac{1}{y}\right) = f_1' + \frac{1}{y}f_2', \\
+  z_y &= f_1'\cdot(0) + f_2'\cdot\left(-\frac{x}{y^2}\right) = -\frac{x}{y^2}f_2'.
+  \end{align*}
+
+  \item[(4)] \textbf{分析与计算：} $u_1=x, u_2=xy, u_3=xyz$。
+  \begin{align*}
+  u_x &= f_1'(1) + f_2'(y) + f_3'(yz) = f_1' + yf_2' + yzf_3', \\
+  u_y &= f_1'(0) + f_2'(x) + f_3'(xz) = xf_2' + xzf_3', \\
+  u_z &= f_1'(0) + f_2'(0) + f_3'(xy) = xyf_3'.
+  \end{align*}
+\end{enumerate}
+\end{solution}
+
+\begin{exercise}[求具体函数的二阶偏导数]
+求下列函数的二阶偏导数：
+\begin{center}
+\renewcommand{\arraystretch}{2}
+\begin{tabular}{p{0.22\textwidth} p{0.22\textwidth} p{0.25\textwidth} p{0.22\textwidth}}
+(1) $z = \sin\left(\dfrac{x}{y}\right)$ & (2) $z = xe^y$ & (3) $z = \sin(x^2+y^2)$ & (4) $z = \sqrt{x^2+y^2}$ \\
+(5) $z = \dfrac{xe^y}{x+y}$ & (6) $z = \arctan(x+y)$ & (7) $f(x,y) = \ln(xy)$ & (8) $f(x,y) = x^y$
+\end{tabular}
+\end{center}
+\end{exercise}
+
+\begin{solution}
+为了节省版面且防止过度冗长，这里对各小问提供快速求解的骨干步骤（包括 $z_x, z_y$ 及二阶 $z_{xx}, z_{xy}, z_{yy}$，且混合偏导假定连续直接给出一个结果）：
+\begin{enumerate}
+  \item[(1)] $z_x = \dfrac{1}{y}\cos\dfrac{x}{y}$, \quad $z_y = -\dfrac{x}{y^2}\cos\dfrac{x}{y}$。
+  \begin{align*}
+  z_{xx} &= -\frac{1}{y^2}\sin\dfrac{x}{y},\\
+  z_{xy} &= -\frac{1}{y^2}\cos\dfrac{x}{y} + \frac{x}{y^3}\sin\dfrac{x}{y},\\
+  z_{yy} &= \frac{2x}{y^3}\cos\dfrac{x}{y} - \frac{x^2}{y^4}\sin\dfrac{x}{y}.
+  \end{align*}
+
+  \item[(2)] $z_x = e^y$, \quad $z_y = xe^y$。
+  \[
+  z_{xx} = 0, \qquad z_{xy} = e^y, \qquad z_{yy} = xe^y.
+  \]
+
+  \item[(3)] $z_x = 2x\cos(x^2+y^2)$, \quad $z_y = 2y\cos(x^2+y^2)$。
+  \begin{align*}
+  z_{xx} &= 2\cos(x^2+y^2) - 4x^2\sin(x^2+y^2),\\
+  z_{xy} &= -4xy\sin(x^2+y^2),\\
+  z_{yy} &= 2\cos(x^2+y^2) - 4y^2\sin(x^2+y^2).
+  \end{align*}
+
+  \item[(4)] $z_x = \dfrac{x}{\sqrt{x^2+y^2}}$, \quad $z_y = \dfrac{y}{\sqrt{x^2+y^2}}$。记 $r = \sqrt{x^2+y^2}$。
+  \begin{align*}
+  z_{xx} &= \frac{1\cdot r - x\cdot(x/r)}{r^2} = \frac{y^2}{r^3} = \frac{y^2}{(x^2+y^2)^{3/2}},\\
+  z_{xy} &= \frac{0\cdot r - x\cdot(y/r)}{r^2} = -\frac{xy}{(x^2+y^2)^{3/2}},\\
+  z_{yy} &= \frac{x^2}{(x^2+y^2)^{3/2}}.
+  \end{align*}
+
+  \item[(5)] $z_x = \dfrac{y e^y}{(x+y)^2}$, \quad $z_y = \dfrac{x(x+y-1)e^y}{(x+y)^2}$。
+  \begin{align*}
+  z_{xx} &= \frac{-2y e^y}{(x+y)^3},\\
+  z_{xy} &= \frac{e^y(x+y)^2 - 2y e^y(x+y)}{(x+y)^4} = \frac{e^y(x-y)}{(x+y)^3},\\
+  z_{yy} &= \frac{x(x^2+xy-2)e^y}{(x+y)^3}.
+  \end{align*}
+
+  \item[(6)] $z_x = \dfrac{1}{1+(x+y)^2} = z_y$。
+  \[
+  z_{xx} = z_{xy} = z_{yy} = -\frac{2(x+y)}{(1+(x+y)^2)^2}.
+  \]
+
+  \item[(7)] $f = \ln(xy) = \ln x + \ln y$（限定 $x,y$ 同号）。故交叉部分为0。
+  $f_x = \dfrac{1}{x}$, $f_y = \dfrac{1}{y}$。
+  \[
+  f_{xx} = -\frac{1}{x^2}, \qquad f_{xy} = 0, \qquad f_{yy} = -\frac{1}{y^2}.
+  \]
+
+  \item[(8)] $f = x^y = e^{y\ln x}$。
+  $f_x = y x^{y-1}$, \quad $f_y = x^y\ln x$。
+  \begin{align*}
+  f_{xx} &= y(y-1)x^{y-2},\\
+  f_{xy} &= x^{y-1} + y x^{y-1}\ln x = x^{y-1}(1+y\ln x),\\
+  f_{yy} &= x^y(\ln x)^2.
+  \end{align*}
+\end{enumerate}
+\end{solution}
+
+\begin{exercise}[二阶偏导数在原点的值]
+设 $f(x,y) = a+bx+cy+dx^2+exy+ky^2$，其中 $a,b,c,d,e,k$ 均为常数。验证 $a = f(0,0),\ b = \dfrac{\partial f}{\partial x}(0,0),\ c = \dfrac{\partial f}{\partial y}(0,0),\ d = \dfrac{1}{2}\dfrac{\partial^2 f}{\partial x^2}(0,0),\ e = \dfrac{\partial^2 f}{\partial x\partial y}(0,0),\ k = \dfrac{1}{2}\dfrac{\partial^2 f}{\partial y^2}(0,0)$。
+\end{exercise}
+
+\begin{solution}
+\begin{enumerate}
+  \item \textbf{代入原点检验函数值：}
+  直接令 $x=0, y=0$ 得到：
+  $f(0,0) = a + 0 + 0 + 0 + 0 + 0 = a$。得证。
+  
+  \item \textbf{求解并检验一阶偏导数在原点的值：}
+  $f_x = b + 2dx + ey \implies f_x(0,0) = b$。得证。
+  $f_y = c + ex + 2ky \implies f_y(0,0) = c$。得证。
+  
+  \item \textbf{求解并检验二阶偏导数在原点的值：}
+  $f_{xx} = \dfrac{\partial}{\partial x}(b + 2dx + ey) = 2d \implies f_{xx}(0,0) = 2d \implies d = \dfrac{1}{2}f_{xx}(0,0)$。得证。
+  $f_{xy} = \dfrac{\partial}{\partial y}(b + 2dx + ey) = e \implies f_{xy}(0,0) = e$。得证。
+  $f_{yy} = \dfrac{\partial}{\partial y}(c + ex + 2ky) = 2k \implies f_{yy}(0,0) = 2k \implies k = \dfrac{1}{2}f_{yy}(0,0)$。得证。
+\end{enumerate}
+这正是多元函数在原点进行二阶泰勒展开的一个体现。
+\end{solution}
+
+\begin{exercise}[偏微分方程待定常数]
+设 $z = x^k e^{-\frac{y}{x}}$ 满足关系式 $\dfrac{\partial z}{\partial x} = y\dfrac{\partial^2 z}{\partial y^2} + \dfrac{\partial z}{\partial y}$，试求常数 $k$。
+\end{exercise}
+
+\begin{solution}
+\begin{enumerate}
+  \item \textbf{求解各项所需的偏导数：}
+  \begin{align*}
+  \frac{\partial z}{\partial x} &= kx^{k-1}e^{-\frac{y}{x}} + x^k e^{-\frac{y}{x}}\left(\frac{y}{x^2}\right) = x^{k-1}e^{-\frac{y}{x}}\left(k + \frac{y}{x}\right) = x^{k-2}e^{-\frac{y}{x}}(kx+y). \\
+  \frac{\partial z}{\partial y} &= x^k e^{-\frac{y}{x}}\left(-\frac{1}{x}\right) = -x^{k-1}e^{-\frac{y}{x}}. \\
+  \frac{\partial^2 z}{\partial y^2} &= \frac{\partial}{\partial y}\left(-x^{k-1}e^{-\frac{y}{x}}\right) = -x^{k-1}e^{-\frac{y}{x}}\left(-\frac{1}{x}\right) = x^{k-2}e^{-\frac{y}{x}}.
+  \end{align*}
+
+  \item \textbf{代入偏微分方程：}
+  方程右端化简：
+  \begin{align*}
+  y\frac{\partial^2 z}{\partial y^2} + \frac{\partial z}{\partial y} &= y\left(x^{k-2}e^{-\frac{y}{x}}\right) - x^{k-1}e^{-\frac{y}{x}} \\
+  &= x^{k-2}e^{-\frac{y}{x}}(y - x).
+  \end{align*}
+
+  \item \textbf{比对系数求 $k$：}
+  使方程两边相等，即要求：
+  \[
+  x^{k-2}e^{-\frac{y}{x}}(kx+y) \equiv x^{k-2}e^{-\frac{y}{x}}(y-x).
+  \]
+  由于指数项绝不为零，消去公因式得出恒等关系：$kx+y \equiv y-x$。由此可知必定有 $k = -1$。
+\end{enumerate}
+\end{solution}
+
+\begin{exercise}[验证偏微分方程]
+验证函数 $u = x\varphi\left(\dfrac{y}{x}\right) + \psi\left(\dfrac{y}{x}\right)$ 满足方程 $x^2u_{xx} + 2xyu_{xy} + y^2u_{yy} = 0$。
+\end{exercise}
+
+\begin{solution}
+\begin{enumerate}
+  \item \textbf{代数直接求导法：求一阶偏导。}
+  令中间变量 $t=\dfrac{y}{x}$。利用链式法则求导：
+  \begin{align*}
+  u_x &= \varphi(t) + x\varphi'(t)\left(-\frac{y}{x^2}\right) + \psi'(t)\left(-\frac{y}{x^2}\right) = \varphi(t) - \frac{y}{x}\varphi'(t) - \frac{y}{x^2}\psi'(t), \\
+  u_y &= x\varphi'(t)\left(\frac{1}{x}\right) + \psi'(t)\left(\frac{1}{x}\right) = \varphi'(t) + \frac{1}{x}\psi'(t).
+  \end{align*}
+
+  \item \textbf{求涉及的二阶偏导：}
+  注意对 $x, y$ 求导时 $t$ 的内导数会频繁跳出。
+  对 $u_x$ 提取含 $x$ 项的导数较为繁复，为计算方便，我们注意到方程只要求 $u_{xx}, u_{xy}, u_{yy}$ 组合。
+  \begin{align*}
+  u_{yy} &= \frac{\partial}{\partial y}\left(\varphi'(t) + \frac{1}{x}\psi'(t)\right) = \varphi''(t)\left(\frac{1}{x}\right) + \frac{1}{x}\psi''(t)\left(\frac{1}{x}\right) = \frac{1}{x}\varphi''(t) + \frac{1}{x^2}\psi''(t). \\
+  u_{xy} &= \frac{\partial}{\partial x}\left(\varphi'(t) + \frac{1}{x}\psi'(t)\right) = \varphi''(t)\left(-\frac{y}{x^2}\right) - \frac{1}{x^2}\psi'(t) + \frac{1}{x}\psi''(t)\left(-\frac{y}{x^2}\right) \\
+  &= -\frac{y}{x^2}\varphi''(t) - \frac{1}{x^2}\psi'(t) - \frac{y}{x^3}\psi''(t). \\
+  u_{xx} &= \frac{\partial}{\partial x}\left(\varphi(t) - \frac{y}{x}\varphi'(t) - \frac{y}{x^2}\psi'(t)\right) \\
+  &= \varphi'(t)\left(-\frac{y}{x^2}\right) - \left(-\frac{y}{x^2}\varphi'(t) + \frac{y}{x}\varphi''(t)\left(-\frac{y}{x^2}\right)\right) - \left(-\frac{2y}{x^3}\psi'(t) + \frac{y}{x^2}\psi''(t)\left(-\frac{y}{x^2}\right)\right) \\
+  &= \frac{y^2}{x^3}\varphi''(t) + \frac{2y}{x^3}\psi'(t) + \frac{y^2}{x^4}\psi''(t).
+  \end{align*}
+
+  \item \textbf{代入目标方程验证并化简：}
+  组合 $x^2 u_{xx} + 2xy u_{xy} + y^2 u_{yy}$：
+  \begin{align*}
+  x^2 u_{xx} &= \frac{y^2}{x}\varphi'' + \frac{2y}{x}\psi' + \frac{y^2}{x^2}\psi'', \\
+  2xy u_{xy} &= -\frac{2y^2}{x}\varphi'' - \frac{2y}{x}\psi' - \frac{2y^2}{x^2}\psi'', \\
+  y^2 u_{yy} &= \frac{y^2}{x}\varphi'' + \frac{y^2}{x^2}\psi''.
+  \end{align*}
+  将三式相加：$\left(\dfrac{y^2}{x} - \dfrac{2y^2}{x} + \dfrac{y^2}{x}\right)\varphi'' + \left(\dfrac{2y}{x} - \dfrac{2y}{x}\right)\psi' + \left(\dfrac{y^2}{x^2} - \dfrac{2y^2}{x^2} + \dfrac{y^2}{x^2}\right)\psi'' \equiv 0$。验证成功。
+\end{enumerate}
+\end{solution}
+
+\subsection*{B组}
+
+\begin{exercise}[抽象函数的二阶偏导数]
+求下列函数的二阶偏导数：
+\begin{center}
+\renewcommand{\arraystretch}{2}
+\begin{tabular}{p{0.3\textwidth} p{0.3\textwidth} p{0.3\textwidth}}
+(1) $z = f(ax,by)$ & (2) $u = f(x^2+y^2)$ & (3) $z = f(x+y,xy)$ \\
+(4) $z = f(x+y,x-y)$ & (5) $z = f(xy^2,x^2y)$ & (6) $z = f(\sin x,\cos y,e^{x+y})$
+\end{tabular}
+\end{center}
+\end{exercise}
+
+\begin{solution}
+\begin{enumerate}
+  \item[(1)] 令 $z=f(s,t)$，内层 $s=ax, t=by$。
+  一阶：$z_x = af_1'$， $z_y = bf_2'$。
+  二阶：
+  $z_{xx} = a(af_{11}'') = a^2 f_{11}''$。
+  $z_{xy} = a(bf_{12}'') = ab f_{12}''$。
+  $z_{yy} = b(bf_{22}'') = b^2 f_{22}''$。
+
+  \item[(2)] 令 $v=x^2+y^2$，$u=f(v)$。
+  一阶：$u_x = 2xf'(v)$， $u_y = 2yf'(v)$。
+  二阶：
+  $u_{xx} = 2f'(v) + 2x(f''(v)\cdot 2x) = 2f' + 4x^2 f''$。
+  $u_{xy} = 2x(f''(v)\cdot 2y) = 4xy f''$。
+  $u_{yy} = 2f'(v) + 2y(f''(v)\cdot 2y) = 2f' + 4y^2 f''$。
+
+  \item[(3)] 令 $s=x+y, t=xy$。
+  一阶：$z_x = f_1' + yf_2'$， $z_y = f_1' + xf_2'$。
+  二阶：
+  \begin{align*}
+  z_{xx} &= (f_{11}'\cdot 1 + f_{12}''\cdot y) + y(f_{21}''\cdot 1 + f_{22}''\cdot y) = f_{11}'' + 2yf_{12}'' + y^2f_{22}''. \\
+  z_{xy} &= (f_{11}''\cdot 1 + f_{12}''\cdot x) + f_2' + y(f_{21}''\cdot 1 + f_{22}''\cdot x) = f_2' + f_{11}'' + (x+y)f_{12}'' + xyf_{22}''. \\
+  z_{yy} &= (f_{11}''\cdot 1 + f_{12}''\cdot x) + x(f_{21}''\cdot 1 + f_{22}''\cdot x) = f_{11}'' + 2xf_{12}'' + x^2f_{22}''.
+  \end{align*}
+
+  \item[(4)] 令 $s=x+y, t=x-y$。
+  一阶：$z_x = f_1' + f_2'$， $z_y = f_1' - f_2'$。
+  二阶：
+  $z_{xx} = (f_{11}'' + f_{12}'') + (f_{21}'' + f_{22}'') = f_{11}'' + 2f_{12}'' + f_{22}''$。
+  $z_{xy} = (f_{11}'' - f_{12}'') + (f_{21}'' - f_{22}'') = f_{11}'' - f_{22}''$。
+  $z_{yy} = (f_{11}'' - f_{12}'') - (f_{21}'' - f_{22}'') = f_{11}'' - 2f_{12}'' + f_{22}''$。
+
+  \item[(5)] 令 $s=xy^2, t=x^2y$。
+  一阶：$z_x = y^2f_1' + 2xyf_2'$， $z_y = 2xyf_1' + x^2f_2'$。
+  二阶：
+  \begin{align*}
+  z_{xx} &= y^2(y^2f_{11}'' + 2xyf_{12}'') + 2y f_2' + 2xy(y^2f_{21}'' + 2xyf_{22}'') \\
+         &= 2y f_2' + y^4 f_{11}'' + 4xy^3 f_{12}'' + 4x^2y^2 f_{22}''. \\
+  z_{xy} &= 2y f_1' + y^2(2xy f_{11}'' + x^2 f_{12}'') + 2x f_2' + 2xy(2xy f_{21}'' + x^2 f_{22}'') \\
+         &= 2yf_1' + 2xf_2' + 2xy^3 f_{11}'' + 5x^2y^2 f_{12}'' + 2x^3y f_{22}''. \\
+  z_{yy} &= 2x f_1' + 2xy(2xy f_{11}'' + x^2 f_{12}'') + x^2(2xy f_{21}'' + x^2 f_{22}'') \\
+         &= 2xf_1' + 4x^2y^2 f_{11}'' + 4x^3y f_{12}'' + x^4 f_{22}''.
+  \end{align*}
+
+  \item[(6)] 变量较多时推导繁复，建议利用一次链式求导法：令 $u=\sin x, v=\cos y, w=e^{x+y}$。
+  $z_x = (\cos x)f_1' + e^{x+y}f_3'$， $z_y = (-\sin y)f_2' + e^{x+y}f_3'$。
+  \begin{align*}
+  z_{xx} &= (-\sin x)f_1' + \cos^2 x f_{11}'' + 2e^{x+y}\cos x f_{13}'' + e^{x+y}f_3' + e^{2(x+y)}f_{33}''. \\
+  z_{xy} &= -\cos x\sin y f_{12}'' + e^{x+y}\cos x f_{13}'' - e^{x+y}\sin y f_{23}'' + e^{x+y}f_3' + e^{2(x+y)}f_{33}''. \\
+  z_{yy} &= (-\cos y)f_2' + \sin^2 y f_{22}'' - 2e^{x+y}\sin y f_{23}'' + e^{x+y}f_3' + e^{2(x+y)}f_{33}''.
+  \end{align*}
+\end{enumerate}
+\end{solution}
+
+\begin{exercise}[混合偏导数不相等]
+设 $f(x,y) = \begin{cases} \dfrac{x^3y-xy^3}{x^2+y^2}, & (x,y)\neq(0,0), \\ 0, & (x,y)=(0,0) \end{cases}$，试证：$f_{xy}(0,0)\neq f_{yx}(0,0)$。
+\end{exercise}
+
+\begin{solution}
+\begin{enumerate}
+  \item \textbf{在轴上利用差商求一阶偏导：}
+  由于原点为分段点边界，我们需要利用极限定义进行差商：
+  对于 $x=0$，当 $y\neq 0$ 时，直接代入 $x=0$ 可见 $f(0,y) = 0$。同理 $f(x,0) = 0$。
+  现在求在轴非零点上交叉方向的导数：
+  \begin{align*}
+  f_x(0,y) &= \lim_{h\to 0} \frac{f(h,y)-f(0,y)}{h} = \lim_{h\to 0} \frac{h^3y - hy^3}{h(h^2+y^2)} = \lim_{h\to 0} \frac{h^2y - y^3}{h^2+y^2} = -y. \\
+  f_y(x,0) &= \lim_{k\to 0} \frac{f(x,k)-f(x,0)}{k} = \lim_{k\to 0} \frac{x^3k - xk^3}{k(x^2+k^2)} = \lim_{k\to 0} \frac{x^3 - xk^2}{x^2+k^2} = x.
+  \end{align*}
+
+  \item \textbf{在原点利用差商求二阶混合偏导：}
+  \begin{align*}
+  f_{xy}(0,0) &= \lim_{k\to 0} \frac{f_x(0,k)-f_x(0,0)}{k} = \lim_{k\to 0} \frac{-k - 0}{k} = -1. \\
+  f_{yx}(0,0) &= \lim_{h\to 0} \frac{f_y(h,0)-f_y(0,0)}{h} = \lim_{h\to 0} \frac{h - 0}{h} = 1.
+  \end{align*}
+
+  \item \textbf{得出结论：}
+  显然有 $-1 \neq 1$，因此 $f_{xy}(0,0) \neq f_{yx}(0,0)$ 得证。这是经典的施瓦茨不反例，原因在于它的二阶混合偏导数不连续。
+\end{enumerate}
+\end{solution}
+
+\begin{exercise}[欧拉齐次函数定理]
+若函数 $f(x,y)$ 对任意正实数 $t$ 满足关系 $f(tx,ty) = t^n f(x,y)$，则称 $f(x,y)$ 为 $n$ 次齐次函数。设 $f(x,y)$ 可微，试证明 $f(x,y)$ 为 $n$ 次齐次函数的充要条件是
+\[
+x\frac{\partial f}{\partial x} + y\frac{\partial f}{\partial y} = nf(x,y).
+\]
+\end{exercise}
+\begin{solution}
+\begin{enumerate}
+  \item \textbf{证明必要性（$\Rightarrow$）：}
+  已知恒等式 $f(tx, ty) = t^n f(x,y)$ 对所有 $t>0$ 成立。我们将 $t$ 视作自变量对其两边求导。
+  左端求导运用复合函数链式法则：
+  \[
+  \frac{d}{dt} f(tx,ty) = \frac{\partial f}{\partial (tx)} \cdot \frac{\partial (tx)}{\partial t} + \frac{\partial f}{\partial (ty)} \cdot \frac{\partial (ty)}{\partial t} = x f_1'(tx,ty) + y f_2'(tx,ty).
+  \]
+  右端求导则是普通一元函数导数：
+  \[
+  \frac{d}{dt} [t^n f(x,y)] = n t^{n-1} f(x,y).
+  \]
+  两端相连得到：$x f_1'(tx,ty) + y f_2'(tx,ty) = n t^{n-1} f(x,y)$。
+  特别地，由于恒等式对任意 $t$ 成立，令 $t=1$，则 $tx=x, ty=y$，代入即得：
+  \[
+  x \frac{\partial f}{\partial x}(x,y) + y \frac{\partial f}{\partial y}(x,y) = n f(x,y).
+  \]
+
+  \item \textbf{证明充分性（$\Leftarrow$）：}
+  已知对于空间任意点 $(X, Y)$ 都满足偏微分方程 $X f_X(X,Y) + Y f_Y(X,Y) = n f(X,Y)$。
+  为了探究 $f(tx,ty)$ 与 $t^n f(x,y)$ 的关系，构造一个辅助函数 $g(t) = \dfrac{f(tx,ty)}{t^n} = t^{-n} f(tx,ty)$（此处将 $x, y$ 视作固定的参数）。
+  对 $g(t)$ 求导以判断其是否为常数：
+  \begin{align*}
+  g'(t) &= -n t^{-n-1} f(tx,ty) + t^{-n} \frac{d}{dt} f(tx,ty) \\
+  &= -n t^{-n-1} f(tx,ty) + t^{-n} \left[ x f_1'(tx,ty) + y f_2'(tx,ty) \right].
+  \end{align*}
+  在已知等式中令 $X=tx, Y=ty$，则有 $tx f_1'(tx,ty) + ty f_2'(tx,ty) = n f(tx,ty)$。提取 $t$ 即 $x f_1' + y f_2' = \dfrac{n}{t} f(tx,ty)$。将此关系代入 $g'(t)$：
+  \[
+  g'(t) = -n t^{-n-1} f(tx,ty) + t^{-n} \left[ \frac{n}{t} f(tx,ty) \right] = 0.
+  \]
+  这表明 $g(t)$ 是与 $t$ 无关的常数，即 $g(t) \equiv g(1)$。
+  由于 $g(1) = 1^{-n} f(x,y) = f(x,y)$，所以对于一切 $t>0$，有 $t^{-n}f(tx,ty) = f(x,y)$，移项即为 $f(tx,ty) = t^n f(x,y)$。这证明了它是 $n$ 次齐次函数。
+\end{enumerate}
+\end{solution}
+
+\begin{exercise}[抽象函数验证偏微分方程]
+验证函数 $u(x,y) = x^n f\left(\dfrac{y}{x^2}\right)$ 满足方程 $x\dfrac{\partial u}{\partial x} + 2y\dfrac{\partial u}{\partial y} = nu$。
+\end{exercise}
+
+\begin{solution}
+\begin{enumerate}
+  \item \textbf{利用乘积求导法则计算偏导数：}
+  令中间变量 $t = \dfrac{y}{x^2}$。注意 $x$ 即在外部多项式里又在复合函数里。
+  \begin{align*}
+  \frac{\partial u}{\partial x} &= n x^{n-1} f(t) + x^n f'(t) \cdot \left(-\frac{2y}{x^3}\right) = n x^{n-1} f(t) - 2y x^{n-3} f'(t), \\
+  \frac{\partial u}{\partial y} &= x^n f'(t) \cdot \left(\frac{1}{x^2}\right) = x^{n-2} f'(t).
+  \end{align*}
+
+  \item \textbf{将求导结果代入偏微分方程：}
+  将各项乘上指定系数后加和：
+  \begin{align*}
+  x\frac{\partial u}{\partial x} + 2y\frac{\partial u}{\partial y} &= x\left[n x^{n-1} f(t) - 2y x^{n-3} f'(t)\right] + 2y\left[x^{n-2} f'(t)\right] \\
+  &= n x^n f(t) - 2y x^{n-2} f'(t) + 2y x^{n-2} f'(t).
+  \end{align*}
+
+  \item \textbf{化简后得出结论：}
+  由于后两项互为相反数，完美抵消：
+  \[
+  x\frac{\partial u}{\partial x} + 2y\frac{\partial u}{\partial y} = n x^n f(t) = n \left[x^n f\left(\frac{y}{x^2}\right)\right] = nu.
+  \]
+  方程得证。这也表明此式具备某种特殊的广义齐次性。
+\end{enumerate}
+\end{solution}
+
+
+
+
 \end{document}
