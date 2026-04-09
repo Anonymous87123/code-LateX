@@ -10985,4 +10985,997 @@ f(x,y) = \begin{cases}
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+% ============================================================
+% §7.8 向量值函数的导数
+% ============================================================
+
+\section{向量值函数及其微分}
+
+\begin{introduction}
+  \item 向量值函数的概念与实例~\ref{def:vec-func},~\ref{ex:helix}
+  \item 向量值函数的极限：分量极限的等价刻画~\ref{def:vec-limit},~\ref{prop:vec-limit-component}
+  \item 向量值函数的连续性~\ref{def:vec-continuity},~\ref{prop:vec-cont-component}
+  \item 向量值函数的可微性与 Jacobian 矩阵~\ref{def:vec-diff},~\ref{thm:jacobian-formula}
+  \item 一元向量函数的导数与几何意义~\ref{ex:curve-deriv},~\ref{remark:curve-geometry}
+  \item 多元向量函数 Jacobian 矩阵的计算~\ref{ex:jacobian-compute}
+\end{introduction}
+
+至此我们已经建立了两种类型函数的微积分理论：
+\begin{itemize}
+  \item 一元实值函数 $f:\mathbb R\to\mathbb R$（一元微积分）；
+  \item 多元实值函数 $f:\mathbb R^n\to\mathbb R$（多元微分学）。
+\end{itemize}
+
+这两种情形的共同特征是\textbf{因变量只有一个}（即函数值为标量/数量）。
+然而在许多实际问题中，我们需要同时跟踪\textbf{多个}相互关联的输出量——
+例如质点的位置 $(x(t),y(t),z(t))$ 有三个分量；
+气象预报需要同时输出温度、湿度、风速等多个参数；
+经济学模型中，多个商品的价格可能同时受到若干投入要素的影响。
+
+这些例子中的映射 $f:\mathbb R^n\to\mathbb R^m$（$m\geq 2$）
+就是所谓的\textbf{向量值函数}（Vector-valued Function）。
+本节将前面建立的极限、连续和微分理论统一地推广到向量值函数的情形，
+并引入刻画其“导数”的核心工具——\textbf{Jacobian 矩阵}（雅可比矩阵）。
+
+
+\subsection{向量值函数的定义}
+
+\begin{definition}[向量值函数 / Vector-valued Function] \label{def:vec-func}
+设 $D\subset\mathbb R^n$ 为一个点集。称映射
+\[
+f:\;D\longrightarrow\mathbb R^m\qquad(m\geq 2)
+\]
+为定义在 $D$ 上、在 $\mathbb R^m$ 中取值的\textbf{向量值函数}（或称\textbf{向量函数}、\textbf{映射}）。
+
+将输入和输出均写成列向量形式：
+\[
+\boldsymbol x=(x_1,x_2,\dots,x_n)^{\mathsf T}\in\mathbb R^n,\qquad
+\boldsymbol y=(y_1,y_2,\dots,y_m)^{\mathsf T}\in\mathbb R^m,
+\]
+则 $\boldsymbol y=f(\boldsymbol x)$ 可以具体展开为 $m$ 个分量方程：
+\[
+\begin{cases}
+y_1=f_1(x_1,x_2,\dots,x_n),\\[4pt]
+y_2=f_2(x_1,x_2,\dots,x_n),\\
+\quad\vdots\\
+y_m=f_m(x_1,x_2,\dots,x_n).
+\end{cases}
+\tag{$\star$}
+\]
+其中每个 $f_i:D\to\mathbb R$ 都是一个 $n$ 元\textbf{实值}函数，称为 $f$ 的\textbf{第 $i$ 个分量函数}。
+\end{definition}
+
+\begin{note}[三种函数类型的比较]
+\begin{center}
+\renewcommand{\arraystretch}{1.4}
+\begin{tabular}{@{}lccc@{}}
+\textbf{类型} & \textbf{记号} & \textbf{自变量} & \textbf{因变量} \\
+一元实值函数 & $f:\mathbb R\to\mathbb R$ & 标量 $x$ & 标量 $y$ \\
+多元实值函数 & $f:\mathbb R^n\to\mathbb R$ & 向量 $\boldsymbol x$ & 标量 $y$ \\
+向量值函数 & $f:\mathbb R^n\to\mathbb R^m$ & 向量 $\boldsymbol x$ & 向量 $\boldsymbol y$
+\end{tabular}
+\end{center}
+向量值函数是前两种情形的自然推广：当 $m=1$ 时退化为多元实值函数；
+当 $n=m=1$ 时退为一元函数。因此我们期望前述理论的大部分结论都能
+“分量地”推广过来。
+\end{note}
+
+\begin{example}[空间螺旋线] \label{ex:helix}
+向量值函数
+\[
+f(t)=(\cos t,\;\sin t,\;t)^{\mathsf T},\qquad t\in\mathbb R
+\]
+表示三维空间中的一条\textbf{螺旋线}（Helix）。
+
+若令 $\vec i=(1,0,0)^{\mathsf T}$，$\vec j=(0,1,0)^{\mathsf T}$，
+$\vec k=(0,0,1)^{\mathsf T}$（标准基向量），则该函数也可表示为：
+\[
+f(t)=\vec i\cos t+\vec j\sin t+\vec k\,t.
+\]
+
+直观理解：随着参数 $t$ 的增大，点 $f(t)$ 绕 $z$ 轴做匀速旋转
+（$x=\cos t$, $y=\sin t$ 描绘出半径为 $1$ 的圆），同时以匀速 $1$
+沿 $z$ 轴正方向上升（$z=t$），形成等螺距的螺旋结构。
+这种曲线在 DNA 双螺旋结构、弹簧线圈等自然和工程场景中无处不在。
+\end{example}
+
+
+\subsection{向量值函数的极限}
+
+\subsubsection*{定义}
+
+对任何函数，极限的 $\varepsilon$-$\delta$ 定义在本质结构上是一致的——
+“当自变量趋近目标点时，函数值可以任意接近极限值”。
+唯一的区别在于“接近程度”的度量方式：
+对于向量值函数，我们需要使用相应空间中的\textbf{欧几里得范数}（即距离）来衡量。
+
+\begin{definition}[向量值函数的极限] \label{def:vec-limit}
+设 $D\subset\mathbb R^n$ 为区域，$f:D\to\mathbb R^m$ 为 $n$ 元 $m$ 维向量值函数。
+设 $\boldsymbol a=(a_1,a_2,\dots,a_n)^{\mathsf T}\in D'$ 为 $D$ 的聚点，
+$\boldsymbol A=(A_1,A_2,\dots,A_m)^{\mathsf T}\in\mathbb R^m$ 为给定向量。
+
+若 $\forall\varepsilon>0$，$\exists\delta>0$，使得对满足 $0<\|\boldsymbol x-\boldsymbol a\|_n<\delta$ 的一切 $\boldsymbol x\in D$，均有
+\[
+\|f(\boldsymbol x)-\boldsymbol A\|_m<\varepsilon,
+\]
+则称 $\boldsymbol A$ 为 $f(\boldsymbol x)$ 当 $\boldsymbol x\to\boldsymbol a$ 时的\textbf{极限}，记作
+\[
+\lim_{\boldsymbol x\to\boldsymbol a}f(\boldsymbol x)=\boldsymbol A.
+\]
+
+其中 $\|\cdot\|_n$ 和 $\|\cdot\|_m$ 分别是 $\mathbb R^n$ 和 $\mathbb R^m$ 中的欧几里得范数：
+\[
+\|\boldsymbol x-\boldsymbol a\|_n = \sqrt{\sum_{k=1}^{n}(x_k-a_k)^2},\qquad
+\|f(\boldsymbol x)-\boldsymbol A\|_m = \sqrt{\sum_{k=1}^{m}\bigl(f_k(\boldsymbol x)-A_k\bigr)^2}.
+\]
+\end{definition}
+
+
+\subsubsection*{分量极限的等价刻画}
+
+\begin{property}[极限的分量等价性] \label{prop:vec-limit-component}
+向量值函数的极限存在当且仅当每个分量函数的极限同时存在：
+\[
+\lim_{\boldsymbol x\to\boldsymbol a}f(\boldsymbol x)=\boldsymbol A
+\quad\Longleftrightarrow\quad
+\lim_{\boldsymbol x\to\boldsymbol a}f_i(\boldsymbol x)=A_i,\quad i=1,2,\dots,m.
+\]
+\end{property}
+
+\begin{proof}
+“$\Rightarrow$”（必要性）：由欧几里得距离的性质，对任意 $i=1,\dots,m$，恒有 $|f_i(\boldsymbol x)-A_i| \leq \|f(\boldsymbol x)-\boldsymbol A\|_m$。
+已知 $\|f(\boldsymbol x)-\boldsymbol A\|_m<\varepsilon$，故 $|f_i(\boldsymbol x)-A_i|<\varepsilon$ 成立，即各分量极限存在且为 $A_i$。
+
+“$\Leftarrow$”（充分性）：设每个 $\lim\limits_{\boldsymbol x\to\boldsymbol a}f_i(\boldsymbol x)=A_i$。
+对任意给定的 $\varepsilon>0$，对每个分量 $i$，都存在 $\delta_i>0$ 使得当 $0<\|\boldsymbol x-\boldsymbol a\|_n<\delta_i$ 时有 $|f_i(\boldsymbol x)-A_i|<\dfrac\varepsilon{\sqrt{m}}$。
+取 $\delta=\min\{\delta_1,\dots,\delta_m\}>0$，则当 $0<\|\boldsymbol x-\boldsymbol a\|_n<\delta$ 时，所有分量的不等式同时成立，此时：
+\[
+\|f(\boldsymbol x)-\boldsymbol A\|_m
+=\sqrt{\sum_{i=1}^{m}|f_i(\boldsymbol x)-A_i|^2}
+<\sqrt{\sum_{i=1}^{m}\left(\frac{\varepsilon}{\sqrt{m}}\right)^2}
+=\sqrt{m\cdot\frac{\varepsilon^2}{m}}=\varepsilon.
+\]
+充分性得证。
+\end{proof}
+
+\begin{remark}[分量等价性的意义]
+这一性质将向量值函数极限的存在性问题完全\textbf{归约}为我们已经熟悉的多元实值函数极限问题。
+这是向量分析中“逐分量处理”哲学的第一个体现——后续的连续性和可微性讨论都将沿用这一思路。
+\end{remark}
+
+
+\subsection{向量值函数的连续性}
+
+\begin{definition}[向量值函数的连续性] \label{def:vec-continuity}
+设 $D\subset\mathbb R^n$ 为区域，$f:D\to\mathbb R^m$ 为向量值函数，
+$\boldsymbol a\in D$ 为 $D$ 的聚点。
+
+若 $\lim\limits_{\boldsymbol x\to\boldsymbol a}f(\boldsymbol x)=f(\boldsymbol a)$，
+即 $\forall\varepsilon>0$，$\exists\delta>0$，使得 $\|\boldsymbol x-\boldsymbol a\|_n<\delta$ 时
+$\|f(\boldsymbol x)-f(\boldsymbol a)\|_m<\varepsilon$，
+则称 $f$ 在 $\boldsymbol a$ 处\textbf{连续}。
+
+若 $f$ 在 $D$ 的每一点都连续，则称 $f$ 在 $D$ 上连续，记作 $f\in C(D;\mathbb R^m)$。
+\end{definition}
+
+\begin{property}[连续性的分量等价性] \label{prop:vec-cont-component}
+$f$ 在 $\boldsymbol a$ 处连续 $\Longleftrightarrow$
+每个分量函数 $f_i$ 在 $\boldsymbol a$ 处连续（$i=1,2,\dots,m$）。
+\end{property}
+
+\begin{proof}
+直接由连续性的定义和极限的性质 \ref{prop:vec-limit-component} 得到：
+$\lim\limits_{\boldsymbol x\to\boldsymbol a}f(\boldsymbol x)=f(\boldsymbol a)$
+当且仅当对每个 $i$ 都有
+$\lim\limits_{\boldsymbol x\to\boldsymbol a}f_i(\boldsymbol x)=f_i(\boldsymbol a)$。
+\end{proof}
+
+\begin{note}[连续的运算封闭性]
+既然向量值函数的连续性归结为分量函数的连续性，
+而每个分量函数都是多元实值函数，
+因此多元实值函数连续性的所有运算性质（四则运算、复合运算等）
+都可以自然地推广到向量值函数。
+例如：若 $f,g:D\to\mathbb R^m$ 连续，$\lambda\in\mathbb R$，
+则 $f+g$ 和 $\lambda f$ 也连续；若 $\varphi:D\to D'$ 连续且
+$\psi:D'\to\mathbb R^m$ 连续，则复合函数 $\psi\circ\varphi$ 连续。
+\end{note}
+
+
+\subsection{向量值函数的可微性与 Jacobian 矩阵}
+
+现在进入本节的核心——向量值函数的“导数”是什么？
+
+回顾前述两种情形中“可微”的统一表述。可微性本质上是用一个线性映射去逼近函数在某一点的增量：
+\[
+f(\boldsymbol a+\boldsymbol h)-f(\boldsymbol a)
+=L(\boldsymbol h)+o(\|\boldsymbol h\|),\qquad\|\boldsymbol h\|\to 0,
+\]
+其中 $L$ 是一个\textbf{线性映射}。
+
+\begin{itemize}
+  \item 一元实值函数 $f:\mathbb R\to\mathbb R$：线性映射表达为 $L(h)=f'(a)\cdot h$
+        （退化为“乘以标量 $f'(a)$”）；
+  \item 多元实值函数 $f:\mathbb R^n\to\mathbb R$：线性映射表达为
+        $L(\boldsymbol h)= \nabla f(\boldsymbol a)\cdot\boldsymbol h$
+        （退化为“与梯度行向量的内积”）。
+\end{itemize}
+
+对于向量值函数 $f:\mathbb R^n\to\mathbb R^m$，线性映射 $L:\mathbb R^n\to\mathbb R^m$
+在标准基下应当用一个 $m\times n$ 矩阵来表示——这个核心矩阵就是 \textbf{Jacobian 矩阵}。
+
+
+\subsubsection*{可微性的定义}
+
+\begin{definition}[向量值函数的可微性] \label{def:vec-diff}
+设 $D\subset\mathbb R^n$ 为开区域，$f:D\to\mathbb R^m$ 为向量值函数，
+$\boldsymbol a\in D$，向量增量记作 $\boldsymbol h=(h_1,h_2,\dots,h_n)^{\mathsf T}$。
+
+若存在一个只与 $\boldsymbol a$ 有关的 $m\times n$ 常数矩阵 $A=(a_{ij})_{m\times n}$ 使得
+\[
+f(\boldsymbol a+\boldsymbol h)-f(\boldsymbol a)=A\boldsymbol h+\boldsymbol r(\boldsymbol h),
+\]
+且余项 $\boldsymbol r(\boldsymbol h)$ 满足高阶无穷小条件：
+\[
+\lim_{\|\boldsymbol h\|_n\to 0}\frac{\|\boldsymbol r(\boldsymbol h)\|_m}{\|\boldsymbol h\|_n}=0,
+\]
+则称 $f$ 在 $\boldsymbol a$ 处\textbf{可微}（Differentiable），
+并称 $df(\boldsymbol a)=A\boldsymbol h$ 为 $f$ 在 $\boldsymbol a$ 处的\textbf{微分}（Differential）。
+\end{definition}
+
+\begin{note}[与实值函数可微性的对比]
+当 $m=1$ 时，因变量为标量，矩阵 $A$ 变为一个 $1\times n$ 的行向量（即梯度 $\nabla f(\boldsymbol a)$），
+上述定义恰好与多元实值函数的可微性定义完全一致。
+因此向量值函数的可微性确实是前述理论的平滑推广。
+\end{note}
+
+
+\subsubsection*{Jacobian 矩阵的推导}
+
+关键问题：如果 $f$ 在 $\boldsymbol a$ 处可微，那么矩阵 $A$ 的元素到底是什么？
+
+我们将可微性定义中的向量等式写成分量形式。
+左端函数增量展开为：
+\[
+f(\boldsymbol a+\boldsymbol h)-f(\boldsymbol a)
+=\begin{pmatrix}
+f_1(\boldsymbol a+\boldsymbol h)-f_1(\boldsymbol a)\\[4pt]
+f_2(\boldsymbol a+\boldsymbol h)-f_2(\boldsymbol a)\\[4pt]
+\vdots\\[4pt]
+f_m(\boldsymbol a+\boldsymbol h)-f_m(\boldsymbol a)
+\end{pmatrix}.
+\]
+
+右端线性主部与余项展开为：
+\[
+A\boldsymbol h+\boldsymbol r(\boldsymbol h)
+=\begin{pmatrix}
+a_{11}h_1+a_{12}h_2+\cdots+a_{1n}h_n+r_1(\boldsymbol h)\\[4pt]
+a_{21}h_1+a_{22}h_2+\cdots+a_{2n}h_n+r_2(\boldsymbol h)\\[4pt]
+\vdots\\[4pt]
+a_{m1}h_1+a_{m2}h_2+\cdots+a_{mn}h_n+r_m(\boldsymbol h)
+\end{pmatrix}.
+\]
+
+将两端逐行比较可以得到，对每个 $i=1,2,\dots,m$，
+\[
+f_i(\boldsymbol a+\boldsymbol h)-f_i(\boldsymbol a)
+=\sum_{j=1}^{n}a_{ij}h_j+r_i(\boldsymbol h)
+=(a_{i1},a_{i2},\dots,a_{in})\boldsymbol h+r_i(\boldsymbol h). \tag{1}
+\]
+
+同时，由于余项向量的极限为零，各分量必然也满足：
+\[
+0 \leq \frac{|r_i(\boldsymbol h)|}{\|\boldsymbol h\|_n}
+\leq\frac{\|\boldsymbol r(\boldsymbol h)\|_m}{\|\boldsymbol h\|_n}\to 0.
+\]
+这意味着式 (1) 恰好说明了：每个分量函数 $f_i$ 都在 $\boldsymbol a$ 处可微，
+且其线性主部系数向量就是矩阵 $A$ 的第 $i$ 行 $(a_{i1},a_{i2},\dots,a_{in})$。
+
+由多元实值函数可微的必要条件（即偏导数必须存在且等于线性主部的系数），
+这组系数正是 $f_i$ 在 $\boldsymbol a$ 处的梯度：
+\[
+(a_{i1},a_{i2},\dots,a_{in})
+=\left(\frac{\partial f_i}{\partial x_1}(\boldsymbol a),\;
+       \frac{\partial f_i}{\partial x_2}(\boldsymbol a),\;\dots,\;
+       \frac{\partial f_i}{\partial x_n}(\boldsymbol a)\right).
+\]
+
+\begin{theorem}[Jacobian 矩阵公式] \label{thm:jacobian-formula}
+若向量值函数 $f:D\to\mathbb R^m$（$D\subset\mathbb R^n$ 为开区域）
+在 $\boldsymbol a$ 处可微，则其导数矩阵为
+\[
+\boxed{
+Jf(\boldsymbol a)
+=\begin{pmatrix}
+\dfrac{\partial f_1}{\partial x_1}(\boldsymbol a) &
+\dfrac{\partial f_1}{\partial x_2}(\boldsymbol a) &
+\cdots &
+\dfrac{\partial f_1}{\partial x_n}(\boldsymbol a) \\[10pt]
+\dfrac{\partial f_2}{\partial x_1}(\boldsymbol a) &
+\dfrac{\partial f_2}{\partial x_2}(\boldsymbol a) &
+\cdots &
+\dfrac{\partial f_2}{\partial x_n}(\boldsymbol a) \\[10pt]
+\vdots & \vdots & \ddots & \vdots \\[8pt]
+\dfrac{\partial f_m}{\partial x_1}(\boldsymbol a) &
+\dfrac{\partial f_m}{\partial x_2}(\boldsymbol a) &
+\cdots &
+\dfrac{\partial f_m}{\partial x_n}(\boldsymbol a)
+\end{pmatrix}_{m\times n}
+}.
+\]
+这个矩阵称为 $f$ 在 $\boldsymbol a$ 处的\textbf{Jacobian 矩阵}（Jacobian Matrix / 雅可比矩阵），
+也常记作 $\dfrac{\partial(f_1,f_2,\dots,f_m)}{\partial(x_1,x_2,\dots,x_n)}\biggr|_{\boldsymbol a}$。
+
+矩阵的第 $i$ 行就是分量函数 $f_i$ 的梯度行向量 $\nabla f_i(\boldsymbol a)$。
+\end{theorem}
+
+\begin{remark}[Jacobian 矩阵的地位]
+Jacobian 矩阵 $Jf(\boldsymbol a)$ 是向量值函数在一点处的“最佳线性近似”。
+它在多元微积分中的地位与一元函数的导数 $f'(a)$ 完全对等：
+\begin{center}
+\renewcommand{\arraystretch}{1.5}
+\begin{tabular}{@{}lcc@{}}
+\hline
+& \textbf{一元函数} $f:\mathbb R\to\mathbb R$ & \textbf{向量函数} $f:\mathbb R^n\to\mathbb R^m$ \\
+\hline
+\textbf{“导数”形态} & 标量 $f'(a)$ & $m \times n$ 矩阵 $Jf(\boldsymbol a)$ \\
+\textbf{线性近似} & $f(a+h)\approx f(a)+f'(a)h$ & $f(\boldsymbol a+\boldsymbol h)\approx f(\boldsymbol a)+Jf(\boldsymbol a)\boldsymbol h$ \\
+\hline
+\end{tabular}
+\end{center}
+
+特别地，Jacobian 矩阵统一了以下几种情况：
+\begin{itemize}
+  \item 当 $n=1$, $m=1$ 时：$Jf(a)=f'(a)$（退化为普通标量导数）；
+  \item 当 $n\geq 2$, $m=1$ 时：$Jf(\boldsymbol a)= \nabla f(\boldsymbol a)$（退化为 $1 \times n$ 梯度行向量）；
+  \item 当 $n=1$, $m\geq 2$ 时：$Jf(a)=(f_1'(a),f_2'(a),\dots,f_m'(a))^{\mathsf T}$
+        （退化为 $m \times 1$ 列向量，表示空间曲线的“速度向量”）。
+\end{itemize}
+\end{remark}
+
+
+\subsection{一元向量函数的导数与几何意义}
+
+\begin{example}[一元向量函数的导数——曲线速度] \label{ex:curve-deriv}
+设 $D\subset\mathbb R$，$f:D\to\mathbb R^3$ 为一元三维向量值函数。
+对 $a\in D$ 及充分小的 $h\in\mathbb R$，若 $f$ 在 $a$ 处可微，则定义给出：
+\[
+f(a+h)-f(a)=Jf(a)\cdot h+\boldsymbol r(h).
+\]
+
+将其写成分量形式：
+\[
+\begin{pmatrix}
+f_1(a+h)\\f_2(a+h)\\f_3(a+h)
+\end{pmatrix}
+-\begin{pmatrix}
+f_1(a)\\f_2(a)\\f_3(a)
+\end{pmatrix}
+=\begin{pmatrix}
+f_1'(a)\\f_2'(a)\\f_3'(a)
+\end{pmatrix}h
++\begin{pmatrix}
+r_1(h)\\r_2(h)\\r_3(h)
+\end{pmatrix}.
+\]
+
+由于自变量只有一个，对 $x$ 的偏导数就是普通导数。因此 Jacobian 矩阵为一个 $3\times 1$ 列向量：
+\[
+\boxed{Jf(a)=\bigl(f_1'(a),\;f_2'(a),\;f_3'(a)\bigr)^{\mathsf T}}.
+\]
+\end{example}
+
+\begin{remark}[几何意义：速度向量与切线] \label{remark:curve-geometry}
+一元向量函数 $f(t)$ 描绘的是空间中的一条\textbf{参数曲线}（Parametric Curve）。
+其 Jacobian 矩阵 $Jf(t)=f'(t)$ 具有极为清晰的几何意义：
+\begin{itemize}
+  \item $f'(t_0)$ 是曲线在 $t=t_0$ 处的\textbf{速度向量}（Velocity Vector）——
+        它的方向即为曲线在该点处的\textbf{切线方向}，
+        它的长度（范数） $\|f'(t_0)\|$ 即为质点沿该曲线运动的瞬时\textbf{速率}（Speed）。
+  \item 若 $f'(t_0) \neq \boldsymbol 0$，则曲线在点 $f(t_0)$ 处的切线方程可写为：
+        \[ \boldsymbol \ell(s)=f(t_0)+s\,f'(t_0) \quad (s\in\mathbb R) \]
+  \item 若 $f'(t_0)=\boldsymbol 0$，则该点可能是曲线的“尖点”（Cusp）或“驻点”（Stationary Point），此时曲线可能没有良好定义的切线。
+\end{itemize}
+\end{remark}
+
+让我们回到开篇提到的螺旋线的例子，进行具体计算验证：
+
+\begin{example}[螺旋线的速度向量] \label{ex:helix-velocity}
+对螺旋线 $f(t)=(\cos t,\sin t,t)^{\mathsf T}$，计算其导数并分析其几何特征。
+\end{example}
+
+\begin{solution}
+\begin{enumerate}
+  \item \textbf{计算导数（速度向量）：}
+  使用标准基表示为 $f(t)=\vec i\cos t+\vec j\sin t+\vec k\,t$。
+  对各个分量分别关于 $t$ 求导：
+  \[
+  f'(t)=(-\sin t,\;\cos t,\;1)^{\mathsf T}
+       =-\vec i\sin t+\vec j\cos t+\vec k.
+  \]
+  
+  \item \textbf{几何特征分析：}
+  \begin{itemize}
+    \item 速度在 $xy$ 平面上的投影为水平分量 $(-\sin t,\cos t)^{\mathsf T}$。其长度恒为 $\sqrt{(-\sin t)^2+(\cos t)^2}=1$，且方向时刻与圆周相切，指向旋转的切线方向。
+    \item 速度在 $z$ 轴上的投影为竖直分量 $1$。由于它是正的常数，表示质点在 $z$ 轴方向上做匀速上升运动。
+    \item 质点运动的总速率为：
+    \[
+    \|f'(t)\|=\sqrt{(-\sin t)^2+(\cos t)^2+1^2}=\sqrt{1+1}=\sqrt{2}.
+    \]
+    可以发现，总速率是一个与参数 $t$ 无关的常数！
+  \end{itemize}
+  
+  \item \textbf{结论：}
+  这从微积分的层面上严格证明了，螺旋线上的质点确实是以恒定的速率 $\sqrt{2}$ 在空间中运动，完全符合我们直观上对“匀速螺旋”的想象。
+\end{enumerate}
+\end{solution}
+
+
+\subsection{多元向量函数 Jacobian 矩阵的计算}
+
+\begin{example}[Jacobian 矩阵的完整计算] \label{ex:jacobian-compute}
+求向量值函数
+\[
+f(x,y,z)=\begin{pmatrix}
+3x+e^y z\\[4pt]
+x^3+y^2\sin z
+\end{pmatrix}
+\]
+在点 $\bigl(\dfrac12,1,\pi\bigr)$ 处的 Jacobian 矩阵。
+\end{example}
+
+\begin{solution}
+此函数是从 $\mathbb R^3$ 到 $\mathbb R^2$ 的映射，包含两个分量函数：
+\[ f_1(x,y,z)=3x+e^yz,\qquad f_2(x,y,z)=x^3+y^2\sin z. \]
+
+\begin{enumerate}
+  \item \textbf{求各分量的偏导函数：}
+  对于 $f_1$：
+  \[
+  \frac{\partial f_1}{\partial x}=3,\qquad
+  \frac{\partial f_1}{\partial y}=e^y z,\qquad
+  \frac{\partial f_1}{\partial z}=e^y.
+  \]
+  对于 $f_2$：
+  \[
+  \frac{\partial f_2}{\partial x}=3x^2,\qquad
+  \frac{\partial f_2}{\partial y}=2y\sin z,\qquad
+  \frac{\partial f_2}{\partial z}=y^2\cos z.
+  \]
+
+  \item \textbf{在指定点 $\bigl(\frac12,1,\pi\bigr)$ 处求值：}
+  代入 $x=\frac12, y=1, z=\pi$ 到上述偏导函数中。
+  $f_1$ 的偏导数值：
+  \[
+  \frac{\partial f_1}{\partial x}\biggr|_{(\frac12,1,\pi)}=3,\quad
+  \frac{\partial f_1}{\partial y}\biggr|_{(\frac12,1,\pi)}=e^1\cdot\pi=e\pi,\quad
+  \frac{\partial f_1}{\partial z}\biggr|_{(\frac12,1,\pi)}=e^1=e.
+  \]
+  $f_2$ 的偏导数值：
+  \[
+  \frac{\partial f_2}{\partial x}\biggr|_{(\frac12,1,\pi)}
+  =3\cdot\left(\frac12\right)^2=\frac34,\quad
+  \frac{\partial f_2}{\partial y}\biggr|_{(\frac12,1,\pi)}
+  =2\cdot 1\cdot\sin\pi=0,\quad
+  \frac{\partial f_2}{\partial z}\biggr|_{(\frac12,1,\pi)}
+  =1^2\cdot\cos\pi=-1.
+  \]
+
+  \item \textbf{组装 Jacobian 矩阵：}
+  将 $f_1$ 的偏导数作为第一行，$f_2$ 的偏导数作为第二行，得到 $2 \times 3$ 的矩阵：
+  \[
+  \boxed{Jf\!\left(\frac12,1,\pi\right)
+  =\begin{pmatrix}
+  3 & e\pi & e\\[6pt]
+  \dfrac34 & 0 & -1
+  \end{pmatrix}_{2\times 3}}.
+  \]
+
+  \item \textbf{验证（线性近似的体现）：}
+  在这个点附近产生微小增量 $\boldsymbol h = (h_1, h_2, h_3)^{\mathsf T}$ 时，函数的线性近似为：
+  \[
+  f\!\left(\tfrac12+h_1,\,1+h_2,\,\pi+h_3\right)
+  \approx f\!\left(\tfrac12,1,\pi\right)+Jf\!\left(\tfrac12,1,\pi\right)\boldsymbol h.
+  \]
+  具体写出就是：
+  \[
+  \begin{pmatrix}
+  \frac32+e\pi\\[4pt]
+  \frac18+0
+  \end{pmatrix}
+  +\begin{pmatrix}
+  3 & e\pi & e\\[6pt]
+  \frac34 & 0 & -1
+  \end{pmatrix}
+  \begin{pmatrix}
+  h_1\\h_2\\h_3
+  \end{pmatrix}.
+  \]
+\end{enumerate}
+\end{solution}
+
+
+\subsection{可微性的充分条件}
+
+\begin{theorem}[向量值函数可微的充分条件] \label{thm:vec-diff-sufficient}
+设 $D\subset\mathbb R^n$ 为开区域，$f:D\to\mathbb R^m$ 为向量值函数。
+若 $f$ 的所有偏导数 $\dfrac{\partial f_i}{\partial x_j}$（$i=1,\dots,m$；$j=1,\dots,n$）
+在 $\boldsymbol a$ 的某邻域内存在，且在 $\boldsymbol a$ 处\textbf{连续}，
+则 $f$ 在 $\boldsymbol a$ 处可微。
+\end{theorem}
+
+\begin{proof}
+我们可以利用已经证明的实值函数可微性充分条件（见 §7.3）来逐分量推导。
+
+\begin{enumerate}
+  \item \textbf{分量可微性：}
+  由于每个分量函数 $f_i$ 的所有偏导数都在 $\boldsymbol a$ 处连续，根据一元和多元实值函数可微的充分条件，每个 $f_i$ 在 $\boldsymbol a$ 处都是可微的。
+
+  \item \textbf{写出分量的线性近似：}
+  于是对每个 $i=1,\dots,m$，都存在梯度行向量 $\nabla f_i(\boldsymbol a)$ 使得：
+  \[
+  f_i(\boldsymbol a+\boldsymbol h)-f_i(\boldsymbol a)
+  =\nabla f_i(\boldsymbol a)\,\boldsymbol h+r_i(\boldsymbol h),
+  \]
+  并且余项满足高阶无穷小条件：
+  \[
+  \lim_{\|\boldsymbol h\|_n\to 0}\frac{|r_i(\boldsymbol h)|}{\|\boldsymbol h\|_n}=0.
+  \]
+
+  \item \textbf{组合为向量形式：}
+  将这 $m$ 个标量等式按列堆叠起来合并为向量形式：
+  \[
+  f(\boldsymbol a+\boldsymbol h)-f(\boldsymbol a)
+  =Jf(\boldsymbol a)\,\boldsymbol h+\boldsymbol r(\boldsymbol h),
+  \]
+  其中 $Jf(\boldsymbol a)$ 正是以 $\nabla f_i(\boldsymbol a)$ 为第 $i$ 行组装而成的 Jacobian 矩阵，而余项向量为 $\boldsymbol r(\boldsymbol h)=(r_1(\boldsymbol h),\dots,r_m(\boldsymbol h))^{\mathsf T}$。
+
+  \item \textbf{验证向量余项条件：}
+  最后，我们需要验证总的余项向量也是 $\|\boldsymbol h\|_n$ 的高阶无穷小。
+  利用范数的定义以及三角不等式：
+  \[
+  \frac{\|\boldsymbol r(\boldsymbol h)\|_m}{\|\boldsymbol h\|_n}
+  =\frac{\sqrt{\sum_{i=1}^m r_i(\boldsymbol h)^2}}{\|\boldsymbol h\|_n}
+  \leq \frac{\sum_{i=1}^m |r_i(\boldsymbol h)|}{\|\boldsymbol h\|_n}
+  =\sum_{i=1}^m\frac{|r_i(\boldsymbol h)|}{\|\boldsymbol h\|_n}.
+  \]
+  因为对每一个固定的 $i$，当 $\|\boldsymbol h\|_n \to 0$ 时都有 $\dfrac{|r_i(\boldsymbol h)|}{\|\boldsymbol h\|_n} \to 0$。
+  而上式是有限个（$m$ 个）趋于 $0$ 的项求和，故总和也趋于 $0$。这证明了向量值函数整体的可微性。
+\end{enumerate}
+\end{proof}
+
+
+\section{练习}
+
+\begin{exercise}[基础：向量值函数的极限与连续]
+\begin{enumerate}
+  \item[(1)] 设 $f:\mathbb R\to\mathbb R^2$，$f(t)=(t^2,1-t^3)^{\mathsf T}$。求 $\displaystyle\lim_{t\to 1}f(t)$。
+  \item[(2)] 设 $f:\mathbb R^2\to\mathbb R^2$，$f(x,y)=(e^{x+y},\sin(xy))^{\mathsf T}$。证明 $f$ 在 $\mathbb R^2$ 上连续。
+\end{enumerate}
+\end{exercise}
+\begin{solution}
+\begin{enumerate}
+  \item[(1)] \textbf{求向量值函数的极限。}
+  根据极限的分量等价性定理，向量值函数的极限等于各个分量函数极限组成的向量。
+  计算各个分量在 $t \to 1$ 时的极限：
+  \begin{itemize}
+    \item 第一分量：$\lim\limits_{t\to 1} t^2 = 1^2 = 1$。
+    \item 第二分量：$\lim\limits_{t\to 1} (1-t^3) = 1 - 1^3 = 0$。
+  \end{itemize}
+  因此，组合得到：
+  \[
+  \lim_{t\to 1}f(t) = \begin{pmatrix} 1 \\ 0 \end{pmatrix}.
+  \]
+
+  \item[(2)] \textbf{证明向量值函数的连续性。}
+  根据连续性的分量等价性定理，$f$ 在 $\mathbb R^2$ 上连续当且仅当它的每个分量函数在 $\mathbb R^2$ 上连续。
+  考察其两个分量函数：
+  \begin{itemize}
+    \item $f_1(x,y) = e^{x+y}$：这是多元多项式 $x+y$ 与指数函数 $e^u$ 的复合。由于多项式处处连续，指数函数处处连续，所以复合函数 $f_1$ 在整个 $\mathbb R^2$ 上连续。
+    \item $f_2(x,y) = \sin(xy)$：这是多元多项式 $xy$ 与正弦函数 $\sin(u)$ 的复合。同理，它在整个 $\mathbb R^2$ 上也连续。
+  \end{itemize}
+  既然两个分量函数处处连续，那么向量值函数 $f(x,y)$ 在 $\mathbb R^2$ 上必然连续。
+\end{enumerate}
+\end{solution}
+
+\begin{exercise}[基础：Jacobian 矩阵计算]
+求下列向量值函数的 Jacobian 矩阵：
+\begin{enumerate}
+  \item[(1)] $f:\mathbb R^2\to\mathbb R^2$，$f(x,y)=(x^2-y^2,\;2xy)^{\mathsf T}$
+        （这是复平面上 $z\mapsto z^2$ 的实化表示）；
+  \item[(2)] $f:\mathbb R\to\mathbb R^3$，$f(t)=(t,\,t^2,\,t^3)^{\mathsf T}$
+        （三次挠曲线 Twisted Cubic）；
+  \item[(3)] $f:\mathbb R^2\to\mathbb R^3$，$f(u,v)=(u\cos v,\;u\sin v,\;u)^{\mathsf T}$
+        （圆锥面的参数化）。
+\end{enumerate}
+\end{exercise}
+\begin{solution}
+\begin{enumerate}
+  \item[(1)] \textbf{求 $f(x,y)=(x^2-y^2,\;2xy)^{\mathsf T}$ 的 Jacobian 矩阵。}
+  分量函数为 $f_1 = x^2-y^2$ 和 $f_2 = 2xy$。
+  分别对 $x, y$ 求偏导：
+  \begin{itemize}
+    \item $\dfrac{\partial f_1}{\partial x} = 2x$, \quad $\dfrac{\partial f_1}{\partial y} = -2y$
+    \item $\dfrac{\partial f_2}{\partial x} = 2y$, \quad $\dfrac{\partial f_2}{\partial y} = 2x$
+  \end{itemize}
+  将其按行排布，得到 $2 \times 2$ 的矩阵：
+  \[
+  Jf(x,y) = \begin{pmatrix} 2x & -2y \\ 2y & 2x \end{pmatrix}.
+  \]
+
+  \item[(2)] \textbf{求 $f(t)=(t,\,t^2,\,t^3)^{\mathsf T}$ 的 Jacobian 矩阵。}
+  自变量只有一个 $t$，因此直接对每个分量求一阶导数，结果为一个 $3 \times 1$ 的列向量。
+  \begin{itemize}
+    \item $f_1'(t) = 1$
+    \item $f_2'(t) = 2t$
+    \item $f_3'(t) = 3t^2$
+  \end{itemize}
+  组装得到：
+  \[
+  Jf(t) = \begin{pmatrix} 1 \\ 2t \\ 3t^2 \end{pmatrix}.
+  \]
+
+  \item[(3)] \textbf{求 $f(u,v)=(u\cos v,\;u\sin v,\;u)^{\mathsf T}$ 的 Jacobian 矩阵。}
+  分量函数为 $f_1 = u\cos v$, $f_2 = u\sin v$, $f_3 = u$。
+  分别对 $u, v$ 求偏导数：
+  \begin{itemize}
+    \item 第一行（$f_1$）：$\dfrac{\partial f_1}{\partial u} = \cos v$, \quad $\dfrac{\partial f_1}{\partial v} = -u\sin v$
+    \item 第二行（$f_2$）：$\dfrac{\partial f_2}{\partial u} = \sin v$, \quad $\dfrac{\partial f_2}{\partial v} = u\cos v$
+    \item 第三行（$f_3$）：$\dfrac{\partial f_3}{\partial u} = 1$, \quad $\dfrac{\partial f_3}{\partial v} = 0$
+  \end{itemize}
+  按行排布，得到 $3 \times 2$ 矩阵：
+  \[
+  Jf(u,v) = \begin{pmatrix} 
+  \cos v & -u\sin v \\ 
+  \sin v & u\cos v \\ 
+  1 & 0 
+  \end{pmatrix}.
+  \]
+\end{enumerate}
+\end{solution}
+
+\begin{exercise}[提高：极坐标变换的 Jacobian]
+\begin{enumerate}
+  \item[(1)] 设 $f:\mathbb R^2\to\mathbb R^2$ 为极坐标变换
+        $f(r,\theta)=(r\cos\theta,\;r\sin\theta)^{\mathsf T}$，
+        计算 $Jf(r,\theta)$ 并求 $\det Jf(r,\theta)$；
+  \item[(2)] 球坐标变换
+        $f(\rho,\varphi,\theta)=(\rho\sin\varphi\cos\theta,\;\rho\sin\varphi\sin\theta,\;\rho\cos\varphi)^{\mathsf T}$，
+        计算 $\det Jf(\rho,\varphi,\theta)$。
+\end{enumerate}
+（提示：这两个行列式在多重积分的变量代换公式中扮演核心角色。）
+\end{exercise}
+\begin{solution}
+\begin{enumerate}
+  \item[(1)] \textbf{极坐标变换的 Jacobian 及其行列式。}
+  分量函数为 $x(r,\theta) = r\cos\theta$ 和 $y(r,\theta) = r\sin\theta$。
+  分别求偏导：
+  \[
+  \frac{\partial x}{\partial r} = \cos\theta, \quad \frac{\partial x}{\partial \theta} = -r\sin\theta
+  \]
+  \[
+  \frac{\partial y}{\partial r} = \sin\theta, \quad \frac{\partial y}{\partial \theta} = r\cos\theta
+  \]
+  所以 Jacobian 矩阵为：
+  \[
+  Jf(r,\theta) = \begin{pmatrix} \cos\theta & -r\sin\theta \\ \sin\theta & r\cos\theta \end{pmatrix}.
+  \]
+  计算其行列式：
+  \[
+  \det Jf(r,\theta) = (\cos\theta)(r\cos\theta) - (-r\sin\theta)(\sin\theta) = r\cos^2\theta + r\sin^2\theta = r.
+  \]
+
+  \item[(2)] \textbf{球坐标变换的 Jacobian 行列式。}
+  分量函数为：
+  $x = \rho\sin\varphi\cos\theta$
+  $y = \rho\sin\varphi\sin\theta$
+  $z = \rho\cos\varphi$
+  对其分别关于 $\rho, \varphi, \theta$ 求偏导，得到 $3 \times 3$ 的 Jacobian 矩阵：
+  \[
+  Jf(\rho,\varphi,\theta) = \begin{pmatrix}
+  \sin\varphi\cos\theta & \rho\cos\varphi\cos\theta & -\rho\sin\varphi\sin\theta \\
+  \sin\varphi\sin\theta & \rho\cos\varphi\sin\theta & \rho\sin\varphi\cos\theta \\
+  \cos\varphi & -\rho\sin\varphi & 0
+  \end{pmatrix}.
+  \]
+  按第三行展开计算行列式：
+  \[
+  \begin{aligned}
+  \det Jf &= \cos\varphi \begin{vmatrix} \rho\cos\varphi\cos\theta & -\rho\sin\varphi\sin\theta \\ \rho\cos\varphi\sin\theta & \rho\sin\varphi\cos\theta \end{vmatrix}
+  - (-\rho\sin\varphi) \begin{vmatrix} \sin\varphi\cos\theta & -\rho\sin\varphi\sin\theta \\ \sin\varphi\sin\theta & \rho\sin\varphi\cos\theta \end{vmatrix} + 0 \\
+  &= \cos\varphi \left[ (\rho\cos\varphi\cos\theta)(\rho\sin\varphi\cos\theta) - (-\rho\sin\varphi\sin\theta)(\rho\cos\varphi\sin\theta) \right] \\
+  &\quad + \rho\sin\varphi \left[ (\sin\varphi\cos\theta)(\rho\sin\varphi\cos\theta) - (-\rho\sin\varphi\sin\theta)(\sin\varphi\sin\theta) \right] \\
+  &= \cos\varphi \left[ \rho^2\sin\varphi\cos\varphi(\cos^2\theta + \sin^2\theta) \right] + \rho\sin\varphi \left[ \rho\sin^2\varphi(\cos^2\theta + \sin^2\theta) \right] \\
+  &= \cos\varphi (\rho^2\sin\varphi\cos\varphi) + \rho\sin\varphi (\rho\sin^2\varphi) \\
+  &= \rho^2\sin\varphi\cos^2\varphi + \rho^2\sin^3\varphi \\
+  &= \rho^2\sin\varphi(\cos^2\varphi + \sin^2\varphi) = \rho^2\sin\varphi.
+  \end{aligned}
+  \]
+  即球坐标变换的 Jacobian 行列式为 $\rho^2\sin\varphi$。
+\end{enumerate}
+\end{solution}
+
+\begin{exercise}[提高：链式法则的矩阵形式]
+设 $f:\mathbb R^n\to\mathbb R^m$ 在 $\boldsymbol a$ 处可微，
+$g:\mathbb R^m\to\mathbb R^p$ 在 $f(\boldsymbol a)$ 处可微。
+利用可微性的定义证明复合函数 $g\circ f$ 在 $\boldsymbol a$ 处可微，且
+\[
+J(g\circ f)(\boldsymbol a)=Jg\bigl(f(\boldsymbol a)\bigr)\cdot Jf(\boldsymbol a).
+\]
+这是\textbf{多元链式法则}的矩阵形式——Jacobian 矩阵的乘法恰好对应复合映射的求导！
+\end{exercise}
+\begin{solution}
+\begin{enumerate}
+  \item \textbf{写出内外层函数的可微定义：}
+  由于 $f$ 在 $\boldsymbol a$ 处可微，存在 $m \times n$ 矩阵 $Jf(\boldsymbol a)$，使得增量 $\boldsymbol k = f(\boldsymbol a+\boldsymbol h)-f(\boldsymbol a)$ 可以表示为：
+  \[
+  \boldsymbol k = Jf(\boldsymbol a)\boldsymbol h + \boldsymbol r_1(\boldsymbol h)
+  \]
+  且满足 $\lim_{\boldsymbol h \to \boldsymbol 0} \dfrac{\|\boldsymbol r_1(\boldsymbol h)\|}{\|\boldsymbol h\|} = 0$。注意到因为可微必然连续，当 $\boldsymbol h \to \boldsymbol 0$ 时，$\boldsymbol k \to \boldsymbol 0$。
+
+  \item \textbf{展开复合函数的增量：}
+  记 $\boldsymbol y = f(\boldsymbol a)$。由于 $g$ 在 $\boldsymbol y$ 处可微，对于增量 $\boldsymbol k$，存在 $p \times m$ 矩阵 $Jg(\boldsymbol y)$ 使得：
+  \[
+  g(\boldsymbol y+\boldsymbol k)-g(\boldsymbol y) = Jg(\boldsymbol y)\boldsymbol k + \boldsymbol r_2(\boldsymbol k)
+  \]
+  且满足 $\lim_{\boldsymbol k \to \boldsymbol 0} \dfrac{\|\boldsymbol r_2(\boldsymbol k)\|}{\|\boldsymbol k\|} = 0$。
+  
+  \item \textbf{代入并整理线性结构：}
+  将 $\boldsymbol y$ 和 $\boldsymbol k$ 代入上式左边即得复合函数的增量：
+  \[
+  (g \circ f)(\boldsymbol a+\boldsymbol h) - (g \circ f)(\boldsymbol a) = Jg(f(\boldsymbol a)) \bigl[ Jf(\boldsymbol a)\boldsymbol h + \boldsymbol r_1(\boldsymbol h) \bigr] + \boldsymbol r_2(\boldsymbol k)
+  \]
+  将其整理为“线性主部 + 综合余项”的形式：
+  \[
+  (g \circ f)(\boldsymbol a+\boldsymbol h) - (g \circ f)(\boldsymbol a) = \bigl[ Jg(f(\boldsymbol a)) \cdot Jf(\boldsymbol a) \bigr]\boldsymbol h + \boldsymbol R(\boldsymbol h)
+  \]
+  其中，综合余项为 $\boldsymbol R(\boldsymbol h) = Jg(f(\boldsymbol a))\boldsymbol r_1(\boldsymbol h) + \boldsymbol r_2(\boldsymbol k)$。
+  
+  \item \textbf{证明综合余项是高阶无穷小：}
+  我们需要证明 $\lim_{\boldsymbol h \to \boldsymbol 0} \dfrac{\|\boldsymbol R(\boldsymbol h)\|}{\|\boldsymbol h\|} = 0$。
+  利用三角不等式和矩阵范数的性质（$\|A\boldsymbol x\| \leq \|A\|\|\boldsymbol x\|$）：
+  \[
+  \frac{\|\boldsymbol R(\boldsymbol h)\|}{\|\boldsymbol h\|} \leq \|Jg(f(\boldsymbol a))\| \frac{\|\boldsymbol r_1(\boldsymbol h)\|}{\|\boldsymbol h\|} + \frac{\|\boldsymbol r_2(\boldsymbol k)\|}{\|\boldsymbol h\|}
+  \]
+  第一项中，由于 $\frac{\|\boldsymbol r_1(\boldsymbol h)\|}{\|\boldsymbol h\|} \to 0$，整个第一项趋于 0。
+  
+  对于第二项，我们将其变形为：
+  \[
+  \frac{\|\boldsymbol r_2(\boldsymbol k)\|}{\|\boldsymbol h\|} = \begin{cases}
+  \dfrac{\|\boldsymbol r_2(\boldsymbol k)\|}{\|\boldsymbol k\|} \cdot \dfrac{\|\boldsymbol k\|}{\|\boldsymbol h\|}, & \boldsymbol k \neq \boldsymbol 0 \\
+  0, & \boldsymbol k = \boldsymbol 0
+  \end{cases}
+  \]
+  由于 $\boldsymbol k = Jf(\boldsymbol a)\boldsymbol h + \boldsymbol r_1(\boldsymbol h)$，有：
+  \[
+  \frac{\|\boldsymbol k\|}{\|\boldsymbol h\|} \leq \|Jf(\boldsymbol a)\| + \frac{\|\boldsymbol r_1(\boldsymbol h)\|}{\|\boldsymbol h\|}
+  \]
+  当 $\boldsymbol h \to \boldsymbol 0$ 时，该式趋于 $\|Jf(\boldsymbol a)\| + 0$，因而是有界的。
+  又因为当 $\boldsymbol h \to \boldsymbol 0$ 时 $\boldsymbol k \to \boldsymbol 0$，所以 $\frac{\|\boldsymbol r_2(\boldsymbol k)\|}{\|\boldsymbol k\|} \to 0$。
+  有界量乘以无穷小量依然为无穷小量。故第二项也趋于 0。
+  
+  \item \textbf{得出结论：}
+  综合起来，余项 $\boldsymbol R(\boldsymbol h)$ 满足高阶无穷小的要求。
+  根据可微性的定义，这证明了 $g \circ f$ 在 $\boldsymbol a$ 处可微，并且它的 Jacobian 矩阵正好是前面提出的线性算子，即：
+  \[
+  J(g \circ f)(\boldsymbol a) = Jg(f(\boldsymbol a)) \cdot Jf(\boldsymbol a).
+  \]
+\end{enumerate}
+\end{solution}
+
+\begin{exercise}[Jacobian 行列式与坐标变换]
+当 $m=n$ 时，Jacobian 矩阵是方阵，其行列式 $\det Jf(\boldsymbol a)$ 称为
+\textbf{Jacobian 行列式}（或\textbf{函数行列式}），记作
+$\dfrac{\partial(f_1,f_2,\dots,f_n)}{\partial(x_1,x_2,\dots,x_n)}$。
+
+证明以下关于 Jacobian 行列式的重要性质：
+\begin{enumerate}
+  \item[(1)] 若 $f$ 和 $g$ 都是从 $\mathbb R^n$ 到 $\mathbb R^n$ 的可微映射，
+        则 $\det J(g\circ f)=\det(Jg)\cdot\det(Jf)$
+        （链式法则取行列式——矩阵乘法的行列式等于行列式之积）；
+  \item[(2)] 若 $f$ 有可微的逆映射 $f^{-1}$，则
+        $\det J(f^{-1})=\dfrac{1}{\det Jf}$；
+  \item[(3)] 在极坐标变换 $x=r\cos\theta$, $y=r\sin\theta$ 下，
+        $\det Jf=r$。解释为什么 “面积元素 $dx\,dy=r\,dr\,d\theta$”。
+\end{enumerate}
+\end{exercise}
+\begin{solution}
+\begin{enumerate}
+  \item[(1)] \textbf{证明复合映射的 Jacobian 行列式公式。}
+  由上题证明的多元链式法则可知，复合映射 $g \circ f$ 的 Jacobian 矩阵为其各自 Jacobian 矩阵的乘积：
+  \[
+  J(g \circ f)(\boldsymbol x) = Jg(f(\boldsymbol x)) \cdot Jf(\boldsymbol x)
+  \]
+  利用线性代数中关于方阵行列式的乘法定理（即两矩阵乘积的行列式等于它们行列式的乘积 $\det(AB) = \det(A)\det(B)$），在两边同时取行列式即可得到：
+  \[
+  \det \bigl[J(g \circ f)(\boldsymbol x)\bigr] = \det \bigl[Jg(f(\boldsymbol x))\bigr] \cdot \det \bigl[Jf(\boldsymbol x)\bigr]
+  \]
+  命题得证。
+
+  \item[(2)] \textbf{证明逆映射的 Jacobian 行列式。}
+  设恒等映射为 $I(\boldsymbol x) = \boldsymbol x$。显然恒等映射的 Jacobian 矩阵是单位矩阵 $I_n$，其行列式为 $1$。
+  若 $f$ 具有可微的逆映射 $f^{-1}$，则依据定义有 $f^{-1} \circ f = I$。
+  对该等式两边同时求 Jacobian 矩阵，应用链式法则：
+  \[
+  J(f^{-1})(f(\boldsymbol x)) \cdot Jf(\boldsymbol x) = J(I)(\boldsymbol x) = I_n
+  \]
+  对两边取行列式，结合矩阵乘法行列式的性质：
+  \[
+  \det\bigl[J(f^{-1})\bigr] \cdot \det\bigl[Jf\bigr] = \det(I_n) = 1
+  \]
+  当 $\det Jf \neq 0$ 时，即可得出：
+  \[
+  \det J(f^{-1}) = \frac{1}{\det Jf}
+  \]
+  
+  \item[(3)] \textbf{极坐标面积元素的几何解释。}
+  在多元积分的变量代换中，Jacobian 行列式的绝对值 $|\det Jf|$ 刻画了由坐标变换所引起的\textbf{局部面积（或体积）的放缩比例}。
+  对于极坐标变换，我们在网格平面 $(r, \theta)$ 上取一个长为 $\Delta r$，宽为 $\Delta \theta$ 的微小矩形区域，其面积为 $\Delta r \Delta \theta$。
+  经过变换 $f$ 映射到 $(x, y)$ 平面后，这个区域变成了一个圆环扇形，其半径介于 $r$ 和 $r+\Delta r$ 之间，圆心角为 $\Delta \theta$。
+  该扇形区域在平面上的真实几何面积约为 弧长 $\times$ 宽度，即 $(r\Delta\theta) \times \Delta r = r\,\Delta r\Delta\theta$。
+  这说明映射将局部面积放大/缩小了 $r$ 倍。而计算得出的 $\det Jf = r$ 恰好反映了这个\textbf{面积伸缩因数}。
+  因此，在微分意义下，积分的微面积元素满足等式 $dx\,dy = |\det Jf|\,dr\,d\theta = r\,dr\,d\theta$。
+\end{enumerate}
+\end{solution}
+
+\begin{exercise}[概念与基本性质问答]
+回答下列问题：
+\begin{enumerate}
+  \item[(1)] 什么叫做向量值函数？
+  \item[(2)] 向量值函数的极限与连续如何定义？
+  \item[(3)] 雅可比矩阵是什么？向量值函数 $f:D\subset\mathbb{R}^n\to\mathbb{R}^m$ 在点 $\boldsymbol x^\circ$ 的导数怎样定义？
+\end{enumerate}
+\end{exercise}
+\begin{solution}
+\begin{enumerate}
+  \item[(1)] \textbf{向量值函数的定义：}
+  若一个映射 $f: D \to \mathbb{R}^m$ 将区域 $D \subset \mathbb{R}^n$ 中的任意一点 $\boldsymbol x = (x_1, \dots, x_n)^{\mathsf T}$ 对应到一个 $m$ 维向量 $\boldsymbol y = (y_1, \dots, y_m)^{\mathsf T} \in \mathbb{R}^m$，则称 $f$ 为定义在 $D$ 上的向量值函数。它本质上是由 $m$ 个共同拥有自变量 $\boldsymbol x$ 的实值分量函数组装而成的。
+  
+  \item[(2)] \textbf{极限与连续的定义：}
+  \begin{itemize}
+    \item \textbf{极限：} 设 $\boldsymbol a$ 为 $D$ 的聚点。若对任意 $\varepsilon > 0$，都存在 $\delta > 0$，使得当 $0 < \|\boldsymbol x - \boldsymbol a\|_n < \delta$ 且 $\boldsymbol x \in D$ 时，恒有函数值与向量 $\boldsymbol A$ 的欧氏距离 $\|f(\boldsymbol x) - \boldsymbol A\|_m < \varepsilon$，则称当 $\boldsymbol x \to \boldsymbol a$ 时，$f(\boldsymbol x)$ 的极限为 $\boldsymbol A$。
+    \item \textbf{连续：} 如果极限值恰好等于该点处的函数值，即 $\lim_{\boldsymbol x\to\boldsymbol a}f(\boldsymbol x)=f(\boldsymbol a)$，则称 $f$ 在点 $\boldsymbol a$ 处连续。这两者都可以等价转化为对其所有分量函数逐一要求极限和连续性。
+  \end{itemize}
+  
+  \item[(3)] \textbf{雅可比矩阵与导数：}
+  \begin{itemize}
+    \item \textbf{导数（可微性）的定义：} 对于点 $\boldsymbol x^\circ$，若能找到一个 $m \times n$ 的常数矩阵 $A$，使得 $f(\boldsymbol x^\circ + \boldsymbol h) - f(\boldsymbol x^\circ) = A\boldsymbol h + \boldsymbol r(\boldsymbol h)$，且余项满足 $\lim_{\|\boldsymbol h\| \to 0} \frac{\|\boldsymbol r(\boldsymbol h)\|}{\|\boldsymbol h\|} = 0$，则称 $f$ 在 $\boldsymbol x^\circ$ 可微，这个矩阵 $A$ 就是 $f$ 在该点的导数。
+    \item \textbf{雅可比矩阵（Jacobian 矩阵）：} 这个发挥导数作用的矩阵 $A$ 就叫做雅可比矩阵，记作 $Jf(\boldsymbol x^\circ)$。它的第 $i$ 行、第 $j$ 列的元素是由第 $i$ 个分量函数对第 $j$ 个自变量求偏导得到的值，即 $\dfrac{\partial f_i}{\partial x_j}(\boldsymbol x^\circ)$。
+  \end{itemize}
+\end{enumerate}
+\end{solution}
+
+\begin{exercise}[Jacobian 矩阵计算（二维）]
+求向量值函数 $f(x,y) = \begin{bmatrix} x^2+y^2 \\ 3xy \end{bmatrix}$ 的导数 $f'(x,y)$。
+\end{exercise}
+\begin{solution}
+\begin{enumerate}
+  \item \textbf{识别分量函数：}
+  该函数有两个分量：
+  \[
+  f_1(x,y) = x^2+y^2, \qquad f_2(x,y) = 3xy
+  \]
+  
+  \item \textbf{计算偏导数：}
+  针对第一分量：
+  \[
+  \frac{\partial f_1}{\partial x} = 2x, \qquad \frac{\partial f_1}{\partial y} = 2y
+  \]
+  针对第二分量：
+  \[
+  \frac{\partial f_2}{\partial x} = 3y, \qquad \frac{\partial f_2}{\partial y} = 3x
+  \]
+  
+  \item \textbf{组装导数矩阵（Jacobian 矩阵）：}
+  将上述求得的偏导数按所在分量的顺序排成矩阵：
+  \[
+  f'(x,y) = Jf(x,y) = \begin{bmatrix} 2x & 2y \\ 3y & 3x \end{bmatrix}.
+  \]
+\end{enumerate}
+\end{solution}
+
+\begin{exercise}[点处 Jacobian 矩阵计算]
+设 $f:\mathbb{R}^3\to\mathbb{R}^2$ 定义为 $f(x,y,z) = \begin{bmatrix} e^x\cos y + e^y z^2 \\ 2x\sin y - 3y z^3 \end{bmatrix}$，求 $f'\left(0,\frac{\pi}{2},1\right)$。
+\end{exercise}
+\begin{solution}
+\begin{enumerate}
+  \item \textbf{列出分量函数：}
+  \[
+  f_1(x,y,z) = e^x\cos y + e^y z^2
+  \]
+  \[
+  f_2(x,y,z) = 2x\sin y - 3y z^3
+  \]
+  
+  \item \textbf{计算 $f_1$ 的偏导数并在点 $\left(0,\frac{\pi}{2},1\right)$ 求值：}
+  \begin{itemize}
+    \item 对 $x$ 偏导：$\dfrac{\partial f_1}{\partial x} = e^x\cos y$
+          代入值 $\Rightarrow e^0\cos(\pi/2) = 1 \cdot 0 = 0$
+    \item 对 $y$ 偏导：$\dfrac{\partial f_1}{\partial y} = -e^x\sin y + e^y z^2$
+          代入值 $\Rightarrow -e^0\sin(\pi/2) + e^{\pi/2}(1^2) = -1 + e^{\pi/2}$
+    \item 对 $z$ 偏导：$\dfrac{\partial f_1}{\partial z} = 2z e^y$
+          代入值 $\Rightarrow 2(1)e^{\pi/2} = 2e^{\pi/2}$
+  \end{itemize}
+
+  \item \textbf{计算 $f_2$ 的偏导数并在点 $\left(0,\frac{\pi}{2},1\right)$ 求值：}
+  \begin{itemize}
+    \item 对 $x$ 偏导：$\dfrac{\partial f_2}{\partial x} = 2\sin y$
+          代入值 $\Rightarrow 2\sin(\pi/2) = 2(1) = 2$
+    \item 对 $y$ 偏导：$\dfrac{\partial f_2}{\partial y} = 2x\cos y - 3z^3$
+          代入值 $\Rightarrow 2(0)\cos(\pi/2) - 3(1^3) = 0 - 3 = -3$
+    \item 对 $z$ 偏导：$\dfrac{\partial f_2}{\partial z} = -9y z^2$
+          代入值 $\Rightarrow -9(\pi/2)(1^2) = -\frac{9\pi}{2}$
+  \end{itemize}
+  
+  \item \textbf{组装最终的导数矩阵：}
+  将算出的值排成 $2 \times 3$ 的矩阵：
+  \[
+  f'\left(0,\frac{\pi}{2},1\right) = \begin{bmatrix} 
+  0 & e^{\pi/2}-1 & 2e^{\pi/2} \\[6pt] 
+  2 & -3 & -\dfrac{9\pi}{2} 
+  \end{bmatrix}.
+  \]
+\end{enumerate}
+\end{solution}
+
+\begin{exercise}[复杂函数的点处 Jacobian 矩阵计算]
+设 $f:\mathbb{R}^3\to\mathbb{R}^3$ 定义为 
+\[
+f(x,y,z) = \begin{bmatrix} \sin(x^2-y^2) \\ \ln(x^2+z^2) \\ \dfrac{1}{\sqrt{y^2+z^2}} \end{bmatrix}
+\]
+求 $f'(1,1,1)$。
+\end{exercise}
+\begin{solution}
+\begin{enumerate}
+  \item \textbf{分别写出分量并求关于各变量的偏导数。}
+  代入的点为 $(x, y, z) = (1, 1, 1)$。
+  
+  \item \textbf{第一分量 $f_1(x,y,z) = \sin(x^2-y^2)$：}
+  \begin{itemize}
+    \item $\dfrac{\partial f_1}{\partial x} = \cos(x^2-y^2) \cdot 2x$ \quad $\Rightarrow$ \quad 代入 $(1,1,1)$ 得 $2(1)\cos(1-1) = 2\cos(0) = 2$
+    \item $\dfrac{\partial f_1}{\partial y} = \cos(x^2-y^2) \cdot (-2y)$ \quad $\Rightarrow$ \quad 代入得 $-2(1)\cos(0) = -2$
+    \item $\dfrac{\partial f_1}{\partial z} = 0$ \quad $\Rightarrow$ \quad 显然值为 $0$
+  \end{itemize}
+  
+  \item \textbf{第二分量 $f_2(x,y,z) = \ln(x^2+z^2)$：}
+  \begin{itemize}
+    \item $\dfrac{\partial f_2}{\partial x} = \dfrac{1}{x^2+z^2} \cdot 2x$ \quad $\Rightarrow$ \quad 代入得 $\dfrac{2(1)}{1^2+1^2} = \dfrac{2}{2} = 1$
+    \item $\dfrac{\partial f_2}{\partial y} = 0$ \quad $\Rightarrow$ \quad 显然值为 $0$
+    \item $\dfrac{\partial f_2}{\partial z} = \dfrac{1}{x^2+z^2} \cdot 2z$ \quad $\Rightarrow$ \quad 代入得 $\dfrac{2(1)}{1^2+1^2} = 1$
+  \end{itemize}
+  
+  \item \textbf{第三分量 $f_3(x,y,z) = (y^2+z^2)^{-1/2}$：}
+  这里运用链式法则：
+  \begin{itemize}
+    \item $\dfrac{\partial f_3}{\partial x} = 0$ \quad $\Rightarrow$ \quad 显然值为 $0$
+    \item $\dfrac{\partial f_3}{\partial y} = -\dfrac{1}{2}(y^2+z^2)^{-3/2} \cdot 2y = -y(y^2+z^2)^{-3/2}$ \quad $\Rightarrow$ \quad 代入得 $-1(1^2+1^2)^{-3/2} = -2^{-3/2} = -\dfrac{1}{2\sqrt{2}} = -\dfrac{\sqrt{2}}{4}$
+    \item $\dfrac{\partial f_3}{\partial z} = -\dfrac{1}{2}(y^2+z^2)^{-3/2} \cdot 2z = -z(y^2+z^2)^{-3/2}$ \quad $\Rightarrow$ \quad 代入得 $-1(2)^{-3/2} = -\dfrac{\sqrt{2}}{4}$
+  \end{itemize}
+  
+  \item \textbf{组装导数矩阵：}
+  将三行偏导数值排成 $3 \times 3$ 的矩阵：
+  \[
+  f'(1,1,1) = \begin{bmatrix} 
+  2 & -2 & 0 \\[6pt] 
+  1 & 0 & 1 \\[6pt] 
+  0 & -\dfrac{\sqrt{2}}{4} & -\dfrac{\sqrt{2}}{4} 
+  \end{bmatrix}.
+  \]
+\end{enumerate}
+\end{solution}
+
+
+
 \end{document}
