@@ -1243,17 +1243,17 @@ H-20 = \pm\mathrm{e}^{C_1}\mathrm{e}^{-kt}
 \end{solution}
 
 \begin{exercise}[求解方程]
-求下列初值问题的解:
-\begin{enumerate}
-    \item[(1)] $\displaystyle \frac{\mathrm{d}P}{\mathrm{d}t}=0.02P,\,P(0)=20$;
-    \item[(2)] $\displaystyle \frac{\mathrm{d}y}{\mathrm{d}x}+\frac{y}{3}=0,\,y(0)=10$;
-    \item[(3)] $\displaystyle \frac{\mathrm{d}y}{\mathrm{d}x}=2y-4$, 过点 $(2,5)$;
-    \item[(4)] $\displaystyle \frac{\mathrm{d}x}{\mathrm{d}t}=t\mathrm{e}^t$, 过原点;
-    \item[(5)] $\displaystyle \frac{\mathrm{d}y}{\mathrm{d}x}=\frac{5y}{x},\,y\big|_{x=1}=3$;
-    \item[(6)] $\displaystyle \frac{\mathrm{d}u}{\mathrm{d}t}=u+ut^2,\,u(0)=5$;
-    \item[(7)] $\displaystyle \frac{\mathrm{d}\omega}{\mathrm{d}\theta}=\theta\omega^2\sin\theta^2,\,\omega(0)=1$;
-    \item[(8)] $\displaystyle x(x+1)\frac{\mathrm{d}y}{\mathrm{d}x}=y^2,\,y(1)=1$.
-\end{enumerate}
+求解下列微分方程：\\
+\begin{tabular}{p{0.45\textwidth} p{0.45\textwidth}}
+  (1) $\displaystyle \frac{\mathrm{d}P}{\mathrm{d}t}=0.02P,\,P(0)=20$; & 
+  (2) $\displaystyle \frac{\mathrm{d}y}{\mathrm{d}x}+\frac{y}{3}=0,\,y(0)=10$; \\[2ex]
+  (3) $\displaystyle \frac{\mathrm{d}y}{\mathrm{d}x}=2y-4$, 过点 $(2,5)$; & 
+  (4) $\displaystyle \frac{\mathrm{d}z}{\mathrm{d}t}=t\mathrm{e}^z$, 过原点; \\[2ex]
+  (5) $\displaystyle \frac{\mathrm{d}y}{\mathrm{d}x}=\frac{5y}{x},\,y\big|_{x=1}=3$; & 
+  (6) $\displaystyle \frac{\mathrm{d}u}{\mathrm{d}t}=u+ut^2,\,u(0)=5$; \\[2ex]
+  (7) $\displaystyle \frac{\mathrm{d}\omega}{\mathrm{d}\theta}=\theta\omega^2\sin\theta^2,\,\omega(0)=1$; & 
+  (8) $\displaystyle x(x+1)\frac{\mathrm{d}y}{\mathrm{d}x}=y^2,\,y(1)=1$. \\
+\end{tabular}
 \end{exercise}
 \begin{solution}
 \begin{enumerate}
@@ -1272,7 +1272,7 @@ H-20 = \pm\mathrm{e}^{C_1}\mathrm{e}^{-kt}
     \]
     由 $y(0)=10$ 得 $C=10$，故解为：
     \[
-    \mathbf{y = 10\mathrm{e}^{-x/3}}
+    \mathbf{y = 10\mathrm{e}^{-\frac{x}{3}}}
     \]
     
     \item[(3)] 分离变量并积分：
@@ -1284,13 +1284,17 @@ H-20 = \pm\mathrm{e}^{C_1}\mathrm{e}^{-kt}
     \mathbf{y = 2+3\mathrm{e}^{2x-4}}
     \]
     
-    \item[(4)] 直接积分得：
+    \item[(4)] 分离变量并积分：
     \[
-    x(t) = \int t\mathrm{e}^t\,\mathrm{d}t = t\mathrm{e}^t - \mathrm{e}^t + C
+    \mathrm{e}^{-z}\mathrm{d}z = t\,\mathrm{d}t \implies -\mathrm{e}^{-z} = \frac{1}{2}t^2 + C
     \]
-    过原点意味着 $x(0)=0$，代入得 $0 = -1+C \implies C=1$。故解为：
+    过原点意味着 $z(0)=0$，代入得 $-\mathrm{e}^0 = 0 + C \implies C=-1$。故：
     \[
-    \mathbf{x(t) = (t-1)\mathrm{e}^t + 1}
+    -\mathrm{e}^{-z} = \frac{1}{2}t^2 - 1 \implies \mathrm{e}^{-z} = 1 - \frac{1}{2}t^2
+    \]
+    解得：
+    \[
+    \mathbf{z(t) = -\ln\left(1-\frac{1}{2}t^2\right)}
     \]
     
     \item[(5)] 分离变量并积分：
@@ -1304,11 +1308,11 @@ H-20 = \pm\mathrm{e}^{C_1}\mathrm{e}^{-kt}
     
     \item[(6)] 提取公因式 $\displaystyle \frac{\mathrm{d}u}{\mathrm{d}t} = u(1+t^2)$，分离并积分：
     \[
-    \frac{\mathrm{d}u}{u} = (1+t^2)\mathrm{d}t \implies \ln|u| = t+\frac{1}{3}t^3+C \implies u = C_1\mathrm{e}^{t+t^3/3}
+    \frac{\mathrm{d}u}{u} = (1+t^2)\mathrm{d}t \implies \ln|u| = t+\frac{1}{3}t^3+C \implies u = C_1\mathrm{e}^{t+\frac{t^3}{3}}
     \]
     由 $u(0)=5$ 得 $C_1=5$。故解为：
     \[
-    \mathbf{u(t) = 5\mathrm{e}^{t+t^3/3}}
+    \mathbf{u(t) = 5\mathrm{e}^{t+\frac{t^3}{3}}}
     \]
     
     \item[(7)] 分离变量得：
@@ -1319,7 +1323,7 @@ H-20 = \pm\mathrm{e}^{C_1}\mathrm{e}^{-kt}
     \[
     -\frac{1}{\omega} = -\frac{1}{2}\cos(\theta^2)+C
     \]
-    代入初值 $\omega(0)=1$ 得 $-1 = -1/2+C \implies C=-1/2$。故：
+    代入初值 $\omega(0)=1$ 得 $-1 = -\frac{1}{2}+C \implies C=-\frac{1}{2}$。故：
     \[
     -\frac{1}{\omega} = -\frac{1}{2}(\cos(\theta^2)+1) = -\cos^2\left(\frac{\theta^2}{2}\right)
     \]
@@ -1369,13 +1373,11 @@ H-20 = \pm\mathrm{e}^{C_1}\mathrm{e}^{-kt}
 \end{solution}
 
 \begin{exercise}[求解齐次方程]
-求下列齐次方程的通解:
-\begin{enumerate}
-    \item[(1)] $\displaystyle x\frac{\mathrm{d}y}{\mathrm{d}x}=y\ln\frac{y}{x}$;
-    \item[(2)] $\displaystyle y^2+x^2\frac{\mathrm{d}y}{\mathrm{d}x}=xy\frac{\mathrm{d}y}{\mathrm{d}x}$;
-    \item[(3)] $\displaystyle \frac{\mathrm{d}y}{\mathrm{d}x}=2\sqrt{\frac{y}{x}}+\frac{y}{x}$;
-    \item[(4)] $\displaystyle (x^2+y^2)\mathrm{d}x-xy\mathrm{d}y=0$.
-\end{enumerate}
+求下列齐次方程的通解:\\
+    (1) $\displaystyle x\frac{\mathrm{d}y}{\mathrm{d}x}=y\ln\frac{y}{x}$; ~~
+    (2) $\displaystyle y^2+x^2\frac{\mathrm{d}y}{\mathrm{d}x}=xy\frac{\mathrm{d}y}{\mathrm{d}x}$; ~~
+    (3) $\displaystyle \frac{\mathrm{d}y}{\mathrm{d}x}=2\sqrt{\frac{y}{x}}+\frac{y}{x}$; ~~
+    (4) $\displaystyle (x^2+y^2)\mathrm{d}x-xy\mathrm{d}y=0$.
 \end{exercise}
 \begin{solution}
 针对齐次方程，统一令 $y=ux$，则 $y' = u + xu'$：
@@ -1441,17 +1443,15 @@ H-20 = \pm\mathrm{e}^{C_1}\mathrm{e}^{-kt}
     \]
     积分得 $\frac{1}{2}u^2 = \ln|x| + C_1$。即 $\frac{y^2}{2x^2} = \ln|x| + C_1$，通解为：
     \[
-    \mathbf{y^2 = 2x^2(\ln|x| + C_1)}
+    \mathbf{y^2 = 2x^2(\ln|x| + C_1)=x^2(\ln x^2+C)}
     \]
 \end{enumerate}
 \end{solution}
 
 \begin{exercise}[求解齐次方程]
-求下列初值问题的解:
-\begin{enumerate}
-    \item[(1)] $\displaystyle \frac{\mathrm{d}y}{\mathrm{d}x}=\frac{x}{y}+\frac{y}{x},\,y\big|_{x=1}=2$;
-    \item[(2)] $\displaystyle (x^2+2xy-y^2)\mathrm{d}x+(y^2+2xy-x^2)\mathrm{d}y=0,\,y\big|_{x=1}=1$.
-\end{enumerate}
+求下列初值问题的解:\\
+(1) $\displaystyle \frac{\mathrm{d}y}{\mathrm{d}x}=\frac{x}{y}+\frac{y}{x},\,y\big|_{x=1}=2$;
+~~(2)$\displaystyle (x^2+2xy-y^2)\mathrm{d}x+(y^2+2xy-x^2)\mathrm{d}y=0,\,y\big|_{x=1}=1$.
 \end{exercise}
 \begin{solution}
 \begin{enumerate}
@@ -1491,11 +1491,8 @@ H-20 = \pm\mathrm{e}^{C_1}\mathrm{e}^{-kt}
 \subsection{B组}
 
 \begin{exercise}[求解方程]
-化下列方程为齐次方程, 并求出其通解:
-\begin{enumerate}
-    \item[(1)] $\displaystyle \frac{\mathrm{d}y}{\mathrm{d}x}=\frac{y-x-2}{x+y+4}$;
-    \item[(2)] $\displaystyle (x-y-1)\mathrm{d}x+(4y+x-1)\mathrm{d}y=0$.
-\end{enumerate}
+化下列方程为齐次方程, 并求出其通解:\\
+(1) $\displaystyle \frac{\mathrm{d}y}{\mathrm{d}x}=\frac{y-x-2}{x+y+4}$;~~(2)$\displaystyle (x-y-1)\mathrm{d}x+(4y+x-1)\mathrm{d}y=0$.
 \end{exercise}
 \begin{solution}
 \begin{enumerate}
@@ -1536,11 +1533,7 @@ H-20 = \pm\mathrm{e}^{C_1}\mathrm{e}^{-kt}
 \end{solution}
 
 \begin{exercise}[求解方程]
-求下列方程的通解:
-\begin{enumerate}
-    \item[(1)] $\displaystyle \sqrt{1-y^2}=3x^2yy'$;
-    \item[(2)] $\displaystyle x\mathrm{d}y-y\mathrm{d}x=\sqrt{x^2+y^2}\mathrm{d}x$.
-\end{enumerate}
+求下列方程的通解:(1)$\displaystyle \sqrt{1-y^2}=3x^2yy'$;~~(2)$\displaystyle x\mathrm{d}y-y\mathrm{d}x=\sqrt{x^2+y^2}\mathrm{d}x$.
 \end{exercise}
 \begin{solution}
 \begin{enumerate}
@@ -1576,7 +1569,7 @@ H-20 = \pm\mathrm{e}^{C_1}\mathrm{e}^{-kt}
     \]
     移项平方消去根号，可化简得通解：
     \[
-    \mathbf{y = \frac{1}{2}\left(Cx^2 - \frac{1}{C}\right)}
+    \mathbf{y = \frac{1}{2}\left(Cx^2 - \frac{1}{C}\right)},x=0
     \]
     对于 $x<0$ 推导同理，结论一致。
 \end{enumerate}
@@ -1586,31 +1579,46 @@ H-20 = \pm\mathrm{e}^{C_1}\mathrm{e}^{-kt}
 由曲线上任意一点引法线, 它在纵轴上截得线段的长度等于该点到坐标原点的距离, 求此曲线的方程.
 \end{exercise}
 \begin{solution}
-设曲线方程为 $y=y(x)$。曲线上任意一点 $(x,y)$ 处的法线方程为：
-\[
-Y - y = -\frac{1}{y'}(X - x)
-\]
-令 $X=0$，得到纵轴上的截距 $Y_0 = y + \frac{x}{y'}$。
-由题意，截距的绝对值等于点到原点的距离 $\sqrt{x^2+y^2}$。由于几何关系，我们有：
-\[
-y + x\frac{\mathrm{d}x}{\mathrm{d}y} = \pm\sqrt{x^2+y^2} \implies y\mathrm{d}y + x\mathrm{d}x = \pm\sqrt{x^2+y^2}\,\mathrm{d}y
-\]
-注意到左端全微分形式：
-\[
-\frac{1}{2}\mathrm{d}(x^2+y^2) = \pm\sqrt{x^2+y^2}\,\mathrm{d}y
-\]
-令 $u = x^2+y^2$，则有 $\displaystyle\frac{\mathrm{d}u}{2\sqrt{u}} = \pm\mathrm{d}y$。积分得：
-\[
-\sqrt{u} = \pm y + C \implies \sqrt{x^2+y^2} = \pm y + C
-\]
-两边平方得：
-\[
-x^2+y^2 = y^2 \pm 2Cy + C^2 \implies x^2 = C(C \pm 2y)
-\]
-故满足条件的曲线族是一族对称轴为 $y$ 轴的抛物线，方程为：
-\[
-\mathbf{x^2 = C(C \pm 2y)}
-\]
+\begin{enumerate}
+    \item \textbf{建立微分方程}：
+    设曲线方程为 $y=y(x)$。曲线上任意一点 $(x,y)$ 处的法线方程为：
+    \[
+    Y - y = -\frac{1}{y'}(X - x)
+    \]
+    令 $X=0$，得到法线在纵轴上的截距 $Y_0 = y + \frac{x}{y'} = y + x\frac{\mathrm{d}x}{\mathrm{d}y}$。
+    由题意，该截距的绝对值等于点 $(x,y)$ 到坐标原点的距离 $\sqrt{x^2+y^2}$，即：
+    \[
+    y + x\frac{\mathrm{d}x}{\mathrm{d}y} = \pm\sqrt{x^2+y^2} 
+    \]
+    
+    \item \textbf{凑全微分求解}：
+    将方程两边同乘 $\mathrm{d}y$，得到：
+    \[
+    y\,\mathrm{d}y + x\,\mathrm{d}x = \pm\sqrt{x^2+y^2}\,\mathrm{d}y
+    \]
+    注意到左端恰好是 $\frac{1}{2}\mathrm{d}(x^2+y^2)$，方程可写为：
+    \[
+    \frac{\mathrm{d}(x^2+y^2)}{2\sqrt{x^2+y^2}} = \pm\mathrm{d}y \implies \mathrm{d}\left(\sqrt{x^2+y^2}\right) = \pm\mathrm{d}y
+    \]
+    两边直接积分得：
+    \[
+    \sqrt{x^2+y^2} = \pm y + C
+    \]
+    
+    \item \textbf{代数化简与常数吸收}：
+    将等式两边平方，消除根号：
+    \[
+    x^2+y^2 = y^2 \pm 2Cy + C^2 \implies x^2 = \pm 2Cy + C^2
+    \]
+    由于 $C$ 是任意常数（可正可负），表达式 $\pm 2C$ 中的符号可以完全被常数 $C$ 本身吸收（即若取负号，可视作将常数重新记为 $-C$，且其平方项保持不变）。因此，两种情况实际上代表同一族曲线：
+    \[
+    x^2 = 2Cy + C^2 = C(2y + C)
+    \]
+    故满足条件的曲线方程为一族抛物线：
+    \[
+    \boxed{x^2 = C(2y+C)}
+    \]
+\end{enumerate}
 \end{solution}
 
 \begin{exercise}[实际应用题]
@@ -1687,14 +1695,14 @@ v^2 = 2(20^2) - 175 = 800 - 175 = 625
 \end{exercise}
 \begin{solution}
 \begin{enumerate}
-    \item[(1)] 设比例常数为 $k$ (其中 $k>0$)。由牛顿冷却（加热）定律，白薯温度变化率与它同周围环境（烤炉）的温差成正比。微分方程为：
+    \item[(1)] 设比例常数为 $k$ (其中 $k<0$)。由牛顿冷却（加热）定律，白薯温度变化率与它同周围环境（烤炉）的温差成正比。微分方程为：
     \[
-    \mathbf{\frac{\mathrm{d}H}{\mathrm{d}t} = -k(H - 200)}
+    \mathbf{\frac{\mathrm{d}H}{\mathrm{d}t} = k(H - 200)}
     \]
     
-    \item[(2)] 这是一个可分离变量方程，$\frac{\mathrm{d}H}{H-200} = -k\,\mathrm{d}t$。两边积分得：
+    \item[(2)] 这是一个可分离变量方程，$\displaystyle \frac{\mathrm{d}H}{H-200} = k\,\mathrm{d}t$。两边积分得：
     \[
-    \ln|H-200| = -kt + C_1 \implies H-200 = C\mathrm{e}^{-kt}
+    \ln|H-200| = kt + C_1 \implies H-200 = C\mathrm{e}^{kt}
     \]
     代入初始条件 $H(0) = 20$，有：
     \[
@@ -1702,16 +1710,16 @@ v^2 = 2(20^2) - 175 = 800 - 175 = 625
     \]
     故解为：
     \[
-    \mathbf{H(t) = 200 - 180\mathrm{e}^{-kt}}
+    \mathbf{H(t) = 200 - 180\mathrm{e}^{kt}}
     \]
     
     \item[(3)] 代入 $t=30$ 时 $H=120$：
     \[
-    120 = 200 - 180\mathrm{e}^{-30k} \implies 180\mathrm{e}^{-30k} = 80 \implies \mathrm{e}^{-30k} = \frac{4}{9}
+    120 = 200 - 180\mathrm{e}^{30k} \implies 180\mathrm{e}^{30k} = 80 \implies \mathrm{e}^{30k} = \frac{4}{9}
     \]
     取对数得：
     \[
-    -30k = \ln(4/9) \implies \mathbf{k = \frac{1}{30}\ln\frac{9}{4} \approx 0.027}
+    30k = \ln\frac{4}{9} \implies \mathbf{k = \frac{1}{30}\ln\frac{4}{9} \approx -0.027}
     \]
 \end{enumerate}
 \end{solution}
@@ -1856,7 +1864,7 @@ y = \pm \left( 2\ln\left|\frac{2-\sqrt{4-x^2}}{x}\right| + \sqrt{4-x^2} \right) 
 \]
 故该曲线的方程（曳物线的一支）为：
 \[
-\mathbf{y = \pm \left( \sqrt{4-x^2} - 2\ln\frac{2+\sqrt{4-x^2}}{x} \right)}
+\mathbf{y = \pm \left( \sqrt{4-x^2} - 2\ln\left|\frac{2+\sqrt{4-x^2}}{x} \right| \right)}
 \]
 \end{solution}
 
@@ -1958,25 +1966,25 @@ m\frac{\mathrm{d}v}{\mathrm{d}t} = mg - kv
 一电动机开动后, 每分钟温度升高 $10^\circ\mathrm{C}$, 同时将按冷却定律不断散发热量. 设电动机安置在一保持 $15^\circ\mathrm{C}$ 恒温的房间里, 求电机温度 $\theta$ 与时间 $t$ 的函数关系.
 \end{exercise}
 \begin{solution}
-设电机温度为 $\theta(t)$，散热服从牛顿冷却定律。电动机的发热使温度以常数速率增加，而散热使其温度下降，速率与温差正比。综合起来有微分方程：
+设电机温度为 $\theta(t)$，散热服从牛顿冷却定律。电动机的发热使温度以常数速率增加，而散热使其温度下降，速率与温差成正比。综合起来有微分方程：
 \[
-\frac{\mathrm{d}\theta}{\mathrm{d}t} = 10 - k(\theta - 15) \quad (k>0)
+\frac{\mathrm{d}\theta}{\mathrm{d}t} = 10 + k(\theta - 15) \quad (k<0)
 \]
-其中 $10$ 是恒定发热率，$k$ 为散热系数。将其改写为变量可分离方程：
+其中 $10$ 是恒定发热率，$k$ 为比例常数。将其改写为变量可分离方程：
 \[
-\frac{\mathrm{d}\theta}{\mathrm{d}t} = -k\left(\theta - 15 - \frac{10}{k}\right) \implies \frac{\mathrm{d}\theta}{\theta - \left(15 + \frac{10}{k}\right)} = -k\,\mathrm{d}t
+\frac{\mathrm{d}\theta}{\mathrm{d}t} = k\left(\theta - 15 + \frac{10}{k}\right) \implies \frac{\mathrm{d}\theta}{\theta - \left(15 - \frac{10}{k}\right)} = k\,\mathrm{d}t
 \]
 两边积分得：
 \[
-\ln\left|\theta - \left(15 + \frac{10}{k}\right)\right| = -kt + C_1 \implies \theta = 15 + \frac{10}{k} + C\mathrm{e}^{-kt}
+\ln\left|\theta - \left(15 - \frac{10}{k}\right)\right| = kt + C_1 \implies \theta = 15 - \frac{10}{k} + C\mathrm{e}^{kt}
 \]
 若假设电动机开动时即与室温相同，有初值 $\theta(0) = 15$（一般合理预设）：
 \[
-15 = 15 + \frac{10}{k} + C \implies C = -\frac{10}{k}
+15 = 15 - \frac{10}{k} + C \implies C = \frac{10}{k}
 \]
 最终温度与时间的函数关系为：
 \[
-\mathbf{\theta(t) = 15 + \frac{10}{k}\big(1 - \mathrm{e}^{-kt}\big)}
+\mathbf{\theta(t) = 15 - \frac{10}{k}\big(1 - \mathrm{e}^{kt}\big)}
 \]
 （若初值未给定为室温，则通解包含常数项 $C$）。
 \end{solution}
@@ -2028,61 +2036,101 @@ y=y_0\,\exp\!\left(-\int_{x_0}^{x}P(t)\,\mathrm{d}t\right).
 \end{remark}
 
 \subsection{常数变易法与非齐次方程的通解}
-
-当 $Q(x)\not\equiv 0$ 时，我们需要求解非齐次方程 $\frac{\mathrm{d}y}{\mathrm{d}x}+P(x)\,y=Q(x)$。核心思想是法国数学家拉格朗日提出的\textbf{常数变易法}（Variation of Constants）：将对应齐次方程通解中的任意常数 $C$ ``解放''出来，视为 $x$ 的待定函数 $C(x)$。
-
+当 $Q(x)\not\equiv 0$ 时，我们需要求解一阶线性非齐次微分方程：
+$$\frac{\mathrm{d}y}{\mathrm{d}x}+P(x)y=Q(x)$$
+求解该方程的核心思想是法国数学家拉格朗日提出的\textbf{常数变易法}（Variation of Constants）。它的基本思路是：先求出对应齐次方程的通解，然后将其中的任意常数 $C$ ``解放''出来，假设它是一个关于 $x$ 的未知函数 $C(x)$，从而构造出非齐次方程的解。
 \begin{theorem}[常数变易法] \label{thm:variation-of-constants}
-令
-\[
-y=C(x)\exp\!\left(-\int P(x)\,\mathrm{d}x\right)
-\]
-其中 $C(x)$ 是新的未知函数。计算导数并代入原方程 $\frac{\mathrm{d}y}{\mathrm{d}x}+P(x)\,y=Q(x)$ 后，$C(x)$ 满足
-\[
-\frac{\mathrm{d}C}{\mathrm{d}x}=Q(x)\exp\!\left(\int P(x)\,\mathrm{d}x\right),
-\]
-积分得
-\[
-C(x)=\int Q(x)\exp\!\left(\int P(x)\,\mathrm{d}x\right)\mathrm{d}x+C_0.
-\]
-
-代回 $y=C(x)\exp\!\left(-\int P(x)\,\mathrm{d}x\right)$ 即得非齐次方程 $\frac{\mathrm{d}y}{\mathrm{d}x}+P(x)\,y=Q(x)$ 的\textbf{通解公式}：
-\[
-\boxed{
-y=\exp\!\left(-\int P(x)\,\mathrm{d}x\right)\left[\int Q(x)\exp\!\left(\int P(x)\,\mathrm{d}x\right)\mathrm{d}x+C_0\right].
-} 
-\]
+第一步：考虑与之对应的齐次方程
+$$\frac{\mathrm{d}y}{\mathrm{d}x}+P(x)y=0$$
+我们已知该齐次方程的通解为：
+$$y=C\exp\!\left(-\int P(x)\,\mathrm{d}x\right)$$
+第二步：将常数 $C$ 替换为关于 $x$ 的未知函数 $C(x)$，即令非齐次方程的解的形式为：
+$$y=C(x)\exp\!\left(-\int P(x)\,\mathrm{d}x\right)$$
+第三步：利用乘积求导法则，对上式两边关于 $x$ 求导。根据复合函数求导法则，指数部分 $\exp\!\left(-\int P(x)\,\mathrm{d}x\right)$ 的导数为 $-P(x)\exp\!\left(-\int P(x)\,\mathrm{d}x\right)$。因此我们有：
+$$\frac{\mathrm{d}y}{\mathrm{d}x} = \frac{\mathrm{d}C(x)}{\mathrm{d}x}\exp\!\left(-\int P(x)\,\mathrm{d}x\right) + C(x)\left[ -P(x)\exp\!\left(-\int P(x)\,\mathrm{d}x\right) \right]$$
+整理得：
+$$\frac{\mathrm{d}y}{\mathrm{d}x} = \frac{\mathrm{d}C}{\mathrm{d}x}\exp\!\left(-\int P(x)\,\mathrm{d}x\right) - P(x)C(x)\exp\!\left(-\int P(x)\,\mathrm{d}x\right)$$
+第四步：将 $y$ 和 $\frac{\mathrm{d}y}{\mathrm{d}x}$ 的表达式代入原非齐次方程 $\dfrac{\mathrm{d}y}{\mathrm{d}x}+P(x)y=Q(x)$ 中：$Q(x)=$
+$$\left[ \frac{\mathrm{d}C}{\mathrm{d}x}\exp\!\left(-\int P(x)\,\mathrm{d}x\right) - P(x)C(x)\exp\!\left(-\int P(x)\,\mathrm{d}x\right) \right] + P(x)\left[ C(x)\exp\!\left(-\int P(x)\,\mathrm{d}x\right) \right] $$
+观察上式，方括号中包含 $C(x)$ 的两项恰好互为相反数，可以完全抵消（这是常数变易法必然会出现的特征，如果无法抵消说明前面求导或代入有误）：
+$$\frac{\mathrm{d}C}{\mathrm{d}x}\exp\!\left(-\int P(x)\,\mathrm{d}x\right) = Q(x)$$
+第五步：解出 $\frac{\mathrm{d}C}{\mathrm{d}x}$，即在等式两边同时乘以 $\exp\!\left(\int P(x)\,\mathrm{d}x\right)$：
+$$\frac{\mathrm{d}C}{\mathrm{d}x} = Q(x)\exp\!\left(\int P(x)\,\mathrm{d}x\right)$$
+对两边同时积分，即可求出待定函数 $C(x)$（其中 $C_0$ 为任意积分常数）：
+$$C(x) = \int Q(x)\exp\!\left(\int P(x)\,\mathrm{d}x\right)\mathrm{d}x + C_0$$
+第六步：将求得的 $C(x)$ 代回我们在第二步假设的解的表达式 $y=C(x)\exp\!\left(-\int P(x)\,\mathrm{d}x\right)$ 中，即得到一阶线性非齐次方程的\textbf{通解公式}：
+$$\boxed{ y=\exp\!\left(-\int P(x)\,\mathrm{d}x\right)\left[\int Q(x)\exp\!\left(\int P(x)\,\mathrm{d}x\right)\mathrm{d}x+C_0\right] }$$
 \end{theorem}
-
 \begin{property}[通解的结构]
-公式 \[y=\exp\!\left(-\int P(x)\,\mathrm{d}x\right)\left[\int Q(x)\exp\!\left(\int P(x)\,\mathrm{d}x\right)\mathrm{d}x+C_0\right]\] 可拆分为两项之和：
-\[
-\underbrace{C_0\exp\!\left(-\int P(x)\,\mathrm{d}x\right)}_{\text{齐次通解}}
-\;+\;
-\underbrace{\exp\!\left(-\int P(x)\,\mathrm{d}x\right)\int Q(x)\exp\!\left(\int P(x)\,\mathrm{d}x\right)\mathrm{d}x}_{\text{非齐次的一个特解}}.
-\]
-即：\textbf{非齐次通解 = 对应齐次通解 + 非齐次任一特解}。
-
-这个结论不仅对一阶线性方程成立，更是高阶线性方程理论的基石（叠加原理的雏形）。
+将通解公式展开，可以明显地看到它由两部分叠加而成：
+$$y = \underbrace{C_0\exp\!\left(-\int P(x)\,\mathrm{d}x\right)}_{\text{对应齐次方程的通解}} \;+\; \underbrace{\exp\!\left(-\int P(x)\,\mathrm{d}x\right)\int Q(x)\exp\!\left(\int P(x)\,\mathrm{d}x\right)\mathrm{d}x}_{\text{原非齐次方程的一个特解}}$$
+即：\textbf{非齐次方程的通解 = 对应齐次方程的通解 + 非齐次方程的任意一个特解}。
+这个重要结论不仅对一阶线性方程成立，更是高阶线性微分方程理论的基石，它是线性系统“叠加原理”在微分方程中的直观体现。
 \end{property}
-
 \begin{remark}[使用建议]
-在实际解题时，不建议死记繁琐的通解公式。更高效的做法是\textbf{重复上述常数变易法的推导过程}：先求齐次通解 $\to$ 令 $C=C(x)$ 代入 $\to$ 解出 $C(x)$。这样既不容易出错，也有助于理解方法的本质。
+在实际解题时，\textbf{强烈不建议死记硬背上述繁琐的通解公式}。更稳妥且高效的做法是\textbf{在具体的题目中重复常数变易法的推导步骤}：
+\begin{enumerate}
+\item 先求解对应的齐次方程，得到齐次通解 $y = C \cdot y_1(x)$；
+\item 令 $C = C(x)$，即设特解为 $y = C(x) \cdot y_1(x)$；
+\item 将其求导并代入原非齐次方程，此时必然会消去含有 $C(x)$ 的项，只剩下含有 $C'(x)$ 的项；
+\item 解出 $C'(x)$ 并积分求出 $C(x)$，最后写出完整通解。
+\end{enumerate}
+这样既不容易因为正负号记错而失分，也有助于深刻理解常数变易法的本质。
 \end{remark}
-
 \begin{exercise}
 求方程 $\displaystyle\frac{\mathrm{d}y}{\mathrm{d}x}-\frac{y}{x}=x^{2}$ 的通解。
 \end{exercise}
 \begin{solution}
-对应齐次方程为 $\dfrac{\mathrm{d}y}{\mathrm{d}x}=\dfrac{y}{x}$，分离变量得齐次通解 $y=Cx$。
+\begin{enumerate}
+    \item \textbf{求解对应齐次方程}：
+    先考虑与之对应的齐次线性方程：
+    \[
+    \frac{\mathrm{d}y}{\mathrm{d}x}-\frac{y}{x}=0
+    \]
+    分离变量，将含有 $y$ 的项移到等式一边，含有 $x$ 的项移到另一边：
+    \[
+    \frac{\mathrm{d}y}{y}=\frac{\mathrm{d}x}{x}
+    \]
+    两边同时积分：
+    \[
+    \int \frac{1}{y}\,\mathrm{d}y = \int \frac{1}{x}\,\mathrm{d}x \implies \ln|y|=\ln|x|+C_1
+    \]
+    化简得到齐次方程的通解为 $y=Cx$。
 
-常数变易：令 $y=C(x)x$，则 $\dfrac{\mathrm{d}y}{\mathrm{d}x}=C'(x)\cdot x+C(x)$。代入原方程：
-\[
-C'(x)\cdot x+C(x)-C(x)=x^{2}\quad\Longrightarrow\quad C'(x)=x,
-\]
-积分得 $C(x)=\dfrac{x^{2}}{2}+C_0$。故通解为
-\[
-\boxed{y=C_0x+\frac{x^{3}}{2}}
-\]
+    \item \textbf{运用常数变易法求特解}：
+    将常数 $C$ 替换为关于 $x$ 的未知函数 $C(x)$，令非齐次方程的解为：
+    \[
+    y=C(x)x
+    \]
+    对其关于 $x$ 求导，根据乘积求导法则得：
+    \[
+    \frac{\mathrm{d}y}{\mathrm{d}x}=C'(x)x+C(x)
+    \]
+    
+    \item \textbf{代回原方程求解待定函数}：
+    将 $y$ 和 $\frac{\mathrm{d}y}{\mathrm{d}x}$ 代入原非齐次方程 $\frac{\mathrm{d}y}{\mathrm{d}x}-\frac{y}{x}=x^{2}$ 中：
+    \[
+    \left[C'(x)x+C(x)\right]-\frac{C(x)x}{x}=x^{2}
+    \]
+    化简后，$C(x)$ 项恰好相互抵消：
+    \[
+    C'(x)x = x^{2} \implies C'(x)=x
+    \]
+    对 $C'(x)$ 进行积分，求得 $C(x)$：
+    \[
+    C(x)=\int x\,\mathrm{d}x = \frac{x^{2}}{2}+C_0
+    \]
+    
+    \item \textbf{写出最终通解}：
+    将求得的 $C(x)$ 代回我们在第2步假设的解的形式中：
+    \[
+    y=\left(\frac{x^{2}}{2}+C_0\right)x
+    \]
+    展开即得通解：
+    \[
+    \boxed{y=C_0x+\frac{x^{3}}{2}}
+    \]
+\end{enumerate}
 \end{solution}
 
 \begin{exercise}
@@ -2090,78 +2138,166 @@ C'(x)\cdot x+C(x)-C(x)=x^{2}\quad\Longrightarrow\quad C'(x)=x,
 $\begin{cases}(x^{2}-1)y'+2xy=\cos x,\\ y(0)=1.\end{cases}$
 \end{exercise}
 \begin{solution}
-化为标准形式（注意 $x \neq \pm1$）：
-\[
-y'+\frac{2x}{x^{2}-1}\,y=\frac{\cos x}{x^{2}-1}.
-\]
+\begin{enumerate}
+    \item \textbf{化为标准形式}：
+    方程两边同除以 $(x^{2}-1)$（注意隐含条件 $x \neq \pm1$），化为一阶线性微分方程的标准形式：
+    \[
+    y'+\frac{2x}{x^{2}-1}y=\frac{\cos x}{x^{2}-1}
+    \]
 
-齐次部分：$y'+\dfrac{2x}{x^{2}-1}y=0$
-$\;\Longrightarrow\;$ $\ln|y|=-\ln|x^{2}-1|+\ln|C|$，即 $y_h=\dfrac{C}{x^{2}-1}$。
+    \item \textbf{求解对应齐次方程}：
+    对应的齐次方程为：
+    \[
+    y'+\frac{2x}{x^{2}-1}y=0
+    \]
+    分离变量并积分：
+    \[
+    \frac{\mathrm{d}y}{y}=-\frac{2x}{x^{2}-1}\,\mathrm{d}x \implies \int \frac{1}{y}\,\mathrm{d}y = -\int \frac{2x}{x^{2}-1}\,\mathrm{d}x
+    \]
+    由于 $\mathrm{d}(x^{2}-1) = 2x\,\mathrm{d}x$，得：
+    \[
+    \ln|y|=-\ln|x^{2}-1|+\ln|C| \implies y_h=\frac{C}{x^{2}-1}
+    \]
 
-常数变易：令 $y=\dfrac{C(x)}{x^{2}-1}$，代入化简后得 $C'(x)=\cos x$，
-故 $C(x)=\sin x+C_0$。通解为
-\[
-y=\frac{\sin x+C_0}{x^{2}-1}.
-\]
+    \item \textbf{常数变易法}：
+    令非齐次通解为 $y=\frac{C(x)}{x^{2}-1}$，利用除法求导法则对其求导：
+    \[
+    y'=\frac{C'(x)(x^{2}-1)-C(x)(2x)}{(x^{2}-1)^{2}} = \frac{C'(x)}{x^{2}-1} - \frac{2xC(x)}{(x^{2}-1)^{2}}
+    \]
+    代入标准形式的非齐次方程中：
+    \[
+    \left[\frac{C'(x)}{x^{2}-1} - \frac{2xC(x)}{(x^{2}-1)^{2}}\right] + \frac{2x}{x^{2}-1}\left[\frac{C(x)}{x^{2}-1}\right] = \frac{\cos x}{x^{2}-1}
+    \]
+    化简消去含 $C(x)$ 的项：
+    \[
+    \frac{C'(x)}{x^{2}-1} = \frac{\cos x}{x^{2}-1} \implies C'(x)=\cos x
+    \]
+    积分求得 $C(x)$：
+    \[
+    C(x)=\int \cos x\,\mathrm{d}x = \sin x+C_0
+    \]
+    由此得到非齐次方程的通解：
+    \[
+    y=\frac{\sin x+C_0}{x^{2}-1}
+    \]
 
-代入 $y(0)=1$：$1=\dfrac{0+C_0}{-1}\;\Rightarrow\; C_0=-1$。特解为
-\[
-\boxed{y=\frac{1-\sin x}{1-x^{2}}}
-\]
+    \item \textbf{代入初始条件求解特解}：
+    利用初值条件 $y(0)=1$，代入通解表达式：
+    \[
+    1=\frac{\sin(0)+C_0}{0^{2}-1} \implies 1 = \frac{C_0}{-1} \implies C_0=-1
+    \]
+    将 $C_0$ 代回，最终求得初值问题的特解：
+    \[
+    \boxed{y=\frac{\sin x - 1}{x^{2}-1} = \frac{1-\sin x}{1-x^{2}}}
+    \]
+\end{enumerate}
 \end{solution}
 
 \begin{exercise}
 解方程 $y\ln y\,\mathrm{d}x+(x-\ln y)\,\mathrm{d}y=0$。
 \end{exercise}
 \begin{solution}
-若按常规写成 $\dfrac{\mathrm{d}y}{\mathrm{d}x}=-\dfrac{y\ln y}{x-\ln y}$，既非线性也非可分离。
+\begin{enumerate}
+    \item \textbf{转换自变量与因变量}：
+    若按常规写成 $\frac{\mathrm{d}y}{\mathrm{d}x}=-\frac{y\ln y}{x-\ln y}$，方程既不是线性方程也不是可分离变量方程。
+    \textbf{关键观察}：我们尝试交换自变量和因变量的角色，将 $x$ 视为 $y$ 的函数，将原方程除以 $\mathrm{d}y$：
+    \[
+    y\ln y\frac{\mathrm{d}x}{\mathrm{d}y}+(x-\ln y)=0
+    \]
+    两边同除以 $y\ln y$，整理为关于未知函数 $x(y)$ 的一阶线性微分方程标准形式：
+    \[
+    \frac{\mathrm{d}x}{\mathrm{d}y}+\frac{1}{y\ln y}x=\frac{1}{y}
+    \]
 
-\textbf{关键观察}：交换自变量和因变量的角色！将 $x$ 视为 $y$ 的函数：
-\[
-\frac{\mathrm{d}x}{\mathrm{d}y}=-\frac{x-\ln y}{y\ln y}
-=-\frac{1}{y\ln y}\,x+\frac{1}{y},
-\]
-即
-\[
-\frac{\mathrm{d}x}{\mathrm{d}y}+\frac{1}{y\ln y}\,x=\frac{1}{y}. \tag{$\dagger$}
-\]
+    \item \textbf{求解对应齐次方程}：
+    齐次方程为 $\frac{\mathrm{d}x}{\mathrm{d}y}+\frac{1}{y\ln y}x=0$，分离变量并积分：
+    \[
+    \frac{\mathrm{d}x}{x} = -\frac{1}{y\ln y}\,\mathrm{d}y \implies \int \frac{1}{x}\,\mathrm{d}x = -\int \frac{1}{\ln y}\,\mathrm{d}(\ln y)
+    \]
+    \[
+    \ln|x| = -\ln|\ln y| + C_1 \implies x=\frac{C}{\ln y}
+    \]
 
-这是以 $x=x(y)$ 为未知函数的一阶线性方程！齐次通解：$x=\dfrac{C}{\ln y}$。
+    \item \textbf{常数变易法}：
+    令 $x=\frac{C(y)}{\ln y}$，对其关于 $y$ 求导：
+    \[
+    \frac{\mathrm{d}x}{\mathrm{d}y}=\frac{C'(y)\ln y-C(y)\cdot\frac{1}{y}}{(\ln y)^{2}} = \frac{C'(y)}{\ln y}-\frac{C(y)}{y(\ln y)^{2}}
+    \]
+    代入步骤1得到的标准方程中：
+    \[
+    \left[\frac{C'(y)}{\ln y}-\frac{C(y)}{y(\ln y)^{2}}\right]+\frac{1}{y\ln y}\left[\frac{C(y)}{\ln y}\right]=\frac{1}{y}
+    \]
+    化简消元后得到：
+    \[
+    \frac{C'(y)}{\ln y}=\frac{1}{y} \implies C'(y)=\frac{\ln y}{y}
+    \]
+    对 $y$ 积分（通过凑微分 $\mathrm{d}(\ln y)=\frac{1}{y}\mathrm{d}y$）：
+    \[
+    C(y)=\int \frac{\ln y}{y}\,\mathrm{d}y = \int \ln y\,\mathrm{d}(\ln y) = \frac{1}{2}(\ln y)^{2}+C_0
+    \]
 
-常数变易：令 $x=\dfrac{C(y)}{\ln y}$，代入 ($\dagger$) 得 $C'(y)=\dfrac{\ln y}{y}$，
-故 $C(y)=\dfrac{1}{2}(\ln y)^{2}+C_0$。通解为
-\[
-\boxed{x=\frac{1}{2}\ln y+\frac{C_0}{\ln y}}
-\]
-此外 $y\equiv 1$ 也是原方程的解（使 $\ln y=0$ 导致退化）。
+    \item \textbf{写出最终通解}：
+    将 $C(y)$ 代回，得到原方程的通解：
+    \[
+    x=\frac{\frac{1}{2}(\ln y)^{2}+C_0}{\ln y} \implies \boxed{x=\frac{1}{2}\ln y+\frac{C_0}{\ln y}}
+    \]
+    （另外，观察原方程可知，使分母 $\ln y=0$ 的函数 $y \equiv 1$ 导致退化，代回原方程恒成立，故 $y \equiv 1$ 也是一个奇解）。
+\end{enumerate}
 \end{solution}
 
 \begin{exercise}[质点在驱动力与阻力下的运动]
 质量为 $m$ 的质点从静止开始运动，受到与时间成正比的驱动力 $k_1 t$（与速度同向），以及与速度成正比的阻力 $k_2 v$。求速度 $v(t)$。
 \end{exercise}
 \begin{solution}
-由牛顿第二定律 $F=ma$ 得
-\[
-m\frac{\mathrm{d}v}{\mathrm{d}t}=k_1t-k_2v,\quad v(0)=0.
-\]
-化为标准线性形式：
-\[
-\frac{\mathrm{d}v}{\mathrm{d}t}+\frac{k_2}{m}v=\frac{k_1}{m}t.
-\]
+\begin{enumerate}
+    \item \textbf{建立微分方程并化为标准形式}：
+    根据牛顿第二定律 $F=ma$，合外力为驱动力与阻力之差：
+    \[
+    m\frac{\mathrm{d}v}{\mathrm{d}t}=k_1t-k_2v
+    \]
+    初值条件为“静止开始”，即 $v(0)=0$。
+    将方程两边同除以 $m$ 并移项，化为一阶线性标准形式：
+    \[
+    \frac{\mathrm{d}v}{\mathrm{d}t}+\frac{k_2}{m}v=\frac{k_1}{m}t
+    \]
 
-齐次通解：$v_h=C\,\mathrm{e}^{-\frac{k_2}{m}t}$。
+    \item \textbf{求解对应齐次方程}：
+    齐次方程为 $\frac{\mathrm{d}v}{\mathrm{d}t}+\frac{k_2}{m}v=0$。分离变量积分：
+    \[
+    \frac{\mathrm{d}v}{v}=-\frac{k_2}{m}\,\mathrm{d}t \implies \ln|v|=-\frac{k_2}{m}t+C_1 \implies v_h=C\mathrm{e}^{-\frac{k_2}{m}t}
+    \]
 
-常数变易：代入非齐次方程得
-$C'(t)=\dfrac{k_1}{m}t\,\mathrm{e}^{\frac{k_2}{m}t}$，
-分部积分后
-\[
-C(t)=\frac{k_1}{k_2}t\,\mathrm{e}^{\frac{k_2}{m}t}-\frac{k_1m}{k_2^{2}}\,\mathrm{e}^{\frac{k_2}{m}t}+C_0.
-\]
+    \item \textbf{常数变易法求特解}：
+    设 $v=C(t)\mathrm{e}^{-\frac{k_2}{m}t}$，求导得：
+    \[
+    \frac{\mathrm{d}v}{\mathrm{d}t}=C'(t)\mathrm{e}^{-\frac{k_2}{m}t}-C(t)\frac{k_2}{m}\mathrm{e}^{-\frac{k_2}{m}t}
+    \]
+    代入标准非齐次方程中，消去 $C(t)$ 项得到：
+    \[
+    C'(t)\mathrm{e}^{-\frac{k_2}{m}t}=\frac{k_1}{m}t \implies C'(t)=\frac{k_1}{m}t\mathrm{e}^{\frac{k_2}{m}t}
+    \]
+    利用分部积分法求解 $C(t)$：
+    \[
+    C(t) = \int \frac{k_1}{m}t\mathrm{e}^{\frac{k_2}{m}t}\,\mathrm{d}t = \frac{k_1}{m}\left[t \cdot \frac{m}{k_2}\mathrm{e}^{\frac{k_2}{m}t} - \int \frac{m}{k_2}\mathrm{e}^{\frac{k_2}{m}t}\,\mathrm{d}t\right]
+    \]
+    \[
+    = \frac{k_1}{k_2}t\mathrm{e}^{\frac{k_2}{m}t} - \frac{k_1m}{k_2^{2}}\mathrm{e}^{\frac{k_2}{m}t} + C_0
+    \]
+    因此通解为 $v(t) = C(t)\mathrm{e}^{-\frac{k_2}{m}t}$，展开即：
+    \[
+    v(t) = \frac{k_1}{k_2}t - \frac{k_1m}{k_2^{2}} + C_0\mathrm{e}^{-\frac{k_2}{m}t}
+    \]
 
-利用 $v(0)=0$ 定出 $C_0=\dfrac{k_1m}{k_2^{2}}$，最终得
-\[
-\boxed{v(t)=\frac{k_1}{k_2}t-\frac{k_1m}{k_2^{2}}\!\left(1-\mathrm{e}^{-\frac{k_2}{m}t}\right)}.
-\]
+    \item \textbf{代入初始条件求解特定常数}：
+    代入初始条件 $v(0)=0$：
+    \[
+    0 = 0 - \frac{k_1m}{k_2^{2}} + C_0\mathrm{e}^{0} \implies C_0 = \frac{k_1m}{k_2^{2}}
+    \]
+    将 $C_0$ 代回，最终速度函数整理为：
+    \[
+    \boxed{v(t)=\frac{k_1}{k_2}t-\frac{k_1m}{k_2^{2}}\left(1-\mathrm{e}^{-\frac{k_2}{m}t}\right)}
+    \]
+\end{enumerate}
 \end{solution}
 
 \subsection{伯努利方程}
@@ -2177,65 +2313,133 @@ C(t)=\frac{k_1}{k_2}t\,\mathrm{e}^{\frac{k_2}{m}t}-\frac{k_1m}{k_2^{2}}\,\mathrm
 \end{definition}
 
 \begin{theorem}[伯努利方程的标准化方法]
-当 $y \neq 0$ 时，以 $y^{n}$ 除 $\frac{\mathrm{d}y}{\mathrm{d}x}+P(x)\,y=Q(x)\,y^{n}$ 两边得
-\[
-y^{-n}\frac{\mathrm{d}y}{\mathrm{d}x}+P(x)\,y^{1-n}=Q(x).
-\]
+伯努利方程可以通过特定的变量代换转化为一阶线性微分方程。具体推导步骤如下：
 
-注意到 $\dfrac{\mathrm{d}}{\mathrm{d}x}(y^{1-n})=(1-n)y^{-n}\dfrac{\mathrm{d}y}{\mathrm{d}x}$，
-作代换 $z=y^{1-n}$，则 $\frac{\mathrm{d}y}{\mathrm{d}x}+P(x)\,y=Q(x)\,y^{n}$ 化为关于 $z$ 的\textbf{一阶线性方程}：
-\[
-\frac{\mathrm{d}z}{\mathrm{d}x}+(1-n)P(x)\,z=(1-n)Q(x). 
-\]
+\begin{enumerate}
+    \item \textbf{消除等式右侧的 $y$ 项}：假设 $y \neq 0$，将原方程两边同时除以 $y^{n}$，得到：
+    \[
+    y^{-n}\frac{\mathrm{d}y}{\mathrm{d}x}+P(x)\,y^{1-n}=Q(x)
+    \]
+    \item \textbf{引入新变量进行代换}：观察到中间项包含了 $y^{1-n}$，我们令 $z = y^{1-n}$。
+    \item \textbf{求导并寻找联系}：对新变量 $z$ 关于 $x$ 求导，根据复合函数求导法则（链式法则）：
+    \[
+    \frac{\mathrm{d}z}{\mathrm{d}x} = \frac{\mathrm{d}}{\mathrm{d}x}(y^{1-n}) = (1-n)y^{-n}\frac{\mathrm{d}y}{\mathrm{d}x}
+    \]
+    这说明 $y^{-n}\frac{\mathrm{d}y}{\mathrm{d}x} = \frac{1}{1-n}\frac{\mathrm{d}z}{\mathrm{d}x}$。
+    \item \textbf{完成转化}：将上述结果代回第1步化简后的方程中：
+    \[
+    \frac{1}{1-n}\frac{\mathrm{d}z}{\mathrm{d}x} + P(x)\,z = Q(x)
+    \]
+    两边同乘 $(1-n)$，即化为关于 $z$ 的\textbf{一阶线性微分方程}：
+    \[
+    \frac{\mathrm{d}z}{\mathrm{d}x}+(1-n)P(x)\,z=(1-n)Q(x)
+    \]
+\end{enumerate}
 
-用常数变易法或通解公式求出 $z$ 后回代 $y=z^{1/(1-n)}$ 即得原方程的通解。
-
-此外，当 $n>0$ 时 $y\equiv 0$ 也是解（可能不在通解表达式中）。
+求出 $z$ 的通解后，再通过回代 $y=z^{\frac{1}{1-n}}$ 即可得到原方程的通解。需要注意的是，当 $n>0$ 时，除以 $y^n$ 的操作预设了 $y \neq 0$，但显然 $y\equiv 0$ 也是原方程的一个解（此解可能包含在通解中，也可能是奇解，需单独说明）。
 \end{theorem}
 
 \begin{exercise}
 解方程 $\displaystyle\frac{\mathrm{d}y}{\mathrm{d}x}=\frac{4}{x}y+x\sqrt{y}\;(y>0,x \neq 0)$。
 \end{exercise}
 \begin{solution}
-这是 $n=\dfrac{1}{2}$ 的伯努利方程。令 $z=\sqrt{y}=y^{1/2}$，则
-$\dfrac{\mathrm{d}z}{\mathrm{d}x}=\dfrac{1}{2}y^{-1/2}\dfrac{\mathrm{d}y}{\mathrm{d}x}$，
-原方程化为
-\[
-\frac{\mathrm{d}z}{\mathrm{d}x}-\frac{2}{x}z=\frac{x}{2}.
-\]
-
-这是关于 $z$ 的一阶线性方程。由通解公式：
-\[
-z=\mathrm{e}^{\int\frac{2}{x}\mathrm{d}x}\!\left(C+\int\frac{x}{2}\mathrm{e}^{-\int\frac{2}{x}\mathrm{d}x}\mathrm{d}x\right)
-=x^{2}\!\left(C+\frac{1}{2}\ln|x|\right).
-\]
-
-回代 $z=\sqrt{y}$ 得通解
-\[
-\boxed{y=x^{4}\!\left(C+\frac{1}{2}\ln|x|\right)^{2}}.
-\]
+\begin{enumerate}
+    \item \textbf{识别方程类型}：原方程可改写为 $\displaystyle \frac{\mathrm{d}y}{\mathrm{d}x}-\frac{4}{x}y=xy^{\frac{1}{2}}$。这是一个伯努利指数为 $n=\frac{1}{2}$ 的伯努利方程。
+    
+    \item \textbf{变量代换}：方程两边同除以 $y^{\frac{1}{2}}$：
+    \[
+    y^{-\frac{1}{2}}\frac{\mathrm{d}y}{\mathrm{d}x} - \frac{4}{x}y^{\frac{1}{2}} = x
+    \]
+    令 $z = y^{1-\frac{1}{2}} = y^{\frac{1}{2}}$。对其求导得 $\displaystyle \frac{\mathrm{d}z}{\mathrm{d}x} = \frac{1}{2}y^{-\frac{1}{2}}\frac{\mathrm{d}y}{\mathrm{d}x}$，即 $y^{-\frac{1}{2}}\frac{\mathrm{d}y}{\mathrm{d}x} = 2\frac{\mathrm{d}z}{\mathrm{d}x}$。
+    
+    \item \textbf{化为线性方程}：代入原式，得到关于 $z$ 的方程：
+    \[
+    2\frac{\mathrm{d}z}{\mathrm{d}x} - \frac{4}{x}z = x \implies \frac{\mathrm{d}z}{\mathrm{d}x} - \frac{2}{x}z = \frac{x}{2}
+    \]
+    这已经是一个标准的一阶线性非齐次方程。
+    
+    \item \textbf{求解线性方程}：寻找积分因子 $\mu(x) = \exp\!\left(\int -\frac{2}{x}\,\mathrm{d}x\right) = \exp(-2\ln|x|) = x^{-2}$。
+    方程两边同乘 $x^{-2}$：
+    \[
+    x^{-2}\frac{\mathrm{d}z}{\mathrm{d}x} - 2x^{-3}z = \frac{1}{2}x^{-1} \implies \frac{\mathrm{d}}{\mathrm{d}x}\left(z \cdot x^{-2}\right) = \frac{1}{2x}
+    \]
+    两边同时积分：
+    \[
+    z \cdot x^{-2} = \int \frac{1}{2x}\,\mathrm{d}x \implies z \cdot x^{-2} = \frac{1}{2}\ln|x| + C
+    \]
+    解得 $z$ 的表达式：
+    \[
+    z = x^{2}\left(\frac{1}{2}\ln|x| + C\right)
+    \]
+    
+    \item \textbf{回代求原通解}：将 $z = \sqrt{y}$ 代回：
+    \[
+    \sqrt{y} = x^{2}\left(\frac{1}{2}\ln|x| + C\right)
+    \]
+    两边平方，得到原方程的通解：
+    \[
+    \boxed{y=x^{4}\left(C+\frac{1}{2}\ln|x|\right)^{2}}
+    \]
+\end{enumerate}
 \end{solution}
 
 \subsection{黎卡提方程与刘维尔方法}
 
 形如
 \[\frac{\mathrm{d}y}{\mathrm{d}x}=P(x)\,y^{2}+Q(x)\,y+R(x) \]
-的方程称为\textbf{黎卡提方程}（Riccati Equation）。它\textbf{一般没有初等解法}；但若能通过观察或其他途径找到一个特解 $y=\phi(x)$，则可通过变量代换将其化为伯努利方程从而求出通解。
+的方程称为\textbf{黎卡提方程}（Riccati Equation）。它\textbf{一般没有初等解法}；但若能通过观察或其他途径找到一个特解 $y=\phi(x)$，则可通过刘维尔方法（变量代换）将其化为伯努利方程，进而求出通解。
 
 \begin{theorem}[黎卡提方程的刘维尔解法] \label{thm:riccati-liouville}
-设已知黎卡提方程 $\frac{\mathrm{d}y}{\mathrm{d}x}=P(x)\,y^{2}+Q(x)\,y+R(x) $ 的一个特解 $y=\phi(x)$。作代换 $y=\phi(x)+u$，其中 $u$ 为新的未知函数，代入后化简可得
-\[
-\frac{\mathrm{d}u}{\mathrm{d}x}=\underbrace{[2P(x)\phi(x)+Q(x)]}_{\text{记为 }S(x)}u+P(x)\,u^{2}.
-\]
+设已知黎卡提方程 $\frac{\mathrm{d}y}{\mathrm{d}x}=P(x)\,y^{2}+Q(x)\,y+R(x)$ 的一个特解 $y=\phi(x)$。通过以下严密的代换过程，可以求得其通解：
 
-这是关于 $u$ 的伯努利方程（指数为 2）！再令 $w=u^{-1}$ 即可化为关于 $w$ 的一阶线性方程，最终求得通解
-\[
-\boxed{y=\phi(x)+\frac{\exp\!\left(\displaystyle\int S(x)\,\mathrm{d}x\right)}{C-\displaystyle\int P(x)\exp\!\left(\int S(x)\,\mathrm{d}x\right)\mathrm{d}x}}.
-\]
+\begin{enumerate}
+    \item \textbf{引入扰动函数}：作代换 $y=\phi(x)+u$，其中 $u=u(x)$ 为新的未知函数。对其求导得 $\frac{\mathrm{d}y}{\mathrm{d}x}=\phi'(x)+\frac{\mathrm{d}u}{\mathrm{d}x}$。
+    
+    \item \textbf{代入原方程并展开}：将 $y$ 和 $\frac{\mathrm{d}y}{\mathrm{d}x}$ 代入原黎卡提方程中：
+    \[
+    \phi'(x)+\frac{\mathrm{d}u}{\mathrm{d}x} = P(x)[\phi(x)+u]^{2} + Q(x)[\phi(x)+u] + R(x)
+    \]
+    展开等式右侧的括号：
+    \[
+    \phi'(x)+\frac{\mathrm{d}u}{\mathrm{d}x} = P(x)[\phi(x)^{2} + 2\phi(x)u + u^{2}] + Q(x)\phi(x) + Q(x)u + R(x)
+    \]
+    重新整理同类项，把不含 $u$ 的项、含 $u$ 的一次项和二次项分别组合：
+    \[
+    \phi'(x)+\frac{\mathrm{d}u}{\mathrm{d}x} = \left[P(x)\phi(x)^{2} + Q(x)\phi(x) + R(x)\right] + \left[2P(x)\phi(x) + Q(x)\right]u + P(x)u^{2}
+    \]
+    
+    \item \textbf{利用特解性质消元}：因为 $y=\phi(x)$ 是原方程的特解，所以它必定满足原方程，即恒有 $\phi'(x) = P(x)\phi(x)^{2} + Q(x)\phi(x) + R(x)$。
+    利用这一性质，上式左右两边的第一项恰好完全抵消！等式大幅简化为：
+    \[
+    \frac{\mathrm{d}u}{\mathrm{d}x} = \underbrace{[2P(x)\phi(x)+Q(x)]}_{\text{记为 }S(x)}u + P(x)u^{2}
+    \]
+    
+    \item \textbf{化为伯努利方程并求解}：记 $S(x) = 2P(x)\phi(x)+Q(x)$，上式变为：
+    \[
+    \frac{\mathrm{d}u}{\mathrm{d}x} - S(x)u = P(x)u^{2}
+    \]
+    这是一个指数为 $n=2$ 的\textbf{伯努利方程}！同除以 $u^2$：
+    \[
+    u^{-2}\frac{\mathrm{d}u}{\mathrm{d}x} - S(x)u^{-1} = P(x)
+    \]
+    令 $w = u^{-1}$，则 $\frac{\mathrm{d}w}{\mathrm{d}x} = -u^{-2}\frac{\mathrm{d}u}{\mathrm{d}x}$。代入后化为关于 $w$ 的线性方程：
+    \[
+    -\frac{\mathrm{d}w}{\mathrm{d}x} - S(x)w = P(x) \implies \frac{\mathrm{d}w}{\mathrm{d}x} + S(x)w = -P(x)
+    \]
+    
+    \item \textbf{得出最终解的结构}：利用一阶线性方程的通解公式解出 $w(x)$：
+    \[
+    w(x) = \exp\!\left(-\int S(x)\,\mathrm{d}x\right)\left[C - \int P(x)\exp\!\left(\int S(x)\,\mathrm{d}x\right)\mathrm{d}x\right]
+    \]
+    由于 $u = \frac{1}{w}$ 且 $y = \phi(x) + u$，最终得到黎卡提方程的通解公式：
+    \[
+    \boxed{y=\phi(x)+\frac{\exp\!\left(\displaystyle\int S(x)\,\mathrm{d}x\right)}{C-\displaystyle\int P(x)\exp\!\left(\int S(x)\,\mathrm{d}x\right)\mathrm{d}x}}
+    \]
+\end{enumerate}
 \end{theorem}
 
 \begin{remark}
-刘维尔方法的精妙之处在于：找到\textbf{一个}特解即可完全确定通解的结构。然而 ``找特解''这一步往往需要运气、直觉或特殊技巧，没有通用算法。这也是黎卡提方程在理论和应用中既重要又棘手的原因之一。
+刘维尔方法的精妙之处在于代数上的绝妙抵消：只要能找到\textbf{一个}特解 $\phi(x)$，其代入后的非线性常量项刚好能与等式左边的导数项相消，从而降维成伯努利方程，最终完全确定通解的结构。然而，“找特解”这一步往往需要观察方程的特征项、运用待定系数法或凭借一定的数学直觉，目前并没有通用的无脑算法。这也是黎卡提方程在理论和应用中既重要又棘手的原因之一。
 \end{remark}
 
 \subsection{其他可化为线性方程的类型}
@@ -2243,62 +2447,116 @@ z=\mathrm{e}^{\int\frac{2}{x}\mathrm{d}x}\!\left(C+\int\frac{x}{2}\mathrm{e}^{-\
 除了标准的伯努利形式外，还有多种方程可以通过巧妙的代换纳入线性框架。
 
 \begin{exercise}
-求解 $y'=\dfrac{1}{x}+\mathrm{e}^{y}$。
+求解 $y'=\displaystyle\frac{1}{x}+\mathrm{e}^{y}$。
 \end{exercise}
 \begin{solution}
-这不是前面讨论过的任何标准类型。但注意到方程右端含 $\mathrm{e}^{y}$，尝试以 $\mathrm{e}^{-y}$ 同乘两边：
-\[
-\mathrm{e}^{-y}\,y'-\frac{1}{x}\,\mathrm{e}^{-y}=1.
-\]
+\begin{enumerate}
+    \item \textbf{分离非线性项}：方程右端包含 $\mathrm{e}^{y}$，这不是我们熟悉的标准类型。为了消除它，我们在方程两边同时乘以 $\mathrm{e}^{-y}$：
+    \[
+    \mathrm{e}^{-y}\frac{\mathrm{d}y}{\mathrm{d}x} = \frac{1}{x}\mathrm{e}^{-y} + 1
+    \]
+    移项整理得：
+    \[
+    \mathrm{e}^{-y}\frac{\mathrm{d}y}{\mathrm{d}x} - \frac{1}{x}\mathrm{e}^{-y} = 1
+    \]
 
-令 $u=\mathrm{e}^{-y}$，则 $\dfrac{\mathrm{d}u}{\mathrm{d}x}=-\mathrm{e}^{-y}\,y'$，上式化为
-\[
-\frac{\mathrm{d}u}{\mathrm{d}x}+\frac{1}{x}u=-1,
-\]
-这是一阶线性方程。由通解公式：
-\[
-u=\mathrm{e}^{-\int\frac{1}{x}\mathrm{d}x}\!\left(-\int\mathrm{e}^{\int\frac{1}{x}\mathrm{d}x}\mathrm{d}x+C\right)
-=-\frac{x}{2}+\frac{C}{x}.
-\]
+    \item \textbf{引入新变量代换}：观察到 $\frac{\mathrm{d}}{\mathrm{d}x}(\mathrm{e}^{-y}) = -\mathrm{e}^{-y}\frac{\mathrm{d}y}{\mathrm{d}x}$，这启发我们作变量代换。令 $u=\mathrm{e}^{-y}$，则：
+    \[
+    \frac{\mathrm{d}u}{\mathrm{d}x} = -\mathrm{e}^{-y}\frac{\mathrm{d}y}{\mathrm{d}x} \implies \mathrm{e}^{-y}\frac{\mathrm{d}y}{\mathrm{d}x} = -\frac{\mathrm{d}u}{\mathrm{d}x}
+    \]
+    
+    \item \textbf{化为线性方程}：将上述关系代回整理后的方程中：
+    \[
+    -\frac{\mathrm{d}u}{\mathrm{d}x} - \frac{1}{x}u = 1
+    \]
+    两边同乘 $-1$，得到关于 $u$ 的标准一阶线性微分方程：
+    \[
+    \frac{\mathrm{d}u}{\mathrm{d}x} + \frac{1}{x}u = -1
+    \]
 
-回代 $u=\mathrm{e}^{-y}$ 得隐式通解
-\[
-\boxed{\mathrm{e}^{-y}=-\frac{x}{2}+\frac{C}{x}}
-\quad\Longleftrightarrow\quad
-\boxed{y=-\ln\!\left(Cx^{-1}-\frac{x}{2}\right)}
-\]
+    \item \textbf{求解一阶线性方程}：寻找积分因子 $\mu(x) = \exp\!\left(\int \frac{1}{x}\,\mathrm{d}x\right) = \mathrm{e}^{\ln|x|} = x$（此处为简化书写假设 $x>0$，实际上绝对值符号最终会消去）。
+    方程两边同乘 $x$：
+    \[
+    x\frac{\mathrm{d}u}{\mathrm{d}x} + u = -x \implies \frac{\mathrm{d}}{\mathrm{d}x}(xu) = -x
+    \]
+    两边同时积分：
+    \[
+    xu = \int -x\,\mathrm{d}x \implies xu = -\frac{x^{2}}{2} + C
+    \]
+    解得 $u$ 的表达式：
+    \[
+    u = -\frac{x}{2} + \frac{C}{x}
+    \]
+
+    \item \textbf{回代求原通解}：将 $u=\mathrm{e}^{-y}$ 代回：
+    \[
+    \mathrm{e}^{-y} = \frac{C}{x} - \frac{x}{2}
+    \]
+    两边取自然对数，并解出 $y$（注意等式右侧需大于 $0$）：
+    \[
+    -y = \ln\!\left(\frac{C}{x} - \frac{x}{2}\right) \implies \boxed{y=-\ln\!\left(\frac{C}{x}-\frac{x}{2}\right)}
+    \]
+\end{enumerate}
 \end{solution}
 
 \begin{exercise}
 求 $y'+\sin y+x\cos y+x=0$ 的通解。
 \end{exercise}
 \begin{solution}
-利用半角公式将方程变形：
-\[
-y'+2\sin\frac{y}{2}\cos\frac{y}{2}+(1+\cos y)\cdot x=0.
-\]
+\begin{enumerate}
+    \item \textbf{利用三角恒等式变形}：将方程中含有 $x$ 的两项提取公因式：
+    \[
+    y' + \sin y + x(1+\cos y) = 0
+    \]
+    利用二倍角（半角）公式 $\sin y = 2\sin\frac{y}{2}\cos\frac{y}{2}$ 以及 $1+\cos y = 2\cos^{2}\frac{y}{2}$，对方程进行变形：
+    \[
+    y' + 2\sin\frac{y}{2}\cos\frac{y}{2} + x\left(2\cos^{2}\frac{y}{2}\right) = 0
+    \]
 
-注意到 $1+\cos y=2\cos^{2}\dfrac{y}{2}$，两边除以 $2\cos^{2}\dfrac{y}{2}$ 得
-\[
-\frac{1}{2\cos^{2}\frac{y}{2}}\,y'+\tan\frac{y}{2}+x=0.
-\]
+    \item \textbf{构造可代换形式}：方程两边同时除以 $2\cos^{2}\frac{y}{2}$（假设 $\cos\frac{y}{2} \neq 0$）：
+    \[
+    \frac{1}{2\cos^{2}\frac{y}{2}}y' + \frac{\sin\frac{y}{2}}{\cos\frac{y}{2}} + x = 0 \implies \frac{1}{2}\sec^{2}\frac{y}{2}\cdot y' + \tan\frac{y}{2} + x = 0
+    \]
+    
+    \item \textbf{引入新变量代换}：注意到根据复合函数求导法则，$\frac{\mathrm{d}}{\mathrm{d}x}\!\left(\tan\frac{y}{2}\right) = \frac{1}{2}\sec^{2}\frac{y}{2}\cdot y'$。这部分刚好对应方程的第一项。
+    令 $u = \tan\frac{y}{2}$，则 $\frac{\mathrm{d}u}{\mathrm{d}x} = \frac{1}{2}\sec^{2}\frac{y}{2}\cdot y'$。代入方程得到：
+    \[
+    \frac{\mathrm{d}u}{\mathrm{d}x} + u + x = 0 \implies \frac{\mathrm{d}u}{\mathrm{d}x} + u = -x
+    \]
+    这转化为一个简单的一阶线性微分方程。
 
-而 $\dfrac{\mathrm{d}}{\mathrm{d}x}\!\left(\tan\frac{y}{2}\right)=\dfrac{1}{2\cos^{2}\frac{y}{2}}\,y'$，因此方程恰好等价于
-\[
-\left(\tan\frac{y}{2}\right)'+\tan\frac{y}{2}+x=0.
-\]
+    \item \textbf{常数变易法求解线性方程}：
+    首先求解对应的齐次方程 $\frac{\mathrm{d}u}{\mathrm{d}x} + u = 0$：
+    \[
+    \frac{\mathrm{d}u}{u} = -\mathrm{d}x \implies \ln|u| = -x + C_1 \implies u_h = C\mathrm{e}^{-x}
+    \]
+    令非齐次方程的特解为 $u = C(x)\mathrm{e}^{-x}$，对其求导得 $\frac{\mathrm{d}u}{\mathrm{d}x} = C'(x)\mathrm{e}^{-x} - C(x)\mathrm{e}^{-x}$。
+    代入原非齐次方程 $\frac{\mathrm{d}u}{\mathrm{d}x} + u = -x$ 中：
+    \[
+    \left[C'(x)\mathrm{e}^{-x} - C(x)\mathrm{e}^{-x}\right] + C(x)\mathrm{e}^{-x} = -x \implies C'(x)\mathrm{e}^{-x} = -x
+    \]
+    解出 $C'(x)$：
+    \[
+    C'(x) = -x\mathrm{e}^{x}
+    \]
+    利用分部积分法求解 $C(x)$：
+    \[
+    C(x) = \int -x\mathrm{e}^{x}\,\mathrm{d}x = -\left(x\mathrm{e}^{x} - \int \mathrm{e}^{x}\,\mathrm{d}x\right) = -x\mathrm{e}^{x} + \mathrm{e}^{x} + C = (1-x)\mathrm{e}^{x} + C
+    \]
+    将 $C(x)$ 代回 $u = C(x)\mathrm{e}^{-x}$：
+    \[
+    u = \left[(1-x)\mathrm{e}^{x} + C\right]\mathrm{e}^{-x} = 1-x + C\mathrm{e}^{-x}
+    \]
 
-令 $u=\tan\dfrac{y}{2}$，则得到一阶线性方程 $u'+u+x=0$。由常数变易法：
-齐次通解 $u_h=C\mathrm{e}^{-x}$；令 $u=C(x)\mathrm{e}^{-x}$ 代入得 $C'(x)=x\mathrm{e}^{x}$，积分之 $C(x)=(x-1)\mathrm{e}^{x}+C_0$。
-
-最终通解为
-\[
-\boxed{\tan\frac{y}{2}=C\,\mathrm{e}^{-x}+(1-x)}
-\]
+    \item \textbf{回代求原通解}：最后，将 $u = \tan\frac{y}{2}$ 回代：
+    \[
+    \boxed{\tan\frac{y}{2}=C\,\mathrm{e}^{-x}+(1-x)}
+    \]
+\end{enumerate}
 \end{solution}
 
 \begin{remark}
-这两个例子的共同策略是：\textbf{识别方程中非线性项的特殊结构}（指数函数、三角函数等），然后寻找合适的因式或代换将其“吸收”进新的未知函数中，从而使整体方程变为线性形式。这种技巧需要经验积累和对各类函数组合模式的敏感度。
+这两个例子的共同策略是：\textbf{识别方程中非线性项的特殊结构}（例如指数函数、由三角恒等式构成的函数等），然后寻找合适的因式或代换，将其导数形式与原函数形式“吸收”进新的未知函数中，从而使整体方程转化为标准的线性形式。这种技巧需要长期的经验积累，以及对各类函数（尤其是三角函数恒等变形）求导法则的极度敏感。
 \end{remark}
 
 \section{练习}
@@ -2312,216 +2570,264 @@ y'+2\sin\frac{y}{2}\cos\frac{y}{2}+(1+\cos y)\cdot x=0.
 \end{enumerate}
 \end{exercise}
 \begin{solution}
-求解下列一阶线性方程：
 \begin{enumerate}
-  \item[(1)] 
-此为标准形式的一阶线性微分方程，其中 $P(x)=1, Q(x)=\mathrm{e}^{-x}$。
-利用积分因子法，两边同乘 $\mathrm{e}^{\int 1 \mathrm{d}x} = \mathrm{e}^{x}$，方程化为：
-\[
-\mathrm{e}^{x}y' + \mathrm{e}^{x}y = 1 \implies (y\mathrm{e}^{x})' = 1
-\]
-两边积分得：
-\[
-y\mathrm{e}^{x} = x + C \implies y = (x+C)\mathrm{e}^{-x}
-\]
-代入初值条件 $y(0)=1$ 得到 $1 = (0+C)\mathrm{e}^{0} \implies C=1$。
-故特解为：$\mathbf{y = (x+1)\mathrm{e}^{-x}}$。
-\item[(2)]
-将方程化为标准形式：
-\[
-y' - \frac{2}{x}y = x\ln x
-\]
-这里 $P(x) = -\frac{2}{x}$，积分因子 $\mu(x) = \exp\!\left(\int-\frac{2}{x}\mathrm{d}x\right) = \mathrm{e}^{-2\ln|x|} = x^{-2}$。
-方程两边同乘 $x^{-2}$：
-\[
-x^{-2}y' - 2x^{-3}y = x^{-1}\ln x \implies (yx^{-2})' = \frac{\ln x}{x}
-\]
-两边积分（利用换元法 $\int \frac{\ln x}{x}\mathrm{d}x = \int \ln x\,\mathrm{d}(\ln x)$）：
-\[
-yx^{-2} = \frac{1}{2}(\ln x)^2 + C
-\]
-整理得通解：$\mathbf{y = x^2\left[ \frac{1}{2}(\ln x)^2 + C \right]}$。
-\item[(3)]方程两边同除以 $\cos x$ 化为标准型：
-\[
-y' + y\tan x = \cos x
-\]
-求出积分因子 $\mu(x) = \exp\!\left(\int\tan x\mathrm{d}x\right) = \exp(-\ln|\cos x|) = \sec x$。
-（也可以直接观察，原方程两边同乘 $\sec^2 x$）。
-方程两边同乘 $\sec x$ 得到：
-\[
-y'\sec x + y\sec x\tan x = 1 \implies (y\sec x)' = 1
-\]
-两边积分得到：
-\[
-y\sec x = x + C \implies y = (x+C)\cos x
-\]
-代入初值条件 $y(\pi)=\pi$，有 $\pi = (\pi+C)\cos\pi = -(\pi+C)$，解得 $C = -2\pi$。
-故特解为：$\mathbf{y = (x-2\pi)\cos x}$。
+  \item[(1)] \textbf{求解 $y'+y=\mathrm{e}^{-x},\; y(0)=1$}
+  \begin{enumerate}
+      \item 此为标准形式的一阶线性微分方程，其中 $P(x)=1, Q(x)=\mathrm{e}^{-x}$。
+      \item 计算积分因子：$\mu(x) = \exp\!\left(\int 1\,\mathrm{d}x\right) = \mathrm{e}^{x}$。
+      \item 方程两边同乘积分因子 $\mathrm{e}^{x}$，左边化为完全导数：
+      \[
+      \mathrm{e}^{x}y' + \mathrm{e}^{x}y = 1 \implies (y\mathrm{e}^{x})' = 1
+      \]
+      \item 两边同时对 $x$ 积分：
+      \[
+      \int (y\mathrm{e}^{x})'\,\mathrm{d}x = \int 1\,\mathrm{d}x \implies y\mathrm{e}^{x} = x + C \implies y = (x+C)\mathrm{e}^{-x}
+      \]
+      \item 代入初值条件 $y(0)=1$ 求解 $C$：
+      \[
+      1 = (0+C)\mathrm{e}^{0} \implies C=1
+      \]
+      \item 故初值问题的特解为：$\mathbf{y = (x+1)\mathrm{e}^{-x}}$。
+  \end{enumerate}
+
+  \item[(2)] \textbf{求解 $xy'-2y=x^{2}\ln x$}
+  \begin{enumerate}
+      \item 将方程两边同除以 $x$，化为标准形式：
+      \[
+      y' - \frac{2}{x}y = x\ln x
+      \]
+      \item 计算积分因子（注意 $\mathrm{e}^{\ln a} = a$）：
+      \[
+      \mu(x) = \exp\!\left(\int-\frac{2}{x}\,\mathrm{d}x\right) = \mathrm{e}^{-2\ln|x|} = x^{-2}
+      \]
+      \item 方程两边同乘 $x^{-2}$，左边凑成完全导数形式：
+      \[
+      x^{-2}y' - 2x^{-3}y = x^{-1}\ln x \implies (yx^{-2})' = \frac{\ln x}{x}
+      \]
+      \item 两边同时积分，右侧利用凑微分法 $\mathrm{d}(\ln x) = \frac{1}{x}\mathrm{d}x$：
+      \[
+      yx^{-2} = \int \frac{\ln x}{x}\,\mathrm{d}x = \int \ln x\,\mathrm{d}(\ln x) = \frac{1}{2}(\ln x)^2 + C
+      \]
+      \item 两边同乘 $x^2$，整理得通解：$\mathbf{y = x^2\left[ \frac{1}{2}(\ln x)^2 + C \right]}$。
+  \end{enumerate}
+
+  \item[(3)] \textbf{求解 $y'\cos x+y\sin x=\cos^{2}x,\; y(\pi)=\pi$}
+  \begin{enumerate}
+      \item 方程两边同除以 $\cos x$，化为标准型：
+      \[
+      y' + y\tan x = \cos x
+      \]
+      \item 计算积分因子：
+      \[
+      \mu(x) = \exp\!\left(\int\tan x\,\mathrm{d}x\right) = \exp(-\ln|\cos x|) = \sec x
+      \]
+      \item 方程两边同乘 $\sec x$（即 $\frac{1}{\cos x}$）：
+      \[
+      y'\sec x + y\sec x\tan x = 1 \implies (y\sec x)' = 1
+      \]
+      \item 两边积分得到：
+      \[
+      y\sec x = \int 1\,\mathrm{d}x \implies y\sec x = x + C \implies y = (x+C)\cos x
+      \]
+      \item 代入初值条件 $y(\pi)=\pi$ 求解常数 $C$：
+      \[
+      \pi = (\pi+C)\cos\pi \implies \pi = -(\pi+C) \implies \pi = -\pi - C \implies C = -2\pi
+      \]
+      \item 故特解为：$\mathbf{y = (x-2\pi)\cos x}$。
+  \end{enumerate}
 \end{enumerate}
 \end{solution}
 
 \begin{exercise}[基础：伯努利方程]
-求解下列伯努利方程（先判断指数 $n$）：
-\begin{enumerate}
-  \item[(1)] $y'-\dfrac{1}{x}y=x^{2}y^{3}$
-  \item[(2)] $y'+\dfrac{2}{x}y=\dfrac{1}{x^{2}}y^{2}\sin x$
-  \item[(3)] $3(1+x^{2})y'-2xy=(1+x^{2})^{2}y^{4}$
-\end{enumerate}
+求解下列伯努利方程（先判断指数 $n$）：\\
+（1） $y'-\dfrac{1}{x}y=x^{2}y^{3}$~~（2）$y'+\dfrac{2}{x}y=\dfrac{1}{x^{2}}y^{2}\sin x$~~（3）$3(1+x^{2})y'-2xy=(1+x^{2})^{2}y^{4}$
 \end{exercise}
+\begin{note}
+除以$y^n$这一步很重要，它让原本独立的$y'$变成一个可以凑微分的式子，这样就可以换元求解。
+\end{note}
 \begin{solution}
-\textbf{解(1):}
-这是 $n=3$ 的伯努利方程。两边同除以 $y^3$，得：
-\[
-y^{-3}y' - \frac{1}{x}y^{-2} = x^2
-\]
-作代换 $z = y^{1-3} = y^{-2}$，则 $z' = -2y^{-3}y'$。原方程同乘 $-2$ 可化为关于 $z$ 的线性方程：
-\[
-z' + \frac{2}{x}z = -2x^2
-\]
-求出积分因子 $\mu(x) = \exp\!\left(\int \frac{2}{x}\mathrm{d}x\right) = x^2$。方程化为 $(zx^2)' = -2x^4$。
-两边积分得：$zx^2 = -\frac{2}{5}x^5 + C \implies z = Cx^{-2} - \frac{2}{5}x^3$。
-回代 $z=y^{-2}$，得通解：
-\[
-y^{-2} = Cx^{-2} - \frac{2}{5}x^3 \implies \mathbf{y^2 = \frac{5x^2}{5C - 2x^5}} \quad (\text{另外 } y=0 \text{ 也是解})
-\]
+\begin{enumerate}
+  \item[(1)] \textbf{求解 $y'-\frac{1}{x}y=x^{2}y^{3}$}
+  \begin{enumerate}
+      \item 此为 $n=3$ 的伯努利方程。两边同除以 $y^3$，得：
+      \[
+      y^{-3}y' - \frac{1}{x}y^{-2} = x^2
+      \]
+      \item 作变量代换，令 $z = y^{1-3} = y^{-2}$。对其求导得 $z' = -2y^{-3}y'$，即 $y^{-3}y' = -\frac{1}{2}z'$。
+      \item 代回原方程，化为关于 $z$ 的一阶线性微分方程：
+      \[
+      -\frac{1}{2}z' - \frac{1}{x}z = x^2 \implies z' + \frac{2}{x}z = -2x^2
+      \]
+      \item 计算积分因子：$\mu(x) = \exp\!\left(\int \frac{2}{x}\,\mathrm{d}x\right) = \mathrm{e}^{2\ln|x|} = x^2$。
+      \item 两边同乘 $x^2$，化为 $(zx^2)' = -2x^4$。两边积分得：
+      \[
+      zx^2 = \int -2x^4\,\mathrm{d}x = -\frac{2}{5}x^5 + C \implies z = Cx^{-2} - \frac{2}{5}x^3
+      \]
+      \item 回代 $z=y^{-2}$，得通解：
+      \[
+      y^{-2} = Cx^{-2} - \frac{2}{5}x^3 \implies \mathbf{y^2 = \frac{5x^2}{5C - 2x^5}} \quad (\text{另外 } y\equiv0 \text{ 也是解})
+      \]
+  \end{enumerate}
 
-\textbf{解(2):}
-这是 $n=2$ 的伯努利方程。两边同除以 $y^2$，得：
-\[
-y^{-2}y' + \frac{2}{x}y^{-1} = \frac{\sin x}{x^2}
-\]
-作代换 $z = y^{-1}$，则 $z' = -y^{-2}y'$。方程化为：
-\[
--z' + \frac{2}{x}z = \frac{\sin x}{x^2} \implies z' - \frac{2}{x}z = -\frac{\sin x}{x^2}
-\]
-积分因子 $\mu(x) = \exp\!\left(-\int \frac{2}{x}\mathrm{d}x\right) = x^{-2}$。方程化为：
-\[
-(zx^{-2})' = -\frac{\sin x}{x^4}
-\]
-两边积分得到（右侧积分为非初等积分，保留积分号）：
-\[
-zx^{-2} = -\int \frac{\sin x}{x^4}\mathrm{d}x + C \implies z = x^2\left( C - \int \frac{\sin x}{x^4}\mathrm{d}x \right)
-\]
-回代 $z=y^{-1}$，得通解：
-\[
-\mathbf{y = \frac{1}{x^2\left( C - \displaystyle\int \frac{\sin x}{x^4}\mathrm{d}x \right)}} \quad (\text{另外 } y=0 \text{ 也是解})
-\]
+  \item[(2)] \textbf{求解 $y'+\frac{2}{x}y=\frac{1}{x^{2}}y^{2}\sin x$}
+  \begin{enumerate}
+      \item 此为 $n=2$ 的伯努利方程。两边同除以 $y^2$，得：
+      \[
+      y^{-2}y' + \frac{2}{x}y^{-1} = \frac{\sin x}{x^2}
+      \]
+      \item 作代换 $z = y^{1-2} = y^{-1}$，则 $z' = -y^{-2}y'$。代入化简：
+      \[
+      -z' + \frac{2}{x}z = \frac{\sin x}{x^2} \implies z' - \frac{2}{x}z = -\frac{\sin x}{x^2}
+      \]
+      \item 计算积分因子：$\mu(x) = \exp\!\left(\int-\frac{2}{x}\,\mathrm{d}x\right) = x^{-2}$。
+      \item 方程化为 $(zx^{-2})' = -\frac{\sin x}{x^4}$。两边积分（右侧为非初等积分，保留积分号）：
+      \[
+      zx^{-2} = \int -\frac{\sin x}{x^4}\,\mathrm{d}x + C \implies z = x^2\left( C - \int \frac{\sin x}{x^4}\,\mathrm{d}x \right)
+      \]
+      \item 回代 $z=y^{-1}$，得通解：
+      \[
+      \mathbf{y = \frac{1}{x^2\left( C - \displaystyle\int \frac{\sin x}{x^4}\,\mathrm{d}x \right)}} \quad (\text{另外 } y\equiv0 \text{ 也是解})
+      \]
+  \end{enumerate}
 
-\textbf{解(3):}
-这是 $n=4$ 的伯努利方程。先将方程化为标准形式：
-\[
-y' - \frac{2x}{3(1+x^2)}y = \frac{1+x^2}{3}y^4
-\]
-作代换 $z = y^{1-4} = y^{-3}$，则 $z' = -3y^{-4}y'$。
-方程两边同除以 $y^4$ 并乘以 $-3$：
-\[
--3y^{-4}y' + \frac{2x}{1+x^2}y^{-3} = -(1+x^2) \implies z' + \frac{2x}{1+x^2}z = -(1+x^2)
-\]
-积分因子 $\mu(x) = \exp\!\left(\int \frac{2x}{1+x^2}\mathrm{d}x\right) = 1+x^2$。方程化为：
-\[
-(z(1+x^2))' = -(1+x^2)^2 = -(1 + 2x^2 + x^4)
-\]
-积分得：
-\[
-z(1+x^2) = -x - \frac{2}{3}x^3 - \frac{1}{5}x^5 + C
-\]
-回代 $z=y^{-3}$，整理得通解：
-\[
-\mathbf{y^{-3} = \frac{C - x - \frac{2}{3}x^3 - \frac{1}{5}x^5}{1+x^2}} \quad (\text{另外 } y=0 \text{ 也是解})
-\]
+  \item[(3)] \textbf{求解 $3(1+x^{2})y'-2xy=(1+x^{2})^{2}y^{4}$}
+  \begin{enumerate}
+      \item 先将方程化为标准形式，两边同除以 $3(1+x^2)$：
+      \[
+      y' - \frac{2x}{3(1+x^2)}y = \frac{1+x^2}{3}y^4
+      \]
+      这是 $n=4$ 的伯努利方程。两边同除以 $y^4$：
+      \[
+      y^{-4}y' - \frac{2x}{3(1+x^2)}y^{-3} = \frac{1+x^2}{3}
+      \]
+      \item 作代换 $z = y^{1-4} = y^{-3}$，则 $z' = -3y^{-4}y'$，即 $y^{-4}y' = -\frac{1}{3}z'$。代入得：
+      \[
+      -\frac{1}{3}z' - \frac{2x}{3(1+x^2)}z = \frac{1+x^2}{3} \implies z' + \frac{2x}{1+x^2}z = -(1+x^2)
+      \]
+      \item 计算积分因子：$\mu(x) = \exp\!\left(\int \frac{2x}{1+x^2}\,\mathrm{d}x\right) = \exp(\ln(1+x^2)) = 1+x^2$。
+      \item 方程化为 $(z(1+x^2))' = -(1+x^2)^2 = -(1 + 2x^2 + x^4)$。
+      \item 两边积分得：
+      \[
+      z(1+x^2) = \int -(1 + 2x^2 + x^4)\,\mathrm{d}x = -x - \frac{2}{3}x^3 - \frac{1}{5}x^5 + C
+      \]
+      \item 回代 $z=y^{-3}$，整理得通解：
+      \[
+      \mathbf{y^{-3} = \frac{C - x - \frac{2}{3}x^3 - \frac{1}{5}x^5}{1+x^2}} \quad (\text{另外 } y\equiv0 \text{ 也是解})
+      \]
+  \end{enumerate}
+\end{enumerate}
 \end{solution}
 
 \begin{exercise}[提高：角色互换]
 解方程 $y'\,(x\ln y-1)=y\ln y$。（提示：将 $x$ 视为 $y$ 的函数）
 \end{exercise}
 \begin{solution}
- 由于方程中关于 $y$ 及其导数高度非线性，但关于 $x$ 是线性的。我们取互为反函数的关系，视 $x$ 为未知函数，$y$ 为自变量。
-将方程改写为：
-\[
-\frac{\mathrm{d}x}{\mathrm{d}y} = \frac{x\ln y - 1}{y\ln y} = \frac{1}{y}x - \frac{1}{y\ln y}
-\]
-整理成关于 $x=x(y)$ 的一阶线性标准形式：
-\[
-\frac{\mathrm{d}x}{\mathrm{d}y} - \frac{1}{y}x = -\frac{1}{y\ln y}
-\]
-此时 $P(y) = -\frac{1}{y}$，求出积分因子：
-\[
-\mu(y) = \exp\!\left(\int -\frac{1}{y}\mathrm{d}y\right) = \frac{1}{y}
-\]
-方程两边同乘以 $\frac{1}{y}$，得：
-\[
-\frac{1}{y}\frac{\mathrm{d}x}{\mathrm{d}y} - \frac{1}{y^2}x = -\frac{1}{y^2\ln y} \implies \left(x\cdot \frac{1}{y}\right)' = -\frac{1}{y^2\ln y}
-\]
-两边对 $y$ 积分：
-\[
-\frac{x}{y} = -\int \frac{1}{y^2\ln y}\mathrm{d}y + C \implies x = y\left( C - \int \frac{1}{y^2\ln y}\mathrm{d}y \right)
-\]
-注：右侧的积分可以通过换元法转化为指数积分函数，属于超越积分，无法用初等函数有限形式表示。可保留积分号，或利用指数积分形式表达：
-\[
-\mathbf{x = Cy - y \int \frac{\mathrm{d}y}{y^2\ln y}}
-\]
+\begin{enumerate}
+    \item \textbf{变量角色倒转}：观察方程，关于 $y$ 高度非线性，但关于 $x$ 是一次的。将 $y' = \frac{\mathrm{d}y}{\mathrm{d}x}$ 转换为 $\frac{1}{\frac{\mathrm{d}x}{\mathrm{d}y}}$，则方程变为：
+    \[
+    \frac{x\ln y - 1}{\frac{\mathrm{d}x}{\mathrm{d}y}} = y\ln y \implies \frac{\mathrm{d}x}{\mathrm{d}y} = \frac{x\ln y - 1}{y\ln y} = \frac{1}{y}x - \frac{1}{y\ln y}
+    \]
+    \item \textbf{化为线性方程标准型}：移项整理得关于未知函数 $x(y)$ 的一阶线性微分方程：
+    \[
+    \frac{\mathrm{d}x}{\mathrm{d}y} - \frac{1}{y}x = -\frac{1}{y\ln y}
+    \]
+    \item \textbf{求解线性方程}：计算积分因子 $P(y) = -\frac{1}{y}$：
+    \[
+    \mu(y) = \exp\!\left(\int -\frac{1}{y}\,\mathrm{d}y\right) = \mathrm{e}^{-\ln|y|} = \frac{1}{y}
+    \]
+    方程两边同乘以 $\frac{1}{y}$，凑成完全导数：
+    \[
+    \frac{1}{y}\frac{\mathrm{d}x}{\mathrm{d}y} - \frac{1}{y^2}x = -\frac{1}{y^2\ln y} \implies \left(x\cdot \frac{1}{y}\right)' = -\frac{1}{y^2\ln y}
+    \]
+    \item \textbf{积分求通解}：两边对 $y$ 积分：
+    \[
+    \frac{x}{y} = \int -\frac{1}{y^2\ln y}\,\mathrm{d}y + C \implies x = Cy - y \int \frac{1}{y^2\ln y}\,\mathrm{d}y
+    \]
+    注：右侧的积分为超越积分，无法用初等函数有限形式表示。保留积分号即为最终解：
+    \[
+    \mathbf{x = Cy - y \int \frac{\mathrm{d}y}{y^2\ln y}}
+    \]
+\end{enumerate}
 \end{solution}
 
 \begin{exercise}[提高：三角代换]
 解方程 $y'\sec x-y\tan x=\sec x\tan x$。（提示：乘以适当积分因子 $\mu(x)$ 使左端成为全微分）
 \end{exercise}
 \begin{solution}
-观察方程左端结构 $y'\sec x - y\tan x$，联想到商的导数公式或乘积的导数公式。
-我们知道 $(\cos x)' = -\sin x$。将原方程两边同时乘以 $\cos^2 x$，试图凑出全微分：
-\[
-y'\sec x\cdot\cos^2 x - y\tan x\cdot\cos^2 x = \sec x\tan x\cdot\cos^2 x
-\]
-化简得：
-\[
-y'\cos x - y\sin x = \frac{1}{\cos x}\frac{\sin x}{\cos x}\cos^2 x = \sin x
-\]
-奇迹发生了，左端恰好是函数乘积的导数：
-\[
-(y\cos x)' = \sin x
-\]
-对两边关于 $x$ 积分：
-\[
-y\cos x = -\cos x + C
-\]
-从而解出通解为：
-\[
-\mathbf{y = C\sec x - 1}
-\]
-此解法非常巧妙，完全避开了繁琐的标准积分因子公式推导。
+\begin{enumerate}
+    \item \textbf{观察方程结构}：方程左端为 $y'\sec x - y\tan x$。联想到乘积的导数公式 $(uv)' = u'v + uv'$，已知 $(\cos x)' = -\sin x$。
+    \item \textbf{构造全微分}：我们将原方程两边同时乘以 $\cos^2 x$：
+    \[
+    y'\sec x\cdot\cos^2 x - y\tan x\cdot\cos^2 x = \sec x\tan x\cdot\cos^2 x
+    \]
+    \item \textbf{恒等变形}：化简各项：
+    第一项：$y' \cdot \frac{1}{\cos x} \cdot \cos^2 x = y'\cos x$
+    第二项：$-y \cdot \frac{\sin x}{\cos x} \cdot \cos^2 x = -y\sin x$
+    等式右侧：$\frac{1}{\cos x} \cdot \frac{\sin x}{\cos x} \cdot \cos^2 x = \sin x$
+    原方程等价转化为：
+    \[
+    y'\cos x - y\sin x = \sin x
+    \]
+    \item \textbf{积分求解}：奇迹发生，左端恰好是函数乘积 $y\cos x$ 的导数：
+    \[
+    (y\cos x)' = \sin x
+    \]
+    对两边关于 $x$ 积分：
+    \[
+    y\cos x = \int \sin x\,\mathrm{d}x \implies y\cos x = -\cos x + C
+    \]
+    两边同除以 $\cos x$，解出通解：
+    \[
+    \mathbf{y = C\sec x - 1}
+    \]
+\end{enumerate}
 \end{solution}
 
 \begin{exercise}[黎卡提方程]
 验证 $y=\dfrac{1}{x}$ 是黎卡提方程 $y'=-y^{2}-\dfrac{1}{x}y+\dfrac{1}{x^2}$ 的一个特解，并由此求出通解。
 \end{exercise}
 \begin{solution}
-\textbf{验证：} 将 $y = \frac{1}{x}$ 代入方程：
-左端 $y' = -\frac{1}{x^2}$；
-右端 $=- \left(\frac{1}{x}\right)^2 - \frac{1}{x}\left(\frac{1}{x}\right) + \frac{1}{x^2} = -\frac{1}{x^2}$。
-左右两端相等，特解验证成立。
-
-\textbf{求解：} 利用刘维尔方法，设 $y = \frac{1}{x} + u(x)$，求导得 $y' = -\frac{1}{x^2} + u'$。
-代入原黎卡提方程：
-\[
--\frac{1}{x^2} + u' = -\left(\frac{1}{x} + u\right)^2 - \frac{1}{x}\left(\frac{1}{x} + u\right) + \frac{1}{x^2}
-\]
-展开右端并消项：
-\[
--\frac{1}{x^2} + u' = -\frac{1}{x^2} - \frac{2}{x}u - u^2 - \frac{1}{x^2} - \frac{1}{x}u + \frac{1}{x^2} \implies u' = -\frac{3}{x}u - u^2
-\]
-这是一个伯努利方程（$n=2$）。令 $w = u^{-1}$，则 $w' = -u^{-2}u'$。
-方程两边同除以 $u^2$ 并乘以 $-1$：
-\[
--u^{-2}u' - \frac{3}{x}u^{-1} = 1 \implies w' - \frac{3}{x}w = 1
-\]
-求出积分因子 $\mu(x) = \exp\!\left(-\int \frac{3}{x}\mathrm{d}x\right) = x^{-3}$。方程化为 $(wx^{-3})' = x^{-3}$。
-两边积分得：
-\[
-wx^{-3} = \int x^{-3}\mathrm{d}x = -\frac{1}{2}x^{-2} + C \implies w = Cx^3 - \frac{x}{2}
-\]
-回代 $u = w^{-1} = \frac{1}{Cx^3 - x/2}$，进而求得最终通解：
-\[
-\mathbf{y = \frac{1}{x} + \frac{1}{Cx^3 - \frac{x}{2}} = \frac{2Cx^2 + 1}{2Cx^3 - x}}
-\]
+\begin{enumerate}
+    \item \textbf{验证特解}：将 $y = \frac{1}{x}$ 及其导数 $y' = -\frac{1}{x^2}$ 代入原方程：
+    左端 $= -\frac{1}{x^2}$；
+    右端 $= - \left(\frac{1}{x}\right)^2 - \frac{1}{x}\left(\frac{1}{x}\right) + \frac{1}{x^2} = -\frac{1}{x^2} - \frac{1}{x^2} + \frac{1}{x^2} = -\frac{1}{x^2}$。
+    左右两端相等，故 $y = \frac{1}{x}$ 确为方程的特解。
+    
+    \item \textbf{刘维尔代换}：利用找到的特解，设原方程的解为 $y = \frac{1}{x} + u(x)$，对其求导得 $y' = -\frac{1}{x^2} + u'$。代入原方程：
+    \[
+    -\frac{1}{x^2} + u' = -\left(\frac{1}{x} + u\right)^2 - \frac{1}{x}\left(\frac{1}{x} + u\right) + \frac{1}{x^2}
+    \]
+    
+    \item \textbf{展开并消元}：展开等式右侧的完全平方和乘积式：
+    \[
+    -\frac{1}{x^2} + u' = -\left(\frac{1}{x^2} + \frac{2u}{x} + u^2\right) - \left(\frac{1}{x^2} + \frac{u}{x}\right) + \frac{1}{x^2}
+    \]
+    去掉括号并合并同类项，注意常数项 $-\frac{1}{x^2}$ 在左右两边完美抵消：
+    \[
+    u' = -\frac{2}{x}u - u^2 - \frac{1}{x}u \implies u' = -\frac{3}{x}u - u^2
+    \]
+    
+    \item \textbf{化为伯努利方程求解}：整理得 $u' + \frac{3}{x}u = -u^2$，这是 $n=2$ 的伯努利方程。
+    两边同除以 $u^2$，得 $u^{-2}u' + \frac{3}{x}u^{-1} = -1$。
+    令 $w = u^{-1}$，则 $w' = -u^{-2}u'$。代入方程：
+    \[
+    -w' + \frac{3}{x}w = -1 \implies w' - \frac{3}{x}w = 1
+    \]
+    计算积分因子：$\mu(x) = \exp\!\left(\int -\frac{3}{x}\,\mathrm{d}x\right) = x^{-3}$。方程化为 $(wx^{-3})' = x^{-3}$。两边积分：
+    \[
+    wx^{-3} = \int x^{-3}\,\mathrm{d}x = -\frac{1}{2}x^{-2} + C \implies w = Cx^3 - \frac{x}{2}
+    \]
+    
+    \item \textbf{回代求最终通解}：由于 $u = w^{-1}$，有 $u = \frac{1}{Cx^3 - \frac{x}{2}}$。
+    代回 $y = \frac{1}{x} + u$：
+    \[
+    y = \frac{1}{x} + \frac{1}{Cx^3 - \frac{x}{2}}
+    \]
+    通分化简：
+    \[
+    y = \frac{1}{x} + \frac{2}{2Cx^3 - x} = \frac{2Cx^2 - 1}{x(2Cx^2 - 1)} + \frac{2}{x(2Cx^2 - 1)} = \mathbf{\frac{2Cx^2 + 1}{2Cx^3 - x}}
+    \]
+\end{enumerate}
 \end{solution}
 
 \subsection{A组}
@@ -2529,109 +2835,144 @@ wx^{-3} = \int x^{-3}\mathrm{d}x = -\frac{1}{2}x^{-2} + C \implies w = Cx^3 - \f
 \begin{exercise}[基本概念]
 回答下列问题:
 \begin{enumerate}
-    \item[(1)] 什么叫一阶线性微分方程?
-    \item[(2)] 常数变易法的基本思想是什么?
-    \item[(3)] 如何将伯努利方程化为线性方程?
+  \item[(1)] 什么叫一阶线性微分方程?
+  \item[(2)] 常数变易法的基本思想是什么?
+  \item[(3)] 如何将伯努利方程化为线性方程?
 \end{enumerate}
 \end{exercise}
 \begin{solution}
 \begin{enumerate}
-    \item[(1)] 若一个一阶微分方程中，关于未知函数 $y$ 及其一阶导数 $y'$ 都是一次的（即没有平方、高次方或作为复合函数内部的自变量等情形），则称之为一阶线性微分方程。其一般标准形式可写作 $y' + P(x)y = Q(x)$。
-    \item[(2)] 常数变易法的基本思想是先求解非齐次方程对应的齐次方程 $y' + P(x)y = 0$ 得到通解 $y_h = C \mathrm{e}^{-\int P(x)\mathrm{d}x}$。然后假设非齐次方程的解具有相同结构，只是将原来作为常数的 $C$ “解放”为未知函数 $C(x)$，即假设通解为 \[y = C(x) \mathrm{e}^{-\int P(x)\mathrm{d}x}\]将其代入原非齐次方程中求解出 $C(x)$，进而得到完整通解。
-    \item[(3)] 对于标准形式的伯努利方程 $y' + P(x)y = Q(x)y^n$（$n \neq 0, 1$），可将其等式两边同除以 $y^n$，得到 $y^{-n}y' + P(x)y^{1-n} = Q(x)$。然后引入新的因变量代换 $z = y^{1-n}$，利用其导数关系 $z' = (1-n)y^{-n}y'$，即可将原方程严丝合缝地化为关于 $z$ 的一阶线性微分方程：$z' + (1-n)P(x)z = (1-n)Q(x)$。
+  \item[(1)] 若一个一阶微分方程中，关于未知函数 $y$ 及其一阶导数 $y'$ 都是一次的（即没有平方、高次方，也没有将 $y$ 放在诸如 $\sin y$ 等非线性函数内部的情形），则称之为一阶线性微分方程。其一般标准形式可写作 $\frac{\mathrm{d}y}{\mathrm{d}x} + P(x)y = Q(x)$。
+  
+  \item[(2)] 常数变易法的基本思想是：首先求解非齐次方程所对应的齐次方程 $y' + P(x)y = 0$，得到其通解形式 $y_h = C \mathrm{e}^{-\int P(x)\mathrm{d}x}$。然后，我们保留该解的整体代数结构，但假设通解中的任意常数 $C$ 不是固定的常数，而是一个关于自变量 $x$ 的待定函数 $C(x)$，即令 $y = C(x) \mathrm{e}^{-\int P(x)\mathrm{d}x}$。将其代入原非齐次方程中，方程中的 $C(x)$ 项会必然相消，只剩下 $C'(x)$ 项，通过一次积分求解出 $C(x)$，最终得到非齐次方程的通解。
+  
+  \item[(3)] 对于标准形式的伯努利方程 $y' + P(x)y = Q(x)y^n$（其中 $n \neq 0, 1$），通过以下两步核心代换可将其化为线性方程：
+      第一步：等式两边同除以非线性因子 $y^n$，得到 $y^{-n}y' + P(x)y^{1-n} = Q(x)$。
+      第二步：引入新的未知函数进行变量代换，令 $z = y^{1-n}$。利用复合函数求导法则，其导数为 $z' = (1-n)y^{-n}y'$。将该关系代入上一步骤的方程中，即可将其完美转化为关于 $z$ 的一阶线性微分方程：$z' + (1-n)P(x)z = (1-n)Q(x)$。
 \end{enumerate}
 \end{solution}
 
 \begin{exercise}[一阶线性微分方程求通解]
-求下列微分方程的通解:
-\begin{enumerate}
-    \item[(1)] $\displaystyle \frac{\mathrm{d}y}{\mathrm{d}x} + y\tan x = \cos x$;
-    \item[(2)] $\displaystyle \frac{\mathrm{d}y}{\mathrm{d}x} - y\cot x = 2x\sin x$;
-    \item[(3)] $\displaystyle (y^2 - 6x)\frac{\mathrm{d}y}{\mathrm{d}x} + 2y = 0$;
-    \item[(4)] $\displaystyle y' + y\cos x = \mathrm{e}^{-\sin x}$.
-\end{enumerate}
+求下列微分方程的通解:\\
+\begin{tabular}{ll}
+  (1) $\displaystyle \frac{\mathrm{d}y}{\mathrm{d}x} + y\tan x = \cos x$; &
+  (2) $\displaystyle \frac{\mathrm{d}y}{\mathrm{d}x} - y\cot x = 2x\sin x$; \\[2ex]
+  (3) $\displaystyle (y^2 - 6x)\frac{\mathrm{d}y}{\mathrm{d}x} + 2y = 0$; &
+  (4) $\displaystyle y' + y\cos x = \mathrm{e}^{-\sin x}$.
+\end{tabular}
 \end{exercise}
 \begin{solution}
-\textbf{解(1):}
-这是标准的一阶线性微分方程，积分因子 $\mu(x) = \mathrm{e}^{\int \tan x\mathrm{d}x} = \sec x$。
-方程两边同乘 $\sec x$ 得到 $(y\sec x)' = \cos x \cdot \sec x = 1$。
-积分得 $y\sec x = x + C$，故通解为：
-\[
-\mathbf{y = (x+C)\cos x}
-\]
+\begin{enumerate}
+    \item[(1)] \textbf{求解 $\frac{\mathrm{d}y}{\mathrm{d}x} + y\tan x = \cos x$}
+    \begin{enumerate}
+        \item 积分因子 $\mu(x) = \exp\!\left(\int \tan x\,\mathrm{d}x\right) = \mathrm{e}^{-\ln|\cos x|} = \sec x$。
+        \item 方程两边同乘 $\sec x$ 得到 $(y\sec x)' = \cos x \cdot \sec x = 1$。
+        \item 积分得 $y\sec x = \int 1\,\mathrm{d}x = x + C$。
+        \item 故通解为：$\mathbf{y = (x+C)\cos x}$。
+    \end{enumerate}
 
-\textbf{解(2):}
-积分因子 $\mu(x) = \mathrm{e}^{-\int \cot x\mathrm{d}x} = \mathrm{e}^{-\ln|\sin x|} = \csc x$。
-两边同乘 $\csc x$ 得 $(y\csc x)' = 2x\sin x \cdot \csc x = 2x$。
-积分得 $y\csc x = x^2 + C$，故通解为：
-\[
-\mathbf{y = (x^2+C)\sin x}
-\]
+    \item[(2)] \textbf{求解 $\frac{\mathrm{d}y}{\mathrm{d}x} - y\cot x = 2x\sin x$}
+    \begin{enumerate}
+        \item 积分因子 $\mu(x) = \exp\!\left(\int -\cot x\,\mathrm{d}x\right) = \mathrm{e}^{-\ln|\sin x|} = \csc x$。
+        \item 两边同乘 $\csc x$ 得 $(y\csc x)' = 2x\sin x \cdot \csc x = 2x$。
+        \item 积分得 $y\csc x = \int 2x\,\mathrm{d}x = x^2 + C$。
+        \item 故通解为：$\mathbf{y = (x^2+C)\sin x}$。
+    \end{enumerate}
 
-\textbf{解(3):}
-方程关于 $y$ 不是线性的，采取角色互换策略，视 $x$ 为 $y$ 的函数。
-将方程整理为 $\displaystyle 2y\frac{\mathrm{d}x}{\mathrm{d}y} = 6x - y^2 \implies \frac{\mathrm{d}x}{\mathrm{d}y} - \frac{3}{y}x = -\frac{y}{2}$。
-这是一阶线性微分方程。积分因子 $\mu(y) = \mathrm{e}^{\int -\frac{3}{y}\mathrm{d}y} = y^{-3}$。
-方程化为 $(x y^{-3})' = -\frac{y}{2}y^{-3} = -\frac{1}{2}y^{-2}$。
-积分得 $xy^{-3} = \frac{1}{2}y^{-1} + C$，故通解为：
-\[
-\mathbf{x = Cy^3 + \frac{1}{2}y^2} \quad (\text{另外 } y=0 \text{ 也是解})
-\]
+    \item[(3)] \textbf{求解 $(y^2 - 6x)\frac{\mathrm{d}y}{\mathrm{d}x} + 2y = 0$}
+    \begin{enumerate}
+        \item 方程关于 $y$ 不是线性的，采取角色互换策略，视 $x$ 为 $y$ 的函数。将原方程转化为：
+        \[
+        2y\frac{\mathrm{d}x}{\mathrm{d}y} = 6x - y^2 \implies \frac{\mathrm{d}x}{\mathrm{d}y} - \frac{3}{y}x = -\frac{y}{2}
+        \]
+        \item 这是一阶线性微分方程。积分因子 $\mu(y) = \exp\!\left(\int -\frac{3}{y}\,\mathrm{d}y\right) = y^{-3}$。
+        \item 方程化为 $(x y^{-3})' = -\frac{y}{2}y^{-3} = -\frac{1}{2}y^{-2}$。
+        \item 积分得 $xy^{-3} = \int -\frac{1}{2}y^{-2}\,\mathrm{d}y = \frac{1}{2}y^{-1} + C$。
+        \item 故通解为：$\mathbf{x = Cy^3 + \frac{1}{2}y^2} \quad (\text{另外 } y\equiv0 \text{ 也是解})$。
+    \end{enumerate}
 
-\textbf{解(4):}
-积分因子 $\mu(x) = \mathrm{e}^{\int \cos x\mathrm{d}x} = \mathrm{e}^{\sin x}$。
-两边同乘 $\mathrm{e}^{\sin x}$ 得 $(y\mathrm{e}^{\sin x})' = \mathrm{e}^{-\sin x} \cdot \mathrm{e}^{\sin x} = 1$。
-积分得 $y\mathrm{e}^{\sin x} = x + C$，故通解为：
-\[
-\mathbf{y = (x+C)\mathrm{e}^{-\sin x}}
-\]
+    \item[(4)] \textbf{求解 $y' + y\cos x = \mathrm{e}^{-\sin x}$}
+    \begin{enumerate}
+        \item 积分因子 $\mu(x) = \exp\!\left(\int \cos x\,\mathrm{d}x\right) = \mathrm{e}^{\sin x}$。
+        \item 两边同乘 $\mathrm{e}^{\sin x}$ 得 $(y\mathrm{e}^{\sin x})' = \mathrm{e}^{-\sin x} \cdot \mathrm{e}^{\sin x} = 1$。
+        \item 积分得 $y\mathrm{e}^{\sin x} = \int 1\,\mathrm{d}x = x + C$。
+        \item 故通解为：$\mathbf{y = (x+C)\mathrm{e}^{-\sin x}}$。
+    \end{enumerate}
+\end{enumerate}
 \end{solution}
 
 \begin{exercise}[一阶线性微分方程初值问题]
-求下列初值问题的解:
-\begin{enumerate}
-    \item[(1)] $\displaystyle (x+1)y' + y = 2\mathrm{e}^{-x},\,y(1)=0$;
-    \item[(2)] $\displaystyle \frac{\mathrm{d}y}{\mathrm{d}x} - y\tan x = \sec x,\,y(0)=0$;
-    \item[(3)] $\displaystyle \frac{\mathrm{d}y}{\mathrm{d}x} + \frac{3}{x}y = \frac{2}{x^3},\,y(1)=1$;
-    \item[(4)] $\displaystyle y' + \frac{y}{x} + \mathrm{e}^x = 0,\,y(1)=0$.
-\end{enumerate}
+求下列初值问题的解:\\
+\begin{tabular}{ll}
+  (1) $\displaystyle (x+1)y' + y = 2\mathrm{e}^{-x},\,y(1)=0$; &
+  (2) $\displaystyle \frac{\mathrm{d}y}{\mathrm{d}x} - y\tan x = \sec x,\,y(0)=0$; \\[2ex]
+  (3) $\displaystyle \frac{\mathrm{d}y}{\mathrm{d}x} + \frac{3}{x}y = \frac{2}{x^3},\,y(1)=1$; &
+  (4) $\displaystyle y' + \frac{y}{x} + \mathrm{e}^x = 0,\,y(1)=0$.
+\end{tabular}
 \end{exercise}
 \begin{solution}
 \begin{enumerate}
-    \item[(1)]观察左端即为乘积的导数形式：$((x+1)y)' = 2\mathrm{e}^{-x}$。
-两边直接积分：$(x+1)y = -2\mathrm{e}^{-x} + C$。
-代入初值 $y(1)=0$，得到 $(1+1)\cdot 0 = -2\mathrm{e}^{-1} + C \implies C = \frac{2}{\mathrm{e}}$。
-故初值问题的解为：
-\[
-\mathbf{y = \frac{2\mathrm{e}^{-1} - 2\mathrm{e}^{-x}}{x+1}}
-\]
-\item[(2)]积分因子 $\mu(x) = \mathrm{e}^{-\int \tan x\mathrm{d}x} = \cos x$。
-方程两边同乘 $\cos x$ 得到 $(y\cos x)' = \sec x \cdot \cos x = 1$。
-积分得 $y\cos x = x + C$。
-代入初值 $y(0)=0$，得 $0\cdot \cos 0 = 0 + C \implies C = 0$。
-故初值问题的解为：
-\[
-\mathbf{y = x\sec x}
-\]
-\item[(3)]积分因子 $\mu(x) = \mathrm{e}^{\int \frac{3}{x}\mathrm{d}x} = x^3$。
-两边同乘 $x^3$ 得 $(y x^3)' = \frac{2}{x^3} \cdot x^3 = 2$。
-积分得 $yx^3 = 2x + C$。
-代入初值 $y(1)=1$，得 $1\cdot 1^3 = 2\cdot 1 + C \implies C = -1$。
-故初值问题的解为：
-\[
-\mathbf{y = \frac{2x - 1}{x^3} = 2x^{-2} - x^{-3}}
-\]
-\item[(4)]积分因子 $\mu(x) = \mathrm{e}^{\int \frac{1}{x}\mathrm{d}x} = x$。
-将方程整理为 $y' + \frac{1}{x}y = -\mathrm{e}^x$，两边同乘 $x$ 得到 $(xy)' = -x\mathrm{e}^x$。
-利用分部积分法对右端积分：
-\[
-xy = -\int x\mathrm{e}^x\mathrm{d}x = -(x\mathrm{e}^x - \mathrm{e}^x) + C = (1-x)\mathrm{e}^x + C
-\]
-代入初值 $y(1)=0$，得到 $1\cdot 0 = (1-1)\mathrm{e}^1 + C \implies C=0$。
-故初值问题的解为：
-\[
-\mathbf{y = \frac{1-x}{x}\mathrm{e}^x}
-\]
+  \item[(1)] \textbf{求解 $(x+1)y' + y = 2\mathrm{e}^{-x},\,y(1)=0$}
+  \begin{enumerate}
+      \item 观察方程左端，利用乘积导数法则 $(uv)'=u'v+uv'$，可知它恰好是 $((x+1)y)'$：
+      \[
+      ((x+1)y)' = 2\mathrm{e}^{-x}
+      \]
+      \item 两边直接对 $x$ 积分：
+      \[
+      (x+1)y = \int 2\mathrm{e}^{-x}\,\mathrm{d}x = -2\mathrm{e}^{-x} + C
+      \]
+      \item 代入初值条件 $y(1)=0$ 求解 $C$：
+      \[
+      (1+1)\cdot 0 = -2\mathrm{e}^{-1} + C \implies 0 = -\frac{2}{\mathrm{e}} + C \implies C = 2\mathrm{e}^{-1}
+      \]
+      \item 故初值问题的解为：
+      \[
+      \mathbf{y = \frac{2\mathrm{e}^{-1} - 2\mathrm{e}^{-x}}{x+1}}
+      \]
+  \end{enumerate}
+
+  \item[(2)] \textbf{求解 $\frac{\mathrm{d}y}{\mathrm{d}x} - y\tan x = \sec x,\,y(0)=0$}
+  \begin{enumerate}
+      \item 计算积分因子：$\mu(x) = \exp\!\left(\int -\tan x\,\mathrm{d}x\right) = \mathrm{e}^{\ln|\cos x|} = \cos x$。
+      \item 方程两边同乘 $\cos x$ 得到：
+      \[
+      y'\cos x - y\sin x = 1 \implies (y\cos x)' = 1
+      \]
+      \item 两边积分得 $y\cos x = \int 1\,\mathrm{d}x = x + C$。
+      \item 代入初值条件 $y(0)=0$ 求解 $C$：
+      \[
+      0\cdot \cos 0 = 0 + C \implies C = 0
+      \]
+      \item 故初值问题的解为：$\mathbf{y = \frac{x}{\cos x} = x\sec x}$。
+  \end{enumerate}
+
+  \item[(3)] \textbf{求解 $\frac{\mathrm{d}y}{\mathrm{d}x} + \frac{3}{x}y = \frac{2}{x^3},\,y(1)=1$}
+  \begin{enumerate}
+      \item 计算积分因子：$\mu(x) = \exp\!\left(\int \frac{3}{x}\,\mathrm{d}x\right) = \mathrm{e}^{3\ln|x|} = x^3$。
+      \item 两边同乘 $x^3$ 得 $(y x^3)' = \frac{2}{x^3} \cdot x^3 = 2$。
+      \item 两边积分得 $yx^3 = \int 2\,\mathrm{d}x = 2x + C$。
+      \item 代入初值条件 $y(1)=1$ 求解 $C$：
+      \[
+      1\cdot 1^3 = 2\cdot 1 + C \implies C = -1
+      \]
+      \item 故初值问题的解为：$\mathbf{y = \frac{2x - 1}{x^3} = 2x^{-2} - x^{-3}}$。
+  \end{enumerate}
+
+  \item[(4)] \textbf{求解 $y' + \frac{y}{x} + \mathrm{e}^x = 0,\,y(1)=0$}
+  \begin{enumerate}
+      \item 整理为标准形式 $y' + \frac{1}{x}y = -\mathrm{e}^x$。积分因子 $\mu(x) = \exp\!\left(\int \frac{1}{x}\,\mathrm{d}x\right) = x$。
+      \item 两边同乘 $x$ 得到 $(xy)' = -x\mathrm{e}^x$。
+      \item 利用分部积分法对右端进行积分 $\int u\,\mathrm{d}v = uv - \int v\,\mathrm{d}u$（令 $u=x, \mathrm{d}v=\mathrm{e}^x\mathrm{d}x$）：
+      \[
+      xy = \int -x\mathrm{e}^x\,\mathrm{d}x = -\left(x\mathrm{e}^x - \int \mathrm{e}^x\,\mathrm{d}x\right) = -x\mathrm{e}^x + \mathrm{e}^x + C = (1-x)\mathrm{e}^x + C
+      \]
+      \item 代入初值条件 $y(1)=0$ 求解 $C$：
+      \[
+      1\cdot 0 = (1-1)\mathrm{e}^1 + C \implies 0 = 0 + C \implies C=0
+      \]
+      \item 故初值问题的解为：$\mathbf{y = \frac{1-x}{x}\mathrm{e}^x}$。
+  \end{enumerate}
 \end{enumerate}
 \end{solution}
 
@@ -2639,107 +2980,115 @@ xy = -\int x\mathrm{e}^x\mathrm{d}x = -(x\mathrm{e}^x - \mathrm{e}^x) + C = (1-x
 设一曲线通过原点, 且它在点$(x,y)$处的切线斜率等于$2x+y$. 求这曲线方程.
 \end{exercise}
 \begin{solution}
-由几何意义知，切线斜率即导数，故列出微分方程：
-\[
-y' = 2x + y \implies y' - y = 2x
-\]
-这是一阶线性微分方程，积分因子为 $\mu(x) = \mathrm{e}^{\int -1\mathrm{d}x} = \mathrm{e}^{-x}$。
-两边同乘 $\mathrm{e}^{-x}$：
-\[
-(y\mathrm{e}^{-x})' = 2x\mathrm{e}^{-x}
-\]
-通过分部积分对两边进行积分：
-\[
-y\mathrm{e}^{-x} = \int 2x\mathrm{e}^{-x}\mathrm{d}x = -2x\mathrm{e}^{-x} + \int 2\mathrm{e}^{-x}\mathrm{d}x = -2x\mathrm{e}^{-x} - 2\mathrm{e}^{-x} + C = -2(x+1)\mathrm{e}^{-x} + C
-\]
-两边同乘 $\mathrm{e}^x$ 得到通解 $y = -2(x+1) + C\mathrm{e}^x$。
-由于曲线通过原点 $(0,0)$，代入条件得到 $0 = -2(0+1) + C\mathrm{e}^0 \implies C = 2$。
-故该曲线的方程为：
-\[
-\mathbf{y = 2\mathrm{e}^x - 2x - 2}
-\]
+\begin{enumerate}
+    \item \textbf{建立微分方程}：由导数的几何意义可知，曲线上任意一点 $(x,y)$ 的切线斜率即为其导数值 $y'$。根据题意建立微分方程：
+    \[
+    y' = 2x + y \implies y' - y = 2x
+    \]
+    \item \textbf{求解一阶线性方程}：这是一阶线性常微分方程，积分因子为 $\mu(x) = \exp\!\left(\int -1\,\mathrm{d}x\right) = \mathrm{e}^{-x}$。
+    方程两边同乘 $\mathrm{e}^{-x}$，转化为完全导数形式：
+    \[
+    (y\mathrm{e}^{-x})' = 2x\mathrm{e}^{-x}
+    \]
+    \item \textbf{分部积分求通解}：对两边关于 $x$ 积分，右侧运用分部积分法（令 $u=2x, \mathrm{d}v=\mathrm{e}^{-x}\mathrm{d}x$）：
+    \[
+    y\mathrm{e}^{-x} = \int 2x\mathrm{e}^{-x}\,\mathrm{d}x = -2x\mathrm{e}^{-x} - \int -2\mathrm{e}^{-x}\,\mathrm{d}x = -2x\mathrm{e}^{-x} - 2\mathrm{e}^{-x} + C
+    \]
+    提取公因式，两边同乘 $\mathrm{e}^x$ 得到通解：
+    \[
+    y = -2(x+1) + C\mathrm{e}^x
+    \]
+    \item \textbf{应用初值条件}：由于曲线通过原点 $(0,0)$，代入通解求特定常数 $C$：
+    \[
+    0 = -2(0+1) + C\mathrm{e}^0 \implies 0 = -2 + C \implies C = 2
+    \]
+    \item \textbf{得出最终方程}：该曲线的方程为：
+    \[
+    \mathbf{y = 2\mathrm{e}^x - 2x - 2}
+    \]
+\end{enumerate}
 \end{solution}
 
 \begin{exercise}[应用题: 电路模型]
 设有一个由电阻$R=10\ \Omega$、电感$L=2\ \mathrm{H}$和电源电压$E=20\sin5t$ (V) 串联组成的电路. 开关$\mathrm{S}$合上后, 电路中有电流通过. 求电流$I$与时间$t$的函数关系. (利用回路电压定律$\displaystyle E=RI+L\frac{\mathrm{d}I}{\mathrm{d}t}$.)
 \end{exercise}
 \begin{solution}
-根据基尔霍夫电压定律列出微分方程：
-\[
-2\frac{\mathrm{d}I}{\mathrm{d}t} + 10I = 20\sin 5t \implies \frac{\mathrm{d}I}{\mathrm{d}t} + 5I = 10\sin 5t
-\]
-这是一个关于电流 $I(t)$ 的一阶线性非齐次常微分方程。积分因子 $\mu(t) = \mathrm{e}^{\int 5\mathrm{d}t} = \mathrm{e}^{5t}$。
-方程转化为：
-\[
-(I\mathrm{e}^{5t})' = 10\mathrm{e}^{5t}\sin 5t
-\]
-利用多次分部积分或欧拉公式求解右端的积分：
-\[
-\int \mathrm{e}^{5t}\sin 5t\,\mathrm{d}t = \frac{\mathrm{e}^{5t}}{5^2 + 5^2}(5\sin 5t - 5\cos 5t) = \frac{\mathrm{e}^{5t}}{10}(\sin 5t - \cos 5t)
-\]
-代入前式：
-\[
-I\mathrm{e}^{5t} = 10 \cdot \frac{\mathrm{e}^{5t}}{10}(\sin 5t - \cos 5t) + C = \mathrm{e}^{5t}(\sin 5t - \cos 5t) + C
-\]
-两边同乘 $\mathrm{e}^{-5t}$ 得到通解：
-\[
-I(t) = \sin 5t - \cos 5t + C\mathrm{e}^{-5t}
-\]
-对于 RL 串联电路，合上开关的瞬间电流无法突变，即 $I(0) = 0$。代入求特解：
-\[
-0 = \sin 0 - \cos 0 + C\mathrm{e}^0 \implies 0 = -1 + C \implies C = 1
-\]
-故电流与时间的函数关系为：
-\[
-\mathbf{I(t) = \sin 5t - \cos 5t + \mathrm{e}^{-5t}}
-\]
+\begin{enumerate}
+    \item \textbf{建立方程模型}：根据题干给出的基尔霍夫电压定律（回路电压定律），代入具体的物理参数 $R=10, L=2, E=20\sin 5t$：
+    \[
+    2\frac{\mathrm{d}I}{\mathrm{d}t} + 10I = 20\sin 5t \implies \frac{\mathrm{d}I}{\mathrm{d}t} + 5I = 10\sin 5t
+    \]
+    这是一个关于电流 $I(t)$ 的一阶线性非齐次常微分方程。
+    \item \textbf{寻找积分因子}：计算积分因子 $\mu(t) = \exp\!\left(\int 5\,\mathrm{d}t\right) = \mathrm{e}^{5t}$。
+    方程两边同乘 $\mathrm{e}^{5t}$：
+    \[
+    (I\mathrm{e}^{5t})' = 10\mathrm{e}^{5t}\sin 5t
+    \]
+    \item \textbf{积分求解}：利用标准积分公式 $\int \mathrm{e}^{at}\sin(bt)\,\mathrm{d}t = \frac{\mathrm{e}^{at}}{a^2+b^2}(a\sin bt - b\cos bt)$（可以通过两次分部积分推导得出），此处 $a=5, b=5$：
+    \[
+    \int \mathrm{e}^{5t}\sin 5t\,\mathrm{d}t = \frac{\mathrm{e}^{5t}}{5^2 + 5^2}(5\sin 5t - 5\cos 5t) = \frac{\mathrm{e}^{5t}}{50} \cdot 5(\sin 5t - \cos 5t) = \frac{\mathrm{e}^{5t}}{10}(\sin 5t - \cos 5t)
+    \]
+    将积分结果代回：
+    \[
+    I\mathrm{e}^{5t} = 10 \left[ \frac{\mathrm{e}^{5t}}{10}(\sin 5t - \cos 5t) \right] + C = \mathrm{e}^{5t}(\sin 5t - \cos 5t) + C
+    \]
+    两边同乘 $\mathrm{e}^{-5t}$ 得到通解：
+    \[
+    I(t) = \sin 5t - \cos 5t + C\mathrm{e}^{-5t}
+    \]
+    \item \textbf{利用物理初值条件求特解}：对于含有电感 $L$ 的 RL 串联电路，依据电磁学原理，合上开关的瞬间电流无法突变，即满足初值条件 $I(0) = 0$。代入求 $C$：
+    \[
+    0 = \sin 0 - \cos 0 + C\mathrm{e}^0 \implies 0 = 0 - 1 + C \implies C = 1
+    \]
+    \item \textbf{得出结论}：电流与时间的函数关系为：
+    \[
+    \mathbf{I(t) = \sin 5t - \cos 5t + \mathrm{e}^{-5t}}
+    \]
+\end{enumerate}
 \end{solution}
 
 \begin{exercise}[溶液混合问题]
-    一容器内盛有$50\ \mathrm{L}$的盐水溶液, 其中含有$10\ \mathrm{g}$的盐. 现将每升含$2\ \mathrm{g}$盐的溶液以每分钟$5\ \mathrm{L}$的速率注入容器, 并不断进行搅拌, 使混合液迅速达到均匀, 同时混合液以每分钟$3\ \mathrm{L}$的速率流出容器. 问在任一时刻$t$容器中含盐量是多少?
+一容器内盛有$50\ \mathrm{L}$的盐水溶液, 其中含有$10\ \mathrm{g}$的盐. 现将每升含$2\ \mathrm{g}$盐的溶液以每分钟$5\ \mathrm{L}$的速率注入容器, 并不断进行搅拌, 使混合液迅速达到均匀, 同时混合液以每分钟$3\ \mathrm{L}$的速率流出容器. 问在任一时刻$t$容器中含盐量是多少?
 \end{exercise}
 \begin{solution}
-设时刻 $t$ (分钟) 时容器中的含盐量为 $y(t)$ (克)。
-首先计算时刻 $t$ 容器内溶液的总体积 $V(t)$：初始体积为 $50\ \mathrm{L}$，每分钟流入 $5\ \mathrm{L}$，流出 $3\ \mathrm{L}$，因此净增加率为 $2\ \mathrm{L}/\text{min}$，故：
-\[
-V(t) = 50 + (5-3)t = 50 + 2t \ (\mathrm{L})
-\]
-根据质量守恒定律，盐的浓度变化率 = 流入盐的速率 - 流出盐的速率：
-流入速率 = 注入溶液浓度 $\times$ 注入速率 = $2\ \mathrm{g/L} \times 5\ \mathrm{L/min} = 10\ \mathrm{g/min}$。
-流出速率 = 容器中瞬时浓度 $\times$ 流出速率 = $\frac{y(t)}{V(t)} \times 3\ \mathrm{L/min} = \frac{3y}{50+2t}\ \mathrm{g/min}$。
-
-由此建立微分方程初值问题：
-\[
-\frac{\mathrm{d}y}{\mathrm{d}t} = 10 - \frac{3y}{50+2t}, \quad y(0) = 10
-\]
-整理为一阶线性微分方程：
-\[
-y' + \frac{3}{50+2t}y = 10
-\]
-求出积分因子：
-\[
-\mu(t) = \exp\!\left(\int \frac{3}{50+2t}\mathrm{d}t\right) = \exp\!\left(\frac{3}{2}\ln(50+2t)\right) = (50+2t)^{3/2}
-\]
-两边同乘积分因子得：
-\[
-\left(y(50+2t)^{3/2}\right)' = 10(50+2t)^{3/2}
-\]
-对 $t$ 积分：
-\[
-y(50+2t)^{3/2} = \int 10(50+2t)^{3/2}\mathrm{d}t = 10 \cdot \frac{1}{2} \cdot \frac{2}{5}(50+2t)^{5/2} + C = 2(50+2t)^{5/2} + C
-\]
-化简得通解：
-\[
-y(t) = 2(50+2t) + C(50+2t)^{-3/2}
-\]
-利用初值条件 $y(0) = 10$ 求出积分常数 $C$：
-\[
-10 = 2(50) + C(50)^{-3/2} \implies 10 = 100 + C(50)^{-3/2} \implies C = -90(50)^{3/2}
-\]
-故任一时刻 $t$ 容器中的含盐量为：
-\[
-\mathbf{y(t) = 100 + 4t - 90\left(\frac{50}{50+2t}\right)^{\!3/2}}
-\]
+\begin{enumerate}
+    \item \textbf{建立状态函数}：设时刻 $t$ (分钟) 时，容器中的含盐量为 $y(t)$ (克)。
+    首先计算时刻 $t$ 容器内溶液的总体积 $V(t)$。初始体积为 $50\ \mathrm{L}$，每分钟流入 $5\ \mathrm{L}$，流出 $3\ \mathrm{L}$，体积净增加率为 $2\ \mathrm{L}/\mathrm{min}$：
+    \[
+    V(t) = 50 + (5-3)t = 50 + 2t \ (\mathrm{L})
+    \]
+    \item \textbf{建立导数方程}：根据质量守恒定律，盐的浓度变化率 $\frac{\mathrm{d}y}{\mathrm{d}t} = \text{流入盐的速率} - \text{流出盐的速率}$：
+    流入速率 = 注入溶液浓度 $\times$ 注入速率 = $2\ \mathrm{g/L} \times 5\ \mathrm{L/min} = 10\ \mathrm{g/min}$。
+    流出速率 = 容器中瞬时浓度 $\times$ 流出速率 = $\frac{y(t)}{V(t)} \times 3\ \mathrm{L/min} = \frac{3y}{50+2t}\ \mathrm{g/min}$。
+    由此建立一阶线性非齐次微分方程：
+    \[
+    \frac{\mathrm{d}y}{\mathrm{d}t} = 10 - \frac{3y}{50+2t} \implies y' + \frac{3}{50+2t}y = 10
+    \]
+    \item \textbf{求解线性方程}：求出积分因子：
+    \[
+    \mu(t) = \exp\!\left(\int \frac{3}{50+2t}\,\mathrm{d}t\right) = \exp\!\left(\frac{3}{2}\ln(50+2t)\right) = (50+2t)^{3/2}
+    \]
+    两边同乘积分因子，方程化为：
+    \[
+    \left(y(50+2t)^{3/2}\right)' = 10(50+2t)^{3/2}
+    \]
+    对 $t$ 积分，利用复合函数积分法（令 $u = 50+2t, \mathrm{d}u = 2\mathrm{d}t$）：
+    \[
+    y(50+2t)^{3/2} = \int 10(50+2t)^{3/2}\,\mathrm{d}t = 10 \cdot \frac{1}{2} \int u^{3/2}\,\mathrm{d}u = 5 \cdot \frac{2}{5}u^{5/2} + C = 2(50+2t)^{5/2} + C
+    \]
+    两边同除以 $(50+2t)^{3/2}$ 得通解：
+    \[
+    y(t) = 2(50+2t) + C(50+2t)^{-3/2} = 100 + 4t + C(50+2t)^{-3/2}
+    \]
+    \item \textbf{应用初值条件求特解}：题干指出初始 $t=0$ 时，容器内含 $10\ \mathrm{g}$ 盐，即初值条件 $y(0) = 10$。代入求解 $C$：
+    \[
+    10 = 100 + 0 + C(50)^{-3/2} \implies -90 = C(50)^{-3/2} \implies C = -90(50)^{3/2}
+    \]
+    \item \textbf{得出最终函数}：将 $C$ 代回原通解式中并合并指数项：
+    \[
+    \mathbf{y(t) = 100 + 4t - 90\left(\frac{50}{50+2t}\right)^{\!3/2}}
+    \]
+\end{enumerate}
 \end{solution}
 
 \subsection{B组}
@@ -2748,74 +3097,89 @@ y(t) = 2(50+2t) + C(50+2t)^{-3/2}
 求微分方程的初值问题$\displaystyle y'\sec^2 y + \frac{x}{1+x^2}\tan y = x,\,y\big|_{x=0}=0$的解.
 \end{exercise}
 \begin{solution}
-注意到$y'\sec^2 y=(y\tan y)'$，作代换 $z = \tan y$，则对其求导得 $z' = y'\sec^2 y$。代入原方程后，极为完美地化解了非线性项：
-\[
-z' + \frac{x}{1+x^2}z = x
-\]
-该方程为一阶线性微分方程。计算积分因子：
-\[
-\mu(x) = \exp\!\left(\int \frac{x}{1+x^2}\mathrm{d}x\right) = \exp\!\left(\frac{1}{2}\ln(1+x^2)\right) = \sqrt{1+x^2}
-\]
-两边同乘 $\sqrt{1+x^2}$ 得到全微分形式：
-\[
-(z\sqrt{1+x^2})' = x\sqrt{1+x^2}
-\]
-积分得：
-\[
-z\sqrt{1+x^2} = \int x(1+x^2)^{1/2}\mathrm{d}x = \frac{1}{2} \cdot \frac{2}{3}(1+x^2)^{3/2} + C = \frac{1}{3}(1+x^2)^{3/2} + C
-\]
-由初值条件 $y(0)=0$ 可知此时 $z(0) = \tan 0 = 0$。代入得：
-\[
-0 \cdot \sqrt{1} = \frac{1}{3}(1)^{3/2} + C \implies C = -\frac{1}{3}
-\]
-故特解为：
-\[
-z\sqrt{1+x^2} = \frac{1}{3}(1+x^2)^{3/2} - \frac{1}{3} \implies z = \frac{1}{3}(1+x^2) - \frac{1}{3\sqrt{1+x^2}}
-\]
-最后回代 $z = \tan y$ 得到最终函数：
-\[
-\mathbf{y = \arctan\!\left[ \frac{1}{3}\left(1+x^2 - \frac{1}{\sqrt{1+x^2}}\right) \right]}
-\]
+\begin{enumerate}
+    \item \textbf{观察并实施变量代换}：注意到方程中包含非线性项 $\tan y$，而其旁边的项恰好包含它的导数形式 $y'\sec^2 y = (\tan y)'$。
+    作代换 $z = \tan y$，对其求导得到 $z' = y'\sec^2 y$。将这些代入原方程后，非线性方程被完美降维：
+    \[
+    z' + \frac{x}{1+x^2}z = x
+    \]
+    \item \textbf{求解一阶线性微分方程}：计算该标准方程的积分因子：
+    \[
+    \mu(x) = \exp\!\left(\int \frac{x}{1+x^2}\,\mathrm{d}x\right) = \exp\!\left(\frac{1}{2}\ln(1+x^2)\right) = \sqrt{1+x^2}
+    \]
+    两边同乘 $\sqrt{1+x^2}$ 得到全微分形式：
+    \[
+    (z\sqrt{1+x^2})' = x\sqrt{1+x^2}
+    \]
+    两边积分，对右侧使用凑微分（令 $u = 1+x^2, \mathrm{d}u = 2x\mathrm{d}x$）：
+    \[
+    z\sqrt{1+x^2} = \int x(1+x^2)^{1/2}\,\mathrm{d}x = \frac{1}{2} \int u^{1/2}\,\mathrm{d}u = \frac{1}{2} \cdot \frac{2}{3}u^{3/2} + C = \frac{1}{3}(1+x^2)^{3/2} + C
+    \]
+    \item \textbf{代入初值求解}：由原初值条件 $y(0)=0$ 可知，当 $x=0$ 时，$z(0) = \tan(y(0)) = \tan 0 = 0$。代入积分等式中求 $C$：
+    \[
+    0 \cdot \sqrt{1} = \frac{1}{3}(1)^{3/2} + C \implies C = -\frac{1}{3}
+    \]
+    \item \textbf{回代得到目标函数}：将 $C = -\frac{1}{3}$ 代回，并除以 $\sqrt{1+x^2}$ 隔离出 $z$：
+    \[
+    z\sqrt{1+x^2} = \frac{1}{3}(1+x^2)^{3/2} - \frac{1}{3} \implies z = \frac{1}{3}(1+x^2) - \frac{1}{3\sqrt{1+x^2}}
+    \]
+    最后回代 $z = \tan y$，利用反三角函数得到 $y$：
+    \[
+    \mathbf{y = \arctan\!\left[ \frac{1}{3}\left(1+x^2 - \frac{1}{\sqrt{1+x^2}}\right) \right]}
+    \]
+\end{enumerate}
 \end{solution}
 
-\begin{exercise}[一阶线性与伯努利方程求通解]
-求下列微分方程的通解:
-\begin{enumerate}
-    \item[(1)] $\displaystyle xy' = y(2y\ln x - 1)$;
-    \item[(2)] $\displaystyle y' = x^3y^3 - xy$.
-\end{enumerate}
+\begin{exercise}[求通解]
+求下列微分方程的通解:(1)$\displaystyle xy' = y(2y\ln x - 1)$;~~(2) $\displaystyle y' = x^3y^3 - xy$.
 \end{exercise}
 \begin{solution}
 \begin{enumerate}
-    \item[(1)] 展开整理得 $xy' = 2y^2\ln x - y \implies y' + \frac{1}{x}y = \frac{2\ln x}{x}y^2$。
-此为 $n=2$ 的伯努利方程。作代换 $z = y^{-1}$，则 $z' = -y^{-2}y'$。
-方程两边同除以 $y^2$ 并乘以 $-1$ 得：
-\[
--y^{-2}y' - \frac{1}{x}y^{-1} = -\frac{2\ln x}{x} \implies z' - \frac{1}{x}z = -\frac{2\ln x}{x}
-\]
-积分因子 $\mu(x) = \exp\!\left(-\int \frac{1}{x}\mathrm{d}x\right) = x^{-1}$。
-转化为 $(zx^{-1})' = -\frac{2\ln x}{x^2}$。利用分部积分法：
-\[
-zx^{-1} = -2\int x^{-2}\ln x\mathrm{d}x = -2\left(-x^{-1}\ln x - \int -x^{-2}\mathrm{d}x\right) = \frac{2\ln x}{x} + \frac{2}{x} + C
-\]
-通解 $z = 2\ln x + 2 + Cx$。回代 $z = y^{-1}$ 得：
-\[
-\mathbf{y = \frac{1}{Cx + 2\ln x + 2}} \quad (\text{另外 } y=0 \text{ 也是解})
-\]
-\item[(2)] 整理为标准形式 $y' + xy = x^3y^3$。此为 $n=3$ 的伯努利方程。
-作代换 $z = y^{-2}$，则 $z' = -2y^{-3}y'$。方程两边同除以 $y^3$ 并乘以 $-2$：
-\[
--2y^{-3}y' - 2xy^{-2} = -2x^3 \implies z' - 2xz = -2x^3
-\]
-积分因子 $\mu(x) = \exp\!\left(-\int 2x\mathrm{d}x\right) = \mathrm{e}^{-x^2}$。
-转化为 $(z\mathrm{e}^{-x^2})' = -2x^3\mathrm{e}^{-x^2}$。通过换元积分法（令 $u = x^2$）：
-\[
-z\mathrm{e}^{-x^2} = -\int 2x^3\mathrm{e}^{-x^2}\mathrm{d}x = -\int u\mathrm{e}^{-u}\mathrm{d}u = u\mathrm{e}^{-u} + \mathrm{e}^{-u} + C = (x^2+1)\mathrm{e}^{-x^2} + C
-\]
-得通解 $z = x^2 + 1 + C\mathrm{e}^{x^2}$。回代 $z = y^{-2}$：
-\[
-\mathbf{y^2 = \frac{1}{x^2 + 1 + C\mathrm{e}^{x^2}}} \quad (\text{另外 } y=0 \text{ 也是解})
-\]
+  \item[(1)] \textbf{求解 $xy' = y(2y\ln x - 1)$}
+  \begin{enumerate}
+      \item 展开右侧并整理为伯努利方程的标准形式：
+      \[
+      xy' = 2y^2\ln x - y \implies y' + \frac{1}{x}y = \frac{2\ln x}{x}y^2
+      \]
+      \item 此为 $n=2$ 的伯努利方程。作代换 $z = y^{1-2} = y^{-1}$，则有 $z' = -y^{-2}y'$。
+      方程两边同除以 $y^2$ 并乘以 $-1$：
+      \[
+      -y^{-2}y' - \frac{1}{x}y^{-1} = -\frac{2\ln x}{x} \implies z' - \frac{1}{x}z = -\frac{2\ln x}{x}
+      \]
+      \item 积分因子 $\mu(x) = \exp\!\left(\int -\frac{1}{x}\,\mathrm{d}x\right) = x^{-1}$。
+      转化为 $(zx^{-1})' = -\frac{2\ln x}{x^2}$。
+      \item 两边积分，利用分部积分法求解右侧（令 $u=\ln x, \mathrm{d}v=-2x^{-2}\mathrm{d}x$）：
+      \[
+      zx^{-1} = \int -\frac{2\ln x}{x^2}\,\mathrm{d}x = \frac{2\ln x}{x} - \int \frac{2}{x}\cdot\frac{1}{x}\,\mathrm{d}x = \frac{2\ln x}{x} - \int 2x^{-2}\,\mathrm{d}x = \frac{2\ln x}{x} + \frac{2}{x} + C
+      \]
+      \item 两边同乘 $x$ 得通解 $z = 2\ln x + 2 + Cx$。回代 $z = y^{-1}$ 解得 $y$：
+      \[
+      \mathbf{y = \frac{1}{Cx + 2\ln x + 2}} \quad (\text{另外 } y\equiv0 \text{ 也是解})
+      \]
+  \end{enumerate}
+
+  \item[(2)] \textbf{求解 $y' = x^3y^3 - xy$}
+  \begin{enumerate}
+      \item 整理为标准形式 $y' + xy = x^3y^3$。此为 $n=3$ 的伯努利方程。
+      \item 作代换 $z = y^{1-3} = y^{-2}$，则 $z' = -2y^{-3}y'$。方程两边同除以 $y^3$ 并乘以 $-2$：
+      \[
+      -2y^{-3}y' - 2xy^{-2} = -2x^3 \implies z' - 2xz = -2x^3
+      \]
+      \item 积分因子 $\mu(x) = \exp\!\left(\int -2x\,\mathrm{d}x\right) = \mathrm{e}^{-x^2}$。
+      转化为 $(z\mathrm{e}^{-x^2})' = -2x^3\mathrm{e}^{-x^2}$。
+      \item 两边积分。通过换元积分法结合分部积分法（令 $u = x^2, \mathrm{d}u = 2x\mathrm{d}x$）：
+      \[
+      z\mathrm{e}^{-x^2} = \int -2x^3\mathrm{e}^{-x^2}\,\mathrm{d}x = \int -x^2\mathrm{e}^{-x^2}(2x\,\mathrm{d}x) = \int -u\mathrm{e}^{-u}\,\mathrm{d}u
+      \]
+      利用分部积分处理 $\int -u\mathrm{e}^{-u}\,\mathrm{d}u$：
+      \[
+      \int -u\mathrm{e}^{-u}\,\mathrm{d}u = u\mathrm{e}^{-u} - \int \mathrm{e}^{-u}\,\mathrm{d}u = u\mathrm{e}^{-u} + \mathrm{e}^{-u} + C = (x^2+1)\mathrm{e}^{-x^2} + C
+      \]
+      \item 得到通解 $z = x^2 + 1 + C\mathrm{e}^{x^2}$。回代 $z = y^{-2}$ 得：
+      \[
+      \mathbf{y^2 = \frac{1}{x^2 + 1 + C\mathrm{e}^{x^2}}} \quad (\text{另外 } y\equiv0 \text{ 也是解})
+      \]
+  \end{enumerate}
 \end{enumerate}
 \end{solution}
 
@@ -2823,65 +3187,85 @@ z\mathrm{e}^{-x^2} = -\int 2x^3\mathrm{e}^{-x^2}\mathrm{d}x = -\int u\mathrm{e}^
 已知连续函数$f(x)$满足条件$\displaystyle f(x) = \int_{0}^{3x} f\left(\frac{t}{3}\right)\mathrm{d}t + \mathrm{e}^{2x}$, 求$f(x)$.
 \end{exercise}
 \begin{solution}
-对积分式作换元处理，以消除积分限与被积函数参数间的耦合。
-令 $u = \frac{t}{3}$，则 $\mathrm{d}t = 3\mathrm{d}u$。当 $t=0$ 时 $u=0$；当 $t=3x$ 时 $u=x$。
-原方程化为：
-\[
-f(x) = \int_{0}^{x} f(u) \cdot 3\mathrm{d}u + \mathrm{e}^{2x} = 3\int_{0}^{x} f(t)\mathrm{d}t + \mathrm{e}^{2x}
-\]
-这是一个含有未知函数的积分方程，等式两边关于 $x$ 求导得到微分方程：
-\[
-f'(x) = 3f(x) + 2\mathrm{e}^{2x} \implies f'(x) - 3f(x) = 2\mathrm{e}^{2x}
-\]
-显然这是一阶线性非齐次常微分方程。求出积分因子 $\mu(x) = \mathrm{e}^{-3x}$：
-\[
-(f(x)\mathrm{e}^{-3x})' = 2\mathrm{e}^{2x} \cdot \mathrm{e}^{-3x} = 2\mathrm{e}^{-x}
-\]
-积分得：
-\[
-f(x)\mathrm{e}^{-3x} = \int 2\mathrm{e}^{-x}\mathrm{d}x = -2\mathrm{e}^{-x} + C \implies f(x) = -2\mathrm{e}^{2x} + C\mathrm{e}^{3x}
-\]
-为了确定 $C$，回到原积分方程中代入 $x=0$：
-\[
-f(0) = 3\int_{0}^{0} f(t)\mathrm{d}t + \mathrm{e}^{0} = 1
-\]
-由通解式求得 $f(0) = -2 + C = 1 \implies C = 3$。
-最终解得：
-\[
-\mathbf{f(x) = 3\mathrm{e}^{3x} - 2\mathrm{e}^{2x}}
-\]
+\begin{enumerate}
+    \item \textbf{消除积分限与被积函数的参数耦合}：对积分项作换元处理。令 $u = \frac{t}{3}$，则 $\mathrm{d}t = 3\mathrm{d}u$。当积分下限 $t=0$ 时，新的积分下限 $u=0$；当积分上限 $t=3x$ 时，新的积分上限 $u=x$。
+    将换元结果代入原方程：
+    \[
+    f(x) = \int_{0}^{x} f(u) \cdot 3\mathrm{d}u + \mathrm{e}^{2x} = 3\int_{0}^{x} f(t)\mathrm{d}t + \mathrm{e}^{2x}
+    \]
+    \item \textbf{化为微分方程}：这是一个含有未知函数变上限积分的积分方程。利用微积分基本定理，等式两边同时关于 $x$ 求导，化解积分号：
+    \[
+    f'(x) = 3f(x) + 2\mathrm{e}^{2x} \implies f'(x) - 3f(x) = 2\mathrm{e}^{2x}
+    \]
+    这转化为一阶线性非齐次常微分方程。
+    \item \textbf{求解线性方程}：求出积分因子 $\mu(x) = \exp\!\left(\int -3\,\mathrm{d}x\right) = \mathrm{e}^{-3x}$。
+    方程两边同乘 $\mathrm{e}^{-3x}$：
+    \[
+    (f(x)\mathrm{e}^{-3x})' = 2\mathrm{e}^{2x} \cdot \mathrm{e}^{-3x} = 2\mathrm{e}^{-x}
+    \]
+    两边积分得：
+    \[
+    f(x)\mathrm{e}^{-3x} = \int 2\mathrm{e}^{-x}\,\mathrm{d}x = -2\mathrm{e}^{-x} + C \implies f(x) = -2\mathrm{e}^{2x} + C\mathrm{e}^{3x}
+    \]
+    \item \textbf{提取隐含的初值条件}：为了确定积分常数 $C$，我们需要一个初值条件。回到第1步化简的积分方程中，直接令自变量 $x=0$：
+    \[
+    f(0) = 3\int_{0}^{0} f(t)\mathrm{d}t + \mathrm{e}^{0} = 3(0) + 1 = 1
+    \]
+    \item \textbf{求解常数完成解答}：将 $f(0) = 1$ 代入求得的通解表达式：
+    \[
+    f(0) = -2\mathrm{e}^{0} + C\mathrm{e}^{0} = -2 + C = 1 \implies C = 3
+    \]
+    最终解得函数表达式为：
+    \[
+    \mathbf{f(x) = 3\mathrm{e}^{3x} - 2\mathrm{e}^{2x}}
+    \]
+\end{enumerate}
 \end{solution}
 
 \begin{exercise}[积分与变量无关]
 设$f(x)$连续, 积分$\displaystyle \int_{0}^{1} [f(x) + xf(xt)]\mathrm{d}t$与$x$无关, 求$f(x)$.
 \end{exercise}
 \begin{solution}
-将题干积分分为两项处理：
-\[
-I(x) = \int_{0}^{1} f(x)\mathrm{d}t + \int_{0}^{1} xf(xt)\mathrm{d}t
-\]
-第一项由于 $f(x)$ 相对积分变量 $t$ 是常数：$\int_{0}^{1} f(x)\mathrm{d}t = f(x)$。
-第二项作变量代换，令 $u = xt$（此处视 $x$ 为参数），则 $\mathrm{d}u = x\mathrm{d}t$；当 $t=0$ 时 $u=0$，当 $t=1$ 时 $u=x$。
-\[
-\int_{0}^{1} xf(xt)\mathrm{d}t = \int_{0}^{x} f(u)\mathrm{d}u
-\]
-因此原积分式可以表示为：
-\[
-I(x) = f(x) + \int_{0}^{x} f(u)\mathrm{d}u
-\]
-由题意，该积分值与变量 $x$ 无关，即其对于 $x$ 的导数恒为 0。对方程两边求导：
-\[
-I'(x) = f'(x) + f(x) = 0
-\]
-这是一个极基础的齐次一阶线性（可分离变量）微分方程，立刻解出：
-\[
-\frac{f'(x)}{f(x)} = -1 \implies \ln|f(x)| = -x + C_1 \implies f(x) = C\mathrm{e}^{-x}
-\]
-此处的 $C$ 为任意常数。将 $f(x)$ 代回验算：$I(x) = C\mathrm{e}^{-x} + \int_0^x C\mathrm{e}^{-u}\mathrm{d}u = C\mathrm{e}^{-x} - C\mathrm{e}^{-x} + C = C$，确实为与 $x$ 无关的常数。
-故满足条件的函数族为：
-\[
-\mathbf{f(x) = C\mathrm{e}^{-x}} \quad (\text{其中 } C \text{ 为任意常数})
-\]
+\begin{enumerate}
+    \item \textbf{积分项的拆分与化简}：将题干积分基于加法拆分为两项分别处理：
+    \[
+    I(x) = \int_{0}^{1} f(x)\mathrm{d}t + \int_{0}^{1} xf(xt)\mathrm{d}t
+    \]
+    对于第一项，积分变量是 $t$，因此 $f(x)$ 相当于常数，可以直接提出来：
+    \[
+    \int_{0}^{1} f(x)\mathrm{d}t = f(x)\int_{0}^{1} 1\,\mathrm{d}t = f(x) \cdot (1 - 0) = f(x)
+    \]
+    对于第二项，采用变量代换法。令 $u = xt$（此处视 $x$ 为参数），则 $\mathrm{d}u = x\mathrm{d}t$。当 $t=0$ 时 $u=0$，当 $t=1$ 时 $u=x$。积分转化为变上限积分：
+    \[
+    \int_{0}^{1} xf(xt)\mathrm{d}t = \int_{0}^{x} f(u)\mathrm{d}u
+    \]
+    因此原积分式可以重新表示为：
+    \[
+    I(x) = f(x) + \int_{0}^{x} f(u)\mathrm{d}u
+    \]
+    \item \textbf{利用题意建立微分方程}：题干指出，该积分值与变量 $x$ 无关。也就是说，$I(x)$ 是一个常数。因此，它关于 $x$ 的导数必定恒等于 0。
+    对 $I(x)$ 两边关于 $x$ 求导：
+    \[
+    I'(x) = f'(x) + f(x) = 0
+    \]
+    \item \textbf{求解齐次微分方程}：这是一个极基础的齐次一阶线性（且可分离变量）微分方程：
+    \[
+    f'(x) = -f(x) \implies \frac{f'(x)}{f(x)} = -1
+    \]
+    两边对 $x$ 积分：
+    \[
+    \int \frac{1}{f(x)}\,\mathrm{d}f(x) = \int -1\,\mathrm{d}x \implies \ln|f(x)| = -x + C_1
+    \]
+    解出通解形式（其中 $C = \pm\mathrm{e}^{C_1}$ 为任意常数）：
+    \[
+    f(x) = C\mathrm{e}^{-x}
+    \]
+    （为了严谨可代回原式验算：$I(x) = C\mathrm{e}^{-x} + \int_0^x C\mathrm{e}^{-u}\,\mathrm{d}u = C\mathrm{e}^{-x} - C\mathrm{e}^{-x} + C = C$，确实与 $x$ 无关，恒为常数）。
+    \item \textbf{得出最终结论}：满足条件的函数族为：
+    \[
+    \mathbf{f(x) = C\mathrm{e}^{-x}} \quad (\text{其中 } C \text{ 为任意实数常数})
+    \]
+\end{enumerate}
 \end{solution}
 
 \section{恰当微分方程与积分因子法}
@@ -3097,7 +3481,7 @@ $\bigg(-\dfrac{4}{x}\sqrt{y}-x\bigg)\mathrm{d}x+y^{-1/2}\,\mathrm{d}y=0$。
 \section{可降阶的高阶方程}
 
 \begin{introduction}
-  \item $y^{(n)}=f(x)$ 型：直接积分法~\ref{ex:ode-direct-int}
+  \item $y^{(n)}=f(x)$ 型：直接积分法
   \item 不显含 $y$ 的 $y''=f(x,y')$ 型~\ref{def:ode-missing-y}
   \item 不显含 $x$ 的 $y''=f(y,y')$ 型~\ref{def:ode-missing-x}
   \item 追线问题（Pursuit Curve）~\ref{ex:ode-pursuit}
@@ -3436,14 +3820,6 @@ y=\frac1{2a}\bigl(\mathrm{e}^{ax}+\mathrm{e}^{-ax}\bigr)+C_2
 
 这就是著名的\textbf{悬链线方程}——一条双曲余弦曲线（catenary）
 \end{solution}
-
-\begin{remark}
-悬链线问题最早由伯努利兄弟（Johann 和 Jakob Bernoulli, 1690s）
-提出并解决，它是最早被精确求解的非线性力学系统之一。该结果不仅具有重要的历史意义，在现代物理中也有广泛应用：
-悬链线模型出现在 DNA 聚合物的超螺旋结构分析中；
-柔性绳索和缆索的大变形理论是其现代推广形式；
-类似的变分原理也用于描述海洋表面波和弹性杆的非线性振动模式。
-\end{remark}
 
 
 \section{练习}
@@ -4124,366 +4500,578 @@ t = \frac{30}{9.8} \ln\left(\frac{66}{8}\right) \approx 3.06 \times \ln(8.25) \a
 % ============================================================
 % §5.5 二阶线性微分方程
 % ============================================================
-\section{可降阶的高阶方程}
+\section{二阶微分方程}
 
-\begin{introduction}
-  \item $y^{(n)}=f(x)$ 型：直接积分法~\ref{ex:ode-direct-int}
-  \item 不显含 $y$ 的 $y''=f(x,y')$ 型~\ref{def:ode-missing-y}
-  \item 不显含 $x$ 的 $y''=f(y,y')$ 型~\ref{def:ode-missing-x}
-  \item 追线问题（Pursuit Curve）~\ref{ex:ode-pursuit}
-  \item 悬链线（Catenary）问题~\ref{ex:ode-catenary}
-\end{introduction}
+\subsection{二阶线性微分方程及其物理背景}
 
-高阶微分方程的通解通常难以直接求得。然而，某些具有特殊结构的高阶方程可以通过变量代换\textbf{降阶}为一阶方程，从而利用已建立的一阶方程理论求解。本节介绍三类最重要的可降阶类型及其经典应用。
+振动是日常生活和工程技术中常见的一种运动形式，例如钟摆的往复运动、弹簧的振动、乐器中弦线的振动、机床主轴的振动以及电路中的电振荡等。振动问题的研究，在一定条件下，可以归结为\textbf{二阶常系数线性微分方程}的问题来讨论。
 
+\begin{example}[线性振动的物理模型]
+如图（略）所示，物体的平衡位置是物体不受外力而静止时所处的位置（平衡时物体的重力与弹簧的恢复力相平衡）。我们用 $y=0$ 表示这个平衡位置，并把向下的方向取为正向建立坐标系。令 $y(t)$ 表示 $t$ 时刻物体的位置。请推导不同条件下的振动微分方程。
+\end{example}
 
-\subsection{$y^{(n)}=f(x)$ 型：直接积分型}
-
-\begin{definition}[$y^{(n)}=f(x)$ 型方程]
-形如
-\[y^{(n)}=f(x)\]
-的方程，其特点是左端为未知函数 $y$ 的 $n$ 阶导数，右端仅含自变量 $x$ 的已知连续函数，称为\textbf{可直接积分型方程}。
-\end{definition}
-
-将方程改写为 $\dfrac{\mathrm{d}}{\mathrm{d}x}\!\left(y^{(n-1)}\right)=f(x)$，
-连续积分 $n$ 次即可得到含有 $n$ 个独立任意常数的通解。
-
-\begin{exercise}[逐次积分]
-求 $y'''=\mathrm{e}^{3x}-\cos x$ 的通解。
-\end{exercise}
 \begin{solution}
-积分一次：
-\[
-y''=\dfrac13\mathrm{e}^{3x}-\sin x+C_1
-\]
+根据受力情况与能量守恒定律，我们可以将振动分为以下四种基本模型：
+\begin{enumerate}
+    \item \textbf{无阻尼自由振动}：
+    此时忽略空气阻力，且质量为 $m$ 的物体不受其它外力的作用。物体在位置 $y$ 处具有的弹性势能为 $E_{1}=\frac{1}{2} k y^{2}$（其中 $k$ 为弹簧的劲度系数），动能为 $E_{2}=\frac{1}{2} m\left(\frac{\mathrm{d} y}{\mathrm{d} t}\right)^{2}$。
+    由机械能守恒 $E_{1}+E_{2} \equiv C$，即：
+    $$
+    \frac{1}{2} m\left(\frac{\mathrm{d} y}{\mathrm{d} t}\right)^{2}+\frac{1}{2} k y^{2} \equiv C
+    $$
+    等式两边关于时间 $t$ 求导数，并消去非零因子 $\frac{\mathrm{d} y}{\mathrm{d} t}$，得到：
+    $$
+    m y''+k y=0 \quad \text{或} \quad y''+\omega_{0}^{2} y=0 \quad \left(\text{其中 } \omega_{0}^{2}=\frac{k}{m}\right)
+    $$
 
-再积一次：
-\[
-y'=\dfrac19\mathrm{e}^{3x}+\cos x+C_1x+C_2
-\]
+    \item \textbf{阻尼自由振动}：
+    考虑空气阻力，此力总与运动方向相反，且通常与速度 $\frac{\mathrm{d} y}{\mathrm{d} t}$ 的大小成正比。由能量守恒可得：
+    $$
+    \frac{1}{2} m\left(\frac{\mathrm{d} y}{\mathrm{d} t}\right)^{2}+R \int_{0}^{t} \left(\frac{\mathrm{d} y}{\mathrm{d} t}\right)^{2} \mathrm{d} t+\frac{1}{2} k y^{2} \equiv C
+    $$
+    其中 $R$ 为空气的阻尼系数，中间的积分项为阻力做的功。两边对 $t$ 求导数得：
+    $$
+    m y''+R y'+k y=0
+    $$
 
-第三次积分即得通解：
-\[
-\boxed{y=\frac{1}{27}\mathrm{e}^{3x}+\sin x+\frac{C_1}{2}x^{2}+C_2x+C_3}.
-\]
-\hfill$\square$
+    \item \textbf{阻尼强迫振动}：
+    若考虑外部驱动力 $F(t)$，则系统的动能、势能以及克服阻力做的功均来自于外力做功：
+    $$
+    \frac{1}{2} m\left(\frac{\mathrm{d} y}{\mathrm{d} t}\right)^{2}+R \int_{0}^{t} \left(\frac{\mathrm{d} y}{\mathrm{d} t}\right)^{2} \mathrm{d} t+\frac{1}{2} k y^{2}=\int_{0}^{t} F(t) y' \mathrm{d} t
+    $$
+    两边求导后可得完整的受迫振动方程：
+    $$
+    m y''+R y'+k y=F(t)
+    $$
+
+    \item \textbf{无阻尼强迫振动与共振}：
+    若不考虑阻力（$R=0$），则 $y$ 满足的方程退化为：
+    $$
+    y''+\omega_{0}^{2} y=\frac{F(t)}{m}
+    $$
+    特别地，当取周期性外力 $F(t)=F_{0} \cos \omega_{0} t$（即外力频率等于系统固有频率）时，系统会产生\textbf{共振现象}。
+\end{enumerate}
 \end{solution}
 
+由上面的物理例子，我们可以抽象出更一般的数学概念：
 
-\subsection{不显含未知函数 $y$ 的方程：$y''=f(x,y')$ 型}
-
-\begin{definition}[不显含 $y$ 的二阶方程] 
-形如
-\[y''=f(x,\,y')
-\]
-的方程称为\textbf{不显含未知函数 $y$ 的方程}（或称 ``缺 $y$ 型''）。
-\end{definition}
-
-此类方程的特点是右端不显含 $y$ 本身，仅依赖 $x$ 和 $y'$。令 $p=y'$（即把 $y'$ 视为新的未知函数），则 $y''=p'$，原方程化为关于 $p$ 的一阶方程：
-\[
-p'=f(x,p).
-\]
-
-设其一阶通解为 $p=\varphi(x,C_1)$，则由 $y'=\varphi(x,C_1)$ 再积分一次得
-\[
-y=\int\varphi(x,C_1)\,\mathrm{d}x+C_2.
-\]
-
-这是含有两个独立任意常数 $C_1,C_2$ 的通解族。
-
-\begin{property}[一般化推广]
-对于不含 $y, y', \dots, y^{(k-1)}$ 的 $n$ 阶方程
-\[
-F\bigl(x,\,y^{(k)},\,\dots,\,y^{(n)}\bigr)=0,
-\]
-只需作代换 $p=y^{(k)}$，即可化为 $n-k$ 阶方程
-$F(x,\,p,\,\dots,\,p^{(n-k)})=0$。
-求出通解后对 $p$ 积分 $k$ 次即得原方程通解。
-\end{property}
-
-\begin{exercise}
-解初值问题
-$\begin{cases}
-y''=\dfrac{3x^{2}}{1+x^{3}}\,y',\\
-y|_{x=0}=1,\quad y'|_{x=0}=4.
-\end{cases}$
-\end{exercise}
-\begin{solution}
-方程不显含 $y$，属于 $y''=f(x,y')$ 型。令 $y'=p(x)$，则 $y''=p'$，代入得
-\[
-p'=\frac{3x^{2}}{1+x^{3}}\,p.
-\]
-
-分离变量：
-\[
-\frac{\mathrm{d}p}{p}=\frac{3x^{2}\,\mathrm{d}x}{1+x^{3}}
-\]
-积分得 
-\[
-\ln|p|=\ln(1+x^{3})+\ln C_1 \implies p=C_{1}(1+x^{3}).
-\]
-
-由 $y'(0)=4$ 得 $C_1=4$，故 
-\[
-y'=4(1+x^{3})=4+4x^{3}.
-\]
-
-再次积分：
-\[
-y=\int(4+4x^{3})\,\mathrm{d}x=x^{4}+4x+C_{2}.
-\]
-由 $y(0)=1$ 得 $C_2=1$。特解为
-\[
-\boxed{y=x^{4}+4x+1.}
-\]
-\hfill$\square$
-\end{solution}
-
-\begin{exercise}
-求 $y^{(5)}-\dfrac{1}{x}y^{(4)}=0$ 的通解。
-\end{exercise}
-\begin{solution}
-方程不显含 $y$ 且最高阶导数为 $5$ 阶，缺 $y,y',y'',y'''$。
-令 $p=y^{(4)}$，降为关于 $p$ 的一阶线性齐次方程：
-\[
-p'-\frac{1}{x}\,p=0.
-\]
-
-分离变量：
-\[
-\frac{\mathrm{d}p}{p}=\frac{\mathrm{d}x}{x} \implies p=C_{1}x.
-\]
-于是 $y^{(4)}=C_{1}x$，对 $x$ 连续积分四次，得到通解
-\[
-\boxed{y=\frac{C_1}{120}x^{5}+\frac{C_2}{24}x^{4}+\frac{C_3}{6}x^{3}+\frac{C_4}{2}x^{2}+C_5x+C_6} \quad (\text{常数可重新吸并})
-\]
-为了与常见形式对应，通常写为：
-\[
-\boxed{y=C_1 x^{5}+C_2 x^{4}+C_3 x^{3}+C_4 x^{2}+C_5 x+C_{6}.}
-\]
-\hfill$\square$
-\end{solution}
-
-
-\subsection{不显含自变量 $x$ 的方程：$y''=f(y,y')$ 型}
-
-\begin{definition}[不显含 $x$ 的二阶方程] 
-形如
-\[y''=f(y,\,y')
-\]
-的方程称为\textbf{不显含自变量 $x$ 的方程}（或称 ``缺 $x$ 型''）。
-\end{definition}
-
-关键技巧：注意到 
-\[
-\dfrac{\mathrm{d}^2y}{\mathrm{d}x^{2}}
-=\dfrac{\mathrm{d}p}{\mathrm{d}y}\cdot\dfrac{\mathrm{d}y}{\mathrm{d}x}=p\,\dfrac{\mathrm{d}p}{\mathrm{d}y}
-\]
-故若令 $p=\dfrac{\mathrm{d}y}{\mathrm{d}x}=p(y)$（将速度视为位置的函数！），则原方程化为
-\[
-p\,\frac{\mathrm{d}p}{\mathrm{d}y}=f(y,\,p).
-\]
-
-这已是关于自变量 $y$、未知函数 $p$ 的\textbf{一阶方程}。设其通解为 $y'=\varphi(y,C_1)$，分离变量后积分即得隐式通解
-\[
-\int\frac{\mathrm{d}y}{\varphi(y,C_1)}=x+C_2.
-\]
-
-\begin{exercise}
-求 $y''=\dfrac{1+y'^{2}}{2y}$ 的通解。
-\end{exercise}
-\begin{solution}
-方程不显含 $x$，属于 $y''=f(y,y')$ 型。令 $y'=p(y)$，
-则 $y''=p\,\dfrac{\mathrm{d}p}{\mathrm{d}y}$，代入原方程：
-\[
-p\,\frac{\mathrm{d}p}{\mathrm{d}y}=\frac{1+p^{2}}{2y}
-\]
-分离变量：
-\[
-\frac{2p\,\mathrm{d}p}{1+p^{2}}=\frac{\mathrm{d}y}{y}.
-\]
-
-两边积分（左端用换元 $u=1+p^2$）：
-\[
-\ln(1+p^{2})=\ln|y|+\ln C \quad (C>0)
-\]
-故 $1+p^{2}=Cy$，即
-\[
-p=\pm\sqrt{Cy-1}.
-\]
-
-因此 
-\[
-\frac{\mathrm{d}y}{\mathrm{d}x}=\pm\sqrt{Cy-1}
-\]
-分离变量并整理得隐式通解：
-\[
-\boxed{4(Cy-1)=C^{2}(x+C_{1})^{2}.}
-\]
-\hfill$\square$
-\end{solution}
-
-\begin{exercise}
-求 $yy''-y'^{2}=0$ 的通解。
-\end{exercise}
-\begin{solution}
-令 $y'=p(y)$，则 $y''=p\,\dfrac{\mathrm{d}p}{\mathrm{d}y}$。代入得
-\[
-yp\,\frac{\mathrm{d}p}{\mathrm{d}y}-p^{2}=0
-\quad\Longrightarrow\quad
-p\!\left(y\,\frac{\mathrm{d}p}{\mathrm{d}y}-p\right)=0.
-\]
-
-由 $p=0$ 得 $y=C$；由 $y\,\dfrac{\mathrm{d}p}{\mathrm{d}y}-p=0$ 得 
-\[
-\frac{\mathrm{d}p}{p}=\frac{\mathrm{d}y}{y}
-\]
-积分得 $p=C_{1}y$，即 $y'=C_{1}y$。此为可分离变量方程，通解为
-\[
-\boxed{y=C_{2}\,\mathrm{e}^{C_{1}x}.}
-\]
-\hfill$\square$
-\end{solution}
-
-\begin{remark}[另解：凑全微分法]
-本题也可用 ``乘以积分因子'' 的方法快速求解。
-方程两边同乘非零因子 $\dfrac{1}{y^{2}}$（注意 $y \neq 0$ 已被单独处理）：
-\[
-\frac{yy''-y'^{2}}{y^{2}}
-=\frac{\mathrm{d}}{\mathrm{d}x}\!\left(\frac{y'}{y}\right)=0
-\]
-即 $\dfrac{y'}{y}=C_{1}$，同样得到 $y'=C_{1}y$，与上述结果一致。
-这种 ``观察特殊结构、构造恰当组合'' 的技巧在非线性方程求解中极为有用。
-\end{remark}
-
-
-\subsection{应用实例}
-
-
-\subsubsection*{追线问题（Pursuit Curve）}
-
-\begin{exercise}[导弹追击舰船] 
-如图所示，位于坐标原点 $O$ 的甲舰向正 $x$ 轴上点 $A(1,0)$ 处的乙舰发射制导导弹。导弹头始终对准乙舰。
-已知乙舰以最大恒定速度 $v_{0}$ 沿平行于 $y$ 轴的直线行驶，导弹的速度为 $5v_{0}$。
-求导弹轨迹方程，以及乙舰被击中时的位置。
-\end{exercise}
-
-\begin{solution}
-建立坐标系如图所示。设导弹轨迹为 $y=y(x)$，经过时间 $t$ 导弹位于 $P(x,y)$，
-此时乙舰位于 $Q(1,v_{0}t)$。
-
-由于导弹始终瞄准目标，直线 $PQ$ 就是轨迹曲线在 $P$ 点的切线，斜率为
-\[
-y'=\tan\theta=\frac{v_{0}t-y}{1-x},
-\qquad\Longrightarrow\qquad v_{0}t=(1-x)y'+y. \tag{†}
-\]
-
-另一方面，弧长 $\widehat{OP}$ 的长度是距离 $|AQ|$ 的 5 倍（速度比 $5:1$）：
-\[
-\int_{0}^{x}\sqrt{1+y'^{2}}\;\mathrm{d}x=5v_{0}t. \tag{‡}
-\]
-
-将 (†) 代入 (‡) 并消去 $t$：
-\[
-(1-x)y'+y=\frac15\int_{0}^{x}\sqrt{1+y'^{2}}\;\mathrm{d}x. \tag{§}
-\]
-
-对 $x$ 求导（利用初始条件 $y(0)=0,\;y'(0)=0$）：
-\begin{align*}
--(1-x)y''+y'-y' &=\frac15\sqrt{1+y'^{2}} \\
-(1-x)y'' &=\frac15\sqrt{1+y'^{2}}.
-\end{align*}
-
-令 $y'=p$，化为 $(1-x)p'=\dfrac15\sqrt{1+p^{2}}$，分离变量：
-\[
-\frac{\mathrm{d}p}{\sqrt{1+p^{2}}}=\frac{1}{5}\frac{\mathrm{d}x}{1-x}.
-\]
-
-积分得 
-\[
-\ln(p+\sqrt{1+p^{2}})=-\frac15\ln(1-x)+C
-\]
-由 $p(0)=0$ 知 $C=0$，故
-$p+\sqrt{1+p^{2}}=(1-x)^{-1/5}$。取倒数有 $\sqrt{1+p^{2}}-p=(1-x)^{1/5}$，两式相减并除以 2 得
-\[
-y'=p=\frac12\!\left[(1-x)^{-1/5}-(1-x)^{1/5}\right].
-\]
-
-最后积分（利用 $y(0)=0$ 确定常数）：
-\[
-\boxed{
-y=-\frac58(1-x)^{4/5}+\frac5{12}(1-x)^{6/5}+\frac{5}{24}.
-}
-\]
-
-当导弹到达 $x=1$ 时，$y=\dfrac5{24}$。即乙舰航行到 $\bigl(1,\dfrac{5}{24}\bigr)$ 时被击中。\hfill$\square$
-\end{solution}
-
-
-\subsubsection*{悬链线（Catenary / Hanging Chain）}
-
-\begin{exercise}[悬链线的形状] 
-如图所示，一条均匀、柔软且不可拉伸的细弦两端悬挂。
-当载荷沿弦均匀分布时，求弦在平衡状态下的形状曲线方程。
-\end{exercise}
-
-\begin{solution}
-取弦最低点为坐标原点 $O(0,0)$。设弦的（常值）线密度为 $\rho$，最低点水平张力为 $H$，重力加速度为 $g$。平衡时弦的方程为 $y=y(x)$。
-
-在弦上任一点 $B(x,y)$ 取微元弧段 $\widehat{OB}$ 做受力分析。设该处弦切线与 $x$ 轴夹角为 $\theta$，则：
-\[
+\begin{definition}[二阶线性微分方程及初值问题]
+称形如
+$$
+y''+P(x) y'+Q(x) y=f(x)
+$$
+的方程为\textbf{二阶线性微分方程}（由于方程关于未知函数 $y$ 及其导数 $y', y''$ 都是一次的）。
+\begin{itemize}
+    \item 若 $f(x) \equiv 0$，则方程称为\textbf{二阶线性齐次方程}；
+    \item 若 $f(x) \not\equiv 0$，则称为\textbf{二阶线性非齐次方程}；
+    \item 若 $P(x), Q(x)$ 均为常数，则称方程为\textbf{二阶常系数线性方程}。
+\end{itemize}
+附加初始条件的定解问题：
+$$
 \begin{cases}
-T\sin\theta = \rho g s \\
-T\cos\theta = H
+y''+P(x) y'+Q(x) y=f(x) \\
+y(x_{0})=y_{0} \\
+y'(x_{0})=y_{0}'
 \end{cases}
-\]
-其中 $s$ 为 $\widehat{OB}$ 段的弧长，$T$ 为拉力。
+$$
+称为二阶线性微分方程的\textbf{初值问题}（Cauchy 问题）。
+\end{definition}
 
-两式相除得 $H\tan\theta=\rho g\displaystyle\int_{0}^{x}\sqrt{1+y'^{2}}\;\mathrm{d}x$。
-由于 $y'=\tan\theta$，上式化为
-\[
-y'=\frac{\rho g}{H}\int_{0}^{x}\sqrt{1+y'^{2}}\;\mathrm{d}x.
-\]
 
-记常数 $a=\dfrac{\rho g}{H}>0$，则
-\[
-y''=a\sqrt{1+y'^{2}}. \tag{††}
-\]
+\subsection{二阶线性微分方程解的结构}
 
-此方程不显含 $y$，属 $y''=f(x,y')$ 型。令 $y'=p$，则
-\[
-\frac{\mathrm{d}p}{\mathrm{d}x}=a\sqrt{1+p^{2}},\quad
-\Longrightarrow\quad
-\frac{\mathrm{d}p}{\sqrt{1+p^{2}}} = a\mathrm{d}x
-\]
-积分得：
-\[
-\ln(p+\sqrt{1+p^{2}})=ax+C.
-\]
+首先，下面的定理保证了解的合理性与适定性。
 
-由 $y'(0)=0$ 知 $C=0$，故 $p+\sqrt{1+p^{2}}=\mathrm{e}^{ax}$，解出
-\[
-p=\dfrac12(\mathrm{e}^{ax}-\mathrm{e}^{-ax}).
-\]
-
-积分得（利用 $y(0)=0$）：
-\[
-y=\frac1{2a}\bigl(\mathrm{e}^{ax}+\mathrm{e}^{-ax}\bigr)+C_2
-=\frac1a\cosh(ax)-\frac{1}{a}
-=\frac{H}{\rho g}\cosh\!\left(\frac{\rho g}{H}x\right)-\frac{H}{\rho g}.
-\]
-
-这就是著名的\textbf{悬链线方程}——一条双曲余弦曲线（catenary）。\hfill$\square$
-\end{solution}
+\begin{theorem}[解的存在唯一性定理]
+对于二阶线性初值问题，若函数 $P(x), Q(x)$ 及 $f(x)$ 在区间 $(a, b)$ 上连续，且 $x_0 \in (a, b)$，则存在唯一的一个函数 $y(x)$ 在 $(a, b)$ 上满足该初值问题。
+\end{theorem}
 
 \begin{remark}
-悬链线问题最早由伯努利兄弟（Johann 和 Jakob Bernoulli, 1690s）
-提出并解决，它是最早被精确求解的非线性力学系统之一。该结果不仅具有重要的历史意义，在现代物理中也有广泛应用：
-悬链线模型出现在 DNA 聚合物的超螺旋结构分析中；
-柔性绳索和缆索的大变形理论是其现代推广形式；
-类似的变分原理也用于描述海洋表面波和弹性杆的非线性振动模式。
+该定理有一个重要的推论：对于对应的齐次方程 $y''+P(x) y'+Q(x) y=0$，如果满足初始条件 $y(x_{0})=0$ 且 $y'(x_{0})=0$，那么它的解\textbf{必定恒为零}（即平凡解 $y \equiv 0$）。
 \end{remark}
 
+为了更简洁地给出二阶线性微分方程解的结构，我们引入\textbf{线性算子}的概念。
+
+\begin{definition}[二阶线性微分算子]
+对具有二阶连续导数的函数 $y \in C^{2}(a, b)$，由齐次方程左端的部分，我们定义一个映射 $L$：
+$$
+L: y \mapsto y''+P(x) y'+Q(x) y
+$$
+即记为 $L[y]=y''+P(x) y'+Q(x) y$。该映射 $L$ 称为微分算子。
+\end{definition}
+
+\begin{example}[算子的计算]
+设 $P(x)=0, Q(x)=x$，即算子为 $L[y]=y''+x y$。计算 $L[\cos x]$ 与 $L[x^3]$。
+\end{example}
+
+\begin{solution}
+\begin{enumerate}
+    \item 对于 $y=\cos x$，求二阶导数得 $y'' = -\cos x$。代入算子：
+    $$
+    L[\cos x] = -\cos x + x \cos x = (x-1) \cos x
+    $$
+    \item 对于 $y=x^{3}$，求二阶导数得 $y'' = 6x$。代入算子：
+    $$
+    L[x^{3}] = 6 x + x \cdot x^{3} = x^{4} + 6 x
+    $$
+\end{enumerate}
+\end{solution}
+
+\begin{property}[微分算子的线性性质]
+微分算子 $L$ 满足以下两条核心性质（其中 $c, c_1, c_2$ 为常数， $y, y_1, y_2 \in C^2(a,b)$）：
+\begin{enumerate}
+    \item \textbf{齐次性}：$L[cy] = cL[y]$；
+    \item \textbf{可加性}：$L[y_1+y_2] = L[y_1] + L[y_2]$。
+\end{enumerate}
+综合可得 \textbf{线性性}：$L[c_1 y_1 + c_2 y_2] = c_1 L[y_1] + c_2 L[y_2]$。
+\end{property}
+
+\begin{proof}
+\begin{enumerate}
+    \item 证明齐次性：
+    $$
+    L[c y] = (c y)''+P(x)(c y)'+Q(x)(c y) = c\left[y''+P(x) y'+Q(x) y\right] = c L[y]
+    $$
+    \item 证明可加性：
+    $$
+    \begin{aligned}
+    L[y_{1}+y_{2}] &= (y_{1}+y_{2})''+P(x)(y_{1}+y_{2})'+Q(x)(y_{1}+y_{2}) \\
+    &= y_{1}''+y_{2}''+P(x) y_{1}'+P(x) y_{2}'+Q(x) y_{1}+Q(x) y_{2} \\
+    &= L[y_{1}]+L[y_{2}]
+    \end{aligned}
+    $$
+\end{enumerate}
+\end{proof}
+
+
+\subsubsection{齐次方程解的结构}
+
+\begin{theorem}[线性叠加原理]
+设 $y_{1}$ 与 $y_{2}$ 为齐次方程 $L[y]=0$ 的两个解，则它们的任意线性组合 $y=c_{1} y_{1}+c_{2} y_{2}$ 也为该方程的解。
+\end{theorem}
+
+\begin{proof}
+因为 $y_{1}, y_{2}$ 均为 $L[y]=0$ 的解，所以 $L[y_{1}]=0$ 且 $L[y_{2}]=0$。利用算子的线性性：
+$$
+L[c_{1}y_{1}+c_{2}y_{2}] = c_{1}L[y_{1}]+c_{2}L[y_{2}] = 0 + 0 = 0
+$$
+所以 $y=c_{1} y_{1}+c_{2} y_{2}$ 也是 $L[y]=0$ 的解。
+\end{proof}
+
+现在产生一个问题：若 $L[y_{1}]=L[y_{2}]=0$，那么 $y=c_{1} y_{1}+c_{2} y_{2}$ 是否一定是 $L[y]=0$ 的\textbf{通解}？
+答案：\textbf{不一定}。关键在于 $y_{1}$ 和 $y_{2}$ 是否足够“独立”。
+
+例如考虑方程 $y''-y=0$。易见 $y_{1}=e^{x}$ 和 $y_{2}=2 e^{x}$ 均为解，但它们的线性组合 $y = c_{1}e^{x}+2c_{2}e^{x} = (c_{1}+2c_{2})e^{x}$ 实际上只包含一个独立常数，无法涵盖如 $e^{-x}$ 这样的解，故不是通解。
+为了严格刻画解的独立性，引入以下概念：
+
+\begin{definition}[线性相关与线性无关]
+考虑定义在 $(a, b)$ 上的函数 $y_{1}(x)$ 和 $y_{2}(x)$。若存在不全为零的常数 $c_{1}, c_{2}$，使得对任意 $x \in (a, b)$ 均有：
+$$
+c_{1}y_{1}(x)+c_{2}y_{2}(x) \equiv 0
+$$
+则称 $y_{1}(x)$ 与 $y_{2}(x)$ 在该区间上\textbf{线性相关}。否则，称为\textbf{线性无关}。
+\end{definition}
+
+\begin{remark}
+对于两个函数而言：
+\begin{itemize}
+    \item 线性相关 $\iff$ 其中一个函数是另一个函数的常数倍（即 $y_1(x) \equiv k y_2(x)$）。
+    \item 线性无关 $\iff$ 它们的比值不是常数。
+\end{itemize}
+\end{remark}
+
+\begin{definition}[朗斯基行列式 (Wronskian)]
+对定义在 $(a, b)$ 上的可导函数 $y_{1}(x)$ 和 $y_{2}(x)$，我们称行列式：
+$$
+W(x) := \begin{vmatrix}
+y_{1}(x) & y_{2}(x) \\
+y_{1}'(x) & y_{2}'(x)
+\end{vmatrix} = y_{1}(x)y_{2}'(x) - y_{1}'(x)y_{2}(x)
+$$
+为这两个函数的\textbf{朗斯基行列式}（Wronskian）。
+\end{definition}
+
+\begin{example}[线性相关性的判别]
+利用朗斯基行列式或定义，判别下列各组函数在指定区间上的线性相关性：
+(1) $1$ 与 $x$ 在 $(0, 1)$ 上；
+(2) $\sin x$ 与 $\cos x$ 在 $(0, \pi)$ 上；
+(3) $\cos^2 x$ 与 $\sin^2 x - 1$ 在 $(0, 1)$ 上。
+\end{example}
+
+\begin{solution}
+\begin{enumerate}
+    \item \textbf{证明 $1, x$ 线性无关}：
+    若有常数 $c_{1}, c_{2}$ 使得 $c_{1} \cdot 1 + c_{2} x \equiv 0$，两边对 $x$ 求导得 $c_{2} \equiv 0$。代回原式得 $c_{1} = 0$。
+    或者通过朗斯基行列式计算：
+    $$
+    W(x) = \begin{vmatrix} 1 & x \\ 0 & 1 \end{vmatrix} = 1 \neq 0
+    $$
+    故 $1$ 和 $x$ 线性无关。
+
+    \item \textbf{证明 $\sin x, \cos x$ 线性无关}：
+    计算它们的朗斯基行列式：
+    $$
+    W(x) = \begin{vmatrix} \sin x & \cos x \\ \cos x & -\sin x \end{vmatrix} = -\sin^2 x - \cos^2 x = -1 \neq 0
+    $$
+    因为 $W(x) \neq 0$，所以 $\sin x$ 和 $\cos x$ 在 $(0, \pi)$ 上线性无关。
+
+    \item \textbf{证明 $\cos^2 x, \sin^2 x - 1$ 线性相关}：
+    观察两函数关系，由三角恒等式知 $\sin^2 x - 1 = -\cos^2 x$。
+    即存在不全为零的常数组合 $1 \cdot (\cos^2 x) + 1 \cdot (\sin^2 x - 1) \equiv 0$。故它们线性相关。
+\end{enumerate}
+\end{solution}
+
+\begin{remark}[朗斯基行列式与线性相关性的关系]
+对于一般的函数组，若线性相关，则必有 $W(x) \equiv 0$。但反之不一定成立（即 $W(x) \equiv 0$ 不能直接推导线性相关，存在分段函数反例）。
+\textbf{但是}，如果这两个函数是某个\textbf{二阶齐次线性微分方程的解}，那么 $W(x)$ 的性质将变得非常完美，由以下定理保证。
+\end{remark}
+
+\begin{theorem}[解的朗斯基行列式判别法]
+如果 $y_{1}(x)$ 和 $y_{2}(x)$ 是二阶线性齐次方程 $L[y]=0$ 的两个解，则它们在区间 $(a,b)$ 上\textbf{线性无关}的充分必要条件是：对于任意的 $x \in (a, b)$，均有 $W(x) \neq 0$。
+\end{theorem}
+
+\begin{proof}
+这里仅证明必要性（即若线性无关，则 $W(x) \neq 0$）。采用反证法。
+\begin{enumerate}
+    \item 假设存在某个点 $x_{0} \in (a, b)$，使得 $W(x_{0})=0$。
+    \item 考虑关于未知数 $c_{1}, c_{2}$ 的齐次线性代数方程组：
+    $$
+    \begin{cases}
+    c_{1} y_{1}(x_{0}) + c_{2} y_{2}(x_{0}) = 0 \\
+    c_{1} y_{1}'(x_{0}) + c_{2} y_{2}'(x_{0}) = 0
+    \end{cases}
+    $$
+    \item 因为其系数矩阵的行列式恰为 $W(x_{0}) = 0$，根据克莱姆法则，该方程组必然存在\textbf{非零解} $(c_{1}^*, c_{2}^*)$。
+    \item 利用这组非零常数构造函数 $Y(x) = c_{1}^* y_{1}(x) + c_{2}^* y_{2}(x)$。由叠加原理，$Y(x)$ 是 $L[y]=0$ 的解。
+    \item 结合第 2 步的方程组，该解满足初始条件：$Y(x_{0})=0$ 且 $Y'(x_{0})=0$。
+    \item 根据解的存在唯一性定理推论，必有 $Y(x) \equiv 0$，即：
+    $$
+    c_{1}^* y_{1}(x) + c_{2}^* y_{2}(x) \equiv 0 \quad (\forall x \in (a, b))
+    $$
+    这与 $y_1, y_2$ 线性无关的前提矛盾！故假设不成立，必定处处有 $W(x) \neq 0$。
+\end{enumerate}
+\end{proof}
+
+\begin{theorem}[二阶线性齐次方程通解的结构]
+设 $y_{1}(x)$ 和 $y_{2}(x)$ 是齐次方程 $L[y]=0$ 的两个\textbf{线性无关解}，则：
+$$
+y = c_{1} y_{1}(x) + c_{2} y_{2}(x)
+$$
+为 $L[y]=0$ 的通解（其中 $c_1, c_2$ 为任意常数）。称 $\{y_{1}, y_{2}\}$ 为方程的一个\textbf{基础解系}。该通解包含了方程的所有解。
+\end{theorem}
+
+
+\subsubsection{非齐次方程解的结构}
+
+\begin{theorem}[非齐次方程通解的结构]
+设 $y_{1}, y_{2}$ 是对应齐次方程 $L[y]=0$ 的基础解系，而 $y^{*}$ 是非齐次方程 $L[y]=f(x)$ 的\textbf{一个特解}，则：
+$$
+y = c_{1} y_{1} + c_{2} y_{2} + y^{*}
+$$
+为非齐次方程 $L[y]=f(x)$ 的通解。
+\end{theorem}
+
+\begin{proof}
+\begin{enumerate}
+    \item \textbf{验证是解}：
+    利用算子 $L$ 的线性性：
+    $$
+    L[y] = L[c_{1} y_{1} + c_{2} y_{2} + y^{*}] = c_{1} L[y_{1}] + c_{2} L[y_{2}] + L[y^{*}] = 0 + 0 + f(x) = f(x)
+    $$
+    故它是解。
+    \item \textbf{验证完备性（包含所有解）}：
+    设 $\bar{y}(x)$ 为 $L[y]=f(x)$ 的任意一个解。考虑差值函数 $\bar{y} - y^{*}$：
+    $$
+    L[\bar{y} - y^{*}] = L[\bar{y}] - L[y^{*}] = f(x) - f(x) = 0
+    $$
+    这说明 $\bar{y} - y^{*}$ 是对应齐次方程 $L[y]=0$ 的解。根据齐次通解结构定理，必然存在常数 $c_1, c_2$ 使得：
+    $$
+    \bar{y} - y^{*} = c_{1} y_{1} + c_{2} y_{2} \implies \bar{y} = c_{1} y_{1} + c_{2} y_{2} + y^{*}
+    $$
+    证明完毕。
+\end{enumerate}
+\end{proof}
+
+\begin{example}[非齐次通解的构造]
+已知 $y''-y=x$，求其通解。
+\end{example}
+\begin{solution}
+\begin{enumerate}
+    \item 观察对应的齐次方程 $y''-y=0$，易得基础解系为 $y_1=e^x, y_2=e^{-x}$。
+    \item 通过观察原方程，易猜测并验证 $y^{*} = -x$ 为一个特解（因 $(-x)'' - (-x) = 0 + x = x$）。
+    \item 故通解为 $y = c_{1} e^{x} + c_{2} e^{-x} - x$。
+\end{enumerate}
+\end{solution}
+
+\begin{theorem}[非齐次方程的线性叠加原理]
+设 $y_{1}^{*}$ 和 $y_{2}^{*}$ 分别是方程 $L[y]=f_{1}(x)$ 和 $L[y]=f_{2}(x)$ 的解，则 $y^{*} = y_{1}^{*}+y_{2}^{*}$ 是叠加方程：
+$$
+L[y] = f_{1}(x) + f_{2}(x)
+$$
+的特解。
+\end{theorem}
+
+\begin{example}[非齐次叠加原理应用]
+求解方程 $y''+y=x+e^{x}$。
+\end{example}
+\begin{solution}
+\begin{enumerate}
+    \item 求对应齐次方程 $y''+y=0$ 的通解为 $y_h = c_{1} \sin x+c_{2} \cos x$。
+    \item 将右端项拆分为 $f_1(x)=x$ 和 $f_2(x)=e^x$。
+    \item 显然 $y_1^* = x$ 是 $y''+y=x$ 的特解。
+    \item 将 $y_2^* = A e^x$ 代入 $y''+y=e^x$ 得 $2A e^x = e^x \implies A=1/2$，故 $y_2^* = \frac{1}{2} e^{x}$ 为第二个特解。
+    \item 组合得到总的通解：
+    $$
+    y = c_{1} \sin x + c_{2} \cos x + x + \frac{1}{2} e^{x}
+    $$
+\end{enumerate}
+\end{solution}
+
+
+\subsection{常数变易法}
+
+由上一节可知，要求 $L[y]=f(x)$ 的通解，只需求出齐次方程 $L[y]=0$ 的基础解系和非齐次方程的一个特解 $y^*$ 即可。常数变易法提供了一种只要知道齐次基础解系，就必然能通过积分求出 $y^*$ 的通用程式化方法。
+
+\begin{theorem}[常数变易法公式推导]
+设 $y_{1}(x), y_{2}(x)$ 为 $L[y]=0$ 的基础解系，推导非齐次方程 $y''+P(x)y'+Q(x)y=f(x)$ 的特解形式。    
+\[\boxed{y^{*}(x) = -y_{1}(x) \int \frac{y_{2}(x) f(x)}{\begin{vmatrix} y_1 & y_2 \\ y_1' & y_2' \end{vmatrix} } \mathrm{d}x + y_{2}(x) \int \frac{y_{1}(x) f(x)}{\begin{vmatrix} y_1 & y_2 \\ y_1' & y_2' \end{vmatrix} } \mathrm{d}x}\]
+\end{theorem}
+
+\begin{proof}
+\begin{enumerate}
+    \item \textbf{变易常数}：
+    已知齐次通解为 $y = c_{1} y_{1} + c_{2} y_{2}$。将常数变易为待定函数，设特解为：
+    \[
+    y^{*}(x) = c_{1}(x) y_{1}(x) + c_{2}(x) y_{2}(x)
+    \]
+    
+    \item \textbf{第一次求导与附加约束的引入}：
+    对 $y^{*}(x)$ 求一阶导数：
+    \[
+    (y^{*})' = c_{1}(x) y_{1}' + c_{2}(x) y_{2}' + \left[ c_{1}'(x) y_{1} + c_{2}'(x) y_{2} \right]
+    \]
+    如果我们直接对上式再求导，将会产生 $c_1''(x)$ 和 $c_2''(x)$，这会使得最终的方程组极其复杂，失去求解的意义。为了简化运算，我们人为地添加一个\textbf{约束条件}，令括号内的项恒等于 0：
+    \[
+    c_{1}'(x) y_{1} + c_{2}'(x) y_{2} = 0 \tag{A}
+    \]
+    在这个约束条件下，一阶导数大幅简化为：
+    \[
+    (y^{*})' = c_{1}(x) y_{1}' + c_{2}(x) y_{2}'
+    \]
+    
+    \item \textbf{第二次求导}：
+    对简化后的一阶导数再求导，得到二阶导数（此时不会再出现二阶导数项 $c''$）：
+    \[
+    (y^{*})'' = c_{1}(x) y_{1}'' + c_{2}(x) y_{2}'' + c_{1}'(x) y_{1}' + c_{2}'(x) y_{2}'
+    \]
+    
+    \item \textbf{代入原方程并消项}：
+    将 $y^*, (y^*)', (y^*)''$ 代入原非齐次方程 $y''+P(x) y'+Q(x) y=f(x)$ 中，按 $c_1(x), c_2(x)$ 以及剩余项重新分组：
+    \[
+    \begin{aligned}
+    & c_{1}(x)[y_{1}''+P(x) y_{1}'+Q(x) y_{1}] + c_{2}(x)[y_{2}''+P(x) y_{2}'+Q(x) y_{2}] \\
+    & \quad + c_{1}'(x) y_{1}' + c_{2}'(x) y_{2}' = f(x)
+    \end{aligned}
+    \]
+    因为 $y_1, y_2$ 是齐次方程的解，方括号内的项均恒等于 0。方程坍塌为：
+    \[
+    c_{1}'(x) y_{1}' + c_{2}'(x) y_{2}' = f(x) \tag{B}
+    \]
+    
+    \item \textbf{求解代数方程组}：
+    联立方程 (A) 和 (B)，我们得到了一个关于未知数 $c_1'(x)$ 和 $c_2'(x)$ 的线性代数方程组：
+    \[
+    \begin{cases}
+    y_{1}(x) c_{1}'(x) + y_{2}(x) c_{2}'(x) = 0 \\
+    y_{1}'(x) c_{1}'(x) + y_{2}'(x) c_{2}'(x) = f(x)
+    \end{cases}
+    \]
+    该方程组的系数矩阵的行列式恰好是朗斯基行列式 $W(x) = y_{1}y_{2}' - y_{2}y_{1}'$。因为 $y_1, y_2$ 是基础解系，线性无关，故 $W(x) \neq 0$。
+    根据克莱姆法则（Cramer's Rule），解得：
+    \[
+    c_{1}'(x) = \frac{\begin{vmatrix} 0 & y_{2} \\ f(x) & y_{2}' \end{vmatrix}}{W(x)} = -\frac{y_{2}(x) f(x)}{W(x)},~~
+    c_{2}'(x) = \frac{\begin{vmatrix} y_{1} & 0 \\ y_{1}' & f(x) \end{vmatrix}}{W(x)} = \frac{y_{1}(x) f(x)}{W(x)}
+    \]
+    
+    \item \textbf{积分求出待定函数}：
+    对 $c_1'(x)$ 和 $c_2'(x)$ 进行积分（由于只是求一个特解，此处可省略积分常数）：
+    \[
+    c_{1}(x) = -\int \frac{y_{2}(x) f(x)}{W(x)} \mathrm{d}x,~~c_{2}(x) = \int \frac{y_{1}(x) f(x)}{W(x)} \mathrm{d}x
+    \]
+    
+    \item \textbf{得出最终特解公式}：
+    将求得的 $c_1(x)$ 和 $c_2(x)$ 代回初始假设的 $y^*(x)$ 中，最终得到二阶线性非齐次方程的通用特解公式：
+    \[
+    \boxed{y^{*}(x) = -y_{1}(x) \int \frac{y_{2}(x) f(x)}{W(x)} \mathrm{d}x + y_{2}(x) \int \frac{y_{1}(x) f(x)}{W(x)} \mathrm{d}x}
+    \]
+    其中：
+    \[
+    W(x) = y_{1}y_{2}' - y_{2}y_{1}'
+    \]
+\end{enumerate}
+\end{proof}
+
+\begin{example}[常数变易法的实际应用]
+求方程 $y''+y=\sec x$ 的通解。
+\end{example}
+
+\begin{solution}
+\begin{enumerate}
+    \item \textbf{求齐次基础解系}：
+    对应齐次方程 $y''+y=0$ 的特征方程为 $r^2+1=0$，得 $r = \pm i$。
+    基础解系为 $y_{1}=\sin x, y_{2}=\cos x$。
+    
+    \item \textbf{设特解形式并列方程组}：
+    令非齐次特解为 $y^{*} = c_{1}(x) \sin x + c_{2}(x) \cos x$。
+    根据常数变易法推导出的标准方程组结构，直接写出关于 $c_1', c_2'$ 的方程组：
+    $$
+    \begin{cases}
+    c_{1}'(x) \sin x + c_{2}'(x) \cos x = 0 \quad &(1) \\
+    c_{1}'(x) \cos x - c_{2}'(x) \sin x = \sec x \quad &(2)
+    \end{cases}
+    $$
+    
+    \item \textbf{求解方程组中的导函数}：
+    使用加减消元法。将方程 (1) 两边同乘 $\sin x$，方程 (2) 两边同乘 $\cos x$：
+    $$
+    \begin{cases}
+    c_{1}'(x) \sin^2 x + c_{2}'(x) \sin x \cos x = 0 \\
+    c_{1}'(x) \cos^2 x - c_{2}'(x) \sin x \cos x = \sec x \cdot \cos x = 1
+    \end{cases}
+    $$
+    两式相加，消去 $c_2'$ 项：
+    $$
+    c_{1}'(x)(\sin^2 x + \cos^2 x) = 1 \implies c_{1}'(x) = 1
+    $$
+    将 $c_1'(x)=1$ 代回方程 (1)：
+    $$
+    1 \cdot \sin x + c_{2}'(x) \cos x = 0 \implies c_{2}'(x) = -\frac{\sin x}{\cos x} = -\tan x
+    $$
+    
+    \item \textbf{积分求特解系数}：
+    对导函数积分以求出系数函数（求特解时可令积分常数为0）：
+    $$
+    c_{1}(x) = \int 1 \, \mathrm{d} x = x
+    $$
+    $$
+    c_{2}(x) = \int (-\tan x) \, \mathrm{d} x = \int \frac{-\sin x}{\cos x} \, \mathrm{d} x = \ln |\cos x|
+    $$
+    
+    \item \textbf{写出最终通解}：
+    代回特解假设式，得到：
+    $$
+    y^{*} = x \sin x + \cos x \ln |\cos x|
+    $$
+    将齐次通解与特解相加，得到最终通解：
+    $$
+    \boxed{y = C_{1} \sin x + C_{2} \cos x + x \sin x + \cos x \ln |\cos x|}
+    $$
+\end{enumerate}
+\end{solution}
+
+\begin{theorem}[刘维尔公式/降阶法求第二解]
+若已知齐次方程 $y''+P(x) y'+Q(x) y=0$ 的一个非零特解 $y_{1}(x)$，则可利用代换 $y_2 = u(x) y_1(x)$ 进行降阶，求出与其线性无关的第二解公式为：
+$$
+y_{2}(x) = y_{1}(x) \int \frac{1}{y_{1}^{2}(x)} e^{-\int P(x) \mathrm{d} x} \mathrm{d} x
+$$
+\end{theorem}
+
+\begin{proof}
+本证明展示如何通过变量代换将二阶方程降为一阶方程求解。
+\begin{enumerate}
+    \item \textbf{代入新变量}：令 $y_{2} = u y_{1}$（简写 $u(x)$ 为 $u$，$y_1(x)$ 为 $y_1$）。对其求一阶和二阶导数：
+    $$
+    y_{2}' = u' y_{1} + u y_{1}',~~y_{2}'' = u'' y_{1} + 2u' y_{1}' + u y_{1}''
+    $$
+    \item \textbf{代入原方程化简}：将 $y_2, y_2', y_2''$ 代入原齐次方程 $y''+P(x)y'+Q(x)y=0$：
+    $$
+    (u'' y_{1} + 2u' y_{1}' + u y_{1}'') + P(x)(u' y_{1} + u y_{1}') + Q(x)(u y_{1}) = 0
+    $$
+    按照 $u$ 及其导数进行合并归类：
+    $$
+    u \underbrace{(y_{1}'' + P(x)y_{1}' + Q(x)y_{1})}_{=0 \text{ (因为 } y_1 \text{ 是解)}} + u''(y_{1}) + u'(2y_{1}' + P(x)y_{1}) = 0
+    $$
+    第一项因为 $y_1$ 是原方程的解而彻底消失，方程降维：
+    $$
+    u'' y_{1} + u'(2y_{1}' + P(x)y_{1}) = 0
+    $$
+    \item \textbf{引入一阶变量分离法}：令 $w = u'$，则 $w' = u''$。方程化为关于 $w$ 的一阶可分离变量微分方程：
+    $$
+    w' y_{1} + w(2y_{1}' + P(x)y_{1}) = 0 \implies \frac{w'}{w} = -2\frac{y_{1}'}{y_{1}} - P(x)
+    $$
+    \item \textbf{积分求解 $w$}：对上式两边关于 $x$ 积分：
+    $$
+    \int \frac{\mathrm{d}w}{w} = -2 \int \frac{\mathrm{d}y_{1}}{y_{1}} - \int P(x) \mathrm{d}x
+    $$
+    $$
+    \ln|w| = -2\ln|y_{1}| - \int P(x) \mathrm{d}x + C
+    $$
+    因为我们只需要寻找\textbf{一个}独立解，不妨取 $C=0$，并去掉绝对值（常数系数可被基础解系吸收），解得：
+    $$
+    w = y_{1}^{-2} e^{-\int P(x) \mathrm{d}x} = \frac{1}{y_{1}^{2}} e^{-\int P(x) \mathrm{d}x}
+    $$
+    \item \textbf{回代得出第二解}：由于 $u' = w$，再次积分得到 $u(x)$：
+    $$
+    u(x) = \int \frac{1}{y_{1}^{2}(x)} e^{-\int P(x) \mathrm{d}x} \mathrm{d}x
+    $$
+    最后将其代回 $y_2 = u y_1$，定理得证：
+    $$
+    y_{2}(x) = y_{1}(x) \int \frac{1}{y_{1}^{2}(x)} e^{-\int P(x) \mathrm{d} x} \mathrm{d} x
+    $$
+\end{enumerate}
+\end{proof}
+
+\begin{example}[降阶法的应用]
+已知方程 $(1-x^{2}) y''-2 x y'+2 y=0$ 有一个解为 $y_{1}=x$，求其通解。
+\end{example}
+
+\begin{solution}
+\begin{enumerate}
+    \item \textbf{化为首项系数为 1 的标准形式}：
+    在应用公式前，必须将方程两边同除以 $(1-x^2)$，提取标准的 $P(x)$：
+    $$
+    y'' - \frac{2 x}{1-x^{2}} y' + \frac{2}{1-x^{2}} y = 0
+    $$
+    此时得到 $P(x) = -\frac{2 x}{1-x^{2}}$。
+    
+    \item \textbf{计算刘维尔公式中的指数部分}：
+    $$
+    -\int P(x) \mathrm{d} x = \int \frac{2 x}{1-x^{2}} \mathrm{d} x 
+    $$
+    利用凑微分法，令 $v = 1-x^2, \mathrm{d}v = -2x\mathrm{d}x$：
+    $$
+    \int \frac{2 x}{1-x^{2}} \mathrm{d} x = \int \frac{-\mathrm{d}v}{v} = -\ln|v| = -\ln(1-x^2)
+    $$
+    因此指数项为：
+    $$
+    e^{-\int P(x) \mathrm{d} x} = e^{-\ln(1-x^2)} = \frac{1}{1-x^2}
+    $$
+    
+    \item \textbf{计算外层积分求 $u(x)$}：
+    将 $y_1^2 = x^2$ 和刚才求出的指数项代入公式 $u(x) = \int \frac{1}{y_1^2} e^{-\int P(x)\mathrm{d}x} \mathrm{d}x$：
+    $$
+    u(x) = \int \frac{1}{x^{2}} \cdot \frac{1}{1-x^{2}} \mathrm{d} x
+    $$
+    利用部分分式分解将被积函数拆开：
+    $$
+    \frac{1}{x^2(1-x^2)} = \frac{(1-x^2) + x^2}{x^2(1-x^2)} = \frac{1}{x^2} + \frac{1}{1-x^2}
+    $$
+    对其逐项积分：
+    $$
+    u(x) = \int \left( \frac{1}{x^{2}} + \frac{1}{1-x^{2}} \right) \mathrm{d} x = -\frac{1}{x} + \frac{1}{2} \ln \left| \frac{1+x}{1-x} \right|
+    $$
+    
+    \item \textbf{写出第二解与最终通解}：
+    根据降阶设定 $y_2 = x \cdot u(x)$，乘回 $y_1 = x$：
+    $$
+    y_{2}(x) = x \left( -\frac{1}{x} + \frac{1}{2} \ln \left| \frac{1+x}{1-x} \right| \right) = -1 + \frac{x}{2} \ln \left| \frac{1+x}{1-x} \right|
+    $$
+    因此，该微分方程的通解为 $y = c_1 y_1 + c_2 y_2$：
+    $$
+    \boxed{y = C_{1} x + C_{2} \left( -1 + \frac{x}{2} \ln \left| \frac{1+x}{1-x} \right| \right)}
+    $$
+\end{enumerate}
+\end{solution}
 
 \section{练习}
 
@@ -4493,63 +5081,70 @@ y=\frac1{2a}\bigl(\mathrm{e}^{ax}+\mathrm{e}^{-ax}\bigr)+C_2
         $y''-4y'+4y=0$ 的解，判断它们是否构成基础解系；
   \item[(2)] 设 $y_1,y_2$ 是某二阶齐次线性方程的线性无关解，
         证明 $z_1=y_1+y_2$ 和 $z_2=y_1-y_2$ 也构成该方程的一组基础解系；
-  \item[(3)] 已知 $y''-2xy'+4y=0$ 的一个解为 $y_1=1-x^2$，求其通解。
+  \item[(3)] 已知 $y''-2xy'+4y=0$ 的一个解为 $y_1=1-2x^2$，求其通解。
 \end{enumerate}
 \end{exercise}
 \begin{solution}
 \begin{enumerate}
-  \item[(1)] \textbf{解的验证：}
-  计算一阶和二阶导数：
-  对于 $y_1 = \mathrm{e}^{2x}$：$y_1' = 2\mathrm{e}^{2x}$，$y_1'' = 4\mathrm{e}^{2x}$。
-  代入方程：
-  \[
-  y_1'' - 4y_1' + 4y_1 = 4\mathrm{e}^{2x} - 4(2\mathrm{e}^{2x}) + 4\mathrm{e}^{2x} = 0
-  \]
-  故 $y_1$ 是方程的解。
-  对于 $y_2 = x\mathrm{e}^{2x}$：$y_2' = \mathrm{e}^{2x} + 2x\mathrm{e}^{2x}$，$y_2'' = 2\mathrm{e}^{2x} + 2\mathrm{e}^{2x} + 4x\mathrm{e}^{2x} = 4\mathrm{e}^{2x} + 4x\mathrm{e}^{2x}$。
-  代入方程：
-  \[
-  y_2'' - 4y_2' + 4y_2 = (4\mathrm{e}^{2x} + 4x\mathrm{e}^{2x}) - 4(\mathrm{e}^{2x} + 2x\mathrm{e}^{2x}) + 4x\mathrm{e}^{2x} = 0
-  \]
-  故 $y_2$ 也是方程的解。
-  
-  \textbf{判断基础解系：}
-  计算它们的朗斯基行列式：
-  \[
-  W(x) = y_1 y_2' - y_1' y_2 = \mathrm{e}^{2x}(\mathrm{e}^{2x} + 2x\mathrm{e}^{2x}) - (2\mathrm{e}^{2x})(x\mathrm{e}^{2x}) = \mathrm{e}^{4x} \neq 0
-  \]
-  由于 $W(x) \neq 0$，两者线性无关，因此它们构成基础解系。
+  \item[(1)] \textbf{解的验证与基础解系判定：}
+  \begin{enumerate}
+      \item 验证 $y_1 = \mathrm{e}^{2x}$：
+      计算其导数：$y_1' = 2\mathrm{e}^{2x}$，$y_1'' = 4\mathrm{e}^{2x}$。代入原方程左端：
+      \[
+      y_1'' - 4y_1' + 4y_1 = 4\mathrm{e}^{2x} - 4(2\mathrm{e}^{2x}) + 4\mathrm{e}^{2x} = 4\mathrm{e}^{2x} - 8\mathrm{e}^{2x} + 4\mathrm{e}^{2x} = 0
+      \]
+      等式成立，故 $y_1$ 是方程的解。
+      \item 验证 $y_2 = x\mathrm{e}^{2x}$：
+      利用乘积求导法则：$y_2' = \mathrm{e}^{2x} + 2x\mathrm{e}^{2x} = (1+2x)\mathrm{e}^{2x}$。
+      继续求二阶导：$y_2'' = 2\mathrm{e}^{2x} + 2(1+2x)\mathrm{e}^{2x} = (4+4x)\mathrm{e}^{2x}$。代入原方程左端：
+      \[
+      y_2'' - 4y_2' + 4y_2 = (4+4x)\mathrm{e}^{2x} - 4(1+2x)\mathrm{e}^{2x} + 4x\mathrm{e}^{2x} = (4 + 4x - 4 - 8x + 4x)\mathrm{e}^{2x} = 0
+      \]
+      等式成立，故 $y_2$ 也是方程的解。
+      \item 判断基础解系：
+      计算两个解的朗斯基行列式 $W(x)$：
+      \[
+      W(x) = y_1 y_2' - y_1' y_2 = \mathrm{e}^{2x}(1+2x)\mathrm{e}^{2x} - (2\mathrm{e}^{2x})(x\mathrm{e}^{2x}) = \mathrm{e}^{4x} + 2x\mathrm{e}^{4x} - 2x\mathrm{e}^{4x} = \mathrm{e}^{4x}
+      \]
+      因为对于任意 $x$ 都有 $W(x) = \mathrm{e}^{4x} \neq 0$，所以 $y_1, y_2$ 线性无关，\textbf{它们构成方程的一组基础解系}。
+  \end{enumerate}
+
   \item[(2)] \textbf{证明：}
-  因为原方程是齐次线性的，根据线性叠加原理，$z_1 = y_1 + y_2$ 与 $z_2 = y_1 - y_2$ 均是原方程的解。
-  判断它们是否构成基础解系，只需验证它们的朗斯基行列式是否非零：
-  \[
-  W(z_1, z_2) = z_1 z_2' - z_1' z_2 = (y_1+y_2)(y_1'-y_2') - (y_1'+y_2')(y_1-y_2)
-  \]
-  展开后得：
-  \[
-  = y_1 y_1' - y_1 y_2' + y_2 y_1' - y_2 y_2' - (y_1' y_1 - y_1' y_2 + y_2' y_1 - y_2' y_2)
-  \]
-  化简得：
-  \[
-  = -2 y_1 y_2' + 2 y_1' y_2 = -2 (y_1 y_2' - y_1' y_2) = -2 W(y_1, y_2)
-  \]
-  已知 $y_1, y_2$ 是线性无关的，所以 $W(y_1, y_2) \neq 0$。因此 $W(z_1, z_2) = -2 W(y_1, y_2) \neq 0$。
-  这就证明了 $z_1, z_2$ 也是线性无关的，构成一组基础解系。
-  \item[(3)] \textbf{刘维尔公式求第二解：}
-  注意：原题给出的 $y_1=1-x^2$ 代入原方程其实并不为 $0$（由于存在题目笔误，实际上使该方程成立的多项式解应为厄米特多项式的变体 $y_1 = 1-2x^2$）。我们暂且将正确的特解 $y_1 = 1-2x^2$ 代入公式进行演示降阶法。
-  方程标准形式为 $y'' - 2x y' + 4y = 0$，此处 $P(x) = -2x$。
-  利用刘维尔公式计算另一解 $y_2$ 的核心部分：
-  \[
-  \exp\left(-\int P(x)\,\mathrm{d}x\right) = \exp\left(\int 2x\,\mathrm{d}x\right) = \mathrm{e}^{x^2}
-  \]
-  代入刘维尔公式构造第二解（设用修正后的 $y_1$）：
-  \[
-  y_2(x) = (1-2x^2) \int \frac{\mathrm{e}^{x^2}}{(1-2x^2)^2} \,\mathrm{d}x
-  \]
-  由于该积分无法用初等函数表达，通解可直接写为积分形式：
-  \[
-  y = C_1(1-2x^2) + C_2(1-2x^2) \int_{x_0}^x \frac{\mathrm{e}^{t^2}}{(1-2t^2)^2} \,\mathrm{d}t
-  \]
+  \begin{enumerate}
+      \item 根据齐次线性微分方程的叠加原理，由于 $y_1, y_2$ 是解，它们的任意线性组合 $z_1 = y_1 + y_2$ 和 $z_2 = y_1 - y_2$ 必然也是该方程的解。
+      \item 要证明 $z_1, z_2$ 构成基础解系，只需证明它们线性无关，即计算其朗斯基行列式 $W(z_1, z_2)$ 是否非零：
+      \[
+      W(z_1, z_2) = z_1 z_2' - z_1' z_2 = (y_1+y_2)(y_1'-y_2') - (y_1'+y_2')(y_1-y_2)
+      \]
+      将上式展开：
+      \[
+      = (y_1 y_1' - y_1 y_2' + y_2 y_1' - y_2 y_2') - (y_1' y_1 - y_1' y_2 + y_2' y_1 - y_2' y_2)
+      \]
+      合并并抵消同类项（注意 $y_1 y_1'$ 和 $-y_2 y_2'$ 被抵消）：
+      \[
+      = -y_1 y_2' + y_2 y_1' + y_1' y_2 - y_2' y_1 = -2y_1 y_2' + 2y_1' y_2 = -2(y_1 y_2' - y_1' y_2) = -2W(y_1, y_2)
+      \]
+      \item 因为已知 $y_1, y_2$ 线性无关，所以 $W(y_1, y_2) \neq 0$。进而推导出 $W(z_1, z_2) = -2 W(y_1, y_2) \neq 0$。
+      因此 $z_1, z_2$ 线性无关，\textbf{确实构成该方程的一组基础解系}。
+  \end{enumerate}
+
+  \item[(3)] \textbf{求解通解：}
+  \begin{enumerate}
+      \item 验证特解：令 $y_1 = 1-2x^2$，则 $y_1' = -4x$, $y_1'' = -4$。代入 $y'' - 2xy' + 4y = -4 - 2x(-4x) + 4(1-2x^2) = -4 + 8x^2 + 4 - 8x^2 = 0$，确实为方程的解。
+      \item 利用刘维尔（Liouville）公式求第二解。原方程已经是标准形式 $y'' + P(x)y' + Q(x)y = 0$，其中 $P(x) = -2x$。
+      \item 计算刘维尔公式中的积分因子：
+      \[
+      \exp\left(-\int P(x)\,\mathrm{d}x\right) = \exp\left(-\int (-2x)\,\mathrm{d}x\right) = \exp\left(\int 2x\,\mathrm{d}x\right) = \mathrm{e}^{x^2}
+      \]
+      \item 代入降阶公式 $y_2(x) = y_1(x) \int \frac{1}{y_1^2(x)} \exp\left(-\int P(x)\,\mathrm{d}x\right) \mathrm{d}x$：
+      \[
+      y_2(x) = (1-2x^2) \int \frac{\mathrm{e}^{x^2}}{(1-2x^2)^2} \,\mathrm{d}x
+      \]
+      \item 由于右侧的积分无法用初等函数形式表达，我们将其保留为变上限积分形式。最终通解为：
+      \[
+      \mathbf{y = C_1(1-2x^2) + C_2(1-2x^2) \int_{x_0}^x \frac{\mathrm{e}^{t^2}}{(1-2t^2)^2} \,\mathrm{d}t}
+      \]
+  \end{enumerate}
 \end{enumerate}
 \end{solution}
 
@@ -4563,77 +5158,102 @@ y=\frac1{2a}\bigl(\mathrm{e}^{ax}+\mathrm{e}^{-ax}\bigr)+C_2
 \end{exercise}
 \begin{solution}
 \begin{enumerate}
-  \item[(1)] 齐次方程 $y''+y=0$ 的基础解系为 $y_1 = \sin x, y_2 = \cos x$，$W(x) = -1$。
-  设特解为 $y^* = c_1(x)\sin x + c_2(x)\cos x$，列出方程组：
-  \[
-  \begin{cases}
-  c_1' \sin x + c_2' \cos x = 0 \\
-  c_1' \cos x - c_2' \sin x = \cot x
-  \end{cases}
-  \]
-  解得：
-  \[
-  c_2' = -\cos x \implies c_2(x) = -\sin x
-  \]
-  \[
-  c_1' = \cos x \cdot \cot x = \frac{\cos^2 x}{\sin x} = \csc x - \sin x \implies c_1(x) = \ln|\csc x - \cot x| + \cos x
-  \]
-  代入得特解：
-  \[
-  y^* = (\ln|\csc x - \cot x| + \cos x)\sin x - \sin x \cos x = \sin x \ln|\csc x - \cot x|
-  \]
-  通解为：
-  \[
-  y = C_1 \sin x + C_2 \cos x + \sin x \ln|\csc x - \cot x|
-  \]
-  \item[(2)] 齐次方程特征方程 $r^2 - 3r + 2 = 0$，解得 $r_1=1, r_2=2$。基础解系为 $y_1=\mathrm{e}^x, y_2=\mathrm{e}^{2x}$，$W(x) = \mathrm{e}^{3x}$。
-  设特解 $y^* = c_1(x)\mathrm{e}^x + c_2(x)\mathrm{e}^{2x}$，列出方程组：
-  \[
-  \begin{cases}
-  c_1' \mathrm{e}^x + c_2' \mathrm{e}^{2x} = 0 \\
-  c_1' \mathrm{e}^x + 2c_2' \mathrm{e}^{2x} = \frac{\mathrm{e}^x}{1+\mathrm{e}^x}
-  \end{cases}
-  \]
-  下式减上式得：
-  \[
-  c_2' \mathrm{e}^{2x} = \frac{\mathrm{e}^x}{1+\mathrm{e}^x} \implies c_2' = \frac{\mathrm{e}^{-x}}{1+\mathrm{e}^x}
-  \]
-  从而：
-  \[
-  c_1' = -c_2' \mathrm{e}^x = -\frac{1}{1+\mathrm{e}^x}
-  \]
-  分别积分：
-  \[
-  c_1(x) = \int \left(\frac{\mathrm{e}^x}{1+\mathrm{e}^x} - 1\right) \mathrm{d}x = \ln(1+\mathrm{e}^x) - x
-  \]
-  \[
-  c_2(x) = \int \frac{\mathrm{e}^{-x}}{1+\mathrm{e}^x} \mathrm{d}x = \int \left(\mathrm{e}^{-x} - \frac{1}{1+\mathrm{e}^x}\right) \mathrm{d}x = -\mathrm{e}^{-x} - x + \ln(1+\mathrm{e}^x)
-  \]
-  代入合并化简可得特解，进一步得到通解：
-  \[
-  y = C_1\mathrm{e}^x + C_2\mathrm{e}^{2x} + (\mathrm{e}^x + \mathrm{e}^{2x})\ln(1+\mathrm{e}^x) - x(\mathrm{e}^x + \mathrm{e}^{2x})
-  \]
-  \item[(3)] 首先求齐次方程 $xy'' - y' = 0$ 的基础解系。
-  分离变量得 $\frac{y''}{y'} = \frac{1}{x} \implies y' = C x \implies y = \frac{C}{2}x^2 + C_0$。
-  取 $y_1 = 1, y_2 = x^2$ 为基础解系，$W(x) = 2x$。
-  将原非齐次方程化为标准形：$y'' - \frac{1}{x}y' = x$，这里 $f(x)=x$。
-  设特解 $y^* = c_1(x) \cdot 1 + c_2(x) \cdot x^2$，方程组为：
-  \[
-  \begin{cases}
-  c_1' \cdot 1 + c_2' \cdot x^2 = 0 \\
-  c_1' \cdot 0 + c_2' \cdot 2x = x
-  \end{cases}
-  \]
-  由第二式得 $c_2' = \frac{1}{2} \implies c_2 = \frac{x}{2}$。
-  代回第一式得 $c_1' = -\frac{1}{2}x^2 \implies c_1 = -\frac{x^3}{6}$。
-  代入得特解：
-  \[
-  y^* = \left(-\frac{x^3}{6}\right) \cdot 1 + \left(\frac{x}{2}\right) \cdot x^2 = \frac{x^3}{3}
-  \]
-  通解为：
-  \[
-  y = C_1 + C_2 x^2 + \frac{1}{3}x^3
-  \]
+  \item[(1)] \textbf{求解 $y''+y=\cot x$}
+  \begin{enumerate}
+      \item \textbf{求齐次通解}：特征方程 $r^2+1=0$，根为 $r=\pm \mathrm{i}$。齐次方程的基础解系为 $y_1 = \sin x, y_2 = \cos x$。
+      \item \textbf{设特解列方程组}：设非齐次特解为 $y^* = c_1(x)\sin x + c_2(x)\cos x$。根据常数变易法，列出关于 $c_1', c_2'$ 的方程组：
+      \[
+      \begin{cases}
+      c_1' \sin x + c_2' \cos x = 0 \\
+      c_1' \cos x - c_2' \sin x = \cot x
+      \end{cases}
+      \]
+      \item \textbf{解方程组}：将第一式乘 $\sin x$，第二式乘 $\cos x$ 并相加，消去 $c_2'$：
+      \[
+      c_1'(\sin^2 x + \cos^2 x) = \cot x \cos x \implies c_1' = \frac{\cos^2 x}{\sin x} = \frac{1-\sin^2 x}{\sin x} = \csc x - \sin x
+      \]
+      将 $c_1'$ 代回第一式，解得 $c_2'$：
+      \[
+      c_2' \cos x = -(\csc x - \sin x)\sin x \implies c_2' \cos x = -(1-\sin^2 x) \implies c_2' = -\cos x
+      \]
+      \item \textbf{积分求系数}：对 $c_1', c_2'$ 积分：
+      \[
+      c_1(x) = \int (\csc x - \sin x)\,\mathrm{d}x = \ln|\csc x - \cot x| + \cos x
+      \]
+      \[
+      c_2(x) = \int -\cos x\,\mathrm{d}x = -\sin x
+      \]
+      \item \textbf{写出通解}：代入 $y^*$ 的表达式并化简：
+      \[
+      y^* = (\ln|\csc x - \cot x| + \cos x)\sin x + (-\sin x)\cos x = \sin x \ln|\csc x - \cot x|
+      \]
+      最终通解为：$\mathbf{y = C_1 \sin x + C_2 \cos x + \sin x \ln|\csc x - \cot x|}$。
+  \end{enumerate}
+
+  \item[(2)] \textbf{求解 $y''-3y'+2y=\frac{\mathrm{e}^x}{1+\mathrm{e}^x}$}
+  \begin{enumerate}
+      \item \textbf{求齐次通解}：特征方程 $r^2 - 3r + 2 = 0$，解得 $r_1=1, r_2=2$。基础解系为 $y_1=\mathrm{e}^x, y_2=\mathrm{e}^{2x}$。
+      \item \textbf{设特解列方程组}：设特解 $y^* = c_1(x)\mathrm{e}^x + c_2(x)\mathrm{e}^{2x}$，列出方程组：
+      \[
+      \begin{cases}
+      c_1' \mathrm{e}^x + c_2' \mathrm{e}^{2x} = 0 \\
+      c_1' \mathrm{e}^x + 2c_2' \mathrm{e}^{2x} = \frac{\mathrm{e}^x}{1+\mathrm{e}^x}
+      \end{cases}
+      \]
+      \item \textbf{解方程组}：用第二式减去第一式，直接求得 $c_2'$：
+      \[
+      c_2' \mathrm{e}^{2x} = \frac{\mathrm{e}^x}{1+\mathrm{e}^x} \implies c_2' = \frac{\mathrm{e}^{-x}}{1+\mathrm{e}^x}
+      \]
+      代回第一式得 $c_1'$：
+      \[
+      c_1' \mathrm{e}^x = -c_2' \mathrm{e}^{2x} = -\frac{\mathrm{e}^x}{1+\mathrm{e}^x} \implies c_1' = -\frac{1}{1+\mathrm{e}^x}
+      \]
+      \item \textbf{积分求系数}：利用凑微分与加减项技巧积分：
+      \[
+      c_1(x) = \int \frac{-1}{1+\mathrm{e}^x} \,\mathrm{d}x = \int \frac{\mathrm{e}^x - (1+\mathrm{e}^x)}{1+\mathrm{e}^x} \,\mathrm{d}x = \int \left(\frac{\mathrm{e}^x}{1+\mathrm{e}^x} - 1\right) \mathrm{d}x = \ln(1+\mathrm{e}^x) - x
+      \]
+      对于 $c_2(x)$，将分子分母同乘 $\mathrm{e}^{-x}$：
+      \[
+      c_2(x) = \int \frac{\mathrm{e}^{-x}}{1+\mathrm{e}^x} \,\mathrm{d}x = \int \frac{\mathrm{e}^{-2x}}{\mathrm{e}^{-x}+1} \,\mathrm{d}x
+      \]
+      令 $u = \mathrm{e}^{-x}$，则 $\mathrm{d}u = -\mathrm{e}^{-x}\mathrm{d}x$：
+      \[
+      \int \frac{-u}{u+1}\,\mathrm{d}u = \int \left(-1 + \frac{1}{u+1}\right)\mathrm{d}u = -u + \ln|u+1| = -\mathrm{e}^{-x} + \ln(1+\mathrm{e}^{-x})
+      \]
+      由于 $\ln(1+\mathrm{e}^{-x}) = \ln(\frac{1+\mathrm{e}^x}{\mathrm{e}^x}) = \ln(1+\mathrm{e}^x) - x$，所以 $c_2(x) = -\mathrm{e}^{-x} - x + \ln(1+\mathrm{e}^x)$。
+      \item \textbf{写出通解}：代入 $y^* = c_1\mathrm{e}^x + c_2\mathrm{e}^{2x}$：
+      \[
+      y^* = (\ln(1+\mathrm{e}^x) - x)\mathrm{e}^x + (-\mathrm{e}^{-x} - x + \ln(1+\mathrm{e}^x))\mathrm{e}^{2x} = (\mathrm{e}^x+\mathrm{e}^{2x})\ln(1+\mathrm{e}^x) - x(\mathrm{e}^x+\mathrm{e}^{2x}) - \mathrm{e}^x
+      \]
+      注意最后的 $-\mathrm{e}^x$ 项与齐次通解 $C_1\mathrm{e}^x$ 同构，可直接被常数 $C_1$ 吸收。
+      最终通解为：$\mathbf{y = C_1\mathrm{e}^x + C_2\mathrm{e}^{2x} + (\mathrm{e}^x + \mathrm{e}^{2x})\ln(1+\mathrm{e}^x) - x(\mathrm{e}^x + \mathrm{e}^{2x})}$。
+  \end{enumerate}
+
+  \item[(3)] \textbf{求解 $xy''-y'=x^2\;(x>0)$}
+  \begin{enumerate}
+      \item \textbf{求齐次通解}：解齐次方程 $xy'' - y' = 0$。分离变量得 $\frac{y''}{y'} = \frac{1}{x}$。
+      积分得 $\ln|y'| = \ln x + C \implies y' = C_1 x \implies y = \frac{1}{2}C_1x^2 + C_0$。
+      取基础解系为 $y_1 = 1, y_2 = x^2$。
+      \item \textbf{化为标准形式}：使用常数变易法前，\textbf{必须将原方程化为首项系数为1的标准形}：
+      \[
+      y'' - \frac{1}{x}y' = x
+      \]
+      此时非齐次项 $f(x) = x$。
+      \item \textbf{设特解列方程组}：设特解 $y^* = c_1(x) \cdot 1 + c_2(x) \cdot x^2$，方程组为：
+      \[
+      \begin{cases}
+      c_1' \cdot 1 + c_2' \cdot x^2 = 0 \\
+      c_1' \cdot 0 + c_2' \cdot 2x = x
+      \end{cases}
+      \]
+      \item \textbf{解方程组并积分}：由第二式解得 $c_2' = \frac{x}{2x} = \frac{1}{2}$。积分得 $c_2(x) = \frac{x}{2}$。
+      代回第一式得 $c_1' = -c_2' x^2 = -\frac{1}{2}x^2$。积分得 $c_1(x) = -\frac{x^3}{6}$。
+      \item \textbf{写出通解}：代入求得特解：
+      \[
+      y^* = \left(-\frac{x^3}{6}\right) \cdot 1 + \left(\frac{x}{2}\right) \cdot x^2 = -\frac{x^3}{6} + \frac{x^3}{2} = \frac{x^3}{3}
+      \]
+      最终通解为：$\mathbf{y = C_1 + C_2 x^2 + \frac{1}{3}x^3}$。
+  \end{enumerate}
 \end{enumerate}
 \end{solution}
 
@@ -4645,20 +5265,23 @@ y=\frac1{2a}\bigl(\mathrm{e}^{ax}+\mathrm{e}^{-ax}\bigr)+C_2
 \end{exercise}
 \begin{solution}
 \textbf{解析：}
-将 $y_1 + y_2$ 代入微分算子 $L[y] = y'' + py' + qy$ 中验证：
-\[
-L[y_1 + y_2] = (y_1 + y_2)'' + p(y_1 + y_2)' + q(y_1 + y_2)
-\]
-根据导数的线性性质展开：
-\[
-= (y_1'' + py_1' + qy_1) + (y_2'' + py_2' + qy_2) = L[y_1] + L[y_2]
-\]
-已知 $L[y_1] = f_1(x)$ 且 $L[y_2] = f_2(x)$，所以：
-\[
-L[y_1 + y_2] = f_1(x) + f_2(x)
-\]
-这说明 $y_1 + y_2$ 满足方程 $y''+py'+qy=f_1(x)+f_2(x)$。
-因此，若要求 $y''+py'+qy=f_1(x)+f_2(x)$ 的一个特解，我们完全可以仅通过将 $y_1$ 和 $y_2$ “拼出来”（直接相加）即可得到。这就是线性微分方程的非齐次叠加原理。
+\begin{enumerate}
+    \item 定义线性微分算子 $L[y] = y'' + py' + qy$。根据题意已知：$L[y_1] = f_1(x)$ 且 $L[y_2] = f_2(x)$。
+    \item 考察 $y_1 + y_2$ 作用于算子 $L$ 的结果：
+    \[
+    L[y_1 + y_2] = (y_1 + y_2)'' + p(y_1 + y_2)' + q(y_1 + y_2)
+    \]
+    \item 根据导数和运算法则的线性性质，将其完全展开并重新分组：
+    \[
+    L[y_1 + y_2] = (y_1'' + py_1' + qy_1) + (y_2'' + py_2' + qy_2) = L[y_1] + L[y_2]
+    \]
+    \item 代入已知条件：
+    \[
+    L[y_1 + y_2] = f_1(x) + f_2(x)
+    \]
+    这说明 \textbf{$y_1 + y_2$ 满足的方程正是 $y''+py'+qy=f_1(x)+f_2(x)$}。
+    \item \textbf{结论}：若要求 $y''+py'+qy=f_1(x)+f_2(x)$ 的一个特解，我们完全可以仅通过将 $y_1$ 和 $y_2$ “拼出来”（直接相加）即可。这就是线性常微分方程中极为重要的\textbf{非齐次叠加原理}。
+\end{enumerate}
 \end{solution}
 
 \begin{exercise}[刘维尔公式的推广]
@@ -4669,25 +5292,37 @@ $y'''+p(x)y''+q(x)y'+r(x)y=0$ 的一个非零特解，
 \end{exercise}
 \begin{solution}
 \textbf{解析推导：}
-已知 $y_1$ 是三阶齐次方程 $L[y] = y''' + p(x)y'' + q(x)y' + r(x)y = 0$ 的非零解。我们引入变量代换 $y = u y_1$，以期将方程降阶。
-分别计算各阶导数：
-\[
-y' = u'y_1 + u y_1',~~y'' = u''y_1 + 2u'y_1' + u y_1'',~~y''' = u'''y_1 + 3u''y_1' + 3u'y_1'' + u y_1'''
-\]
-将它们代入原微分方程并按 $u$ 的各阶导数整理：
-\[
-u'''(y_1) + u''(3y_1' + py_1) + u'(3y_1'' + 2py_1' + qy_1) + u(y_1''' + py_1'' + qy_1' + ry_1) = 0
-\]
-因为 $y_1$ 是原方程的解，所以关于 $u$ 的那一项的系数恰为 $L[y_1] = 0$，于是 $u$ 项消失，方程化为：
-\[
-y_1 u''' + (3y_1' + p(x)y_1) u'' + (3y_1'' + 2p(x)y_1' + q(x)y_1) u' = 0
-\]
-此时，令 $w = u'$，则 $w' = u''$，$w'' = u'''$。代入上式，立刻得到了关于 $w$ 的二阶线性齐次方程：
-\[
-y_1 w'' + (3y_1' + p(x)y_1) w' + (3y_1'' + 2p(x)y_1' + q(x)y_1) w = 0
-\]
-我们将三阶微分方程成功降阶为二阶微分方程。
-若进一步求解这个新的二阶方程（假设能找到其特解 $w_1$），再利用一次标准二阶刘维尔公式，就能找到它的基础解系 $w_1, w_2$。积分得 $u$，最终由 $y = u y_1$ 即可反推出原三阶方程剩下的两个线性无关解。
+已知 $y_1$ 是三阶齐次方程 $L[y] = y''' + p(x)y'' + q(x)y' + r(x)y = 0$ 的非零特解。我们通过变量代换 $y = u y_1$ 将其降阶：
+\begin{enumerate}
+    \item \textbf{计算各阶导数}：利用乘积求导法则（莱布尼茨公式）：
+    \[
+    y' = u'y_1 + u y_1'
+    \]
+    \[
+    y'' = u''y_1 + 2u'y_1' + u y_1''
+    \]
+    \[
+    y''' = u'''y_1 + 3u''y_1' + 3u'y_1'' + u y_1'''
+    \]
+    \item \textbf{代入原方程并按 $u$ 的导数项重新整理}：
+    \[
+    (u'''y_1 + 3u''y_1' + 3u'y_1'' + u y_1''') + p(u''y_1 + 2u'y_1' + u y_1'') + q(u'y_1 + u y_1') + r(u y_1) = 0
+    \]
+    合并同类项，提取 $u''', u'', u'$ 和 $u$ 的系数：
+    \[
+    y_1 u''' + (3y_1' + py_1) u'' + (3y_1'' + 2py_1' + qy_1) u' + u\underbrace{(y_1''' + py_1'' + qy_1' + ry_1)}_{L[y_1]} = 0
+    \]
+    \item \textbf{消除 $u$ 项降阶}：因为 $y_1$ 是原方程的解，所以 $L[y_1] = 0$。于是 $u$ 项被完美消去，方程退化为不含 $u$ 本身的方程：
+    \[
+    y_1 u''' + (3y_1' + p(x)y_1) u'' + (3y_1'' + 2p(x)y_1' + q(x)y_1) u' = 0
+    \]
+    \item \textbf{引入新变量完成第一次降阶}：令 $w = u'$，则 $w' = u''$，$w'' = u'''$。代入上式，得到关于 $w$ 的二阶线性齐次微分方程：
+    \[
+    y_1 w'' + (3y_1' + p(x)y_1) w' + (3y_1'' + 2p(x)y_1' + q(x)y_1) w = 0
+    \]
+    至此，我们成功将三阶问题降为二阶问题。
+    \item \textbf{后续求解思路}：解出这个二阶方程的基础解系 $w_1, w_2$（若能找到特解则再次使用二阶刘维尔公式降阶为一阶），然后对其分别积分得到 $u_1 = \int w_1\,\mathrm{d}x$ 和 $u_2 = \int w_2\,\mathrm{d}x$。最后，根据 $y=uy_1$，原三阶方程剩下的两个线性无关解即为 $y_2 = u_1 y_1$ 和 $y_3 = u_2 y_1$。
+\end{enumerate}
 \end{solution}
 
 
@@ -4794,12 +5429,7 @@ A\cos\left(4 \cdot \frac{\pi}{8}\right) + B\sin\left(4 \cdot \frac{\pi}{8}\right
 \end{solution}
 
 \begin{exercise}[线性算子的计算]
-设 $L[y]=y''-3xy'+3y$, 试计算
-\begin{enumerate}
-    \item[(1)] $L[\mathrm{e}^x]$;
-    \item[(2)] $L[\cos\sqrt{3}x]$;
-    \item[(3)] $L[x^2+3x]$.
-\end{enumerate}
+设 $L[y]=y''-3xy'+3y$, 试计算（1）$L[\mathrm{e}^x]$;~~（2） $L[\cos\sqrt{3}x]$;~~（3） $L[x^2+3x]$.
 \end{exercise}
 \begin{solution}
 \begin{enumerate}
@@ -5758,7 +6388,6 @@ c_1 - c_2 = 2
 \]
 \end{solution}
 
-
 \section{练习}
 
 \subsection{A组}
@@ -5772,17 +6401,27 @@ c_1 - c_2 = 2
 \end{exercise}
 \begin{solution}
 \begin{enumerate}
-    \item[(1)] 欧拉待定指数法通过假设 $y=\mathrm{e}^{\lambda x}$ 代入 $y''+py'+qy=0$，并消去非零因子 $\mathrm{e}^{\lambda x}$ 后得到的一个关于常数 $\lambda$ 的一元二次代数方程：
+    \item[(1)] \textbf{特征方程的推导}：利用欧拉待定指数法，假设齐次线性微分方程有形如 $y=\mathrm{e}^{\lambda x}$ 的解。
+    对其求导可得 $y' = \lambda \mathrm{e}^{\lambda x}$， $y'' = \lambda^2 \mathrm{e}^{\lambda x}$。
+    将其代入原方程 $y''+py'+qy=0$ 中，得到：
+    \[
+    (\lambda^2 + p\lambda + q)\mathrm{e}^{\lambda x} = 0
+    \]
+    由于指数函数 $\mathrm{e}^{\lambda x}$ 恒不为零，消去该因子后得到关于常数 $\lambda$ 的一元二次代数方程：
     \[
     \lambda^2 + p\lambda + q = 0
     \]
-    该方程即为原微分方程的特征方程。
+    该代数方程即为原微分方程的\textbf{特征方程}。
     
-    \item[(2)] 对定义在区间 $I$ 上的 $k$ 个函数 $y_1(x), y_2(x), \dots, y_k(x)$，若存在不全为零的常数 $c_1, c_2, \dots, c_k$，使得恒等式
+    \item[(2)] \textbf{线性无关的定义}：对定义在区间 $I$ 上的 $k$ 个函数 $y_1(x), y_2(x), \dots, y_k(x)$，若存在一组常数 $c_1, c_2, \dots, c_k$，使得恒等式
     \[
     c_1y_1(x) + c_2y_2(x) + \dots + c_ky_k(x) \equiv 0 \quad (\forall x \in I)
     \]
-    成立，则称这 $k$ 个函数是\textbf{线性相关}的；若只有当 $c_1 = c_2 = \dots = c_k = 0$ 时上述恒等式才成立，则称这 $k$ 个函数是\textbf{线性无关}的。
+    成立。
+    \begin{itemize}
+        \item 若这组常数中\textbf{至少有一个不为零}，则称这 $k$ 个函数是\textbf{线性相关}的；
+        \item 若\textbf{只有当} $c_1 = c_2 = \dots = c_k = 0$ 时，上述恒等式才成立，则称这 $k$ 个函数是\textbf{线性无关}的。
+    \end{itemize}
 \end{enumerate}
 \end{solution}
 
@@ -5800,43 +6439,43 @@ c_1 - c_2 = 2
 \end{exercise}
 \begin{solution}
 \begin{enumerate}
-    \item[(1)] \textbf{思路}：特征方程 $\lambda^2 - 6\lambda + 9 = 0$，即 $(\lambda-3)^2 = 0$。特征根为 $\lambda_{1,2} = 3$（二重实根）。
-    根据情形三的公式，通解为：
+    \item[(1)] 特征方程为 $\lambda^2 - 6\lambda + 9 = 0$，即 $(\lambda-3)^2 = 0$。解得特征根为 $\lambda_{1,2} = 3$（二重实根）。
+    因此，通解为：
     \[
-    y = (C_1 + C_2 x)\mathrm{e}^{3x}
+    \mathbf{y = (C_1 + C_2 x)\mathrm{e}^{3x}}
     \]
     
-    \item[(2)] \textbf{思路}：特征方程 $4\lambda^2 - 12\lambda + 9 = 0$，即 $(2\lambda-3)^2 = 0$。特征根为 $\lambda_{1,2} = \frac{3}{2}$（二重实根）。
-    根据情形三的公式，通解为：
+    \item[(2)] 特征方程为 $4\lambda^2 - 12\lambda + 9 = 0$，即 $(2\lambda-3)^2 = 0$。解得特征根为 $\lambda_{1,2} = \frac{3}{2}$（二重实根）。
+    因此，通解为：
     \[
-    y = (C_1 + C_2 x)\mathrm{e}^{\frac{3}{2}x}
+    \mathbf{y = (C_1 + C_2 x)\mathrm{e}^{\frac{3}{2}x}}
     \]
     
-    \item[(3)] \textbf{思路}：特征方程 $\lambda^2 + 6\lambda + 13 = 0$。配方得 $(\lambda+3)^2 + 4 = 0$，解得共轭复根 $\lambda = -3 \pm 2i$。这里 $\alpha = -3, \beta = 2$。
-    根据情形二的公式，通解为：
+    \item[(3)] 特征方程为 $\lambda^2 + 6\lambda + 13 = 0$。配方得 $(\lambda+3)^2 + 4 = 0$，解得一对共轭复根 $\lambda = -3 \pm 2i$（其中 $\alpha = -3, \beta = 2$）。
+    因此，通解为：
     \[
-    y = \mathrm{e}^{-3x}(C_1\cos 2x + C_2\sin 2x)
+    \mathbf{y = \mathrm{e}^{-3x}(C_1\cos 2x + C_2\sin 2x)}
     \]
     
-    \item[(4)] \textbf{思路}：特征方程 $\lambda^2 - 2\lambda + 1 = 0$，即 $(\lambda-1)^2 = 0$。特征根为 $\lambda_{1,2} = 1$（二重实根）。
-    根据情形三的公式，通解为：
+    \item[(4)] 特征方程为 $\lambda^2 - 2\lambda + 1 = 0$，即 $(\lambda-1)^2 = 0$。解得特征根为 $\lambda_{1,2} = 1$（二重实根）。
+    因此，通解为：
     \[
-    y = (C_1 + C_2 x)\mathrm{e}^x
+    \mathbf{y = (C_1 + C_2 x)\mathrm{e}^x}
     \]
     
-    \item[(5)] \textbf{思路}：这是一道四阶高阶常系数方程。特征方程为 $\lambda^4 - 1 = 0$。
-    分解因式：$(\lambda^2 - 1)(\lambda^2 + 1) = 0$，解得特征根 $\lambda_1 = 1, \lambda_2 = -1, \lambda_{3,4} = \pm i$。
-    组合这些根对应的解，通解为：
+    \item[(5)] 这是一道四阶常系数线性方程。特征方程为 $\lambda^4 - 1 = 0$。
+    因式分解得 $(\lambda^2 - 1)(\lambda^2 + 1) = 0$，解得特征根为 $\lambda_1 = 1$, $\lambda_2 = -1$, $\lambda_{3,4} = \pm i$。
+    结合实根与共轭复根的通解公式，通解为：
     \[
-    y = C_1\mathrm{e}^x + C_2\mathrm{e}^{-x} + C_3\cos x + C_4\sin x
+    \mathbf{y = C_1\mathrm{e}^x + C_2\mathrm{e}^{-x} + C_3\cos x + C_4\sin x}
     \]
     
-    \item[(6)] \textbf{思路}：这是三阶常系数齐次方程。特征方程 $\lambda^3 - 6\lambda^2 + 3\lambda + 10 = 0$。
-    利用试根法，发现当 $\lambda = -1$ 时，$-1 - 6 - 3 + 10 = 0$，因此有因式 $(\lambda+1)$。
-    多项式除法：$(\lambda^3 - 6\lambda^2 + 3\lambda + 10) \div (\lambda+1) = \lambda^2 - 7\lambda + 10 = (\lambda-2)(\lambda-5)$。
-    特征根为互异的三个实根：$\lambda_1 = -1, \lambda_2 = 2, \lambda_3 = 5$。通解为：
+    \item[(6)] 这是三阶常系数齐次方程。特征方程为 $\lambda^3 - 6\lambda^2 + 3\lambda + 10 = 0$。
+    观察发现，当 $\lambda = -1$ 时，$-1 - 6 - 3 + 10 = 0$ 成立，故有因式 $(\lambda+1)$。
+    利用多项式除法：$(\lambda^3 - 6\lambda^2 + 3\lambda + 10) \div (\lambda+1) = \lambda^2 - 7\lambda + 10 = (\lambda-2)(\lambda-5)$。
+    解得三个互异的实根：$\lambda_1 = -1, \lambda_2 = 2, \lambda_3 = 5$。通解为：
     \[
-    y = C_1\mathrm{e}^{-x} + C_2\mathrm{e}^{2x} + C_3\mathrm{e}^{5x}
+    \mathbf{y = C_1\mathrm{e}^{-x} + C_2\mathrm{e}^{2x} + C_3\mathrm{e}^{5x}}
     \]
 \end{enumerate}
 \end{solution}
@@ -5853,212 +6492,132 @@ c_1 - c_2 = 2
 \end{exercise}
 \begin{solution}
 \begin{enumerate}
-    \item[(1)] \textbf{思路}：特征方程 $\lambda^2 + 4\lambda + 29 = 0 \implies (\lambda+2)^2 = -25 \implies \lambda = -2 \pm 5i$。
-    通解：
-    \[
-    y = \mathrm{e}^{-2x}(C_1\cos 5x + C_2\sin 5x)
-    \]
-    代入初始条件 $y(0) = 0 \implies C_1 = 0$。所以 $y = C_2\mathrm{e}^{-2x}\sin 5x$。
-    求导：
-    \[
-    y' = C_2(-2\mathrm{e}^{-2x}\sin 5x + 5\mathrm{e}^{-2x}\cos 5x)
-    \]
-    代入 $y'(0) = 15 \implies 5C_2 = 15 \implies C_2 = 3$。特解为：
-    \[
-    y = 3\mathrm{e}^{-2x}\sin 5x
-    \]
+    \item[(1)] \textbf{求解思路}：
+    特征方程 $\lambda^2 + 4\lambda + 29 = 0 \implies (\lambda+2)^2 = -25 \implies \lambda = -2 \pm 5i$。
+    通解形式为 $y = \mathrm{e}^{-2x}(C_1\cos 5x + C_2\sin 5x)$。
+    代入初始条件 $y(0) = 0 \implies C_1 = 0$。所以函数简化为 $y = C_2\mathrm{e}^{-2x}\sin 5x$。
+    对其求导：$y' = C_2(-2\mathrm{e}^{-2x}\sin 5x + 5\mathrm{e}^{-2x}\cos 5x)$。
+    代入初始条件 $y'(0) = 15 \implies C_2(0 + 5) = 15 \implies 5C_2 = 15 \implies C_2 = 3$。
+    特解为：$\mathbf{y = 3\mathrm{e}^{-2x}\sin 5x}$。
     
-    \item[(2)] \textbf{思路}：特征方程 $4\lambda^2 + 4\lambda + 1 = 0 \implies (2\lambda+1)^2 = 0 \implies \lambda_{1,2} = -\frac{1}{2}$。
-    通解：
-    \[
-    y = (C_1 + C_2 x)\mathrm{e}^{-x/2}
-    \]
+    \item[(2)] \textbf{求解思路}：
+    特征方程 $4\lambda^2 + 4\lambda + 1 = 0 \implies (2\lambda+1)^2 = 0 \implies \lambda_{1,2} = -\frac{1}{2}$。
+    通解形式为 $y = (C_1 + C_2 x)\mathrm{e}^{-\frac{1}{2}x}$。
     代入 $y(0) = 2 \implies C_1 = 2$。
-    求导：
-    \[
-    y' = C_2\mathrm{e}^{-x/2} - \frac{1}{2}(2 + C_2 x)\mathrm{e}^{-x/2}
-    \]
-    代入 $y'(0) = 0 \implies C_2 - \frac{1}{2}(2) = 0 \implies C_2 = 1$。特解为：
-    \[
-    y = (2 + x)\mathrm{e}^{-x/2}
-    \]
+    求导：$y' = C_2\mathrm{e}^{-\frac{1}{2}x} - \frac{1}{2}(C_1 + C_2 x)\mathrm{e}^{-\frac{1}{2}x}$。
+    代入 $y'(0) = 0 \implies C_2 - \frac{1}{2}C_1 = 0 \implies C_2 - 1 = 0 \implies C_2 = 1$。
+    特解为：$\mathbf{y = (2 + x)\mathrm{e}^{-\frac{x}{2}}}$。
     
-    \item[(3)] \textbf{思路}：特征方程 $\lambda^2 - 4\lambda + 3 = 0 \implies (\lambda-1)(\lambda-3) = 0 \implies \lambda_1 = 1, \lambda_2 = 3$。
-    通解：
-    \[
-    y = C_1\mathrm{e}^x + C_2\mathrm{e}^{3x}
-    \]
-    求导：
-    \[
-    y' = C_1\mathrm{e}^x + 3C_2\mathrm{e}^{3x}
-    \]
-    联立初始条件：
+    \item[(3)] \textbf{求解思路}：
+    特征方程 $\lambda^2 - 4\lambda + 3 = 0 \implies (\lambda-1)(\lambda-3) = 0 \implies \lambda_1 = 1, \lambda_2 = 3$。
+    通解形式为 $y = C_1\mathrm{e}^x + C_2\mathrm{e}^{3x}$。
+    求导得 $y' = C_1\mathrm{e}^x + 3C_2\mathrm{e}^{3x}$。
+    代入初始条件联立方程组：
     \[
     \begin{cases}
     C_1 + C_2 = 6 \\
     C_1 + 3C_2 = 10
     \end{cases}
-    \implies 2C_2 = 4 \implies C_2 = 2, \quad C_1 = 4
     \]
-    特解为：
-    \[
-    y = 4\mathrm{e}^x + 2\mathrm{e}^{3x}
-    \]
+    下式减上式得 $2C_2 = 4 \implies C_2 = 2$。进而求出 $C_1 = 4$。
+    特解为：$\mathbf{y = 4\mathrm{e}^x + 2\mathrm{e}^{3x}}$。
     
-    \item[(4)] \textbf{思路}：特征方程 $\lambda^2 + 25 = 0 \implies \lambda = \pm 5i$。
-    通解：
-    \[
-    y = C_1\cos 5x + C_2\sin 5x
-    \]
+    \item[(4)] \textbf{求解思路}：
+    特征方程 $\lambda^2 + 25 = 0 \implies \lambda = \pm 5i$。
+    通解形式为 $y = C_1\cos 5x + C_2\sin 5x$。
     代入 $y(0) = 2 \implies C_1 = 2$。
-    求导：
-    \[
-    y' = -5C_1\sin 5x + 5C_2\cos 5x
-    \]
-    代入 $y'(0) = 5 \implies 5C_2 = 5 \implies C_2 = 1$。特解为：
-    \[
-    y = 2\cos 5x + \sin 5x
-    \]
+    求导得 $y' = -5C_1\sin 5x + 5C_2\cos 5x$。
+    代入 $y'(0) = 5 \implies 5C_2 = 5 \implies C_2 = 1$。
+    特解为：$\mathbf{y = 2\cos 5x + \sin 5x}$。
 \end{enumerate}
 \end{solution}
 
 
 \begin{exercise}[非齐次方程通解]
-求下列微分方程的通解:
-\begin{enumerate}
-    \item[(1)] $y''+y'-2y=-2\sin x$;
-    \item[(2)] $y''+y=4\sin x$;
-    \item[(3)] $y''+4y=17\mathrm{e}^{-x}\cos 2x$;
-    \item[(4)] $y''+a^2y=\mathrm{e}^x$;
-    \item[(5)] $y''+5y'+4y=3-2x$;
-    \item[(6)] $y''-6y'+9y=\mathrm{e}^{2x}(x+1)$;
-    \item[(7)] $y''+y=3x\mathrm{e}^x+5\sin x$;
-    \item[(8)] $y''-y=\sin^2 x$.
-\end{enumerate}
+求下列微分方程的通解:\\
+\begin{tabular}{lll}
+  (1) $y''+y'-2y=-2\sin x$; &
+  (2) $y''+y=4\sin x$; &
+  (3) $y''+4y=17\mathrm{e}^{-x}\cos 2x$; \\
+  (4) $y''+a^2y=\mathrm{e}^x$; &
+  (5) $y''+5y'+4y=3-2x$; &
+  (6) $y''-6y'+9y=\mathrm{e}^{2x}(x+1)$; \\
+  (7) $y''+y=3x\mathrm{e}^x+5\sin x$; &
+  (8) $y''-y=\sin^2 x$. &
+\end{tabular}
 \end{exercise}
 \begin{solution}
 \begin{enumerate}
-    \item[(1)] \textbf{思路}：齐次方程特征根 $\lambda^2+\lambda-2=0 \implies \lambda_1=1, \lambda_2=-2$。通解 $y_h = C_1\mathrm{e}^x + C_2\mathrm{e}^{-2x}$。
-    对于非齐次项 $f(x) = -2\sin x$，因为 $\lambda = i$ 不是特征根（$k=0$），设特解 $y^* = A\cos x + B\sin x$。
-    求导：$(y^*)' = -A\sin x + B\cos x$, $(y^*)'' = -A\cos x - B\sin x$。代入原方程：
+    \item[(1)] \textbf{求齐次通解}：$\lambda^2+\lambda-2=0 \implies \lambda_1=1, \lambda_2=-2$。$y_h = C_1\mathrm{e}^x + C_2\mathrm{e}^{-2x}$。\\
+    \textbf{求特解}：非齐次项 $-2\sin x$ 对应 $\lambda = i$（非特征根，不共振）。设特解 $y^* = A\cos x + B\sin x$。
+    对其求导：$(y^*)' = -A\sin x + B\cos x$, $(y^*)'' = -A\cos x - B\sin x$。代入原方程并合并同类项：
     \[
     (-A+B-2A)\cos x + (-B-A-2B)\sin x = -2\sin x
     \]
-    比较系数：
-    \[
-    \begin{cases}
-    -3A + B = 0 \implies B = 3A \\
-    -A - 3B = -2 \implies -A - 9A = -2 \implies -10A = -2
-    \end{cases}
-    \implies A = \frac{1}{5}, B = \frac{3}{5}
-    \]
-    通解为：
-    \[
-    y = C_1\mathrm{e}^x + C_2\mathrm{e}^{-2x} + \frac{1}{5}\cos x + \frac{3}{5}\sin x
-    \]
+    比较系数得到方程组：$-3A + B = 0$ 且 $-A - 3B = -2$。
+    解得 $B = 3A$，代入下式 $-10A = -2 \implies A = \frac{1}{5}, B = \frac{3}{5}$。
+    \textbf{通解}：$\mathbf{y = C_1\mathrm{e}^x + C_2\mathrm{e}^{-2x} + \frac{1}{5}\cos x + \frac{3}{5}\sin x}$。
 
-    \item[(2)] \textbf{思路}：特征方程 $\lambda^2+1=0 \implies \lambda = \pm i$。$y_h = C_1\cos x + C_2\sin x$。
-    非齐次项 $f(x) = 4\sin x$，此时 $\lambda = i$ 是特征单根（共振情形，$k=1$）。
-    设特解 $y^* = x(A\cos x + B\sin x)$。
-    求二阶导数：$(y^*)'' = -x(A\cos x + B\sin x) - 2A\sin x + 2B\cos x$。
-    代入 $y''+y=4\sin x$ 得：
+    \item[(2)] \textbf{求齐次通解}：$\lambda^2+1=0 \implies \lambda = \pm i$。$y_h = C_1\cos x + C_2\sin x$。\\
+    \textbf{求特解}：非齐次项 $4\sin x$ 对应 $\lambda = i$（恰是单根，发生共振）。设特解 $y^* = x(A\cos x + B\sin x)$。
+    求导：$(y^*)' = A\cos x + B\sin x + x(-A\sin x + B\cos x)$。
+    $(y^*)'' = -2A\sin x + 2B\cos x - x(A\cos x + B\sin x)$。
+    代入原方程 $y''+y = 4\sin x$：
     \[
-    -2A\sin x + 2B\cos x = 4\sin x \implies -2A = 4, 2B = 0 \implies A = -2, B = 0
+    (-2A\sin x + 2B\cos x) - x(A\cos x + B\sin x) + x(A\cos x + B\sin x) = 4\sin x
     \]
-    特解 $y^* = -2x\cos x$。通解为：
-    \[
-    y = C_1\cos x + C_2\sin x - 2x\cos x
-    \]
+    化简得 $-2A\sin x + 2B\cos x = 4\sin x \implies A = -2, B = 0$。特解 $y^* = -2x\cos x$。
+    \textbf{通解}：$\mathbf{y = C_1\cos x + C_2\sin x - 2x\cos x}$。
 
-    \item[(3)] \textbf{思路}：特征根 $\lambda^2+4=0 \implies \lambda=\pm 2i$。$y_h = C_1\cos 2x + C_2\sin 2x$。
-    非齐次项中 $\lambda = -1 + 2i$ 并非特征根（$k=0$）。设 $y^* = \mathrm{e}^{-x}(A\cos 2x + B\sin 2x)$。
-    由于用算子法比较直观，利用位移定理 $(D^2+4)y = 17\mathrm{e}^{-x}\cos 2x$：
+    \item[(3)] \textbf{求齐次通解}：$\lambda^2+4=0 \implies \lambda=\pm 2i$。$y_h = C_1\cos 2x + C_2\sin 2x$。\\
+    \textbf{求特解}：非齐次项 $17\mathrm{e}^{-x}\cos 2x$ 对应 $\lambda = -1 + 2i$（不是根，不共振）。设 $y^* = \mathrm{e}^{-x}(A\cos 2x + B\sin 2x)$。
+    利用导数性质进行计算：
+    $(y^*)' = \mathrm{e}^{-x}[(-A+2B)\cos 2x + (-B-2A)\sin 2x]$。
+    $(y^*)'' = \mathrm{e}^{-x}[(-3A-4B)\cos 2x + (4A-3B)\sin 2x]$。
+    代入原方程 $y''+4y=17\mathrm{e}^{-x}\cos 2x$ 并提取 $\mathrm{e}^{-x}$：
     \[
-    \mathrm{e}^{-x} ((D-1)^2+4)[A\cos 2x + B\sin 2x] = 17\mathrm{e}^{-x}\cos 2x
+    (-3A-4B+4A)\cos 2x + (4A-3B+4B)\sin 2x = 17\cos 2x
     \]
-    即 $(D^2-2D+5)[A\cos 2x + B\sin 2x] = 17\cos 2x$。因为 $D^2(\cos 2x) = -4\cos 2x$ 等等价关系：
-    \[
-    (1-2D)[A\cos 2x + B\sin 2x] = A\cos 2x + B\sin 2x - 2(-2A\sin 2x + 2B\cos 2x) = 17\cos 2x
-    \]
-    \[
-    (A-4B)\cos 2x + (4A+B)\sin 2x = 17\cos 2x
-    \]
-    比较系数：
-    \[
-    \begin{cases}
-    4A + B = 0 \implies B = -4A \\
-    A - 4B = 17 \implies A - 4(-4A) = 17A = 17
-    \end{cases}
-    \implies A = 1, B = -4
-    \]
-    通解为：
-    \[
-    y = C_1\cos 2x + C_2\sin 2x + \mathrm{e}^{-x}(\cos 2x - 4\sin 2x)
-    \]
+    即 $(A-4B)\cos 2x + (4A+B)\sin 2x = 17\cos 2x$。
+    对比系数：$4A+B=0 \implies B=-4A$。代入前式：$A-4(-4A) = 17A = 17 \implies A=1, B=-4$。
+    \textbf{通解}：$\mathbf{y = C_1\cos 2x + C_2\sin 2x + \mathrm{e}^{-x}(\cos 2x - 4\sin 2x)}$。
 
-    \item[(4)] \textbf{思路}：特征根 $\lambda = \pm ai$。
-    非齐次项 $\mathrm{e}^x$ 对应的 $\lambda=1$ 不是根，设特解 $y^* = A\mathrm{e}^x$。
+    \item[(4)] \textbf{求齐次通解}：$\lambda = \pm ai$。$y_h = C_1\cos ax + C_2\sin ax$。\\
+    \textbf{求特解}：非齐次项 $\mathrm{e}^x$ 对应 $\lambda=1$（不是根）。设 $y^* = A\mathrm{e}^x$。
     代入方程：$A\mathrm{e}^x + a^2 A\mathrm{e}^x = \mathrm{e}^x \implies A(1+a^2)=1 \implies A=\frac{1}{1+a^2}$。
-    通解为：
-    \[
-    y = C_1\cos ax + C_2\sin ax + \frac{\mathrm{e}^x}{1+a^2}
-    \]
+    \textbf{通解}：$\mathbf{y = C_1\cos ax + C_2\sin ax + \frac{\mathrm{e}^x}{1+a^2}}$。
 
-    \item[(5)] \textbf{思路}：特征方程 $\lambda^2+5\lambda+4=0 \implies \lambda = -1, -4$。
-    非齐次项 $3-2x$ 对应 $\lambda=0$，不是根（$k=0$）。设特解 $y^* = Ax + B$。
-    代入方程：
-    \[
-    0 + 5A + 4(Ax+B) = 3 - 2x \implies 4Ax + (5A+4B) = -2x + 3
-    \]
-    比较系数：
-    \[
-    4A = -2 \implies A = -\frac{1}{2}
-    \]
-    \[
-    5A + 4B = 3 \implies -\frac{5}{2} + 4B = 3 \implies 4B = \frac{11}{2} \implies B = \frac{11}{8}
-    \]
-    通解为：
-    \[
-    y = C_1\mathrm{e}^{-x} + C_2\mathrm{e}^{-4x} - \frac{1}{2}x + \frac{11}{8}
-    \]
+    \item[(5)] \textbf{求齐次通解}：$\lambda^2+5\lambda+4=0 \implies \lambda = -1, -4$。$y_h = C_1\mathrm{e}^{-x} + C_2\mathrm{e}^{-4x}$。\\
+    \textbf{求特解}：非齐次项 $3-2x$ 对应 $\lambda=0$（不是根）。设 $y^* = Ax + B$。求导得 $(y^*)'=A, (y^*)''=0$。
+    代入方程：$0 + 5A + 4(Ax+B) = 3 - 2x \implies 4Ax + (5A+4B) = -2x + 3$。
+    比较系数：$4A = -2 \implies A = -\frac{1}{2}$；$5(-\frac{1}{2}) + 4B = 3 \implies 4B = \frac{11}{2} \implies B = \frac{11}{8}$。
+    \textbf{通解}：$\mathbf{y = C_1\mathrm{e}^{-x} + C_2\mathrm{e}^{-4x} - \frac{1}{2}x + \frac{11}{8}}$。
 
-    \item[(6)] \textbf{思路}：特征根 $(\lambda-3)^2=0 \implies \lambda_{1,2}=3$。
-    非齐次项 $\mathrm{e}^{2x}(x+1)$ 中 $\lambda=2$ 不是根（$k=0$）。设 $y^* = \mathrm{e}^{2x}(Ax+B)$。
-    运用算子法求解 $(D-3)^2 y = \mathrm{e}^{2x}(x+1)$：
-    \begin{align*}
-    \mathrm{e}^{2x}(D-1)^2[Ax+B] &= \mathrm{e}^{2x}(D^2-2D+1)[Ax+B] = \mathrm{e}^{2x}(-2A + Ax + B) \\
-    &= \mathrm{e}^{2x}(Ax + B - 2A) = \mathrm{e}^{2x}(x+1)
-    \end{align*}
-    比较系数：
+    \item[(6)] \textbf{求齐次通解}：$(\lambda-3)^2=0 \implies \lambda_{1,2}=3$。$y_h = (C_1+C_2x)\mathrm{e}^{3x}$。\\
+    \textbf{求特解}：非齐次项 $\mathrm{e}^{2x}(x+1)$ 对应 $\lambda=2$（不是根）。设 $y^* = \mathrm{e}^{2x}(Ax+B)$。
+    求导得：$(y^*)' = \mathrm{e}^{2x}(2Ax+2B+A)$，$(y^*)'' = \mathrm{e}^{2x}(4Ax+4B+4A)$。
+    代入原方程 $y''-6y'+9y$ 并提取公因式 $\mathrm{e}^{2x}$：
     \[
-    A = 1, \quad B - 2A = 1 \implies B = 3
+    (4Ax+4B+4A) - 6(2Ax+2B+A) + 9(Ax+B) = Ax + (B-2A) = x+1
     \]
-    通解为：
-    \[
-    y = (C_1 + C_2 x)\mathrm{e}^{3x} + \mathrm{e}^{2x}(x+3)
-    \]
+    比较系数：$A = 1$，$B - 2A = 1 \implies B = 3$。特解 $y^* = \mathrm{e}^{2x}(x+3)$。
+    \textbf{通解}：$\mathbf{y = (C_1 + C_2 x)\mathrm{e}^{3x} + \mathrm{e}^{2x}(x+3)}$。
 
-    \item[(7)] \textbf{思路}：特征根 $\lambda^2+1=0 \implies \lambda=\pm i$。
-    利用叠加原理分别求 $y_1^*$（对应 $3x\mathrm{e}^x$）和 $y_2^*$（对应 $5\sin x$）。
-    对 $y_1^*$，$\lambda=1$ 不是根，设 $y_1^* = \mathrm{e}^x(Ax+B)$：
+    \item[(7)] \textbf{求齐次通解}：$\lambda=\pm i$。$y_h = C_1\cos x + C_2\sin x$。\\
+    \textbf{求特解}：运用叠加原理分离非齐次项 $3x\mathrm{e}^x$ 和 $5\sin x$。
+    对 $3x\mathrm{e}^x$，设 $y_1^* = \mathrm{e}^x(Ax+B)$。代入 $(y_1^*)'' + y_1^*$：
     \[
-    (D^2+1)y_1^* = \mathrm{e}^x((D+1)^2+1)[Ax+B] = \mathrm{e}^x(D^2+2D+2)[Ax+B] = \mathrm{e}^x(2A + 2Ax + 2B) = 3x\mathrm{e}^x
+    \mathrm{e}^x(Ax+2A+B) + \mathrm{e}^x(Ax+B) = \mathrm{e}^x(2Ax+2A+2B) = 3x\mathrm{e}^x
     \]
-    解得：$2A=3 \implies A=\frac{3}{2}$；$2A+2B=0 \implies B=-\frac{3}{2}$。$y_1^* = \mathrm{e}^x\left(\frac{3}{2}x - \frac{3}{2}\right)$。
-    对 $y_2^*$，$\lambda=i$ 是单根（共振），设 $y_2^* = x(C\cos x + D\sin x)$。由前面第(2)题推导类似，代入可得 $-2C\sin x + 2D\cos x = 5\sin x \implies C=-\frac{5}{2}, D=0$。$y_2^* = -\frac{5}{2}x\cos x$。
-    通解为：
-    \[
-    y = C_1\cos x + C_2\sin x + \mathrm{e}^x\left(\frac{3}{2}x - \frac{3}{2}\right) - \frac{5}{2}x\cos x
-    \]
+    比较系数得 $2A=3 \implies A=\frac{3}{2}$；$2A+2B=0 \implies B=-\frac{3}{2}$。$y_1^* = \mathrm{e}^x\left(\frac{3}{2}x - \frac{3}{2}\right)$。
+    对 $5\sin x$，因共振设 $y_2^* = x(C\cos x + D\sin x)$。代入 $(y_2^*)'' + y_2^*$ 得 $-2C\sin x + 2D\cos x = 5\sin x \implies C=-\frac{5}{2}, D=0$。$y_2^* = -\frac{5}{2}x\cos x$。
+    \textbf{通解}：$\mathbf{y = C_1\cos x + C_2\sin x + \mathrm{e}^x\left(\frac{3}{2}x - \frac{3}{2}\right) - \frac{5}{2}x\cos x}$。
 
-    \item[(8)] \textbf{思路}：特征根 $\lambda^2-1=0 \implies \lambda=\pm 1$。
-    使用三角恒等式降幂处理右侧：$f(x) = \sin^2 x = \frac{1}{2} - \frac{1}{2}\cos 2x$。
-    对常数项 $\frac{1}{2}$，显然特解 $y_1^* = -\frac{1}{2}$。
-    对 $-\frac{1}{2}\cos 2x$，设 $y_2^* = A\cos 2x$。代入得 $-4A\cos 2x - A\cos 2x = -5A\cos 2x = -\frac{1}{2}\cos 2x \implies A = \frac{1}{10}$。
-    通解为：
-    \[
-    y = C_1\mathrm{e}^x + C_2\mathrm{e}^{-x} - \frac{1}{2} + \frac{1}{10}\cos 2x
-    \]
+    \item[(8)] \textbf{求齐次通解}：$\lambda^2-1=0 \implies \lambda=\pm 1$。$y_h = C_1\mathrm{e}^x + C_2\mathrm{e}^{-x}$。\\
+    \textbf{求特解}：右端为 $\sin^2 x$，利用半角公式降幂得 $\frac{1}{2} - \frac{1}{2}\cos 2x$。
+    对常数项 $\frac{1}{2}$，设 $y_1^* = A \implies -A = \frac{1}{2} \implies y_1^* = -\frac{1}{2}$。
+    对 $-\frac{1}{2}\cos 2x$，设 $y_2^* = B\cos 2x$。代入得 $(y_2^*)''-y_2^* = -4B\cos 2x - B\cos 2x = -5B\cos 2x = -\frac{1}{2}\cos 2x \implies B = \frac{1}{10}$。
+    \textbf{通解}：$\mathbf{y = C_1\mathrm{e}^x + C_2\mathrm{e}^{-x} - \frac{1}{2} + \frac{1}{10}\cos 2x}$。
 \end{enumerate}
 \end{solution}
 
@@ -6069,63 +6628,49 @@ c_1 - c_2 = 2
     \item[(1)] $y''+y+\sin 2x=0$, $y(\pi)=1$, $y'(\pi)=1$;
     \item[(2)] $y''-3y'+2y=5$, $y(0)=1$, $y'(0)=2$;
     \item[(3)] $y''-y=4x\mathrm{e}^x$, $y(0)=0$, $y'(0)=1$;
-    \item[(4)] $y''-4y'=5$, $y(0)=1$, $y'(0)=0$ (注: 修正了原题 $y'-4y'=5$ 且带两个初始条件的排版笔误).
+    \item[(4)] $y''-4y'=5$, $y(0)=1$, $y'(0)=0$.
 \end{enumerate}
 \end{exercise}
 \begin{solution}
 \begin{enumerate}
-    \item[(1)] \textbf{思路}：方程化为 $y''+y=-\sin 2x$。特征根 $\lambda=\pm i$。
-    设特解 $y^* = A\sin 2x$。代入得 $-4A\sin 2x + A\sin 2x = -3A\sin 2x = -\sin 2x \implies A = \frac{1}{3}$。
-    通解：$y = C_1\cos x + C_2\sin x + \frac{1}{3}\sin 2x$。
-    由 $y(\pi) = -C_1 = 1 \implies C_1 = -1$。
-    求导：$y' = \sin x + C_2\cos x + \frac{2}{3}\cos 2x$。
-    由 $y'(\pi) = -C_2 + \frac{2}{3}(1) = 1 \implies C_2 = -\frac{1}{3}$。
-    特解：
-    \[
-    y = -\cos x - \frac{1}{3}\sin x + \frac{1}{3}\sin 2x
-    \]
+    \item[(1)] \textbf{求通解}：方程化为 $y''+y=-\sin 2x$。特征根 $\lambda=\pm i$。齐次通解 $y_h = C_1\cos x + C_2\sin x$。
+    设特解 $y^* = A\sin 2x$。代入得 $(y^*)''+y^* = -4A\sin 2x + A\sin 2x = -3A\sin 2x = -\sin 2x \implies A = \frac{1}{3}$。
+    通解：$y = C_1\cos x + C_2\sin x + \frac{1}{3}\sin 2x$。\\
+    \textbf{定初值}：代入 $x=\pi$，$y(\pi) = C_1\cos\pi + C_2\sin\pi + \frac{1}{3}\sin 2\pi = -C_1 = 1 \implies C_1 = -1$。
+    求导：$y' = -C_1\sin x + C_2\cos x + \frac{2}{3}\cos 2x$。
+    代入 $x=\pi$，$y'(\pi) = -C_2\cdot 1 + \frac{2}{3}\cdot 1 = 1 \implies C_2 = -\frac{1}{3}$。
+    \textbf{特解}：$\mathbf{y = -\cos x - \frac{1}{3}\sin x + \frac{1}{3}\sin 2x}$。
 
-    \item[(2)] \textbf{思路}：特征根 $\lambda^2-3\lambda+2=0 \implies \lambda=1, 2$。
-    非齐次项是常数 $5$，显然特解为 $y^* = \frac{5}{2}$。
-    通解：$y = C_1\mathrm{e}^x + C_2\mathrm{e}^{2x} + \frac{5}{2}$。
-    $y(0) = C_1 + C_2 + \frac{5}{2} = 1 \implies C_1 + C_2 = -\frac{3}{2}$。
-    $y' = C_1\mathrm{e}^x + 2C_2\mathrm{e}^{2x} \implies y'(0) = C_1 + 2C_2 = 2$。
-    下式减上式得 $C_2 = \frac{7}{2}$，进而 $C_1 = -5$。
-    特解：
-    \[
-    y = -5\mathrm{e}^x + \frac{7}{2}\mathrm{e}^{2x} + \frac{5}{2}
-    \]
+    \item[(2)] \textbf{求通解}：特征根 $\lambda^2-3\lambda+2=0 \implies \lambda=1, 2$。齐次通解 $y_h = C_1\mathrm{e}^x + C_2\mathrm{e}^{2x}$。
+    非齐次项是常数 $5$，由于不共振，设特解为 $y^* = A$。代入得 $2A = 5 \implies y^* = \frac{5}{2}$。
+    通解：$y = C_1\mathrm{e}^x + C_2\mathrm{e}^{2x} + \frac{5}{2}$。\\
+    \textbf{定初值}：代入 $y(0) = C_1 + C_2 + \frac{5}{2} = 1 \implies C_1 + C_2 = -\frac{3}{2}$。
+    求导得 $y' = C_1\mathrm{e}^x + 2C_2\mathrm{e}^{2x}$，代入 $y'(0) = C_1 + 2C_2 = 2$。
+    两式相减得 $C_2 = 2 - (-\frac{3}{2}) = \frac{7}{2}$。代回求得 $C_1 = -5$。
+    \textbf{特解}：$\mathbf{y = -5\mathrm{e}^x + \frac{7}{2}\mathrm{e}^{2x} + \frac{5}{2}}$。
 
-    \item[(3)] \textbf{思路}：特征根 $\lambda=\pm 1$。
-    非齐次项为 $4x\mathrm{e}^x$，$\lambda=1$ 为单根（共振，设提升因子 $x$）。设 $y^* = x\mathrm{e}^x(Ax+B) = \mathrm{e}^x(Ax^2+Bx)$。
-    代入方程：
+    \item[(3)] \textbf{求通解}：特征根 $\lambda=\pm 1$。齐次通解 $y_h = C_1\mathrm{e}^x + C_2\mathrm{e}^{-x}$。
+    非齐次项为 $4x\mathrm{e}^x$，因 $\lambda=1$ 为特征单根（共振），设特解 $y^* = x(Ax+B)\mathrm{e}^x = (Ax^2+Bx)\mathrm{e}^x$。
+    对其求导：$(y^*)' = [Ax^2+(2A+B)x+B]\mathrm{e}^x$, $(y^*)'' = [Ax^2+(4A+B)x+(2A+2B)]\mathrm{e}^x$。
+    代入方程 $y''-y=4x\mathrm{e}^x$ 得到：
     \[
-    (D^2-1)[\mathrm{e}^x(Ax^2+Bx)] = \mathrm{e}^x((D+1)^2-1)[Ax^2+Bx] = \mathrm{e}^x(D^2+2D)[Ax^2+Bx]
+    [Ax^2+(4A+B)x+(2A+2B)]\mathrm{e}^x - [Ax^2+Bx]\mathrm{e}^x = (4Ax + 2A+2B)\mathrm{e}^x = 4x\mathrm{e}^x
     \]
-    \[
-    = \mathrm{e}^x (2A + 4Ax + 2B) = 4x\mathrm{e}^x
-    \]
-    比较系数：$4A=4 \implies A=1$；$2A+2B=0 \implies B=-1$。特解 $y^* = \mathrm{e}^x(x^2-x)$。
-    通解：$y = C_1\mathrm{e}^x + C_2\mathrm{e}^{-x} + \mathrm{e}^x(x^2-x)$。
-    $y(0) = C_1 + C_2 = 0 \implies C_2 = -C_1$。
-    $y' = C_1\mathrm{e}^x - C_2\mathrm{e}^{-x} + \mathrm{e}^x(x^2+x-1)$。
-    $y'(0) = C_1 - C_2 - 1 = 1 \implies C_1 - C_2 = 2 \implies 2C_1 = 2 \implies C_1 = 1, C_2 = -1$。
-    特解：
-    \[
-    y = \mathrm{e}^x - \mathrm{e}^{-x} + \mathrm{e}^x(x^2-x) = \mathrm{e}^x(x^2-x+1) - \mathrm{e}^{-x}
-    \]
+    比较系数：$4A=4 \implies A=1$；$2A+2B=0 \implies B=-1$。特解 $y^* = (x^2-x)\mathrm{e}^x$。
+    通解：$y = C_1\mathrm{e}^x + C_2\mathrm{e}^{-x} + (x^2-x)\mathrm{e}^x$。\\
+    \textbf{定初值}：代入 $y(0) = C_1 + C_2 = 0 \implies C_2 = -C_1$。
+    求导：$y' = C_1\mathrm{e}^x - C_2\mathrm{e}^{-x} + (x^2+x-1)\mathrm{e}^x$。
+    代入 $y'(0) = C_1 - C_2 - 1 = 1 \implies C_1 - C_2 = 2 \implies 2C_1 = 2 \implies C_1 = 1, C_2 = -1$。
+    \textbf{特解}：$\mathbf{y = \mathrm{e}^x(x^2-x+1) - \mathrm{e}^{-x}}$。
 
-    \item[(4)] \textbf{思路}：特征方程 $\lambda^2-4\lambda=0 \implies \lambda=0, 4$。
-    非齐次项是常数 $5$，因为 $\lambda=0$ 是单根（共振），设 $y^* = Ax$。
-    代入得 $-4A = 5 \implies A = -\frac{5}{4}$。
-    通解：$y = C_1 + C_2\mathrm{e}^{4x} - \frac{5}{4}x$。
-    $y(0) = C_1 + C_2 = 1$。
-    $y' = 4C_2\mathrm{e}^{4x} - \frac{5}{4} \implies y'(0) = 4C_2 - \frac{5}{4} = 0 \implies C_2 = \frac{5}{16}$。
+    \item[(4)] \textbf{求通解}：特征方程 $\lambda^2-4\lambda=0 \implies \lambda=0, 4$。齐次通解 $y_h = C_1 + C_2\mathrm{e}^{4x}$。
+    非齐次项是常数 $5$，因 $\lambda=0$ 为单根（共振），设 $y^* = Ax$。
+    代入原方程 $y''-4y'=5$ 得 $-4A = 5 \implies A = -\frac{5}{4}$。
+    通解：$y = C_1 + C_2\mathrm{e}^{4x} - \frac{5}{4}x$。\\
+    \textbf{定初值}：代入 $y(0) = C_1 + C_2 = 1$。
+    求导：$y' = 4C_2\mathrm{e}^{4x} - \frac{5}{4}$。代入 $y'(0) = 4C_2 - \frac{5}{4} = 0 \implies C_2 = \frac{5}{16}$。
     从而 $C_1 = 1 - \frac{5}{16} = \frac{11}{16}$。
-    特解：
-    \[
-    y = \frac{11}{16} + \frac{5}{16}\mathrm{e}^{4x} - \frac{5}{4}x
-    \]
+    \textbf{特解}：$\mathbf{y = \frac{11}{16} + \frac{5}{16}\mathrm{e}^{4x} - \frac{5}{4}x}$。
 \end{enumerate}
 \end{solution}
 
@@ -6140,29 +6685,35 @@ c_1 - c_2 = 2
 \end{exercise}
 \begin{solution}
 \begin{enumerate}
-    \item[(1)] \textbf{思路}：特征方程 $(\lambda+2)^2=0 \implies \lambda=-2$（二重实根）。
-    非齐次项为指数函数 $\mathrm{e}^{\alpha x}$，我们需要按参数 $\alpha$ 与根的关系进行分类讨论：
+    \item[(1)] \textbf{求解思路}：特征方程 $(\lambda+2)^2=0 \implies \lambda=-2$（二重实根）。齐次通解为 $y_h = (C_1 + C_2 x)\mathrm{e}^{-2x}$。
+    非齐次项为指数函数 $\mathrm{e}^{\alpha x}$，其指数部分的系数为 $\alpha$。根据待定系数法的原则，我们需要按 $\alpha$ 是否与特征根重合来进行分类讨论：
     \begin{itemize}
-        \item 若 $\alpha \neq -2$，则非共振。设特解为 $y^* = A\mathrm{e}^{\alpha x}$，代入方程：
+        \item \textbf{情形 1（非共振）：若 $\alpha \neq -2$}。设特解为 $y^* = A\mathrm{e}^{\alpha x}$，代入原方程：
         \[
-        A(\alpha^2+4\alpha+4)\mathrm{e}^{\alpha x} = \mathrm{e}^{\alpha x} \implies A(\alpha+2)^2 = 1 \implies A = \frac{1}{(\alpha+2)^2}
+        A\alpha^2\mathrm{e}^{\alpha x} + 4A\alpha\mathrm{e}^{\alpha x} + 4A\mathrm{e}^{\alpha x} = \mathrm{e}^{\alpha x} \implies A(\alpha^2+4\alpha+4) = 1 \implies A = \frac{1}{(\alpha+2)^2}
         \]
-        此时通解为 $y = (C_1 + C_2 x)\mathrm{e}^{-2x} + \frac{\mathrm{e}^{\alpha x}}{(\alpha+2)^2}$。
-        \item 若 $\alpha = -2$，则为二重共振根（$k=2$）。设特解为 $y^* = Ax^2\mathrm{e}^{-2x}$。代入方程，由前面法则 $A=\frac{1}{2!}=\frac{1}{2}$（或者运用算子法直接推得）。
-        此时通解为 $y = (C_1 + C_2 x)\mathrm{e}^{-2x} + \frac{1}{2}x^2\mathrm{e}^{-2x}$。
+        此时通解为 $\mathbf{y = (C_1 + C_2 x)\mathrm{e}^{-2x} + \frac{\mathrm{e}^{\alpha x}}{(\alpha+2)^2}}$。
+        \item \textbf{情形 2（二重共振）：若 $\alpha = -2$}。$\lambda=-2$ 为二重根。设特解为 $y^* = Ax^2\mathrm{e}^{-2x}$。
+        求导：$(y^*)' = (2Ax - 2Ax^2)\mathrm{e}^{-2x}$，$(y^*)'' = (2A - 8Ax + 4Ax^2)\mathrm{e}^{-2x}$。代入方程：
+        \[
+        (2A - 8Ax + 4Ax^2)\mathrm{e}^{-2x} + 4(2Ax - 2Ax^2)\mathrm{e}^{-2x} + 4Ax^2\mathrm{e}^{-2x} = 2A\mathrm{e}^{-2x} = \mathrm{e}^{-2x} \implies A = \frac{1}{2}
+        \]
+        此时通解为 $\mathbf{y = (C_1 + C_2 x)\mathrm{e}^{-2x} + \frac{1}{2}x^2\mathrm{e}^{-2x}}$。
     \end{itemize}
     
-    \item[(2)] \textbf{思路}：特征方程 $\lambda^2+a^2=0 \implies \lambda=\pm ai$。
-    非齐次项 $\sin x$ 对应的虚部频率为 $1$。需讨论 $a$ 与 $1$ 的关系：
+    \item[(2)] \textbf{求解思路}：特征方程 $\lambda^2+a^2=0 \implies \lambda=\pm ai$。齐次通解为 $y_h = C_1\cos ax + C_2\sin ax$。
+    非齐次项 $\sin x$ 对应的等价指数虚部频率为 $1$。同样需要按是否发生共振分类讨论：
     \begin{itemize}
-        \item 若 $a \neq 1$（由于 $a>0$，即 $\pm a i \neq \pm i$），则非共振。设 $y^* = A\sin x$。
-        代入得 $-A\sin x + a^2 A\sin x = \sin x \implies A(a^2-1)=1 \implies A = \frac{1}{a^2-1}$。
-        通解：$y = C_1\cos ax + C_2\sin ax + \frac{\sin x}{a^2-1}$。
-        \item 若 $a = 1$，此时为共振。设 $y^* = x(A\cos x + B\sin x)$。代入方程：
+        \item \textbf{情形 1（非共振）：若 $a \neq 1$}（因 $a>0$，即 $\pm a i \neq \pm i$）。设 $y^* = A\sin x$（由于方程不含一次导数项，可不设余弦项）。
+        代入得 $(y^*)''+a^2y^* = -A\sin x + a^2 A\sin x = (a^2-1)A\sin x = \sin x \implies A = \frac{1}{a^2-1}$。
+        此时通解为 $\mathbf{y = C_1\cos ax + C_2\sin ax + \frac{\sin x}{a^2-1}}$。
+        \item \textbf{情形 2（共振）：若 $a = 1$}。此时特征根为 $\pm i$，对应齐次解恰含 $\sin x$。设 $y^* = x(A\cos x + B\sin x)$。
+        求二次导数得 $(y^*)'' = -2A\sin x + 2B\cos x - x(A\cos x + B\sin x)$。代入方程 $y''+y = \sin x$：
         \[
         -2A\sin x + 2B\cos x = \sin x \implies A = -\frac{1}{2}, B = 0
         \]
-        特解为 $y^* = -\frac{1}{2}x\cos x$。通解：$y = C_1\cos x + C_2\sin x - \frac{1}{2}x\cos x$。
+        特解为 $y^* = -\frac{1}{2}x\cos x$。
+        此时通解为 $\mathbf{y = C_1\cos x + C_2\sin x - \frac{1}{2}x\cos x}$。
     \end{itemize}
 \end{enumerate}
 \end{solution}
@@ -6180,67 +6731,73 @@ c_1 - c_2 = 2
 \end{enumerate}
 \end{exercise}
 \begin{solution}
-我们统一采用变换 $x = \mathrm{e}^t$（即 $t = \ln x$）将Euler方程转化为以 $t$ 为自变量的常系数微分方程。运用前面推导的算子法则：$xD_x \to D_t$，$x^2 D_x^2 \to D_t(D_t-1)$。
+对于欧拉方程（Euler Equation），我们统一采用自变量变换 $x = \mathrm{e}^t$（即 $t = \ln x$）将其转化为以 $t$ 为自变量的常系数常微分方程。
+根据求导的链式法则，有以下变换关系（设 $y_t'$ 表示对 $t$ 求导）：
+\[
+y' = \frac{\mathrm{d}y}{\mathrm{d}x} = \frac{\mathrm{d}y}{\mathrm{d}t}\frac{\mathrm{d}t}{\mathrm{d}x} = y_t' \frac{1}{x} \implies xy' = y_t'
+\]
+\[
+y'' = \frac{\mathrm{d}}{\mathrm{d}x}\left(y_t' \frac{1}{x}\right) = \frac{\mathrm{d}(y_t')}{\mathrm{d}t}\frac{\mathrm{d}t}{\mathrm{d}x}\frac{1}{x} - y_t'\frac{1}{x^2} = y_{tt}''\frac{1}{x^2} - y_t'\frac{1}{x^2} \implies x^2y'' = y_{tt}'' - y_t'
+\]
+\begin{note}
+规律：$D,D(D-1),D(D-1)(D-2),...$
+\end{note}
+利用上述关系，依次对各题代入替换：
 \begin{enumerate}
-    \item[(1)] \textbf{思路}：$D_t(D_t-1)y - D_t y + y = 0 \implies D_t^2 y - 2D_t y + y = 0 \implies (D_t-1)^2 y = 0$。
-    解得：$y = (C_1 + C_2 t)\mathrm{e}^t$。
-    反代回 $x$：
+    \item[(1)] 代入原方程得：$(y_{tt}'' - y_t') - y_t' + y = 0 \implies y_{tt}'' - 2y_t' + y = 0$。
+    特征方程 $\lambda^2 - 2\lambda + 1 = 0 \implies (\lambda-1)^2 = 0$。
+    在 $t$ 空间解得：$y = (C_1 + C_2 t)\mathrm{e}^t$。
+    反代回 $x$ 空间：
     \[
-    y = (C_1 + C_2\ln x)x
+    \mathbf{y = x(C_1 + C_2\ln x)}
     \]
     
-    \item[(2)] \textbf{思路}：$D_t(D_t-1)y + D_t y + y = x \implies D_t^2 y + y = \mathrm{e}^t$。
-    齐次通解 $y_h = C_1\cos t + C_2\sin t$。非齐次特解设为 $y^* = A\mathrm{e}^t \implies 2A=1 \implies A=\frac{1}{2}$。
-    解得：$y = C_1\cos t + C_2\sin t + \frac{1}{2}\mathrm{e}^t$。
-    反代回 $x$：
+    \item[(2)] 代入原方程得：$(y_{tt}'' - y_t') + y_t' + y = \mathrm{e}^t \implies y_{tt}'' + y = \mathrm{e}^t$。
+    特征方程 $\lambda^2 + 1 = 0 \implies \lambda=\pm i$。齐次通解 $y_h = C_1\cos t + C_2\sin t$。
+    非齐次特解设为 $y^* = A\mathrm{e}^t \implies (y^*)'' = A\mathrm{e}^t \implies 2A\mathrm{e}^t = \mathrm{e}^t \implies A=\frac{1}{2}$。
+    $t$ 空间解得：$y = C_1\cos t + C_2\sin t + \frac{1}{2}\mathrm{e}^t$。
+    反代回 $x$ 空间：
     \[
-    y = C_1\cos(\ln x) + C_2\sin(\ln x) + \frac{1}{2}x
+    \mathbf{y = C_1\cos(\ln x) + C_2\sin(\ln x) + \frac{1}{2}x}
     \]
     
-    \item[(3)] \textbf{思路}：$D_t(D_t-1)y + 2D_t y - n(n+1)y = 0 \implies D_t^2 y + D_t y - n(n+1)y = 0$。
+    \item[(3)] 代入原方程得：$(y_{tt}'' - y_t') + 2y_t' - n(n+1)y = 0 \implies y_{tt}'' + y_t' - n(n+1)y = 0$。
     特征方程 $\lambda^2 + \lambda - n(n+1) = 0 \implies (\lambda-n)(\lambda+n+1) = 0$。
-    解得：$y = C_1\mathrm{e}^{nt} + C_2\mathrm{e}^{-(n+1)t}$。
-    反代回 $x$：
+    在 $t$ 空间解得：$y = C_1\mathrm{e}^{nt} + C_2\mathrm{e}^{-(n+1)t}$。
+    反代回 $x$ 空间：
     \[
-    y = C_1 x^n + C_2 x^{-(n+1)}
+    \mathbf{y = C_1 x^n + C_2 x^{-(n+1)}}
     \]
     
-    \item[(4)] \textbf{思路}：原方程同乘 $x$ 凑标准形式 $x^2 y'' + 2xy' = 12x\ln x$。
-    代入算子：$D_t(D_t-1)y + 2D_t y = 12t\mathrm{e}^t \implies D_t^2 y + D_t y = 12t\mathrm{e}^t$。
-    齐次通解（特征根 $0, -1$）：$y_h = C_1 + C_2\mathrm{e}^{-t}$。
-    $\lambda=1$ 不是特征根。设特解 $y^* = \mathrm{e}^t(At+B)$。
-    \begin{align*}
-    (D_t^2+D_t)[\mathrm{e}^t(At+B)] &= \mathrm{e}^t((D_t+1)^2+(D_t+1))[At+B] = \mathrm{e}^t(D_t^2+3D_t+2)[At+B] \\
-    &= \mathrm{e}^t(3A+2At+2B)
-    \end{align*}
-    对比得：$2A=12 \implies A=6$；$3A+2B=0 \implies 2B=-18 \implies B=-9$。
-    特解：$y^* = \mathrm{e}^t(6t-9)$。
-    反代回 $x$：
+    \item[(4)] 先将原方程同乘 $x$ 凑成标准形式：$x^2 y'' + 2xy' = 12x\ln x$。
+    代入关系：$(y_{tt}'' - y_t') + 2y_t' = 12t\mathrm{e}^t \implies y_{tt}'' + y_t' = 12t\mathrm{e}^t$。
+    特征方程 $\lambda^2+\lambda=0 \implies \lambda=0, -1$。齐次通解 $y_h = C_1 + C_2\mathrm{e}^{-t}$。
+    设特解 $y^* = \mathrm{e}^t(At+B)$，求导得 $(y^*)'=\mathrm{e}^t(At+A+B)$, $(y^*)''=\mathrm{e}^t(At+2A+B)$。
+    代入得 $(y^*)''+(y^*)' = \mathrm{e}^t(2At+3A+2B) = 12t\mathrm{e}^t$。比较系数得 $2A=12 \implies A=6$；$3A+2B=0 \implies B=-9$。
+    $t$ 空间解得：$y = C_1 + C_2\mathrm{e}^{-t} + \mathrm{e}^t(6t-9)$。
+    反代回 $x$ 空间：
     \[
-    y = C_1 + C_2 x^{-1} + x(6\ln x - 9)
+    \mathbf{y = C_1 + C_2 x^{-1} + x(6\ln x - 9)}
     \]
     
-    \item[(5)] \textbf{思路}：$D_t(D_t-1)y - D_t y + 4y = \mathrm{e}^t\sin t \implies (D_t^2 - 2D_t + 4)y = \mathrm{e}^t\sin t$。
-    特征根 $\lambda^2-2\lambda+4=0 \implies \lambda = 1 \pm \sqrt{3}i$。
+    \item[(5)] 代入原方程得：$(y_{tt}'' - y_t') - y_t' + 4y = \mathrm{e}^t\sin t \implies y_{tt}'' - 2y_t' + 4y = \mathrm{e}^t\sin t$。
+    特征根 $\lambda^2-2\lambda+4=0 \implies \lambda = 1 \pm \sqrt{3}i$。齐次解 $y_h = \mathrm{e}^t(C_1\cos\sqrt{3}t + C_2\sin\sqrt{3}t)$。
     非齐次项对应的指数为 $1 \pm i$，不发生共振。设特解 $y^* = \mathrm{e}^t(A\cos t + B\sin t)$。
-    \[
-    (D_t^2-2D_t+4)[\mathrm{e}^t(A\cos t+B\sin t)] = \mathrm{e}^t((D_t+1)^2-2(D_t+1)+4)[\dots] = \mathrm{e}^t(D_t^2+3)[A\cos t+B\sin t]
-    \]
-    \[
-    = \mathrm{e}^t(-A\cos t - B\sin t + 3A\cos t + 3B\sin t) = \mathrm{e}^t(2A\cos t + 2B\sin t) = \mathrm{e}^t\sin t
-    \]
+    连续求导得：$(y^*)' = \mathrm{e}^t[(A+B)\cos t + (B-A)\sin t]$，$(y^*)'' = \mathrm{e}^t[2B\cos t - 2A\sin t]$。
+    代入方程合并后化简为：$\mathrm{e}^t(2A\cos t + 2B\sin t) = \mathrm{e}^t\sin t$。
     解得：$2A=0, 2B=1 \implies A=0, B=\frac{1}{2}$。
-    $t$ 空间解：$y = \mathrm{e}^t(C_1\cos\sqrt{3}t + C_2\sin\sqrt{3}t) + \frac{1}{2}\mathrm{e}^t\sin t$。
-    反代回 $x$：
+    $t$ 空间解得：$y = \mathrm{e}^t(C_1\cos\sqrt{3}t + C_2\sin\sqrt{3}t) + \frac{1}{2}\mathrm{e}^t\sin t$。
+    反代回 $x$ 空间：
     \[
-    y = x\left(C_1\cos(\sqrt{3}\ln x) + C_2\sin(\sqrt{3}\ln x) + \frac{1}{2}\sin(\ln x)\right)
+    \mathbf{y = x\left(C_1\cos(\sqrt{3}\ln x) + C_2\sin(\sqrt{3}\ln x) + \frac{1}{2}\sin(\ln x)\right)}
     \]
     
-    \item[(6)] \textbf{思路}：$D_t(D_t-1)y - 3D_t y + 4y = 0 \implies D_t^2 y - 4D_t y + 4y = 0 \implies (D_t-2)^2 = 0$。
-    解得：$y = (C_1 + C_2 t)\mathrm{e}^{2t}$。
-    反代回 $x$：
+    \item[(6)] 代入原方程得：$(y_{tt}'' - y_t') - 3y_t' + 4y = 0 \implies y_{tt}'' - 4y_t' + 4y = 0$。
+    特征方程 $\lambda^2-4\lambda+4=0 \implies (\lambda-2)^2=0$。
+    在 $t$ 空间解得：$y = (C_1 + C_2 t)\mathrm{e}^{2t}$。
+    反代回 $x$ 空间（注意 $\mathrm{e}^{2t} = (\mathrm{e}^t)^2 = x^2$）：
     \[
-    y = (C_1 + C_2\ln x)x^2
+    \mathbf{y = x^2(C_1 + C_2\ln x)}
     \]
 \end{enumerate}
 \end{solution}
@@ -6253,35 +6810,42 @@ c_1 - c_2 = 2
 \begin{solution}
 \begin{enumerate}
     \item \textbf{转化Euler方程求解通解：}\\
-    令 $x = \mathrm{e}^t$，化为 $D_t(D_t-1)y - D_t y + y = 2\mathrm{e}^t \implies (D_t-1)^2 y = 2\mathrm{e}^t$。
-    特征根为 $\lambda_{1,2} = 1$（二重根），所以齐次通解为 $y_h = (C_1 + C_2 t)\mathrm{e}^t$。
-    非齐次项 $2\mathrm{e}^t$ 的指数 $\lambda=1$ 是二重特征根，发生共振（$k=2$）。设特解：
+    令 $x = \mathrm{e}^t$，化为常系数方程：
+    \[
+    (y_{tt}'' - y_t') - y_t' + y = 2\mathrm{e}^t \implies y_{tt}'' - 2y_t' + y = 2\mathrm{e}^t
+    \]
+    齐次特征根为 $\lambda_{1,2} = 1$（二重根），所以齐次通解为 $y_h = (C_1 + C_2 t)\mathrm{e}^t$。
+    非齐次项 $2\mathrm{e}^t$ 中的指数 $\lambda=1$ 是特征二重根，发生深度共振（$k=2$）。设特解：
     \[
     y^* = A t^2 \mathrm{e}^t
     \]
-    代入算子：
+    求导代入方程中：
+    $(y^*)' = A(t^2+2t)\mathrm{e}^t$, $(y^*)'' = A(t^2+4t+2)\mathrm{e}^t$。
     \[
-    (D_t-1)^2[At^2\mathrm{e}^t] = \mathrm{e}^t D_t^2[At^2] = \mathrm{e}^t(2A) = 2\mathrm{e}^t \implies A = 1
+    (y^*)'' - 2(y^*)' + y^* = A(t^2+4t+2 - 2t^2-4t + t^2)\mathrm{e}^t = 2A\mathrm{e}^t = 2\mathrm{e}^t \implies A = 1
     \]
     因此 $y$ 在 $t$ 空间的通解为：$y(t) = (C_1 + C_2 t + t^2)\mathrm{e}^t$。
-    反代回自变量 $x$ 得到通解形式：
+    反代回自变量 $x = \mathrm{e}^t, t=\ln x$ 得到原始通解形式：
     \[
-    y(x) = (C_1 + C_2\ln x + \ln^2 x)x
+    y(x) = x(C_1 + C_2\ln x + \ln^2 x)
     \]
 
     \item \textbf{利用初始条件定常数：}\\
-    将 $x=1$ 代入：$y(1) = (C_1 + 0 + 0) \cdot 1 = C_1 = 0$。
-    于是 $y(x) = x(C_2\ln x + \ln^2 x)$。
-    求导：
+    将 $x=1$ 代入 $y(x)$：
     \[
-    y'(x) = (C_2\ln x + \ln^2 x) \cdot 1 + x\left(C_2\frac{1}{x} + 2\ln x \cdot \frac{1}{x}\right) = C_2\ln x + \ln^2 x + C_2 + 2\ln x
+    y(1) = 1 \cdot (C_1 + 0 + 0) = C_1
     \]
-    将 $x=1$ 代入 $y'(x)$：
+    已知 $y(1)=0$，因此 $C_1 = 0$。函数化简为 $y(x) = x(C_2\ln x + \ln^2 x)$。
+    利用乘积法则求导：
+    \[
+    y'(x) = 1 \cdot (C_2\ln x + \ln^2 x) + x\left(C_2\frac{1}{x} + 2\ln x \cdot \frac{1}{x}\right) = C_2\ln x + \ln^2 x + C_2 + 2\ln x
+    \]
+    将 $x=1$ 代入导数式：
     \[
     y'(1) = 0 + 0 + C_2 + 0 = C_2
     \]
-    由题设 $y'(1)=1$，得到 $C_2 = 1$。
-    因此满足条件的特解为：
+    已知 $y'(1)=1$，因此 $C_2 = 1$。
+    最终特解为：
     \[
     \boxed{y = x(\ln x + \ln^2 x)}
     \]
@@ -6297,29 +6861,31 @@ c_1 - c_2 = 2
 \end{exercise}
 \begin{solution}
 \begin{enumerate}
-    \item \textbf{物理建模与微分方程的建立：}\\
-    （注：在经典力学习题中，物体重 $p(\mathrm{kg})$ 通常指千克力 $\mathrm{kgf}$，其质量为 $m = \frac{p}{g}$。弹簧由于受此力伸长了 $a\ \mathrm{cm}$，故弹簧劲度系数为 $k = \frac{p}{a}$）。
-    以重物静止时的平衡位置为坐标原点，向下为正方向建立 $y$ 轴。
-    系统的动力学方程（无阻尼）为：
+    \item \textbf{受力分析与参数推导：}\\
+    （注：在经典力学习题中，物体重 $p(\mathrm{kg})$ 通常指千克力 $\mathrm{kgf}$，其质量为 $m = \frac{p}{g}$。此重物挂上后弹簧静力伸长了 $a$，故弹簧劲度系数满足 $ka = mg = p$，即 $k = \frac{p}{a}$）。
+    \item \textbf{建立微分方程：}\\
+    以重物静止时的平衡位置为坐标原点，向下为正方向建立 $y$ 轴。在该位置重力与初始静弹性力抵消，仅剩偏离平衡点带来的弹性恢复力起作用。
+    根据牛顿第二定律，系统的动力学方程（无阻尼）为：
     \[
-    m y'' = -k y \implies \frac{p}{g} y'' + \frac{p}{a} y = 0 \implies y'' + \frac{g}{a} y = 0
+    m y'' = -k y \implies \frac{p}{g} y'' = -\frac{p}{a} y \implies y'' + \frac{g}{a} y = 0
     \]
-    这是一个标准的无阻尼简谐振动方程。其特征方程为 $\lambda^2 + \frac{g}{a} = 0$，解得特征根 $\lambda = \pm i\sqrt{\frac{g}{a}}$。
-    通解为：
+    这是一个标准的无阻尼简谐振动方程。其特征方程为 $\lambda^2 + \frac{g}{a} = 0$，解得固有圆频率 $\omega = \sqrt{\frac{g}{a}}$。
+    方程的通解为：
     \[
     y(t) = C_1\cos\left(\sqrt{\frac{g}{a}}t\right) + C_2\sin\left(\sqrt{\frac{g}{a}}t\right)
     \]
 
     \item \textbf{根据初始条件定常数：}\\
-    题设指出“再用手把弹簧拉长 $A(\mathrm{cm})$ 后无初速地松开”。这意味着在 $t=0$ 时，物体偏离静力平衡位置的距离为 $y(0) = A$，初速度为 $y'(0) = 0$。
-    代入通解：
+    题设指出“再用手把弹簧拉长 $A$ 后无初速地松开”。这意味着在 $t=0$ 瞬间，物体偏离静力平衡位置的距离为正 $A$，初速度为零。
+    得到初始条件：$y(0) = A$，$y'(0) = 0$。
+    将 $t=0$ 代入通解：
     $y(0) = C_1 = A$
-    $y'(t) = -A\sqrt{\frac{g}{a}}\sin\left(\sqrt{\frac{g}{a}}t\right) + C_2\sqrt{\frac{g}{a}}\cos\left(\sqrt{\frac{g}{a}}t\right) \implies y'(0) = C_2\sqrt{\frac{g}{a}} = 0 \implies C_2=0$
-    最终得振动规律为：
+    求导得 $y'(t) = -C_1\sqrt{\frac{g}{a}}\sin\left(\sqrt{\frac{g}{a}}t\right) + C_2\sqrt{\frac{g}{a}}\cos\left(\sqrt{\frac{g}{a}}t\right)$，代入 $t=0$：
+    $y'(0) = C_2\sqrt{\frac{g}{a}} = 0 \implies C_2=0$
+    最终振动规律为：
     \[
     \boxed{y(t) = A\cos\left(\sqrt{\frac{g}{a}}t\right)}
     \]
-    （注意单位转换，如果在厘米–克–秒 CGS 制中，重力加速度 $g \approx 980\ \mathrm{cm/s^2}$）。
 \end{enumerate}
 \end{solution}
 
@@ -6329,41 +6895,41 @@ c_1 - c_2 = 2
 \begin{solution}
 \begin{enumerate}
     \item \textbf{物理建模与微分方程的建立：}\\
-    题设中提到外力“与距离成正比”，即 $F \propto x$。由“离开中心点”通常意指该外力指向中心且反抗离开的趋势（经典的弹性恢复力），故 $F_{ext} = -k x$（若为相斥力则为 $+kx$，但物理振动问题默认为恢复力，故取前者，下面以恢复力为例求解）。
-    介质的阻力与速度成正比，且总是与运动方向相反，故 $F_{fric} = -\mu x'$（$\mu>0$ 为阻尼系数）。
-    由牛顿第二定律得：
+    题设指出外力“与距离成正比”，这是一种指向平衡位置的典型弹性恢复力特征，根据胡克定律设为 $F_{ext} = -k x$（$k>0$ 为比例系数）。
+    介质的阻力与速度成正比，且总是与运动方向相反阻碍运动，设为 $F_{fric} = -\mu x'$（$\mu>0$ 为阻尼系数）。
+    由牛顿第二定律 $m x'' = \Sigma F$，得到完整的运动微分方程：
     \[
     m x'' = -k x - \mu x' \implies m x'' + \mu x' + kx = 0
     \]
-    此为经典的阻尼自由振动方程。
 
-    \item \textbf{方程求解与分类讨论：}\\
-    特征方程为 $m\lambda^2 + \mu\lambda + k = 0$，其根为：
+    \item \textbf{方程求解与物理分类讨论：}\\
+    这是经典的常系数二阶齐次方程，其特征方程为 $m\lambda^2 + \mu\lambda + k = 0$。
+    通过求根公式解得：
     \[
     \lambda_{1,2} = \frac{-\mu \pm \sqrt{\mu^2 - 4mk}}{2m}
     \]
-    运动规律完全取决于阻尼判别式 $\Delta = \mu^2 - 4mk$ 的符号：
+    质点的运动规律将完全取决于根的性质，即阻尼判别式 $\Delta = \mu^2 - 4mk$ 的符号：
     \begin{enumerate}
-        \item[(1)] \textbf{过阻尼情形}（当 $\mu^2 > 4mk$ 时）：
-        根为两个不相等的负实数 $\lambda_1, \lambda_2$。此时运动规律为非周期性的衰减过程：
+        \item[(1)] \textbf{过阻尼情形}（大阻尼，当 $\mu^2 > 4mk$ 时）：
+        特征根为两个不相等的负实数 $\lambda_1, \lambda_2$。运动规律为非周期性的纯衰减过程：
         \[
-        \boxed{x(t) = C_1\mathrm{e}^{\lambda_1 t} + C_2\mathrm{e}^{\lambda_2 t}}
+        \mathbf{x(t) = C_1\mathrm{e}^{\lambda_1 t} + C_2\mathrm{e}^{\lambda_2 t}}
         \]
-        质点只会缓慢地滑向原点而不会发生越位振荡。
+        质点由于阻力过大，只会缓慢地滑回平衡位置而不会发生来回越位的振荡。
 
         \item[(2)] \textbf{临界阻尼情形}（当 $\mu^2 = 4mk$ 时）：
-        根为二重负实根 $\lambda = -\frac{\mu}{2m}$。运动规律为：
+        特征根为二重等负实根 $\lambda = -\frac{\mu}{2m}$。运动规律为：
         \[
-        \boxed{x(t) = (C_1 + C_2 t)\mathrm{e}^{-\frac{\mu}{2m}t}}
+        \mathbf{x(t) = (C_1 + C_2 t)\mathrm{e}^{-\frac{\mu}{2m}t}}
         \]
-        质点在尽可能短的时间内返回平衡位置而不越界。
+        这是介于振荡与不振荡之间的临界态，质点能以最快的速度返回平衡位置。
 
-        \item[(3)] \textbf{欠阻尼情形}（当 $\mu^2 < 4mk$ 时）：
-        根为一对共轭复数 $\lambda = -\frac{\mu}{2m} \pm i\omega_d$，其中衰减圆频率 $\omega_d = \frac{\sqrt{4mk - \mu^2}}{2m}$。运动规律为阻尼振荡：
+        \item[(3)] \textbf{欠阻尼情形}（小阻尼，当 $\mu^2 < 4mk$ 时）：
+        特征根为一对共轭复数 $\lambda = -\frac{\mu}{2m} \pm i\omega_d$，其中带阻尼圆频率 $\omega_d = \frac{\sqrt{4mk - \mu^2}}{2m}$。运动规律为衰减振荡：
         \[
-        \boxed{x(t) = \mathrm{e}^{-\frac{\mu}{2m}t}(C_1\cos\omega_d t + C_2\sin\omega_d t)}
+        \mathbf{x(t) = \mathrm{e}^{-\frac{\mu}{2m}t}(C_1\cos\omega_d t + C_2\sin\omega_d t)}
         \]
-        质点作振幅随指数规律衰减的往复振荡。
+        质点作振幅随指数律不断缩小的往复振荡，直到最终停留在平衡位置。
     \end{enumerate}
 \end{enumerate}
 \end{solution}
@@ -6376,38 +6942,42 @@ c_1 - c_2 = 2
 \begin{solution}
 \begin{enumerate}
     \item \textbf{将几何条件转化为初值条件：}\\
-    题设指出解曲线经过点 $(0,1)$，故 $y(0) = 1$。
-    解曲线在该点与曲线 $y_0 = x^2-x+1$ 的切线重合。由于 $y_0'(x) = 2x - 1$，它在 $x=0$ 处的斜率为 $y_0'(0) = -1$。
-    故有初值条件：$y'(0) = -1$。
+    题设明确指出解曲线经过点 $(0,1)$，因此可以直接得到初值：$y(0) = 1$。
+    同时，解曲线在该点处的切线与抛物线 $y_0 = x^2-x+1$ 的切线重合，这意味着它们在该点的斜率（一阶导数值）相等。
+    求抛物线的导数 $y_0'(x) = 2x - 1$，在 $x=0$ 处的斜率为 $y_0'(0) = -1$。
+    故得到完整的初值条件：$y(0) = 1, y'(0) = -1$。
 
-    \item \textbf{求解非齐次微分方程的通解：}\\
-    特征方程 $\lambda^2 - 3\lambda + 2 = 0 \implies \lambda_1=1, \lambda_2=2$。
-    由于非齐次项 $2\mathrm{e}^x$ 中的指数 $\lambda=1$ 恰是特征单根，发生共振。设特解为 $y^* = Ax\mathrm{e}^x$。
-    利用算子法代入方程 $(D-1)(D-2)y = 2\mathrm{e}^x$：
+    \item \textbf{求解微分方程的通解：}\\
+    原方程对应的齐次特征方程为 $\lambda^2 - 3\lambda + 2 = 0 \implies \lambda_1=1, \lambda_2=2$。
+    非齐次项 $2\mathrm{e}^x$ 的指数 $\lambda=1$ 恰是特征单根，发生共振。设特解结构为 $y^* = Ax\mathrm{e}^x$。
+    对其求导代入：$(y^*)' = A(x+1)\mathrm{e}^x$, $(y^*)'' = A(x+2)\mathrm{e}^x$。
+    代入原方程 $y''-3y'+2y$：
     \[
-    (D-2)(D-1)[Ax\mathrm{e}^x] = (D-2)\mathrm{e}^x D[Ax] = (D-2)[A\mathrm{e}^x] = A\mathrm{e}^x(1-2) = -A\mathrm{e}^x = 2\mathrm{e}^x \implies A=-2
+    A(x+2)\mathrm{e}^x - 3A(x+1)\mathrm{e}^x + 2Ax\mathrm{e}^x = A\mathrm{e}^x(x+2 - 3x-3 + 2x) = -A\mathrm{e}^x = 2\mathrm{e}^x
     \]
-    故特解为 $y^* = -2x\mathrm{e}^x$。
-    通解为：
+    解得 $A=-2$。因此特解为 $y^* = -2x\mathrm{e}^x$。
+    方程通解为：
     \[
     y = C_1\mathrm{e}^x + C_2\mathrm{e}^{2x} - 2x\mathrm{e}^x
     \]
 
-    \item \textbf{由初值确定常数：}\\
-    $y(0) = C_1 + C_2 = 1$。
-    $y'(x) = C_1\mathrm{e}^x + 2C_2\mathrm{e}^{2x} - 2\mathrm{e}^x - 2x\mathrm{e}^x$。
-    $y'(0) = C_1 + 2C_2 - 2 = -1 \implies C_1 + 2C_2 = 1$。
-    两式联立：
+    \item \textbf{利用初值确定常数：}\\
+    将 $x=0$ 代入通解中：
     \[
-    \begin{cases}
-    C_1 + C_2 = 1 \\
-    C_1 + 2C_2 = 1
-    \end{cases}
-    \implies C_2 = 0, C_1 = 1
+    y(0) = C_1 + C_2 - 0 = 1 \implies C_1 + C_2 = 1
     \]
-    因此，满足几何条件的函数为：
+    对通解求导：
     \[
-    \boxed{y(x) = \mathrm{e}^x - 2x\mathrm{e}^x = (1-2x)\mathrm{e}^x}
+    y'(x) = C_1\mathrm{e}^x + 2C_2\mathrm{e}^{2x} - 2(x+1)\mathrm{e}^x
+    \]
+    代入 $x=0$ 和 $y'(0) = -1$：
+    \[
+    y'(0) = C_1 + 2C_2 - 2 = -1 \implies C_1 + 2C_2 = 1
+    \]
+    联立解方程组得 $C_2 = 0, C_1 = 1$。
+    因此，满足全部条件的函数为：
+    \[
+    \mathbf{y(x) = \mathrm{e}^x - 2x\mathrm{e}^x = (1-2x)\mathrm{e}^x}
     \]
 \end{enumerate}
 \end{solution}
@@ -6417,48 +6987,51 @@ c_1 - c_2 = 2
 \end{exercise}
 \begin{solution}
 \begin{enumerate}
-    \item \textbf{力学建模推导：}\\
-    设链条的线密度为 $\rho$，总长度为 $L = 8 + 10 = 18\ \mathrm{m}$。
-    设时刻 $t$ 时，链条较长（原下垂 $10\ \mathrm{m}$）的一边下垂的长度为 $x(t)$，则另一边的长度为 $18 - x(t)$。
-    由于钉子无摩擦，系统受到的驱动力是两侧链条的重力差：
+    \item \textbf{建立力学方程：}\\
+    设链条的线密度为 $\rho$，总长度固定为 $L = 8 + 10 = 18\ \mathrm{m}$。
+    为了描述系统的运动，设时刻 $t$ 时，较长那一端（初始下垂 $10\ \mathrm{m}$）下垂的长度为 $x(t)$。由于总长不变，另一边下垂的长度即为 $18 - x(t)$。
+    由于钉子绝对光滑，整个链条受到的驱动力仅来自于两侧下垂链条的重力差：
     \[
     F_{net} = \rho g x - \rho g (18-x) = \rho g(2x - 18)
     \]
-    根据牛顿第二定律，整个链条加速运动的方程为：
+    根据牛顿第二定律对系统整体（总质量 $M = 18\rho$）列方程：
     \[
-    M x'' = F_{net} \implies (\rho \cdot 18) x'' = \rho g (2x - 18) \implies 18 x'' = 2g(x-9)
+    M x'' = F_{net} \implies 18\rho x'' = \rho g(2x - 18) \implies 18 x'' = 2g(x-9)
     \]
-    简化得常系数微分方程：
+    化简得到一个常系数二阶非齐次微分方程：
     \[
-    x'' - \frac{g}{9}(x-9) = 0
-    \]
-    这是一个非齐次方程。为了求解方便，作变量代换：令 $y = x - 9$。
-    此时方程化为齐次式：
-    \[
-    y'' - \frac{g}{9} y = 0
-    \]
-    特征方程 $\lambda^2 - \frac{g}{9} = 0 \implies \lambda = \pm \frac{\sqrt{g}}{3}$。令 $\omega = \frac{\sqrt{g}}{3}$。
-    通解为：
-    \[
-    y(t) = C_1\cosh(\omega t) + C_2\sinh(\omega t)
+    x'' - \frac{g}{9}x = -g
     \]
 
-    \item \textbf{初边值条件代入：}\\
-    初始时刻（由静止释放），较长端 $x(0) = 10 \implies y(0) = 10-9 = 1$；且初速 $x'(0) = 0 \implies y'(0) = 0$。
-    $y(0) = C_1 = 1$。
-    $y'(t) = \omega(C_1\sinh\omega t + C_2\cosh\omega t) \implies y'(0) = \omega C_2 = 0 \implies C_2 = 0$。
-    所以运动方程为 $y(t) = \cosh(\omega t)$，即 $x(t) = 9 + \cosh(\omega t)$。
-    链条完全滑过钉子的时刻，较长端的长度等于链条总长 $x(t) = 18\ \mathrm{m}$。代入运动方程得：
+    \item \textbf{求解运动规律通解：}\\
+    齐次特征方程 $\lambda^2 - \frac{g}{9} = 0 \implies \lambda = \pm \frac{\sqrt{g}}{3}$。令角频率记号 $\omega = \frac{\sqrt{g}}{3}$。
+    齐次通解为 $x_h(t) = C_1\mathrm{e}^{\omega t} + C_2\mathrm{e}^{-\omega t}$，通常物理上写为双曲函数形式 $x_h(t) = C_1\cosh(\omega t) + C_2\sinh(\omega t)$ 会更方便。
+    观察右侧常数非齐次项 $-g$，由于不共振，直接猜设特解 $x^* = A$。代入得 $-\frac{g}{9}A = -g \implies A = 9$。
+    通解为：
+    \[
+    x(t) = C_1\cosh(\omega t) + C_2\sinh(\omega t) + 9
+    \]
+
+    \item \textbf{代入初始状态定常数：}\\
+    静止释放的初始时刻，状态为 $x(0) = 10, x'(0) = 0$。
+    代入通解：
+    $x(0) = C_1\cosh 0 + C_2\sinh 0 + 9 = C_1 + 9 = 10 \implies C_1 = 1$。
+    求导：$x'(t) = \omega(C_1\sinh\omega t + C_2\cosh\omega t)$。
+    代入得 $x'(0) = \omega(0 + C_2) = 0 \implies C_2 = 0$。
+    所以链条滑落的运动方程确切为 $x(t) = 9 + \cosh(\omega t)$。
+
+    \item \textbf{求解目标滑落时间：}\\
+    当链条完全滑过钉子的瞬间，较长端的长度恰好占据了整个链条，即 $x(t) = 18\ \mathrm{m}$。代入运动方程求 $t$：
     \[
     18 = 9 + \cosh(\omega t) \implies \cosh(\omega t) = 9
     \]
-    解得：
+    利用反双曲余弦公式 $\operatorname{arccosh} y = \ln(y + \sqrt{y^2-1})$ 解算得：
     \[
-    \omega t = \operatorname{arccosh}(9) = \ln\left(9 + \sqrt{9^2 - 1}\right) = \ln(9 + \sqrt{80}) = \ln(9 + 4\sqrt{5})
+    \omega t = \operatorname{arccosh}(9) = \ln(9 + \sqrt{81 - 1}) = \ln(9 + \sqrt{80}) = \ln(9 + 4\sqrt{5})
     \]
-    因此所需时间为：
+    最后，将 $\omega = \frac{\sqrt{g}}{3}$ 移过去得：
     \[
-    \boxed{t = \frac{3}{\sqrt{g}}\ln(9+4\sqrt{5})\ \text{(s)}}
+    \mathbf{t = \frac{3}{\sqrt{g}}\ln(9+4\sqrt{5})\ \text{(s)}}
     \]
 \end{enumerate}
 \end{solution}
@@ -6468,38 +7041,37 @@ c_1 - c_2 = 2
 \end{exercise}
 \begin{solution}
 \begin{enumerate}
-    \item \textbf{求出弹簧的劲度系数：}\\
-    五个质量为 $m$ 的重物产生的拉力与弹簧弹力平衡，即 $k(5a) = 5mg \implies k = \frac{mg}{a}$。
+    \item \textbf{求出弹簧的力学参数：}\\
+    根据题设条件，挂载 $5m$ 的总质量时，静力平衡使得拉伸了 $5a$。因此弹簧弹力抵消重力 $k(5a) = 5mg \implies k = \frac{mg}{a}$。
 
-    \item \textbf{确立新的平衡点与建立方程：}\\
-    突然取去一个重物后，只剩下 4 个重物，总质量为 $4m$。
-    这个新系统如果静止，其伸长量应为 $x_{eq} = \frac{4mg}{k} = 4a$。
-    我们以\textbf{这个新的平衡位置}为原点（取向下为正），建立坐标系 $x$。这样重力与新平衡点的静弹性力就相互抵消了。此时只剩下由新偏离带来的恢复力 $-kx$。
-    根据牛顿第二定律，运动方程为：
+    \item \textbf{确定振动方程与新平衡点：}\\
+    突然取走一个重物后，系统转变为总质量为 $4m$ 的弹簧振子模型。
+    此时，新的系统如果达到绝对静止，其理想的伸长量应为 $x_{eq} = \frac{4mg}{k} = 4a$。
+    为了消去重力引起的常数偏置项，我们在物理上通常直接以\textbf{这个新的平衡位置}（即向下伸长 $4a$ 的位置）为原点，建立坐标系 $x$。此时新产生的微分方程是不含常数项的纯齐次方程：
     \[
     4m x'' = -k x \implies 4m x'' + \frac{mg}{a}x = 0 \implies x'' + \frac{g}{4a}x = 0
     \]
-    这是一个无阻尼自由振动，自然角频率 $\omega = \sqrt{\frac{g}{4a}}$。
+    这是一个固有角频率为 $\omega = \sqrt{\frac{g}{4a}}$ 的无阻尼自由振动。
     通解为：
     \[
     x(t) = C_1\cos\left(\sqrt{\frac{g}{4a}} t\right) + C_2\sin\left(\sqrt{\frac{g}{4a}} t\right)
     \]
 
-    \item \textbf{初值代入：}\\
-    在突然取下重物的 $t=0$ 瞬间，这 4 个重物的位置仍然停留在“挂 5 个重物时的位置”，也就是距离悬挂点伸长了 $5a$ 的地方。
-    相对于我们建立的新平衡点（在 $4a$ 处），它的初始位移是：
+    \item \textbf{代入初值确立运动规律：}\\
+    在突然取下重物的瞬间（$t=0$），剩余的重物由于惯性仍然停留在“旧平衡位置”，即距离悬挂点伸长 $5a$ 处。
+    因此相对于我们刚才设定的新原点（$4a$ 处），它的初始物理位移是：
     \[
     x(0) = 5a - 4a = a
     \]
-    因为是“由静止状态开始”，所以初速度 $x'(0) = 0$。
-    将初始条件代入通解：
+    因为“由静止状态开始振动”，意味着它的初速度为 $0$，即 $x'(0) = 0$。
+    将这组初值条件代入通解：
     $x(0) = C_1 = a$
-    $x'(0) = C_2\omega = 0 \implies C_2=0$
-    所以，相对于新平衡点，重物的运动规律为：
+    $x'(t) = -\omega C_1\sin(\omega t) + \omega C_2\cos(\omega t) \implies x'(0) = \omega C_2 = 0 \implies C_2=0$
+    所以，相对于新平衡点，重物的规律为：
     \[
-    \boxed{x(t) = a\cos\left(\frac{1}{2}\sqrt{\frac{g}{a}} t\right)}
+    \mathbf{x(t) = a\cos\left(\frac{1}{2}\sqrt{\frac{g}{a}} t\right)}
     \]
-    （若要求关于未挂重物时的原始坐标 $Y$ 的位移规律，则是 $Y(t) = 4a + a\cos\left(\frac{1}{2}\sqrt{\frac{g}{a}} t\right)$。）
+    （备注：若严格按绝对顶端下垂长度 $Y$ 计算，则需加上平衡偏置量，写为 $Y(t) = 4a + a\cos\left(\frac{1}{2}\sqrt{\frac{g}{a}} t\right)$。）
 \end{enumerate}
 \end{solution}
 
@@ -6509,70 +7081,75 @@ c_1 - c_2 = 2
 \begin{solution}
 \begin{enumerate}
     \item \textbf{建立运动微分方程：}\\
-    设质点的质量为 $m$，液体对它的浮力为常数 $F_b$。取向下为坐标轴正方向，沉入深度的坐标设为 $x(t)$。
-    质点受向下的重力 $mg$，向上的恒定浮力 $F_b$，以及向上的粘性阻力 $F_{fric} = kv$（其中 $k>0$ 为阻力比例系数，$v = x'$ 为下沉速度）。
-    由牛顿第二定律，微分方程为：
+    设质点的质量为 $m$，液体对它的恒定浮力为 $F_b$。取竖直向下为正方向，设下沉深度的坐标为 $x(t)$。
+    运动中质点共受三个力：向下的重力 $mg$，向上的浮力 $F_b$，以及向上的粘性阻力 $F_{fric} = kv$（其中 $k>0$ 为阻力比例系数，$v = x'$ 为质点速度）。
+    由牛顿第二定律列出二阶微分方程：
     \[
     m x'' = mg - F_b - kx'
     \]
-    我们可以定义质点在液体中的“有效重力” $G' = mg - F_b$，以及“有效重力加速度” $g' = \frac{G'}{m}$。这样方程化简为：
+    为了使得方程更加简洁物理化，令常量 $G' = mg - F_b$ 为“有效重力”，并定义 $g' = \frac{G'}{m}$。方程可改写为：
     \[
     x'' + \frac{k}{m} x' = g'
     \]
     
-    \item \textbf{解微分方程：}\\
-    因为方程缺 $x$，我们可以直接将其视为速度 $v$ 的一阶线性微分方程求解：
+    \item \textbf{方程降阶求解速度：}\\
+    观察发现，方程中并未出现位移 $x$ 本身。我们可以降一阶，将其视为关于速度 $v(t)$ 的一阶线性微分方程：
     \[
     v' + \frac{k}{m}v = g'
     \]
-    解此一阶常微分方程：分离变量或使用常数变易法，解得速度函数为：
+    先求齐次方程 $v'+\frac{k}{m}v=0$ 得通解 $C_1\mathrm{e}^{-\frac{k}{m}t}$。特解显然是常数 $v^* = \frac{mg'}{k}$。组合得：
     \[
     v(t) = \frac{mg'}{k} + C_1\mathrm{e}^{-\frac{k}{m}t}
     \]
-    由于“徐徐沉入”意味着初始瞬间没有初速度（或者速度较小，设 $v(0)=0$ 进行简化表达）：
+    因为题目描述为“徐徐沉入”，合理的物理抽象是在液面刚刚下沉瞬间 $t=0$ 时初速度极小（通常按 $v(0)=0$ 理想化处理计算）。
     \[
     0 = \frac{mg'}{k} + C_1 \implies C_1 = -\frac{mg'}{k}
     \]
-    因此速度规律为：
+    因此质点的速度演化规律为：
     \[
     v(t) = \frac{mg'}{k}\left(1 - \mathrm{e}^{-\frac{k}{m}t}\right)
     \]
-    再对时间 $t$ 积分，求质点的位置规律（设 $x(0)=0$）：
+    
+    \item \textbf{积分求解运动位置规律：}\\
+    位移就是速度对时间的积分（设初始位移 $x(0)=0$）：
     \[
-    x(t) = \int_0^t v(\tau)\mathrm{d}\tau = \frac{mg'}{k}t - \frac{mg'}{k}\int_0^t \mathrm{e}^{-\frac{k}{m}\tau}\mathrm{d}\tau
+    x(t) = \int_0^t v(\tau)\mathrm{d}\tau = \int_0^t \left[ \frac{mg'}{k} - \frac{mg'}{k}\mathrm{e}^{-\frac{k}{m}\tau} \right] \mathrm{d}\tau
     \]
+    计算这两项积分：
     \[
-    \boxed{x(t) = \frac{mg'}{k}t - \frac{m^2g'}{k^2}\left(1 - \mathrm{e}^{-\frac{k}{m}t}\right)}
+    x(t) = \frac{mg'}{k}t - \frac{mg'}{k}\left( -\frac{m}{k}\mathrm{e}^{-\frac{k}{m}\tau} \right)\Bigg|_0^t = \frac{mg'}{k}t + \frac{m^2g'}{k^2}\mathrm{e}^{-\frac{k}{m}t} - \frac{m^2g'}{k^2}
     \]
-    随着时间无限增加，指数项衰减至 0，质点将达到恒定的极限下沉速度 $\frac{mg'}{k}$。
+    整理得到最终位置随时间的函数规律：
+    \[
+    \mathbf{x(t) = \frac{mg'}{k}t - \frac{m^2g'}{k^2}\left(1 - \mathrm{e}^{-\frac{k}{m}t}\right)}
+    \]
 \end{enumerate}
 \end{solution}
+
 \begin{exercise}[频率计算（保留重力加速度符号 $g$）]
 弹簧的弹性力与其伸缩量成正比. 设长度增加 $1\ \mathrm{cm}$ 时, 弹性力等于 $1\ \mathrm{kg}$. 现把 $2\ \mathrm{kg}$ 的重物悬挂在弹簧上, 如果先稍微把重物往下拉, 然后放开它, 求重物由此所产生的振动周期.
 \end{exercise}
 \begin{solution}
 \begin{enumerate}
-    \item \textbf{受力分析与参数确定：}\\
-    题中提到的“力等于 $1\ \mathrm{kg}$”和“重物 $2\ \mathrm{kg}$”均指工程单位制下的千克力（$\mathrm{kgf}$）。为了通用性并与参考答案对照，我们保留重力加速度符号 $g$（若长度单位取 $\mathrm{cm}$，通常 $g \approx 980\ \mathrm{cm/s^2}$，但此处将其作为常数符号处理）。
-    已知长度增加 $\Delta x = 1\ \mathrm{cm}$ 时，弹力 $F = 1 \cdot g$。
-    因此，弹簧的劲度系数为：
+    \item \textbf{明确单位制并提取参数：}\\
+    题目中所描述的“力等于 $1\ \mathrm{kg}$”指的是千克力（$\mathrm{kgf}$），即质量为 $1\ \mathrm{kg}$ 物体的重力 $1\cdot g$。悬挂重物的质量为 $m = 2\ \mathrm{kg}$。
+    根据条件“长度增加 $\Delta x = 1$ 时，弹力 $F = 1 \cdot g$”，可以确定弹簧的劲度系数：
     \[
-    k = \frac{F}{\Delta x} = \frac{1 \cdot g}{1} = g
+    k = \frac{F}{\Delta x} = \frac{g}{1} = g
     \]
-    悬挂重物的质量为 $m = 2$。
 
-    \item \textbf{建立方程与求解周期：}\\
-    根据牛顿第二定律，重物在平衡位置附近的振动微分方程为：
+    \item \textbf{建立简谐振动模型求周期：}\\
+    将重物置于弹簧末端发生振动时，其围绕静平衡位置的微分运动方程为：
     \[
     m x'' + k x = 0 \implies 2x'' + gx = 0 \implies x'' + \frac{g}{2}x = 0
     \]
-    由标准形式可知，系统的固有圆频率的平方为 $\omega^2 = \frac{g}{2}$，即：
+    根据标准的简谐振动方程 $x'' + \omega^2 x = 0$，对照系数可得系统振动的固有圆频率：
     \[
-    \omega = \sqrt{\frac{g}{2}}
+    \omega^2 = \frac{g}{2} \implies \omega = \sqrt{\frac{g}{2}}
     \]
-    因此，重物的振动周期为：
+    根据圆频率与周期的物理关系 $T = \frac{2\pi}{\omega}$，求出最终的振动周期为：
     \[
-    \boxed{T = \frac{2\pi}{\omega} = \frac{2\pi}{\sqrt{\frac{g}{2}}} = 2\pi\sqrt{\frac{2}{g}}}
+    \mathbf{T = \frac{2\pi}{\sqrt{\frac{g}{2}}} = 2\pi\sqrt{\frac{2}{g}}}
     \]
 \end{enumerate}
 \end{solution}
@@ -6582,63 +7159,54 @@ c_1 - c_2 = 2
 \end{exercise}
 \begin{solution}
 \begin{enumerate}
-    \item \textbf{物理建模与参数确定：}\\
-    与上题类似，重量为 $4\ \mathrm{kgf}$ 的物体产生 $4g$ 的重力。
-    由于弹簧伸长了 $1\ \mathrm{cm}$ 达到静力平衡，故弹簧的劲度系数为：
-    \[
-    k = \frac{4g}{1} = 4g
-    \]
-    物体的质量为 $m = 4$。
-    设重物在 $t$ 时刻相对于绝对静止参考系（取向下为正，原点在初始静力平衡位置）的位移为 $y(t)$。
-    弹簧上端的位移为 $y_0(t) = 2\sin 30t$。弹簧此时的相对伸长量变化为 $y - y_0$。
-    根据牛顿第二定律，系统的运动微分方程为：
+    \item \textbf{确立受迫振动微分方程：}\\
+    重量为 $4\ \mathrm{kgf}$ 的物体能产生大小为 $4g$ 的重力，已知其挂载使得弹簧伸长 $1\ \mathrm{cm}$ 达到平衡，故劲度系数 $k = \frac{4g}{1} = 4g$。系统的质量为 $m = 4$。
+    以初始静平衡点为原点向下建轴，重物的绝对位移记为 $y(t)$。
+    由于弹簧悬挂端并非静止，而是受到外部激励运动 $y_0(t) = 2\sin 30t$，这导致弹簧的实际形变相对变化了 $y - y_0$。
+    根据牛顿定律建立非齐次微分方程：
     \[
     m y'' = -k(y - y_0) \implies 4y'' = -4g(y - 2\sin 30t)
     \]
-    化简为标准形式的非齐次常系数线性微分方程：
+    除以 4 移项，化为标准形式：
     \[
     y'' + gy = 2g\sin 30t
     \]
 
-    \item \textbf{求解微分方程：}\\
-    齐次方程 $y'' + gy = 0$ 的特征方程为 $\lambda^2 + g = 0$，解得特征根为 $\lambda = \pm i\sqrt{g}$。
-    齐次通解为：
+    \item \textbf{求解通解规律：}\\
+    对应的齐次方程 $y'' + gy = 0$ 的特征根为 $\pm i\sqrt{g}$。于是齐次通解为：
     \[
     y_h(t) = C_1\cos(\sqrt{g}t) + C_2\sin(\sqrt{g}t)
     \]
-    对于非齐次项 $2g\sin 30t$，由于外力频率 $\omega = 30$，若不发生共振（即 $g \neq 900$），设特解为：
+    对于右侧由于外驱力产生的非齐次项 $2g\sin 30t$，若激励频率 $\omega=30$ 未与固有频率吻合产生共振（即假设 $g \neq 900$），可直接设特解结构为：
     \[
     y^* = A\sin 30t
     \]
-    将其代入微分方程得：
+    对其求两次导后代入原方程 $(y^*)'' + g y^* = 2g\sin 30t$：
     \[
-    -900A\sin 30t + gA\sin 30t = 2g\sin 30t 
+    -900A\sin 30t + gA\sin 30t = 2g\sin 30t \implies A(g - 900) = 2g \implies A = \frac{2g}{g - 900}
     \]
-    \[
-    A(g - 900) = 2g \implies A = \frac{2g}{g - 900}
-    \]
-    故微分方程的通解为：
+    从而方程的完整通解为：
     \[
     y(t) = C_1\cos(\sqrt{g}t) + C_2\sin(\sqrt{g}t) + \frac{2g}{g - 900}\sin 30t
     \]
 
-    \item \textbf{代入初始条件确定常数：}\\
-    题设“初始时刻重物处于静止状态”，即初始位移 $y(0) = 0$，初速度 $y'(0) = 0$。
-    将 $t=0$ 代入通解得：
+    \item \textbf{代入初值求解确定方程：}\\
+    题设条件“初始时刻重物处于静止状态”等价于初值 $y(0) = 0$ 且 $y'(0) = 0$。
+    首先代入 $t=0$：
     \[
-    y(0) = C_1 + 0 + 0 = 0 \implies C_1 = 0
+    y(0) = C_1 \cdot 1 + C_2 \cdot 0 + 0 = 0 \implies C_1 = 0
     \]
-    对 $y(t)$ 求导：
+    因此 $y(t)$ 简化为 $C_2\sin(\sqrt{g}t) + \frac{2g}{g - 900}\sin 30t$。求导数：
     \[
     y'(t) = C_2\sqrt{g}\cos(\sqrt{g}t) + \frac{60g}{g - 900}\cos 30t
     \]
-    将 $t=0$ 代入导数表达式得：
+    再次代入 $t=0$ 求 $y'(0)$：
     \[
     y'(0) = C_2\sqrt{g} + \frac{60g}{g - 900} = 0 \implies C_2\sqrt{g} = -\frac{60g}{g - 900} \implies C_2 = -\frac{60\sqrt{g}}{g - 900}
     \]
-    将 $C_1, C_2$ 代回通解，即可得到重物的运动规律：
+    将确定的 $C_1$ 和 $C_2$ 代回即可得到重物最终完整的运动规律：
     \[
-    \boxed{y(t) = \frac{1}{g - 900}\left(2g\sin 30t - 60\sqrt{g}\sin(\sqrt{g}t)\right)}
+    \mathbf{y(t) = \frac{1}{g - 900}\left(2g\sin 30t - 60\sqrt{g}\sin(\sqrt{g}t)\right)}
     \]
 \end{enumerate}
 \end{solution}
@@ -6648,46 +7216,49 @@ c_1 - c_2 = 2
 \end{exercise}
 \begin{solution}
 \begin{enumerate}
-    \item \textbf{求导与化简：}\\
-    对积分方程两边对 $x$ 求导。变上限积分运用微积分基本定理：
+    \item \textbf{通过求导消除积分号：}\\
+    面对积分方程，常用的方法是对等式两边连续求导。利用变上限积分的求导定理 $\frac{\mathrm{d}}{\mathrm{d}x} \int_0^x g(t)\mathrm{d}t = g(x)$：
     \[
-    f''(x) = 6\sin^2 x - f(x)
+    f''(x) = \frac{\mathrm{d}}{\mathrm{d}x}(1) + 6\sin^2 x - f(x) \implies f''(x) = 6\sin^2 x - f(x)
     \]
-    移项得标准的二阶常系数非齐次微分方程：
+    将其整理移项得标准的二阶常系数非齐次微分方程：
     \[
     f''(x) + f(x) = 6\sin^2 x
     \]
-    利用二倍角公式将右侧降幂化简：$6\sin^2 x = 6 \cdot \frac{1-\cos 2x}{2} = 3 - 3\cos 2x$。
-    于是方程变为：
+    直接处理平方项较复杂，利用半角（降幂）公式 $2\sin^2 x = 1-\cos 2x$ 将右侧变形：
     \[
-    f''(x) + f(x) = 3 - 3\cos 2x
+    f''(x) + f(x) = 3(1-\cos 2x) = 3 - 3\cos 2x
     \]
 
-    \item \textbf{微分方程求解：}\\
-    齐次方程特征根为 $\pm i$，通解为 $f_h(x) = C_1\cos x + C_2\sin x$。
-    右侧的非齐次项可分为两部分 $f_1 = 3$ 和 $f_2 = -3\cos 2x$。因为均不与特征根重合，所以用常规猜解法：
-    对 $3$，猜 $y_1^* = A \implies A = 3$。
-    对 $-3\cos 2x$，猜 $y_2^* = B\cos 2x$。代入方程：
-    $-4B\cos 2x + B\cos 2x = -3B\cos 2x = -3\cos 2x \implies B = 1$。
-    因此完整的通解为：
+    \item \textbf{求解非齐次微分方程：}\\
+    方程特征根为 $\pm i$，固有齐次通解为 $f_h(x) = C_1\cos x + C_2\sin x$。
+    根据叠加原理将非齐次项分为 $3$ 与 $-3\cos 2x$ 分别猜特解（均不属于共振）：
+    对常数项 $3$，设特解 $y_1^* = A$，直接代入得 $A=3$。
+    对余弦项 $-3\cos 2x$，设特解 $y_2^* = B\cos 2x$，二次求导为 $-4B\cos 2x$：
+    代入得 $-4B\cos 2x + B\cos 2x = -3B\cos 2x = -3\cos 2x \implies B = 1$。
+    把所有的解合并，得到方程的通解结构：
     \[
     f(x) = C_1\cos x + C_2\sin x + 3 + \cos 2x
     \]
 
-    \item \textbf{确定常数：}\\
-    第一项初始条件由题设直接给出 $f(0) = 0$。
-    第二项初始条件从原题干的积分表达式中取得：把 $x=0$ 代入原恒等式，积分下限等于上限，积分项为 0，得到 $f'(0) = 1 + 0 = 1$。
-    先利用 $f(0) = 0$：
+    \item \textbf{发掘隐含初值以定常数：}\\
+    除了题干明确给出的 $f(0) = 0$ 之外，我们需要第二个初值条件来求解两个常数。
+    回到最初未求导的恒等式：$f'(x)=1+\int_0^x[6\sin^2 t-f(t)]\mathrm{d}t$。直接在该式中令 $x=0$，此时积分上限等于下限，整个积分项直接归零：
+    \[
+    f'(0) = 1 + \int_0^0 [\cdots]\mathrm{d}t = 1 + 0 = 1
+    \]
+    现在结合这组条件 $(f(0)=0, f'(0)=1)$ 对通解定系数。
+    代入 $x=0$：
     \[
     f(0) = C_1(1) + 0 + 3 + 1 = 0 \implies C_1 = -4
     \]
-    再求导并代入 $f'(0) = 1$：
+    对通解求一次导：$f'(x) = -C_1\sin x + C_2\cos x - 2\sin 2x$。代入 $x=0$：
     \[
-    f'(x) = -C_1\sin x + C_2\cos x - 2\sin 2x \implies f'(0) = 0 + C_2 - 0 = 1 \implies C_2 = 1
+    f'(0) = 0 + C_2(1) - 0 = 1 \implies C_2 = 1
     \]
-    最终解为：
+    将确定的 $C_1, C_2$ 代回通解，最终解出函数为：
     \[
-    \boxed{f(x) = -4\cos x + \sin x + 3 + \cos 2x}
+    \mathbf{f(x) = -4\cos x + \sin x + 3 + \cos 2x}
     \]
 \end{enumerate}
 \end{solution}
@@ -7007,12 +7578,8 @@ y(t)=2t\,\mathrm{e}^{t}.
 \section{练习}
 
 \begin{exercise}[基础：概念辨析]
-判断下列方程组是否为线性微分方程组。若是，写出其矩阵形式 $\mathbf{x}'=A\mathbf{x}+\mathbf{f}(t)$（其中 $\mathbf{x}=(x,y)^{\mathsf T}$）：
-\begin{enumerate}
-  \item[(1)] $\begin{cases}x'=xy+t,\\ y'=x^{2}-y^{2}\end{cases}$
-  \item[(2)] $\begin{cases}x'=x+\sin t,\\ y'=y+\cos t\end{cases}$
-  \item[(3)] $\begin{cases}x'=3x+y,\\ y'=x-y+z'\end{cases}$
-\end{enumerate}
+判断下列方程组是否为线性微分方程组。若是，写出其矩阵形式 $\mathbf{x}'=A\mathbf{x}+\mathbf{f}(t)$（其中 $\mathbf{x}=(x,y)^{\mathsf T}$）：\\
+(1) $\begin{cases}x'=xy+t,\\ y'=x^{2}-y^{2}\end{cases}$~~(2) $\begin{cases}x'=x+\sin t,\\ y'=y+\cos t\end{cases}$~~(3)$\begin{cases}x'=3x+y,\\ y'=x-y+z'\end{cases}$
 \end{exercise}
 \begin{solution}
 \begin{enumerate}
@@ -7180,12 +7747,12 @@ y'+x-2y=\mathrm{e}^{3t}.
 
 \begin{exercise}[解微分方程组综合]
 求下列微分方程组的通解或特解:
-\begin{enumerate}
-    \item[(1)] $\begin{cases}\dfrac{\mathrm{d}x}{\mathrm{d}t} = y, \\ \dfrac{\mathrm{d}y}{\mathrm{d}t} = x; \end{cases}$
-    \item[(2)] $\begin{cases}\dfrac{\mathrm{d}x}{\mathrm{d}t} = y,\, x(0)=0, \\\dfrac{\mathrm{d}y}{\mathrm{d}t} = -x,\, y(0)=1;\end{cases}$
-    \item[(3)] $\begin{cases} \dfrac{\mathrm{d}x}{\mathrm{d}t} = x+2y, \\ \dfrac{\mathrm{d}y}{\mathrm{d}t} = 4x+3y; \end{cases}$
-    \item[(4)] $\begin{cases} \dfrac{\mathrm{d}x}{\mathrm{d}t} = x-5y, \\ \dfrac{\mathrm{d}y}{\mathrm{d}t} = 2x-y. \end{cases}$
-\end{enumerate}
+\begin{tabular}{ll}
+  (1) $\begin{cases}\dfrac{\mathrm{d}x}{\mathrm{d}t} = y, \\ \dfrac{\mathrm{d}y}{\mathrm{d}t} = x; \end{cases}$ &
+  (2) $\begin{cases}\dfrac{\mathrm{d}x}{\mathrm{d}t} = y,\, x(0)=0, \\\dfrac{\mathrm{d}y}{\mathrm{d}t} = -x,\, y(0)=1;\end{cases}$ \\[12pt]
+  (3) $\begin{cases} \dfrac{\mathrm{d}x}{\mathrm{d}t} = x+2y, \\ \dfrac{\mathrm{d}y}{\mathrm{d}t} = 4x+3y; \end{cases}$ &
+  (4) $\begin{cases} \dfrac{\mathrm{d}x}{\mathrm{d}t} = x-5y, \\ \dfrac{\mathrm{d}y}{\mathrm{d}t} = 2x-y. \end{cases}$
+\end{tabular}
 \end{exercise}
 \begin{solution}
 \begin{enumerate}
