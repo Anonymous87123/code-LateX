@@ -1036,7 +1036,7 @@
 \renewcommand{\theexam}{\thechapter.\arabic{exam}}
 \newenvironment{example}[1][]{
   \refstepcounter{exam}
-  \phantomsection\addcontentsline{loex}{examples}{\theexam\ifstrempty{#1}{}{\hspace{1em}#1}}%
+  % Removed addcontentsline for examples
   \par\noindent\textbf{\color{main}{\examplename} \theexam #1 }\rmfamily}{
   \par\ignorespacesafterend}
 
@@ -1046,6 +1046,7 @@
 \renewcommand{\theexer}{\thechapter.\arabic{exer}}
 \newenvironment{exercise}[1][]{
   \refstepcounter{exer}
+  \phantomsection\addcontentsline{loexer}{exercises}{\theexer\ifstrempty{#1}{}{\hspace{1em}#1}}% ADDED: Write to list of exercises
   \par\noindent\makebox[-3pt][r]{
     \scriptsize\color{red!90}\HandPencilLeft\quad}
     \textbf{\color{main}{\exercisename} \theexer #1 }\rmfamily}{
@@ -1329,29 +1330,29 @@
 \usepackage[titles]{tocloft}
 
 % -------------------------------------------------------------
-% ADDED: Custom Lists for Environments (Definitions, Theorems, etc.)
+% ADDED: Custom Lists for Environments (Definitions, Theorems, Exercises, Properties)
 % -------------------------------------------------------------
 \providecommand{\listdefinitionname}{List of Definitions}
 \providecommand{\listtheoremname}{List of Theorems}
-\providecommand{\listexamplename}{List of Examples}
+\providecommand{\listexercisename}{List of Exercises}
 \providecommand{\listpropertyname}{List of Properties}
 
 \ifdefstring{\ELEGANT@lang}{cn}{
   \renewcommand{\listdefinitionname}{定义索引}
   \renewcommand{\listtheoremname}{定理索引}
-  \renewcommand{\listexamplename}{例题索引}
+  \renewcommand{\listexercisename}{习题索引}
   \renewcommand{\listpropertyname}{性质索引}
 }{\relax}
 
 \newlistof{definitions}{lod}{\listdefinitionname}
 \newlistof{theorems}{loth}{\listtheoremname}
-\newlistof{examples}{loex}{\listexamplename}
+\newlistof{exercises}{loexer}{\listexercisename}
 \newlistof{properties}{lopr}{\listpropertyname}
 
 \newcommand{\makeenvindex}{
   \listofdefinitions
   \listoftheorems
-  \listofexamples
+  \listofexercises
   \listofproperties
 }
 % -------------------------------------------------------------
