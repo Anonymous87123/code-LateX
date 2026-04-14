@@ -13483,12 +13483,8 @@ y,&x=0.
 \end{solution}
 
 \begin{exercise}[基础：极限计算（夹逼法）]
-用夹逼准则求下列极限：
-\begin{enumerate}
-  \item[(1)] $\displaystyle\lim_{(x,y)\to(0,0)}\frac{x^3+y^3}{x^2+y^2}$
-  \item[(2)] $\displaystyle\lim_{(x,y)\to(0,0)}\frac{x^2\sin^2y}{x^2+2y^2}$
-  \item[(3)] $\displaystyle\lim_{(x,y)\to(0,0)}(x^2+y^2)\sin\frac1{x^2+y^2}$
-\end{enumerate}
+用夹逼准则求下列极限：\\
+(1)$\displaystyle\lim_{(x,y)\to(0,0)}\frac{x^3+y^3}{x^2+y^2}$;(2)$\displaystyle\lim_{(x,y)\to(0,0)}\frac{x^2\sin^2y}{x^2+2y^2}$;(3)$\displaystyle\lim_{(x,y)\to(0,0)}(x^2+y^2)\sin\frac1{x^2+y^2}$
 \end{exercise}
 \begin{solution}
 \begin{enumerate}
@@ -13520,6 +13516,7 @@ y,&x=0.
 \end{enumerate}
 \end{solution}
 
+
 \begin{exercise}[基础：极限存在性判定]
 判断下列函数在 $(0,0)$ 处的极限是否存在。若不存在，给出证明：
 \begin{enumerate}
@@ -13530,39 +13527,42 @@ y,&x=0.
 \end{enumerate}
 \end{exercise}
 \begin{solution}
+引入极坐标变换 $x = r\cos\theta, y = r\sin\theta$。当 $(x,y) \to (0,0)$ 时，等价于 $r \to 0^+$。
 \begin{enumerate}
-  \item[(1)] \textbf{不存在}。尝试沿不同直线路径 $y=kx$ 趋近原点：
+  \item[(1)] \textbf{不存在}。将极坐标代入得：
   \[
-  f(x,kx) = \frac{x^2-(kx)^2}{x^2+(kx)^2} = \frac{x^2(1-k^2)}{x^2(1+k^2)} = \frac{1-k^2}{1+k^2}.
+  f(r\cos\theta, r\sin\theta) = \frac{r^2\cos^2\theta - r^2\sin^2\theta}{r^2\cos^2\theta + r^2\sin^2\theta} = \cos^2\theta - \sin^2\theta = \cos 2\theta.
   \]
-  该极限结果是一个与参数 $k$ 相关的常数。例如，当 $k=0$（沿 $x$ 轴）时极限为 $1$；当 $k=1$（沿 $y=x$）时极限为 $0$。因沿不同路径极限不一致，故重极限不存在。
-
-  \item[(2)] \textbf{不存在}。首先检验直线路径 $y=kx$：
+  当 $r \to 0^+$ 时，极限结果 $\cos 2\theta$ 仍然依赖于趋近原点时的角度 $\theta$。例如，当 $\theta = 0$ 时极限为 $1$；当 $\theta = \frac{\pi}{4}$ 时极限为 $0$。由于沿不同方向趋近原点得到的极限不同，故重极限不存在。
+  \item[(2)] \textbf{不存在}。将极坐标代入得：
   \[
-  f(x,kx) = \frac{x^3(kx)}{x^6+(kx)^2} = \frac{kx^4}{x^6+k^2x^2} = \frac{kx^2}{x^4+k^2}.
+  f(r\cos\theta, r\sin\theta) = \frac{(r\cos\theta)^3(r\sin\theta)}{(r\cos\theta)^6 + (r\sin\theta)^2} = \frac{r^4\cos^3\theta\sin\theta}{r^6\cos^6\theta + r^2\sin^2\theta} = \frac{r^2\cos^3\theta\sin\theta}{r^4\cos^6\theta + \sin^2\theta}.
   \]
-  当 $x\to 0$ 时，上式趋于 $0$（无论是 $k=0$ 还是 $k\neq 0$）。
-  再检验特殊的曲线路径，令同阶项匹配，取 $y=kx^3$：
+  若沿直线射线 $\theta = \text{const}$（且 $\sin\theta \neq 0$）趋近原点，$r \to 0^+$ 时极限为 $0$。
+  但是，我们可以选取依赖于 $r$ 的曲线路径。令 $\sin\theta = r^2\cos^3\theta$（对应直角坐标系下的 $y=x^3$ 路径），当 $r \to 0^+$ 时 $\theta \to 0$ 或 $\pi$，该路径满足趋于原点的条件。代入上式得：
   \[
-  f(x,kx^3) = \frac{x^3(kx^3)}{x^6+(kx^3)^2} = \frac{kx^6}{x^6+k^2x^6} = \frac{k}{1+k^2}.
+  \lim_{r\to 0^+} \frac{r^2\cos^3\theta(r^2\cos^3\theta)}{r^4\cos^6\theta + (r^2\cos^3\theta)^2} = \lim_{r\to 0^+} \frac{r^4\cos^6\theta}{2r^4\cos^6\theta} = \frac{1}{2}.
   \]
-  此极限结果依赖于 $k$。例如 $k=1$ 极限为 $1/2$，与沿直线趋近的 $0$ 不同。故重极限不存在。
-
-  \item[(3)] \textbf{存在，且为 $\boldsymbol{0}$}。由于原题表述“若不存在给出证明”，这里实际是一个可以求出的极限：
+  由于沿此曲线路径趋近的极限值（$1/2$）与沿一般直线路径趋近的极限值（$0$）不一致，故重极限不存在。
+  \item[(3)] \textbf{存在，且为 $\boldsymbol{0}$}。将极坐标代入，并考察其绝对值：
   \[
-  0 \leqslant  \left|\frac{xy}{|x|+|y|}\right| \leqslant  \frac{|x||y|}{|x|+|y|}.
+  |f(r\cos\theta, r\sin\theta)| = \left| \frac{r^2\cos\theta\sin\theta}{r|\cos\theta| + r|\sin\theta|} \right| = r \frac{|\cos\theta\sin\theta|}{|\cos\theta| + |\sin\theta|}.
   \]
-  因为 $|y| \leqslant  |x|+|y|$，所以 $\frac{|y|}{|x|+|y|} \leqslant  1$。因此：
+  由于 $(|\cos\theta| + |\sin\theta|)^2 = \cos^2\theta + \sin^2\theta + 2|\cos\theta\sin\theta| = 1 + |\sin 2\theta| \geqslant 1$，所以 $|\cos\theta| + |\sin\theta| \geqslant 1$。
+  因此可以进行放缩：
   \[
-  \frac{|x||y|}{|x|+|y|} = |x| \left(\frac{|y|}{|x|+|y|}\right) \leqslant  |x| \cdot 1 = |x|.
+  0 \leqslant |f(r\cos\theta, r\sin\theta)| \leqslant r \frac{|\cos\theta\sin\theta|}{1} \leqslant \frac{1}{2}r.
   \]
-  当 $(x,y)\to(0,0)$ 时，$|x|\to 0$。由夹逼准则，极限存在且等于 $0$。
-
-  \item[(4)] \textbf{存在，且为 $\boldsymbol{0}$}。利用有界性放缩：
+  当 $r \to 0^+$ 时，$\frac{1}{2}r \to 0$。由夹逼定理可知，原极限存在且等于 $0$。
+  \item[(4)] \textbf{存在，且为 $\boldsymbol{0}$}。将极坐标代入，考察其绝对值：
   \[
-  0 \leqslant  \left| (x^2+y^2)\cos\dfrac{1}{xy} \right| \leqslant  (x^2+y^2) \cdot 1 = x^2+y^2.
+  |f(r\cos\theta, r\sin\theta)| = \left| r^2 \cos\left(\frac{1}{r^2\cos\theta\sin\theta}\right) \right|.
   \]
-  当 $(x,y)\to(0,0)$ 时，$x^2+y^2 \to 0$。由夹逼定理，重极限存在且为 $0$。
+  由于余弦函数在实数范围内有界，即 $\left|\cos\left(\dfrac{1}{r^2\cos\theta\sin\theta}\right)\right| \leqslant 1$，故：
+  \[
+  0 \leqslant |f(r\cos\theta, r\sin\theta)| \leqslant r^2 \cdot 1 = r^2.
+  \]
+  当 $r \to 0^+$ 时，$r^2 \to 0$。由夹逼定理可知，原极限存在且等于 $0$。
 \end{enumerate}
 \end{solution}
 
@@ -13670,15 +13670,15 @@ y,&x=0.
 \end{solution}
 
 \begin{exercise}[求定义域]
-确定并画出下列二元函数的定义域：
-\begin{enumerate}
-  \item[(1)] $z = x + \sqrt{y}$
-  \item[(2)] $z = \sqrt{1-x^2} + \sqrt{y^2-1}$
-  \item[(3)] $z = \sqrt{1-x^2-y^2}$
-  \item[(4)] $z = \dfrac{1}{\sqrt{x^2+y^2-1}}$
-  \item[(5)] $z = \ln(-x-y)$
-  \item[(6)] $z = \arcsin\dfrac{y}{x}$
-\end{enumerate}
+确定并画出下列二元函数的定义域：\\
+\begin{tabular}{lll}
+  (1) $z = x + \sqrt{y}$ &
+  (2) $z = \sqrt{1-x^2} + \sqrt{y^2-1}$ &
+  (3) $z = \sqrt{1-x^2-y^2}$ \\
+  (4) $z = \dfrac{1}{\sqrt{x^2+y^2-1}}$ &
+  (5) $z = \ln(-x-y)$ &
+  (6) $z = \arcsin\dfrac{y}{x}$
+\end{tabular}
 \end{exercise}
 \begin{solution}
 \begin{enumerate}
@@ -13938,26 +13938,30 @@ y,&x=0.
 证明下列极限不存在：(1) $\lim\limits_{\substack{x\to 0 \\ y\to 0}} \dfrac{y}{x}$~~~(2) $\lim\limits_{\substack{x\to 0 \\ y\to 0}} \dfrac{x^2-y^2}{x^2+y^2}$
 \end{exercise}
 \begin{solution}
+引入极坐标变换 $x = r\cos\theta, y = r\sin\theta$。当 $(x,y) \to (0,0)$ 时，等价于 $r \to 0^+$。
 \begin{enumerate}
   \item[(1)] \textbf{证明极限 (1) 不存在}：
-  我们令点 $(x,y)$ 沿着过原点的任意直线族 $y=kx$ 逼近原点 $(0,0)$。
-  代入该路径到函数中：
+  将极坐标代入函数中得：
   \[
-  \lim_{x\to 0} \frac{kx}{x} = \lim_{x\to 0} k = k.
+  f(r\cos\theta, r\sin\theta) = \frac{r\sin\theta}{r\cos\theta} = \tan\theta \quad (\cos\theta \neq 0).
   \]
-  极限计算结果直接等于参数 $k$。这意味着，如果我们沿着 $y=x$（即 $k=1$）的方向走，得到极限 $1$；而沿着 $y=2x$（即 $k=2$）的方向走，则得到极限 $2$。对于不同的趋近路径，得到了不同的极限值，故由重极限存在的必要条件（路径无关性）得知该极限不存在。
-
-  \item[(2)] \textbf{证明极限 (2) 不存在}：
-  同样采用路径检验法。选取经过原点的一般直线束 $y=kx$。将自变量 $y$ 替换为 $kx$：
-  \[
-  \lim_{x\to 0} \frac{x^2-(kx)^2}{x^2+(kx)^2} = \lim_{x\to 0} \frac{x^2(1-k^2)}{x^2(1+k^2)} = \frac{1-k^2}{1+k^2}.
-  \]
-  可以发现此极限值依然高度依赖于参数 $k$：
+  当 $r \to 0^+$ 时，极限结果为 $\tan\theta$。由于该极限值依赖于趋近原点时的角度 $\theta$，并非一个确定的常数。例如：
   \begin{itemize}
-    \item 沿 $x$ 轴（$k=0$）趋近，得 $\frac{1-0}{1+0} = 1$。
-    \item 沿 $y$ 轴（相当于 $k\to \infty$ 或者直接代入 $x=0$ 的极限 $\frac{-y^2}{y^2}$），得 $-1$。
+    \item 当沿射线 $\theta = \frac{\pi}{4}$ 趋近原点时，极限为 $\tan\frac{\pi}{4} = 1$。
+    \item 当沿射线 $\theta = 0$ 趋近原点时，极限为 $\tan 0 = 0$。
   \end{itemize}
-  由海涅归结原理，能找到至少两条导致极限不同的趋近路径，说明函数的二重极限在原点不存在。
+  因为沿不同角度趋近原点得到的极限值不一致，所以该重极限不存在。
+  \item[(2)] \textbf{证明极限 (2) 不存在}：
+  将极坐标代入函数中得：
+  \[
+  f(r\cos\theta, r\sin\theta) = \frac{r^2\cos^2\theta - r^2\sin^2\theta}{r^2\cos^2\theta + r^2\sin^2\theta} = \frac{r^2(\cos^2\theta - \sin^2\theta)}{r^2(1)} = \cos 2\theta.
+  \]
+  当 $r \to 0^+$ 时，极限结果为 $\cos 2\theta$。该结果同样依赖于趋近原点时的角度 $\theta$。例如：
+  \begin{itemize}
+    \item 当沿射线 $\theta = 0$ 趋近原点时（沿 $x$ 轴），极限为 $\cos 0 = 1$。
+    \item 当沿射线 $\theta = \frac{\pi}{2}$ 趋近原点时（沿 $y$ 轴），极限为 $\cos\pi = -1$。
+  \end{itemize}
+  由于沿不同方向趋近原点得到的极限值不相等，因此该二重极限不存在。
 \end{enumerate}
 \end{solution}
 
@@ -13975,7 +13979,7 @@ y,&x=0.
   \item 多元函数可微的定义~\ref{def:differentiability}
   \item 可微 $\Rightarrow$ 连续、可微 $\Rightarrow$ 偏导存在
   \item 偏导数连续 $\Rightarrow$ 可微（充分条件）
-  \item 全微分公式与局部线性化~\property{total-diff-formula}
+  \item 全微分公式与局部线性化
   \item 全微分在近似计算中的应用
 \end{introduction}
 
@@ -14259,8 +14263,6 @@ f(p_0+\boldsymbol h)\approx f(p_0)+A\boldsymbol h, \qquad\text{当 }\|\boldsymbo
 这意味着：在 $p_0$ 的充分小邻域内，曲面 $z=f(x,y)$ 可以用一个\textbf{平面} $z=f(p_0)+a_1(x-x_0)+a_2(y-y_0)$ 来 ``非常好地逼近''。这个平面正是曲面在该点的\textbf{切平面}，而行向量 $A=(a_1,a_2)$ 就是 ``多元导数'' 的恰当形式——它是一个\textbf{线性泛函}（Linear Functional），把每个方向 $\boldsymbol h$ 映射为函数值在该方向上的线性变化量。
 \end{note}
 
-\subsubsection*{可微性的验证示例}
-
 \begin{exercise}[证明某函数在原点可微] \label{ex:diff-prove}
 证明函数
 \[
@@ -14272,36 +14274,50 @@ x+y+(x^2+y^2)\sin\dfrac{1}{x^2+y^2},&(x,y) \neq (0,0),\\[8pt]
 \]
 在原点处可微，并求其微分。
 \end{exercise}
-
 \begin{solution}
 \begin{enumerate}
-  \item \textbf{考察增量的构成}：
-  $f$ 显然在全平面上有定义且连续。对增量向量 $\boldsymbol h=(h_1,h_2)^{\mathsf T}$，计算函数从原点出发的增量：
+  \item \textbf{求偏导数以确定线性主部候选}：
+  首先，通过定义计算函数在原点 $(0,0)$ 处的偏导数：
+  \[
+  f_x(0,0) = \lim_{x\to 0} \frac{f(x,0)-f(0,0)}{x} = \lim_{x\to 0} \frac{x + x^2\sin\frac{1}{x^2}}{x} = \lim_{x\to 0} \left(1 + x\sin\frac{1}{x^2}\right).
+  \]
+  由于 $\left|x\sin\frac{1}{x^2}\right| \leqslant |x|$，当 $x\to 0$ 时极限为 $0$，故 $f_x(0,0) = 1$。
+  同理，由对称性可得：
+  \[
+  f_y(0,0) = \lim_{y\to 0} \frac{f(0,y)-f(0,0)}{y} = \lim_{y\to 0} \left(1 + y\sin\frac{1}{y^2}\right) = 1.
+  \]
+  若函数可微，其在原点的线性增量应为 $A h_1 + B h_2 = 1\cdot h_1 + 1\cdot h_2 = h_1 + h_2$。
+
+  \item \textbf{利用极限定义验证可微性}：
+  根据二元函数可微的定义，我们需要考察增量误差除以距离的极限是否为 $0$。令 $\rho = \sqrt{h_1^2+h_2^2}$，需要验证：
+  \[
+  \lim_{(h_1,h_2)\to(0,0)} \frac{f(h_1,h_2) - f(0,0) - (f_x(0,0)h_1 + f_y(0,0)h_2)}{\sqrt{h_1^2+h_2^2}} = 0.
+  \]
+  将函数表达式及偏导数值代入该极限的表达式中：
   \begin{align*}
-  f(0+h_1,\,0+h_2)-f(0,0) &=h_1+h_2+(h_1^2+h_2^2)\sin\frac{1}{h_1^2+h_2^2}\\
-  &=h_1+h_2+\sqrt{h_1^2+h_2^2}\; \underbrace{\sqrt{h_1^2+h_2^2}\sin\frac{1}{h_1^2+h_2^2}}_{\displaystyle=:R(\boldsymbol h)}.
+  \text{原式} &= \lim_{(h_1,h_2)\to(0,0)} \frac{\left( h_1+h_2+(h_1^2+h_2^2)\sin\frac{1}{h_1^2+h_2^2} \right) - 0 - (h_1 + h_2)}{\sqrt{h_1^2+h_2^2}} \\
+  &= \lim_{(h_1,h_2)\to(0,0)} \frac{(h_1^2+h_2^2)\sin\frac{1}{h_1^2+h_2^2}}{\sqrt{h_1^2+h_2^2}}.
   \end{align*}
-  
-  \item \textbf{分析非线性余项}：
-  观察余项部分 $R(\boldsymbol h)$，由于正弦函数有界 $|\sin(\cdot)|\leqslant  1$，故有：
+  利用 $\rho = \sqrt{h_1^2+h_2^2}$ 进行替换，当 $(h_1,h_2)\to(0,0)$ 时，$\rho \to 0^+$。极限转化为：
   \[
-  |R(\boldsymbol h)|\leqslant\sqrt{h_1^2+h_2^2}=\|\boldsymbol h\|.
-  \]
-  当 $\|\boldsymbol h\|\to 0$ 时，$R(\boldsymbol h)\to 0$。因此 $R(\boldsymbol h)\sqrt{h_1^2+h_2^2} = o(\|\boldsymbol h\|)$。
-  
-  \item \textbf{得出结论}：
-  我们将增量写成了标准的局部线性化形式：
-  \[
-  f(\boldsymbol h)-f(\boldsymbol 0)=(1,1)\boldsymbol h+o(\|\boldsymbol h\|),
-  \]
-  这完全符合可微的定义。即 $f$ 在原点处可微，且其微分为线性部分：
-  \[
-  \boxed{\mathrm{d}f(0,0)=(1,1)\begin{pmatrix}h_1\\h_2\end{pmatrix} = h_1 + h_2}.
+  \lim_{\rho\to 0^+} \frac{\rho^2 \sin\frac{1}{\rho^2}}{\rho} = \lim_{\rho\to 0^+} \rho \sin\frac{1}{\rho^2}.
   \]
 
+  \item \textbf{得出结论}：
+  由于正弦函数在实数域上有界，即 $\left|\sin\frac{1}{\rho^2}\right| \leqslant 1$，因此可以放缩：
+  \[
+  0 \leqslant \left| \rho \sin\frac{1}{\rho^2} \right| \leqslant \rho.
+  \]
+  当 $\rho \to 0^+$ 时，$\rho \to 0$。由夹逼定理可知：
+  \[
+  \lim_{\rho\to 0^+} \rho \sin\frac{1}{\rho^2} = 0.
+  \]
+  因为该极限等于 $0$，说明函数的全增量与线性部分之差是关于 $\rho$ 的高阶无穷小。因此，函数 $f(x,y)$ 在原点处可微，且其微分为：
+  \[
+  \boxed{\mathrm{d}f(0,0) = \mathrm{d}x + \mathrm{d}y} \quad \text{（或写为增量形式：} \mathrm{d}f(0,0) = h_1 + h_2 \text{）}.
+  \]
 \end{enumerate}
 \end{solution}
-
 
 \subsubsection{可微性与连续性、偏导数存在性的关系}
 
@@ -14339,33 +14355,36 @@ f(x,y)=
 \end{cases}
 \]
 \end{exercise}
-
 \begin{solution}
 \begin{enumerate}
-  \item \textbf{检验偏导数是否存在}：
-  在原点处计算偏导数：
+  \item \textbf{计算偏导数以确定线性主部候选}：
+  首先，我们在原点处通过定义计算偏导数：
   \begin{align*}
-  f_x(0,0)&=\lim_{t\to 0}\frac{f(t,0)-f(0,0)}{t} =\lim_{t\to 0}\frac{0-0}{t}=0,\\[6pt]
-  f_y(0,0)&=\lim_{t\to 0}\frac{f(0,t)-f(0,0)}{t} =\lim_{t\to 0}\frac{0-0}{t}=0.
+  f_x(0,0)&=\lim_{x\to 0}\frac{f(x,0)-f(0,0)}{x} =\lim_{x\to 0}\frac{0-0}{x}=0,\\[6pt]
+  f_y(0,0)&=\lim_{y\to 0}\frac{f(0,y)-f(0,0)}{y} =\lim_{y\to 0}\frac{0-0}{y}=0.
   \end{align*}
-  两个偏导数都存在且等于零！
-  
-  \item \textbf{检验连续性}：
-  我们考察极限 $\displaystyle\lim_{(x,y)\to(0,0)}f(x,y)$。若让点沿直线 $y=kx$ 趋于原点，则：
+  若函数在原点可微，其在原点的线性增量必定为 $\mathrm{d}f = f_x(0,0)h_1 + f_y(0,0)h_2 = 0 \cdot h_1 + 0 \cdot h_2 = 0$。
+  \item \textbf{利用极限定义验证可微性}：
+  根据二元函数可微的定义，需要考察全增量减去线性主部后，除以距离 $\rho = \sqrt{h_1^2+h_2^2}$ 的极限是否为 $0$。即验证：
   \[
-  \lim_{x\to 0}f(x,kx) = \lim_{x\to 0}\frac{kx^2}{x^2+k^2x^2} = \frac{k}{1+k^2}.
+  \lim_{(h_1,h_2)\to(0,0)} \frac{f(h_1,h_2) - f(0,0) - (f_x(0,0)h_1 + f_y(0,0)h_2)}{\sqrt{h_1^2+h_2^2}} = 0.
   \]
-  极限值随着路径斜率 $k$ 的不同而变化，故该极限不存在，由此可知 $f$ 在 $(0,0)$ 处不连续。
-  
+  将函数表达式及偏导数值代入上式中：
+  \[
+  \lim_{(h_1,h_2)\to(0,0)} \frac{\frac{h_1 h_2}{h_1^2+h_2^2} - 0 - 0}{\sqrt{h_1^2+h_2^2}} = \lim_{(h_1,h_2)\to(0,0)} \frac{h_1 h_2}{(h_1^2+h_2^2)^{\frac{3}{2}}}.
+  \]
+  \item \textbf{计算并分析该极限}：
+  我们让点 $(h_1,h_2)$ 沿直线 $h_2 = h_1$（且 $h_1 > 0$）趋近于 $(0,0)$，代入上式计算：
+  \[
+  \lim_{h_1\to 0^+} \frac{h_1 \cdot h_1}{(h_1^2+h_1^2)^{\frac{3}{2}}} = \lim_{h_1\to 0^+} \frac{h_1^2}{(2h_1^2)^{\frac{3}{2}}} = \lim_{h_1\to 0^+} \frac{h_1^2}{2\sqrt{2}h_1^3} = \lim_{h_1\to 0^+} \frac{1}{2\sqrt{2}h_1} = +\infty.
+  \]
+  由于沿该路径趋近时，极限趋于无穷大（显然不等于 $0$，甚至极限不存在），说明函数的全增量与线性部分之差并不是关于距离 $\rho$ 的高阶无穷小。
   \item \textbf{得出结论}：
-  由定理 \ref{thm:diff-cont}（可微 $\Rightarrow$ 连续）之逆否命题，$f$ 在 $(0,0)$ 处虽然偏导数存在，但由于不连续，因此\textbf{不可微}。
+  由可微的定义可知，由于误差项除以距离的极限不为 $0$，因此函数 $f(x,y)$ 在 $(0,0)$ 处虽然偏导数存在，但\textbf{不可微}。
 \end{enumerate}
 \begin{note}{重要教训}
-\centering
-\textbf{偏导数存在 $\nRightarrow$ 函数可微！}\\
-（甚至不能保证函数连续！）
+\textbf{偏导数存在 $\nRightarrow$ 函数可微！}甚至不能保证函数连续！这是因为偏导数只捕捉了“沿坐标轴方向”的变化信息，完全忽略了“其他方向”（如对角方向）的行为。
 \end{note}
-这是因为偏导数只捕捉了 ``沿坐标轴方向'' 的变化信息，完全忽略了 ``其他方向'' （如对角方向）的行为
 \end{solution}
 
 \subsubsection*{可微 $\Rightarrow$ 偏导数存在}
@@ -14451,7 +14470,6 @@ f(x,y)=
 \]
 证明：(1) $f$ 在原点处偏导数存在；(2) $f_x$, $f_y$ 在原点处不连续；(3) 但 $f$ 在原点处可微。
 \end{exercise}
-
 \begin{solution}
 \begin{enumerate}
   \item \textbf{验证原点处的偏导数存在}：
@@ -14461,7 +14479,6 @@ f(x,y)=
   f_y(0,0)&=\lim_{t\to 0}\frac{f(0,t)-0}{t}=0.
   \end{align*}
   偏导存在且都为 $0$。
-  
   \item \textbf{验证偏导数在原点处不连续}：
   当 $(x,y) \neq (0,0)$ 时，计算一般的偏导数表达式：
   \begin{align*}
@@ -14469,21 +14486,22 @@ f(x,y)=
   &=2x\sin\frac{1}{x^2+y^2}-\frac{2x}{x^2+y^2}\cos\frac{1}{x^2+y^2},\\[8pt]
   f_y(x,y)&=2y\sin\frac{1}{x^2+y^2}-\frac{2y}{x^2+y^2}\cos\frac{1}{x^2+y^2}.
   \end{align*}
-  沿路径 $y=x$ 令 $x\to 0$：
-  \[
-  f_x(x,x)=2x\sin\frac{1}{2x^2}-\frac{1}{x}\cos\frac{1}{2x^2} \nrightarrow 0\quad(x\to 0).
-  \]
-  （第二项振荡发散），故 $f_x$ 在原点处不连续；同理 $f_y$ 也不连续。
-  
+  引入极坐标变换 $x = r\cos\theta, y = r\sin\theta$。当 $(x,y) \to (0,0)$ 时，等价于 $r \to 0^+$。代入 $f_x$ 的表达式中：
+  \begin{align*}
+  f_x(r\cos\theta, r\sin\theta) &= 2r\cos\theta\sin\frac{1}{r^2} - \frac{2r\cos\theta}{r^2}\cos\frac{1}{r^2} \\
+  &= 2r\cos\theta\sin\frac{1}{r^2} - \frac{2\cos\theta}{r}\cos\frac{1}{r^2}.
+  \end{align*}
+  当 $r \to 0^+$ 时，第一项由于有界量乘无穷小量，因此 $2r\cos\theta\sin\frac{1}{r^2} \to 0$。
+  但是对于第二项，若我们固定角度 $\theta$ 使得 $\cos\theta \neq 0$（例如取 $\theta=0$ 沿 $x$ 轴趋近），该项变为 $-\frac{2}{r}\cos\frac{1}{r^2}$。随着 $r \to 0^+$，由于 $\frac{1}{r} \to +\infty$，而 $\cos\frac{1}{r^2}$ 在 $-1$ 到 $1$ 之间剧烈振荡，导致整个表达式不仅无界且发散。
+  因此，极限 $\lim\limits_{(x,y)\to(0,0)} f_x(x,y)$ 不存在，从而 $f_x$ 在原点处不连续。同理可证 $f_y$ 在原点处也不连续。
   \item \textbf{验证函数在原点处可微}：
   需检查余项是否为 $o(\|\boldsymbol h\|)$。
   \[
   \frac{f(h_1,h_2)-f(0,0)-0\cdot h_1-0\cdot h_2}{\|\boldsymbol h\|} =\frac{(h_1^2+h_2^2)\sin\dfrac{1}{h_1^2+h_2^2}}{\sqrt{h_1^2+h_2^2}} =\sqrt{h_1^2+h_2^2}\sin\frac{1}{h_1^2+h_2^2} \xrightarrow[\|\boldsymbol h\|\to 0]{}0.
   \]
-  由于极限为 $0$，所以 $f$ 在原点处依然是可微的
+  由于极限为 $0$，所以 $f$ 在原点处依然是可微的。
 \end{enumerate}
 \end{solution}
-
 
 \subsection{全微分公式及其应用}
 
@@ -14491,12 +14509,12 @@ f(x,y)=
 
 \subsubsection*{全微分公式}
 
-\begin{property}[全微分 / Total Differential] \label{property:total-diff-formula}
+\begin{definition}[全微分 / Total Differential] \label{property:total-diff-formula}
 若 $z=f(x,y)$ 在点 $(x,y)$ 处可微，则其\textbf{全微分}为
 \[
 \boxed{\; \mathrm{d}z=\mathrm{d}f=\frac{\partial z}{\partial x}\,\mathrm{d}x+\frac{\partial z}{\partial y}\,\mathrm{d}y\;}.
 \]
-\end{property}
+\end{definition}
 
 这里 $\mathrm{d}x=h_1$ 和 $\mathrm{d}y=h_2$ 分别是自变量 $x$ 和 $y$ 的\textbf{微分}（即增量的线性主部）。特别地，取 $f(x,y)=x$ 则 $\mathrm{d}z=\mathrm{d}x$；取 $f(x,y)=y$ 则 $\mathrm{d}z=\mathrm{d}y$。这与一元情形下的符号约定保持一致。
 
@@ -14531,15 +14549,12 @@ f(x,y)=
 \begin{enumerate}
   \item \textbf{求对三个变量的偏导数}：
   \begin{align*}
-  \frac{\partial u}{\partial x}&=2,\\
-  \frac{\partial u}{\partial y}&=-\sin y+z e^{yz},\\
-  \frac{\partial u}{\partial z}&=ye^{yz}.
+  \frac{\partial u}{\partial x}&=2,~~\frac{\partial u}{\partial y}=-\sin y+z e^{yz},~~\frac{\partial u}{\partial z}=ye^{yz}.
   \end{align*}
   \item \textbf{构造全微分}：
   \[
   \boxed{\mathrm{d}u=2\,\mathrm{d}x+\bigl(-\sin y+z e^{yz}\bigr)\mathrm{d}y+ye^{yz}\mathrm{d}z}.
   \]
-
 \end{enumerate}
 \end{solution}
 
@@ -14603,9 +14618,7 @@ f(x,y)=
   
   \item[(2)] \textbf{解析}：分别对 $x, y, z$ 求导，其余变量视作常数。
   \begin{align*}
-  f_x(x,y,z) &= \frac{1}{y} - \frac{z}{x^2}, \\
-  f_y(x,y,z) &= -\frac{x}{y^2} + \frac{1}{z}, \\
-  f_z(x,y,z) &= -\frac{y}{z^2} + \frac{1}{x}.
+  f_x(x,y,z) &= \frac{1}{y} - \frac{z}{x^2}, ~~  f_y(x,y,z) = -\frac{x}{y^2} + \frac{1}{z}, ~~  f_z(x,y,z) = -\frac{y}{z^2} + \frac{1}{x}.
   \end{align*}
   
   \item[(3)] \textbf{解析}：先求梯度，再与方向向量做点积。
@@ -14683,28 +14696,27 @@ f(x,y)=
   f_x(x,y) &= \frac{3x^2(x^2+y^2) - x^3(2x)}{(x^2+y^2)^2} = \frac{x^4 + 3x^2y^2}{(x^2+y^2)^2}, \\[6pt]
   f_y(x,y) &= x^3 \cdot \left(-\frac{2y}{(x^2+y^2)^2}\right) = -\frac{2x^3y}{(x^2+y^2)^2}.
   \end{align*}
-  
   \item[(2)] \textbf{解析}：
   先考察在 $(0,0)$ 处的存在性（用定义）：
   \[
-  f_x(0,0) = \lim_{x \to 0} \frac{x^3/x^2 - 0}{x} = \lim_{x \to 0} 1 = 1.
+  f_x(0,0) = \lim_{x \to 0} \frac{x^3/x^2 - 0}{x} = \lim_{x \to 0} 1 = 1,~~  f_y(0,0) = \lim_{y \to 0} \frac{0/y^2 - 0}{y} = 0.
   \]
+  再考察连续性。引入极坐标变换 $x = r\cos\theta, y = r\sin\theta$，当 $(x,y) \to (0,0)$ 时，等价于 $r \to 0^+$。代入 $f_x(x,y)$ 得：
   \[
-  f_y(0,0) = \lim_{y \to 0} \frac{0/y^2 - 0}{y} = 0.
+  f_x(r\cos\theta, r\sin\theta) = \frac{r^4\cos^4\theta + 3r^4\cos^2\theta\sin^2\theta}{r^4} = \cos^4\theta + 3\cos^2\theta\sin^2\theta.
   \]
-  再考察连续性。考察 $f_x(x,y)$ 趋于 $(0,0)$ 时的极限，令 $y=kx$：
-  \[
-  \lim_{x \to 0} f_x(x,kx) = \lim_{x \to 0} \frac{x^4 + 3k^2x^4}{(x^2+k^2x^2)^2} = \frac{1+3k^2}{(1+k^2)^2}.
-  \]
-  极限值依赖于 $k$ 的选择（如 $k=0$ 时为 $1$，$k=1$ 时为 $1$，$k=2$ 时为 $13/25$），故极限不存在。因此 $f_x$ 在 $(0,0)$ \textbf{不连续}。
-  同理对 $f_y(x,y)$ 令 $y=kx$，极限为 $-2k/(1+k^2)^2$，也与 $k$ 有关，因此 $f_y$ 在 $(0,0)$ \textbf{也不连续}。
+  当 $r \to 0^+$ 时，极限结果依然依赖于趋近原点时的角度 $\theta$。例如，沿射线 $\theta=0$（$x$ 轴）趋近时，极限为 $1$；沿射线 $\theta=\frac{\pi}{2}$（$y$ 轴）趋近时，极限为 $0$。因沿不同方向趋近原点得到的极限值不一致，故极限 $\lim\limits_{(x,y)\to(0,0)} f_x(x,y)$ 不存在，因此 $f_x$ 在 $(0,0)$ \textbf{不连续}。
   
+  同理对 $f_y(x,y)$ 代入极坐标得：
+  \[
+  f_y(r\cos\theta, r\sin\theta) = -\frac{2r^4\cos^3\theta\sin\theta}{r^4} = -2\cos^3\theta\sin\theta.
+  \]
+  当 $r \to 0^+$ 时，该极限结果同样依赖于角度 $\theta$。例如 $\theta=0$ 时极限为 $0$，$\theta=\frac{\pi}{4}$ 时极限为 $-\frac{1}{2}$。因极限不唯一，因此 $f_y$ 在 $(0,0)$ \textbf{也不连续}。
   \item[(3)] \textbf{解析}：
   即便偏导数不连续，我们仍需通过定义验证可微性。考察余项极限：
   \begin{align*}
   \lim_{(x,y) \to (0,0)} \frac{f(x,y) - f(0,0) - (1 \cdot x + 0 \cdot y)}{\sqrt{x^2+y^2}} 
-  &= \lim_{(x,y) \to (0,0)} \frac{\frac{x^3}{x^2+y^2} - x}{\sqrt{x^2+y^2}} \\
-  &= \lim_{(x,y) \to (0,0)} \frac{-xy^2}{(x^2+y^2)^{3/2}}.
+  &= \lim_{(x,y) \to (0,0)} \frac{\frac{x^3}{x^2+y^2} - x}{\sqrt{x^2+y^2}} = \lim_{(x,y) \to (0,0)} \frac{-xy^2}{(x^2+y^2)^{3/2}}.
   \end{align*}
   取路径 $y=x$，原式变为 $\lim_{x \to 0^+} \frac{-x^3}{(2x^2)^{3/2}} = -\frac{1}{2\sqrt{2}} \neq 0$。因此 $f$ 在 $(0,0)$ \textbf{不可微}。
 \end{enumerate}
