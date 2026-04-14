@@ -16564,6 +16564,91 @@ f_{yx}(\boldsymbol x_0) & f_{yy}(\boldsymbol x_0)
 称为 $f$ 在 $\boldsymbol x_0$ 处的\textbf{Hesse 矩阵}（Hessian Matrix）。
 \end{definition}
 
+\begin{theorem}[二阶偏导数结论]
+对于 $z = f(u, v)$，其中 $u=u(x,y), v=v(x,y)$，二阶偏导数可以严格分为两部分——“外层二次型”（跟外层函数 $f$ 的二阶导有关）加上“内层曲率项”**（跟内层函数 $u, v$ 的二阶导有关）：
+$$z_{xx} = \underbrace{f_{11}'' u_x^2 + 2f_{12}'' u_x v_x + f_{22}'' v_x^2}_{\text{外层二次型}} + \underbrace{f_1' u_{xx} + f_2' v_{xx}}_{\text{内层曲率}}$$
+$$z_{xy} = f_{11}'' u_x u_y + f_{12}'' (u_x v_y + u_y v_x) + f_{22}'' v_x v_y + f_1' u_{xy} + f_2' v_{xy}$$
+$$z_{yy} = f_{11}'' u_y^2 + 2f_{12}'' u_y v_y + f_{22}'' v_y^2 + f_1' u_{yy} + f_2' v_{yy}$$
+(注：上述假设 $f_{12}'' = f_{21}''$ 满足连续性。如果是三元函数，外层二次型就是三个变量的完全平方展开)
+\end{theorem}
+\begin{proof}
+本推导旨在利用矩阵分析与多元微积分的链式法则，严格证明多元复合函数 $z = f(u, v)$（其中 $u = u(x,y), v = v(x,y)$）的二阶海森矩阵（Hessian Matrix）的“二次型 + 曲率”结构分解。
+
+\textbf{第一步：定义核心矩阵与向量}
+
+设自变量构成的列向量为 $\mathbf{x} = \begin{bmatrix} x \\ y \end{bmatrix}$，中间变量构成的列向量为 $\mathbf{u} = \begin{bmatrix} u \\ v \end{bmatrix}$。目标复合函数可表示为 $z(\mathbf{x}) = f(\mathbf{u}(\mathbf{x}))$。
+
+引入以下三个核心矩阵工具：
+\begin{itemize}
+    \item \textbf{梯度向量（一阶偏导）}：对外部函数 $f$ 关于中间变量 $\mathbf{u}$ 的梯度记为 $\nabla_{\mathbf{u}} f = \begin{bmatrix} f_1' \\ f_2' \end{bmatrix}$。
+    \item \textbf{雅可比矩阵（Jacobian）}：中间变量 $\mathbf{u}$ 关于自变量 $\mathbf{x}$ 的一阶导数矩阵，定义为：
+    \[ J = \frac{\partial(u,v)}{\partial(x,y)} = \begin{bmatrix} u_x & u_y \\ v_x & v_y \end{bmatrix} \]
+    \item \textbf{海森矩阵（Hessian）}：即函数的二阶偏导数矩阵。外部函数 $f$ 的海森矩阵记为 $H_f$，由二阶连续可微性（施瓦兹定理）知其为对称矩阵：
+    \[ H_f = \begin{bmatrix} f_{11}'' & f_{12}'' \\ f_{21}'' & f_{22}'' \end{bmatrix}, \quad \text{且 } f_{12}'' = f_{21}'' \]
+    我们需要求解的终极目标是复合函数 $z$ 关于 $\mathbf{x}$ 的海森矩阵 $H_z = \begin{bmatrix} z_{xx} & z_{xy} \\ z_{yx} & z_{yy} \end{bmatrix}$。
+\end{itemize}
+
+\textbf{第二步：一阶导数的矩阵链式法则}
+
+由多元微积分的链式法则，$z$ 关于 $\mathbf{x}$ 的梯度等于 $\mathbf{u}$ 的雅可比矩阵的转置乘以 $f$ 关于 $\mathbf{u}$ 的梯度：
+\[ \nabla_{\mathbf{x}} z = J^T \nabla_{\mathbf{u}} f \]
+我们可以通过矩阵乘法将其展开以验证：
+\[ \begin{bmatrix} z_x \\ z_y \end{bmatrix} = \begin{bmatrix} u_x & v_x \\ u_y & v_y \end{bmatrix} \begin{bmatrix} f_1' \\ f_2' \end{bmatrix} = \begin{bmatrix} f_1' u_x + f_2' v_x \\ f_1' u_y + f_2' v_y \end{bmatrix} \]
+此即为多元函数一阶全微分的系数表达式。
+
+\textbf{第三步：二阶导数的矩阵乘法法则与指标展开（核心推导）}
+
+为了得到 $H_z$，我们需要对一阶梯度向量 $\nabla_{\mathbf{x}} z$ 再次关于 $\mathbf{x}$ 求导：
+\[ H_z = \nabla_{\mathbf{x}} (\nabla_{\mathbf{x}} z) = \nabla_{\mathbf{x}} (J^T \nabla_{\mathbf{u}} f) \]
+由于被求导对象是矩阵函数 $J^T(\mathbf{x})$ 与向量函数 $\nabla_{\mathbf{u}} f(\mathbf{u}(\mathbf{x}))$ 的乘积，为避免高阶张量求导的歧义，我们引入指标记法（Index Notation）进行严格剖析。
+
+考察一阶梯度的第 $i$ 个分量（$x_1=x, x_2=y$；$u_1=u, u_2=v$）：
+\[ z_{x_i} = \sum_{k=1}^2 \frac{\partial u_k}{\partial x_i} f_k' \]
+现在对该分量再关于 $x_j$ 求偏导，运用乘积法则，这就对应着目标海森矩阵 $H_z$ 的第 $(i, j)$ 个元素：
+\begin{align*}
+(H_z)_{ij} = \frac{\partial}{\partial x_j} z_{x_i} &= \frac{\partial}{\partial x_j} \left( \sum_{k=1}^2 \frac{\partial u_k}{\partial x_i} f_k' \right) \\
+&= \sum_{k=1}^2 \left[ \left( \frac{\partial^2 u_k}{\partial x_i \partial x_j} \right) f_k' + \frac{\partial u_k}{\partial x_i} \left( \frac{\partial}{\partial x_j} f_k' \right) \right]
+\end{align*}
+对于上式括号内的第二项，根据链式法则展开 $\frac{\partial}{\partial x_j} f_k'$：
+\[ \frac{\partial}{\partial x_j} f_k' = \sum_{m=1}^2 \frac{\partial f_k'}{\partial u_m} \frac{\partial u_m}{\partial x_j} = \sum_{m=1}^2 f_{km}'' \frac{\partial u_m}{\partial x_j} \]
+将其代回原式，分离为两大部分：
+\[ (H_z)_{ij} = \underbrace{\sum_{k=1}^2 \sum_{m=1}^2 \frac{\partial u_k}{\partial x_i} f_{km}'' \frac{\partial u_m}{\partial x_j}}_{\text{外层二次型项}} + \underbrace{\sum_{k=1}^2 f_k' \frac{\partial^2 u_k}{\partial x_i \partial x_j}}_{\text{内层曲率项}} \]
+将这一严密的求和公式重新转写回紧凑的矩阵乘法形式：
+\begin{enumerate}
+    \item 第一项恰好是矩阵连乘 $(J^T H_f J)$ 的第 $(i, j)$ 元素。
+    \item 第二项恰好是标量 $f_1'$ 乘以 $u_1$（即 $u$）的海森矩阵 $H_u$，加上 $f_2'$ 乘以 $u_2$（即 $v$）的海森矩阵 $H_v$ 的第 $(i, j)$ 元素。
+\end{enumerate}
+由此，我们严格证明了多维复合函数二阶导数的终极矩阵公式：
+\[ H_z = J^T H_f J + f_1' H_u + f_2' H_v \]
+
+\textbf{第四步：将矩阵展开为“万能结构公式”}
+
+最后，我们将具体的矩阵元素代入此终极公式。
+首先计算最复杂的“外层二次型”项 $J^T H_f J$。分步相乘，先计算 $J^T H_f$：
+\[ J^T H_f = \begin{bmatrix} u_x & v_x \\ u_y & v_y \end{bmatrix} \begin{bmatrix} f_{11}'' & f_{12}'' \\ f_{12}'' & f_{22}'' \end{bmatrix} = \begin{bmatrix} u_x f_{11}'' + v_x f_{12}'' & u_x f_{12}'' + v_x f_{22}'' \\ u_y f_{11}'' + v_y f_{12}'' & u_y f_{12}'' + v_y f_{22}'' \end{bmatrix} \]
+接着将其右乘雅可比矩阵 $J$：
+\[ (J^T H_f) J = \begin{bmatrix} u_x f_{11}'' + v_x f_{12}'' & u_x f_{12}'' + v_x f_{22}'' \\ u_y f_{11}'' + v_y f_{12}'' & u_y f_{12}'' + v_y f_{22}'' \end{bmatrix} \begin{bmatrix} u_x & u_y \\ v_x & v_y \end{bmatrix} \]
+提取该矩阵乘积的三个独立元素（由对称性，左下角等于右上角）：
+\begin{itemize}
+    \item \textbf{左上角 $(z_{xx}$ 的对应部分$)$}：
+    \[ (u_x f_{11}'' + v_x f_{12}'')u_x + (u_x f_{12}'' + v_x f_{22}'')v_x = f_{11}'' u_x^2 + 2f_{12}'' u_x v_x + f_{22}'' v_x^2 \]
+    \item \textbf{右上角 $(z_{xy}$ 的对应部分$)$}：
+    \[ (u_x f_{11}'' + v_x f_{12}'')u_y + (u_x f_{12}'' + v_x f_{22}'')v_y = f_{11}'' u_x u_y + f_{12}''(u_x v_y + u_y v_x) + f_{22}'' v_x v_y \]
+    \item \textbf{右下角 $(z_{yy}$ 的对应部分$)$}：
+    \[ (u_y f_{11}'' + v_y f_{12}'')u_y + (u_y f_{12}'' + v_y f_{22}'')v_y = f_{11}'' u_y^2 + 2f_{12}'' u_y v_y + f_{22}'' v_y^2 \]
+\end{itemize}
+
+最后，加上较为直观的“内层曲率”项 $f_1' H_u + f_2' H_v$：
+\[ f_1' \begin{bmatrix} u_{xx} & u_{xy} \\ u_{yx} & u_{yy} \end{bmatrix} + f_2' \begin{bmatrix} v_{xx} & v_{xy} \\ v_{yx} & v_{yy} \end{bmatrix} \]
+
+将两部分矩阵在对应位置上相加，即得标量形式的最终结论：
+\begin{align*}
+z_{xx} &= f_{11}'' u_x^2 + 2f_{12}'' u_x v_x + f_{22}'' v_x^2 + f_1' u_{xx} + f_2' v_{xx} \\
+z_{xy} &= f_{11}'' u_x u_y + f_{12}'' (u_x v_y + u_y v_x) + f_{22}'' v_x v_y + f_1' u_{xy} + f_2' v_{xy} \\
+z_{yy} &= f_{11}'' u_y^2 + 2f_{12}'' u_y v_y + f_{22}'' v_y^2 + f_1' u_{yy} + f_2' v_{yy}
+\end{align*}
+至此，证明完毕。
+\end{proof}
 
 \subsubsection*{混合偏导数交换定理}
 
@@ -17055,7 +17140,7 @@ xy\,\dfrac{x^2-y^2}{x^2+y^2},&(x,y)\neq(0,0),\\[10pt]
 设 $u = f(x,y,z) = 3xy+yz,\ x = \ln s+\cos t,\ y = 1+s\sin t,\ z = st$。
 \begin{enumerate}
   \item[(1)] 求 $\dfrac{\partial u}{\partial s}$ 和 $\dfrac{\partial u}{\partial t}$ 在 $(s,t) = (1,\pi)$ 点的值；
-  \item[(2)] 假定 $s,t$ 还是 $w$ 的函数，即 $s = 1+\sin(\pi w),\ t = \pi w^2$，试求 $\left.\dfrac{du}{dw}\right|_{w=1}$。
+  \item[(2)] 假定 $s,t$ 还是 $w$ 的函数，即 $s = 1+\sin(\pi w),\ t = \pi w^2$，试求 $\left.\dfrac{\mathrm{d}u}{\mathrm{d}w}\right|_{w=1}$。
 \end{enumerate}
 \end{exercise}
 
@@ -17091,8 +17176,7 @@ xy\,\dfrac{x^2-y^2}{x^2+y^2},&(x,y)\neq(0,0),\\[10pt]
   \textbf{步骤 3：运用全导数链式法则。}
   利用我们在第 (1) 问已求得的 $\dfrac{\partial u}{\partial s}$ 和 $\dfrac{\partial u}{\partial t}$ 在此点的值，代入：
   \begin{align*}
-  \left.\frac{du}{dw}\right|_{w=1} &= \frac{\partial u}{\partial s} \frac{ds}{dw} + \frac{\partial u}{\partial t} \frac{\mathrm{d}t}{dw} \\
-  &= (\pi+3)(-\pi) + (4-\pi)(2\pi) \\
+  \left.\frac{du}{dw}\right|_{w=1} &= \frac{\partial u}{\partial s} \frac{ds}{dw} + \frac{\partial u}{\partial t} \frac{\mathrm{d}t}{dw} = (\pi+3)(-\pi) + (4-\pi)(2\pi) \\
   &= -\pi^2 - 3\pi + 8\pi - 2\pi^2 = 5\pi - 3\pi^2.
   \end{align*}
 \end{enumerate}
@@ -17286,6 +17370,13 @@ xy\,\dfrac{x^2-y^2}{x^2+y^2},&(x,y)\neq(0,0),\\[10pt]
 
 \subsection{B组}
 
+\begin{note}
+对于 $z=f(u,v)$，其二阶偏导的标准结构为：
+\[z_{xx} = f_{11}'' u_x^2 + 2f_{12}'' u_x v_x + f_{22}'' v_x^2 + f_1' u_{xx} + f_2' v_{xx}\]
+\[z_{xy} = f_{11}'' u_x u_y + f_{12}'' (u_x v_y + u_y v_x) + f_{22}'' v_x v_y + f_1' u_{xy} + f_2' v_{xy}\]
+\[z_{yy} = f_{11}'' u_y^2 + 2f_{12}'' u_y v_y + f_{22}'' v_y^2 + f_1' u_{yy} + f_2' v_{yy}\]
+对于 $z = f(u, v, w)$，它的二阶偏导数依然严格遵循 “外层二次型 + 内层曲率” 的规律。只不过外层二次型变成了三个变量的完全平方展开式（即 $(A+B+C)^2 = A^2+B^2+C^2+2AB+2AC+2BC$ 的结构）：$$z_{xx} = \underbrace{f_{11}'' u_x^2 + f_{22}'' v_x^2 + f_{33}'' w_x^2 + 2f_{12}'' u_x v_x + 2f_{13}'' u_x w_x + 2f_{23}'' v_x w_x}_{\text{外层二次型 (xx方向)}} + \underbrace{f_1' u_{xx} + f_2' v_{xx} + f_3' w_{xx}}_{\text{内层曲率}}$$$$z_{yy} = \underbrace{f_{11}'' u_y^2 + f_{22}'' v_y^2 + f_{33}'' w_y^2 + 2f_{12}'' u_y v_y + 2f_{13}'' u_y w_y + 2f_{23}'' v_y w_y}_{\text{外层二次型 (yy方向)}} + \underbrace{f_1' u_{yy} + f_2' v_{yy} + f_3' w_{yy}}_{\text{内层曲率}}$$对于混合偏导 $z_{xy}$，结构则是两组不同方向一阶导数的交叉相乘：$$z_{xy} = \underbrace{f_{11}'' u_x u_y + f_{22}'' v_x v_y + f_{33}'' w_x w_y + f_{12}''(u_x v_y + u_y v_x) + f_{13}''(u_x w_y + u_y w_x) + f_{23}''(v_x w_y + v_y w_x)}_{\text{外层交叉二次型}} + \underbrace{f_1' u_{xy} + f_2' v_{xy} + f_3' w_{xy}}_{\text{内层交叉曲率}}$$
+\end{note}
 \begin{exercise}[抽象函数的二阶偏导数]
 求下列函数的二阶偏导数：
 \begin{center}
@@ -17298,56 +17389,86 @@ xy\,\dfrac{x^2-y^2}{x^2+y^2},&(x,y)\neq(0,0),\\[10pt]
 
 \begin{solution}
 \begin{enumerate}
-  \item[(1)] 令 $z=f(s,t)$，内层 $s=ax, t=by$。
-  一阶：\[z_x = af_1',~~z_y = bf_2'\]
-  二阶：  \[z_{xx} = a(af_{11}'') = a^2 f_{11}'',~~z_{xy} = a(bf_{12}'') = ab f_{12}'',~~z_{yy} = b(bf_{22}'') = b^2 f_{22}''\]
-  \item[(2)] 令 $v=x^2+y^2$，$u=f(v)$。
-  一阶：\[u_x = 2xf'(v),~~u_y = 2yf'(v)\]
-  二阶：
+  \item[(1)] 令 $u=ax, v=by$。
+  内层导数：$u_x=a, u_y=0$；$v_x=0, v_y=b$。所有内层的二阶导数均为 $0$。
+  一阶：
+  \[z_x = af_1', \quad z_y = bf_2'\]
+  二阶（代入结构公式，内层曲率项为0）：
   \begin{align*}
-  u_{xx} &= 2f'(v) + 2x(f''(v)\cdot 2x) = 2f' + 4x^2 f''\\
-  u_{xy} &= 2x(f''(v)\cdot 2y) = 4xy f''\\
-  u_{yy} &= 2f'(v) + 2y(f''(v)\cdot 2y) = 2f' + 4y^2 f''
-  \end{align*}
-  \item[(3)] 令 $s=x+y, t=xy$。
-  一阶：$z_x = f_1' + yf_2'$， $z_y = f_1' + xf_2'$。
-  二阶：
-  \begin{align*}
-  z_{xx} &= (f_{11}'\cdot 1 + f_{12}''\cdot y) + y(f_{21}''\cdot 1 + f_{22}''\cdot y) = f_{11}'' + 2yf_{12}'' + y^2f_{22}''. \\
-  z_{xy} &= (f_{11}''\cdot 1 + f_{12}''\cdot x) + f_2' + y(f_{21}''\cdot 1 + f_{22}''\cdot x) = f_2' + f_{11}'' + (x+y)f_{12}'' + xyf_{22}''. \\
-  z_{yy} &= (f_{11}''\cdot 1 + f_{12}''\cdot x) + x(f_{21}''\cdot 1 + f_{22}''\cdot x) = f_{11}'' + 2xf_{12}'' + x^2f_{22}''.
+  z_{xx} &= f_{11}''(a)^2 + 0 + 0 + 0 = a^2 f_{11}'' \\
+  z_{xy} &= f_{11}''(a)(0) + f_{12}''(ab + 0) + f_{22}''(0)(b) + 0 = ab f_{12}'' \\
+  z_{yy} &= 0 + 0 + f_{22}''(b)^2 + 0 = b^2 f_{22}''
   \end{align*}
 
-  \item[(4)] 令 $s=x+y, t=x-y$。
-  一阶：$z_x = f_1' + f_2'$， $z_y = f_1' - f_2'$。
-  二阶：
+  \item[(2)] 令 $v=x^2+y^2$，$u=f(v)$。此为一元抽象函数复合。
+  内层导数：$v_x = 2x, v_y = 2y$。内层二阶导数：$v_{xx} = 2, v_{xy} = 0, v_{yy} = 2$。
+  一阶：
+  \[u_x = 2xf'(v), \quad u_y = 2yf'(v)\]
+  二阶（根据一元链式法则 $u_{xx} = f''(v)v_x^2 + f'(v)v_{xx}$）：
   \begin{align*}
-  z_{xx} &= (f_{11}'' + f_{12}'') + (f_{21}'' + f_{22}'') = f_{11}'' + 2f_{12}'' + f_{22}''\\
-  z_{xy} &= (f_{11}'' - f_{12}'') + (f_{21}'' - f_{22}'') = f_{11}'' - f_{22}''\\
-  z_{yy} &= (f_{11}'' - f_{12}'') - (f_{21}'' - f_{22}'') = f_{11}'' - 2f_{12}'' + f_{22}''
-  \end{align*}
-  \item[(5)] 令 $s=xy^2, t=x^2y$。
-  一阶：$z_x = y^2f_1' + 2xyf_2'$， $z_y = 2xyf_1' + x^2f_2'$。
-  二阶：
-  \begin{align*}
-  z_{xx} &= y^2(y^2f_{11}'' + 2xyf_{12}'') + 2y f_2' + 2xy(y^2f_{21}'' + 2xyf_{22}'') \\
-         &= 2y f_2' + y^4 f_{11}'' + 4xy^3 f_{12}'' + 4x^2y^2 f_{22}''. \\
-  z_{xy} &= 2y f_1' + y^2(2xy f_{11}'' + x^2 f_{12}'') + 2x f_2' + 2xy(2xy f_{21}'' + x^2 f_{22}'') \\
-         &= 2yf_1' + 2xf_2' + 2xy^3 f_{11}'' + 5x^2y^2 f_{12}'' + 2x^3y f_{22}''. \\
-  z_{yy} &= 2x f_1' + 2xy(2xy f_{11}'' + x^2 f_{12}'') + x^2(2xy f_{21}'' + x^2 f_{22}'') \\
-         &= 2xf_1' + 4x^2y^2 f_{11}'' + 4x^3y f_{12}'' + x^4 f_{22}''.
+  u_{xx} &= f''(v)(2x)^2 + f'(v)(2) = 4x^2 f'' + 2f' \\
+  u_{xy} &= f''(v)(2x)(2y) + f'(v)(0) = 4xy f'' \\
+  u_{yy} &= f''(v)(2y)^2 + f'(v)(2) = 4y^2 f'' + 2f'
   \end{align*}
 
-  \item[(6)] 变量较多时推导繁复，建议利用一次链式求导法：令 $u=\sin x, v=\cos y, w=e^{x+y}$。
-  $z_x = (\cos x)f_1' + e^{x+y}f_3'$， $z_y = (-\sin y)f_2' + e^{x+y}f_3'$。
+  \item[(3)] 令 $u=x+y, v=xy$。
+  内层一阶导数：$u_x=1, u_y=1$；$v_x=y, v_y=x$。
+  内层二阶导数：$u_{xx}=u_{xy}=u_{yy}=0$；$v_{xx}=0, v_{xy}=1, v_{yy}=0$。
+  一阶：
+  \[z_x = f_1' + yf_2', \quad z_y = f_1' + xf_2'\]
+  二阶（严格代入结构公式，逻辑清晰不易错）：
   \begin{align*}
-  z_{xx} &= (-\sin x)f_1' + \cos^2 x f_{11}'' + 2e^{x+y}\cos x f_{13}'' + e^{x+y}f_3' + e^{2(x+y)}f_{33}''. \\
-  z_{xy} &= -\cos x\sin y f_{12}'' + e^{x+y}\cos x f_{13}'' - e^{x+y}\sin y f_{23}'' + e^{x+y}f_3' + e^{2(x+y)}f_{33}''. \\
-  z_{yy} &= (-\cos y)f_2' + \sin^2 y f_{22}'' - 2e^{x+y}\sin y f_{23}'' + e^{x+y}f_3' + e^{2(x+y)}f_{33}''.
+  z_{xx} &= f_{11}''(1)^2 + 2f_{12}''(1)(y) + f_{22}''(y)^2 + f_1'(0) + f_2'(0) \\
+         &= f_{11}'' + 2yf_{12}'' + y^2f_{22}'' \\
+  z_{xy} &= f_{11}''(1)(1) + f_{12}''(1\cdot x + 1\cdot y) + f_{22}''(y)(x) + f_1'(0) + f_2'(1) \\
+         &= f_{11}'' + (x+y)f_{12}'' + xyf_{22}'' + f_2' \\
+  z_{yy} &= f_{11}''(1)^2 + 2f_{12}''(1)(x) + f_{22}''(x)^2 + f_1'(0) + f_2'(0) \\
+         &= f_{11}'' + 2xf_{12}'' + x^2f_{22}''
+  \end{align*}
+
+  \item[(4)] 令 $u=x+y, v=x-y$。
+  内层导数：$u_x=1, u_y=1$；$v_x=1, v_y=-1$。所有内层二阶导均为 $0$。
+  一阶：
+  \[z_x = f_1' + f_2', \quad z_y = f_1' - f_2'\]
+  二阶：
+  \begin{align*}
+  z_{xx} &= f_{11}''(1)^2 + 2f_{12}''(1)(1) + f_{22}''(1)^2 = f_{11}'' + 2f_{12}'' + f_{22}'' \\
+  z_{xy} &= f_{11}''(1)(1) + f_{12}''(1(-1) + 1(1)) + f_{22}''(1)(-1) = f_{11}'' - f_{22}'' \\
+  z_{yy} &= f_{11}''(1)^2 + 2f_{12}''(1)(-1) + f_{22}''(-1)^2 = f_{11}'' - 2f_{12}'' + f_{22}''
+  \end{align*}
+
+  \item[(5)] 令 $u=xy^2, v=x^2y$。
+  内层一阶：$u_x=y^2, u_y=2xy$；$v_x=2xy, v_y=x^2$。
+  内层二阶：$u_{xx}=0, u_{xy}=2y, u_{yy}=2x$；$v_{xx}=2y, v_{xy}=2x, v_{yy}=0$。
+  一阶：
+  \[z_x = y^2f_1' + 2xyf_2', \quad z_y = 2xyf_1' + x^2f_2'\]
+  二阶：
+  \begin{align*}
+  z_{xx} &= f_{11}''(y^2)^2 + 2f_{12}''(y^2)(2xy) + f_{22}''(2xy)^2 + f_1'(0) + f_2'(2y) \\
+         &= y^4 f_{11}'' + 4xy^3 f_{12}'' + 4x^2y^2 f_{22}'' + 2y f_2' \\
+  z_{xy} &= f_{11}''(y^2)(2xy) + f_{12}''(y^2 x^2 + 2xy\cdot 2xy) + f_{22}''(2xy)(x^2) + f_1'(2y) + f_2'(2x) \\
+         &= 2xy^3 f_{11}'' + 5x^2y^2 f_{12}'' + 2x^3y f_{22}'' + 2yf_1' + 2xf_2' \\
+  z_{yy} &= f_{11}''(2xy)^2 + 2f_{12}''(2xy)(x^2) + f_{22}''(x^2)^2 + f_1'(2x) + f_2'(0) \\
+         &= 4x^2y^2 f_{11}'' + 4x^3y f_{12}'' + x^4 f_{22}'' + 2xf_1'
+  \end{align*}
+
+  \item[(6)] 三元抽象函数 $z = f(u,v,w)$，令 $u=\sin x, v=\cos y, w=e^{x+y}$。
+  结构公式扩展为三元完全平方展开加内层二阶导。
+  内层一阶：$u_x=\cos x, u_y=0$；$v_x=0, v_y=-\sin y$；$w_x=e^{x+y}, w_y=e^{x+y}$。
+  内层二阶：$u_{xx}=-\sin x, v_{yy}=-\cos y, w_{xx}=w_{xy}=w_{yy}=e^{x+y}$，其余交叉项为 $0$。
+  一阶：
+  \[z_x = (\cos x)f_1' + e^{x+y}f_3', \quad z_y = (-\sin y)f_2' + e^{x+y}f_3'\]
+  二阶：
+  \begin{align*}
+  z_{xx} &= f_{11}''(\cos x)^2 + f_{33}''(e^{x+y})^2 + 2f_{13}''(\cos x)(e^{x+y}) + f_1'(-\sin x) + f_3'(e^{x+y}) \\
+         &= \cos^2 x f_{11}'' + e^{2(x+y)} f_{33}'' + 2e^{x+y}\cos x f_{13}'' - \sin x f_1' + e^{x+y}f_3' \\
+  z_{xy} &= f_{12}''(\cos x)(-\sin y) + f_{13}''(\cos x)(e^{x+y}) + f_{23}''(-\sin y)(e^{x+y}) + f_{33}''(e^{x+y})^2 + f_3'(e^{x+y}) \\
+         &= -\cos x\sin y f_{12}'' + e^{x+y}\cos x f_{13}'' - e^{x+y}\sin y f_{23}'' + e^{2(x+y)} f_{33}'' + e^{x+y}f_3' \\
+  z_{yy} &= f_{22}''(-\sin y)^2 + f_{33}''(e^{x+y})^2 + 2f_{23}''(-\sin y)(e^{x+y}) + f_2'(-\cos y) + f_3'(e^{x+y}) \\
+         &= \sin^2 y f_{22}'' + e^{2(x+y)} f_{33}'' - 2e^{x+y}\sin y f_{23}'' - \cos y f_2' + e^{x+y}f_3'
   \end{align*}
 \end{enumerate}
 \end{solution}
-
 \begin{exercise}[混合偏导数不相等]
 设 $f(x,y) = \begin{cases} \dfrac{x^3y-xy^3}{x^2+y^2}, & (x,y)\neq(0,0), \\ 0, & (x,y)=(0,0) \end{cases}$，试证：$f_{xy}(0,0)\neq f_{yx}(0,0)$。
 \end{exercise}
@@ -17717,10 +17838,6 @@ $(\phi\circ f)'=(\phi'\circ f)f'$ & $\nabla(\phi\circ f)=(\phi'\circ f)\,\nabla 
 \end{remark}
 
 
-\subsection{梯度计算示例}
-
-下面通过一系列典型例子展示梯度的计算方法及其在方向导数求解中的应用。
-
 \begin{exercise}[范数函数的梯度] \label{ex:grad-norm}
 设 $p=(x,y,z)$，$f(p)=\|p\|$（即点到原点的距离）。求 $\nabla f(p)$（当 $p\neq\boldsymbol 0$ 时）。
 \end{exercise}
@@ -17832,9 +17949,6 @@ $(\phi\circ f)'=(\phi'\circ f)f'$ & $\nabla(\phi\circ f)=(\phi'\circ f)\,\nabla 
 \end{solution}
 
 \begin{remark}[两种方法的比较]
-梯度内积法的优势在于“一次计算，终身受用”——
-一旦算出 $\nabla f(p_0)$，就可以用它快速算出沿\textbf{任意}方向的方向导数，
-无需每次都重新构造辅助函数。
 定义法虽然在计算效率上不占优势，但它提供了“回归定义”的机会——当对梯度公式的适用条件有疑虑时，用定义直接计算是最可靠的检验手段。
 \end{remark}
 
