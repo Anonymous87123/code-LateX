@@ -2270,7 +2270,7 @@ $\displaystyle \int x\sin ax\mathrm{d}x$
 \end{align*}
 \item 方法二：严格算子代数法 (Operator Algebra)。令微分算子 $D = \frac{\mathrm{d}}{\mathrm{d}x}$，规避所有积分过程中的“猜测”与反向试错组合。利用位移定理 $D^{-1}(e^{iax} V(x)) = e^{iax}(D+ia)^{-1}V(x)$ 处理含欧拉指数的积分 $I = \text{Im}[D^{-1}(x e^{iax})]$：
 \begin{align*}
-(D+ia)^{-1}x &= \frac{1}{ia\left(1 + \frac{D}{ia}\right)}x = \left(\frac{1}{ia} - \frac{D}{(ia)^2} + \dots\right)x = \left(-i\frac{1}{a} + \frac{D}{a^2}\right)x = -i\frac{x}{a} + \frac{1}{a^2} \\
+(D+ia)^{-1}x &= \frac{1}{ia\left(1 + \frac{\mathrm{d}}{ia}\right)}x = \left(\frac{1}{ia} - \frac{\mathrm{d}}{(ia)^2} + \dots\right)x = \left(-i\frac{1}{a} + \frac{\mathrm{d}}{a^2}\right)x = -i\frac{x}{a} + \frac{1}{a^2} \\
 D^{-1}(x e^{iax}) &= e^{iax}\left(\frac{1}{a^2} - i\frac{x}{a}\right) = (\cos ax + i\sin ax)\left(\frac{1}{a^2} - i\frac{x}{a}\right) \\
 &= \left(\frac{1}{a^2}\cos ax + \frac{x}{a}\sin ax\right) + i\left(\frac{1}{a^2}\sin ax - \frac{x}{a}\cos ax\right) \\
 \text{取虚部得} \quad I &= -\frac{x}{a}\cos ax + \frac{1}{a^2}\sin ax+C.
@@ -2612,11 +2612,11 @@ $\displaystyle \int xe^{ax}\mathrm{d}x$
 \end{align*}
 \item 方法二：算子位移定理 (Shift Theorem)。这是算子代数法的核心灵魂，彻底规避繁琐的分部积分。
 定理指出：$D^{-1}[e^{ax} V(x)] = e^{ax}(D+a)^{-1}V(x)$。（即将指数项提出算子外，代价是算子 $D$ 加上常数 $a$）。
-对于 $(D+a)^{-1}$，我们可以像无穷等比数列一样利用泰勒展开：$(D+a)^{-1} = \frac{1}{a(1 + D/a)} = \frac{1}{a} - \frac{D}{a^2} + \frac{D^2}{a^3} - \dots$
+对于 $(D+a)^{-1}$，我们可以像无穷等比数列一样利用泰勒展开：$(D+a)^{-1} = \frac{1}{a(1 + D/a)} = \frac{1}{a} - \frac{\mathrm{d}}{a^2} + \frac{D^2}{a^3} - \dots$
 将其作用于多项式 $x$ 上（注意 $D(x)=1, D^2(x)=0$），过程变为纯粹的代数展开：
 \begin{align*}
 \int xe^{ax}\mathrm{d}x &= D^{-1}(e^{ax} \cdot x) = e^{ax}(D+a)^{-1}x \\
-&= e^{ax}\left(\frac{1}{a} - \frac{D}{a^2}\right)x = e^{ax}\left(\frac{x}{a} - \frac{1}{a^2}\right) + C \\
+&= e^{ax}\left(\frac{1}{a} - \frac{\mathrm{d}}{a^2}\right)x = e^{ax}\left(\frac{x}{a} - \frac{1}{a^2}\right) + C \\
 &= \frac{1}{a^2}(ax-1)e^{ax}+C.
 \end{align*}
 \end{enumerate}
@@ -2635,10 +2635,10 @@ $\displaystyle \int x^n e^{ax}\mathrm{d}x$
 \item 方法二：算子代数法。利用上一题讲授的“位移定理”，无需去凑分部积分的符号，直接写出递推的代数本质：
 \begin{align*}
 I_n &= D^{-1}(e^{ax} x^n) = e^{ax}(D+a)^{-1}x^n \\
-&= e^{ax}\frac{1}{a}\left(1 + \frac{D}{a}\right)^{-1}x^n = \frac{e^{ax}}{a}\left(1 - \frac{D}{a+D}\right)x^n \\
+&= e^{ax}\frac{1}{a}\left(1 + \frac{\mathrm{d}}{a}\right)^{-1}x^n = \frac{e^{ax}}{a}\left(1 - \frac{\mathrm{d}}{a+D}\right)x^n \\
 &= \frac{e^{ax}}{a}x^n - \frac{1}{a}D\left[ e^{-ax} \cdot e^{ax}(D+a)^{-1}x^n \right] \quad \text{(这里反向使用位移定理)} \\
 &= \frac{1}{a}x^n e^{ax} - \frac{1}{a} D(D^{-1}(x^n e^{ax})) \dots \text{实际上更简单的视角是直接展开算子：} \\
-&= e^{ax}\left(\frac{1}{a} - \frac{D}{a^2} + \frac{D^2}{a^3} - \dots\right)x^n = \frac{e^{ax}}{a}x^n - \frac{n}{a}\left[ e^{ax}\left(\frac{1}{a} - \frac{D}{a^2} + \dots\right)x^{n-1} \right] \\
+&= e^{ax}\left(\frac{1}{a} - \frac{\mathrm{d}}{a^2} + \frac{D^2}{a^3} - \dots\right)x^n = \frac{e^{ax}}{a}x^n - \frac{n}{a}\left[ e^{ax}\left(\frac{1}{a} - \frac{\mathrm{d}}{a^2} + \dots\right)x^{n-1} \right] \\
 &= \frac{1}{a}x^n e^{ax}-\frac{n}{a}\int x^{n-1}e^{ax}\mathrm{d}x.
 \end{align*}
 \end{enumerate}
@@ -2657,7 +2657,7 @@ $\displaystyle \int x a^x\mathrm{d}x$
 \item 方法二：算子位移定理。将 $a^x$ 视为 $e^{x\ln a}$，常数 $a$ 在算子中的角色就是 $\ln a$。完全套用算子的泰勒展开公式：
 \begin{align*}
 \int x e^{x\ln a}\mathrm{d}x &= D^{-1}(e^{x\ln a} \cdot x) = e^{x\ln a}(D+\ln a)^{-1}x \\
-&= a^x\left(\frac{1}{\ln a} - \frac{D}{(\ln a)^2}\right)x \\
+&= a^x\left(\frac{1}{\ln a} - \frac{\mathrm{d}}{(\ln a)^2}\right)x \\
 &= a^x\left(\frac{x}{\ln a} - \frac{1}{\ln^2 a}\right)+C = \frac{x a^x}{\ln a}-\frac{a^x}{\ln^2 a}+C.
 \end{align*}
 \end{enumerate}
@@ -2676,7 +2676,7 @@ $\displaystyle \int x^n a^x\mathrm{d}x$
 \item 方法二：算子代数法。同理将 $a^x$ 化为 $e^{x\ln a}$，这在高级积分理论中是统一处理非自然底数对数的标准流程。
 算子推演直接给出多项式下降的本质结构：
 \begin{align*}
-\int x^n e^{x\ln a}\mathrm{d}x &= D^{-1}(e^{x\ln a}x^n) = e^{x\ln a}\left(\frac{1}{\ln a} - \frac{D}{\ln^2 a} + \dots\right)x^n \\
+\int x^n e^{x\ln a}\mathrm{d}x &= D^{-1}(e^{x\ln a}x^n) = e^{x\ln a}\left(\frac{1}{\ln a} - \frac{\mathrm{d}}{\ln^2 a} + \dots\right)x^n \\
 &= \frac{x^n a^x}{\ln a} - \frac{n}{\ln a} D^{-1}(e^{x\ln a}x^{n-1}) \\
 &= \frac{x^n a^x}{\ln a}-\frac{n}{\ln a}\int x^{n-1}a^x\mathrm{d}x.
 \end{align*}
@@ -2837,7 +2837,7 @@ $\displaystyle \int x^n\ln x\mathrm{d}x$
 \end{align*}
 对其使用无敌的算子位移定理 $D^{-1}(t e^{kt}) = e^{kt}(D+k)^{-1}t$：
 \begin{align*}
-&= e^{(n+1)t} \left( \frac{1}{n+1} - \frac{D}{(n+1)^2} \right)t = e^{(n+1)t} \left( \frac{t}{n+1} - \frac{1}{(n+1)^2} \right)+C
+&= e^{(n+1)t} \left( \frac{1}{n+1} - \frac{\mathrm{d}}{(n+1)^2} \right)t = e^{(n+1)t} \left( \frac{t}{n+1} - \frac{1}{(n+1)^2} \right)+C
 \end{align*}
 从 $t$ 空间映射回 $x$ 空间（$e^{(n+1)t} = x^{n+1}$）：
 \begin{align*}
@@ -2890,7 +2890,7 @@ I_{m,n} &= \int e^{mt} t^n e^t \mathrm{d}t = \int t^n e^{(m+1)t} \mathrm{d}t
 套用算子规则展开一次微分项：
 \begin{align*}
 D^{-1}(t^n e^{(m+1)t}) &= e^{(m+1)t}(D+m+1)^{-1}t^n \\
-&= e^{(m+1)t} \frac{1}{m+1}\left(1 + \frac{D}{m+1}\right)^{-1}t^n \\
+&= e^{(m+1)t} \frac{1}{m+1}\left(1 + \frac{\mathrm{d}}{m+1}\right)^{-1}t^n \\
 &= \frac{e^{(m+1)t}}{m+1} \left( t^n - \frac{n}{m+1} t^{n-1} + \dots \right) \\
 &= \frac{1}{m+1}e^{(m+1)t}t^n - \frac{n}{m+1}\int t^{n-1}e^{(m+1)t}\mathrm{d}t
 \end{align*}
@@ -15517,11 +15517,8 @@ r_1(h)\\r_2(h)\\r_3(h)
 
 \begin{remark}[几何意义：速度向量与切线] \label{remark:curve-geometry}
 一元向量函数 $f(t)$ 描绘的是空间中的一条\textbf{参数曲线}（Parametric Curve）。
-其 Jacobian 矩阵 $Jf(t)=f'(t)$ 具有极为清晰的几何意义：
+其 Jacobian 矩阵 $Jf(t)=f'(t)$ 具有极为清晰的几何意义：$f'(t_0)$ 是曲线在 $t=t_0$ 处的\textbf{速度向量}（Velocity Vector）——它的方向即为曲线在该点处的\textbf{切线方向}，它的长度（范数） $\|f'(t_0)\|$ 即为质点沿该曲线运动的瞬时\textbf{速率}（Speed）。
 \begin{itemize}
-  \item $f'(t_0)$ 是曲线在 $t=t_0$ 处的\textbf{速度向量}（Velocity Vector）——
-        它的方向即为曲线在该点处的\textbf{切线方向}，
-        它的长度（范数） $\|f'(t_0)\|$ 即为质点沿该曲线运动的瞬时\textbf{速率}（Speed）。
   \item 若 $f'(t_0) \neq \boldsymbol 0$，则曲线在点 $f(t_0)$ 处的切线方程可写为：
         \[ \boldsymbol \ell(s)=f(t_0)+s\,f'(t_0) \quad (s\in\mathbb R) \]
   \item 若 $f'(t_0)=\boldsymbol 0$，则该点可能是曲线的“尖点”（Cusp）或“驻点”（Stationary Point），此时曲线可能没有良好定义的切线。
@@ -15552,11 +15549,7 @@ r_1(h)\\r_2(h)\\r_3(h)
     \[
     \|f'(t)\|=\sqrt{(-\sin t)^2+(\cos t)^2+1^2}=\sqrt{1+1}=\sqrt{2}.
     \]
-    可以发现，总速率是一个与参数 $t$ 无关的常数！
   \end{itemize}
-  
-  \item \textbf{结论：}
-  这从微积分的层面上严格证明了，螺旋线上的质点确实是以恒定的速率 $\sqrt{2}$ 在空间中运动，完全符合我们直观上对“匀速螺旋”的想象。
 \end{enumerate}
 \end{solution}
 
@@ -15571,7 +15564,7 @@ f(x,y,z)=\begin{pmatrix}
 x^3+y^2\sin z
 \end{pmatrix}
 \]
-在点 $\bigl(\dfrac12,1,\pi\bigr)$ 处的 Jacobian 矩阵。
+在点 $\left(\dfrac12,1,\pi\right)$ 处的 Jacobian 矩阵。
 \end{exercise}
 
 \begin{solution}
@@ -15832,73 +15825,6 @@ x^3+y^2\sin z
 \end{enumerate}
 \end{solution}
 
-\begin{exercise}[提高：链式法则的矩阵形式]
-设 $f:\mathbb R^n\to\mathbb R^m$ 在 $\boldsymbol a$ 处可微，
-$g:\mathbb R^m\to\mathbb R^p$ 在 $f(\boldsymbol a)$ 处可微。
-利用可微性的定义证明复合函数 $g\circ f$ 在 $\boldsymbol a$ 处可微，且
-\[
-J(g\circ f)(\boldsymbol a)=Jg\bigl(f(\boldsymbol a)\bigr)\cdot Jf(\boldsymbol a).
-\]
-这是\textbf{多元链式法则}的矩阵形式——Jacobian 矩阵的乘法恰好对应复合映射的求导！
-\end{exercise}
-\begin{solution}
-\begin{enumerate}
-  \item \textbf{写出内外层函数的可微定义：}
-  由于 $f$ 在 $\boldsymbol a$ 处可微，存在 $m \times n$ 矩阵 $Jf(\boldsymbol a)$，使得增量 $\boldsymbol k = f(\boldsymbol a+\boldsymbol h)-f(\boldsymbol a)$ 可以表示为：
-  \[
-  \boldsymbol k = Jf(\boldsymbol a)\boldsymbol h + \boldsymbol r_1(\boldsymbol h)
-  \]
-  且满足 $\lim_{\boldsymbol h \to \boldsymbol 0} \dfrac{\|\boldsymbol r_1(\boldsymbol h)\|}{\|\boldsymbol h\|} = 0$。注意到因为可微必然连续，当 $\boldsymbol h \to \boldsymbol 0$ 时，$\boldsymbol k \to \boldsymbol 0$。
-
-  \item \textbf{展开复合函数的增量：}
-  记 $\boldsymbol y = f(\boldsymbol a)$。由于 $g$ 在 $\boldsymbol y$ 处可微，对于增量 $\boldsymbol k$，存在 $p \times m$ 矩阵 $Jg(\boldsymbol y)$ 使得：
-  \[
-  g(\boldsymbol y+\boldsymbol k)-g(\boldsymbol y) = Jg(\boldsymbol y)\boldsymbol k + \boldsymbol r_2(\boldsymbol k)
-  \]
-  且满足 $\lim_{\boldsymbol k \to \boldsymbol 0} \dfrac{\|\boldsymbol r_2(\boldsymbol k)\|}{\|\boldsymbol k\|} = 0$。
-  
-  \item \textbf{代入并整理线性结构：}
-  将 $\boldsymbol y$ 和 $\boldsymbol k$ 代入上式左边即得复合函数的增量：
-  \[
-  (g \circ f)(\boldsymbol a+\boldsymbol h) - (g \circ f)(\boldsymbol a) = Jg(f(\boldsymbol a)) \bigl[ Jf(\boldsymbol a)\boldsymbol h + \boldsymbol r_1(\boldsymbol h) \bigr] + \boldsymbol r_2(\boldsymbol k)
-  \]
-  将其整理为“线性主部 + 综合余项”的形式：
-  \[
-  (g \circ f)(\boldsymbol a+\boldsymbol h) - (g \circ f)(\boldsymbol a) = \bigl[ Jg(f(\boldsymbol a)) \cdot Jf(\boldsymbol a) \bigr]\boldsymbol h + \boldsymbol R(\boldsymbol h)
-  \]
-  其中，综合余项为 $\boldsymbol R(\boldsymbol h) = Jg(f(\boldsymbol a))\boldsymbol r_1(\boldsymbol h) + \boldsymbol r_2(\boldsymbol k)$。
-  
-  \item \textbf{证明综合余项是高阶无穷小：}
-  我们需要证明 $\lim_{\boldsymbol h \to \boldsymbol 0} \dfrac{\|\boldsymbol R(\boldsymbol h)\|}{\|\boldsymbol h\|} = 0$。
-  利用三角不等式和矩阵范数的性质（$\|A\boldsymbol x\| \leqslant  \|A\|\|\boldsymbol x\|$）：
-  \[
-  \frac{\|\boldsymbol R(\boldsymbol h)\|}{\|\boldsymbol h\|} \leqslant  \|Jg(f(\boldsymbol a))\| \frac{\|\boldsymbol r_1(\boldsymbol h)\|}{\|\boldsymbol h\|} + \frac{\|\boldsymbol r_2(\boldsymbol k)\|}{\|\boldsymbol h\|}
-  \]
-  第一项中，由于 $\frac{\|\boldsymbol r_1(\boldsymbol h)\|}{\|\boldsymbol h\|} \to 0$，整个第一项趋于 0。
-  
-  对于第二项，我们将其变形为：
-  \[
-  \frac{\|\boldsymbol r_2(\boldsymbol k)\|}{\|\boldsymbol h\|} = \begin{cases}
-  \dfrac{\|\boldsymbol r_2(\boldsymbol k)\|}{\|\boldsymbol k\|} \cdot \dfrac{\|\boldsymbol k\|}{\|\boldsymbol h\|}, & \boldsymbol k \neq \boldsymbol 0 \\
-  0, & \boldsymbol k = \boldsymbol 0
-  \end{cases}
-  \]
-  由于 $\boldsymbol k = Jf(\boldsymbol a)\boldsymbol h + \boldsymbol r_1(\boldsymbol h)$，有：
-  \[
-  \frac{\|\boldsymbol k\|}{\|\boldsymbol h\|} \leqslant  \|Jf(\boldsymbol a)\| + \frac{\|\boldsymbol r_1(\boldsymbol h)\|}{\|\boldsymbol h\|}
-  \]
-  当 $\boldsymbol h \to \boldsymbol 0$ 时，该式趋于 $\|Jf(\boldsymbol a)\| + 0$，因而是有界的。
-  又因为当 $\boldsymbol h \to \boldsymbol 0$ 时 $\boldsymbol k \to \boldsymbol 0$，所以 $\frac{\|\boldsymbol r_2(\boldsymbol k)\|}{\|\boldsymbol k\|} \to 0$。
-  有界量乘以无穷小量依然为无穷小量。故第二项也趋于 0。
-  
-  \item \textbf{得出结论：}
-  综合起来，余项 $\boldsymbol R(\boldsymbol h)$ 满足高阶无穷小的要求。
-  根据可微性的定义，这证明了 $g \circ f$ 在 $\boldsymbol a$ 处可微，并且它的 Jacobian 矩阵正好是前面提出的线性算子，即：
-  \[
-  J(g \circ f)(\boldsymbol a) = Jg(f(\boldsymbol a)) \cdot Jf(\boldsymbol a).
-  \]
-\end{enumerate}
-\end{solution}
 
 \begin{exercise}[Jacobian 行列式与坐标变换]
 当 $m=n$ 时，Jacobian 矩阵是方阵，其行列式 $\det Jf(\boldsymbol a)$ 称为
@@ -16128,7 +16054,7 @@ f(x,y,z) = \begin{bmatrix} \sin(x^2-y^2) \\ \ln(x^2+z^2) \\ \dfrac{1}{\sqrt{y^2+
 一个函数的输出成为另一个函数的输入——
 这就需要一套系统化的工具来处理\textbf{复合函数}的求导问题。
 
-一元微积分中的链式法则 $\dfrac{d}{\mathrm{d}t}f(g(t))=f'(g(t))\cdot g'(t)$
+一元微积分中的链式法则 $\dfrac{\mathrm{d}}{\mathrm{d}t}f(g(t))=f'(g(t))\cdot g'(t)$
 简洁而优美。在多元情形下，这一法则将推广为\textbf{Jacobian 矩阵的乘法}——
 矩阵运算的引入使得复杂的多变量依赖关系得以用统一的代数语言来描述。
 
@@ -16245,8 +16171,6 @@ A=Jf(\boldsymbol x_0)
 
 \subsection{复合求导的链式法则}
 
-\subsubsection*{一般定理}
-
 \begin{theorem}[链式法则 / Chain Rule] \label{thm:chain-rule-matrix}
 设 $D\subset\mathbb R^k$（$k=1$ 或 $2$）为开区域，
 $f:D\to\mathbb R^2$ 在 $\boldsymbol x_0\in D$ 处可微，
@@ -16297,8 +16221,6 @@ $g:f(D)\to\mathbb R$ 在 $f(\boldsymbol x_0)$ 处可微，
 \end{enumerate}
 \end{proof}
 
-\subsubsection*{两种经典情形}
-
 链式法则的矩阵形式虽然统一而优雅，但在具体计算中，
 我们更常使用它的分量展开形式。
 
@@ -16337,11 +16259,8 @@ $g:f(D)\to\mathbb R$ 在 $f(\boldsymbol x_0)$ 处可微，
 \]
 \end{property}
 
-\begin{note}[链式法则的“记忆口诀”]
-“对每条路径分别求导，再相加”——
-从 $z$ 到 $x_1$ 有两条路径（$z\to y_1\to x_1$ 和 $z\to y_2\to x_1$），
-分别沿路径求导相乘后再求和。
-这正是全概率公式的“微积分版本”：
+\begin{note}
+“对每条路径分别求导，再相加”，从 $z$ 到 $x_1$ 有两条路径（$z\to y_1\to x_1$ 和 $z\to y_2\to x_1$），分别沿路径求导相乘后再求和。这正是全概率公式的“微积分版本”：
 $\dfrac{\partial z}{\partial x_i}=\sum\limits_{j}\dfrac{\partial z}{\partial y_j}\dfrac{\partial y_j}{\partial x_i}$。
 \end{note}
 
@@ -16357,8 +16276,6 @@ f(x,y)=
 \]
 在 $(0,0)$ 处偏导数存在但不可微（甚至不连续），若对其直接套用链式法则将得到错误结论。
 \end{note}
-
-\subsubsection*{一般推广}
 
 \begin{property}[链式法则的一般形式] \label{prop:chain-general}
 \begin{enumerate}
@@ -16668,9 +16585,6 @@ f_{yx}(\boldsymbol x_0) & f_{yy}(\boldsymbol x_0)
 再令 $h,k\to 0$ 取极限并利用二阶偏导数的连续性即可得证。
 \end{note}
 
-
-\subsubsection*{计算示例}
-
 \begin{exercise}[二阶偏导数的完整计算] \label{ex:hessian-basic}
 设 $f(x,y)=y\cos x+3x^2e^y$，求所有二阶偏导数。
 \end{exercise}
@@ -16743,9 +16657,6 @@ f_{yx}(\boldsymbol x_0) & f_{yy}(\boldsymbol x_0)
 \end{enumerate}
 \end{solution}
 
-
-\subsubsection*{抽象复合函数的二阶偏导数}
-
 \begin{exercise}[抽象函数的二阶偏导数] \label{ex:chain-2nd-order}
 设 $z=f\!\left(xy,\;\dfrac{x}{y}\right)$，$f$ 具有二阶连续偏导数。
 求 $\dfrac{\partial^2 z}{\partial x^2}$，$\dfrac{\partial^2 z}{\partial x\partial y}$，$\dfrac{\partial^2 z}{\partial y^2}$。
@@ -16763,8 +16674,7 @@ f_{yx}(\boldsymbol x_0) & f_{yy}(\boldsymbol x_0)
   \item \textbf{求 $\dfrac{\partial^2 z}{\partial x^2}$}：
   因为 $f_1'$ 和 $f_2'$ 依然是 $u, v$ 的复合函数，对它们求 $x$ 偏导数需再次使用链式法则，即 $\dfrac{\partial f_i'}{\partial x} = f_{i1}'' u_x + f_{i2}'' v_x$。
   \begin{align*}
-  \frac{\partial^2 z}{\partial x^2} &= \frac{\partial}{\partial x}\left(yf_1'+\frac{1}{y}f_2'\right) \\
-  &= y\frac{\partial f_1'}{\partial x} + \frac{1}{y}\frac{\partial f_2'}{\partial x} \\
+  \frac{\partial^2 z}{\partial x^2} &= \frac{\partial}{\partial x}\left(yf_1'+\frac{1}{y}f_2'\right) = y\frac{\partial f_1'}{\partial x} + \frac{1}{y}\frac{\partial f_2'}{\partial x} \\
   &= y\!\left(f_{11}''\cdot y+f_{12}''\cdot\frac{1}{y}\right) + \frac{1}{y}\!\left(f_{21}''\cdot y+f_{22}''\cdot\frac{1}{y}\right) \\
   &= y^2f_{11}''+f_{12}''+f_{21}''+\frac{1}{y^2}f_{22}''.
   \end{align*}
@@ -17493,7 +17403,7 @@ x\frac{\partial f}{\partial x} + y\frac{\partial f}{\partial y} = nf(x,y).
   为了探究 $f(tx,ty)$ 与 $t^n f(x,y)$ 的关系，构造一个辅助函数 $g(t) = \dfrac{f(tx,ty)}{t^n} = t^{-n} f(tx,ty)$（此处将 $x, y$ 视作固定的参数）。
   对 $g(t)$ 求导以判断其是否为常数：
   \begin{align*}
-  g'(t) &= -n t^{-n-1} f(tx,ty) + t^{-n} \frac{d}{\mathrm{d}t} f(tx,ty) \\
+  g'(t) &= -n t^{-n-1} f(tx,ty) + t^{-n} \frac{\mathrm{d}}{\mathrm{d}t} f(tx,ty) \\
   &= -n t^{-n-1} f(tx,ty) + t^{-n} \left[ x f_1'(tx,ty) + y f_2'(tx,ty) \right].
   \end{align*}
   在已知等式中令 $X=tx, Y=ty$，则有 $tx f_1'(tx,ty) + ty f_2'(tx,ty) = n f(tx,ty)$。提取 $t$ 即 $x f_1' + y f_2' = \dfrac{n}{t} f(tx,ty)$。将此关系代入 $g'(t)$：
@@ -17976,7 +17886,7 @@ $S_{c_0}:=\{p\mid f(p)=c_0\}$（其中 $c_0=f(p_0)$）。
 $\gamma(0)=p_0$ 且 $\gamma'(0)=\vec v$。
 
 由于 $f(\gamma(t))\equiv c_0$（常数），对 $t$ 求导得
-$\dfrac{d}{dt}f(\gamma(t))\biggr|_{t=0}=0$。
+$\dfrac{\mathrm{d}}{dt}f(\gamma(t))\biggr|_{t=0}=0$。
 
 由链式法则：$\nabla f(p_0)\cdot\gamma'(0)=\nabla f(p_0)\cdot\vec v=0$。
 
