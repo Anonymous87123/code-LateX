@@ -1,0 +1,68 @@
+% 记得最后改名为 `AI 工具使用详情说明`
+% 之所以这个文件用英文名是因为biber似乎不支持含有中文的路径
+\documentclass{MMCStyle}
+\usepackage[multicol]{MyTemplate}
+
+\input{Preamble for Pandoc.tex}
+
+% \def\input@path{{dialog with AI}} % 可以设置多个路径
+
+\newenvironment{dialog}[1][untitled]{
+  \begin{solution}[#1]
+  \begin{multicols}{2}\tiny
+}{
+  \end{multicols}
+  \end{solution}
+}
+
+\bianhao{MC2604019}
+\tihao{ABCDEFGHI}
+\timu{\inline{LeeDo} 组 AI 工具使用详情说明}
+\keyword{content；content；content}
+% \bibliographystyle{gbt7714-numerical}
+\addbibresource{ref.bib}
+
+
+\begin{document}
+
+\begin{abstract}
+本文是 \inline{LeeDo} 参赛组（编号 MC2604019）的 AI 工具使用详情说明。文档将列出论文撰写过程中的 AI 工具的使用详情，以及我们对 AI 生成内容进行处理后应用到论文的核心步骤。
+\end{abstract}
+
+
+% 取消目录页码
+\tableofcontents\newpage
+\clearpage
+\pagenumbering{arabic}
+\pagestyle{fancy}
+
+\section{关于曲线的切线和法平面求法的探讨}
+
+我们使用 Deepseek \cite{deepseek1} 模型来获取对曲线的切线和法平面的一般求法的初步认识，交互记录如下。
+\begin{dialog}[如何求曲面的法线和切平面]
+\input{dialog with AI/DeepSeek1}
+\end{dialog}
+
+\subsection{Gemini 在乱搞}
+
+\begin{dialog}[看个笑话。阿巴阿巴阿巴阿巴阿巴阿巴阿巴阿巴阿巴阿巴阿巴阿巴阿巴阿巴阿巴阿巴阿巴阿巴阿巴阿巴阿巴阿巴阿巴阿巴阿巴阿巴阿巴阿巴阿巴阿巴阿巴阿巴阿巴阿巴阿巴阿巴阿巴阿巴阿巴阿巴阿巴阿巴阿巴阿巴阿巴阿巴阿巴阿巴阿巴阿巴阿巴阿巴阿巴阿巴阿巴阿巴阿巴阿巴阿巴阿巴阿巴阿巴阿巴阿巴阿巴阿巴\LaTeX $a^2+b^2=0, a, b \in\R \Rightarrow a=b=0$]
+\input{dialog with AI/Gemini1}
+\end{dialog}
+
+\section{建模思路的获取}
+
+\subsection{Deepseek 提供的思路}
+
+\begin{dialog}[给一个可信的证明了 "一元实变函数的第一类间断点组成的集合是至多可数的" 或者更强的命题的论文或书籍]
+\input{dialog with AI/deepseek提供的思路}
+\end{dialog}
+
+
+\clearpage
+\phantomsection
+\addcontentsline{toc}{section}{参考文献}
+% \bibliography{ref}
+\printbibliography[title={参考文献}] % 输出列表
+
+\end{document}
+
