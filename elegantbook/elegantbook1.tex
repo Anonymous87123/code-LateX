@@ -3056,6 +3056,159 @@ P\{X>\mu\} = \frac{1}{2}.
 \end{tabular}
 \end{table}
 
+\begin{proof}[(0-1) 分布 $B(1,p)$ 的期望与方差推导]
+由分布列 $P\{X=1\}=p,\ P\{X=0\}=1-p=q$，可得数学期望：
+\[
+E(X) = \sum_{k=0}^1 k P\{X=k\} = 0 \cdot (1-p) + 1 \cdot p = p.
+\]
+计算二阶矩：
+\[
+E(X^2) = \sum_{k=0}^1 k^2 P\{X=k\} = 0^2 \cdot (1-p) + 1^2 \cdot p = p.
+\]
+故方差为：
+\[
+D(X) = E(X^2) - [E(X)]^2 = p - p^2 = p(1-p).
+\]
+\end{proof}
+
+\begin{proof}[二项分布 $B(n,p)$ 的期望与方差推导]
+利用组合数性质 $k \mathrm{C}_n^k = n \mathrm{C}_{n-1}^{k-1}$，计算期望：
+\[
+\begin{aligned}
+E(X) &= \sum_{k=0}^n k \mathrm{C}_n^k p^k (1-p)^{n-k} = \sum_{k=1}^n n \mathrm{C}_{n-1}^{k-1} p^k (1-p)^{n-k} \\
+&= np \sum_{k=1}^n \mathrm{C}_{n-1}^{k-1} p^{k-1} (1-p)^{(n-1)-(k-1)}.
+\end{aligned}
+\]
+令 $j = k-1$，由二项式定理，后方的求和等于 $(p + 1 - p)^{n-1} = 1$，故 $E(X) = np$。
+
+为求方差，先计算 $E[X(X-1)]$，利用性质 $k(k-1)\mathrm{C}_n^k = n(n-1)\mathrm{C}_{n-2}^{k-2}$：
+\[
+\begin{aligned}
+E[X(X-1)] &= \sum_{k=0}^n k(k-1) \mathrm{C}_n^k p^k (1-p)^{n-k} \\
+&= \sum_{k=2}^n n(n-1) \mathrm{C}_{n-2}^{k-2} p^k (1-p)^{n-k} \\
+&= n(n-1)p^2 \sum_{j=0}^{n-2} \mathrm{C}_{n-2}^j p^j (1-p)^{(n-2)-j} = n(n-1)p^2.
+\end{aligned}
+\]
+由于 $D(X) = E(X^2) - [E(X)]^2 = E[X(X-1)] + E(X) - [E(X)]^2$，代入得：
+\[
+D(X) = n(n-1)p^2 + np - n^2p^2 = -np^2 + np = np(1-p).
+\]
+\end{proof}
+
+\begin{proof}[泊松分布 $P(\lambda)$ 的期望与方差推导]
+根据泰勒展开式 $\sum_{k=0}^\infty \frac{\lambda^k}{k!} = e^\lambda$。计算期望：
+\[
+E(X) = \sum_{k=0}^\infty k e^{-\lambda} \frac{\lambda^k}{k!} = \lambda e^{-\lambda} \sum_{k=1}^\infty \frac{\lambda^{k-1}}{(k-1)!} = \lambda e^{-\lambda} e^\lambda = \lambda.
+\]
+为求方差，先计算 $E[X(X-1)]$：
+\[
+E[X(X-1)] = \sum_{k=0}^\infty k(k-1) e^{-\lambda} \frac{\lambda^k}{k!} = \lambda^2 e^{-\lambda} \sum_{k=2}^\infty \frac{\lambda^{k-2}}{(k-2)!} = \lambda^2 e^{-\lambda} e^\lambda = \lambda^2.
+\]
+故方差为：
+\[
+D(X) = E[X(X-1)] + E(X) - [E(X)]^2 = \lambda^2 + \lambda - \lambda^2 = \lambda.
+\]
+\end{proof}
+
+\begin{proof}[几何分布 $G(p)$ 的期望与方差推导]
+记 $q = 1-p$。利用幂级数求和 $\sum_{k=1}^\infty q^k = \frac{q}{1-q}$，两边对 $q$ 求导得 $\sum_{k=1}^\infty k q^{k-1} = \frac{1}{(1-q)^2}$。
+计算期望：
+\[
+E(X) = \sum_{k=1}^\infty k q^{k-1} p = p \cdot \frac{1}{(1-q)^2} = \frac{p}{p^2} = \frac{1}{p}.
+\]
+对幂级数再求一次导得 $\sum_{k=2}^\infty k(k-1) q^{k-2} = \frac{2}{(1-q)^3}$。计算 $E[X(X-1)]$：
+\[
+E[X(X-1)] = \sum_{k=1}^\infty k(k-1) q^{k-1} p = pq \sum_{k=2}^\infty k(k-1) q^{k-2} = pq \frac{2}{(1-q)^3} = \frac{2q}{p^2}.
+\]
+故方差为：
+\[
+D(X) = E[X(X-1)] + E(X) - [E(X)]^2 = \frac{2(1-p)}{p^2} + \frac{1}{p} - \frac{1}{p^2} = \frac{1-p}{p^2}.
+\]
+\end{proof}
+
+\begin{proof}[超几何分布 $H(n,N,M)$ 的期望与方差推导]
+采用引入示性变量（Indicator variables）的求法最为简便。设 $X_i$ 为第 $i$ 次抽出的物品是指定物品（次品/正品）的示性变量，若抽出则 $X_i=1$，否则 $X_i=0$。
+易知 $P(X_i=1) = \frac{M}{N}$，故 $X_i \sim B(1, \frac{M}{N})$，则 $X = \sum_{i=1}^n X_i$。
+期望为：
+\[
+E(X) = E\left(\sum_{i=1}^n X_i\right) = \sum_{i=1}^n E(X_i) = n \frac{M}{N}.
+\]
+对于方差，需考虑 $X_i$ 之间的协方差。当 $i \neq j$ 时：
+\[
+E(X_i X_j) = P(X_i=1, X_j=1) = \frac{M}{N} \cdot \frac{M-1}{N-1}.
+\]
+\[
+\mathrm{Cov}(X_i, X_j) = E(X_i X_j) - E(X_i)E(X_j) = \frac{M(M-1)}{N(N-1)} - \frac{M^2}{N^2} = -\frac{M(N-M)}{N^2(N-1)}.
+\]
+由于 $D(X_i) = \frac{M}{N}\left(1-\frac{M}{N}\right)$，故总方差为：
+\[
+\begin{aligned}
+D(X) &= \sum_{i=1}^n D(X_i) + \sum_{i \neq j} \mathrm{Cov}(X_i, X_j) \\
+&= n \frac{M}{N}\left(1-\frac{M}{N}\right) + n(n-1)\left[-\frac{M(N-M)}{N^2(N-1)}\right] \\
+&= n \frac{M}{N}\left(1-\frac{M}{N}\right) \left[1 - \frac{n-1}{N-1}\right] = \frac{nM}{N}\left(1-\frac{M}{N}\right)\frac{N-n}{N-1}.
+\end{aligned}
+\]
+\end{proof}
+
+\begin{proof}[均匀分布 $U(a,b)$ 的期望与方差推导]
+根据定义，计算期望：
+\[
+E(X) = \int_{a}^{b} x \frac{1}{b-a} \,\mathrm{d}x = \frac{1}{b-a} \left[ \frac{1}{2}x^2 \right]_{a}^{b} = \frac{b^2-a^2}{2(b-a)} = \frac{a+b}{2}.
+\]
+计算二阶矩：
+\[
+E(X^2) = \int_{a}^{b} x^2 \frac{1}{b-a} \,\mathrm{d}x = \frac{1}{b-a} \left[ \frac{1}{3}x^3 \right]_{a}^{b} = \frac{b^3-a^3}{3(b-a)} = \frac{b^2+ab+a^2}{3}.
+\]
+故方差为：
+\[
+\begin{aligned}
+D(X) = E(X^2) - [E(X)]^2 &= \frac{b^2+ab+a^2}{3} - \frac{a^2+2ab+b^2}{4} \\
+&= \frac{4b^2+4ab+4a^2-3a^2-6ab-3b^2}{12} = \frac{(b-a)^2}{12}.
+\end{aligned}
+\]
+\end{proof}
+
+\begin{proof}[指数分布 $E(\lambda)$ 的期望与方差推导]
+利用分部积分法，计算期望：
+\[
+E(X) = \int_{0}^{+\infty} x \lambda e^{-\lambda x} \,\mathrm{d}x = \left[ -x e^{-\lambda x} \right]_{0}^{+\infty} + \int_{0}^{+\infty} e^{-\lambda x} \,\mathrm{d}x = 0 + \left[ -\frac{1}{\lambda} e^{-\lambda x} \right]_{0}^{+\infty} = \frac{1}{\lambda}.
+\]
+计算二阶矩（再次利用分部积分）：
+\[
+\begin{aligned}
+E(X^2) &= \int_{0}^{+\infty} x^2 \lambda e^{-\lambda x} \,\mathrm{d}x = \left[ -x^2 e^{-\lambda x} \right]_{0}^{+\infty} + \int_{0}^{+\infty} 2x e^{-\lambda x} \,\mathrm{d}x \\
+&= 0 + \frac{2}{\lambda} \int_{0}^{+\infty} x \lambda e^{-\lambda x} \,\mathrm{d}x = \frac{2}{\lambda} E(X) = \frac{2}{\lambda^2}.
+\end{aligned}
+\]
+故方差为：
+\[
+D(X) = E(X^2) - [E(X)]^2 = \frac{2}{\lambda^2} - \frac{1}{\lambda^2} = \frac{1}{\lambda^2}.
+\]
+\end{proof}
+
+\begin{proof}[正态分布 $N(\mu,\sigma^2)$ 的期望与方差推导]
+做变量代换 $t = \frac{x-\mu}{\sigma}$，则 $\mathrm{d}x = \sigma \,\mathrm{d}t$。计算期望：
+\[
+E(X) = \int_{-\infty}^{+\infty} x \frac{1}{\sqrt{2\pi}\sigma} e^{-\frac{(x-\mu)^2}{2\sigma^2}} \,\mathrm{d}x = \int_{-\infty}^{+\infty} (\sigma t + \mu) \frac{1}{\sqrt{2\pi}} e^{-\frac{t^2}{2}} \,\mathrm{d}t.
+\]
+由于 $t e^{-t^2/2}$ 是奇函数，在对称区间积分等于 $0$；而 $\frac{1}{\sqrt{2\pi}} \int e^{-t^2/2} \,\mathrm{d}t = 1$（标准正态密度全空间积分为1），故：
+\[
+E(X) = \frac{\sigma}{\sqrt{2\pi}} \int_{-\infty}^{+\infty} t e^{-\frac{t^2}{2}} \,\mathrm{d}t + \mu \int_{-\infty}^{+\infty} \frac{1}{\sqrt{2\pi}} e^{-\frac{t^2}{2}} \,\mathrm{d}t = 0 + \mu \cdot 1 = \mu.
+\]
+为求方差，直接计算中心矩 $E[(X-\mu)^2]$。同样代换 $t = \frac{x-\mu}{\sigma}$：
+\[
+D(X) = \int_{-\infty}^{+\infty} (x-\mu)^2 \frac{1}{\sqrt{2\pi}\sigma} e^{-\frac{(x-\mu)^2}{2\sigma^2}} \,\mathrm{d}x = \frac{\sigma^2}{\sqrt{2\pi}} \int_{-\infty}^{+\infty} t^2 e^{-\frac{t^2}{2}} \,\mathrm{d}t.
+\]
+使用分部积分法，令 $u=t, \mathrm{d}v = t e^{-t^2/2} \,\mathrm{d}t$，则 $v = -e^{-t^2/2}$：
+\[
+\int_{-\infty}^{+\infty} t \cdot \left( t e^{-\frac{t^2}{2}} \right) \,\mathrm{d}t = \left[ -t e^{-\frac{t^2}{2}} \right]_{-\infty}^{+\infty} + \int_{-\infty}^{+\infty} e^{-\frac{t^2}{2}} \,\mathrm{d}t = 0 + \sqrt{2\pi}.
+\]
+代回原式得：
+\[
+D(X) = \frac{\sigma^2}{\sqrt{2\pi}} \cdot \sqrt{2\pi} = \sigma^2.
+\]
+\end{proof}
+
 
 \section{典型例题}
 
@@ -3559,13 +3712,13 @@ F_Y(y) = P\{g(X) \le y\} = P\{X \ge h(y)\} = 1 - F_X[h(y)],
 当 $g(x)$ 不满足严格单调条件时，必须使用分布函数法。
 \end{remark}
 
-\subsection{一般情形} \label{subsec:general-case}
 
-若 $X$ 既非离散型也非连续型（或形式未知），则只能使用分布函数的定义来求 $Y$ 的分布：
+\begin{note}若 $X$ 既非离散型也非连续型（或形式未知），则只能使用分布函数的定义来求 $Y$ 的分布：
 \[
 F_Y(y) = P\{Y \le y\} = P\{g(X) \le y\}.
 \]
 这种方法不依赖于 $X$ 的具体类型，具有完全的通用性。
+\end{note}
 
 \section{典型例题}
 
@@ -3584,42 +3737,39 @@ f_X(x) = \begin{cases}
     \item[(3)] $Y = |X|$。
 \end{enumerate}
 \end{exercise}
-
 \begin{solution}
-(1) \textbf{线性变换}：使用公式法最为简便。函数 $y = a + bx$ 是严格单调函数，其反函数为 $x = h(y) = \dfrac{y-a}{b}$，导数为 $h'(y) = \dfrac{1}{b}$。
-
-当 $b > 0$ 时：
+(1) \textbf{线性变换}：使用分布函数法求 $Y=a+bX$ 的概率密度。设 $Y$ 的分布函数为 $F_Y(y)$，由于 $b \neq 0$，需分情况讨论：
+\begin{itemize}
+\item 当 $b > 0$ 时：
+\begin{align*}
+F_Y(y) &= P\{Y \le y\} = P\{a + bX \le y\} = P\left\{X \le \frac{y-a}{b}\right\} = F_X\left(\frac{y-a}{b}\right). \\
+\intertext{对 $y$ 求导可得：}
+f_Y(y) &= F_Y'(y) = f_X\left(\frac{y-a}{b}\right) \cdot \frac{1}{b}.
+\end{align*}
+由于 $-\dfrac{1}{2} < X < \dfrac{1}{2}$，代入 $Y=a+bX$，此时 $Y$ 的取值范围是 $\left(a-\dfrac{b}{2}, a+\dfrac{b}{2}\right)$。\\
+\item 当 $b < 0$ 时：
+\begin{align*}
+F_Y(y) &= P\{Y \le y\} = P\{a + bX \le y\} = P\left\{X \ge \frac{y-a}{b}\right\} = 1 - F_X\left(\frac{y-a}{b}\right). \\
+f_Y(y) &= F_Y'(y) = -f_X\left(\frac{y-a}{b}\right) \cdot \frac{1}{b} = f_X\left(\frac{y-a}{b}\right) \cdot \frac{1}{-b}.
+\end{align*}
+由于 $-\dfrac{1}{2} < X < \dfrac{1}{2}$ 且 $b < 0$，此时 $Y$ 的取值范围是 $\left(a+\dfrac{b}{2}, a-\dfrac{b}{2}\right)$。
+\end{itemize}
+综合以上两种情况，无论是 $b>0$（此时 $b=|b|$）还是 $b<0$（此时 $-b=|b|$），都可以统一写为：
 \[
-f_Y(y) = f_X\!\left(\frac{y-a}{b}\right) \cdot \frac{1}{b}, \quad \text{当 } -\frac{1}{2} < \frac{y-a}{b} < \frac{1}{2}.
+f_Y(y) = f_X\left(\frac{y-a}{b}\right) \cdot \frac{1}{|b|}.
 \]
-解得 $a - \dfrac{b}{2} < y < a + \dfrac{b}{2}$。因此
+取值区间统一为 $\left(a-\dfrac{|b|}{2}, a+\dfrac{|b|}{2}\right)$。在该区间内，$f_X(\cdot) = 1$。因此 $Y$ 的概率密度函数为：
 \[
 f_Y(y) = \begin{cases}
-\dfrac{1}{b}, & a - \dfrac{b}{2} < y < a + \dfrac{b}{2}, \\[6pt]
+\dfrac{1}{|b|}, & a - \dfrac{|b|}{2} < y < a + \dfrac{|b|}{2}, \\[8pt]
 0, & \text{其他}.
 \end{cases}
 \]
-
-当 $b < 0$ 时，$|h'(y)| = -\dfrac{1}{b}$，得到
-\[
-f_Y(y) = \begin{cases}
--\dfrac{1}{b}, & a + \dfrac{b}{2} < y < a - \dfrac{b}{2}, \\[6pt]
-0, & \text{其他}.
-\end{cases}
-\]
-可以统一表示为 $f_Y(y) = \dfrac{1}{|b|}$，在区间 $\left(a - \dfrac{|b|}{2}, a + \dfrac{|b|}{2}\right)$ 上。
-
-(2) \textbf{平方变换}：函数 $y = x^2$ 在 $(-\dfrac{1}{2}, \dfrac{1}{2})$ 上不是单调函数，必须使用分布函数法。
-
-由于 $Y = X^2 \ge 0$，当 $y \le 0$ 时，$F_Y(y) = 0$。
-
-当 $0 < y < \dfrac{1}{4}$ 时：
+(2) \textbf{平方变换}：函数 $y = x^2$ 在 $(-\dfrac{1}{2}, \dfrac{1}{2})$ 上不是单调函数，必须使用分布函数法。由于 $Y = X^2 \ge 0$，当 $y \le 0$ 时，$F_Y(y) = 0$。当 $0 < y < \dfrac{1}{4}$ 时：
 \[
 F_Y(y) = P\{X^2 \le y\} = P\{-\sqrt{y} \le X \le \sqrt{y}\} = \int_{-\sqrt{y}}^{\sqrt{y}} 1 \, \mathrm{d}x = 2\sqrt{y}.
 \]
-
 当 $y \ge \dfrac{1}{4}$ 时，$F_Y(y) = 1$。
-
 求导得概率密度：
 \[
 f_Y(y) = \begin{cases}
@@ -3627,17 +3777,11 @@ f_Y(y) = \begin{cases}
 0, & \text{其他}.
 \end{cases}
 \]
-
-(3) \textbf{绝对值变换}：同样使用分布函数法。由于 $Y = |X| \ge 0$，当 $y < 0$ 时，$F_Y(y) = 0$。
-
-当 $0 \le y < \dfrac{1}{2}$ 时：
+(3) \textbf{绝对值变换}：同样使用分布函数法。由于 $Y = |X| \ge 0$，当 $y < 0$ 时，$F_Y(y) = 0$。当 $0 \le y < \dfrac{1}{2}$ 时：
 \[
 F_Y(y) = P\{|X| \le y\} = P\{-y \le X \le y\} = \int_{-y}^{y} 1 \, \mathrm{d}x = 2y.
 \]
-
-当 $y \ge \dfrac{1}{2}$ 时，$F_Y(y) = 1$。
-
-求导得：
+当 $y \ge \dfrac{1}{2}$ 时，$F_Y(y) = 1$。求导得：
 \[
 f_Y(y) = \begin{cases}
 2, & 0 \le y < \dfrac{1}{2}, \\[6pt]
@@ -3705,43 +3849,52 @@ y, & 0 \le y < 1, \\
 \end{remark}
 
 \begin{exercise}[分段随机变量的函数] \label{exer:2-21}
-在区间 $(0,2)$ 上随机取一点，将该区间分成两段，较短一段的长度记为 $X$，较长一段的长度记为 $Y$。令 $Z = \dfrac{Y}{X}$。
-
-(1) 求 $X$ 的概率密度；
-(2) 求 $Z$ 的概率密度。
+在区间 $(0,2)$ 上随机取一点，将该区间分成两段，较短一段的长度记为 $X$，较长一段的长度记为 $Y$。令 $Z = \dfrac{Y}{X}$。(1) 求 $X$ 的概率密度；(2) 求 $Z$ 的概率密度。
 \end{exercise}
-
 \begin{solution}
-(1) 设随机点的坐标为 $V \sim U(0,2)$，则 $X = \min\{V, 2-V\}$。显然 $0 \le X \le 1$。
-
-当 $x < 0$ 时，$F_X(x) = 0$；当 $x \ge 1$ 时，$F_X(x) = 1$。
-
-当 $0 \le x < 1$ 时：
+(1) 设随机点的坐标为 $V \sim U(0,2)$，由于区间总长为 $2$，较短一段的长度 $X = \min\{V, 2-V\}$。显然 $X$ 的取值范围为 $(0,1)$。
+先求 $X$ 的分布函数 $F_X(x) = P\{X \le x\}$：
+当 $x \le 0$ 时，$F_X(x) = 0$；
+当 $x \ge 1$ 时，$F_X(x) = 1$。
+当 $0 < x < 1$ 时，利用对立事件有：
 \[
 \begin{aligned}
 F_X(x) &= P\{\min\{V, 2-V\} \le x\} = 1 - P\{\min\{V, 2-V\} > x\} \\
-&= 1 - P\{x < V < 2-x\} = 1 - \frac{2-x-x}{2} = x.
+&= 1 - P\{V > x \text{ 且 } 2-V > x\} = 1 - P\{x < V < 2-x\}
 \end{aligned}
 \]
-
-因此
+因为 $V$ 在 $(0,2)$ 上服从均匀分布，其密度函数为 $\frac{1}{2}$，所以：
 \[
-f_X(x) = \begin{cases}
+P\{x < V < 2-x\} = \int_{x}^{2-x} \frac{1}{2} \,\mathrm{d}v = \frac{(2-x) - x}{2} = 1 - x
+\]
+从而 $F_X(x) = 1 - (1 - x) = x$。对分布函数求导，得到 $X$ 的概率密度为：
+\[
+f_X(x) = F'_X(x) = \begin{cases}
 1, & 0 < x < 1, \\[4pt]
 0, & \text{其他}.
 \end{cases}
 \]
+（即 $X \sim U(0,1)$）
 
-(2) 由于 $Y = 2 - X$，故 $Z = \dfrac{Y}{X} = \dfrac{2-X}{X} = \dfrac{2}{X} - 1$。当 $X \in (0,1)$ 时，$Z \in (1, +\infty)$。
-
-函数 $z = \dfrac{2}{x} - 1$ 在 $(0,1)$ 上严格单调递减，反函数为 $x = \dfrac{2}{1+z}$，导数为 $\dfrac{\mathrm{d}x}{\mathrm{d}z} = -\dfrac{2}{(1+z)^2}$。
-
-由公式法：
+(2) 由于 $Y = 2 - X$，故 $Z = \dfrac{Y}{X} = \dfrac{2-X}{X} = \dfrac{2}{X} - 1$。
+因为 $X \in (0,1)$，所以 $Z$ 的取值范围为 $(1, +\infty)$。
+现在用分布函数法求 $Z$ 的概率密度。设 $Z$ 的分布函数为 $F_Z(z) = P\{Z \le z\}$：
+当 $z \le 1$ 时，$F_Z(z) = 0$。
+当 $z > 1$ 时：
 \[
-f_Z(z) = f_X\!\left(\frac{2}{1+z}\right) \cdot \left|-\frac{2}{(1+z)^2}\right| = \frac{2}{(1+z)^2}, \quad z > 1.
+\begin{aligned}
+F_Z(z) &= P\left\{\frac{2}{X} - 1 \le z\right\} = P\left\{\frac{2}{X} \le z + 1\right\} = P\left\{X \ge \frac{2}{z+1}\right\}
+\end{aligned}
 \]
-
-故
+由于 $X \sim U(0,1)$，当 $z > 1$ 时，$\dfrac{2}{z+1} \in (0, 1)$，因此：
+\[
+F_Z(z) = \int_{\frac{2}{z+1}}^{1} f_X(x) \,\mathrm{d}x = \int_{\frac{2}{z+1}}^{1} 1 \,\mathrm{d}x = 1 - \frac{2}{z+1} = \frac{z-1}{z+1}
+\]
+对分布函数求导，得到 $Z$ 的概率密度为：
+\[
+f_Z(z) = F'_Z(z) = \left( 1 - \frac{2}{z+1} \right)' = \frac{2}{(z+1)^2}, \quad z > 1.
+\]
+故 $Z$ 的概率密度为：
 \[
 f_Z(z) = \begin{cases}
 \dfrac{2}{(1+z)^2}, & z > 1, \\[6pt]
@@ -3879,19 +4032,37 @@ f_Y(y) = \begin{cases}
 设 $f(x)=\dfrac{k}{1+x^2}$，求：(1) $k$~~~(2)$Y=1-\sqrt[3]{X}$ 的概率密度。
 \end{exercise}
 \begin{solution}
-(1) 由归一性条件：
+(1) 由概率密度的归一性条件：
 \[
-\int_{-\infty}^{+\infty} \frac{k}{1+x^2}\,\mathrm{d}x = k\left[\arctan x\right]_{-\infty}^{+\infty} = k\pi = 1 \implies k = \frac{1}{\pi}.
+\int_{-\infty}^{+\infty} \frac{k}{1+x^2}\,\mathrm{d}x = k\left[\arctan x\right]_{-\infty}^{+\infty} = k\left(\frac{\pi}{2} - \left(-\frac{\pi}{2}\right)\right) = k\pi = 1 \implies k = \frac{1}{\pi}.
 \]
-即 $X$ 服从标准柯西分布。\\
-(2) 函数 $y=1-\sqrt[3]{x}$ 在 $(-\infty,+\infty)$ 上严格单调递减，反函数为 $x=(1-y)^3$，导数为
+即 $X$ 服从标准柯西分布，概率密度为 $f_X(x) = \frac{1}{\pi(1+x^2)}$。
+
+(2) 使用分布函数法。设 $Y$ 的分布函数为 $F_Y(y)$，由于 $X \in (-\infty, +\infty)$，显然 $Y \in (-\infty, +\infty)$。
+\begin{align*}
+F_Y(y) &= P\{Y \le y\} \\
+&= P\{1-\sqrt[3]{X} \le y\} \\
+&= P\{\sqrt[3]{X} \ge 1-y\} 
+\end{align*}
+由于函数 $g(t) = t^3$ 在定义域上单调递增，两边同时立方不等号方向不变：
+\begin{align*}
+F_Y(y) &= P\{X \ge (1-y)^3\} \\
+&= 1 - P\{X \le (1-y)^3\} \quad \text{（因 $X$ 是连续型，等号处概率为 $0$）} \\
+&= 1 - F_X\left((1-y)^3\right)
+\end{align*}
+
+对 $y$ 求导得到 $Y$ 的概率密度 $f_Y(y)$，利用复合函数求导法则：
+\begin{align*}
+f_Y(y) &= F_Y'(y) = \frac{\mathrm{d}}{\mathrm{d}y} \left[ 1 - F_X\left((1-y)^3\right) \right] \\
+&= -f_X\left((1-y)^3\right) \cdot \left[3(1-y)^2 \cdot (-1)\right] \\
+&= 3(1-y)^2 f_X\left((1-y)^3\right)
+\end{align*}
+
+将 $f_X(x) = \dfrac{1}{\pi(1+x^2)}$ 代入上式：
 \[
-\frac{\mathrm{d}x}{dy} = -3(1-y)^2.
+f_Y(y) = 3(1-y)^2 \cdot \frac{1}{\pi\left[1+\left((1-y)^3\right)^2\right]} = \frac{3(1-y)^2}{\pi\left[1+(1-y)^6\right]}, \quad y\in\mathbb{R}.
 \]
-由随机变量函数的密度公式（公式法）：
-\[
-f_Y(y) = f_X[(1-y)^3] \cdot \left|\frac{\mathrm{d}x}{dy}\right| = \frac{1}{\pi}\cdot\frac{1}{1+(1-y)^6} \cdot 3(1-y)^2 = \frac{3(1-y)^2}{\pi\left[1+(1-y)^6\right]}, \quad y\in\mathbb{R}.
-\]
+
 答案：(1) $\boldsymbol{k=\dfrac{1}{\pi}}$；(2) $\boldsymbol{f_Y(y)=\dfrac{3(1-y)^2}{\pi[1+(1-y)^6]}}$。
 \end{solution}
 
@@ -3900,10 +4071,21 @@ f_Y(y) = f_X[(1-y)^3] \cdot \left|\frac{\mathrm{d}x}{dy}\right| = \frac{1}{\pi}\
 （A） $\dfrac{1}{\pi(1+4y^2)}$；~~~~（B）$\dfrac{2}{\pi(4+y^2)}$；~~~~（C）$\dfrac{1}{\pi(1+y^2)}$；~~~~（D）$\dfrac{1}{\pi}\arctan y$。
 \end{exercise}
 \begin{solution}
-答案选\textbf{(B)}。由单调函数密度变换公式：
+答案选\textbf{(B)}。
+
+使用分布函数法求解。设 $Y$ 的分布函数为 $F_Y(y)$，则：
 \[
-f_Y(y) = f_X\left(\frac{y}{2}\right)\cdot\left|\frac{\mathrm{d}}{\mathrm{d}y}\left(\frac{y}{2}\right)\right| = \frac{1}{\pi\left[1+\left(\frac{y}{2}\right)^2\right]}\cdot\frac{1}{2} = \frac{2}{\pi(4+y^2)}.
+F_Y(y) = P\{Y \le y\} = P\{2X \le y\} = P\left\{X \le \frac{y}{2}\right\} = F_X\left(\frac{y}{2}\right)
 \]
+两边对 $y$ 求导，得到 $Y$ 的概率密度 $f_Y(y)$：
+\[
+f_Y(y) = F_Y'(y) = f_X\left(\frac{y}{2}\right) \cdot \frac{1}{2}
+\]
+将 $X$ 的概率密度 $f_X(x) = \dfrac{1}{\pi(1+x^2)}$ 代入：
+\[
+f_Y(y) = \frac{1}{\pi\left[1+\left(\frac{y}{2}\right)^2\right]} \cdot \frac{1}{2} = \frac{1}{\pi\left(1+\frac{y^2}{4}\right)} \cdot \frac{1}{2} = \frac{4}{\pi(4+y^2)} \cdot \frac{1}{2} = \frac{2}{\pi(4+y^2)}
+\]
+故选项 (B) 正确。
 \end{solution}
 
 \begin{exercise}[正态分布平方变换] 
@@ -3932,30 +4114,45 @@ f_Y(y) =
 \]
 \end{solution}
 
-
 \begin{exercise}[逻辑分布变换] \label{exer:2-50}
 设 $f(x)=\dfrac{e^x}{(1+e^x)^2}$，$Y=e^X$，求$X$ 的分布函数和$Y$ 的概率密度。
 \end{exercise}
 \begin{solution}
-(1) 分布函数：
-\[
-F(x) = \int_{-\infty}^{x} \frac{e^t}{(1+e^t)^2}\,dt = \left[-\frac{1}{1+e^t}\right]_{-\infty}^{x} = \frac{e^x}{1+e^x}, \quad x\in\mathbb{R}.
-\]
+(1) 求 $X$ 的分布函数 $F_X(x)$：
+\begin{align*}
+F_X(x) &= \int_{-\infty}^{x} \frac{e^t}{(1+e^t)^2}\,\mathrm{d}t \\
+&= \left[-\frac{1}{1+e^t}\right]_{-\infty}^{x} \\
+&= \left(-\frac{1}{1+e^x}\right) - \left(-\frac{1}{1+0}\right) \\
+&= 1 - \frac{1}{1+e^x} = \frac{e^x}{1+e^x}, \quad x\in\mathbb{R}.
+\end{align*}
 这是标准的逻辑分布（Logistic distribution）。
-(2) 函数 $y=e^x$ 在 $(-\infty,+\infty)$ 上严格单调递增，值域为 $(0,+\infty)$，反函数为 $x=\ln y$，导数为 $\dfrac{\mathrm{d}x}{\mathrm{d}y}=\dfrac{1}{y}$。\\
-由公式法：
+
+(2) 使用分布函数法求 $Y$ 的概率密度。设 $Y$ 的分布函数为 $F_Y(y)$。
+由于 $Y = e^X > 0$，所以当 $y \le 0$ 时，$F_Y(y) = P\{Y \le y\} = 0$。
+
+当 $y > 0$ 时：
 \[
-f_Y(y) = f_X(\ln y) \cdot \left|\frac{\mathrm{d}x}{\mathrm{d}y}\right| = \frac{e^{\ln y}}{(1+e^{\ln y})^2} \cdot \frac{1}{y} = \frac{y}{(1+y)^2} \cdot \frac{1}{y} = \frac{1}{(1+y)^2}, \quad y>0.
+F_Y(y) = P\{Y \le y\} = P\{e^X \le y\} = P\{X \le \ln y\} = F_X(\ln y).
 \]
-故
+将第 (1) 问求得的 $F_X(x) = \dfrac{e^x}{1+e^x}$ 代入上式，可得：
+\[
+F_Y(y) = \frac{e^{\ln y}}{1+e^{\ln y}} = \frac{y}{1+y}.
+\]
+对 $y$ 求导即可得到 $Y$ 的概率密度 $f_Y(y)$。当 $y > 0$ 时：
+\[
+f_Y(y) = F_Y'(y) = \frac{\mathrm{d}}{\mathrm{d}y} \left( \frac{y}{1+y} \right) = \frac{1 \cdot (1+y) - y \cdot 1}{(1+y)^2} = \frac{1}{(1+y)^2}.
+\]
+当 $y \le 0$ 时，$f_Y(y) = 0$。
+
+综合可得：
 \[
 f_Y(y)=
 \begin{cases}
-\dfrac{1}{(1+y)^2}, & y>0, \\[6pt]
+\dfrac{1}{(1+y)^2}, & y>0, \\[8pt]
 0, & y\leqslant0.
 \end{cases}
 \]
-答案：(1) $\boldsymbol{F(x)=\dfrac{e^x}{1+e^x}}$；(2) 密度函数如上。
+答案：(1) $\boldsymbol{F_X(x)=\dfrac{e^x}{1+e^x}}$；(2) 密度函数如上。
 \end{solution}
 
 
@@ -5096,14 +5293,56 @@ F(x,y) = \int_{-\infty}^{y}\int_{-\infty}^{x}f(u,v)\,\mathrm{d}u\,\mathrm{d}v,
 $f(x,y) = \begin{cases} Ae^{-y}, & 0 < x < y, \\ 0, & \text{其他}. \end{cases}$，求 $A$，$P\{X+Y \geqslant 1\}$，$P\{X/Y \leqslant 1/2\}$。
 \end{exercise}
 \begin{solution}
-(1) 归一性：$\displaystyle\int_0^{+\infty}\int_0^y Ae^{-y}\,\mathrm{d}x\,\mathrm{d}y = A\int_0^{+\infty}ye^{-y}\,\mathrm{d}y = A = 1$，故 $A = 1$。\\
-(2) 利用 $Z = X+Y$ 的分布函数（$f(x,y) = e^{-y}$ 时 $F_Z(z) = 1 - 2e^{-z/2} + e^{-z}$，$z > 0$）：
+(1) \textbf{求解常数 $\boldsymbol{A}$}：由联合概率密度函数的归一性（即全空间积分为 1）可知：
 \[
-P\{X+Y \geqslant 1\} = 1 - F_Z(1) = 1 - (1 - 2e^{-1/2} + e^{-1}) = 2e^{-1/2} - e^{-1}.
+\iint\limits_{\mathbb{R}^2} f(x,y) \,\mathrm{d}x\,\mathrm{d}y = 1
 \]
-(3) $P\{X/Y \leqslant 1/2\} = P\{X \leqslant Y/2\}$。在 $\{0 < x < y\}$ 中附加 $x \leqslant y/2$，即 $0 < x \leqslant y/2$：
+根据题目给定的非零区域 $0 < x < y < +\infty$，我们先对 $x$ 积分，再对 $y$ 积分，确定上下限如下：
 \[
-P\{X \leqslant Y/2\} = \int_0^{+\infty}\int_0^{y/2}e^{-y}\,\mathrm{d}x\,\mathrm{d}y = \int_0^{+\infty}\frac{y}{2}e^{-y}\,\mathrm{d}y = \frac{1}{2}.
+\int_{0}^{+\infty} \left( \int_{0}^{y} A e^{-y} \,\mathrm{d}x \right) \mathrm{d}y = 1
+\]
+计算内层积分（此时 $y$ 视为常数）：
+\[
+A \int_{0}^{+\infty} e^{-y} \Big[ x \Big]_{0}^{y} \,\mathrm{d}y = A \int_{0}^{+\infty} y e^{-y} \,\mathrm{d}y = 1
+\]
+利用分部积分法或 Gamma 函数性质 $\Gamma(2) = \int_0^\infty y e^{-y} \mathrm{d}y = 1! = 1$，易得：
+\[
+A \times 1 = 1 \implies A = 1
+\]
+(2) \textbf{求解 $\boldsymbol{P\{X+Y \geqslant 1\}}$}：若直接求解 $X+Y \geqslant 1$，积分区域是一个向右上角无限延伸的无界区域，计算较为繁琐。因此，我们利用对立事件（补集）来简化计算：计算图形封闭的 $P\{X+Y < 1\}$。
+\[
+P\{X+Y \geqslant 1\} = 1 - P\{X+Y < 1\}
+\]
+事件 $\{X+Y < 1\}$ 对应的概率本质上是联合密度函数在特定二维区域 $D$ 上的二重积分。该区域 $D$ 由以下三个不等式共同围成：
+\[
+\begin{cases}
+0 < x < y & \text{(密度函数非零的固有条件)} \\
+x + y < 1 & \text{(题目要求的事件条件)}
+\end{cases}
+\]
+在平面直角坐标系中，直线 $y = x$ 与直线 $x + y = 1$ 的交点为 $(1/2, 1/2)$。观察该三角形区域 $D$，我们可以采用 $X$-型区域（先对 $y$ 积分，后对 $x$ 积分）来设置上下限：
+外层 $x$ 的投影范围是 $(0, 1/2)$；对于固定的 $x$，内层 $y$ 的下界是直线 $y=x$，上界是直线 $y=1-x$。因此：
+\begin{align*}
+P\{X+Y < 1\} &= \iint\limits_{D} f(x,y) \,\mathrm{d}x\,\mathrm{d}y = \int_{0}^{1/2} \mathrm{d}x \int_{x}^{1-x} e^{-y} \,\mathrm{d}y \\
+&= \int_{0}^{1/2} \Big[ -e^{-y} \Big]_{x}^{1-x} \mathrm{d}x = \int_{0}^{1/2} \left( e^{-x} - e^{-(1-x)} \right) \mathrm{d}x \\
+&= \Big[ -e^{-x} - e^{x-1} \Big]_{0}^{1/2} = \left( -e^{-1/2} - e^{-1/2} \right) - \left( -1 - e^{-1} \right) \\
+&= 1 + e^{-1} - 2e^{-1/2}
+\end{align*}
+最后，代回对立事件公式中：
+\[
+P\{X+Y \geqslant 1\} = 1 - \left( 1 + e^{-1} - 2e^{-1/2} \right) = 2e^{-1/2} - e^{-1}
+\]
+(3) \textbf{求解 $\boldsymbol{P\{X/Y \leqslant 1/2\}}$}：由于在非零区域内 $y > 0$，不等式 $X/Y \leqslant 1/2$ 可直接等价变形为 $X \leqslant Y/2$。
+同样地，我们需要寻找联合密度函数非零区域 $\{0 < x < y\}$ 与目标事件区域 $\{x \leqslant y/2\}$ 的交集。综合这两个条件，得到真正的积分区域：$0 < x \leqslant y/2 < +\infty$。
+这次我们采用 $Y$-型区域（先对 $x$ 积分，后对 $y$ 积分）来设置上下限更为简便：
+外层 $y$ 的范围是 $(0, +\infty)$；对于固定的 $y$，内层 $x$ 的下界是 $0$，上界是 $y/2$。
+\begin{align*}
+P\{X \leqslant Y/2\} &= \int_{0}^{+\infty} \mathrm{d}y \int_{0}^{y/2} e^{-y} \,\mathrm{d}x = \int_{0}^{+\infty} e^{-y} \Big[ x \Big]_{0}^{y/2} \mathrm{d}y \\
+&= \int_{0}^{+\infty} \frac{y}{2} e^{-y} \,\mathrm{d}y = \frac{1}{2} \int_{0}^{+\infty} y e^{-y} \,\mathrm{d}y
+\end{align*}
+由第(1)问已知的结论 $\int_{0}^{+\infty} y e^{-y} \,\mathrm{d}y = 1$，故：
+\[
+P\{X/Y \leqslant 1/2\} = \frac{1}{2} \times 1 = \frac{1}{2}
 \]
 \end{solution}
 
@@ -5111,14 +5350,49 @@ P\{X \leqslant Y/2\} = \int_0^{+\infty}\int_0^{y/2}e^{-y}\,\mathrm{d}x\,\mathrm{
 $X \sim E(4)$，$Y$ 为离散型随机变量：$P\{Y=-1\} = 1/4$，$P\{Y=1\} = 3/4$，且 $X$ 与 $Y$ 相互独立。求 $P\{X-Y \leqslant 1\}$ 和 $P\{XY \leqslant 2\}$。
 \end{exercise}
 \begin{solution}
-利用全概率公式（对 $Y$ 的取值分解）。
+已知 $X \sim E(4)$，即 $X$ 服从参数 $\lambda = 4$ 的指数分布。根据指数分布的定义，其概率密度函数 $f_X(x)$ 和累积分布函数 $F_X(x)$ 分别为：
+\[
+f_X(x) = \begin{cases} 4e^{-4x}, & x > 0 \\ 0, & x \leqslant 0 \end{cases}
+\quad \text{与} \quad
+F_X(x) = P\{X \leqslant x\} = \begin{cases} 1 - e^{-4x}, & x > 0 \\ 0, & x \leqslant 0 \end{cases}
+\]
+已知 $Y$ 的分布律为：$P\{Y=-1\} = \frac{1}{4}$，$P\{Y=1\} = \frac{3}{4}$。
+最关键的条件是：\textbf{$\boldsymbol{X}$ 与 $\boldsymbol{Y}$ 相互独立}。这意味着对于任意事件集合，形如 $P(A|Y=y)$ 的条件概率可直接转化为边缘概率 $P(A)$，即 $P(\{X \in A\} \cap \{Y=y\}) = P\{X \in A\} \cdot P\{Y=y\}$。基于上述“离散+独立”的特性，我们采用\textbf{全概率公式}的思想：将复杂事件关于 $Y$ 的可能取值进行“完备事件组”的划分与降维。\\
+\textbf{（1）求解 $\boldsymbol{P\{X-Y \leqslant 1\}}$}:根据 $Y$ 的取值将目标事件 $\{X-Y \leqslant 1\}$ 分解为两个互斥子事件的和：
 \begin{align*}
-P\{X-Y \leqslant 1\} &= P\{Y=-1\}P\{X+1 \leqslant 1\} + P\{Y=1\}P\{X-1 \leqslant 1\}\\
-&= \frac{1}{4}P\{X \leqslant 0\} + \frac{3}{4}P\{X \leqslant 2\} = \frac{1}{4}\cdot 0 + \frac{3}{4}(1-e^{-8}) = \frac{3}{4}(1-e^{-8}).\\
-P\{XY \leqslant 2\} &= P\{Y=-1\}P\{-X \leqslant 2\} + P\{Y=1\}P\{X \leqslant 2\}\\
-&= \frac{1}{4}\cdot 1 + \frac{3}{4}(1-e^{-8}) = 1 - \frac{3}{4}e^{-8}.
+P\{X-Y \leqslant 1\} &= P\big( \{X-Y \leqslant 1\} \cap \{Y=-1\} \big) + P\big( \{X-Y \leqslant 1\} \cap \{Y=1\} \big) \\
+&= P\big( \{X-(-1) \leqslant 1\} \cap \{Y=-1\} \big) + P\big( \{X-1 \leqslant 1\} \cap \{Y=1\} \big) \\
+&= P\big( \{X \leqslant 0\} \cap \{Y=-1\} \big) + P\big( \{X \leqslant 2\} \cap \{Y=1\} \big)
 \end{align*}
-（由于 $X > 0$ 恒成立，$P\{-X \leqslant 2\} = 1$。）
+利用 $X, Y$ 的相互独立性，将联合概率拆分为边缘概率的乘积：
+\begin{align*}
+P\{X-Y \leqslant 1\} &= P\{X \leqslant 0\} \cdot P\{Y=-1\} + P\{X \leqslant 2\} \cdot P\{Y=1\}\\
+P\{X \leqslant 0\} &= F_X(0) = 0 \quad (\text{因为 } X \text{ 恒大于 } 0) \\
+P\{X \leqslant 2\} &= F_X(2) = 1 - e^{-4 \times 2} = 1 - e^{-8}
+\end{align*}
+将其代回主式：
+\begin{align*}
+P\{X-Y \leqslant 1\} &= 0 \times \frac{1}{4} + (1 - e^{-8}) \times \frac{3}{4} = \frac{3}{4}(1 - e^{-8})
+\end{align*}
+\textbf{（2）求解 $\boldsymbol{P\{XY \leqslant 2\}}$}:采用相同的全概率分解逻辑，按 $Y$ 的取值将事件 $\{XY \leqslant 2\}$ 拆分：
+\begin{align*}
+P\{XY \leqslant 2\} &= P\big( \{XY \leqslant 2\} \cap \{Y=-1\} \big) + P\big( \{XY \leqslant 2\} \cap \{Y=1\} \big) \\
+&= P\big( \{X(-1) \leqslant 2\} \cap \{Y=-1\} \big) + P\big( \{X(1) \leqslant 2\} \cap \{Y=1\} \big) \\
+&= P\big( \{-X \leqslant 2\} \cap \{Y=-1\} \big) + P\big( \{X \leqslant 2\} \cap \{Y=1\} \big)
+\end{align*}
+由于 $X, Y$ 独立，原式转化为：
+\begin{align*}
+P\{XY \leqslant 2\} &= P\{-X \leqslant 2\} \cdot P\{Y=-1\} + P\{X \leqslant 2\} \cdot P\{Y=1\} \\
+&= P\{X \geqslant -2\} \cdot \frac{1}{4} + P\{X \leqslant 2\} \cdot \frac{3}{4}
+\end{align*}
+由于 $X \sim E(4)$，其取值范围严格为 $X > 0$。因此，事件 $\{X \geqslant -2\}$ 是一个\textbf{必然事件}（即 $X$ 的取值永远大于 0，当然也就大于 -2），故：
+\[
+P\{X \geqslant -2\} = 1
+\]
+再代入前面算出的 $P\{X \leqslant 2\} = 1 - e^{-8}$，得到：
+\begin{align*}
+P\{XY \leqslant 2\} &= 1 \times \frac{1}{4} + (1 - e^{-8}) \times \frac{3}{4} = \frac{1}{4} + \frac{3}{4} - \frac{3}{4} e^{-8} = 1 - \frac{3}{4} e^{-8}
+\end{align*}
 \end{solution}
 
 \subsection{边缘概率密度}
@@ -6035,9 +6309,10 @@ f_Z(z) = \int_{-\infty}^{+\infty}f(x, h(x,z))\left|\frac{\partial h(x,z)}{\parti
     对内层积分做代换，令 $u = xy$（固定 $x$，则 $y = \frac{u}{x}$，$\mathrm{d}y = \frac{1}{x}\mathrm{d}u$）。
     当 $x > 0$ 时，$y$ 的区间 $(-\infty, \frac{z}{x}]$ 对应 $u$ 的区间 $(-\infty, z]$；
     当 $x < 0$ 时，$y$ 的区间 $[\frac{z}{x}, +\infty)$ 对应 $u$ 的区间 $[z, -\infty)$，此时积分限反转带来负号，即 $\mathrm{d}y = \frac{1}{x}\mathrm{d}u = -\frac{1}{|x|}\mathrm{d}u$，吸收反转积分限的负号后，两部分合并为：
-    \[
-    F_Z(z) = \int_{0}^{+\infty} \left( \int_{-\infty}^{z} f\!\left(x,\frac{u}{x}\right)\frac{1}{|x|}\,\mathrm{d}u \right) \mathrm{d}x + \int_{-\infty}^{0} \left( \int_{-\infty}^{z} f\!\left(x,\frac{u}{x}\right)\frac{1}{|x|}\,\mathrm{d}u \right) \mathrm{d}x = \int_{-\infty}^{z} \left[ \int_{-\infty}^{+\infty} \frac{1}{|x|}f\!\left(x,\frac{u}{x}\right)\,\mathrm{d}x \right] \mathrm{d}u.
-    \]
+    \begin{align*}
+    F_Z(z) &= \int_{0}^{+\infty} \left( \int_{-\infty}^{z} f\!\left(x,\frac{u}{x}\right)\frac{1}{|x|}\,\mathrm{d}u \right) \mathrm{d}x + \int_{-\infty}^{0} \left( \int_{-\infty}^{z} f\!\left(x,\frac{u}{x}\right)\frac{1}{|x|}\,\mathrm{d}u \right) \mathrm{d}x \\
+    &= \int_{-\infty}^{z} \left[ \int_{-\infty}^{+\infty} \frac{1}{|x|}f\!\left(x,\frac{u}{x}\right)\,\mathrm{d}x \right] \mathrm{d}u.
+    \end{align*}
     对 $z$ 求导即得 $f_Z(z) = \displaystyle\int_{-\infty}^{+\infty}\frac{1}{|x|}\,f\!\left(x, \frac{z}{x}\right)\,\mathrm{d}x$。独立时展开联合密度即得特例。
 
     \item \textbf{二维变量代换法（雅可比行列式法）}：
@@ -6877,14 +7152,92 @@ DY &= E(Y^2) - (EY)^2 = 1 - \frac{1}{9} = \frac{8}{9}.
 已知随机变量 \((X,Y) \sim N(0,0;\,1,1;\,0.5)\)，\(U = \max\{X,Y\}\)，\(V = \min\{X,Y\}\)，求 \(E(U+V)\) 和 \(E(UV)\)。
 \end{exercise}
 \begin{solution}
-利用恒等式
+根据二维正态分布的参数记号 \((X,Y) \sim N(\mu_1, \mu_2;\, \sigma_1^2, \sigma_2^2;\, \rho)\)，由题意可知：
+\begin{itemize}
+    \item 期望：$E(X) = 0,\quad E(Y) = 0$
+    \item 方差：$D(X) = 1,\quad D(Y) = 1$
+    \item 相关系数：$\rho = 0.5$
+\end{itemize}
+因为 $U = \max\{X,Y\}$，$V = \min\{X,Y\}$，对于任意一对实数取值 $X$ 和 $Y$，无论哪个数较大，$U$ 和 $V$ 必然一个是 $X$ 另一个是 $Y$。因此它们的和与乘积在变换前后保持不变，即有如下代数恒等式：
 \[
-U + V = X + Y,\quad UV = XY.
+U + V = X + Y, \quad U \cdot V = X \cdot Y.
 \]
-故
+(1) \textbf{求 $\boldsymbol{E(U+V)}$}：\\
+利用数学期望的线性性质，直接代入即可：
 \[
-E(U+V) = EX + EY = 0,\quad E(UV) = E(XY) = \mathrm{Cov}(X,Y) + EX \cdot EY = 0.5.
+E(U+V) = E(X+Y) = E(X) + E(Y) = 0 + 0 = 0.
 \]
+(2) \textbf{求 $\boldsymbol{E(UV)}$}：\\
+要求 $E(UV)$，即求 $E(XY)$。首先，根据相关系数与协方差的关系公式计算协方差：
+\[
+\mathrm{Cov}(X,Y) = \rho \cdot \sqrt{D(X)} \sqrt{D(Y)} = 0.5 \times \sqrt{1} \times \sqrt{1} = 0.5.
+\]
+又根据协方差的计算公式 $\mathrm{Cov}(X,Y) = E(XY) - E(X)E(Y)$，可得：
+\[
+E(UV) = E(XY) = \mathrm{Cov}(X,Y) + E(X)E(Y) = 0.5 + 0 \times 0 = 0.5.
+\]
+综上所述，$E(U+V) = 0$，$E(UV) = 0.5$。
+\end{solution}
+
+
+\begin{exercise}
+设随机变量 $X$ 服从参数为 $0.5$ 的泊松分布，试求随机变量 $Y = X/(1+X)$ 的数学期望 $E[Y]$.
+\end{exercise}
+
+\begin{solution}
+由于 $X \sim P(\lambda)$，随机变量 $X$ 的概率质量函数为：
+$$P(X = k) = \frac{\lambda^k e^{-\lambda}}{k!}, \quad k = 0, 1, 2, \dots$$
+
+根据离散型随机变量函数的期望公式，展开 $E[Y]$：
+$$E[Y] = E\left[\frac{X}{1+X}\right] = \sum_{k=0}^{\infty} \frac{k}{k+1} \frac{\lambda^k e^{-\lambda}}{k!} = \sum_{k=0}^{\infty} \left(1 - \frac{1}{k+1}\right) \frac{\lambda^k e^{-\lambda}}{k!}$$
+
+将其拆分为两部分：
+$$E[Y] = \sum_{k=0}^{\infty} \frac{\lambda^k e^{-\lambda}}{k!} - \sum_{k=0}^{\infty} \frac{1}{k+1} \frac{\lambda^k e^{-\lambda}}{k!}$$
+
+第一部分为所有概率之和，由全概率公式可知等于 1。第二部分化简如下：
+$$\sum_{k=0}^{\infty} \frac{1}{k+1} \frac{\lambda^k e^{-\lambda}}{k!} = \sum_{k=0}^{\infty} \frac{\lambda^k e^{-\lambda}}{(k+1)!} = \frac{e^{-\lambda}}{\lambda} \sum_{k=0}^{\infty} \frac{\lambda^{k+1}}{(k+1)!}$$
+
+令 $j = k+1$，当 $k$ 从 $0$ 到 $\infty$ 时，$j$ 从 $1$ 到 $\infty$：
+$$\frac{e^{-\lambda}}{\lambda} \sum_{j=1}^{\infty} \frac{\lambda^j}{j!} = \frac{e^{-\lambda}}{\lambda} (e^\lambda - 1) = \frac{1 - e^{-\lambda}}{\lambda}$$
+
+因此，$E[Y]$ 的通用表达式为：
+$$E[Y] = 1 - \frac{1 - e^{-\lambda}}{\lambda}$$
+
+代入给定的参数 $\lambda = 0.5$：
+$$E[Y] = 1 - \frac{1 - e^{-0.5}}{0.5} = 1 - 2(1 - e^{-0.5}) = 2e^{-0.5} - 1$$
+
+故随机变量 $Y$ 的数学期望为 $2e^{-0.5} - 1$。
+\end{solution}
+
+\vspace{2em}
+
+\begin{exercise}
+现有 3 个袋子，各装有 $a$ 个白球和 $b$ 个黑球。先从第 1 个袋子中摸出一球，记下颜色后把它放入第 2 个袋子中；再从第 2 个袋子中摸出一球，记下颜色后把它放入第 3 个袋子中；最后从第 3 个袋子中摸出一球，记下颜色。记这 3 次摸球中所得的白球总数为 $X$，求 $E[X]$.
+\end{exercise}
+\begin{solution}
+引入指示变量 $X_i$（$i = 1, 2, 3$）：
+若第 $i$ 次摸出的是白球，则 $X_i = 1$；若第 $i$ 次摸出的是黑球，则 $X_i = 0$。
+这 3 次摸球中摸出的白球总数 $X$ 可以表示为：
+$$X = X_1 + X_2 + X_3$$
+根据数学期望的线性性质：
+$$E[X] = E[X_1 + X_2 + X_3] = E[X_1] + E[X_2] + E[X_3]$$
+因为 $X_i$ 只能取 0 或 1，所以 $E[X_i] = 1 \cdot P(X_i = 1) + 0 \cdot P(X_i = 0) = P(X_i = 1)$。
+第一次摸球（从第 1 个袋子）：
+袋中有 $a$ 个白球，$b$ 个黑球。
+$$P(X_1 = 1) = \frac{a}{a+b}$$
+第二次摸球（从第 2 个袋子）：
+利用全概率公式，考虑第一次摸出的是白球还是黑球：
+\begin{align*}
+P(X_2 = 1) &= P(X_2 = 1 \mid X_1 = 1)P(X_1 = 1) + P(X_2 = 1 \mid X_1 = 0)P(X_1 = 0) \\
+&= \left(\frac{a+1}{a+b+1}\right)\left(\frac{a}{a+b}\right) + \left(\frac{a}{a+b+1}\right)\left(\frac{b}{a+b}\right) \\
+&= \frac{a(a+1) + ab}{(a+b+1)(a+b)} = \frac{a(a+b+1)}{(a+b+1)(a+b)} = \frac{a}{a+b}
+\end{align*}
+第三次摸球（从第 3 个袋子）：
+同理，根据全概率公式，由于从第 2 个袋子摸出白球的无条件概率仍为 $\frac{a}{a+b}$，过程具有完全的对称性。因此，第三次摸出白球的概率依然不变：
+$$P(X_3 = 1) = \frac{a}{a+b}$$
+将上述三次的期望加总：
+$$E[X] = E[X_1] + E[X_2] + E[X_3] = \frac{a}{a+b} + \frac{a}{a+b} + \frac{a}{a+b} = \frac{3a}{a+b}$$
+故这 3 次摸球中所得的白球总数 $X$ 的期望 $E[X]$ 为 $\frac{3a}{a+b}$。
 \end{solution}
 
 
@@ -7076,6 +7429,34 @@ E(X_{(n)}) = \frac{n}{n+1},\quad E(X_{(1)}) = \frac{1}{n+1},\quad ER = \frac{n}{
 \end{solution}
 
 
+
+\begin{exercise}
+设随机变量 $X_1, X_2, X_3$ 独立同分布，且 $X_i (i=1,2,3)$ 的分布列为：$P(X_i = k) = \frac{1}{3} \quad (k=1,2,3)$，求 $Y = \max\{X_1, X_2, X_3\}$ 的数学期望.
+\end{exercise}
+\begin{solution}
+因为 $Y = \max\{X_1, X_2, X_3\}$，所以事件 $\{Y \le k\}$ 等价于所有三个随机变量都小于等于 $k$，即 $\{X_1 \le k, X_2 \le k, X_3 \le k\}$。
+由于 $X_1, X_2, X_3$ 独立同分布，我们可以先求出 $Y$ 的分布函数（即累积概率）：
+$$P(Y \le k) = P(X_1 \le k, X_2 \le k, X_3 \le k) = P(X_1 \le k)P(X_2 \le k)P(X_3 \le k) = [P(X_1 \le k)]^3$$
+根据已知条件，$X_i$ 的分布列为 $P(X_i = k) = \frac{1}{3}$（$k=1,2,3$），我们可以算出 $X_i$ 的累积概率：
+\begin{itemize}
+\item 当 $k=1$ 时，$P(X_1 \le 1) = P(X_1 = 1) = \frac{1}{3}$
+\item 当 $k=2$ 时，$P(X_1 \le 2) = P(X_1 = 1) + P(X_1 = 2) = \frac{2}{3}$
+\item 当 $k=3$ 时，$P(X_1 \le 3) = P(X_1 = 1) + P(X_1 = 2) + P(X_1 = 3) = 1$
+\end{itemize}
+代入前面的公式，得到 $Y$ 的累积概率：
+$$P(Y \le 1) = \left(\frac{1}{3}\right)^3 = \frac{1}{27}$$
+$$P(Y \le 2) = \left(\frac{2}{3}\right)^3 = \frac{8}{27}$$
+$$P(Y \le 3) = 1^3 = 1$$
+接下来，我们利用 $P(Y = k) = P(Y \le k) - P(Y \le k-1)$ 来求 $Y$ 的分布列：
+$$P(Y = 1) = P(Y \le 1) = \frac{1}{27}$$
+$$P(Y = 2) = P(Y \le 2) - P(Y \le 1) = \frac{8}{27} - \frac{1}{27} = \frac{7}{27}$$
+$$P(Y = 3) = P(Y \le 3) - P(Y \le 2) = 1 - \frac{8}{27} = \frac{19}{27}$$
+最后，根据离散型随机变量的期望公式计算 $Y$ 的数学期望 $E[Y]$：
+\begin{align*}
+E[Y] &= \sum_{k=1}^{3} k \cdot P(Y = k) = 1 \cdot \frac{1}{27} + 2 \cdot \frac{7}{27} + 3 \cdot \frac{19}{27} = \frac{8}{3}
+\end{align*}
+\end{solution}
+
 \section{方差}
 
 \subsection{方差的定义}
@@ -7119,6 +7500,28 @@ E(X^4) = (-1)^4 \times 0.2 + 0^4 \times 0.6 + 1^4 \times 0.2 = 0.4,
 \[
 D(X^2) = E(X^4) - [E(X^2)]^2 = 0.4 - 0.16 = 0.24.
 \]
+\end{solution}
+
+\begin{exercise}
+设随机变量 $X$ 的分布密度函数为
+$$f(x) = \begin{cases} 2x, & 0 < x < 1, \\ 0, & \text{其他.} \end{cases}$$
+求随机变量 $X$ 的方差.
+\end{exercise}
+
+\begin{solution}
+根据连续型随机变量方差的计算公式 $D(X) = E[X^2] - (E[X])^2$，我们需要先分别求出 $X$ 的数学期望 $E[X]$ 和 $X^2$ 的数学期望 $E[X^2]$。
+首先，计算随机变量 $X$ 的数学期望 $E[X]$：
+\begin{align*}
+E[X] &= \int_{-\infty}^{+\infty} x f(x) dx = \int_{0}^{1} x \cdot (2x) dx = \int_{0}^{1} 2x^2 dx = \left[ \frac{2}{3}x^3 \right]_0^1 = \frac{2}{3}
+\end{align*}
+接着，计算 $E[X^2]$：
+\begin{align*}
+E[X^2] &= \int_{-\infty}^{+\infty} x^2 f(x) dx = \int_{0}^{1} x^2 \cdot (2x) dx = \int_{0}^{1} 2x^3 dx = \left[ \frac{2}{4}x^4 \right]_0^1 = \frac{1}{2}
+\end{align*}
+最后，代入方差公式计算 $D(X)$：
+\begin{align*}
+D(X) &= E[X^2] - (E[X])^2 = \frac{1}{2} - \left(\frac{2}{3}\right)^2 = \frac{1}{2} - \frac{4}{9} = \frac{9}{18} - \frac{8}{18} = \frac{1}{18}
+\end{align*}
 \end{solution}
 
 \begin{exercise}\label{exer:4-s6-dexp}
@@ -7651,6 +8054,74 @@ DY - 2t\,\mathrm{Cov}(X,Y) + t^2 DX \geqslant 0, \quad \forall\, t \in \mathbb{R
     \end{itemize}
 \end{enumerate}
 \end{property}
+
+\begin{exercise}[多项分布的相关系数] 
+袋中有红、白、黑三种颜色球若干，若从袋中任摸一球，摸出的球为红球的概率为 $p_1$，摸出的球为白球的概率为 $p_2$。现从袋中有放回地摸球 $n$ 次，共摸出红球 $X$ 次，摸出白球 $Y$ 次，试求 $X$ 与 $Y$ 的相关系数 $r(X,Y)$。
+\end{exercise}
+
+\begin{solution}
+由于是有放回抽样，每次摸球是相互独立的，且 $X$ 和 $Y$ 分别服从二项分布：
+\[
+X \sim B(n, p_1), \quad Y \sim B(n, p_2)
+\]
+因此它们的方差分别为：
+\[
+D(X) = np_1(1-p_1), \quad D(Y) = np_2(1-p_2)
+\]
+
+为了求 $X$ 与 $Y$ 的协方差 $\text{Cov}(X,Y)$，我们引入示性变量（0-1 变量）：
+设 
+\[
+X_i = \begin{cases}
+1, & \text{第 } i \text{ 次摸出红球}, \\
+0, & \text{其他},
+\end{cases}
+\qquad
+Y_i = \begin{cases}
+1, & \text{第 } i \text{ 次摸出白球}, \\
+0, & \text{其他},
+\end{cases}
+\]
+其中 $i = 1, 2, \cdots, n$。则 $X = \sum\limits_{i=1}^n X_i$，$Y = \sum\limits_{j=1}^n Y_j$。
+
+利用协方差的双线性性质：
+\[
+\text{Cov}(X, Y) = \text{Cov}\left(\sum_{i=1}^n X_i, \sum_{j=1}^n Y_j\right) = \sum_{i=1}^n \sum_{j=1}^n \text{Cov}(X_i, Y_j)
+\]
+
+分两种情况讨论 $\text{Cov}(X_i, Y_j)$：
+\begin{enumerate}
+    \item[(1)] 当 $i \neq j$ 时，第 $i$ 次与第 $j$ 次摸球相互独立，因此 $X_i$ 与 $Y_j$ 独立，$\text{Cov}(X_i, Y_j) = 0$。
+    \item[(2)] 当 $i = j$ 时，由于同一次摸球不可能既是红球又是白球，故恒有 $X_i Y_i = 0$，从而 $E(X_i Y_i) = 0$。
+    此时：
+    \[
+    \text{Cov}(X_i, Y_i) = E(X_i Y_i) - E(X_i)E(Y_i) = 0 - p_1 p_2 = -p_1 p_2
+    \]
+\end{enumerate}
+
+因此，协方差为：
+\[
+\text{Cov}(X,Y) = \sum_{i=1}^n \text{Cov}(X_i, Y_i) = \sum_{i=1}^n (-p_1 p_2) = -n p_1 p_2
+\]
+
+最后，求 $X$ 与 $Y$ 的相关系数：
+\begin{align*}
+r(X,Y) &= \frac{\text{Cov}(X,Y)}{\sqrt{D(X)} \sqrt{D(Y)}} \\[6pt]
+&= \frac{-n p_1 p_2}{\sqrt{np_1(1-p_1)} \sqrt{np_2(1-p_2)}} \\[6pt]
+&= \frac{-n p_1 p_2}{n \sqrt{p_1 p_2 (1-p_1)(1-p_2)}} \\[6pt]
+&= -\sqrt{\frac{p_1 p_2}{(1-p_1)(1-p_2)}}
+\end{align*}
+
+\textbf{另解（方差公式法）}：
+令 $Z = X + Y$，表示 $n$ 次摸球中摸出红球或白球的总次数。显然单次摸出红或白的概率为 $p_1 + p_2$，故 $Z \sim B(n, p_1+p_2)$。
+其方差为 $D(X+Y) = n(p_1+p_2)(1 - p_1 - p_2)$。
+又根据方差的性质：$D(X+Y) = D(X) + D(Y) + 2\text{Cov}(X,Y)$，代入展开：
+\[
+n(p_1+p_2)(1 - p_1 - p_2) = np_1(1-p_1) + np_2(1-p_2) + 2\text{Cov}(X,Y)
+\]
+化简同样可得 $\text{Cov}(X,Y) = -n p_1 p_2$，代入相关系数公式即可得相同结果。
+\end{solution}
+
 
 \begin{exercise}\label{exer:4-dens-24y}
 设二维随机变量 \((X,Y)\) 的概率密度函数为
