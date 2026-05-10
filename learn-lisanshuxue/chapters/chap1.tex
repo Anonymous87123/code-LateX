@@ -39,11 +39,11 @@
 \begin{definition}{逻辑联结词的运算优先级}{}
     $\neg> \land> \lor> \rightarrow> \leftrightarrow$，合取优先级大于析取优先级。
 \end{definition}
-给定一个含有$n$个命题变元的命题公式，易得这$n$个命题变元共有$2^n$种不同的赋值，将命题公式在所有赋值下的真值列成一个表，成为该命题的真值表，所以真值表有$2^n$行，真值表实际上定义了一个函数，从 $2^n$种赋值映射到一个真值 (真或假)。对于每种赋值，函数的输出可以是真或假两种选择。因此，所有可能的函数数量是$2^{2^n}$个。这意味着，对于n个命题变元，存在$2^{2^n}$个不同的真值表。
+给定一个含有$n$个命题变元的命题公式，易得这$n$个命题变元共有$2^n$种不同的赋值，将命题公式在所有赋值下的真值列成一个表，称为该命题的真值表，所以真值表有$2^n$行，真值表实际上定义了一个函数，从 $2^n$种赋值映射到一个真值 (真或假)。对于每种赋值，函数的输出可以是真或假两种选择。因此，所有可能的函数数量是$2^{2^n}$个。这意味着，对于n个命题变元，存在$2^{2^n}$个不同的真值表。
 \begin{definition}{（最小）全功能联结词集}{}
     在命题逻辑中，一个联结词集合被称为\textbf{全功能联结词集}，当且仅当该集合中的联结词足以表达所有可能的真值函数。换句话说，使用该集合中的联结词可以构造出任意的命题公式，并能够表示所有可能的$2^{2^n}$个不同的真值表（其中$n$为命题变元的个数）。如果从一个全功能联结词集中移除任何一个联结词后，剩下的联结词集合不再是全功能的，则称该集合为\textbf{最小全功能联结词集}。
 \end{definition}
-列举所有的最小全功能联结词集：$\{\neg, \land\}$，$\{\neg, \lor\}$，$\{\neg, \rightarrow\}$，$\{\uparrow\}$ （与非集），$\{\downarrow\}$ （或非集）。考试一般考选择题，归纳出特点就是：一定要出现否定（或者包含有），析取、合取、蕴含这三个出现一个就行，不出现时必然是单一的$\{\uparrow\}$ （与非集），$\{\downarrow\}$ （或非集）。
+常见的最小全功能联结词集有：$\{\neg, \land\}$，$\{\neg, \lor\}$，$\{\neg, \rightarrow\}$，$\{\uparrow\}$ （与非集），$\{\downarrow\}$ （或非集）。考试一般考选择题，归纳出特点就是：一定要出现否定（或者包含有），析取、合取、蕴含这三个出现一个就行，不出现时可能是单一的$\{\uparrow\}$ （与非集），$\{\downarrow\}$ （或非集）。
 
 \textbf{特别的，异或$\{\oplus\}$不是最小全功能联结词集，甚至不是全功能联结词集。}事实上，命题的真值只有0和1，而恰好异或运算有一个重要特性：当输入的真值变化时，输出总是以"可预测的线性方式"变化。具体来说，如果我们只使用异或运算，无论怎么组合，得到的结果都只能表达"奇偶校验"类型的关系——即计算输入中1的个数是奇数还是偶数。这种运算无法表达更复杂的逻辑关系，比如"两个输入必须同时为1"（与运算）或"至少一个输入为1"（或运算）。
 
@@ -86,7 +86,7 @@ $\{\oplus\}$ 不是全功能的：考虑只由 $\oplus$ 和命题变元构成的
     P \land Q &\Leftrightarrow (P \uparrow Q) \uparrow (P \uparrow Q) \\
     P \lor Q &\Leftrightarrow (P \uparrow P) \uparrow (Q \uparrow Q) &
     P \rightarrow Q &\Leftrightarrow P \uparrow (Q \uparrow Q) \\
-    P \leftrightarrow Q &\Leftrightarrow (P \uparrow (Q \uparrow Q)) \uparrow ((Q \uparrow (P \uparrow P)) \uparrow (Q \uparrow (P \uparrow P)))
+    P \leftrightarrow Q &\Leftrightarrow \big((P \uparrow (Q \uparrow Q)) \uparrow (Q \uparrow (P \uparrow P))\big) \uparrow \big((P \uparrow (Q \uparrow Q)) \uparrow (Q \uparrow (P \uparrow P))\big)
 \end{align*}
 类似地：
 \begin{align*}

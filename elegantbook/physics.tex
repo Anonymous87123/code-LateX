@@ -1,0 +1,2203 @@
+\documentclass[lang=cn,11pt]{elegantbook}
+
+\title{大学物理桥接笔记}
+\subtitle{从高中物理走向大学物理}
+
+\author{Codex}
+\institute{ElegantBook 重构实践}
+\date{\today}
+\version{0.2}
+\bioinfo{定位}{面向初学者的大学物理过渡笔记}
+
+\extrainfo{先抓住物理图景，再学习大学层面的数学表达。}
+
+\setcounter{tocdepth}{3}
+
+\logo{logo-blue.png}
+\cover{cover.jpg}
+
+\usepackage{array}
+\usepackage{amsmath,amssymb,mathtools}
+\usepackage{physics}
+\usepackage{siunitx}
+\usepackage{tikz}
+\usepackage{graphicx}
+
+\newcommand{\bridge}[1]{\begin{note}#1\end{note}}
+\newcommand{\summaryline}[1]{\par\noindent\textbf{小结：}#1\par}
+
+\begin{document}
+
+\maketitle
+\frontmatter
+
+\tableofcontents
+\makeenvindex
+
+\mainmatter
+
+\part{力学}
+
+\chapter{质点运动学}
+
+\begin{introduction}
+  \item 建立描述质点运动的基本语言：位置、位移、路程、速度、加速度。
+  \item 学会用矢量和坐标方程描述直线运动、平面运动和圆周运动。
+  \item 理解切向加速度与法向加速度的物理含义，并把它们和高中中的匀速圆周运动联系起来。
+\end{introduction}
+
+\section{为什么大学物理先讲运动学}
+
+高中物理里，我们已经知道“物体会运动”，也会处理匀变速直线运动、平抛运动、圆周运动等典型问题。大学物理的第一步不是立刻讨论力，而是先回答一个更基础的问题：\emph{如果只看运动本身，我们怎样把它描述得更准确、更一般？}
+
+运动学研究的是“怎样运动”，而不是“为什么这样运动”。也就是说，在这一章里，我们暂时不追问力从哪里来，而是把注意力集中在位置怎样变化、速度怎样变化、加速度怎样变化上。这一步很重要，因为后面的动力学、守恒定律、振动和波动，全部都建立在这些基本语言之上。
+
+\subsection{质点模型}
+
+\begin{definition}[质点]\label{def:particle}
+当物体的形状、大小以及内部结构对所研究的问题影响很小，可以忽略不计时，就把整个物体看成一个只有质量而没有几何尺寸的点，这个理想化模型叫做\textbf{质点}。
+\end{definition}
+
+\begin{note}
+质点不是“很小的真实小球”，而是一种\textbf{建模方式}。例如研究地球绕太阳公转时，地球和太阳都可以先近似看成质点；但研究地球自转时，就必须考虑刚体模型，不能再把地球简单看成一个点。
+\end{note}
+
+\section{位置、运动方程与轨迹}
+
+\begin{definition}[位置矢量]\label{def:position-vector}
+在选定参考系和坐标系之后，从坐标原点指向质点所在位置的有向线段称为\textbf{位置矢量}，记作
+\[
+\vb*{r}(t)=x(t)\vb*{i}+y(t)\vb*{j}+z(t)\vb*{k}.
+\]
+\end{definition}
+
+这条式子叫做运动函数或者运动方程。它告诉我们：随着时间 \(t\) 的变化，质点的位置如何变化。若我们只研究平面运动，就可以写成
+\[
+\vb*{r}(t)=x(t)\vb*{i}+y(t)\vb*{j}.
+\]
+
+\begin{definition}[轨迹]\label{def:trajectory}
+质点在空间中连续经过的所有点连成的曲线，叫做质点的\textbf{轨迹}。
+\end{definition}
+
+如果已经知道坐标方程
+\[
+x=x(t),\qquad y=y(t),\qquad z=z(t),
+\]
+那么通过消去参数 \(t\)，就可以得到轨迹方程 \(f(x,y,z)=0\)。
+
+\bridge{高中中经常直接看到“抛物线轨迹”或“圆轨迹”；大学里更强调一件事：\textbf{轨迹是由运动方程消去时间后得到的几何结果}。先有位置随时间变化，再有轨迹。}
+
+\section{位移与路程}
+
+\begin{definition}[位移]\label{def:displacement}
+在时间间隔 \(\Delta t\) 内，质点位置的变化量
+\[
+\Delta \vb*{r}=\vb*{r}(t+\Delta t)-\vb*{r}(t)
+\]
+称为这段时间内的\textbf{位移}。
+\end{definition}
+
+位移是矢量，既有大小也有方向。它的方向由初位置指向末位置，而不是沿着实际轨迹逐点弯曲前进。
+
+\begin{definition}[路程]\label{def:path-length}
+质点在一段时间内实际运动轨迹的长度，称为\textbf{路程}，通常记作 \(\Delta s\)。
+\end{definition}
+
+位移和路程的区别，是大学物理里非常容易混淆的第一件事：
+\begin{itemize}
+  \item 路程是标量，只反映“走了多长”；
+  \item 位移是矢量，反映“位置变了多少以及朝哪边变”。
+\end{itemize}
+
+当质点沿曲线运动时，一般有
+\[
+\Delta s\neq \abs{\Delta \vb*{r}}.
+\]
+只有当运动轨迹在这一小段上可以近似看作直线时，才有微元关系
+\[
+\dd s=\abs{\dd \vb*{r}}.
+\]
+
+\begin{example}
+一个质点从圆周上的某点出发，沿半圆运动到对径点。若圆半径为 \(R\)，则它的路程是 \(\pi R\)，而位移的大小是 \(2R\)。
+\end{example}
+
+\begin{solution}
+路程等于半圆弧长，因此
+\[
+\Delta s=\pi R.
+\]
+初末位置是直径两端点，所以位移大小等于直径长度：
+\[
+\abs{\Delta \vb*{r}}=2R.
+\]
+这个例子说明：\textbf{路程关注“沿路走了多少”，位移关注“起点和终点相隔多远”}。
+\end{solution}
+
+\section{平均速度与瞬时速度}
+
+\begin{definition}[平均速度]\label{def:average-velocity}
+在时间间隔 \(\Delta t\) 内，位移与时间之比
+\[
+\overline{\vb*{v}}=\frac{\Delta \vb*{r}}{\Delta t}
+\]
+称为\textbf{平均速度}。
+\end{definition}
+
+它的方向与位移方向一致，表示在这段时间内位置变化的总体快慢和方向。
+
+\begin{definition}[瞬时速度]\label{def:instantaneous-velocity}
+当 \(\Delta t\to 0\) 时，平均速度的极限称为\textbf{瞬时速度}，简称速度：
+\[
+\vb*{v}=\lim_{\Delta t\to 0}\frac{\Delta \vb*{r}}{\Delta t}=\dv{\vb*{r}}{t}.
+\]
+\end{definition}
+
+在直角坐标系中，
+\[
+\vb*{v}=\dv{x}{t}\vb*{i}+\dv{y}{t}\vb*{j}+\dv{z}{t}\vb*{k}.
+\]
+
+\begin{note}
+速度是矢量，速率是标量。速率等于速度大小：
+\[
+v=\abs{\vb*{v}}=\dv{s}{t}.
+\]
+高中里常说“速度大小”，大学里更愿意把它单独叫做\textbf{速率}，这样语言更清楚。
+\end{note}
+
+\bridge{这里第一次出现导数。你可以把 \(\dv{\vb*{r}}{t}\) 理解成“在极短时间内，位置对时间的变化率”。高中里匀变速直线运动用斜率理解 \(v\)，大学里只是把这个想法推广成了极限和导数。}
+
+\section{平均加速度与瞬时加速度}
+
+\begin{definition}[平均加速度]\label{def:average-acceleration}
+在时间间隔 \(\Delta t\) 内，速度变化量与时间之比
+\[
+\overline{\vb*{a}}=\frac{\Delta \vb*{v}}{\Delta t}
+\]
+称为\textbf{平均加速度}。
+\end{definition}
+
+\begin{definition}[瞬时加速度]\label{def:instantaneous-acceleration}
+当 \(\Delta t\to 0\) 时，平均加速度的极限称为\textbf{瞬时加速度}，简称加速度：
+\[
+\vb*{a}=\lim_{\Delta t\to 0}\frac{\Delta \vb*{v}}{\Delta t}=\dv{\vb*{v}}{t}=\dv[2]{\vb*{r}}{t}.
+\]
+\end{definition}
+
+在直角坐标系中，
+\[
+\vb*{a}=\dv[2]{x}{t}\vb*{i}+\dv[2]{y}{t}\vb*{j}+\dv[2]{z}{t}\vb*{k}.
+\]
+
+\begin{note}
+加速度并不一定表示“速度变快”。只要速度矢量发生变化，无论是大小变了还是方向变了，都说明存在加速度。
+\end{note}
+
+\section{直线运动的几类典型模型}
+
+\subsection{匀速直线运动}
+
+若加速度为零，即
+\[
+a=0,
+\]
+则速度保持不变，位置与时间呈线性关系：
+\[
+x=x_0+vt.
+\]
+
+\subsection{匀变速直线运动}
+
+若加速度为常量 \(a\)，则由
+\[
+\dv{v}{t}=a
+\]
+积分可得
+\[
+v=v_0+at.
+\]
+再由
+\[
+\dv{x}{t}=v=v_0+at
+\]
+积分得
+\[
+x=x_0+v_0t+\frac{1}{2}at^2.
+\]
+进一步消去 \(t\)，还可以得到
+\[
+v^2-v_0^2=2a(x-x_0).
+\]
+
+\bridge{这里第二次遇到积分。对初学者来说，可以先把积分理解成“把许多个很小的变化量累加起来”。匀变速运动的这三条公式，你在高中已经用过；大学里只是把它们从“结论”提升为“由微分方程推导出的结果”。}
+
+\begin{example}
+一辆汽车从静止出发，以加速度 \(a=\SI{2}{m/s^2}\) 做匀加速直线运动，求 \(5\) 秒后的速度和位移。
+\end{example}
+
+\begin{solution}
+已知初速度 \(v_0=0\)、加速度 \(a=\SI{2}{m/s^2}\)、时间 \(t=\SI{5}{s}\)。
+
+由匀变速速度公式
+\[
+v=v_0+at
+\]
+得
+\[
+v=0+2\times 5=\SI{10}{m/s}.
+\]
+
+由位移公式
+\[
+x-x_0=v_0t+\frac{1}{2}at^2
+\]
+得
+\[
+x-x_0=0+\frac{1}{2}\times 2\times 5^2=\SI{25}{m}.
+\]
+
+所以 \(5\) 秒后，汽车速度为 \(\SI{10}{m/s}\)，位移为 \(\SI{25}{m}\)。
+\end{solution}
+
+\section{平面运动的分解思想}
+
+大学物理处理平面运动时，常把运动分解到两个互相垂直的方向上。若
+\[
+\vb*{r}=x(t)\vb*{i}+y(t)\vb*{j},
+\]
+那么
+\[
+\vb*{v}= \dv{x}{t}\vb*{i}+\dv{y}{t}\vb*{j},\qquad
+\vb*{a}= \dv[2]{x}{t}\vb*{i}+\dv[2]{y}{t}\vb*{j}.
+\]
+
+这说明：\textbf{二维运动可以分解成两个一维运动同时进行}。例如平抛运动中，水平方向通常是匀速运动，竖直方向通常是自由落体运动。
+
+\begin{example}
+平抛运动中，若初速度水平向右，大小为 \(v_0\)，忽略空气阻力，则
+\[
+x=v_0t,\qquad y=\frac{1}{2}gt^2.
+\]
+消去 \(t\) 后可得轨迹方程
+\[
+y=\frac{g}{2v_0^2}x^2.
+\]
+这是一条抛物线。
+\end{example}
+
+\section{圆周运动与自然坐标系}
+
+当质点沿曲线运动时，仅用直角坐标分量有时不够直观。此时常引入沿轨迹切线方向和法线方向的自然坐标系。
+
+\subsection{切向加速度与法向加速度}
+
+速度总沿轨迹切线方向，因此可以写成
+\[
+\vb*{v}=v\vb*{e}_\tau.
+\]
+对时间求导后，加速度可分为两部分：
+\[
+\vb*{a}=a_\tau \vb*{e}_\tau + a_n \vb*{e}_n,
+\]
+其中
+\[
+a_\tau=\dv{v}{t},\qquad a_n=\frac{v^2}{R}.
+\]
+
+\begin{definition}[切向加速度]\label{def:tangential-acceleration}
+\(a_\tau\) 描述速度大小变化的快慢。
+\end{definition}
+
+\begin{definition}[法向加速度]\label{def:normal-acceleration}
+\(a_n\) 指向曲率中心，描述速度方向变化的快慢。
+\end{definition}
+
+\begin{note}
+匀速圆周运动中，速率不变，所以 \(a_\tau=0\)；但方向不断变化，因此仍有法向加速度
+\[
+a_n=\frac{v^2}{R}=\omega^2R.
+\]
+这正是高中中熟悉的向心加速度。
+\end{note}
+
+\section{角量描述}
+
+对圆周运动，除了线量 \(s,v,a\)，还常用角量：
+\[
+\theta,\qquad \omega=\dv{\theta}{t},\qquad \alpha=\dv{\omega}{t}.
+\]
+
+它们和线量的关系为
+\[
+s=R\theta,\qquad v=R\omega,\qquad a_\tau=R\alpha.
+\]
+
+\bridge{这三条关系很重要。它说明“绕圈运动”并不是另一套完全陌生的世界，而是把直线运动中的位移、速度、加速度分别换成弧长、角速度、角加速度之后得到的对应关系。后面刚体转动一章还会继续使用这套思想。}
+
+\section{本章常见误区}
+
+\begin{remark}
+\begin{enumerate}
+  \item 把路程和位移混为一谈。
+  \item 认为“加速度存在就一定越来越快”。
+  \item 只会写速度大小，不会写速度矢量。
+  \item 在平面运动中忘记先选坐标系，再写分量方程。
+  \item 在圆周运动中只记向心加速度公式，却不理解它对应的是方向变化。
+\end{enumerate}
+\end{remark}
+
+\section{章末小结}
+
+\summaryline{运动学的核心任务，是用位置、速度、加速度这三层量把运动描述清楚。位置告诉我们“在哪”，速度告诉我们“怎么变位置”，加速度告诉我们“怎么变速度”。}
+
+\begin{exercise}
+已知质点作直线运动，其位置方程为
+\[
+x=2+3t-t^2.
+\]
+求 \(t=\SI{1}{s}\) 时的速度和加速度。
+\end{exercise}
+
+\begin{solution}
+由定义，
+\[
+v=\dv{x}{t}=3-2t,\qquad a=\dv{v}{t}=-2.
+\]
+因此在 \(t=1\) 时，
+\[
+v=3-2=\SI{1}{m/s},\qquad a=\SI{-2}{m/s^2}.
+\]
+速度为正，说明此刻仍沿 \(x\) 轴正方向运动；加速度为负，说明速度正在减小。
+\end{solution}
+
+\begin{exercise}
+一个质点做半径为 \(R\) 的匀速圆周运动，周期为 \(T\)。求其速度大小和法向加速度大小。
+\end{exercise}
+
+\begin{solution}
+一周路程为 \(2\pi R\)，周期为 \(T\)，故速率
+\[
+v=\frac{2\pi R}{T}.
+\]
+法向加速度大小为
+\[
+a_n=\frac{v^2}{R}
+=\frac{1}{R}\left(\frac{2\pi R}{T}\right)^2
+=\frac{4\pi^2R}{T^2}.
+\]
+\end{solution}
+
+\chapter{质点动力学基础}
+
+\begin{introduction}
+  \item 从伽利略和牛顿的观点出发，理解动力学研究的是“为什么这样运动”。
+  \item 系统掌握牛顿三定律、惯性系、常见力和受力分析。
+  \item 建立直线和平面动力学的基本求解思路。
+\end{introduction}
+
+\section{动力学研究什么}
+
+如果说运动学讨论的是“怎样运动”，那么动力学讨论的就是“为什么这样运动”。在大学物理里，动力学最核心的出发点是：\textbf{物体运动状态的改变，与它所受的力有关。}
+
+这一观点并不是一开始就很显然。古人曾长期认为，力是维持运动的原因；但伽利略通过斜面实验逐步指出：若阻碍越来越小，物体会保持原有运动状态越来越久。也就是说，力不是维持运动的原因，而是改变运动状态的原因。
+
+\section{惯性与惯性系}
+
+\begin{definition}[惯性]\label{def:inertia}
+物体保持原有静止状态或匀速直线运动状态的性质，称为\textbf{惯性}。
+\end{definition}
+
+\begin{definition}[惯性参考系]\label{def:inertial-frame}
+在其中牛顿第一定律成立的参考系，称为\textbf{惯性系}。
+\end{definition}
+
+地面参考系在许多普通力学问题中可以近似看作惯性系，但如果研究精确的地球自转效应、台风偏转、傅科摆等问题，就需要考虑非惯性效应。
+
+\section{牛顿第一定律}
+
+\begin{theorem}[牛顿第一定律]\label{thm:newton-first}
+若质点不受外力作用，或者所受合外力为零，则它将保持静止状态或匀速直线运动状态。
+\end{theorem}
+
+这一定律有两层作用：
+\begin{enumerate}
+  \item 给出惯性概念；
+  \item 给出惯性系的判据。
+\end{enumerate}
+
+\begin{note}
+牛顿第一定律并不是第二定律在 \(F=0\) 时的简单特例。它在逻辑上先定义了适用第二定律的参考系，因此是整个牛顿力学的基础。
+\end{note}
+
+\section{牛顿第二定律}
+
+\begin{theorem}[牛顿第二定律]\label{thm:newton-second}
+在惯性系中，质点所受合外力等于质点动量对时间的变化率。对质量不变的质点，
+\[
+\vb*{F}=m\vb*{a}.
+\]
+\end{theorem}
+
+更一般的表述是
+\[
+\vb*{F}=\dv{\vb*{p}}{t},
+\]
+其中动量 \(\vb*{p}=m\vb*{v}\)。
+
+\bridge{高中中常把 \(F=ma\) 当成“定义式”来用；大学里要记住，它的本质是一个\textbf{矢量方程}。所以真正解题时，通常不是直接把数代进去，而是先把它投影到各个坐标方向上。}
+
+\subsection{分量形式}
+
+在直角坐标系中，
+\[
+\vb*{F}=F_x\vb*{i}+F_y\vb*{j}+F_z\vb*{k},
+\qquad
+\vb*{a}=a_x\vb*{i}+a_y\vb*{j}+a_z\vb*{k},
+\]
+于是牛顿第二定律可分解为
+\[
+F_x=ma_x,\qquad F_y=ma_y,\qquad F_z=ma_z.
+\]
+
+这就是大学物理求解平面问题时最常见的起点。
+
+\section{牛顿第三定律}
+
+\begin{theorem}[牛顿第三定律]\label{thm:newton-third}
+两个物体之间的相互作用力总是大小相等、方向相反，并且分别作用在彼此身上。
+\end{theorem}
+
+若物体 \(A\) 对物体 \(B\) 的作用力为 \(\vb*{F}_{AB}\)，则
+\[
+\vb*{F}_{AB}=-\vb*{F}_{BA}.
+\]
+
+\begin{note}
+作用力和反作用力\textbf{永远不会互相抵消}，因为它们作用在不同物体上。很多初学者在受力分析时出错，就是把不同物体上的力画到同一个受力图里了。
+\end{note}
+
+\section{常见力}
+
+\subsection{万有引力与重力}
+
+两个质点之间存在万有引力：
+\[
+F=G\frac{m_1m_2}{r^2}.
+\]
+在地球表面附近，物体受到的重力通常写作
+\[
+\vb*{G}=m\vb*{g}.
+\]
+其中 \(g\) 是重力加速度，其方向近似竖直向下。
+
+\subsection{弹力}
+
+弹力是由于物体发生弹性形变而产生的相互作用力。对轻弹簧，在弹性限度内满足胡克定律：
+\[
+\vb*{F}=-k\vb*{x},
+\]
+其中 \(k\) 是劲度系数，负号表示弹力方向总是与形变量方向相反。
+
+\subsection{摩擦力}
+
+摩擦力分为静摩擦力和滑动摩擦力。
+
+\begin{itemize}
+  \item 静摩擦力满足
+  \[
+  0\le f_s\le f_{s,\max},
+  \]
+  它会根据平衡或相对静止条件自动调节大小。
+  \item 滑动摩擦力大小常写成
+  \[
+  f_k=\mu_k N,
+  \]
+  方向总与相对滑动方向相反。
+\end{itemize}
+
+\begin{remark}
+很多同学误以为“摩擦力一定等于 \(\mu N\)”。其实只有滑动摩擦力，或者达到临界状态的最大静摩擦力，才写成这种形式。普通静摩擦力的大小要靠动力学或平衡条件求。
+\end{remark}
+
+\section{受力分析}
+
+受力分析是动力学的第一技能。一个标准流程通常是：
+\begin{enumerate}
+  \item 明确研究对象；
+  \item 只画外力，不画该物体“对外施加的力”；
+  \item 选取方便的坐标方向；
+  \item 沿坐标轴写出牛顿第二定律分量方程。
+\end{enumerate}
+
+\begin{example}
+质量为 \(m\) 的小物块放在倾角为 \(\theta\) 的光滑斜面上，求其加速度。
+\end{example}
+
+\begin{solution}
+研究对象是小物块。它受两个力：重力 \(mg\) 和斜面的支持力 \(N\)。
+
+取沿斜面向下为 \(x\) 轴，垂直斜面向外为 \(y\) 轴。把重力分解：
+\[
+mg\sin\theta \quad \text{沿斜面向下},\qquad
+mg\cos\theta \quad \text{垂直斜面向内}.
+\]
+
+由垂直斜面方向的平衡得
+\[
+N-mg\cos\theta=0.
+\]
+
+由沿斜面方向的牛顿第二定律得
+\[
+mg\sin\theta=ma.
+\]
+因此
+\[
+a=g\sin\theta.
+\]
+
+所以小物块沿斜面向下的加速度大小为 \(g\sin\theta\)。
+\end{solution}
+
+\section{动力学问题的两类基本模型}
+
+\subsection{已知力，求运动}
+
+这是最常见的动力学问题：先根据受力分析写出
+\[
+\vb*{F}=m\vb*{a},
+\]
+再结合运动学关系求出速度、位移、轨迹等。
+
+\subsection{已知运动，反求力}
+
+有时题目已经给出运动形式，例如圆周运动、抛体运动或某条轨迹方程，此时可以先求出加速度，再反推所需合外力。这类问题在后面的圆周运动和万有引力模型里很常见。
+
+\section{惯性力的直观认识}
+
+严格来说，牛顿定律只适用于惯性系。但在加速参考系中，人们有时会引入惯性力，帮助把问题形式上写成“平衡”或“类似平衡”的样子。
+
+这一章只需建立一个初步认识：\textbf{惯性力不是物体之间真实的相互作用力，而是由于参考系本身不再是惯性系而引入的等效力。}
+
+\section{章末小结}
+
+\summaryline{动力学的主线是：先判断参考系，再做受力分析，最后用牛顿第二定律写分量方程。所有复杂问题，拆开来看都离不开这三步。}
+
+\begin{exercise}
+质量为 \(m\) 的物体在水平面上受水平恒力 \(F\) 作用，若水平面光滑，求其加速度。
+\end{exercise}
+
+\begin{solution}
+水平方向只有恒力 \(F\)，由牛顿第二定律
+\[
+F=ma
+\]
+得
+\[
+a=\frac{F}{m}.
+\]
+方向与外力方向相同。
+\end{solution}
+
+\begin{exercise}
+一个质量为 \(m\) 的物体静止在粗糙水平面上，受到大小为 \(f\) 的水平推力但仍静止。问静摩擦力大小是多少？
+\end{exercise}
+
+\begin{solution}
+物体保持静止，说明水平方向合力为零，因此静摩擦力大小应自动调节为
+\[
+f_s=f.
+\]
+方向与推力相反。只有当 \(f\) 继续增大并达到最大静摩擦力时，物体才会开始滑动。
+\end{solution}
+
+\chapter{三大守恒定律}
+
+\begin{introduction}
+  \item 学习动量守恒、角动量守恒、机械能守恒的基本条件和物理意义。
+  \item 理解“守恒定律并不是公式记忆，而是系统观点”。
+  \item 学会在碰撞、爆炸、回转和平衡转化问题中选择最省力的定律。
+\end{introduction}
+
+\section{为什么守恒定律特别重要}
+
+牛顿定律告诉我们“受力如何决定运动”，但有些问题若逐时刻写方程会很繁琐。守恒定律提供了另一种更高效的思路：\textbf{抓住整个系统中不会改变的量，绕开复杂的过程细节，直接联系初态与末态。}
+
+大学物理中最常见的三条守恒规律是：动量守恒、角动量守恒和机械能守恒。它们虽然形式不同，但核心思想一致：选对系统、选对条件、再选对守恒量。
+
+\section{动量与动量守恒}
+
+\begin{definition}[动量]\label{def:momentum}
+质量为 \(m\) 的质点的动量定义为
+\[
+\vb*{p}=m\vb*{v}.
+\]
+\end{definition}
+
+动量是矢量，方向与速度方向相同。它刻画的是“运动状态”的一种更适合研究相互作用的量。
+
+\begin{theorem}[动量定理]\label{thm:impulse-momentum}
+质点在一段时间内所受合外力的冲量，等于动量的变化量：
+\[
+\vb*{I}=\int_{t_1}^{t_2}\vb*{F}\,\dd t=\Delta \vb*{p}.
+\]
+\end{theorem}
+
+\begin{theorem}[动量守恒定律]\label{thm:momentum-conservation}
+若一个系统所受外力的矢量和为零，或者外力冲量可以忽略，则系统总动量保持不变：
+\[
+\sum \vb*{p}_{\text{初}}=\sum \vb*{p}_{\text{末}}.
+\]
+\end{theorem}
+
+\subsection{碰撞问题}
+
+碰撞问题是动量守恒最典型的应用场景。若碰撞时间很短，外力冲量通常远小于内力冲量，因此总动量可以近似守恒。
+
+\begin{example}
+质量为 \(m_1\) 的小球以速度 \(v_1\) 撞上原来静止的质量为 \(m_2\) 的小球，若碰后它们粘在一起运动，求共同速度。
+\end{example}
+
+\begin{solution}
+取碰撞前运动方向为正方向。碰撞前系统总动量为
+\[
+p_{\text{初}}=m_1v_1.
+\]
+碰撞后两球粘在一起，设共同速度为 \(v\)，则
+\[
+p_{\text{末}}=(m_1+m_2)v.
+\]
+
+由动量守恒，
+\[
+m_1v_1=(m_1+m_2)v.
+\]
+故
+\[
+v=\frac{m_1}{m_1+m_2}v_1.
+\]
+
+这是完全非弹性碰撞。动量守恒，但机械能一般不守恒。
+\end{solution}
+
+\section{角动量与角动量守恒}
+
+\begin{definition}[质点对定点的角动量]\label{def:angular-momentum}
+质点对某固定点 \(O\) 的角动量定义为
+\[
+\vb*{L}=\vb*{r}\times \vb*{p}=\vb*{r}\times m\vb*{v}.
+\]
+\end{definition}
+
+其大小为
+\[
+L=rp\sin\theta.
+\]
+方向由右手定则确定。
+
+\begin{definition}[力矩]\label{def:torque}
+力 \(\vb*{F}\) 对点 \(O\) 的力矩定义为
+\[
+\vb*{M}=\vb*{r}\times \vb*{F}.
+\]
+\end{definition}
+
+\begin{theorem}[角动量定理]\label{thm:angular-momentum-theorem}
+外力矩等于角动量对时间的变化率：
+\[
+\vb*{M}=\dv{\vb*{L}}{t}.
+\]
+\end{theorem}
+
+\begin{theorem}[角动量守恒定律]\label{thm:angular-momentum-conservation}
+如果系统所受合外力矩为零，则系统角动量保持不变：
+\[
+\vb*{L}_{\text{初}}=\vb*{L}_{\text{末}}.
+\]
+\end{theorem}
+
+\begin{note}
+花样滑冰运动员收拢双臂后转得更快，正是角动量守恒的直接体现。后面刚体力学一章会看到，转动惯量减小而角动量守恒时，角速度必须增大。
+\end{note}
+
+\section{功、动能与动能定理}
+
+\begin{definition}[功]\label{def:work}
+恒力 \(\vb*{F}\) 作用下，位移为 \(\vb*{s}\) 时，该力所做的功定义为
+\[
+W=\vb*{F}\cdot \vb*{s}=Fs\cos\theta.
+\]
+\end{definition}
+
+变力沿曲线做功写成积分形式：
+\[
+W=\int_A^B \vb*{F}\cdot \dd \vb*{r}.
+\]
+
+\begin{definition}[动能]\label{def:kinetic-energy}
+质量为 \(m\) 的质点的动能定义为
+\[
+E_k=\frac{1}{2}mv^2.
+\]
+\end{definition}
+
+\begin{theorem}[动能定理]\label{thm:kinetic-energy-theorem}
+合外力对质点所做的功，等于质点动能的增量：
+\[
+W_{\text{合}}=\Delta E_k.
+\]
+\end{theorem}
+
+它把“力和位移”联系起来，是动力学中非常高效的一条工具。
+
+\section{势能与机械能守恒}
+
+\begin{definition}[保守力]\label{def:conservative-force}
+若某种力做功只与始末位置有关，而与具体路径无关，则称这种力为\textbf{保守力}。
+\end{definition}
+
+重力、弹力在常见模型下都是保守力。对保守力，可以定义势能。
+
+\subsection{常见势能}
+
+\begin{itemize}
+  \item 重力势能：
+  \[
+  E_p=mgh.
+  \]
+  \item 弹性势能：
+  \[
+  E_p=\frac{1}{2}kx^2.
+  \]
+\end{itemize}
+
+\begin{definition}[机械能]\label{def:mechanical-energy}
+动能与势能之和称为\textbf{机械能}：
+\[
+E=E_k+E_p.
+\]
+\end{definition}
+
+\begin{theorem}[机械能守恒定律]\label{thm:mechanical-energy-conservation}
+若系统内只有保守力做功，或者非保守力做功为零，则系统机械能守恒：
+\[
+E_{k1}+E_{p1}=E_{k2}+E_{p2}.
+\]
+\end{theorem}
+
+\begin{remark}
+“机械能守恒”和“动量守恒”是两条不同的判断条件，不能混用。碰撞常优先看动量守恒；位能和动能相互转化的过程常优先看机械能守恒。
+\end{remark}
+
+\section{章末小结}
+
+\summaryline{守恒定律的关键不是背公式，而是先判断系统和条件。系统选错、条件看错，再熟练的代数都会把题做偏。}
+
+\begin{exercise}
+一质量为 \(m\) 的物体从高为 \(h\) 的位置由静止自由下落，忽略空气阻力，落到地面时速度多大？
+\end{exercise}
+
+\begin{solution}
+忽略空气阻力时，机械能守恒：
+\[
+mgh=\frac{1}{2}mv^2.
+\]
+消去 \(m\) 得
+\[
+v=\sqrt{2gh}.
+\]
+\end{solution}
+
+\begin{exercise}
+若某系统在一段过程中所受合外力矩为零，则哪个物理量守恒？
+\end{exercise}
+
+\begin{solution}
+由角动量守恒定律，系统的总角动量守恒。
+\end{solution}
+
+\chapter{刚体力学}
+
+\begin{introduction}
+  \item 把质点模型推广到刚体模型，理解平动与转动的区别。
+  \item 学习角位移、角速度、角加速度、力矩、转动惯量等基本概念。
+  \item 建立刚体定轴转动的动力学方程与能量方程。
+\end{introduction}
+
+\section{刚体与定轴转动}
+
+\begin{definition}[刚体]\label{def:rigid-body}
+在受力过程中，物体内部任意两点之间距离始终保持不变的理想模型称为\textbf{刚体}。
+\end{definition}
+
+真实物体都可能发生形变，但若形变很小、对问题影响可以忽略，就可以看成刚体。
+
+\begin{definition}[定轴转动]\label{def:fixed-axis-rotation}
+若刚体绕一条固定不动的轴转动，则称为\textbf{定轴转动}。
+\end{definition}
+
+这是刚体力学最基础、也最重要的模型。
+
+\section{角位移、角速度、角加速度}
+
+刚体定轴转动时，可以用角量描述：
+\[
+\theta,\qquad \omega=\dv{\theta}{t},\qquad \alpha=\dv{\omega}{t}.
+\]
+
+若刚体上某点到转轴距离为 \(r\)，则该点的线量与角量满足
+\[
+v=r\omega,\qquad a_\tau=r\alpha,\qquad a_n=r\omega^2.
+\]
+
+\section{力矩}
+
+力对转轴的转动效果用力矩刻画。若力的作用线到转轴的垂直距离为 \(l\)，则力矩大小为
+\[
+M=Fl.
+\]
+
+在矢量形式下，
+\[
+\vb*{M}=\vb*{r}\times \vb*{F}.
+\]
+
+\begin{note}
+判断力矩时，要关注两件事：一是大小取决于“力有多大”和“力臂有多长”；二是方向决定转动趋势，可以用顺时针或逆时针作为正负约定。
+\end{note}
+
+\section{转动惯量}
+
+\begin{definition}[转动惯量]\label{def:moment-of-inertia}
+刚体对某转轴的转动惯量定义为
+\[
+J=\sum_i m_ir_i^2
+\]
+或连续分布时
+\[
+J=\int r^2\,\dd m.
+\]
+\end{definition}
+
+它衡量的是刚体“改变转动状态的难易程度”。质量离转轴越远，转动惯量越大。
+
+\begin{example}
+质量为 \(m\)、半径为 \(R\) 的质点绕圆心转动，其转动惯量为
+\[
+J=mR^2.
+\]
+\end{example}
+
+\section{刚体转动定律}
+
+\begin{theorem}[刚体定轴转动定律]\label{thm:rigid-body-rotation-law}
+对绕固定轴转动的刚体，合外力矩等于转动惯量与角加速度的乘积：
+\[
+M=J\alpha.
+\]
+\end{theorem}
+
+它与质点平动中的
+\[
+F=ma
+\]
+完全对应，只不过线量变成了角量。
+
+\begin{center}
+\begin{tabular}{c|c}
+平动 & 转动 \\
+\hline
+\(x\) & \(\theta\) \\
+\(v\) & \(\omega\) \\
+\(a\) & \(\alpha\) \\
+\(m\) & \(J\) \\
+\(F\) & \(M\)
+\end{tabular}
+\end{center}
+
+\bridge{这一张对照表非常值得记住。很多刚体问题本质上就是把高中熟悉的直线动力学语言，整体平移到“绕轴运动”的世界里。}
+
+\section{角动量与转动动能}
+
+刚体绕固定轴转动时，角动量为
+\[
+L=J\omega.
+\]
+转动动能为
+\[
+E_k=\frac{1}{2}J\omega^2.
+\]
+
+\begin{theorem}[转动动能定理]\label{thm:rotational-kinetic-theorem}
+合外力矩所做的功，等于刚体转动动能的增量：
+\[
+W=\Delta\left(\frac{1}{2}J\omega^2\right).
+\]
+\end{theorem}
+
+\section{滚动问题的桥接理解}
+
+刚体在平面上滚动时，常同时具有平动和转动。若无滑动，则有
+\[
+v_C=R\omega,
+\]
+这里 \(v_C\) 是质心速度。
+
+总动能通常写成
+\[
+E_k=\frac{1}{2}mv_C^2+\frac{1}{2}J_C\omega^2.
+\]
+
+\begin{note}
+这类题往往最容易忘记“平动动能和转动动能都要算”。只写一半，答案通常就会少一个量级或者差一个系数。
+\end{note}
+
+\section{章末小结}
+
+\summaryline{刚体定轴转动最重要的两条式子是 \(M=J\alpha\) 和 \(E_k=\frac{1}{2}J\omega^2\)。一条负责动力学，一条负责能量法。}
+
+\begin{exercise}
+一圆盘绕固定轴转动，若所受合外力矩为常量 \(M\)，转动惯量为 \(J\)，求角加速度。
+\end{exercise}
+
+\begin{solution}
+由刚体定轴转动定律
+\[
+M=J\alpha
+\]
+直接得到
+\[
+\alpha=\frac{M}{J}.
+\]
+\end{solution}
+
+\part{振动与波动}
+
+\chapter{机械振动}
+
+\begin{introduction}
+  \item 理解简谐振动的位移、速度、加速度及其相位关系。
+  \item 学习弹簧振子与单摆的小振幅近似。
+  \item 掌握振动能量在动能和势能之间的周期性交换。
+\end{introduction}
+
+\section{什么是机械振动}
+
+如果一个物体在平衡位置附近作往复运动，并且这种运动具有周期性，就称为机械振动。最典型的模型是弹簧振子。
+
+\begin{definition}[简谐振动]\label{def:simple-harmonic-motion}
+若振动物体的位移可以表示为
+\[
+x=A\cos(\omega t+\varphi_0),
+\]
+则称该振动为\textbf{简谐振动}。
+\end{definition}
+
+其中：
+\begin{itemize}
+  \item \(A\) 是振幅；
+  \item \(\omega\) 是角频率；
+  \item \(\varphi=\omega t+\varphi_0\) 是相位；
+  \item \(\varphi_0\) 是初相。
+\end{itemize}
+
+\section{速度与加速度}
+
+对位移方程求导：
+\[
+v=\dv{x}{t}=-A\omega\sin(\omega t+\varphi_0),
+\]
+\[
+a=\dv{v}{t}=-A\omega^2\cos(\omega t+\varphi_0).
+\]
+又因为
+\[
+x=A\cos(\omega t+\varphi_0),
+\]
+所以
+\[
+a=-\omega^2x.
+\]
+
+\begin{note}
+这条关系极其关键。它说明：简谐振动中的回复加速度总是指向平衡位置，并且大小与位移成正比。这正是“回复力模型”成立的根源。
+\end{note}
+
+\section{周期和频率}
+
+简谐振动的周期、频率与角频率的关系为
+\[
+T=\frac{2\pi}{\omega},\qquad f=\frac{1}{T},\qquad \omega=2\pi f.
+\]
+
+\section{弹簧振子}
+
+设质量为 \(m\) 的小球连在劲度系数为 \(k\) 的轻弹簧上，在光滑水平面上振动。由胡克定律和牛顿第二定律：
+\[
+-kx=ma,
+\]
+结合 \(a=\dv[2]{x}{t}\) 得
+\[
+m\dv[2]{x}{t}+kx=0.
+\]
+其解为简谐振动，角频率满足
+\[
+\omega=\sqrt{\frac{k}{m}},
+\]
+周期为
+\[
+T=2\pi\sqrt{\frac{m}{k}}.
+\]
+
+\section{振动能量}
+
+弹簧振子的动能为
+\[
+E_k=\frac{1}{2}mv^2,
+\]
+势能为
+\[
+E_p=\frac{1}{2}kx^2.
+\]
+总机械能恒定：
+\[
+E=\frac{1}{2}kA^2=\frac{1}{2}m\omega^2A^2.
+\]
+
+当质点经过平衡位置时，动能最大、势能最小；当质点到达端点时，动能为零、势能最大。
+
+\section{小角度单摆}
+
+当单摆摆角很小时，可用近似
+\[
+\sin\theta\approx \theta
+\]
+把运动转化为简谐振动，周期近似为
+\[
+T=2\pi\sqrt{\frac{\ell}{g}}.
+\]
+
+\bridge{这一步是“高中物理图景”和“大学数学表达”很典型的结合：真实单摆的方程本来并不简单，但在小角度条件下，可以近似成简谐振动。大学物理里很多模型都依赖这种“近似化简”。}
+
+\section{章末小结}
+
+\summaryline{机械振动的关键，是抓住“回复性”和“周期性”。一旦写成 \(a=-\omega^2x\)，简谐振动的整套结论就会自然展开。}
+
+\begin{exercise}
+一简谐振动满足 \(x=A\cos(\omega t)\)。求其最大速度和最大加速度。
+\end{exercise}
+
+\begin{solution}
+由
+\[
+v=-A\omega\sin(\omega t),
+\]
+可知最大速度大小为
+\[
+v_{\max}=A\omega.
+\]
+由
+\[
+a=-A\omega^2\cos(\omega t),
+\]
+可知最大加速度大小为
+\[
+a_{\max}=A\omega^2.
+\]
+\end{solution}
+
+\chapter{机械波}
+
+\begin{introduction}
+  \item 区分振动和波动，理解波传播的是振动状态和能量，而不是介质整体迁移。
+  \item 学习平面简谐波方程、波速、波长、周期和相位差。
+  \item 掌握驻波、干涉和典型例题的基本分析方法。
+\end{introduction}
+
+\section{机械波的形成}
+
+当介质中的某一点开始振动时，它会通过相互作用把振动状态传给邻近各点，于是振动逐步向外传播，形成机械波。
+
+\begin{definition}[机械波]\label{def:mechanical-wave}
+机械振动在介质中的传播过程，称为\textbf{机械波}。
+\end{definition}
+
+\begin{note}
+机械波传播的是\textbf{振动状态和能量}，不是把整团介质整体搬走。比如绳波传播时，绳上的点主要做上下振动，而不是沿波前方向整体跑走。
+\end{note}
+
+\section{波的基本量}
+
+\begin{itemize}
+  \item 周期 \(T\)：介质中某点完成一次振动所需时间。
+  \item 频率 \(f=1/T\)。
+  \item 波长 \(\lambda\)：空间中相邻两个同相点之间的距离。
+  \item 波速 \(u\)：波形传播速度。
+\end{itemize}
+
+它们满足关系
+\[
+u=\lambda f=\frac{\lambda}{T}.
+\]
+
+\section{简谐波方程}
+
+若波沿 \(x\) 轴正方向传播，则简谐波方程通常写成
+\[
+y=A\cos\left(\omega t-\frac{2\pi}{\lambda}x+\varphi_0\right).
+\]
+若沿 \(x\) 轴负方向传播，则写成
+\[
+y=A\cos\left(\omega t+\frac{2\pi}{\lambda}x+\varphi_0\right).
+\]
+
+\begin{note}
+判断传播方向时，一个非常实用的记忆方法是：
+\begin{itemize}
+  \item “减 \(kx\)” 对应向正方向传播；
+  \item “加 \(kx\)” 对应向负方向传播。
+\end{itemize}
+这里 \(k=\frac{2\pi}{\lambda}\) 称为波数。
+\end{note}
+
+\section{相位与相位差}
+
+波动问题中，某一点在某时刻的相位为
+\[
+\varphi=\omega t-\frac{2\pi}{\lambda}x+\varphi_0.
+\]
+
+若在同一时刻比较两点 \(x_1,x_2\)，则它们的相位差为
+\[
+\Delta\varphi=\frac{2\pi}{\lambda}\abs{x_2-x_1}.
+\]
+
+当 \(\Delta\varphi=2k\pi\) 时，两点同相；当
+\[
+\Delta\varphi=(2k+1)\pi
+\]
+时，两点反相。
+
+\section{波的能量}
+
+机械波在传播过程中会把振动能量不断传递出去。振幅越大，介质越密、越紧张，通常传递的能量也越强。高中阶段常强调波形，大学里还会更重视能流和能量密度的观点。
+
+\section{驻波的初步认识}
+
+两列振幅相同、频率相同、沿相反方向传播的相干波叠加，可以形成驻波。驻波中有波节和波腹：
+\begin{itemize}
+  \item 波节处振幅始终为零；
+  \item 波腹处振幅最大。
+\end{itemize}
+
+\section{章末小结}
+
+\summaryline{机械波的核心是“点在振动，形在传播”。理解这一点后，波方程、相位差和驻波都会变得清晰。}
+
+\begin{exercise}
+已知一列波的波长为 \(\lambda=\SI{4}{m}\)，频率为 \(f=\SI{5}{Hz}\)，求波速。
+\end{exercise}
+
+\begin{solution}
+由关系
+\[
+u=\lambda f
+\]
+可得
+\[
+u=4\times 5=\SI{20}{m/s}.
+\]
+\end{solution}
+
+\part{波动光学}
+
+\chapter{光的干涉}
+
+\begin{introduction}
+  \item 理解光程、相位差与相干条件。
+  \item 掌握杨氏双缝干涉和薄膜干涉的基本结论。
+  \item 学会用“光程差决定明暗”这一主线组织解题。
+\end{introduction}
+
+\section{干涉现象的核心}
+
+两列相干光相遇时，某些位置光强增强，某些位置光强减弱，这种稳定分布称为光的干涉现象。
+
+\begin{definition}[相干光]\label{def:coherent-light}
+频率相同、振动方向相同、相位差恒定的两列光，称为\textbf{相干光}。
+\end{definition}
+
+\begin{note}
+普通光源由大量原子独立发光，波列很短、相位关系又不断变化，所以把两只灯泡直接放在一起，通常看不到稳定干涉条纹。要看到稳定条纹，关键不是“光够不够亮”，而是“相位差能不能保持稳定”。
+\end{note}
+
+\section{光程与光程差}
+
+\begin{definition}[光程]\label{def:optical-path}
+光在介质中传播时，几何路程与折射率的乘积称为\textbf{光程}：
+\[
+L=n\ell.
+\]
+\end{definition}
+
+两束光的光程差
+\[
+\Delta L=L_2-L_1
+\]
+决定它们相遇时的相位差。
+
+\bridge{高中里很多题默认只在空气中传播，因此常直接比较路程差。大学里开始强调“光程”这个量，是因为一旦光进入不同介质，折射率不同，几何路程相同也不代表传播效果相同。}
+
+\section{明纹与暗纹条件}
+
+若光程差满足
+\[
+\Delta L=k\lambda,
+\]
+则两束光相长干涉，形成明纹。
+
+若满足
+\[
+\Delta L=\left(k+\frac{1}{2}\right)\lambda,
+\]
+则两束光相消干涉，形成暗纹。
+
+\begin{note}
+这组条件管的是“明暗出现在哪里”。至于暗纹是不是完全黑，还要看两束光强是否相等。初学时先把“位置条件”和“强弱程度”分开理解，会更清楚。
+\end{note}
+
+\section{杨氏双缝干涉}
+
+双缝干涉中，若缝间距为 \(d\)，屏到双缝距离为 \(D\)，屏上某点到中央明纹距离为 \(x\)，则在小角近似下有
+\[
+\Delta L\approx \frac{dx}{D}.
+\]
+于是明纹位置满足
+\[
+x_k=\frac{k\lambda D}{d},
+\]
+相邻明纹间距
+\[
+\Delta x=\frac{\lambda D}{d}.
+\]
+
+\begin{remark}
+从这个式子可以直接看出参数变化规律：
+\begin{itemize}
+  \item \(\lambda\) 越大，条纹越疏；
+  \item \(D\) 越大，条纹越疏；
+  \item \(d\) 越大，条纹越密。
+\end{itemize}
+很多选择题、判断题本质上就在考这三条。
+\end{remark}
+
+\begin{example}[双缝条纹间距]
+波长为 \(\SI{600}{nm}\) 的单色光照射双缝，双缝间距为 \(\SI{0.20}{mm}\)，双缝到屏的距离为 \(\SI{2.0}{m}\)。求相邻明纹间距。
+\end{example}
+
+\begin{solution}
+已知
+\[
+\lambda=\SI{600e-9}{m},\qquad d=\SI{2.0e-4}{m},\qquad D=\SI{2.0}{m}.
+\]
+用双缝干涉条纹间距公式
+\[
+\Delta x=\frac{\lambda D}{d}
+\]
+得
+\[
+\Delta x=\frac{600\times 10^{-9}\times 2.0}{2.0\times 10^{-4}}=\SI{6.0e-3}{m}=\SI{6.0}{mm}.
+\]
+因此相邻明纹间距为 \(\SI{6.0}{mm}\)。这个量级足够大，所以实验中条纹可以直接观察到。
+\end{solution}
+
+\section{半波损失}
+
+\begin{definition}[半波损失]\label{def:half-wave-loss}
+光从光疏介质射向光密介质并发生反射时，反射光会发生相位突变 \(\pi\)，等效于额外增加了 \(\lambda/2\) 的附加光程差。这种现象叫做\textbf{半波损失}。
+\end{definition}
+
+\begin{note}
+薄膜干涉最容易出错的地方，就是忘记判断是否有半波损失。一个实用判断法是：看反射发生时，光是不是从折射率较小的一侧反射到折射率较大的一侧。
+\end{note}
+
+\section{薄膜干涉}
+
+薄膜干涉属于分振幅干涉。同一列入射光在薄膜上下表面反射后分成两束，再在空间中某处重新相遇，于是出现明暗条纹。
+
+如果薄膜折射率为 \(n\)、厚度为 \(d\)，在近似垂直入射下，两束反射光的主要光程差可理解为“在薄膜中多走了一次来回路程”，即近似为 \(2nd\)，再结合半波损失决定最终的明暗条件。
+
+\bridge{记公式当然重要，但更本质的思路是：先算几何光程差，再判断有没有附加的 \(\lambda/2\)。只要这两步不乱，图形怎么换都能做。}
+
+\section{等厚干涉：劈尖与牛顿环}
+
+当条纹由“薄膜厚度相同的点”连成时，得到的就是等厚干涉条纹。课件里反复强调了两种最典型的模型：劈尖干涉和牛顿环。
+
+\subsection{劈尖干涉}
+
+两块玻璃形成很小夹角时，中间的空气层或透明薄层厚度沿某一方向线性变化，于是相同厚度的点排成一组与棱边平行的直线，干涉条纹也是平行直条纹。
+
+设劈尖夹角为 \(\alpha\)，介质折射率为 \(n\)。在小角近似下，薄膜厚度满足 \(d\approx \alpha x\)。相邻条纹对应的厚度差为
+\[
+\Delta d=\frac{\lambda}{2n},
+\]
+因此条纹间距为
+\[
+\Delta x=\frac{\lambda}{2n\alpha}.
+\]
+
+\begin{remark}
+这个关系很重要：
+\begin{itemize}
+  \item 劈尖角越大，条纹越密；
+  \item 波长越大，条纹越疏；
+  \item 条纹过密时，实验上就难以分辨。
+\end{itemize}
+也正因为条纹间距和微小厚度变化有关，劈尖干涉常被用来测薄膜厚度或细丝直径。
+\end{remark}
+
+\subsection{牛顿环}
+
+把平凸透镜放在平板玻璃上，中间形成厚度从中心向外逐渐增大的空气薄膜。相同厚度的点构成圆周，所以干涉图样呈同心圆环，这就是牛顿环。
+
+设透镜曲率半径为 \(R\)，第 \(k\) 个暗环半径为 \(r_k\)，则常用关系为
+\[
+r_k^2=kR\lambda.
+\]
+因此若测得第 \(k\) 个暗环和第 \(k+m\) 个暗环的半径，可以消去级次，得到
+\[
+R=\frac{r_{k+m}^2-r_k^2}{m\lambda}.
+\]
+
+\begin{example}[牛顿环测曲率半径]
+在牛顿环实验中，已知单色光波长为 \(\lambda\)，测得第 \(k\) 个暗环半径为 \(r_k\)，第 \(k+m\) 个暗环半径为 \(r_{k+m}\)。求平凸透镜的曲率半径 \(R\)。
+\end{example}
+
+\begin{solution}
+根据暗环半径关系
+\[
+r_k^2=kR\lambda,\qquad r_{k+m}^2=(k+m)R\lambda.
+\]
+两式相减得
+\[
+r_{k+m}^2-r_k^2=mR\lambda.
+\]
+于是
+\[
+R=\frac{r_{k+m}^2-r_k^2}{m\lambda}.
+\]
+这个公式很有实验意义，因为它不要求你准确知道中心是否从第零级开始，只需要测量两个暗环的半径平方差即可。
+\end{solution}
+
+\section{常见误区}
+
+\begin{itemize}
+  \item 只背明暗条件，不判断半波损失。
+  \item 把光程差和几何路程差混为一谈。
+  \item 看到薄膜干涉题就急着代公式，没有先判断观察的是反射光还是透射光。
+\end{itemize}
+
+\section{章末小结}
+
+\summaryline{干涉问题几乎都可以归结为两步：先找光程差，再用明暗条件判断。真正决定熟练度的地方，是你能否在复杂图形中正确处理半波损失，并把几何关系转换成光程差。}
+
+\chapter{光的衍射}
+
+\begin{introduction}
+  \item 理解衍射是波遇到障碍物或小孔时偏离直线传播的现象。
+  \item 掌握单缝衍射中央明纹和暗纹条件的基本结论。
+  \item 认识衍射和干涉的联系与区别。
+\end{introduction}
+
+\section{衍射现象}
+
+光在通过狭缝、孔径或障碍物边缘时，会出现明显的弯曲和扩展，这种现象称为光的衍射。
+
+\begin{note}
+几何光学把光近似成直线，因此会给出清楚的“明区”和“阴影区”。衍射告诉我们：真实光波遇到孔缝时会向阴影区扩展，这正是波动性的体现。
+\end{note}
+
+\section{单缝衍射的暗纹条件}
+
+若单缝宽度为 \(a\)，入射光波长为 \(\lambda\)，则暗纹条件为
+\[
+a\sin\theta=k\lambda,\qquad k=1,2,3,\dots
+\]
+
+中央明纹最宽，且亮度最高，这是单缝衍射最重要的特征之一。
+
+若在透镜焦平面附近观察衍射图样，并采用小角近似，则第 \(k\) 级暗纹到中心的距离约为
+\[
+x_k\approx \frac{k\lambda f}{a}.
+\]
+于是中央明纹宽度约为
+\[
+\Delta x_0\approx \frac{2\lambda f}{a}.
+\]
+
+\begin{remark}
+与干涉条纹“几乎等间距”不同，单缝衍射最突出的是：中央明纹特别宽、特别亮，其他明纹明显较弱。
+\end{remark}
+
+\section{衍射与分辨本领}
+
+衍射不仅会形成条纹，它还决定了光学仪器的分辨极限。任何有限孔径的成像系统，都不可能把点光源成像成理想几何点，而只能成像成一个有限宽度的衍射斑。
+
+\section{分辨本领的初步认识}
+
+衍射说明：光学系统不可能把点光源无限精确地成像成几何点。孔径越小，衍射越明显，成像分辨率就越受限制。
+
+\begin{theorem}[瑞利判据]\label{thm:rayleigh-criterion}
+对于两个强度相等、彼此不相干的点光源，当一个点光源衍射图样的主极大恰好与另一个点光源的第一极小重合时，这两个点光源恰好能够被分辨。
+\end{theorem}
+
+对圆孔衍射，最小分辨角常写成
+\[
+\theta_{\min}\approx 1.22\frac{\lambda}{D},
+\]
+其中 \(D\) 为孔径直径。
+
+\bridge{这个公式很直观：想看得更清楚，可以减小波长，或者增大孔径。这也是显微镜、望远镜、相机都很重视有效孔径的原因。}
+
+\section{光栅衍射}
+
+光栅可以看作许多等间距狭缝的组合。它的图样既包含多缝干涉的主极大，也受到单缝衍射包络的限制。设透光缝宽为 \(a\)，不透光部分宽为 \(b\)，光栅常数为
+\[
+d=a+b.
+\]
+垂直入射时，主极大满足
+\[
+d\sin\theta=k\lambda,\qquad k=0,\pm1,\pm2,\dots
+\]
+这就是光栅方程。
+
+\begin{remark}
+课件把光栅条纹的特点概括为“亮、细、疏”：
+\begin{itemize}
+  \item 亮，是因为很多缝在主极大方向上同相叠加；
+  \item 细，是因为主极大两侧很快出现暗纹；
+  \item 疏，是因为不同级次之间角度间隔通常较大。
+\end{itemize}
+\end{remark}
+
+\subsection{缺级现象}
+
+若某个方向同时满足光栅主极大条件
+\[
+d\sin\theta=k\lambda
+\]
+和单缝衍射暗纹条件
+\[
+a\sin\theta=k'\lambda,
+\]
+那么该方向上的主极大会被单缝包络压掉，这就叫\textbf{缺级}。
+
+两式联立可得
+\[
+\frac{k}{k'}=\frac{d}{a},
+\]
+这就是判断缺级的基本思路。
+
+\begin{example}[缺级判断]
+若光栅常数 \(d=2a\)，问哪些级次的主极大会缺级？
+\end{example}
+
+\begin{solution}
+缺级要求同一方向同时满足
+\[
+d\sin\theta=k\lambda,\qquad a\sin\theta=k'\lambda.
+\]
+相除得
+\[
+\frac{d}{a}=\frac{k}{k'}.
+\]
+由 \(d=2a\) 可知
+\[
+\frac{k}{k'}=2,
+\]
+所以
+\[
+k=2k'.
+\]
+也就是说，偶数级主极大都会缺级，如 \(k=\pm2,\pm4,\pm6,\dots\)。
+\end{solution}
+
+\subsection{光栅光谱}
+
+若白光照射光栅，由于不同波长满足主极大条件的角度不同，除了中央零级仍为白色外，其余各级会展开成彩色光谱。随着级次增大，不同波长之间的角分离通常更明显，但同时更容易发生光谱重叠。
+
+\section{常见误区}
+
+\begin{itemize}
+  \item 把单缝衍射暗纹公式和光栅主极大公式混用。
+  \item 忘记中央明纹宽度是其他明纹宽度的两倍。
+  \item 只背缺级结论，不会从“主极大条件 + 单缝暗纹条件”联立推导。
+\end{itemize}
+
+\section{章末小结}
+
+\summaryline{衍射反映了光的波动性。单缝衍射告诉我们孔缝会让波展开，瑞利判据告诉我们分辨率有极限，光栅衍射则把“多缝干涉 + 单缝包络”的结构完整展示出来。}
+
+\chapter{光的偏振}
+
+\begin{introduction}
+  \item 理解自然光、线偏振光和部分偏振光。
+  \item 学习马吕斯定律和布儒斯特角。
+  \item 从偏振现象理解光是横波。
+\end{introduction}
+
+\section{什么是偏振}
+
+若光波电矢量振动方向在传播方向的垂直平面内具有特定规律，就说光具有偏振性质。
+
+\begin{definition}[自然光]\label{def:natural-light}
+电矢量在垂直于传播方向的平面内沿各个方向随机分布的光，称为\textbf{自然光}。
+\end{definition}
+
+\begin{definition}[线偏振光]\label{def:linearly-polarized-light}
+若电矢量始终沿某一固定方向振动，则称为\textbf{线偏振光}。
+\end{definition}
+
+\begin{note}
+自然光没有固定的优势振动方向；线偏振光则只沿某一个确定方向振动。偏振实验正是区分这两者，并据此说明“光是横波”的关键证据。
+\end{note}
+
+\section{偏振片、起偏和检偏}
+
+偏振片只允许某一特定方向的振动分量通过。自然光经过第一片偏振片后，会变成线偏振光，且光强减半：
+\[
+I=\frac{1}{2}I_{\text{入}}.
+\]
+第一片偏振片常叫起偏器；后面用于分析振动方向的偏振片常叫检偏器。
+
+\begin{remark}
+若转动检偏器时透射光强完全不变，入射光通常是自然光；若光强变化并能出现消光，入射光通常是线偏振光；若变化但始终不能完全熄灭，则常是部分偏振光。
+\end{remark}
+
+\section{马吕斯定律}
+
+若线偏振光通过检偏器，入射偏振方向与检偏方向夹角为 \(\theta\)，则透射光强满足
+\[
+I=I_0\cos^2\theta.
+\]
+
+\begin{example}[两片偏振片]
+自然光依次通过两片偏振片后，若最后的透射光强为入射光强的 \(1/8\)，求两片偏振片偏振化方向的夹角。
+\end{example}
+
+\begin{solution}
+设入射自然光强为 \(I\)。自然光经过第一片偏振片后，光强变为
+\[
+I_1=\frac{I}{2}.
+\]
+再经过第二片偏振片，由马吕斯定律
+\[
+I_2=I_1\cos^2\theta=\frac{I}{2}\cos^2\theta.
+\]
+已知 \(I_2=I/8\)，所以
+\[
+\frac{I}{2}\cos^2\theta=\frac{I}{8}.
+\]
+化简得
+\[
+\cos^2\theta=\frac14,
+\]
+取锐角可得
+\[
+\theta=60^\circ.
+\]
+这道题最容易错在第一步：\textbf{自然光先过第一片偏振片时一定先减半。}
+\end{solution}
+
+\section{反射和折射时的偏振}
+
+光在两种介质界面上发生反射和折射时，反射光和折射光一般都会带有偏振特征，而且偏振程度与入射角有关。最重要的特殊角是布儒斯特角。
+
+\begin{theorem}[布儒斯特定律]\label{thm:brewster-law}
+当入射角为布儒斯特角 \(i_B\) 时，反射光成为完全偏振光，并满足
+\[
+\tan i_B=\frac{n_2}{n_1},
+\]
+其中 \(n_1\) 和 \(n_2\) 分别是入射介质和折射介质的折射率。
+\end{theorem}
+
+在该角度下，反射光与折射光互相垂直。
+
+\bridge{偏光镜能有效削弱路面、水面、玻璃表面的刺眼反光，本质上正是利用了反射光的偏振特征。}
+
+\section{偏振的物理意义}
+
+偏振现象说明：光波的振动方向与传播方向垂直，因此光是横波。
+
+\section{常见误区}
+
+\begin{itemize}
+  \item 忘记自然光先过偏振片后光强减半。
+  \item 把马吕斯定律中的 \(I_0\) 误当成最初自然光光强，而不是进入检偏器前的偏振光光强。
+  \item 只背布儒斯特定律公式，不记得此时反射光和折射光互相垂直。
+\end{itemize}
+
+\section{章末小结}
+
+\summaryline{偏振不是新的光强公式堆积，而是光的横波本质在实验中的直接体现。掌握偏振片、马吕斯定律和布儒斯特定律之后，很多题都可以回到“振动方向分解”这一统一思路。}
+
+\part{热学}
+
+\chapter{气体动理论}
+
+\begin{introduction}
+  \item 从微观粒子运动出发理解压强、温度和内能。
+  \item 建立理想气体模型和状态方程。
+  \item 理解平均平动动能与温度的关系。
+\end{introduction}
+
+\section{理想气体模型}
+
+理想气体是假设分子本身大小忽略不计、分子间除碰撞瞬间外无相互作用的一种理想模型。
+
+\begin{note}
+这并不是说真实气体真的“没有体积、没有作用力”，而是说在压强不太高、温度不太低时，这种理想化已经足够准确。大学物理经常先在理想模型上建立规律，再逐步说明真实情况如何偏离。
+\end{note}
+
+\section{状态方程}
+
+一定质量理想气体的状态方程为
+\[
+pV=\frac{m}{M}RT=nRT.
+\]
+
+这里 \(n\) 是物质的量，\(R\) 是普适气体常量。一定质量的理想气体只要知道 \(p\)、\(V\)、\(T\) 中任意两个量，第三个量就被唯一确定。
+
+\section{压强的微观解释}
+
+气体压强来自大量分子不断撞击器壁。分子运动越剧烈，单位时间内传给器壁的动量变化越大，压强也越大。
+
+进一步的微观推导可得到
+\[
+p=\frac{1}{3}nm\overline{v^2},
+\]
+其中 \(n\) 是单位体积内的分子数密度，\(m\) 是单个分子的质量，\(\overline{v^2}\) 是速率平方的平均值。这个公式把宏观压强和微观无规则热运动直接联系了起来。
+
+\section{温度的微观意义}
+
+理想气体分子的平均平动动能与热力学温度成正比：
+\[
+\overline{E_k}=\frac{3}{2}kT.
+\]
+
+\bridge{这条公式告诉我们：温度高，并不是“分子变多”了，而是“每个分子的平均平动动能变大”了。温度本质上反映的是热运动的剧烈程度。}
+
+\section{麦克斯韦速率分布的直观理解}
+
+同一种气体在热平衡下，并不是所有分子都以同一个速率运动，而是有快有慢，只不过不同速率出现的比例不同。麦克斯韦速率分布描述的正是这种“速率分布规律”。
+
+课件特别强调区分三种常见速率：
+\begin{itemize}
+  \item 最概然速率：出现比例最大的速率；
+  \item 平均速率：所有分子速率的算术平均；
+  \item 方均根速率：与平均动能直接相关的速率。
+\end{itemize}
+
+这三者都会随温度升高而增大，但数值并不相同。初学时先抓住“气体分子速率是分布的，而不是整齐划一的”这一点，比死记分布函数更重要。
+
+\section{自由度与能量均分}
+
+分子的不同运动方式可以用自由度描述。若把分子近似看成刚性分子而忽略振动：
+\begin{itemize}
+  \item 单原子分子通常只有 \(3\) 个平动自由度；
+  \item 双原子分子除了平动外，还常含有转动自由度。
+\end{itemize}
+
+能量均分原理指出：在热平衡时，每一个自由度平均分得的能量为
+\[
+\frac{1}{2}kT.
+\]
+因此，若每个分子具有 \(i\) 个自由度，则单个分子的平均能量可写成
+\[
+\overline{\varepsilon}=\frac{i}{2}kT.
+\]
+对应到 \(n\) mol 理想气体，总内能为
+\[
+U=\frac{i}{2}nRT.
+\]
+
+\begin{remark}
+这也是后面热学里经常写
+\[
+\Delta U=\frac{i}{2}nR\Delta T
+\]
+的根本来源。对理想气体来说，内能只与温度有关，不是凭空规定出来的，而是来自微观自由度和平均能量。
+\end{remark}
+
+\section{常见误区}
+
+\begin{itemize}
+  \item 把压强理解成单个分子的撞击，而忘记它来自大量分子的统计平均。
+  \item 以为所有分子速率都相同。
+  \item 只会写状态方程，不知道温度为什么能和平均动能联系起来。
+\end{itemize}
+
+\section{章末小结}
+
+\summaryline{气体动理论把宏观量和微观模型联系起来：压强来自大量分子的统计碰撞，温度对应平均平动动能，而自由度和能量均分则进一步解释了理想气体内能为什么只与温度有关。}
+
+\chapter{热力学第一定律}
+
+\begin{introduction}
+  \item 明确热量、功、内能的物理意义与符号规定。
+  \item 掌握热力学第一定律及其在等体、等压、等温、绝热过程中的应用。
+  \item 建立“过程量”和“状态量”的区分。
+\end{introduction}
+
+\section{功、热量与内能}
+
+\begin{definition}[热量]\label{def:heat}
+系统与外界通过传热方式交换的能量，称为\textbf{热量}，常记为 \(Q\)。
+\end{definition}
+
+\begin{definition}[内能]\label{def:internal-energy}
+系统内部微观粒子无规则运动的动能以及相互作用势能的总和，称为\textbf{内能}，记为 \(U\)。
+\end{definition}
+
+对理想气体来说，内能只与温度有关。
+
+\section{热力学第一定律}
+
+\begin{theorem}[热力学第一定律]\label{thm:first-law}
+系统从外界吸收的热量，一部分用来增加系统内能，另一部分用来对外做功：
+\[
+Q=\Delta U+A.
+\]
+\end{theorem}
+
+若考虑微元过程，则写成
+\[
+\delta Q=\dd U+\delta A.
+\]
+
+\begin{note}
+这里 \(Q\) 和 \(A\) 是\textbf{过程量}，它们依赖于系统经历的过程；而 \(U\) 是\textbf{状态量}，只与系统当前状态有关。
+\end{note}
+
+\section{准静态过程}
+
+若系统从一个平衡态变化到另一个平衡态的过程中，每一个中间状态都可以近似看作平衡态，这个理想化过程就叫\textbf{准静态过程}。它的重要性在于：只有在这种过程中，我们才能在每一个中间时刻明确地谈论系统的压强 \(p\)，并把功写成积分。
+
+\bridge{“准静态”并不只是“非常慢”的同义词。慢只是手段，真正目的是让系统始终接近平衡态。}
+
+\section{准静态过程中的功}
+
+准静态体积变化过程里，系统对外做功常写为
+\[
+A=\int_{V_1}^{V_2}p\,\dd V.
+\]
+
+若是等压过程，则
+\[
+A=p(V_2-V_1).
+\]
+
+如果过程满足多方关系 \(pV^n=C\)，那么还可以算出
+\[
+A=\frac{p_1V_1-p_2V_2}{n-1}\qquad (n\neq1).
+\]
+这说明等温、绝热、等压、等体这些常见过程，其实都可以看成更一般过程的特例。
+
+\section{四类常见过程}
+
+\subsection{等体过程}
+
+\[
+\dd V=0 \quad \Rightarrow \quad A=0,
+\]
+因此
+\[
+Q=\Delta U.
+\]
+
+对理想气体，
+\[
+\Delta U=\frac{i}{2}nR(T_2-T_1),
+\]
+所以等体过程吸收的热量全部用来改变内能。
+
+\subsection{等压过程}
+
+\[
+Q=\Delta U+p(V_2-V_1).
+\]
+
+若使用定压热容，还可以写成
+\[
+Q=nC_p\Delta T.
+\]
+与等体过程相比，等压过程中气体一边升温，一边还要推动外界，因此在相同温升下所吸收的热量更多。
+
+\subsection{等温过程}
+
+理想气体等温时 \(\Delta U=0\)，所以
+\[
+Q=A.
+\]
+
+又因为
+\[
+p=\frac{nRT}{V},
+\]
+故
+\[
+A=\int_{V_1}^{V_2}p\,\dd V=nRT\ln\frac{V_2}{V_1}.
+\]
+等温膨胀时 \(A>0\)，系统对外做功并吸热；等温压缩时 \(A<0\)，外界对系统做功，系统向外放热。
+
+\subsection{绝热过程}
+
+若系统与外界无热交换，则
+\[
+Q=0,
+\]
+于是
+\[
+\Delta U=-A.
+\]
+
+对于理想气体的准静态绝热过程，还满足
+\[
+pV^\gamma=\text{const},\qquad TV^{\gamma-1}=\text{const},
+\]
+其中
+\[
+\gamma=\frac{C_p}{C_v}.
+\]
+
+\begin{note}
+要特别注意：\textbf{绝热}只表示 \(Q=0\)，\textbf{等温}只表示 \(T\) 不变，它们不是一回事。并且绝热方程只适用于准静态绝热过程，不适用于任意绝热过程。
+\end{note}
+
+\section{绝热自由膨胀}
+
+理想气体向真空中绝热自由膨胀时，没有热交换，也没有外功：
+\[
+Q=0,\qquad A=0.
+\]
+由第一定律得
+\[
+\Delta U=0.
+\]
+对理想气体来说，这进一步意味着
+\[
+\Delta T=0.
+\]
+
+\begin{remark}
+虽然这个过程也是绝热的，但\textbf{不能}写 \(pV^\gamma=\text{const}\)，因为自由膨胀不是准静态过程。原课件对这一点强调得非常明确。
+\end{remark}
+
+\section{循环过程、热机效率与卡诺循环}
+
+系统经历一个完整循环后回到初态，因此
+\[
+\Delta U=0.
+\]
+于是整个循环的净吸热等于净做功：
+\[
+Q_{\text{净}}=A_{\text{净}}.
+\]
+在 \(p\)-\(V\) 图上，循环曲线所围成的面积就表示循环净功。
+
+若热机从高温热源吸热 \(Q_1\)，向低温热源放热 \(Q_2\)，则效率为
+\[
+\eta=\frac{A}{Q_1}=\frac{Q_1-Q_2}{Q_1}=1-\frac{Q_2}{Q_1}.
+\]
+若制冷机从低温热源吸热 \(Q_2\)，外界输入功 \(A\)，则制冷系数为
+\[
+\varepsilon=\frac{Q_2}{A}.
+\]
+
+卡诺循环由两个准静态等温过程和两个准静态绝热过程组成，它的热机效率为
+\[
+\eta_{\text{Carnot}}=1-\frac{T_2}{T_1},
+\]
+只与两个热源温度有关，而与具体工作物质无关。对应的卡诺制冷机有
+\[
+\varepsilon_{\text{Carnot}}=\frac{T_2}{T_1-T_2}.
+\]
+
+\begin{example}[等温压缩与绝热压缩的比较]
+把同一份理想气体从体积 \(V_1\) 压缩到 \(V_2\)（其中 \(V_2<V_1\)），比较等温压缩与绝热压缩时外界所做功的大小。
+\end{example}
+
+\begin{solution}
+等温压缩时，系统可以不断向外放热，因此温度保持不变；绝热压缩时，系统不能放热，外界做的功更多地转化为内能，使温度升高，因此在同一体积下压强更大。
+
+从 \(p\)-\(V\) 图上看，压缩过程中绝热线通常位于等温线之上，因此同样从 \(V_1\) 压缩到 \(V_2\) 时，绝热过程曲线下方的面积更大，也就意味着外界需要做更多功。
+
+所以，\textbf{绝热压缩所需外功大于等温压缩}。这个结论比单纯记住某一个数值公式更重要。
+\end{solution}
+
+\section{常见误区}
+
+\begin{itemize}
+  \item 把 \(Q\)、\(A\) 和 \(U\) 都当成状态量。
+  \item 看见“绝热”就立刻套 \(pV^\gamma=\text{const}\)，忽略了是否准静态。
+  \item 忘记循环过程里 \(\Delta U=0\)。
+\end{itemize}
+
+\section{章末小结}
+
+\summaryline{热力学第一定律本质上是能量守恒在热现象中的表达。真正决定解题成败的，不是公式背得多快，而是你能否先辨认过程类型、判断符号，并清楚哪些关系只适用于准静态过程。}
+
+\chapter{热力学第二定律}
+
+\begin{introduction}
+  \item 理解热现象中的方向性问题。
+  \item 学习热力学第二定律的两种常见表述。
+  \item 初步理解可逆过程、不可逆过程和熵的概念。
+\end{introduction}
+
+\section{为什么还需要第二定律}
+
+第一定律只告诉我们能量守恒，却没有告诉我们过程能否自发发生。例如热量从高温物体传到低温物体是自发的，但反向过程不会自发发生。要描述这种方向性，就需要第二定律。
+
+\section{第二定律的两种经典表述}
+
+\begin{theorem}[开尔文表述]\label{thm:kelvin-statement}
+不可能从单一热源吸热，并把吸收的热量全部转化为有用功而不产生其他影响。
+\end{theorem}
+
+\begin{theorem}[克劳修斯表述]\label{thm:clausius-statement}
+热量不可能自发地从低温物体传到高温物体而不引起其他变化。
+\end{theorem}
+
+\section{可逆过程与不可逆过程}
+
+\begin{definition}[可逆过程]\label{def:reversible-process}
+若系统和外界都能沿原路径严格返回初态，并且不留下任何额外影响，则该过程称为\textbf{可逆过程}。
+\end{definition}
+
+现实中的大多数过程都是不可逆过程，例如有摩擦的机械过程、有限温差传热、自由膨胀等。
+
+\begin{note}
+“能反着做回来”并不等于“可逆”。可逆要求系统和外界都恢复原状，且不留下任何额外影响，这是很强的条件，所以现实过程大多只是“接近可逆”，很少真正可逆。
+\end{note}
+
+\section{熵的初步概念}
+
+熵用于描述过程的方向性与系统的无序程度。在可逆过程中，熵变可写为
+\[
+\Delta S=\int \frac{\delta Q_{\text{rev}}}{T}.
+\]
+
+\begin{note}
+初学时不必把熵神秘化。你可以先把它理解成：\textbf{一个帮助我们判断热过程是否可能自发进行的状态量}。
+\end{note}
+
+\begin{remark}
+式子中的 \(\delta Q_{\text{rev}}\) 非常关键。熵的定义使用的是可逆过程中的热量元。但由于熵是状态量，给定初态和末态后，\(\Delta S\) 与真实过程无关，所以即使真实过程不可逆，我们仍可以假想一条方便计算的可逆路径来求熵变。
+\end{remark}
+
+\section{理想气体的常见熵变公式}
+
+对理想气体，几类常见过程的熵变公式为：
+\begin{itemize}
+  \item 等体过程：
+  \[
+  \Delta S=nC_v\ln\frac{T_2}{T_1};
+  \]
+  \item 等压过程：
+  \[
+  \Delta S=nC_p\ln\frac{T_2}{T_1};
+  \]
+  \item 等温过程：
+  \[
+  \Delta S=nR\ln\frac{V_2}{V_1}=nR\ln\frac{p_1}{p_2};
+  \]
+  \item 准静态绝热过程：
+  \[
+  \Delta S=0.
+  \]
+\end{itemize}
+
+\bridge{熵变计算的核心不是“背更多公式”，而是：先确认初末状态，再选择一条最容易积分的可逆路径。}
+
+\begin{example}[等压升温的熵变]
+1 mol 单原子理想气体在恒压下从 \(\SI{300}{K}\) 加热到 \(\SI{400}{K}\)。求该气体的熵变。
+\end{example}
+
+\begin{solution}
+等压过程可直接用
+\[
+\Delta S=nC_p\ln\frac{T_2}{T_1}.
+\]
+对 1 mol 单原子理想气体，
+\[
+C_p=\frac{5}{2}R.
+\]
+因此
+\[
+\Delta S=\frac{5}{2}R\ln\frac{400}{300}.
+\]
+代入 \(R=\SI{8.31}{J/(mol\cdot K)}\)，得
+\[
+\Delta S\approx \SI{5.98}{J/K}.
+\]
+熵变为正，这和“系统吸热后可达到更多可能微观状态”相一致。
+\end{solution}
+
+\section{熵增加原理}
+
+对于孤立系统或绝热系统，第二定律可进一步写为
+\[
+\Delta S\ge 0.
+\]
+可逆过程取等号，不可逆过程取大于号。这就是熵增加原理。
+
+\begin{example}[绝热自由膨胀的熵变]
+理想气体向真空中绝热自由膨胀，判断其熵变的符号。
+\end{example}
+
+\begin{solution}
+这个过程满足
+\[
+Q=0,\qquad A=0,
+\]
+对理想气体还有 \(\Delta T=0\)。但这并不意味着熵变为零，因为该过程是不可逆的。
+
+由于熵是状态量，我们可以用一条连接同样初末状态的可逆等温膨胀路径来计算：
+\[
+\Delta S=nR\ln\frac{V_2}{V_1}.
+\]
+自由膨胀时 \(V_2>V_1\)，所以
+\[
+\Delta S>0.
+\]
+这正说明：\textbf{绝热并不必然意味着熵不变，只有准静态可逆绝热过程才满足 \(\Delta S=0\)。}
+\end{solution}
+
+\section{统计熵的直观解释}
+
+玻尔兹曼把熵写成
+\[
+S=k\ln\Omega,
+\]
+其中 \(\Omega\) 表示某个宏观态所对应的微观态数。微观态数越大，系统可实现的方式越多，熵也越大。
+
+\begin{remark}
+这给了熵一个更直观的理解：许多自发过程之所以会发生，是因为系统自然倾向于走向“可能实现的微观状态更多”的方向。热传导、扩散和自由膨胀都可以这样理解。
+\end{remark}
+
+\section{常见误区}
+
+\begin{itemize}
+  \item 把“绝热”误认为“熵不变”。
+  \item 忘记熵变只和初末状态有关，可以借助假想可逆路径计算。
+  \item 只会背第二定律表述，却不会把它和热机效率、自由膨胀、热传导联系起来。
+\end{itemize}
+
+\section{章末小结}
+
+\summaryline{第二定律回答的不是“能量够不够”，而是“过程有没有方向”“能不能自发发生”。熵把这种方向性定量化了：可逆过程熵不变，不可逆过程熵增加，而统计熵又从微观态数的角度给出了更深的解释。}
+
+\part{期末总复习}
+
+\chapter{大学物理一总复习}
+
+\begin{introduction}
+  \item 按“概念—公式—方法—误区”四条主线回顾全书。
+  \item 把期末复习资料中的综合思路并入统一笔记体系。
+  \item 帮助读者在考前建立跨章节联结，而不是零散背题。
+\end{introduction}
+
+\section{力学部分总串讲}
+
+力学部分最重要的逻辑顺序是：
+\begin{enumerate}
+  \item 先用运动学描述位置、速度、加速度；
+  \item 再用动力学解释加速度为何产生；
+  \item 当过程复杂时，切换到守恒定律；
+  \item 若物体不能再当质点，就切换到刚体模型。
+\end{enumerate}
+
+\section{振动与波动部分总串讲}
+
+机械振动要抓住简谐模型：
+\[
+x=A\cos(\omega t+\varphi_0).
+\]
+机械波要抓住波动方程和相位差：
+\[
+y=A\cos(\omega t-kx+\varphi_0).
+\]
+
+两者的核心区别在于：振动研究一个点怎样周期变化，波动研究这种变化怎样在空间中传播。
+
+\section{光学部分总串讲}
+
+光学部分最值得抓住的一条主线是：\textbf{先分清现象由什么物理量控制，再决定用哪条公式。}
+\begin{itemize}
+  \item 干涉看光程差，重点是明暗条件与半波损失；
+  \item 衍射看孔缝对波阵面的限制，重点是单缝暗纹条件、中央明纹、光栅方程与缺级；
+  \item 偏振看振动方向，重点是马吕斯定律和布儒斯特定律。
+\end{itemize}
+
+\begin{exercise}[光学复习的第一步]
+面对一道波动光学题时，第一步最应该先判断什么？
+\end{exercise}
+
+\begin{solution}
+第一步不是急着代公式，而是先判断题目属于哪一种物理现象：
+\begin{itemize}
+  \item 如果核心是两路光叠加出现明暗，通常是干涉；
+  \item 如果核心是孔缝导致图样展开或成像分辨率受限，通常是衍射；
+  \item 如果核心是振动方向与偏振片夹角，通常是偏振。
+\end{itemize}
+现象一旦判断错，后面的整套公式往往都会跟着错。
+\end{solution}
+
+\section{热学部分总串讲}
+
+热学部分建议按“微观解释一能量守恒一方向判断”的顺序复习：
+\begin{itemize}
+  \item 气体动理论解释压强、温度、内能从哪里来；
+  \item 第一定律处理 \(Q\)、\(A\)、\(\Delta U\) 的能量收支；
+  \item 第二定律处理可逆性、热机极限和熵变方向。
+\end{itemize}
+
+\begin{remark}
+热学最常见的三类混淆是：把状态量和过程量混淆，把“绝热”和“等温”混淆，把“可逆绝热”和“任意绝热”混淆。只要这三组关系理顺，很多题在起步阶段就不会跑偏。
+\end{remark}
+
+\section{综合题常用切入方法}
+
+\begin{enumerate}
+  \item 看到“初末状态已知、过程较复杂”，优先想状态量和守恒量。
+  \item 看到热学多过程题，先逐段列出每一段的 \(Q\)、\(A\)、\(\Delta U\)，最后再求总量。
+  \item 看到图像题，先判断图是 \(x\)-\(t\)、\(v\)-\(t\)、\(p\)-\(V\) 还是 \(p\)-\(T\)，不要把坐标看错。
+  \item 看到波动光学题，先标清哪两束光在叠加、是否存在半波损失、观察的是反射还是透射。
+\end{enumerate}
+
+\section{跨章节易错点对照}
+
+\begin{itemize}
+  \item 位移与路程：一个是矢量，一个是标量。
+  \item 速度与速率：一个有方向，一个只看大小。
+  \item 功、热量与内能：前两者是过程量，后者是状态量。
+  \item 干涉与衍射：前者强调多路相干叠加，后者强调孔缝导致的波阵面展开。
+  \item 绝热与等温：前者限制热交换，后者限制温度变化。
+  \item 准静态绝热与自由膨胀：前者可用绝热方程，后者不能。
+\end{itemize}
+
+\section{复习建议}
+
+\begin{remark}
+\begin{enumerate}
+  \item 先复习定义，再复习公式，不要倒过来。
+  \item 每个公式都要会说“它适用于什么条件”。
+  \item 每章至少做两类题：一类基础题，一类综合题。
+  \item 容易混淆的成对概念要专门对照：位移/路程，速度/速率，静摩擦/滑动摩擦，过程量/状态量，干涉/衍射，绝热/等温。
+\end{enumerate}
+\end{remark}
+
+\end{document}
