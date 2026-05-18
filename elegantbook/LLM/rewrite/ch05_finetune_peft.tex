@@ -1,0 +1,660 @@
+\chapter{微调路线图：SFT、PEFT、LoRA、QLoRA 与 PEFT 实战}
+
+\begin{introduction}
+\item {\heiti 本章核心问题}：当提示工程已经不够时，企业知识助手究竟应该选 SFT、PEFT、LoRA、QLoRA 还是继续预训练，判断顺序是什么？
+\item {\heiti 主案例推进}：把企业知识助手从“会调模型”推进到“会改模型”，建立一条能落到预算、数据和部署形态上的改造路线。
+\item {\heiti 读完后能做什么}：看到“模型不够像企业助手”时，先分清是知识问题、行为问题、领域分布问题还是部署问题，再决定该不该训练、训练到哪一层。
+\end{introduction}
+
+\section{学习目标}
+\begin{itemize}
+  \item 理解提示工程、SFT、PEFT、LoRA、QLoRA 与继续预训练在模型改造中的职责边界。
+  \item 掌握基座模型选择、训练数据质检、LoRA 参数设置和适配器管理的基本工程原则。
+  \item 能为企业知识助手设计一条从“小修小补”到“正式训练”的渐进式改造路线。
+  \item 知道如何识别灾难性遗忘、过拟合、loss 异常和部署错位等常见失败模式。
+\end{itemize}
+
+\section{问题背景}
+到了这一步，企业知识助手通常已经具备了最小可用闭环：能接收问题、能调用模型、也能接入基础检索。但团队很快会遇到新的不满。第一类不满来自{\heiti 行为稳定性}：模型有时能答对，却总是不按企业要求输出，比如缺少“结论-依据-建议动作”结构，或者本该拒答时仍在猜。第二类不满来自{\heiti 任务适配性}：模型对企业内部术语、工单格式、审批流转话术、常见归因标签的把握仍然不稳。
+
+此时最危险的误判，是把所有改进都压缩成一句话：{\heiti “那我们去微调一下模型。”} 这句话的问题不在于错，而在于它太模糊。它没有回答四个关键问题：到底是知识不在模型里，还是模型不会按要求表达；到底是输出格式不稳，还是领域语言分布不熟；到底线上只服务一个场景，还是要维护多个业务子任务；到底算力预算允许多重的训练方案。
+
+因此，本章不是把 SFT、PEFT、LoRA、QLoRA 当成并列术语逐个介绍，而是要建立一条\textbf{先判断、再训练、最后部署}的决策链。对工程团队来说，训练不是起点，而是排除更便宜方案之后才进入的中段动作。只有这样，后面的数据工程、评测、对齐和分布式训练才不会变成一串彼此脱节的高级词汇。
+
+\section{核心概念}
+\subsection{模型改造不是一道单选题，而是一道决策阶梯}
+如果把模型改造手段按侵入性和成本从低到高排开，可以得到一条更适合工程实践的阶梯：
+\begin{enumerate}
+  \item \textbf{提示工程}：不改参数，只改输入组织、角色约束、输出格式和拒答规则。
+  \item \textbf{SFT}：用高质量样本把“应该怎样回答”写进模型行为。
+  \item \textbf{PEFT / LoRA / QLoRA}：在不大动原模型的前提下，低成本地让模型适配某类任务。
+  \item \textbf{继续预训练}：当领域语言分布、术语体系和文档风格与基座模型差得太远时，再去改更底层的语言分布。
+  \item \textbf{全参数微调}：只在资源充足、任务非常关键、且已经明确需要深度改造时才考虑。
+\end{enumerate}
+
+这条阶梯真正重要的，不是记住顺序，而是记住每一级在回答不同的问题。提示工程回答“如何把现有能力用好”；SFT 回答“如何把行为和格式训稳”；PEFT 回答“如何在预算内做训练”；继续预训练回答“模型是否连这个领域的语言都还没吃透”；全参数微调则回答“我们是否愿意为更深层的改动支付更高成本”。
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+  font=\small,
+  box/.style={llm box, minimum width=3.15cm, minimum height=1cm},
+  arr/.style={llm arr}
+]
+\node[box] (prompt) {Prompt\\先改输入编排\\最低成本};
+\node[box, right=0.9cm of prompt] (sft) {SFT\\稳格式与行为\\改任务习惯};
+\node[box, right=0.9cm of sft] (lora) {LoRA / QLoRA\\低成本训练\\适配具体任务};
+\node[box, right=0.9cm of lora] (cpt) {继续预训练\\改语言分布\\代价更高};
+\draw[arr] (prompt) -- (sft);
+\draw[arr] (sft) -- (lora);
+\draw[arr] (lora) -- (cpt);
+\end{tikzpicture}
+\caption{企业知识助手的模型改造决策阶梯}
+\label{fig:finetune-ladder}
+\end{figure}
+
+\subsection{先回答四个问题，再决定训不训练}
+旧稿里相关内容分散在多个 chapter，合起来后最该沉淀成下面四个判断问题：
+\begin{enumerate}
+  \item \textbf{事实是动态的吗？} 如果答案依赖频繁更新的制度、流程或权限状态，优先考虑 RAG，而不是训练。
+  \item \textbf{问题是知识缺失，还是行为失控？} 如果知识通常给够了，但模型不按格式答、不会拒答、不会先给依据，那么更像行为问题。
+  \item \textbf{领域语言是否陌生？} 如果企业内部充满缩略语、日志片段、半结构化表格语言，基座模型可能先天不熟。
+  \item \textbf{部署形态是否多场景并存？} 如果线上要在多个业务场景间切换，适配器通常比维护多套全量权重更现实。
+\end{enumerate}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{3.2cm}>{\raggedright\arraybackslash}p{3cm}>{\raggedright\arraybackslash}X}
+\toprule
+\textbf{观察到的现象} & \textbf{更像什么问题} & \textbf{优先动作} \\
+\midrule
+回答依赖最新制度，但模型经常引用旧规则 & 知识接入问题 & 先修 RAG、文档更新链路与引用机制 \\
+知识通常给够，但模型不按模板输出 & 任务行为问题 & 先改 prompt，再考虑 SFT \\
+模型看不懂内部术语、日志缩写或行业黑话 & 领域分布问题 & 评估继续预训练或更贴近领域的基座模型 \\
+多个子任务都要上线，且需要频繁切换能力 & 部署与运维问题 & 优先适配器路线，不要堆多套全量权重 \\
+\bottomrule
+\end{tabularx}
+\caption{是否进入训练阶段，先看问题属于哪一层}
+\label{tab:finetune-routing}
+\end{table}
+
+\subsection{SFT 在改什么，不在改什么}
+SFT 的优化目标仍然是交叉熵，只是训练数据从通用语料换成了更贴近任务的输入输出样本：
+\[
+\mathcal{L}_{\mathrm{SFT}}=-\sum_{t=1}^{T}\log p_\theta(y_t \mid x, y_{<t}).
+\]
+这里 \(x\) 可以是指令、上下文和检索到的材料，\(y\) 是理想回答。工程上要抓住一点：\textbf{SFT 改的主要是行为分布，而不是事实来源。} 它最适合解决以下问题：
+\begin{itemize}
+  \item 固定回答结构，例如先结论、再依据、最后动作建议。
+  \item 稳定拒答行为，例如材料不足时明确说明“无法判断”。
+  \item 统一企业术语、语气、称谓和流程说明方式。
+  \item 把一类重复出现的任务做成习惯，例如工单摘要、标签归因、FAQ 改写。
+\end{itemize}
+
+但 SFT 也有明确边界。它不适合代替实时知识接入；它不能自动解决权限控制；它也无法弥补评测缺失。如果用过窄的数据去训练，它还会把模型推向过度模板化，甚至在新输入上表现变差。
+
+\subsection{继续预训练与 SFT 不是一回事：两阶段路线什么时候成立}
+旧稿里有一条很重要的训练路线，在新版里还值得说得更直白一些：\textbf{继续预训练改的是语言分布和领域熟悉度，SFT 改的是任务行为和回答习惯。} 二者经常连用，但不能混成一个动作。
+
+如果模型对企业术语、表述风格、长文档结构和内部缩略语明显陌生，那么先做一轮继续预训练往往更合理。它解决的是“模型看这种材料是否顺手”。等模型对领域语言不再那么陌生之后，再用 SFT 去教“该怎么答”“什么时候拒答”“引用格式长什么样”，收益通常更稳定。
+
+这里还有一个很实用的细节：为了缓解继续预训练导致的通用能力遗忘，领域数据外通常要混入一部分通用语料或多任务指令数据，而不是整轮训练都只喂企业文本。比例没有万能答案，但工程上至少要有这种意识：\textbf{如果你在改语言分布，就要同时防止把原有通用分布挤掉。} 旧稿里提到的 MIP，本质上也是在用多任务样本提前给后续 SFT 铺路。
+
+\subsection{训练之前，先选对基座模型}
+很多微调失败，其实在“开训之前”就埋下了。基座模型选型至少要考虑五个维度：
+\begin{enumerate}
+  \item \textbf{能力底座}：通用问答、长上下文、中文能力、工具调用习惯是否达标。
+  \item \textbf{模型形态}：是更适合直接做 SFT 的 base model，还是已经较成熟、适合快速适配的 chat model。
+  \item \textbf{分词与上下文长度}：企业文档是否大量包含英文缩写、代码片段、表格字段和长段材料。
+  \item \textbf{许可与部署边界}：能否商用、是否允许权重二次分发、是否与团队现有推理栈兼容。
+  \item \textbf{后续训练空间}：现有算力能否支撑该模型做 LoRA、QLoRA 或继续预训练。
+\end{enumerate}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{2.8cm}>{\raggedright\arraybackslash}p{3.5cm}>{\raggedright\arraybackslash}X}
+\toprule
+\textbf{选型问题} & \textbf{更偏向哪种选择} & \textbf{原因} \\
+\midrule
+资源有限，只想先把任务做稳 & 现成 chat model & 指令跟随能力更成熟，启动成本更低 \\
+想做更深的领域继续训练 & base model 或更“干净”的底座 & 更适合做较大幅度的分布改造 \\
+文档很长、表格多、字段混杂 & 长上下文能力更强的模型 & 可减少过早切片和信息截断 \\
+线上要多任务切换 & 生态成熟、适配器支持好的模型 & 后续便于 LoRA/QLoRA 与多适配器管理 \\
+\bottomrule
+\end{tabularx}
+\caption{基座模型选择要先于训练方法选择}
+\label{tab:base-model-choice}
+\end{table}
+
+\begin{note}
+旧稿里提到“资源有限就在 chat 模型上做 SFT，资源充足再考虑 base 模型”，这句话在工程上仍然成立，但要加一句前提：前提是你清楚自己要改的是行为还是语言分布。行为适配通常更适合沿着成熟 chat 底座前进，分布改造才更偏向 base 底座。
+\end{note}
+
+\subsection{训练数据质量，比训练方法名字更决定结果}
+很多团队花大量时间讨论 LoRA 还是 QLoRA，却没有先回答“训练数据到底好不好”。这在教材里必须讲清楚。对企业知识助手来说，SFT 或 PEFT 数据至少需要通过下面几道质检：
+\begin{itemize}
+  \item \textbf{任务边界清楚}：样本到底是在训练总结、分类、问答，还是训练拒答、澄清与引用。
+  \item \textbf{输出格式固定}：同一类任务不能一半写成自然段，一半写成 JSON，再一半写成列表。
+  \item \textbf{材料与答案对应}：回答里的依据必须真的来自输入，不要偷偷把标注者外部知识写进去。
+  \item \textbf{拒答样本充足}：只给“有答案”的样本，会把模型训练成逢问必答。
+  \item \textbf{评测切分独立}：训练集与评测集不能只改几个同义词，否则会高估效果。
+\end{itemize}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{2.8cm}>{\raggedright\arraybackslash}X}
+\toprule
+\textbf{质检项} & \textbf{企业知识助手里的具体要求} \\
+\midrule
+代表性 & 同时覆盖制度问答、工单摘要、术语说明、异常拒答等高频任务 \\
+比例平衡 & 不让某一个最容易构造的大类样本压倒其他任务分布 \\
+负样本设计 & 明确包含“材料不足”“权限不足”“问题越权”等拒答样本 \\
+引用习惯 & 回答里需要能追溯到材料段落、条目或字段 \\
+人工审校 & 至少对高风险任务做人工抽样，避免把错误答案大规模写进训练集 \\
+\bottomrule
+\end{tabularx}
+\caption{训练数据不过关，再轻量的微调也会被带偏}
+\label{tab:finetune-data-qc}
+\end{table}
+
+\subsection{Chat 基座的输入格式必须服从原协议}
+对 chat model 做 SFT 时，最容易被低估的一件事，不是学习率，而是\textbf{输入格式是否仍然服从基座模型原来的对话协议。} 如果基座模型原本依赖特定的 system/user/assistant 模板、特殊分隔符或聊天模板，而训练数据却随意拼成“问题 + 答案”纯文本，模型学到的往往不是任务本身，而是一种与原分布冲突的新输入格式。
+
+多轮对话样本也一样。更稳的组织方式不是把几轮聊天直接揉成一段长字符串，而是保留轮次结构、角色边界和关键中间状态。对企业知识助手来说，尤其要小心把“工具结果”“引用材料”“系统规则”这几类消息混成同一层文本，否则模型会在训练里学会错误的职责边界。
+
+\subsection{多轮 SFT 样本不是把聊天记录直接拼起来}
+旧稿里有不少对话式样本，但如果直接把业务聊天记录原样拷进训练集，模型往往会学到大量不该学的东西：口头省略、角色越界、上下文泄漏、工具输出与最终回答不分层，甚至把人工兜底话术也当成常规回答。教材里必须把这一点讲清楚：\textbf{多轮 SFT 的重点不是“轮数多”，而是每一轮都保留正确职责。}
+
+对企业知识助手来说，多轮样本至少要显式区分四类信息：
+\begin{itemize}
+  \item \textbf{系统规则}：例如回答必须给依据、权限不足要拒答、术语要按内部口径解释。
+  \item \textbf{用户意图}：用户问了什么，是否发生追问、改写、补充条件。
+  \item \textbf{工具或检索结果}：哪些内容来自知识库、检索片段、结构化字段或外部工具。
+  \item \textbf{助手动作}：模型最终该如何作答、何时澄清、何时拒答、何时引用证据。
+\end{itemize}
+
+如果这四类信息混在一起，模型就很容易学出错误边界。典型坏例子包括：把检索片段误当用户原话，把工具返回的半结构化字段改写成似是而非的自然语言，把系统规则写成像普通正文一样的句子，或者在训练里让助手直接复述内部控制指令。它们都会让模型在推理时更难区分“哪些话是约束，哪些话是证据，哪些话是该对用户说的”。
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{2.8cm}>{\raggedright\arraybackslash}p{3.2cm}>{\raggedright\arraybackslash}X}
+\toprule
+\textbf{样本层} & \textbf{应该保留什么} & \textbf{最常见的坏写法} \\
+\midrule
+System 层 & 回答规则、权限边界、引用要求 & 把规则揉进用户输入，导致职责边界消失 \\
+User 层 & 原始问题、追问、补充条件 & 多轮合并成一段散文，看不出轮次变化 \\
+Tool / Context 层 & 检索证据、表格字段、工具返回 & 不标来源，模型学不会“哪些是依据” \\
+Assistant 层 & 最终回答、澄清、拒答、下一步建议 & 夹带标注者解释，或把中间思考暴露成最终输出 \\
+\bottomrule
+\end{tabularx}
+\caption{多轮 SFT 不是聊天记录归档，而是把角色与职责结构化}
+\label{tab:multi-turn-sft-structure}
+\end{table}
+
+更进一步说，多轮样本还要控制上下文长度。不是所有历史轮次都值得保留到训练样本里。若某些前文已经只剩寒暄、重复确认或无关岔题，更稳的做法是做摘要化保留，或者直接截断到和当前回答真正相关的轮次。否则模型会被教成过度依赖冗长历史，而这正会在部署时放大上下文成本。
+
+\subsection{SFT 的 loss mask：不是所有 token 都该学习}
+旧稿里虽然更多从数据格式和训练脚本角度展开，但教材版最好把一个极关键的工程判断直接写出来：\textbf{SFT 不是看见什么 token 都去学什么 token。} 在对话式训练里，很多部分只是上下文条件，例如 system 规则、用户问题、检索材料、工具返回；真正希望模型学会主动生成的，通常主要是 assistant 一侧的目标输出。
+
+如果这层边界不清，训练就会出现两个常见副作用。第一，模型被迫去“复述输入”，于是回答更容易模板化、啰嗦化，甚至学会把引用材料整段搬回去。第二，团队明明想让模型学会“如何回答”，最后却让 loss 大量消耗在“如何把已经给出的上下文再预测一遍”上。也就是说，\textbf{loss mask 不是脚本细节，而是在决定训练信号到底落在哪里。}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{3cm}>{\raggedright\arraybackslash}p{3.2cm}>{\raggedright\arraybackslash}X}
+\toprule
+\textbf{样本部分} & \textbf{更常见的处理} & \textbf{为什么这样处理} \\
+\midrule
+system / instruction & 多数场景只作为条件，不作为主学习目标 & 它是在约束回答，不是让模型逐字复写 \\
+user 问题 & 主要作为条件输入 & 重点是根据问题回答，而不是背问题本身 \\
+tool / context 证据 & 通常作为条件输入，必要时局部监督引用格式 & 避免模型把原文大段复述成“会答” \\
+assistant 目标输出 & 主要参与监督 & 这是团队真正希望模型稳定学会的行为 \\
+\bottomrule
+\end{tabularx}
+\caption{SFT 的监督重点通常应落在模型要主动生成的那一侧}
+\label{tab:sft-loss-mask}
+\end{table}
+
+对企业知识助手来说，这条纪律尤其重要。我们往往希望模型学会的是“先给结论，再给依据，再给下一步动作”“证据不足时要明确拒答”“工单摘要字段要按固定顺序输出”。这些都属于 assistant 行为目标。若把 loss 广泛打到所有上下文 token 上，模型更可能学会冗长复述，而不是学会受控作答。
+
+\subsection{LoRA 持续训练与初始化：别把适配器当成一次性补丁}
+当团队开始持续迭代 LoRA 时，旧稿里还有两条很值得保留的细节。第一，继续训练时要先想清楚：\textbf{是在已有 LoRA 上直接续训，还是先 merge 回 base 再开始新的适配器训练。} 如果任务边界基本不变，只是补更多同类样本，直接续训更省事；如果任务目标已经明显变化，或者担心旧适配器偏差被继续放大，先 merge 回 base 或重新起一个新适配器通常更稳。
+
+第二，LoRA 初始化策略本身也带着工程目的。常见做法是让一侧矩阵随机初始化、另一侧近似零初始化，使得训练刚开始时 LoRA 增量几乎不扰动原模型输出。这样做的价值不是“更优雅”，而是让系统在训练初期更稳，不会因为一上来改动过大而把基座行为迅速冲坏。对企业场景来说，这种保守起步往往比追求更激进的初始变化更重要。
+
+\subsection{训练前先做一张显存账本}
+QLoRA 让更多团队“训得起”，但在真正开训之前，最好还是先把显存账算一遍。工程上至少要区分三块：\textbf{静态显存}主要来自基座权重和优化器状态，\textbf{动态显存}主要来自激活、batch 和序列长度，另外还有\textbf{策略性开销}，例如梯度检查点、k-bit 加载和额外模块保存带来的变化。
+
+因此，训练前的动作不该只是“试试能不能跑起来”，而应包括：是否需要 \texttt{load\_in\_8bit} 或更低比特路线；是否要打开 gradient checkpointing 去换时间省激活；哪些模块必须保留全精度保存；当前 batch 和最大长度是否已经把动态显存推到危险区。把这张账先算清楚，很多“训练一半才 OOM”或“为什么这个配置慢成这样”的问题会少很多。
+
+\subsection{灾难性遗忘与过拟合：轻量微调也躲不过}
+旧稿里把灾难性遗忘讲得比较散，这里把它收束成一个工程判断。所谓灾难性遗忘，不是“模型突然什么都不会了”，而是模型为了贴合一小块新数据，把原本较稳的通用行为挤掉了。它常见于三种情况：
+\begin{enumerate}
+  \item 学习率过大，把模型快速推离原分布。
+  \item 训练数据过窄，只覆盖某一种模板或少量输入形态。
+  \item 评测过于单一，让团队误以为“这类输出更整齐”就等于“整体更好”。
+\end{enumerate}
+
+缓解方法并不神秘，通常来自更保守的训练习惯：
+\begin{itemize}
+  \item 使用更小的学习率，尤其不要让微调学习率大于基础预训练阶段常见量级。
+  \item 在领域数据外混入一定比例的通用样本，维持基础行为不被彻底挤掉。
+  \item 不只看 loss，还要看真实业务样本回放和独立评测集。
+  \item 让训练目标更窄而不是更杂，一次只解决一类明显的问题。
+\end{itemize}
+
+\subsection{PEFT 的价值，不只是省显存}
+PEFT 经常被初学者理解为“显存不够时的替代方案”，这不完整。它至少同时解决四件事：
+\begin{itemize}
+  \item \textbf{降低训练成本}：只更新少量参数，显存和反向传播代价更低。
+  \item \textbf{降低存储成本}：每个任务只需保存适配器，而不是整套大权重。
+  \item \textbf{提升多任务可维护性}：多个任务可以共享同一底座模型。
+  \item \textbf{降低回滚成本}：某个适配器训练坏了，替换或下线它比回滚整套模型容易。
+\end{itemize}
+
+因此，PEFT 不只是“穷人的全参微调”，而是企业多任务场景里的默认工程形态。它让“一个底座 + 多个可切换任务适配器”成为现实，这对后期服务治理非常关键。
+
+\subsection{LoRA 为什么会成为默认路线}
+LoRA 的核心形式是把权重增量写成低秩分解：
+\[
+\Delta W = BA,
+\]
+其中 \(A \in \mathbb{R}^{r \times d_{\mathrm{in}}}\)，\(B \in \mathbb{R}^{d_{\mathrm{out}} \times r}\)，\(r\) 远小于原矩阵维度。工程上可以把它理解成：不直接大规模改原矩阵，而是附加一块可学习的低秩“补丁”。
+
+它流行不是因为概念新，而是因为非常符合工程团队的利益：
+\begin{itemize}
+  \item 它通常只改少量参数，训练开销小。
+  \item 它可以独立保存、按需加载、必要时再合并回基座权重。
+  \item 它与现有 Transformers、PEFT、推理框架的生态配合成熟。
+\end{itemize}
+
+\subsection{LoRA 的关键超参数该怎么理解}
+旧稿里关于 rank、alpha、target modules、dropout 的材料很多，这里把它压成最实用的工程判断：
+\begin{itemize}
+  \item \textbf{rank \(r\)}：决定适配器容量。太小可能学不动，太大则更容易过拟合，也增加显存与训练成本。
+  \item \textbf{lora\_alpha}：缩放增量强度。工程上常用“先让 alpha 与 rank 同量级，再主要调学习率”的简化策略。
+  \item \textbf{target\_modules}：决定把适配器挂到哪些线性层。最常见的是注意力投影层，如 \texttt{q\_proj}、\texttt{v\_proj}，但不同模型命名不同。
+  \item \textbf{dropout}：在数据量不大时有助于缓解过拟合，但不是万能药。
+\end{itemize}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{2.6cm}>{\raggedright\arraybackslash}p{3.2cm}>{\raggedright\arraybackslash}X}
+\toprule
+\textbf{参数} & \textbf{优先怎么设} & \textbf{调参时主要观察什么} \\
+\midrule
+\(r\) & 从较小值起步，再逐步放大 & 任务是否学得动、是否开始模板化或过拟合 \\
+\texttt{lora\_alpha} & 先与 \(r\) 同量级 & 输出变化是否过猛、训练是否不稳定 \\
+\texttt{target\_modules} & 先从最常见的注意力投影层开始 & 真正被更新的参数比例、收益是否集中 \\
+\texttt{dropout} & 数据少时保守加一点 & 是否缓解过拟合、是否伤害稳定性 \\
+\bottomrule
+\end{tabularx}
+\caption{LoRA 调参先从保守配置开始，再逐步加容量}
+\label{tab:lora-hyperparams}
+\end{table}
+
+\subsection{target\_modules 选在哪里，决定你到底在改什么}
+很多初学者把 \texttt{target\_modules} 理解成“照着别人的配置抄一遍”。这会直接遮蔽一个很关键的工程事实：\textbf{你把适配器挂在哪里，等于在决定自己优先改模型的哪一部分表达路径。} 如果只挂注意力投影层，通常更像是在改信息路由和关注方式；如果进一步覆盖 FFN 一类前馈层，往往是在给模型更多改写内部表示的空间；如果把目标模块铺得过宽，则训练成本、过拟合风险和部署复杂度都会一起上升。
+
+对企业知识助手来说，这个判断最好从任务症状出发，而不是从方法名出发。若主要问题是“回答总抓不住该引用哪段证据”“结论和依据的组织顺序不稳定”，优先从注意力相关模块起步通常更稳；若问题已经延伸到“术语映射、表达习惯、字段抽取模式整体都不对”，才考虑把适配范围适度扩到更多层。但无论怎样，\textbf{默认把所有可挂模块全部挂上} 都不是成熟做法，因为那等于先把可控的小修，做成了一次半开放的大改。
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{3cm}>{\raggedright\arraybackslash}p{3cm}>{\raggedright\arraybackslash}X}
+\toprule
+\textbf{模块选择} & \textbf{更像在改什么} & \textbf{什么时候值得优先尝试} \\
+\midrule
+只挂注意力投影层 & 信息关注与路由方式 & 回答能大致答到点上，但证据组织、重点提取和输出稳定性不足 \\
+注意力层 + 部分 FFN & 更深的任务表达习惯 & 任务不只是“先后顺序不稳”，而是整体表达模式、术语映射和字段归纳都偏弱 \\
+覆盖范围很宽 & 更强的改写能力，同时更高副作用 & 已经确认 PEFT 容量不足，且有充分评测与回滚手段时 \\
+\bottomrule
+\end{tabularx}
+\caption{target\_modules 的选择，本质上是在决定先动模型哪条能力路径}
+\label{tab:lora-target-modules}
+\end{table}
+
+\subsection{QLoRA 优先解决的是“能不能训起来”}
+QLoRA 把基座模型量化到较低比特，同时训练 LoRA 适配器。它的重点不是“效果一定更好”，而是把训练门槛压到更多团队能够承受的范围。它尤其适合下面这种局面：
+\begin{itemize}
+  \item 任务已经明确需要训练，而不是只修 prompt。
+  \item 单卡显存不足以舒服地做常规 LoRA 或全参微调。
+  \item 团队接受训练速度更慢一些，但希望快速进入可迭代状态。
+\end{itemize}
+
+QLoRA 的代价也要讲清楚。量化会让训练和推理都更依赖具体实现；不同任务对量化误差的敏感度不同；而且量化带来的资源收益，必须用独立评测来验证是否换来了隐性质量回退。它是工程上的折中，不是无条件升级。
+
+\subsection{QLoRA 的训练链，最好先检查四个环节}
+如果把 QLoRA 只理解成“把模型压成 4bit 再训”，团队很容易在实现上掉坑。更稳的教材化说法是：\textbf{QLoRA 至少同时牵涉到底座加载、量化配置、LoRA 挂载和训练状态四个环节。} 其中任一环节出了偏差，表现出来都可能像“效果没起作用”或“训练莫名不稳”。
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{2.8cm}>{\raggedright\arraybackslash}p{3.2cm}>{\raggedright\arraybackslash}X}
+\toprule
+\textbf{环节} & \textbf{最该核对什么} & \textbf{常见事故} \\
+\midrule
+底座加载 & 是否按预期以量化形式加载，dtype 与设备是否匹配 & 以为自己在跑 QLoRA，实际还是全精度占满显存 \\
+量化配置 & 量化比特、计算 dtype、相关实现是否一致 & 资源省下来了，但数值稳定性突然变差 \\
+LoRA 挂载 & target\_modules、可训练参数比例、是否真的启用 & 训练日志正常，实际改到的模块却不对 \\
+训练状态 & batch、最大长度、checkpoint、恢复策略 & 动态显存失控、恢复后曲线跳变、结果不可复现 \\
+\bottomrule
+\end{tabularx}
+\caption{QLoRA 不是单个开关，而是一条需要逐段核对的训练链}
+\label{tab:qlora-chain}
+\end{table}
+
+对企业知识助手来说，QLoRA 最有价值的不是“更先进”，而是它往往让团队从“根本训不动”进入“终于能做受控对照试验”。一旦进入这个阶段，真正该管住的就不是方法名，而是配置快照、评测回放和回滚能力。
+
+\subsection{为什么有时 LoRA 看起来训了，但行为几乎没变}
+很多团队第一次做 LoRA 时都会遇到一种挫败感：训练日志看起来正常，loss 也在下降，但上线回放时模型几乎还是老样子。这个现象并不神秘，通常意味着团队并没有真正把“行为变化”写进训练链路。
+
+最常见的原因有五类。第一，\textbf{训练数据没有持续表达同一目标行为}，例如一半样本要求“先结论后依据”，另一半又写成自由散文，模型自然学不到稳定习惯。第二，\textbf{训练协议与推理协议不一致}，训练时用了某种聊天模板，推理时却换成另一套 system/user 组织方式，导致适配器学到的信号在真实调用链路里根本触发不出来。第三，\textbf{target\_modules 选得太窄或命名没对上}，结果真正更新到的参数少得可怜。第四，\textbf{适配器已经训出来，但推理时没有被正确加载、切换或合并}，这在多适配器实验里非常常见。第五，\textbf{评测只盯着头部容易样本}，于是误以为“模型没变化”，其实只是评测没对准真正想改的边界行为。
+
+因此，遇到“训了像没训”的第一反应不该是继续加大 rank 或延长训练，而应该按顺序排查下面几件事：
+\begin{enumerate}
+  \item 训练样本是否真的在反复教同一类行为，而不是互相打架。
+  \item 训练模板、推理模板和线上调用模板是否完全一致。
+  \item 适配器是否真的挂到了预期模块，并在推理阶段被启用。
+  \item 评测集里是否单独包含“拒答是否更稳”“证据引用是否更稳”“固定字段是否更齐”这类目标行为样本。
+\end{enumerate}
+
+教材里要刻意强调这一点，是因为它决定了团队会不会把问题错判成“LoRA 不行”。很多时候，不是方法不行，而是\textbf{训练链路和交付链路没有闭环}。
+
+\subsection{不是所有 PEFT 都是 LoRA：Prompt、Prefix、Adapter 与 AdaLoRA}
+旧稿在 \texttt{chap21.tex} 里花了很大篇幅讲 LoRA 之外的 PEFT 路线。新版主线不需要把这些方法都展开成独立章节，但也不能把它们抹掉，因为它们分别对应不同工程取舍。
+\begin{itemize}
+  \item \textbf{Prompt-Tuning / P-Tuning / Prefix-Tuning}：更像是在输入侧附加可学习提示，改动小、训练轻，适合任务比较单纯、只想做轻量行为适配的场景。
+  \item \textbf{Adapter-Tuning}：在层间插入小模块，参数效率高、模块边界清晰，适合希望保留明确任务插件形态的团队。
+  \item \textbf{AdaLoRA}：在 LoRA 基础上做动态 rank 分配，把有限预算更多留给更重要的层，适合希望在固定参数预算下再挖一层效率的场景。
+\end{itemize}
+
+把这些路线放在一起看，会更容易明白一件事：\textbf{PEFT 家族真正提供的，不是一种方法，而是一组围绕“低成本适配”展开的设计空间。} LoRA 只是当下最常见、生态最成熟的那一个默认点。
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{2.8cm}>{\raggedright\arraybackslash}p{2.8cm}>{\raggedright\arraybackslash}p{2.8cm}>{\raggedright\arraybackslash}X}
+\toprule
+\textbf{方法} & \textbf{主要改哪里} & \textbf{更适合什么场景} & \textbf{主要提醒} \\
+\midrule
+Prompt / Prefix / P-Tuning & 输入或前缀表示 & 任务较轻、快速试验、极低训练成本 & 对复杂任务的上限通常不如结构性适配 \\
+Adapter-Tuning & 模型层间小模块 & 想要模块边界清晰、任务插件化明显 & 推理时通常会比纯 LoRA 多一些额外开销 \\
+LoRA & 原权重增量的低秩分解 & 通用任务适配、多数开源工程默认路线 & 仍需认真管 rank、target modules 与数据质量 \\
+AdaLoRA & 动态分配 LoRA 容量 & 预算固定但希望更细粒度分配容量 & 调参与解释成本都会再上一层 \\
+\bottomrule
+\end{tabularx}
+\caption{PEFT 家族不是同义词堆叠，而是不同成本结构下的选择}
+\label{tab:peft-family-choice}
+\end{table}
+
+\subsection{Prompt、Prefix 与 P-Tuning v2：它们更像“改输入协议”而不是“改知识”}
+把 Prompt-Tuning、Prefix-Tuning 和 P-Tuning v2 单独拎出来看，会更容易理解它们和 LoRA 的根本差异。LoRA 是在模型内部加一个可学习增量；而提示学习家族更像是在\textbf{重新设计模型该如何接收任务提示}。这也是为什么它们常常对提示长度、初始化和任务形式更敏感。
+
+\begin{itemize}
+  \item \textbf{Prompt-Tuning}：通常只在输入嵌入层增加少量可学习软提示，最轻，适合快速原型和简单格式控制。
+  \item \textbf{Prefix-Tuning}：把可学习前缀扩展到每层注意力可见的前缀表示，对生成型任务通常比只改输入层更稳。
+  \item \textbf{P-Tuning v2}：进一步把深层提示做成更系统的每层注入方式，试图在复杂任务上保留提示学习的轻量性，同时接近更强的适配效果。
+\end{itemize}
+
+但这三类方法有一条共同边界：如果团队真正缺的是\textbf{知识覆盖、领域表达分布或复杂任务行为稳定性}，单纯改提示表示往往不如 LoRA 更稳。它们更适合的，是“模型基本会，只是要更好地按某种协议说出来”的任务，比如固定字段抽取、统一回答口径、轻量风格对齐、少量槽位填充等。反过来，如果模型对企业术语长期看不懂、对证据引用长期不稳定、对复杂任务经常答偏，那就不能指望靠一小段软提示把问题全部补回来。
+
+因此，教材里更值得保留的不是方法名，而是判断次序：先问\textbf{我是在改任务入口，还是在改模型行为本体。} 前者可以优先试提示学习家族；后者更常走 LoRA/QLoRA；若连底层语言分布都不匹配，再考虑继续预训练。
+
+\subsection{什么时候该承认 PEFT 不够，需要全参微调}
+教材里不能把全参微调写成“理论上存在，但工程上永远别碰”。更稳妥的说法是：\textbf{默认先用 PEFT，不等于永远不用全参。} 当下面几种信号同时出现时，就该认真评估是不是已经越过了 PEFT 的舒服区：
+\begin{itemize}
+  \item 你要改的不是一两个输出习惯，而是整套复杂能力组合，且这些能力在多个任务上同时表现出系统性偏差。
+  \item 任务数据量、评测集和算力预算都足够，已经能支撑更深层的参数更新。
+  \item 多轮 LoRA/QLoRA 试验已经证明收益平台化，继续加 rank、换模块或补少量数据都不再带来实质改善。
+  \item 底座模型本身就是团队长期维护的核心资产，允许为它建立更重的训练、评测和发布流程。
+\end{itemize}
+
+但即便如此，也不该从“感觉 PEFT 不够”直接跳到全参微调。更成熟的动作是先做一次\textbf{受控对照}：保持数据、模板和评测集不变，只改变训练方式，看全参是否真的带来稳定、可复现、值得支付额外成本的收益。如果做不到这一点，那么问题大概率还在数据、任务边界或评测口径上，而不在“是否全参”上。
+
+\subsection{适配器的保存、合并与切换，本身就是部署设计}
+当团队真正开始用 PEFT，问题就不再只是“怎么训”，而是“训完怎么管”。这也是旧稿 \texttt{chap24.tex} 最值得保留的部分。适配器管理至少涉及三种上线模式：
+\begin{enumerate}
+  \item \textbf{独立保存、推理时按需加载}：适合线下评测、多任务切换和快速回滚。
+  \item \textbf{合并后再部署}：适合某个能力已经稳定、追求更简洁的线上服务栈。
+  \item \textbf{同一底座挂多个适配器切换}：适合一个企业助手内部有多个子场景，例如制度问答、工单摘要、术语改写。
+\end{enumerate}
+
+这三种模式没有统一最优，只有是否适配当前服务形态。多任务系统更偏向独立保存和切换；单任务、稳定版本发布则更可能采用合并部署。
+
+\begin{lstlisting}[language=Python]
+from peft import LoraConfig, get_peft_model
+
+lora_config = LoraConfig(
+    r=16,
+    lora_alpha=32,
+    lora_dropout=0.05,
+    target_modules=["q_proj", "v_proj"],
+    task_type="CAUSAL_LM",
+    modules_to_save=["lm_head"]
+)
+
+model = get_peft_model(model, lora_config)
+\end{lstlisting}
+
+\begin{lstlisting}[language=Python]
+model.save_pretrained("policy_qa_adapter")
+
+# 线下评测阶段：按需加载适配器
+# merged_model = model.merge_and_unload()  # 上线前可视情况合并
+\end{lstlisting}
+
+\subsection{\texttt{modules\_to\_save} 与制品边界：别只保存 LoRA 层就以为万事大吉}
+旧稿里关于保存策略还有一个非常容易被漏掉、但实际很值钱的细节：\textbf{不是所有需要随任务一起发布的可训练部分，都天然包含在 LoRA 层里。} 某些场景下，团队还会同步调整输出头、任务特定分类头、特殊嵌入层或少量必须保留的附加模块。若这些内容没有被明确纳入制品边界，后续就会出现“离线评测很好，换环境一加载就不对”的诡异问题。
+
+这也是为什么像 \texttt{modules\_to\_save} 这类配置不该被当成次要参数。它本质上是在回答一个发布问题：\textbf{除了 LoRA 增量本身，哪些部件也是这个任务版本的一部分。} 对教材读者来说，记住 API 名字不是重点，重点是建立这层边界意识。
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{3cm}>{\raggedright\arraybackslash}p{3.2cm}>{\raggedright\arraybackslash}X}
+\toprule
+\textbf{发布对象} & \textbf{为什么可能需要一起保存} & \textbf{漏掉后最常见的后果} \\
+\midrule
+LoRA 适配器权重 & 任务行为增量本体 & 线上加载后几乎退回基座表现 \\
+输出头或任务头 & 任务特定分类或生成边界被改过 & 评测通过，部署后字段分布突然变样 \\
+任务相关嵌入/特殊模块 & 某些输入协议或词表适配依赖它们 & 相同输入在新环境里触发不了原训练行为 \\
+配置与版本元信息 & 回放、切换、回滚都要靠它们定位 & 团队知道有一个适配器，但不知道它到底对应什么 \\
+\bottomrule
+\end{tabularx}
+\caption{适配器发布不只是存一组增量权重，还要划清完整制品边界}
+\label{tab:adapter-artifact-boundary}
+\end{table}
+
+\subsection{多适配器协同：切换、融合、裁剪}
+当一个企业助手同时服务制度问答、工单摘要和术语解释时，旧稿里的另一些 PEFT 内容就会重新变得重要。它们不一定都要成为默认方案，但至少要知道它们在解决什么：
+\begin{itemize}
+  \item \textbf{多 LoRA 切换}：同一底座按任务切换不同适配器，适合“多任务并存但边界清楚”的系统。
+  \item \textbf{AdapterFusion}：不是简单二选一，而是尝试把多个来源任务的适配知识融合起来，适合多任务知识复用需求明确时。
+  \item \textbf{AdapterDrop}：在推理时动态裁掉部分适配模块，换取更低的延迟和显存压力。
+  \item \textbf{MAM 一类统一框架}：尝试把 Adapter、Prefix、LoRA 等多条路线放进一个更统一的设计空间，但工程复杂度也更高。
+\end{itemize}
+
+从教材视角看，最该保留的不是这些名字，而是判断顺序：如果任务之间\textbf{边界清楚、上线节奏快、需要频繁回滚}，多适配器切换最实用；如果任务之间\textbf{确实共享很多知识}，再考虑融合；如果线上资源紧张，才进一步考虑裁剪和动态丢弃。
+
+\begin{lstlisting}[language=Python]
+# 多适配器场景中的常见管理动作
+model.load_adapter("summary_adapter", adapter_name="ticket_summary")
+model.set_adapter("ticket_summary")
+
+# 某些评测或回归阶段可以临时禁用适配器
+with model.disable_adapter():
+    pass
+\end{lstlisting}
+
+\subsection{训练时的基础超参与稳定性习惯}
+旧稿里关于 batch size、优化器和 loss spike 的提示，应该被收束为几个可以直接执行的习惯：
+\begin{itemize}
+  \item \textbf{batch 太小} 会让梯度方向噪声过大，训练不稳；\textbf{batch 太大} 则会带来边际收益快速下降。
+  \item 优化器通常先从 AdamW 这类成熟基线起步，不要在样本和评测都没站稳时先换稀有优化器。
+  \item 一旦出现 loss 突刺，不要只盯模型结构，先查学习率、异常 batch、数据混乱和恢复训练时状态是否完整。
+  \item 训练过程必须留样本回放，不能只看一条 loss 曲线。
+\end{itemize}
+
+\subsection{loss 突刺、warmup 与恢复训练：异常先看状态链}
+真正把训练跑稳以后，团队会发现很多异常并不是“方法失效”，而是训练状态链断了。最常见的几个触发点包括：学习率 warmup 太短，模型一开始就被大步推离原分布；恢复训练时只恢复了权重，没恢复优化器和调度器状态；样本长度突然变长，导致某些 batch 的有效 token 数远超平时；或者打开了 gradient checkpointing，却没有重新评估 step time 与吞吐。
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{2.8cm}>{\raggedright\arraybackslash}p{3cm}>{\raggedright\arraybackslash}X}
+\toprule
+\textbf{异常现象} & \textbf{先查什么} & \textbf{为什么先查这里} \\
+\midrule
+训练初期 loss 快速冲高 & 学习率、warmup、异常 batch & 很多“模型不稳”其实是起步过猛 \\
+从 checkpoint 恢复后曲线突变 & 优化器状态、scheduler、数据进度 & 只恢复权重会让训练节奏瞬间变样 \\
+突然 OOM 或 step time 暴涨 & 最大长度、packing、梯度检查点配置 & 问题常常来自动态显存，而不是模型突然变大 \\
+loss 正常下降但业务样本变差 & 评测集、样本回放、输出模板污染 & 说明模型在学“讨好 loss”，不一定在学任务 \\
+\bottomrule
+\end{tabularx}
+\caption{训练异常优先查状态链，而不是先怀疑算法名字不够新}
+\label{tab:finetune-instability-diagnosis}
+\end{table}
+
+这里还要补一条经常被忽略的工程细节：\textbf{gradient checkpointing 省的是激活显存，不是白送吞吐。} 它通过重算中间激活换空间，所以训练速度下降往往是预期现象，而不是 bug。很多实现里还需要关闭某些面向推理的缓存路径，例如 \texttt{use\_cache} 一类设置，否则会和训练过程冲突。把这些约束提前写进实验配置，比事后在报错里猜原因稳得多。
+
+更成熟的训练习惯，是每次实验都固定保存四类东西：模型参数、优化器状态、学习率调度状态、关键样本回放。只要这四类证据在，团队面对“为什么昨天还好好的，今天继续训就歪了”这类问题时，就不会只剩感觉。
+
+\section{主案例推进}
+回到企业知识助手。本章把它从“能用”推进到“会被改造”。更具体地说，我们要解决的是三个高频子任务：
+\begin{enumerate}
+  \item {\heiti 制度问答}：回答必须稳定带依据，材料不足时必须拒答。
+  \item {\heiti 工单摘要}：回答格式固定，要能抽取负责人、问题类型、风险等级和建议动作。
+  \item {\heiti 术语解释}：需要理解企业内部缩略语、历史项目名和流程别称。
+\end{enumerate}
+
+\subsection{先把三个子任务分到不同改造手段}
+这三个任务不应该被同一种训练方案粗暴处理：
+\begin{itemize}
+  \item 制度问答首先依赖最新事实，所以主手段仍然是 RAG，训练只负责行为规范。
+  \item 工单摘要对格式稳定性要求高，适合建设 SFT 或 LoRA 数据。
+  \item 术语解释如果长期暴露出“看不懂企业语言”的问题，才进一步评估继续预训练。
+\end{itemize}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{2.8cm}>{\raggedright\arraybackslash}p{3cm}>{\raggedright\arraybackslash}X}
+\toprule
+\textbf{子任务} & \textbf{主手段} & \textbf{原因} \\
+\midrule
+制度问答 & RAG + 小规模行为微调 & 知识动态，训练不该替代文档更新 \\
+工单摘要 & SFT 或 LoRA & 格式固定、重复度高、适合学习任务习惯 \\
+术语解释 & 更贴近领域的底座或继续预训练 & 主要矛盾可能在语言分布而非回答模板 \\
+\bottomrule
+\end{tabularx}
+\caption{同一个企业助手，子任务也应走不同改造路线}
+\label{tab:assistant-task-routing}
+\end{table}
+
+\subsection{先做第一批 SFT 数据，而不是直接追求海量}
+我们为企业知识助手建设第一批训练数据时，不追求“越多越好”，而追求“每类关键行为都被明确表达过”。例如：
+\begin{itemize}
+  \item 有依据时如何回答。
+  \item 无依据时如何拒答。
+  \item 有依据但存在例外流程时如何提示人工确认。
+  \item 工单摘要时如何固定字段顺序与措辞。
+\end{itemize}
+
+一个最小样本可以写成：
+\begin{lstlisting}[language=Python]
+sample = {
+    "instruction": "根据给定材料回答员工问题。",
+    "input": "问题：出差报销住宿上限是多少？\n材料：......",
+    "output": "结论：......\n依据：......\n如需例外审批，请联系......"
+}
+\end{lstlisting}
+
+再加一个拒答样本：
+\begin{lstlisting}[language=Python]
+sample_refuse = {
+    "instruction": "根据给定材料回答员工问题。",
+    "input": "问题：这个岗位今年还能破格晋升吗？\n材料：只给出了去年的制度摘录。",
+    "output": "结论：现有材料不足以判断。\n依据：给定材料未覆盖今年晋升政策。\n建议动作：请联系 HR 或查询最新制度。"
+}
+\end{lstlisting}
+
+\subsection{为什么这里优先选 LoRA / QLoRA，而不是全参微调}
+对企业知识助手而言，任务行为适配比底层能力重写更常见。因此我们更偏向这样一条策略：
+\begin{enumerate}
+  \item 先用 prompt 把结构和语气收住。
+  \item 再用 SFT/LoRA 把行为训稳。
+  \item 只有当底层语言分布实在不适配时，才考虑继续预训练或全参微调。
+\end{enumerate}
+
+这一路线背后有三个现实原因。第一，预算通常有限；第二，企业助手往往有多子任务，适配器更容易治理；第三，线上需要快速回滚，LoRA 的独立部署形态更有弹性。
+
+\subsection{先做一轮适配器对照试验，再决定是否合并上线}
+真正进入工程落地时，团队最容易跳过的一步，不是训练，而是\textbf{对照试验}。对企业知识助手来说，至少应该把下面三种状态并排比较：只用基座模型、挂当前适配器、挂上一个稳定适配器。这样做的价值，不只是看“新版本有没有更好”，更是看它\textbf{具体改好了什么，又额外带坏了什么}。
+
+对于“制度问答”子任务，我们关心的是拒答是否更稳、证据引用是否更清楚、例外流程是否更少乱猜；对于“工单摘要”子任务，我们关心的是字段是否更齐、顺序是否更稳、风险等级是否更一致；对于“术语解释”子任务，我们关心的是内部缩略语是否更少误解，还是只是把口吻变得更像企业助手。只有把这些问题拆成可观察的回放项，团队才配讨论下一步是独立加载适配器、继续并存多个适配器，还是把某个版本合并进主模型。
+
+这一步看似琐碎，其实正是教材化写作里最该保留下来的工程纪律：\textbf{训练输出不是“一个权重文件”，而是“一份带对照证据的行为变化说明”。} 没有这份说明，后面的合并、切换和回滚都会失去依据。
+
+\subsection{企业助手里的适配器治理}
+当我们给“制度问答”和“工单摘要”分别训练不同适配器时，真正需要建立的是一套版本治理习惯：
+\begin{itemize}
+  \item 每个适配器都要绑定任务描述、训练集版本、评测结果和上线时间。
+  \item 命名要直接反映任务边界，避免“final\_v2\_newer\_really\_final”这类失控命名。
+  \item 评测时要同时对比“关闭适配器”“当前适配器”“上一个稳定适配器”三种状态。
+  \item 决定合并权重前，先确认该任务能力是否已经足够稳定，不再需要高频切换。
+\end{itemize}
+
+\section{常见坑与工程取舍}
+\begin{itemize}
+  \item \textbf{把知识缺失误判成训练问题}：如果材料经常变化，先补 RAG，不要急着把知识写进参数。
+  \item \textbf{把继续预训练当成所有领域问题的标准解}：很多时候只是术语说明风格不稳，并不需要重写底层语言分布。
+  \item \textbf{只看 loss，不看业务回放}：loss 下降可能伴随模板化、空洞化甚至拒答失控。
+  \item \textbf{rank 一味往大调}：适配器容量上去不一定带来等比例收益，反而更容易过拟合。
+  \item \textbf{目标模块挂得过宽}：如果任务只改回答习惯，不一定需要覆盖所有线性层。
+  \item \textbf{忘了部署形态}：线下可以按需加载多个适配器，线上若追求极简链路，则要重新评估是否合并。
+\end{itemize}
+
+再补几条在旧稿里反复出现、但教材里更需要明确写出来的工程提醒：
+\begin{itemize}
+  \item \textbf{先做评测集，再做训练}：否则训练结束后只能凭感觉判断“是不是更好了”。
+  \item \textbf{训练数据宁可窄而准，也不要大而乱}：坏数据比小数据更危险。
+  \item \textbf{词表扩增通常不是第一优先级}：它更多影响解码效率和分词形态，不是多数任务效果不佳的首因。
+  \item \textbf{不要把 QLoRA 当成免费午餐}：它换来了可训练性，也引入了量化相关的额外验证工作。
+\end{itemize}
+
+\section{本章练习}
+\begin{exercise}[先改提示还是上 LoRA]
+企业知识助手已经能答对大部分制度问题，但经常不按“结论-依据-建议动作”的固定格式输出。知识来源本身没有问题。此时你应先做什么？为什么？
+\end{exercise}
+
+\begin{solution}
+应先改{\heiti 提示模板}，必要时再补一小批针对格式稳定性的 SFT 样本，而不是直接上 LoRA。因为当前主要矛盾是{\heiti 行为表达不稳}，不是知识缺失，也不是必须依赖参数适配才能解决的底层能力问题。先用更便宜的方式把问题定位清楚，再决定是否进入训练，是更稳的工程顺序。
+\end{solution}
+
+\begin{exercise}[什么时候上 QLoRA]
+在什么情况下，QLoRA 比全参微调更适合作为企业知识助手的第一种训练方案？请至少给出两个判断条件。
+\end{exercise}
+
+\begin{solution}
+当团队{\heiti 显存和算力预算有限}、目标是快速让模型适配某类固定任务行为、且线上可能需要维护多个场景适配器时，QLoRA 更合适。它的核心价值不是绝对效果更强，而是{\heiti 先把训练做起来}。如果任务已经明确需要训练，但资源不足以舒服地做全参微调，同时团队又需要较低的回滚和存储成本，那么 QLoRA 往往是更现实的起点。
+\end{solution}
+
+\section{延伸阅读}
+\begin{itemize}
+  \item \textbf{Hu et al., \emph{LoRA: Low-Rank Adaptation of Large Language Models}}：适合理解低秩适配的原始思想和为何它能显著减少可训练参数。
+  \item \textbf{Dettmers et al., \emph{QLoRA}}：适合理解“低比特量化 + 低秩适配”为什么能把训练门槛压低。
+  \item \textbf{Hugging Face PEFT 官方文档}：适合理解 \texttt{LoraConfig}、适配器保存与切换等实操接口。
+  \item \textbf{各类指令微调与领域继续预训练实践报告}：适合理解为什么数据边界、评测边界和预算边界往往比算法名字更重要。
+\end{itemize}
+
+\section{小结}
+本章把“微调”拆成了一条有判断顺序的路线：先分清知识问题、行为问题和分布问题，再决定是改 prompt、做 SFT、上 LoRA/QLoRA，还是继续预训练。对企业知识助手而言，最常见的成功路径不是一上来做重训练，而是先把行为训稳、把适配器管好、把评测做实。只有这样，模型改造才会真正服务于系统交付，而不是沦为新的不确定性来源。
+
+\section{下一章过渡}
+一旦决定进入训练阶段，问题就不再只是“训哪一种”，而是“拿什么来训”。下一章将把视角从训练方法转向数据工程，回答训练数据从哪里来、如何构造成样本、如何拼接、何时需要继续预训练，以及怎样让数据真正决定模型上限。

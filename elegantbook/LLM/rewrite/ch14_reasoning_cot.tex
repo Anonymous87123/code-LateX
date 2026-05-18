@@ -1,0 +1,270 @@
+\chapter{推理增强：从 Chain-of-Thought 到 o1 范式}
+
+\begin{introduction}
+\item {\heiti 本章核心问题}：当任务需要多步逻辑推导、数学计算或复杂规划时，如何让模型"想得更深"而不是"猜得更快"？
+\item {\heiti 主案例推进}：企业知识助手面对需要跨文档推理的合规判断——不是简单检索能解决的，需要模型真正"推理"。
+\item {\heiti 读完后能做什么}：能区分不同推理增强技术的适用场景，能在工程中正确使用 CoT、Self-Consistency、ToT 和推理模型。
+\end{introduction}
+
+\section{学习目标}
+\begin{itemize}
+  \item 理解为什么标准生成模式在复杂推理任务上会失败。
+  \item 掌握 Chain-of-Thought 的原理、触发方式和工程实现。
+  \item 理解 Self-Consistency、Tree-of-Thought 等进阶推理策略的适用条件。
+  \item 认识 o1/o3 等推理模型的范式转变：从"提示技巧"到"训练范式"。
+\end{itemize}
+
+\section{问题背景}
+前面的章节中，模型的任务大多是"给定上下文，生成回答"——本质上是模式匹配和信息整合。上一章又让模型学会了调用工具和执行动作，但工具调用只能帮系统取信息、改状态，不能替模型完成真正的长链判断。企业知识助手会遇到一类更难的问题：
+
+\begin{quote}
+"张三是 2023 年 7 月入职的，试用期 6 个月。公司制度规定试用期内不能申请年假，转正后第一年有 5 天年假，每满一年加 1 天，上限 15 天。现在是 2026 年 5 月，张三还剩多少天年假？"
+\end{quote}
+
+这个问题的答案不在任何单一文档里。它需要：确定转正日期（2024年1月）、计算工龄（2年4个月）、应用年假规则（5+2=7天）、扣除已用天数。任何一步算错，最终答案就错。
+
+这正说明一个新的边界：当资料已经拿到、工具也已经接好，系统仍然可能卡在“不会推理”。标准的 LLM 生成倾向于"一步到位"——直接输出一个数字。但复杂推理需要的是\textbf{中间步骤的显式展开}，让每一步都可验证、可追溯。
+
+\section{核心概念}
+
+\subsection{为什么直接生成会失败}
+大语言模型的生成过程是逐 token 的：每个 token 的选择只依赖于前面的上下文。当模型试图"一步跳到答案"时，它实际上是在用一次前向传播完成本应需要多步计算的任务。
+
+这就像让一个人"不用草稿纸，直接说出 $347 \times 28$ 的答案"。大多数人会算错，不是因为不会乘法，而是因为工作记忆装不下所有中间结果。模型也一样：它的"工作记忆"就是当前的隐藏状态，容量有限。
+
+\begin{definition}[推理深度瓶颈]
+当任务所需的逻辑步骤数超过模型单次前向传播能可靠处理的复杂度时，模型的准确率会急剧下降。这不是知识缺失，而是计算深度不足。解决方案是把内部推理外化为显式的文本步骤，用生成的 token 充当"草稿纸"。
+\end{definition}
+
+\subsection{Chain-of-Thought：让模型展示推理过程}
+Chain-of-Thought（CoT）的核心思想极其简单：让模型在给出最终答案之前，先输出中间推理步骤。这些步骤本身就是生成的 token，它们成为后续 token 生成的上下文，相当于给模型提供了一块"外部草稿纸"。
+
+触发 CoT 的方式有三种：
+
+\begin{enumerate}
+  \item \textbf{Zero-shot CoT}：在提示末尾加一句"Let's think step by step"或"请一步步推理"。简单但效果不稳定。
+  \item \textbf{Few-shot CoT}：在提示中给出带推理过程的示例。效果更好，但需要人工编写高质量示例。
+  \item \textbf{指令式 CoT}：在系统提示中明确要求模型的输出格式必须包含推理步骤，然后才给出结论。
+\end{enumerate}
+
+对企业知识助手的年假计算问题，指令式 CoT 的提示设计如下：
+
+\begin{lstlisting}[language=Python]
+system_prompt = """你是企业知识助手。回答涉及计算或多步推理的问题时，
+必须按以下格式输出：
+
+## 推理过程
+1. [第一步：提取关键信息]
+2. [第二步：应用规则]
+3. [第三步：计算]
+...
+
+## 最终答案
+[简洁的结论]
+
+每一步必须写出依据（引用哪条制度、用了什么数据）。
+如果某一步不确定，明确标注"此步存在不确定性"。"""
+\end{lstlisting}
+
+\begin{note}
+CoT 不是万能的。它对以下任务效果显著：算术推理、逻辑推导、多步规划、因果分析。但对以下任务帮助有限：事实性问答（模型要么知道要么不知道）、创意生成、简单分类。盲目要求所有回答都"一步步推理"只会增加延迟和成本，不会提升质量。
+\end{note}
+
+\subsection{CoT 的工程陷阱}
+在实际部署中，CoT 会引入几个需要处理的工程问题：
+
+\begin{enumerate}
+  \item \textbf{输出变长}：推理步骤占用大量 token，增加延迟和成本。对延迟敏感的场景需要权衡。
+  \item \textbf{推理过程可能暴露敏感信息}：模型在推理中可能引用内部数据、展示计算细节。如果推理过程直接展示给用户，需要做过滤。
+  \item \textbf{推理步骤本身可能出错}：模型可能在第 2 步就算错了，但后续步骤基于错误前提继续推导，最终给出一个"看起来有道理但实际错误"的答案。
+  \item \textbf{格式不稳定}：模型有时会跳过步骤、合并步骤或在推理中途直接给出答案。
+\end{enumerate}
+
+应对策略：
+
+\begin{itemize}
+  \item 对延迟敏感的场景，先用分类器判断问题是否需要 CoT，简单问题走快速路径。
+  \item 推理过程和最终答案分开存储，面向用户只展示答案（或可折叠的推理详情）。
+  \item 对关键计算步骤，用代码验证而不是信任模型的文本计算。
+  \item 用结构化输出（JSON mode）强制推理格式，而不是靠自然语言提示。
+\end{itemize}
+
+\subsection{Self-Consistency：用多数投票提升可靠性}
+CoT 的一个问题是：同一个问题，模型可能走出不同的推理路径，得到不同的答案。Self-Consistency 的思路是：让模型生成多条推理路径，然后对最终答案做多数投票。
+
+\begin{lstlisting}[language=Python]
+def self_consistency(model, prompt, n_samples=5, temperature=0.7):
+    answers = []
+    for _ in range(n_samples):
+        response = model.generate(prompt, temperature=temperature)
+        answer = extract_final_answer(response)
+        answers.append(answer)
+
+    # 多数投票
+    from collections import Counter
+    vote = Counter(answers).most_common(1)[0]
+    return vote[0], vote[1] / n_samples  # 答案 + 置信度
+\end{lstlisting}
+
+Self-Consistency 的适用条件：
+\begin{itemize}
+  \item 问题有明确的、可比较的最终答案（数字、选项、是/否）。
+  \item 模型在该任务上的单次准确率 > 50\%（否则多数投票也救不回来）。
+  \item 可以接受 $n$ 倍的推理成本和延迟。
+\end{itemize}
+
+对企业知识助手来说，Self-Consistency 适合用在合规判断这类"答案明确但推理复杂"的场景。不适合用在开放式问答或创意生成上。
+
+下面用一个具体例子说明 Self-Consistency 如何工作。假设用户问"张三 2023 年 7 月入职，试用期 6 个月，现在是 2026 年 5 月，他有几天年假？"模型以 temperature=0.7 生成 5 次：
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\textwidth}{>{\centering\arraybackslash}p{1.2cm}>{\raggedright\arraybackslash}X>{\centering\arraybackslash}p{1.5cm}}
+\toprule
+\textbf{采样} & \textbf{推理路径摘要} & \textbf{最终答案} \\
+\midrule
+\#1 & 转正 2024-01，工龄 2 年 4 月 → 5+2=7 天 & 7 天 \\
+\#2 & 转正 2024-01，满 2 年 → 5+2=7 天 & 7 天 \\
+\#3 & 入职 2023-07 到 2026-05 = 2 年 10 月 → 5+2=7 天 & 7 天 \\
+\#4 & 转正 2024-01，到 2026-05 满 2 年 → 5+1=6 天（错误：漏算第二年） & 6 天 \\
+\#5 & 转正 2024-01，工龄 2.3 年 → 5+2=7 天 & 7 天 \\
+\bottomrule
+\end{tabularx}
+\caption{Self-Consistency 实例：5 次采样中 4 次得到 7 天，1 次得到 6 天}
+\label{tab:self-consistency-example}
+\end{table}
+
+多数投票结果：7 天（置信度 4/5 = 80\%）。注意第 4 次采样走了一条错误的推理路径，但被多数投票纠正了。这正是 Self-Consistency 的价值：\textbf{单次可能出错，但多次独立推理中正确路径更容易占多数。}
+
+\subsection{Tree-of-Thought：当线性推理不够时}
+有些问题的推理不是线性的——中间某一步有多个可能的方向，选错了就要回溯。Tree-of-Thought（ToT）把推理过程建模为一棵树：每个节点是一个中间状态，每条边是一个推理步骤，系统可以在多个分支上并行探索，并用评估函数剪枝。
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{2.8cm}>{\raggedright\arraybackslash}p{3.5cm}>{\raggedright\arraybackslash}X}
+\toprule
+\textbf{推理策略} & \textbf{核心机制} & \textbf{适用场景} \\
+\midrule
+标准生成 & 一次前向，直接输出答案 & 简单问答、分类、翻译 \\
+Chain-of-Thought & 线性展开中间步骤 & 算术、逻辑推导、因果分析 \\
+Self-Consistency & 多次 CoT + 多数投票 & 答案明确但路径不唯一的推理 \\
+Tree-of-Thought & 树状搜索 + 评估剪枝 & 需要回溯的规划、博弈、创意探索 \\
+\bottomrule
+\end{tabularx}
+\caption{推理增强策略对比}
+\label{tab:reasoning-strategies}
+\end{table}
+
+ToT 在工程中的实现成本很高（需要多次模型调用做评估），通常只用在离线分析或对准确率要求极高的场景。对大多数在线服务来说，CoT + Self-Consistency 已经是性价比最高的组合。
+
+\subsection{o1 范式：从提示技巧到训练范式的转变}
+2024 年以来，以 OpenAI o1/o3 为代表的"推理模型"带来了一个范式转变：不再依赖用户在提示中触发 CoT，而是在训练阶段就让模型学会自主进行长链推理。
+
+传统 CoT 和 o1 范式的关键区别：
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{3cm}>{\raggedright\arraybackslash}p{4.5cm}>{\raggedright\arraybackslash}X}
+\toprule
+\textbf{维度} & \textbf{传统 CoT} & \textbf{o1 范式} \\
+\midrule
+推理触发 & 需要提示词引导 & 模型自主决定是否和如何推理 \\
+推理质量 & 依赖提示设计和示例质量 & 通过 RL 训练优化推理策略 \\
+计算分配 & 固定（一次生成） & 动态（难题花更多 token 思考） \\
+推理过程 & 用户可见 & 通常隐藏（只返回最终答案） \\
+成本模型 & 按输出 token 计费 & 推理 token 单独计费，通常更贵 \\
+\bottomrule
+\end{tabularx}
+\caption{传统 CoT 与 o1 推理范式对比}
+\label{tab:cot-vs-o1}
+\end{table}
+
+o1 范式的工程含义：
+
+\begin{itemize}
+  \item \textbf{不需要（也不应该）在提示中加"请一步步推理"}：推理模型自己会决定推理深度，额外的 CoT 提示反而可能干扰。
+  \item \textbf{延迟不可预测}：模型会根据问题难度动态分配推理时间，简单问题秒回，复杂问题可能需要 30 秒以上。
+  \item \textbf{成本结构变化}：推理 token 的单价通常是普通 token 的 3--5 倍，且用量不可控。
+  \item \textbf{推理过程不透明}：大多数推理模型不暴露中间推理步骤，这对需要可解释性的场景是个问题。
+\end{itemize}
+
+\subsection{工程决策：什么时候用什么推理策略}
+面对一个具体任务，选择推理策略的决策树：
+
+\begin{enumerate}
+  \item 任务是否需要多步推理？如果不需要（简单问答、分类），用标准生成。
+  \item 是否有推理模型可用且预算允许？如果是，优先用推理模型（o1/o3/Claude with extended thinking）。
+  \item 如果用普通模型，问题是否有明确答案？如果是，用 CoT + Self-Consistency。
+  \item 问题是否需要回溯和探索？如果是，考虑 ToT（但要评估成本）。
+  \item 推理过程是否需要对用户可见？如果是，必须用显式 CoT 而非推理模型。
+\end{enumerate}
+
+对企业知识助手来说，实用的策略是：
+\begin{itemize}
+  \item 简单查询（"差旅标准是什么"）→ 标准 RAG，不需要 CoT。
+  \item 计算类问题（"我还有几天年假"）→ CoT + 代码验证。
+  \item 合规判断（"这笔报销是否符合制度"）→ CoT + Self-Consistency（如果准确率要求高）。
+  \item 复杂规划（"帮我安排下周的出差行程"）→ Agent 循环（上一章）+ CoT 辅助规划步骤。
+\end{itemize}
+
+\section{常见坑与工程取舍}
+\begin{itemize}
+  \item \textbf{所有问题都加 CoT}：简单问题加 CoT 只会增加延迟，不会提升质量。应先分类再决定策略。
+  \item \textbf{信任模型的计算步骤}：模型在文本中写"$347 \times 28 = 9716$"不代表它真的算对了。关键计算应交给代码执行。
+  \item \textbf{把推理过程直接展示给用户}：推理中可能包含内部数据引用、错误的中间步骤或不适合展示的内容。应分离推理层和展示层。
+  \item \textbf{Self-Consistency 用在开放式问题上}：如果答案本身就没有唯一正确值，多数投票没有意义。
+  \item \textbf{对推理模型仍然加 CoT 提示}：o1 类模型自己管理推理过程，额外的"请一步步思考"可能降低效果。
+  \item \textbf{忽略推理 token 的成本}：推理模型的隐藏推理 token 可能是输出 token 的 10 倍以上，预算规划必须考虑。
+\end{itemize}
+
+\section{本章练习}
+\begin{exercise}[设计 CoT 提示]
+为企业知识助手设计一个处理"报销合规判断"的 CoT 提示模板。要求：模型必须先列出适用的制度条款，再逐条对照实际情况，最后给出结论和置信度。
+\end{exercise}
+
+\begin{solution}
+提示模板的关键结构：
+\begin{enumerate}
+  \item 系统提示中定义输出格式：\texttt{\#\# 适用条款} → \texttt{\#\# 逐条对照} → \texttt{\#\# 结论}。
+  \item 在"逐条对照"部分，要求每条写明：条款原文、实际情况、是否符合、不确定时标注。
+  \item 结论部分要求给出：合规/不合规/无法判断 + 置信度（高/中/低）+ 建议下一步（如"建议咨询财务部确认"）。
+  \item 关键：提示中应包含一个完整的 few-shot 示例，展示正确的推理格式和深度。
+\end{enumerate}
+\end{solution}
+
+\begin{exercise}[推理策略选择]
+以下四个场景，分别应该用什么推理策略？说明理由。
+\begin{enumerate}
+  \item 用户问"公司的加班补贴标准是多少"。
+  \item 用户问"我上个月加班了 23 小时，按制度应该补贴多少钱"。
+  \item 用户问"这份合同的违约条款是否与公司最新的风控政策冲突"。
+  \item 用户问"帮我对比三个供应商的报价，推荐性价比最高的"。
+\end{enumerate}
+\end{exercise}
+
+\begin{solution}
+\begin{enumerate}
+  \item 标准 RAG 检索即可，无需 CoT。答案直接在制度文档中。
+  \item CoT + 代码验证。需要多步计算（时薪 × 倍率 × 小时数），模型文本计算不可靠，应调用计算工具。
+  \item CoT + Self-Consistency。需要跨文档推理，且判断结果影响重大，应多次推理取共识。
+  \item CoT 辅助的结构化分析。需要模型逐维度对比，但最终推荐应展示推理过程让用户自行判断。
+\end{enumerate}
+\end{solution}
+
+\section{延伸阅读}
+\begin{itemize}
+  \item \textbf{Chain-of-Thought Prompting}（Wei et al., 2022）：CoT 的开创性论文，展示了推理步骤对大模型性能的提升。
+  \item \textbf{Self-Consistency}（Wang et al., 2023）：多路径采样 + 多数投票的理论和实验。
+  \item \textbf{Tree of Thoughts}（Yao et al., 2023）：树状搜索推理的形式化框架。
+  \item \textbf{OpenAI o1 技术报告}：推理模型的训练范式和能力边界。
+  \item \textbf{Let's Verify Step by Step}（Lightman et al., 2023）：过程奖励模型（PRM）如何提升推理可靠性。
+\end{itemize}
+
+\section{小结}
+推理增强的本质是用更多的计算换取更高的准确率。CoT 用生成 token 当草稿纸，Self-Consistency 用多次采样换可靠性，ToT 用树搜索换探索能力，o1 范式用训练时间换推理能力。工程上的关键不是"总是用最强的策略"，而是根据任务难度、延迟要求和成本预算选择合适的策略。
+
+\section{下一章过渡}
+模型现在既能执行动作，也能把推理拉长，但能力越强，风险面也越大。它可能更像真话，也可能更像一本正经地错；它可能会推得更深，也可能因此接触到更多敏感信息。下一章将转向安全、合规与红队测试，讨论如何在保持能力的同时守住系统底线。

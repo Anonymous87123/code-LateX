@@ -1,0 +1,102 @@
+\documentclass[lang=cn,11pt]{elegantbook}
+
+\title{大语言模型工程实践}
+\subtitle{从模型原理到企业知识助手}
+\author{夏同}
+\date{\today}
+\cover{751_01.png}
+
+\setcounter{tocdepth}{0}
+\usepackage{float,longtable,tabularx}
+\usetikzlibrary{arrows.meta, positioning, shapes.geometric, shapes.arrows, shapes.multipart, calc, matrix, decorations.pathreplacing, patterns}
+\graphicspath{{./figure/}{./figures/}{./image/}{./images/}{./graphics/}{./graphic/}{./pictures/}{./picture/}{./LLM/}{./LLM/figure/}{./LLM/figures/}{./LLM/image/}{./LLM/images/}}
+\setlength{\textfloatsep}{0.9\baselineskip plus 0.2\baselineskip minus 0.2\baselineskip}
+\setlength{\floatsep}{0.8\baselineskip plus 0.2\baselineskip minus 0.2\baselineskip}
+\setlength{\intextsep}{0.8\baselineskip plus 0.2\baselineskip minus 0.2\baselineskip}
+\setlength{\abovecaptionskip}{0.45\baselineskip}
+\setlength{\belowcaptionskip}{0.2\baselineskip}
+\setlength{\LTpre}{0.6\baselineskip}
+\setlength{\LTpost}{0.4\baselineskip}
+\renewcommand{\arraystretch}{1.12}
+\AtBeginEnvironment{longtable}{\small}
+\AtBeginEnvironment{tabularx}{\small}
+\captionsetup{
+  font=small,
+  labelfont={bf,color=structurecolor},
+  textfont=small,
+  skip=0.45\baselineskip
+}
+\setlength{\cftbeforechapskip}{0.45\baselineskip}
+\setlength{\cftbeforesecskip}{0pt}
+\setlength{\cftbeforetoctitleskip}{0pt}
+\setlength{\cftaftertoctitleskip}{0.9\baselineskip}
+\tikzset{
+  llm box/.style={
+    draw=structurecolor,
+    rounded corners=4pt,
+    line width=0.9pt,
+    align=center,
+    fill=structurecolor!8
+  },
+  llm note box/.style={
+    draw=structurecolor,
+    rounded corners=4pt,
+    line width=0.9pt,
+    align=center,
+    fill=structurecolor!4
+  },
+  llm arr/.style={
+    -Latex,
+    line width=0.9pt,
+    draw=structurecolor
+  }
+}
+\makeatletter
+\if@twoside
+  \fancyhead[EL]{\color{structurecolor}\cnormal\leftmark}
+  \fancyhead[OR]{\color{structurecolor}\cnormal\leftmark}
+\else
+  \fancyhead[R]{\color{structurecolor}\cnormal\leftmark}
+\fi
+\fancypagestyle{plain}{%
+  \fancyhf{}%
+  \fancyfoot[c]{\color{structurecolor}\small\thepage}%
+  \renewcommand{\headrulewidth}{0pt}%
+  \renewcommand{\footrulewidth}{0pt}%
+}
+\renewcommand{\sectionmark}[1]{}
+\makeatother
+
+\begin{document}
+\maketitle
+\frontmatter
+\tableofcontents
+\cleardoublepage
+\phantomsection
+\addcontentsline{toc}{chapter}{\listexercisename}
+\markboth{\listexercisename}{\listexercisename}
+\listofexercises
+\cleardoublepage
+\mainmatter
+\part{理解模型与使用模型}
+\input{LLM/rewrite/ch01_intro.tex}
+\input{LLM/rewrite/ch02_transformer_core.tex}
+\input{LLM/rewrite/ch03_transformers_inference.tex}
+\input{LLM/rewrite/ch04_prompt_context.tex}
+\part{训练改造与数据工程}
+\input{LLM/rewrite/ch05_finetune_peft.tex}
+\input{LLM/rewrite/ch06_data_continued_pretraining.tex}
+\part{检索系统与效果评测}
+\input{LLM/rewrite/ch07_rag_minimal_loop.tex}
+\input{LLM/rewrite/ch08_document_retrieval_optimization.tex}
+\input{LLM/rewrite/ch09_evaluation.tex}
+\part{对齐、部署与大规模工程}
+\input{LLM/rewrite/ch10_alignment_rlhf.tex}
+\input{LLM/rewrite/ch11_inference_optimization.tex}
+\input{LLM/rewrite/ch12_distributed_engineering.tex}
+\part{Agent、推理与生产落地}
+\input{LLM/rewrite/ch13_agent_tool_orchestration.tex}
+\input{LLM/rewrite/ch14_reasoning_cot.tex}
+\input{LLM/rewrite/ch15_security_compliance.tex}
+\input{LLM/rewrite/ch16_production_operations.tex}
+\end{document}

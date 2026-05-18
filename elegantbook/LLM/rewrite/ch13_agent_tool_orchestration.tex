@@ -1,0 +1,441 @@
+\chapter{Agent 与工具编排：从单轮调用到多步自主执行}
+
+\begin{introduction}
+\item {\heiti 本章核心问题}：如何让大语言模型从"被动回答"升级为"主动规划并调用工具完成多步任务"，同时保持可控、可审计、可恢复？
+\item {\heiti 主案例推进}：为企业知识助手增加跨系统操作能力——查制度、查日历、发审批、写摘要——形成一条可回滚的多步执行链。
+\item {\heiti 读完后能做什么}：能设计一个带规划、执行、观察、反思循环的 Agent 系统，知道工具定义、状态管理和失败恢复各自该怎么做。
+\end{introduction}
+
+\section{学习目标}
+\begin{itemize}
+  \item 理解 Agent 与普通 LLM 调用的本质区别：循环决策而非单次生成。
+  \item 掌握工具定义的工程规范：schema 设计、权限声明、幂等性要求。
+  \item 能实现 ReAct 风格的规划-执行-观察循环，并为每一步设置护栏。
+  \item 理解多步执行中的状态管理、失败恢复和人机协作机制。
+\end{itemize}
+
+\section{问题背景}
+第三章已经搭建了最小推理链路，也讲清了结构化输出、tool calling 和最小 Agent 循环；第四章又补上了上下文管理与护栏。到这里为止，前文已经解决的是：让模型能发出一个动作、让系统能把结果写回、让上下文不至于失控。
+
+企业知识助手的真实场景远比单轮问答复杂。员工问"帮我查一下下周三有没有会议室，如果有就预约 301，然后把会议邀请发给张三和李四"，这一句话背后至少涉及三个系统调用和一个条件判断。如果只靠提示工程，模型最多能"说出步骤"，但无法真正执行。
+
+Agent 的核心思想是：让模型不仅生成文本，还生成\textbf{动作}，然后由系统执行动作、把结果反馈给模型，模型再决定下一步。这个循环一直持续到任务完成或触发终止条件。
+
+因此，本章不再重复讲“函数调用是什么”这类最小定义，而是把焦点放在多步任务的编排、状态持久化、副作用控制、人工审批和失败恢复上。也就是说，前文讲的是最小原子动作，这一章讲的是{\heiti 如何把这些原子动作接成一条能落地的执行链。}
+
+\begin{definition}[Agent 系统]
+Agent 系统是一种以大语言模型为决策核心的循环架构。每一轮中，模型根据当前状态选择一个动作（调用工具、生成回复或请求人工介入），系统执行该动作并将观察结果追加到上下文，模型再据此决定下一步。循环终止条件包括：任务完成、达到最大步数、触发安全护栏或用户中断。
+\end{definition}
+
+\section{核心概念}
+
+\subsection{从函数调用到 Agent 循环}
+第三章介绍了 tool calling 的基本机制：模型输出一个结构化的函数调用请求，应用层执行后把结果塞回上下文。这是 Agent 的最小原子操作。本章要往前再推进一步：把这个原子动作放进一个可持续运行、可回滚、可审计的多步工作流里。换句话说，单次 tool call 还不是 Agent；只有当动作之间开始被状态、护栏和恢复机制连接起来时，系统才真正进入 Agent 编排。
+
+Agent 的关键在于\textbf{循环}。一个完整的 Agent 循环包含四个阶段：
+
+\begin{enumerate}
+  \item \textbf{规划（Plan）}：模型分析当前任务和已有信息，决定下一步该做什么。
+  \item \textbf{执行（Act）}：系统根据模型输出的动作调用对应工具。
+  \item \textbf{观察（Observe）}：工具返回结果，系统将其格式化后追加到上下文。
+  \item \textbf{反思（Reflect）}：模型判断任务是否完成，是否需要调整计划。
+\end{enumerate}
+
+这就是 ReAct（Reasoning + Acting）范式的工程实现。与纯 Chain-of-Thought 不同，ReAct 不只是"想"，还要"做"；与纯工具调用不同，ReAct 在每次执行后都有一个显式的推理步骤来决定是否继续。
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{2.5cm}>{\raggedright\arraybackslash}p{3.5cm}>{\raggedright\arraybackslash}X}
+\toprule
+\textbf{架构模式} & \textbf{模型的角色} & \textbf{适用场景} \\
+\midrule
+单次生成 & 给定输入，输出一段文本 & 问答、摘要、翻译 \\
+单次工具调用 & 输出一个函数调用，系统执行一次 & 查天气、查库存、单步计算 \\
+Agent 循环 & 多轮决策，每轮可选择工具或终止 & 跨系统操作、多步推理、条件分支任务 \\
+多 Agent 协作 & 多个 Agent 各司其职，通过消息协调 & 复杂工作流、角色分工、对抗验证 \\
+\bottomrule
+\end{tabularx}
+\caption{从单次生成到多 Agent 协作的架构演进}
+\label{tab:agent-architecture-spectrum}
+\end{table}
+
+\subsection{工具定义的工程规范}
+Agent 能调用什么工具、怎么调用，取决于工具定义的质量。一个好的工具定义需要回答五个问题：
+
+\begin{enumerate}
+  \item \textbf{这个工具做什么}（description）：一句话说清功能边界，模型靠这句话决定是否选用。
+  \item \textbf{需要什么参数}（parameters）：用 JSON Schema 严格定义类型、必填项和取值范围。
+  \item \textbf{会返回什么}（return schema）：让模型知道拿到结果后能提取哪些字段。
+  \item \textbf{有什么副作用}（side effects）：是只读查询还是会修改状态？模型需要据此判断是否需要确认。
+  \item \textbf{需要什么权限}（permissions）：调用这个工具需要用户授权吗？有没有频率限制？
+\end{enumerate}
+
+\begin{note}
+工具描述的质量直接决定 Agent 的选择准确率。描述模糊的工具会导致模型在不该调用时调用、在该调用时跳过。经验法则：如果一个人类开发者读了描述后仍然不确定什么时候该用这个工具，那模型大概率也会犯错。
+\end{note}
+
+下面是一个企业知识助手中"查询会议室可用性"工具的定义示例：
+
+\begin{lstlisting}[language=Python]
+{
+    "name": "check_room_availability",
+    "description": "查询指定日期和时间段内某会议室是否可预约。"
+                   "仅返回可用性状态，不执行预约操作。",
+    "parameters": {
+        "type": "object",
+        "properties": {
+            "room_id": {
+                "type": "string",
+                "description": "会议室编号，如 '301', 'A-502'"
+            },
+            "date": {
+                "type": "string",
+                "format": "date",
+                "description": "查询日期，ISO 8601 格式"
+            },
+            "start_time": {
+                "type": "string",
+                "format": "time",
+                "description": "开始时间，HH:MM 格式"
+            },
+            "end_time": {
+                "type": "string",
+                "format": "time",
+                "description": "结束时间，HH:MM 格式"
+            }
+        },
+        "required": ["room_id", "date", "start_time", "end_time"]
+    },
+    "returns": {
+        "type": "object",
+        "properties": {
+            "available": {"type": "boolean"},
+            "conflicts": {
+                "type": "array",
+                "description": "如不可用，列出冲突的已有预约"
+            }
+        }
+    },
+    "side_effects": "none",
+    "permissions": ["calendar:read"]
+}
+\end{lstlisting}
+
+\subsection{幂等性与副作用分级}
+工具调用在 Agent 循环中可能被重试——网络超时、模型重新规划、用户要求重做。如果一个工具不是幂等的，重试就可能造成重复操作（重复发邮件、重复扣款、重复预约）。
+
+工程上，工具应按副作用分为三级：
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{2.2cm}>{\raggedright\arraybackslash}p{3.8cm}>{\raggedright\arraybackslash}X}
+\toprule
+\textbf{副作用级别} & \textbf{含义} & \textbf{Agent 应如何处理} \\
+\midrule
+无副作用 & 纯查询，不改变任何状态 & 可自由重试，无需确认 \\
+幂等写入 & 重复执行结果相同（如 PUT） & 可自动重试，但应记录执行次数 \\
+非幂等写入 & 重复执行会叠加效果（如发邮件） & 必须去重或要求人工确认后才执行 \\
+\bottomrule
+\end{tabularx}
+\caption{工具副作用分级与 Agent 重试策略}
+\label{tab:tool-side-effects}
+\end{table}
+
+对企业知识助手来说，"查制度""查会议室"属于无副作用；"更新用户偏好设置"属于幂等写入；"发送会议邀请""提交审批单"属于非幂等写入。Agent 的执行引擎必须在调用非幂等工具前检查是否已经成功执行过，或者将决策权交给用户。
+
+\subsection{Agent 循环的工程实现}
+把 ReAct 范式落地为代码，核心是一个 while 循环加上几个终止条件。下面是一个最小但完整的 Agent 循环骨架：
+
+\begin{lstlisting}[language=Python]
+import json
+
+def run_agent(model, tools, user_message, max_steps=10):
+    messages = [
+        {"role": "system", "content": SYSTEM_PROMPT},
+        {"role": "user", "content": user_message}
+    ]
+
+    for step in range(max_steps):
+        response = model.chat(messages, tools=tools)
+
+        if response.finish_reason == "stop":
+            return response.content  # 任务完成，返回最终回复
+
+        if response.finish_reason == "tool_calls":
+            for call in response.tool_calls:
+                # 执行前检查权限和副作用级别
+                if requires_confirmation(call):
+                    approval = ask_user(call)
+                    if not approval:
+                        messages.append(make_denial_message(call))
+                        continue
+
+                result = execute_tool(call)
+                messages.append(make_tool_result(call.id, result))
+
+            # 追加模型的思考过程（如果有）
+            if response.content:
+                messages.append({"role": "assistant",
+                                 "content": response.content})
+
+    return "达到最大步数限制，任务未完成。"
+\end{lstlisting}
+
+这段代码里有几个关键设计决策：
+
+\begin{itemize}
+  \item \textbf{最大步数限制}：防止模型陷入无限循环。实际系统中通常设为 5--15 步，超过说明任务拆解有问题。
+  \item \textbf{确认机制}：非幂等操作在执行前询问用户，而不是事后补救。
+  \item \textbf{拒绝处理}：用户拒绝某个工具调用时，把拒绝原因反馈给模型，让它调整计划而不是卡死。
+  \item \textbf{思考过程保留}：模型在选择工具时可能同时输出推理文本，这些文本应保留在上下文中，帮助后续步骤保持连贯。
+\end{itemize}
+
+下面展示如何用 OpenAI 兼容 API（vLLM、Ollama 等均支持）实际实现上面的骨架。关键在于 \texttt{tools} 参数的传递和 \texttt{tool\_calls} 响应的解析：
+
+\begin{lstlisting}[language=Python]
+from openai import OpenAI
+
+client = OpenAI(base_url="http://localhost:8000/v1", api_key="unused")
+
+# 工具定义列表（传给模型，让它知道有哪些工具可用）
+tools = [
+    {
+        "type": "function",
+        "function": {
+            "name": "search_policy",
+            "description": "搜索公司制度文档，返回相关条款。仅用于查询制度类问题。",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "query": {"type": "string", "description": "搜索关键词"}
+                },
+                "required": ["query"]
+            }
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "check_room_availability",
+            "description": "查询会议室在指定时段是否可用。不执行预约。",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "room_id": {"type": "string"},
+                    "date": {"type": "string", "format": "date"},
+                    "start_time": {"type": "string"},
+                    "end_time": {"type": "string"}
+                },
+                "required": ["room_id", "date", "start_time", "end_time"]
+            }
+        }
+    }
+]
+
+# Agent 循环的实际调用
+messages = [
+    {"role": "system", "content": "你是企业知识助手。需要时调用工具获取信息。"},
+    {"role": "user", "content": "公司差旅住宿标准是多少？"}
+]
+
+for step in range(10):
+    response = client.chat.completions.create(
+        model="Qwen/Qwen2.5-7B-Instruct",
+        messages=messages,
+        tools=tools,
+        tool_choice="auto",  # 让模型自己决定是否调用工具
+    )
+    msg = response.choices[0].message
+
+    if msg.tool_calls:
+        messages.append(msg)  # 保留模型的工具调用决策
+        for tc in msg.tool_calls:
+            result = execute_tool(tc.function.name, tc.function.arguments)
+            messages.append({
+                "role": "tool",
+                "tool_call_id": tc.id,
+                "content": result
+            })
+    else:
+        print(msg.content)  # 模型给出最终回答
+        break
+\end{lstlisting}
+
+这段代码和前面的骨架逻辑完全一致，但用了真实 API 格式。读者可以直接复制运行（只需实现 \texttt{execute\_tool} 函数）。注意 \texttt{tool\_choice="auto"} 让模型自主决定是否需要调用工具——如果问题可以直接回答，模型会跳过工具调用直接输出文本。
+
+\subsection{状态管理：Agent 的记忆不只是上下文}
+Agent 循环中，模型的"记忆"来自消息列表。但随着步数增加，上下文会迅速膨胀。一个 10 步的 Agent 执行，每步工具返回 500 token，加上模型思考，很容易超过 8000 token。这还没算原始的系统提示和用户消息。
+
+工程上需要区分三类状态：
+
+\begin{enumerate}
+  \item \textbf{短期状态}（working memory）：当前任务的中间结果，存在消息列表中。
+  \item \textbf{执行状态}（execution state）：哪些工具已调用、返回了什么、是否成功，存在结构化日志中。
+  \item \textbf{长期状态}（persistent state）：跨会话的用户偏好、历史操作记录，存在数据库中。
+\end{enumerate}
+
+当上下文接近窗口限制时，系统需要做\textbf{状态压缩}：把早期的工具调用结果摘要化，只保留关键结论。例如，"第 2 步查询会议室 301 在周三 14:00--15:00 可用"可以压缩为一行摘要，而不需要保留完整的 API 返回 JSON。
+
+\begin{note}
+状态压缩的时机很关键。过早压缩会丢失模型后续可能需要的细节；过晚压缩会导致上下文溢出。一个实用的启发式：当消息列表超过上下文窗口的 60\% 时，对最早的工具返回结果做摘要。
+\end{note}
+
+\subsection{失败恢复：Agent 出错后怎么办}
+Agent 循环中的失败比单次调用复杂得多，因为失败可能发生在任何一步，而且前面的步骤可能已经产生了不可逆的副作用。
+
+常见的失败模式和恢复策略：
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{3cm}>{\raggedright\arraybackslash}p{3.5cm}>{\raggedright\arraybackslash}X}
+\toprule
+\textbf{失败模式} & \textbf{表现} & \textbf{恢复策略} \\
+\midrule
+工具调用失败 & API 超时、返回错误码 & 重试（幂等工具）或报告用户（非幂等工具） \\
+模型规划偏离 & 调用了不相关的工具、陷入循环 & 注入纠正提示或触发最大步数终止 \\
+参数填充错误 & 日期格式错、ID 不存在 & 把错误信息反馈给模型，让它修正参数 \\
+权限不足 & 工具拒绝执行 & 告知模型该路径不可行，要求换方案 \\
+部分完成后中断 & 前 3 步成功，第 4 步失败 & 记录检查点，支持从断点恢复 \\
+\bottomrule
+\end{tabularx}
+\caption{Agent 循环中的失败模式与恢复策略}
+\label{tab:agent-failure-recovery}
+\end{table}
+
+其中"部分完成后中断"是最棘手的情况。如果 Agent 已经成功预约了会议室但在发送邀请时失败，系统不能简单地"从头重来"（否则会重复预约）。这就要求执行引擎维护一个\textbf{检查点}（checkpoint）机制：记录每一步的执行状态，恢复时从最后一个成功的检查点继续。
+
+\subsection{护栏与人机协作}
+Agent 的自主性越强，护栏就越重要。没有护栏的 Agent 就像一个没有权限系统的 root 用户——能力很大，但一旦出错，破坏力也很大。
+
+Agent 护栏分为三层：
+
+\begin{enumerate}
+  \item \textbf{输入护栏}：在模型生成动作之前，检查用户请求是否在允许范围内。例如，企业知识助手不应该帮用户"删除所有会议"。
+  \item \textbf{输出护栏}：在执行工具之前，检查模型选择的动作是否合理。例如，单次操作涉及金额超过阈值时自动拦截。
+  \item \textbf{执行护栏}：在工具执行过程中，检查实际操作是否符合预期。例如，批量操作影响行数超过限制时中止。
+\end{enumerate}
+
+人机协作的核心原则是：\textbf{Agent 可以自主完成低风险操作，但高风险操作必须经过人工确认。} 风险等级的判断依据包括：操作是否可逆、影响范围大小、是否涉及敏感数据、是否涉及外部通信。
+
+\begin{lstlisting}[language=Python]
+RISK_LEVELS = {
+    "check_room_availability": "low",     # 纯查询
+    "book_room": "medium",                # 可取消
+    "send_meeting_invite": "high",        # 不可撤回
+    "cancel_all_meetings": "critical",    # 批量不可逆
+}
+
+def requires_confirmation(tool_call):
+    level = RISK_LEVELS.get(tool_call.name, "high")
+    return level in ("high", "critical")
+\end{lstlisting}
+
+\subsection{多 Agent 协作模式}
+当任务复杂度超过单个 Agent 的能力边界时，可以引入多 Agent 协作。常见的协作模式有三种：
+
+\begin{enumerate}
+  \item \textbf{管道模式}（Pipeline）：Agent A 的输出作为 Agent B 的输入，依次传递。适合线性流程，如"先检索→再摘要→最后格式化"。
+  \item \textbf{分派模式}（Router/Dispatcher）：一个路由 Agent 分析任务类型，把子任务分派给专门的 Agent。适合多领域系统，如企业助手同时处理 HR、IT、财务问题。
+  \item \textbf{辩论模式}（Debate/Verify）：两个 Agent 分别生成方案，第三个 Agent 做裁判。适合需要高可靠性的决策场景。
+\end{enumerate}
+
+对企业知识助手来说，分派模式最实用。一个轻量的路由 Agent 先判断用户意图属于哪个领域，然后把请求转给对应的专业 Agent。每个专业 Agent 有自己的工具集和系统提示，互不干扰。
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{2.5cm}>{\raggedright\arraybackslash}p{3cm}>{\raggedright\arraybackslash}X}
+\toprule
+\textbf{协作模式} & \textbf{优势} & \textbf{代价} \\
+\midrule
+管道 & 简单、可预测、易调试 & 不适合需要回溯的任务 \\
+分派 & 各 Agent 专注、工具集隔离 & 路由判断错误会导致整体失败 \\
+辩论 & 提高可靠性、减少幻觉 & 成本翻倍、延迟增加 \\
+\bottomrule
+\end{tabularx}
+\caption{多 Agent 协作模式对比}
+\label{tab:multi-agent-patterns}
+\end{table}
+
+\subsection{案例推进：企业知识助手的 Agent 化升级}
+回到主案例。在前面的章节中，企业知识助手是一个"检索+生成"的系统：用户提问，系统检索相关文档，模型基于文档生成回答。现在要把它升级为一个能执行操作的 Agent 系统。
+
+升级后的架构变化：
+
+\begin{enumerate}
+  \item \textbf{新增工具集}：除了文档检索，还接入日历系统、审批系统、通讯录、邮件系统。
+  \item \textbf{新增路由层}：判断用户意图是"查询类"还是"操作类"。查询类走原有 RAG 链路；操作类进入 Agent 循环。
+  \item \textbf{新增确认机制}：所有写操作在执行前展示给用户确认。
+  \item \textbf{新增执行日志}：每一步的规划、工具调用、返回结果和模型判断都完整记录。
+\end{enumerate}
+
+一个典型的多步执行流程：
+
+\begin{quote}
+\textbf{用户}：帮我查一下公司差旅报销的住宿标准，然后看看下周三下午有没有空的会议室，如果有就帮我预约 301。
+
+\textbf{Agent 执行}：
+\begin{enumerate}
+  \item 规划：需要两个独立子任务——查制度 + 预约会议室。先查制度（无依赖），再查可用性（需要日期），最后预约（需要确认）。
+  \item 调用 \texttt{search\_policy}("差旅报销 住宿标准") → 返回制度文档片段。
+  \item 调用 \texttt{check\_room\_availability}("301", "2026-05-20", "14:00", "18:00") → 返回 14:00--16:00 可用。
+  \item 反思：会议室部分可用，需要告知用户并确认具体时段。
+  \item 生成回复：展示住宿标准 + 告知 301 在 14:00--16:00 可用 + 询问是否预约及具体时段。
+  \item 用户确认后，调用 \texttt{book\_room}("301", "2026-05-20", "14:00", "15:00")。
+\end{enumerate}
+\end{quote}
+
+\section{常见坑与工程取舍}
+\begin{itemize}
+  \item \textbf{工具描述写得太模糊}：模型无法区分相似工具，导致频繁选错。解决：每个工具的描述必须包含"什么时候该用"和"什么时候不该用"。
+  \item \textbf{没有最大步数限制}：模型陷入"查了再查"的循环，token 消耗失控。解决：设置硬性步数上限，超过后强制终止并汇报进度。
+  \item \textbf{所有操作都要确认}：用户体验极差，每步都要点"确认"。解决：只对非幂等、不可逆操作要求确认，查询类自动执行。
+  \item \textbf{工具返回太多无关信息}：API 返回完整 JSON 但模型只需要一两个字段，浪费上下文。解决：在工具执行层做结果裁剪，只把模型需要的字段传回。
+  \item \textbf{忽略并发和竞态}：两个用户同时让 Agent 预约同一个会议室。解决：在工具层做乐观锁或预留机制，而不是让 Agent 自己处理并发。
+  \item \textbf{把 Agent 失败当成模型问题}：很多时候是工具定义不清、权限配置错误或网络问题，不是模型"不够聪明"。解决：先查执行日志，再怀疑模型。
+\end{itemize}
+
+\section{本章练习}
+\begin{exercise}[设计工具集]
+为企业知识助手设计一个"请假申请"场景的工具集。需要包含：查询剩余假期、查询审批人、提交请假申请。为每个工具写出 name、description 和 parameters，并标注副作用级别。
+\end{exercise}
+
+\begin{solution}
+三个工具的设计要点：
+\begin{itemize}
+  \item \texttt{get\_leave\_balance}：查询指定员工的各类假期余额。参数：employee\_id（必填）。副作用：无。
+  \item \texttt{get\_approver}：根据员工和请假类型查询审批人。参数：employee\_id、leave\_type（必填）。副作用：无。
+  \item \texttt{submit\_leave\_request}：提交请假申请。参数：employee\_id、leave\_type、start\_date、end\_date、reason（必填），approver\_id（必填）。副作用：非幂等写入——重复提交会创建多个申请单。Agent 必须在调用前确认，且应检查是否已有相同日期的待审批申请。
+\end{itemize}
+\end{solution}
+
+\begin{exercise}[诊断 Agent 循环问题]
+某次 Agent 执行中，模型在第 3 步调用了 \texttt{search\_policy}，第 4 步又调用了同一个工具但参数略有不同，第 5 步再次调用，直到达到最大步数。可能的原因是什么？如何修复？
+\end{exercise}
+
+\begin{solution}
+最可能的原因是工具返回的结果不够明确，模型无法判断"已经找到了"还是"需要换个关键词再试"。修复方向：
+\begin{enumerate}
+  \item 在工具返回中增加明确的"是否找到相关结果"标志，而不是只返回空列表。
+  \item 在系统提示中加入规则："如果连续两次搜索未找到相关结果，应告知用户该信息可能不在知识库中，而不是继续尝试。"
+  \item 在执行引擎层检测重复工具调用模式，触发时注入提示让模型换策略。
+\end{enumerate}
+\end{solution}
+
+\section{延伸阅读}
+\begin{itemize}
+  \item \textbf{ReAct 原始论文}（Yao et al., 2023）：理解 Reasoning + Acting 范式的理论基础和实验验证。
+  \item \textbf{Toolformer}（Schick et al., 2023）：模型如何学会自主决定何时调用工具。
+  \item \textbf{OpenAI Function Calling 文档}：工业级工具调用的 API 设计和最佳实践。
+  \item \textbf{LangGraph / CrewAI 等框架文档}：多 Agent 编排的工程实现参考。
+  \item \textbf{Anthropic Claude Tool Use 文档}：另一种工具调用协议的设计哲学。
+\end{itemize}
+
+\section{小结}
+本章把模型从"被动回答者"升级为"主动执行者"。Agent 的核心不是某个具体框架，而是一个工程模式：让模型在循环中做决策，让系统在循环中做执行，让护栏在循环中做约束。工具定义的质量决定了 Agent 能做什么，状态管理决定了它能走多远，失败恢复决定了它出错后能不能救回来。
+
+\section{下一章过渡}
+Agent 让系统开始会“做事”，但会做事不等于会把复杂问题想清楚。很多任务即使拿到了工具、拿到了资料，难点仍然落在多步逻辑、规则推导和方案比较上。下一章将继续往前走，讨论推理增强技术：Chain-of-Thought、Tree-of-Thought 以及 o1 范式如何让模型在真正需要时"想得更深"。

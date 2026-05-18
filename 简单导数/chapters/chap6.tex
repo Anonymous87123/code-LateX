@@ -1,7 +1,7 @@
 \chapter{均值不等式链}
 
-\section{引言与核心记号}
-不失一般性，设二元正数 $x, y > 0$ 且 $x \neq y$（后续证明中常假设 $0 < x < y$）。定义以下常见的均值：
+\section{引言与记号}
+不失一般性，设二元正数 $x, y > 0$ 且 $x \neq y$（后续证明中常假设 $0 < x < y$）。定义如下均值：
 \begin{align*}
     A &= \frac{x+y}{2} \quad \text{(算术平均, } M_1 \text{)} \\
     G &= \sqrt{xy} \quad \text{(几何平均, } M_0 \text{)} \\
@@ -11,7 +11,7 @@
     M_p &= \left(\frac{x^p+y^p}{2}\right)^{\frac{1}{p}} \quad \text{(幂平均, 且 } \lim_{p\to 0}M_p = G \text{)}
 \end{align*}
 
-在处理复杂的均值不等式时，常采用双曲参数化替代：令 $t = \frac{1}{2}\ln\left(\frac{y}{x}\right) > 0$，即 $y = G e^t, x = G e^{-t}$。将原式除以 $G$ 无量纲化后，各项均值可优美地转化为双曲函数：
+这里采用双曲参数化。令 $t = \frac{1}{2}\ln\left(\frac{y}{x}\right) > 0$，即 $y = G e^t,\ x = G e^{-t}$。原式除以 $G$ 后，各项均值写成
 \[
 A = \cosh t, \quad G = 1, \quad L = \frac{\sinh t}{t}, \quad I = \exp(t\coth t - 1), \quad M_{1/2} = \frac{\cosh t + 1}{2}
 \]
@@ -36,7 +36,7 @@ A = \cosh t, \quad G = 1, \quad L = \frac{\sinh t}{t}, \quad I = \exp(t\coth t -
     化简等价于 $\frac{t-1}{\ln t} \ge \sqrt{t}$。构造 $f(t) = t - 1 - \sqrt{t}\ln t$，求导得 $f'(t) = \frac{\sqrt{t}-1-\ln\sqrt{t}}{\sqrt{t}} \ge 0$，故得证。
 
     \item \textbf{证明 $G \ge H$：}
-    等价于 $\sqrt{xy} \ge \frac{2xy}{x+y} \iff x+y \ge 2\sqrt{xy} \iff (\sqrt{x}-\sqrt{y})^2 \ge 0$，显然成立。
+    等价于 $\sqrt{xy} \ge \frac{2xy}{x+y} \iff x+y \ge 2\sqrt{xy} \iff (\sqrt{x}-\sqrt{y})^2 \ge 0$，结论即得。
 \end{itemize}
 \end{solution}
 
@@ -47,7 +47,7 @@ A = \cosh t, \quad G = 1, \quad L = \frac{\sinh t}{t}, \quad I = \exp(t\coth t -
 考察函数 $f(x) = x^{\beta/\alpha} (x>0)$，其二阶导数为 $f''(x) = \frac{\beta}{\alpha}\left(\frac{\beta}{\alpha}-1\right)x^{\frac{\beta}{\alpha}-2}$。
 当 $0<\alpha<\beta$ 时，$f''(x) > 0$。由 Jensen 不等式的下凸性质：
 $f\left(\frac{x_1+x_2+\cdots+x_n}{n}\right) \le \frac{f(x_1)+f(x_2)+\cdots+f(x_n)}{n}$。
-取 $x_i = a_i^\alpha$，两边同时进行 $\frac{1}{\beta}$ 次乘方运算即可得证。对于 $\alpha<\beta<0$ 等其他区间，同理可借由凹凸性符号反转严格得证。
+取 $x_i = a_i^\alpha$，两边同时进行 $\frac{1}{\beta}$ 次乘方运算即可得证。对于 $\alpha<\beta<0$ 等其余区间，也可通过凹凸性引起的不等号方向变化完成证明。
 \end{solution}
 
 \begin{example}{}{}
@@ -65,8 +65,16 @@ $f\left(\frac{x_1+x_2+\cdots+x_n}{n}\right) \le \frac{f(x_1)+f(x_2)+\cdots+f(x_n
 \end{example}
 \begin{solution}
 利用最佳系数逼近定理，已知 $L \le M_{1/3}$。
-(1) $2G+A = 2M_0 + M_1 \ge 3M_{1/3} \ge 3L$。若使用微分法，令 $x=t^2 \ge 1$，构造 $f = \ln x - \frac{3(x-1)}{\frac{1+x}{2} + 2\sqrt{x}}$，求导后提取核心项 $f_1'(t) = \frac{(t-1)^4}{t(t^2+4t+1)^2} \ge 0$ 即可反推闭环。
-(2) $2A+H = 2M_1 + M_{-1} \ge 3M_{1/3} \ge 3L$。同理可通过连续多次求导剥离对数因子证明。
+(1) $2G+A = 2M_0 + M_1 \ge 3M_{1/3} \ge 3L$。若使用微分法，令 $x=t^2 \ge 1$，构造
+\[
+f = \ln x - \frac{3(x-1)}{\frac{1+x}{2} + 2\sqrt{x}},
+\]
+求导后把共同因子提出来
+\[
+f_1'(t) = \frac{(t-1)^4}{t(t^2+4t+1)^2} \ge 0,
+\]
+即可完成证明。
+(2) $2A+H = 2M_1 + M_{-1} \ge 3M_{1/3} \ge 3L$。类似地，也可通过连续求导逐步化简对数项完成证明。
 \end{solution}
 
 \begin{example}{}{}
@@ -82,14 +90,14 @@ $f\left(\frac{x_1+x_2+\cdots+x_n}{n}\right) \le \frac{f(x_1)+f(x_2)+\cdots+f(x_n
 证明：(1) $2A+G \le 3I$ \quad (2) $A+L \le 2I$ \quad (3) $G+I \ge 2L$ \quad (4) $AL \le I^2$
 \end{example}
 \begin{solution}
-均可利用“最佳系数问题”的客观定理及单调性代数放缩秒杀：
+均可利用“最佳系数问题”的结论及单调性放缩处理：
 (1) 海伦平均中转：$\frac{2A+G}{3} = He_1 \le M_{2/3} \le I$。
 (2) $A+L \le M_1 + M_{1/3} \le 2M_{2/3} \le 2I$。
 (3) $G+I \ge M_0 + M_{2/3} \ge 2M_{1/3} \ge 2L$。
 (4) $AL \le M_1 M_{1/3} \le M_{2/3}^2 \le I^2$。
 \end{solution}
 
-\section{极难遗留不等式的极致闭环推演（绝杀排雷版）}
+\section{若干补充不等式}
 
 \begin{example}{}{}
 高阶放缩补充：证明 $AG^2 \le L^3$。
@@ -108,7 +116,7 @@ $f\left(\frac{x_1+x_2+\cdots+x_n}{n}\right) \le \frac{f(x_1)+f(x_2)+\cdots+f(x_n
 \end{example}
 \begin{solution}
 由定义展开，$M_{1/2} = \left(\frac{x^{1/2}+y^{1/2}}{2}\right)^2 = \frac{x+y+2\sqrt{xy}}{4} = \frac{A+G}{2}$，即 $2M_{1/2} = A+G$。
-不等式 $L+I \le 2M_{1/2}$ 完全等价于 $L+I \le A+G$，这在本文第 4 节中已被泰勒级数极其严密地证明，直接作为推论。
+不等式 $L+I \le 2M_{1/2}$ 等价于 $L+I \le A+G$，而这在本文第 4 节中已证明，可直接作为推论。
 对于乘积形式，根据基础 AM-GM 不等式，有 $\sqrt{LI} \le \frac{L+I}{2}$。结合已证的 $\frac{L+I}{2} \le M_{1/2}$，连起来平方即得 $LI \le M_{1/2}^2$。
 \end{solution}
 
@@ -116,35 +124,87 @@ $f\left(\frac{x_1+x_2+\cdots+x_n}{n}\right) \le \frac{f(x_1)+f(x_2)+\cdots+f(x_n
 连续分式极值：证明 $\frac{1}{3} < \frac{I-L}{A-G} < \frac{2}{e} < \frac{I+L}{A+G}$。
 \end{example}
 \begin{solution}
-分三段单独击破：
+分别证明三部分不等式：
 \begin{itemize}
     \item \textbf{证左端 $\frac{I-L}{A-G} > \frac{1}{3}$}：即 $3I - 3L > A-G$。因已知 $2A+G \le 3I \implies 3I \ge 2A+G$；又 $2G+A \ge 3L \implies -3L \ge -A-2G$。两式相加得 $3I - 3L \ge A-G$，因 $x \neq y$ 严格大于号成立。
     
-    \item \textbf{证右端 $\frac{I+L}{A+G} > \frac{2}{e}$}：即 $e(I+L) > 2A+2G$。拆解为 $eL > 2G$（因 $L>G, e>2$ 显然）和 $eI > 2A$。对于后者，等价于 $e^{t\coth t} > 2\cosh t$。两边取对数并换元 $u = e^{-2t} \in (0,1)$，等价于 $-\frac{u\ln u}{1-u} > \ln(1+u)$。构造函数的二阶导数严格小于0（上凸），且端点值为0，故内部恒正得证。
+    \item \textbf{证右端 $\frac{I+L}{A+G} > \frac{2}{e}$}：即 $e(I+L) > 2A+2G$。可分解为 $eL > 2G$ 与 $eI > 2A$。前者由 $L>G$ 及 $e>2$ 立即得到。对于后者，等价于 $e^{t\coth t} > 2\cosh t$。两边取对数并换元 $u = e^{-2t} \in (0,1)$，可化为
+    \[
+    -\frac{u\ln u}{1-u} > \ln(1+u).
+    \]
+    对应辅助函数的二阶导数恒小于 $0$，且两端取值为 $0$，故区间内部恒为正。
 
-    \item \textbf{证中端 $\frac{I-L}{A-G} < \frac{2}{e}$}：即 $e(I-L) < 2(A-G)$。构造差值函数 $H(t) = 2(\cosh t - 1) - e\exp(t\coth t - 1) + e\frac{\sinh t}{t}$。在 $t=0$ 处作泰勒展开：$H(t) = \left(1-\frac{e}{6}\right)t^2 + \left(\frac{1}{12}-\frac{e}{40}\right)t^4 + \cdots$。所有偶数次高阶项系数均严格大于 0，解析上绝对保证 $H(t)>0$，确界极限精准收敛于 $2/e$。
+    \item \textbf{证中端 $\frac{I-L}{A-G} < \frac{2}{e}$}：即 $e(I-L) < 2(A-G)$。构造差值函数
+    \[
+    H(t) = 2(\cosh t - 1) - e\exp(t\coth t - 1) + e\frac{\sinh t}{t}.
+    \]
+    在 $t=0$ 附近作泰勒展开：
+    \[
+    H(t) = \left(1-\frac{e}{6}\right)t^2 + \left(\frac{1}{12}-\frac{e}{40}\right)t^4 + \cdots .
+    \]
+    由展开式可见，$H(t)$ 在 $t>0$ 时恒为正，因此得到
+    \[
+    \frac{I-L}{A-G} < \frac{2}{e}.
+    \]
 \end{itemize}
 \end{solution}
 
 \begin{example}{}{}
-【漏洞排雷修复版】在附加必须前提条件 $\mathbf{0 < x < y \le e}$ 下，证明不对称幂塔链：$G^A < L^I < I^L < A^G$。
+在附加条件 $\mathbf{0 < x < y \le e}$ 下，证明不对称幂链
+\[
+G^A < L^I < I^L < A^G.
+\]
 \end{example}
 \begin{solution}
-\textbf{【排雷警示】}：原命题在无条件域限制下是伪命题！幂不等式无齐次缩放性，若令 $x=10, y=1$，则 $A^G \approx 219.4 < G^A \approx 562.3$，不等号彻底反转！加入该隐藏条件后，均值满足 $0 < G < L < I < A \le e$。
+\textbf{说明：} 原命题若不加范围限制并不成立。例如取 $x=10,\ y=1$，则
+\[
+A^G \approx 219.4 < G^A \approx 562.3.
+\]
+因此必须加入 \(0<x<y\le e\) 这一条件。此时有
+\[
+0 < G < L < I < A \le e.
+\]
 \begin{itemize}
-    \item \textbf{证明 $L^I < I^L$}：考察函数 $f(z) = \frac{\ln z}{z}$。导数 $f'(z) = \frac{1-\ln z}{z^2}$ 在区间 $(0, e]$ 上严格为正，即单调递增。因为 $L < I \le e$，必然有 $f(L) < f(I) \implies \frac{\ln L}{L} < \frac{\ln I}{I} \implies L^I < I^L$。秒杀！
+    \item \textbf{证明 $L^I < I^L$}：考察函数 $f(z) = \frac{\ln z}{z}$。其导数
+    \[
+    f'(z) = \frac{1-\ln z}{z^2}
+    \]
+    在区间 \((0,e]\) 上严格为正，因此 \(f\) 单调递增。由 \(L<I\le e\) 可得
+    \[
+    \frac{\ln L}{L}<\frac{\ln I}{I},
+    \]
+    从而 \(L^I<I^L\)。
 
-    \item \textbf{证明 $I^L < A^G$（全场最华丽证明）}：取对数等价于 $L \ln I < G \ln A$。除以 $G$ 将其无量纲化：$L_0 \ln(I_0 G) < \ln(A_0 G)$（下标0表示 $x=Ge^v, y=Ge^{-v}$ 时的双曲均值形式）。
+    \item \textbf{证明 $I^L < A^G$}：取对数后，问题等价于
+    \[
+    L \ln I < G \ln A.
+    \]
+    除以 \(G\) 后写成
+    \[
+    L_0 \ln(I_0 G) < \ln(A_0 G),
+    \]
+    其中下标 \(0\) 表示 \(x=Ge^v,\ y=Ge^{-v}\) 时对应的双曲均值形式。
     因为限制了 $x,y \le e$，故必有 $\ln G + v \le 1 \implies \ln G \le 1-v$。
     只需证极值界限：$(1-v)(L_0 - 1) < \ln A_0 - L_0 \ln I_0$。
-    移项构造绝杀函数：$D(v) = \ln A_0 - L_0 \ln I_0 - (1-v)(L_0 - 1)$。
-    代入 $A_0 = \cosh v, L_0 = \frac{\sinh v}{v}, \ln I_0 = v\coth v - 1$，发生不可思议的代数坍缩相消：
+    移项后构造辅助函数
+    \[
+    D(v) = \ln A_0 - L_0 \ln I_0 - (1-v)(L_0 - 1).
+    \]
+    代入
+    \[
+    A_0 = \cosh v,\qquad L_0 = \frac{\sinh v}{v},\qquad \ln I_0 = v\coth v - 1,
+    \]
+    可化为
     \begin{align*}
     D(v) &= \ln \cosh v - \frac{\sinh v}{v}(v\coth v - 1) - (1-v)\left(\frac{\sinh v}{v} - 1\right) \\
     &= \mathbf{\ln \cosh v - \cosh v + \sinh v + 1 - v}
     \end{align*}
-    对这个极致干净的心智产物求导：
-    $D'(v) = \tanh v - \sinh v + \cosh v - 1 = \tanh v + e^{-v} - 1 = \frac{e^{-v}(1-e^{-v})^2}{1+e^{-2v}} > 0$。
-    因为 $D(0) = 0$ 且导数严格大于 0，所以 $D(v) > 0$ 绝对成立！直接锁死 $I^L < A^G$。同理可借相同框架斩获 $G^A < L^I$。修复条件后实现完美闭环！
+    再求导：
+    \[
+    D'(v) = \tanh v - \sinh v + \cosh v - 1
+    = \tanh v + e^{-v} - 1
+    = \frac{e^{-v}(1-e^{-v})^2}{1+e^{-2v}} > 0.
+    \]
+    因为 \(D(0)=0\) 且 \(D'(v)>0\)，所以 \(D(v)>0\)，从而 \(I^L<A^G\)。另一侧不等式 \(G^A<L^I\) 同理。
 \end{itemize}
 \end{solution}

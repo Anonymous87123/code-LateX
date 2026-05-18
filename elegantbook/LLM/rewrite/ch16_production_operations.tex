@@ -1,0 +1,297 @@
+\chapter{上线运维与持续迭代：让 LLM 系统稳定运行在生产环境}
+
+\begin{introduction}
+\item {\heiti 本章核心问题}：当前面的模型、评测、安全和平台能力都已经具备后，怎样把它们接成一套能长期稳定运行的生产闭环？
+\item {\heiti 主案例推进}：企业知识助手正式上线——部署架构、监控告警、灰度发布、成本控制和版本迭代的完整闭环。
+\item {\heiti 读完后能做什么}：能把评测门禁、推理性能、安全告警和平台治理统一接进生产部署方案，建立可发布、可回滚、可运营的 LLM 服务。
+\end{introduction}
+
+\section{学习目标}
+\begin{itemize}
+  \item 理解 LLM 系统上线与传统服务上线的关键差异。
+  \item 掌握 LLM 服务的监控指标体系：延迟、质量、成本、安全四个维度。
+  \item 能设计灰度发布和回滚策略，控制新版本的风险。
+  \item 理解 LLM 系统的成本结构和优化手段。
+  \item 能建立持续迭代的反馈闭环：从用户反馈到系统改进。
+\end{itemize}
+
+\section{问题背景}
+前面十五章覆盖了 LLM 系统的核心技术：模型理解、推理链路、提示工程、微调、RAG、评测、对齐、推理优化、分布式训练、Agent、推理增强、安全合规。但技术能力不等于生产就绪。
+
+很多团队在开发阶段一切顺利，上线后却频繁出问题：延迟突然飙升但不知道是模型还是网络的问题；用户投诉回答质量下降但无法定位是哪次更新导致的；月底账单超预算但不清楚 token 消耗在哪里；模型提供商更新了 API 版本导致输出格式变化但没有人注意到。
+
+这些问题的共同根源是：\textbf{缺乏生产级的运维体系}。LLM 系统的运维比传统服务更复杂，因为它的行为不完全确定——同样的输入可能产生不同的输出，质量退化是渐进的而非突然崩溃，成本与流量不是简单的线性关系。
+
+因此，本章不是把第九章的评测、第十一章的性能、第十二章的治理、第十五章的安全再讲一遍，而是把它们全部接到“上线后每天怎么跑”这个问题上。前文给的是能力模块，这一章要把这些模块变成值班表、告警规则、灰度纪律和回滚路径。
+
+\section{核心概念}
+
+\subsection{LLM 系统上线的特殊挑战}
+与传统微服务相比，LLM 系统的生产运维有几个独特难点：
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{3cm}>{\raggedright\arraybackslash}p{4cm}>{\raggedright\arraybackslash}X}
+\toprule
+\textbf{维度} & \textbf{传统服务} & \textbf{LLM 系统} \\
+\midrule
+行为确定性 & 相同输入 → 相同输出 & 相同输入可能产生不同输出 \\
+故障表现 & 明确的错误码和异常 & 渐进的质量退化，难以用阈值捕捉 \\
+成本模型 & 主要是计算和存储 & token 消耗占大头，且与输入复杂度相关 \\
+版本管理 & 代码版本 & 代码 + 模型 + 提示 + 数据，四个维度同时变化 \\
+回滚复杂度 & 回滚代码即可 & 可能需要同时回滚提示、模型版本和检索索引 \\
+\bottomrule
+\end{tabularx}
+\caption{LLM 系统与传统服务的运维差异}
+\label{tab:llm-vs-traditional-ops}
+\end{table}
+
+\subsection{监控指标体系}
+这里并不是重新发明一套指标，而是把前面几章已经建立的判断口径接到线上：第九章的评测切片要变成质量雷达，第十一章的延迟与成本要变成容量和 SLO，第十五章的风险边界要变成安全告警，第十二章的版本与恢复纪律要变成运维台账。因此，LLM 系统的监控至少需要覆盖四个维度：
+
+\textbf{1. 延迟指标}
+
+这一组指标承接的是第十一章的推理链路拆分。前文已经知道延迟可能卡在 tokenizer、prefill、decode、KV Cache 或批处理；到了生产环境，就必须把这些差异折算成可告警的服务指标。
+
+\begin{itemize}
+  \item 首 token 时间（Time to First Token, TTFT）：用户感知的响应速度。
+  \item 端到端延迟（End-to-End Latency）：从请求到完整响应的总时间。
+  \item 各环节耗时拆分：检索耗时、模型推理耗时、后处理耗时。
+\end{itemize}
+
+\textbf{2. 质量指标}
+
+这一组指标承接的是第九章的评测体系。离线评测负责决定“这个版本值不值得发”，线上质量指标负责回答“发出去以后它有没有开始变坏”。
+
+\begin{itemize}
+  \item 用户满意度（点赞/点踩比例）。
+  \item 引用准确率（RAG 场景下，回答是否有文档支撑）。
+  \item 拒绝率（系统拒绝回答的比例，过高说明安全规则过严）。
+  \item 幻觉率（抽样人工评估，回答中无依据内容的比例）。
+\end{itemize}
+
+\textbf{3. 成本指标}
+
+这一组指标承接的是第十一章的容量与预算判断。只有当 token、并发和模型路由都被量化，团队才知道某次看似正常的增长，究竟是业务涨了，还是系统变臃肿了。
+
+\begin{itemize}
+  \item 每次请求的平均 token 消耗（输入 + 输出）。
+  \item 每次请求的平均成本（按模型定价计算）。
+  \item 日/周/月总成本及趋势。
+  \item 成本异常检测（某用户或某类查询的成本突然飙升）。
+\end{itemize}
+
+\textbf{4. 安全指标}
+
+这一组指标承接的是第十五章的安全与合规治理。安全在生产环境里不应该只表现为“规则写在文档里”，而要表现为可观测的拦截率、触发率和升级事件。
+
+\begin{itemize}
+  \item 注入攻击检测次数和拦截率。
+  \item PII 泄露检测触发次数。
+  \item 有害内容过滤触发次数。
+  \item 异常使用模式告警（如单用户短时间大量请求）。
+\end{itemize}
+
+\subsection{灰度发布与 A/B 测试}
+灰度发布是第九章“先评测、再放量”在生产环境里的直接延伸。LLM 系统的变更（提示修改、模型升级、检索策略调整）不适合直接全量发布，因为质量退化可能是渐进的、难以通过自动化测试完全覆盖的。
+
+灰度发布策略：
+
+\begin{enumerate}
+  \item \textbf{流量分割}：新版本先接 5\% 流量，观察 24 小时无异常后逐步扩大。
+  \item \textbf{对照组}：始终保留一组用户使用旧版本作为基线对比。
+  \item \textbf{自动回滚触发条件}：延迟 P95 上升 > 30\%、用户差评率上升 > 2 倍、成本上升 > 50\%。
+  \item \textbf{人工审核门}：在扩大到 50\% 流量前，必须有人工抽样审核新版本的输出质量。
+\end{enumerate}
+
+\begin{note}
+LLM 系统的 A/B 测试比传统服务更难做，因为输出是自然语言——不能简单地比较"转化率"或"点击率"。需要结合自动化指标（延迟、成本、格式正确率）和人工评估（回答质量、相关性、安全性）。
+\end{note}
+
+\subsection{成本控制}
+第十一章已经讲过显存、吞吐、上下文长度和模型路由的取舍；到了生产阶段，这些取舍最终都会折算成账单。LLM 系统的成本主要来自 token 消耗，而 token 消耗与输入复杂度、输出长度、推理策略直接相关。
+
+成本优化的常见手段：
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{3cm}>{\raggedright\arraybackslash}p{3.5cm}>{\raggedright\arraybackslash}X}
+\toprule
+\textbf{优化手段} & \textbf{节省幅度} & \textbf{代价} \\
+\midrule
+提示压缩 & 20--40\% 输入 token & 可能丢失上下文细节 \\
+缓存命中 & 90\%+（命中时） & 需要维护缓存，不适合个性化查询 \\
+模型降级 & 50--80\% & 质量下降，需要路由策略 \\
+输出长度限制 & 30--50\% 输出 token & 可能截断有用信息 \\
+批量处理 & 20--30\% & 增加延迟，不适合实时场景 \\
+\bottomrule
+\end{tabularx}
+\caption{LLM 系统的成本优化手段}
+\label{tab:cost-optimization}
+\end{table}
+
+其中\textbf{模型路由}是性价比最高的策略：用一个轻量分类器判断查询的复杂度，简单问题用小模型（快且便宜），复杂问题用大模型（慢但准确）。
+
+\begin{lstlisting}[language=Python]
+def route_query(query: str, classifier) -> str:
+    complexity = classifier.predict(query)
+    if complexity == "simple":
+        return "gpt-4o-mini"      # 快速、低成本
+    elif complexity == "medium":
+        return "gpt-4o"           # 平衡
+    else:
+        return "o1"               # 复杂推理
+\end{lstlisting}
+
+\subsection{版本管理与可追溯性}
+这一节本质上承接的是第十二章的平台治理。LLM 系统的"版本"不只是代码版本。一次输出的行为由四个因素共同决定：
+
+\begin{enumerate}
+  \item \textbf{模型版本}：用的是哪个模型、哪个 checkpoint。
+  \item \textbf{提示版本}：系统提示、few-shot 示例的内容。
+  \item \textbf{检索版本}：知识库的内容和索引策略。
+  \item \textbf{配置版本}：采样参数、工具定义、安全规则。
+\end{enumerate}
+
+生产系统必须能回答："上周三下午那个错误回答，当时用的是什么模型、什么提示、检索到了什么文档、用了什么参数？" 如果回答不了这个问题，就无法做有效的根因分析。
+
+\subsection{持续迭代的反馈闭环}
+LLM 系统上线不是终点，而是迭代的起点。反馈闭环的四个环节：
+
+\begin{enumerate}
+  \item \textbf{收集}：用户的显式反馈（点赞/点踩）+ 隐式信号（是否追问、是否转人工）。
+  \item \textbf{分析}：对差评样本做根因分类——检索问题、模型问题、提示问题还是数据问题？
+  \item \textbf{改进}：根据分析结果决定改进方向。
+  \item \textbf{验证}：改进后通过灰度发布验证效果。
+\end{enumerate}
+
+\subsection{把前面十五章接成一套生产运行手册}
+如果把这一章当成真正的终章，它最重要的工作不是再补一个新名词，而是把前面已经建立的能力重新翻译成生产职责。对企业知识助手来说，下面这张表最能说明“前文学到的东西上线后分别落到哪里”：
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{3.1cm}>{\raggedright\arraybackslash}p{4cm}>{\raggedright\arraybackslash}X}
+\toprule
+\textbf{前文能力模块} & \textbf{到了生产环境要变成什么} & \textbf{如果缺了会发生什么} \\
+\midrule
+第 9 章评测体系 & 发布门禁、线上回放集、核心切片巡检 & 版本退化会先被用户发现，而不是先被团队发现 \\
+第 11 章推理优化 & 容量基线、延迟预算、成本告警与路由策略 & 服务可能“能跑”，但越跑越慢、越跑越贵 \\
+第 12 章平台治理 & 版本台账、恢复流程、变更记录、责任边界 & 出问题后找不到当时的模型、提示、数据和配置 \\
+第 13 章 Agent 编排 & 工具执行日志、审批流、失败补偿、人工接管 & 多步任务一旦出错，团队不知道哪一步出了事 \\
+第 14 章推理增强 & 复杂任务路由、推理成本控制、可解释性策略 & 所有问题都走重推理，系统会又慢又贵且难审计 \\
+第 15 章安全合规 & 安全告警、红队回归、权限审计、异常升级 & 系统越能干，风险面就越大，且上线后难以及时止损 \\
+\bottomrule
+\end{tabularx}
+\caption{终章的价值，在于把前文能力翻译成生产运行职责}
+\label{tab:book-to-production-ops}
+\end{table}
+
+这张表也解释了为什么本章必须放在最后：只有当你知道每个能力模块在线上分别归谁管、出了问题先查什么、变更后怎么回滚，这本书才真正从“会做一个系统”走到“能把系统长期养住”。
+
+\subsection{最小部署方案：从零到可访问的五步}
+对自学读者来说，前面的监控、灰度、成本控制都是"系统已经在跑"之后的事。但很多人卡在更前面一步：怎么让企业知识助手第一次跑起来并对外提供服务？下面给出一个最小但完整的部署路径：
+
+\begin{enumerate}
+  \item \textbf{选择推理后端}：用 vLLM 或 Ollama 把模型跑成一个 HTTP 服务。vLLM 适合 GPU 服务器（支持 continuous batching），Ollama 适合本地开发和小规模部署。
+  \item \textbf{包一层 API 服务}：用 FastAPI 写一个薄层，负责接收用户请求、拼装提示、调用推理后端、做后处理。这一层也是后续加 RAG、加工具调用的扩展点。
+  \item \textbf{加向量数据库}：用 Chroma（本地）或 Milvus（生产）存储文档向量，实现 RAG 检索。
+  \item \textbf{加基础监控}：用 Prometheus + Grafana 采集三个指标——请求延迟、错误率、日 token 消耗。
+  \item \textbf{对外暴露}：用 Nginx 做反向代理，加上认证（API Key 或 OAuth），即可对内部用户开放。
+\end{enumerate}
+
+\begin{lstlisting}[language=Python]
+# 最小 FastAPI 服务骨架（省略 RAG 和监控细节）
+from fastapi import FastAPI
+from openai import OpenAI
+
+app = FastAPI()
+client = OpenAI(base_url="http://localhost:8000/v1", api_key="unused")
+
+@app.post("/chat")
+async def chat(question: str):
+    response = client.chat.completions.create(
+        model="Qwen/Qwen2.5-7B-Instruct",
+        messages=[
+            {"role": "system", "content": "你是企业知识助手。"},
+            {"role": "user", "content": question}
+        ],
+        temperature=0.3,
+    )
+    return {"answer": response.choices[0].message.content}
+\end{lstlisting}
+
+这不是生产级代码，但它让读者看到：从模型到可访问的服务，中间只需要一个推理后端 + 一个 API 层 + 一个反向代理。后续所有优化（RAG、缓存、灰度、监控）都是在这个骨架上逐步叠加的。
+
+\section{常见坑与工程取舍}
+\begin{itemize}
+  \item \textbf{没有监控就上线}：出问题时完全没有数据可查。最少要有延迟、错误率和成本三个基础指标。
+  \item \textbf{全量发布提示修改}：一个看似无害的提示调整可能影响 10\% 的查询。任何提示变更都应走灰度。
+  \item \textbf{忽略模型提供商的变更}：API 提供商可能更新模型版本。应固定版本号并监控输出分布变化。
+  \item \textbf{成本预算没有告警}：月底才发现超预算为时已晚。应设置日级别的成本告警。
+  \item \textbf{只看平均指标}：平均延迟 200ms 但 P99 是 30 秒，用户体验可能很差。关注长尾。
+  \item \textbf{反馈收集了但没人看}：必须有人定期分析并转化为改进动作。
+\end{itemize}
+
+\section{本章练习}
+\begin{exercise}[设计监控面板]
+为企业知识助手设计一个运维监控面板，包含至少 8 个关键指标。对每个指标说明：正常范围、告警阈值和异常时的排查方向。
+\end{exercise}
+
+\begin{solution}
+8 个关键指标：
+\begin{enumerate}
+  \item \textbf{TTFT}：正常 < 1s，告警 > 3s。排查：模型服务负载、网络延迟。
+  \item \textbf{端到端延迟 P95}：正常 < 5s，告警 > 15s。排查：检索、推理、后处理各环节。
+  \item \textbf{错误率}：正常 < 1\%，告警 > 5\%。排查：API 限流、服务故障。
+  \item \textbf{用户差评率}：正常 < 10\%，告警 > 20\%。排查：近期变更、知识库更新。
+  \item \textbf{日 token 消耗}：设定预算基线，告警 > 150\%。排查：异常用户、提示膨胀。
+  \item \textbf{检索命中率}：正常 > 80\%，告警 < 60\%。排查：知识库覆盖度。
+  \item \textbf{安全拦截率}：正常 < 2\%，告警 > 10\%。排查：攻击或规则过严。
+  \item \textbf{拒绝回答率}：正常 < 5\%，告警 > 15\%。排查：安全规则误判。
+\end{enumerate}
+\end{solution}
+
+\begin{exercise}[灰度发布方案]
+企业知识助手要把系统提示从 v2.3 升级到 v2.4。设计灰度发布方案，包括流量分配、观察指标、回滚条件和全量发布标准。
+\end{exercise}
+
+\begin{solution}
+\begin{enumerate}
+  \item Day 1--2：5\% 流量走 v2.4，观察延迟和差评率。
+  \item Day 3--5：扩大到 20\%，增加回归测试观察。
+  \item Day 6--7：扩大到 50\%，人工抽样评估。
+  \item 回滚条件：差评率上升 > 5 个百分点、延迟 P95 上升 > 50\%、出现安全事件。
+  \item 全量标准：50\% 阶段运行 48 小时无异常 + 人工评估通过。
+\end{enumerate}
+\end{solution}
+
+\section{延伸阅读}
+\begin{itemize}
+  \item \textbf{Google SRE Book}：站点可靠性工程的经典参考。
+  \item \textbf{LangSmith / Langfuse 文档}：LLM 专用的可观测性平台。
+  \item \textbf{MLOps 相关资料}：模型版本管理、实验追踪的工程实践。
+  \item \textbf{各模型提供商的生产部署指南}。
+\end{itemize}
+
+\section{小结}
+LLM 系统的上线运维不是"部署完就结束"，而是把前文能力全部接进日常工程过程。监控让你知道系统在做什么，灰度让你安全地做变更，成本控制让你可持续地运营，安全告警让你守住边界，反馈闭环让你持续地改进。走到这里，前面的评测、性能、治理和合规内容才真正从“章节知识”变成“生产纪律”。
+
+\section{全书总结}
+从第一章的能力边界认知，到本章的生产运维，本书完整覆盖了一个 LLM 系统从理解、构建到运营的全生命周期。企业知识助手这条主线贯穿始终：先学会分清模型边界，接着学会使用、约束和改造模型，再把企业知识接进系统、把效果评出来、把偏好调出来、把推理跑稳、把训练治理立住，最后再把执行能力、深推理、安全边界和生产运维全部接起来。
+
+如果把这 16 章再压缩成两条大线来看，前十二章解决的是“如何把一个大模型做成一套能被训练、被评测、被治理的工程系统”；后四章解决的是“当系统开始跨工具执行、处理更深推理并进入高权限生产环境后，怎样继续把它管住”。这也是本书最后真正想留下的判断：LLM 工程从来不是把所有热门名词逐一装上，而是知道每一层问题该由哪一层机制负责。
+
+\section{走出本书后的第一轮实践}
+如果你要把这本书真正落到自己的项目上，第一轮实践不必追求一步做全，更稳的顺序通常是：
+\begin{enumerate}
+  \item 先把任务边界、证据边界和权限边界说清楚，避免系统一开始就定位模糊。
+  \item 再做一个最小可用闭环：能问、能答、能回放、能定位错误来源。
+  \item 当效果开始可见后，再补评测门禁、灰度发布和安全告警，而不是等出事后再补。
+  \item 只有当业务真的要求更强适配、更大规模训练或更复杂执行时，才继续加微调、分布式和 Agent 深化能力。
+  \item 始终把版本、日志、恢复和成本账本当成主系统的一部分，而不是项目末尾的附属品。
+\end{enumerate}
+
+做到这里，这本书就不再只是一本关于 LLM 的读物，而会开始变成你手里那套真实系统的施工图。

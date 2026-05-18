@@ -65,6 +65,7 @@
 
 \DeclareStringOption[numeric-comp]{citestyle}
 \DeclareStringOption[numeric]{bibstyle}
+\DeclareStringOption[false]{usebib}
 
 \DeclareVoidOption{newtx}{\ekv{math=newtx}}
 \DeclareVoidOption{mtpro2}{\ekv{math=mtpro2}}
@@ -84,6 +85,7 @@
 \DeclareStringOption[biber]{bibend}
 \DeclareVoidOption{biber}{\ekv{bibend=biber}}
 \DeclareVoidOption{bibtex}{\ekv{bibend=bibtex}}
+\DeclareVoidOption{nobib}{\ekv{usebib=false}}
 
 
 % ----- Math option -----
@@ -100,6 +102,14 @@
 \ProcessKeyvalOptions*\relax
 % \ProcessOptions*\relax
 \LoadClass[a4paper,oneside]{book}
+% This template set does not use bibliographies. Keep these no-op
+% definitions so stale aux files from earlier biblatex builds still compile.
+\providecommand\abx@aux@cite[2]{}
+\providecommand\abx@aux@defaultrefcontext[3]{}
+\providecommand\abx@aux@read@bbl@mdfivesum[1]{}
+\providecommand\abx@aux@read@bblrerun{}
+\providecommand\abx@aux@refcontext[1]{}
+\providecommand\abx@aux@segm[3]{}
 
 \RequirePackage{setspace}
 
@@ -123,6 +133,7 @@
   pdfborder={0 0 0},
   linktocpage
 }
+\newcommand*{\elegantbook@titlepdfsafe}[1]{\texorpdfstring{#1}{\detokenize{#1}}}
 
 %% device settings
 \RequirePackage{geometry}
@@ -383,10 +394,7 @@
 \RequirePackage[title,titletoc,header]{appendix}
 
 
-\RequirePackage[
-  backend=\ELEGANT@bibend,
-  citestyle=\ELEGANT@citestyle,
-  bibstyle=\ELEGANT@bibstyle]{biblatex}
+% Bibliography support is disabled for the documents in this template set.
 
 \ifdefstring{\ELEGANT@lang}{cn}{
   \renewcommand{\baselinestretch}{1.3}
@@ -857,6 +865,7 @@
 %%define the note and proof environment
 \RequirePackage{pifont,manfnt,bbding}
 \RequirePackage[many]{tcolorbox}
+\RequirePackage{xparse}
 % \newlength{\normalparindent}
 % \setlength{\normalparindent}{\parindent}
 \ifdefstring{\ELEGANT@mode}{fancy}{
@@ -909,7 +918,7 @@
   % \newtcbtheorem[auto counter,number within=chapter]{definition}{\definitionname}{defstyle}{def}
   \DeclareTColorBox[auto counter,number within=\ELEGANT@thmcnt]{definition}{ g o t\label g }{
     common,defstyle,
-    phantom={\phantomsection\addcontentsline{lod}{definitions}{\thetcbcounter\hspace{1em}\IfValueTF{#1}{#1}{\IfValueTF{#2}{#2}{}}}},
+    phantom={\phantomsection\addcontentsline{lod}{definitions}{\elegantbook@titlepdfsafe{\thetcbcounter\hspace{1em}\IfValueTF{#1}{#1}{\IfValueTF{#2}{#2}{}}}}},
     IfValueTF={#1}
       {title={\definitionname~\thetcbcounter\ (#1)}}
       {
@@ -917,11 +926,11 @@
           {title={\definitionname~\thetcbcounter\ (#2)}}
           {title=\definitionname~\thetcbcounter}
       },
-    IfBooleanTF={#3}{label=#4}{label={def:#4}}}
+    IfBooleanTF={#3}{label=#4}{IfValueT={#4}{label={def:#4}}}}
   % \newtcbtheorem[auto counter,number within=chapter]{theorem}{\theoremname}{thmstyle}{thm}
   \DeclareTColorBox[auto counter,number within=\ELEGANT@thmcnt]{theorem}{ g o t\label g }{
     common,thmstyle,
-    phantom={\phantomsection\addcontentsline{loth}{theorems}{\thetcbcounter\hspace{1em}\IfValueTF{#1}{#1}{\IfValueTF{#2}{#2}{}}}},
+    phantom={\phantomsection\addcontentsline{loth}{theorems}{\elegantbook@titlepdfsafe{\thetcbcounter\hspace{1em}\IfValueTF{#1}{#1}{\IfValueTF{#2}{#2}{}}}}},
     IfValueTF={#1}
       {title={\theoremname~\thetcbcounter\ (#1)}}
       {
@@ -929,7 +938,7 @@
           {title={\theoremname~\thetcbcounter\ (#2)}}
           {title=\theoremname~\thetcbcounter}
       },
-    IfBooleanTF={#3}{label=#4}{label={thm:#4}}}
+    IfBooleanTF={#3}{label=#4}{IfValueT={#4}{label={thm:#4}}}}
   % \newtcbtheorem[auto counter,number within=chapter]{postulate}{\postulatename}{thmstyle}{pos}
   \DeclareTColorBox[auto counter,number within=\ELEGANT@thmcnt]{postulate}{ g o t\label g }{
     common,thmstyle,
@@ -940,7 +949,7 @@
           {title={\postulatename~\thetcbcounter\ (#2)}}
           {title=\postulatename~\thetcbcounter}
       },
-    IfBooleanTF={#3}{label=#4}{label={pos:#4}}}
+    IfBooleanTF={#3}{label=#4}{IfValueT={#4}{label={pos:#4}}}}
   % \newtcbtheorem[auto counter,number within=chapter]{axiom}{\axiomname}{thmstyle}{axi}
   \DeclareTColorBox[auto counter,number within=\ELEGANT@thmcnt]{axiom}{ g o t\label g }{
     common,thmstyle,
@@ -951,7 +960,7 @@
           {title={\axiomname~\thetcbcounter\ (#2)}}
           {title=\axiomname~\thetcbcounter}
       },
-    IfBooleanTF={#3}{label=#4}{label={axi:#4}}}
+    IfBooleanTF={#3}{label=#4}{IfValueT={#4}{label={axi:#4}}}}
   % \newtcbtheorem[auto counter,number within=chapter]{corollary}{\corollaryname}{thmstyle}{cor}
   \DeclareTColorBox[auto counter,number within=\ELEGANT@thmcnt]{corollary}{ g o t\label g }{
     common,thmstyle,
@@ -962,7 +971,7 @@
           {title={\corollaryname~\thetcbcounter\ (#2)}}
           {title=\corollaryname~\thetcbcounter}
       },
-    IfBooleanTF={#3}{label=#4}{label={cor:#4}}}
+    IfBooleanTF={#3}{label=#4}{IfValueT={#4}{label={cor:#4}}}}
   % \newtcbtheorem[auto counter,number within=chapter]{lemma}{\lemmaname}{thmstyle}{lem}
   \DeclareTColorBox[auto counter,number within=\ELEGANT@thmcnt]{lemma}{ g o t\label g }{
     common,thmstyle,
@@ -973,7 +982,7 @@
           {title={\lemmaname~\thetcbcounter\ (#2)}}
           {title=\lemmaname~\thetcbcounter}
       },
-    IfBooleanTF={#3}{label=#4}{label={lem:#4}}}
+    IfBooleanTF={#3}{label=#4}{IfValueT={#4}{label={lem:#4}}}}
   % \newtcbtheorem[auto counter,number within=chapter]{proposition}{\propositionname}{propstyle}{pro}
   \DeclareTColorBox[auto counter,number within=\ELEGANT@thmcnt]{proposition}{ g o t\label g }{
     common,propstyle,
@@ -984,7 +993,7 @@
           {title={\propositionname~\thetcbcounter\ (#2)}}
           {title=\propositionname~\thetcbcounter}
       },
-    IfBooleanTF={#3}{label=#4}{label={pro:#4}}}
+    IfBooleanTF={#3}{label=#4}{IfValueT={#4}{label={pro:#4}}}}
 }{\relax}
 
 
@@ -998,11 +1007,11 @@
   % declare a new theorem style
   \newtheoremstyle{defstyle}{3pt}{3pt}{\citshape}{-3pt}{
     \bfseries\color{main}}{}{0.5em}{\thmname{#1} \thmnumber{#2} \thmnote{(#3)}%
-    \addcontentsline{lod}{definitions}{#2\thmnote{\hspace{1em}#3}}}
+    \addcontentsline{lod}{definitions}{\elegantbook@titlepdfsafe{#2\thmnote{\hspace{1em}#3}}}}
   
   \newtheoremstyle{truethmstyle}{3pt}{3pt}{\citshape}{-3pt}{
     \bfseries\color{second}}{}{0.5em}{\thmname{#1} \thmnumber{#2} \thmnote{(#3)}%
-    \addcontentsline{loth}{theorems}{#2\thmnote{\hspace{1em}#3}}}
+    \addcontentsline{loth}{theorems}{\elegantbook@titlepdfsafe{#2\thmnote{\hspace{1em}#3}}}}
     
   \newtheoremstyle{thmstyle}{3pt}{3pt}{\citshape}{-3pt}{
     \bfseries\color{second}}{}{0.5em}{\thmname{#1} \thmnumber{#2} \thmnote{(#3)}}
@@ -1046,7 +1055,7 @@
 \renewcommand{\theexer}{\thechapter.\arabic{exer}}
 \newenvironment{exercise}[1][]{
   \refstepcounter{exer}
-  \phantomsection\addcontentsline{loexer}{exercises}{\theexer\ifstrempty{#1}{}{\hspace{1em}#1}}% ADDED: Write to list of exercises
+  \phantomsection\addcontentsline{loexer}{exercises}{\elegantbook@titlepdfsafe{\theexer\ifstrempty{#1}{}{\hspace{1em}#1}}}% ADDED: Write to list of exercises
   \par\noindent\makebox[-3pt][r]{
     \scriptsize\color{red!90}\HandPencilLeft\quad}
     \textbf{\color{main}{\exercisename} \theexer #1 }\rmfamily}{
@@ -1061,19 +1070,19 @@
   \par\noindent\textbf{\color{main}{\problemname} \theprob #1 }\rmfamily}{
   \par\ignorespacesafterend}
 
-\newenvironment{note}{
+\newenvironment{note}[1][]{
   \par\noindent\makebox[-3pt][r]{
     \scriptsize\color{red!90}\textdbend\quad}
-    \textbf{\color{second}\notename} \citshape}{\par}
+    \textbf{\color{second}\notename\ifstrempty{#1}{}{\ (#1)}} \citshape}{\par}
 
-\newenvironment{proof}{
-  \par\noindent\textbf{\color{second}\proofname\;}
+\newenvironment{proof}[1][]{
+  \par\noindent\textbf{\color{second}\proofname\ifstrempty{#1}{}{\ (#1)}\;}
   \color{black!90}\cfs}{
   % \hfill$\Box$\quad
   \par}
 
 \newenvironment{solution}{\par\noindent\textbf{\color{main}\solutionname} \citshape}{\par}
-\newenvironment{remark}{\noindent\textbf{\color{second}\remarkname}}{\par}
+\newenvironment{remark}[1][]{\noindent\textbf{\color{second}\remarkname\ifstrempty{#1}{}{\ (#1)}}}{\par}
 \newenvironment{assumption}{\par\noindent\textbf{\color{third}\assumptionname} \citshape}{\par}
 \newenvironment{conclusion}{\par\noindent\textbf{\color{third}\conclusionname} \citshape}{\par}
 
@@ -1083,11 +1092,178 @@
 \renewcommand{\theprop}{\thechapter.\arabic{prop}}
 \newenvironment{property}[1][]{
   \refstepcounter{prop}
-  \phantomsection\addcontentsline{lopr}{properties}{\theprop\ifstrempty{#1}{}{\hspace{1em}#1}}%
+  \phantomsection\addcontentsline{lopr}{properties}{\elegantbook@titlepdfsafe{\theprop\ifstrempty{#1}{}{\hspace{1em}#1}}}%
   \par\noindent\textbf{\color{third}{\propertyname} \theprop\ #1} \citshape
 }{\par}
 
 \newenvironment{custom}[1]{\par\noindent\textbf{\color{third} #1} \citshape}{\par}
+
+\newsavebox{\ebword@headbox}
+\newlength{\ebword@leftwidth}
+\newlength{\ebword@leftmin}
+\newlength{\ebword@leftmax}
+\newlength{\ebword@gap}
+\newlength{\ebword@rightwidth}
+\newlength{\ebword@measure}
+\newlength{\ebword@labelwidth}
+\newcounter{ebword@sense}
+\newif\ifebword@active
+\newif\ifebword@breakdownseen
+\newif\ifebword@started
+
+\newcommand{\ebword@starbox}[1]{%
+  \ifstrempty{#1}{}{%
+    \nobreak\hspace{0.5em}{\normalfont\small\color{structurecolor}#1}%
+  }%
+}
+
+\newcommand{\ebword@leftcontent}[3]{%
+  {\raggedright
+    \bfseries #2\ebword@starbox{#1}\par
+    \vspace{0.3ex}%
+    {\small\color{black!70}#3\par}%
+  }%
+}
+
+\newcommand{\ebword@measureleft}[3]{%
+  \setlength{\ebword@leftmin}{0.14\linewidth}%
+  \setlength{\ebword@leftmax}{0.28\linewidth}%
+  \setlength{\ebword@gap}{1.25em}%
+  \sbox{\ebword@headbox}{{\bfseries #2\ebword@starbox{#1}}}%
+  \setlength{\ebword@leftwidth}{\wd\ebword@headbox}%
+  \sbox{\ebword@headbox}{{\small #3}}%
+  \setlength{\ebword@measure}{\wd\ebword@headbox}%
+  \ifdim\ebword@measure>\ebword@leftwidth
+    \setlength{\ebword@leftwidth}{\ebword@measure}%
+  \fi
+  \addtolength{\ebword@leftwidth}{1em}%
+  \ifdim\ebword@leftwidth<\ebword@leftmin
+    \setlength{\ebword@leftwidth}{\ebword@leftmin}%
+  \fi
+  \ifdim\ebword@leftwidth>\ebword@leftmax
+    \setlength{\ebword@leftwidth}{\ebword@leftmax}%
+  \fi
+  \setlength{\ebword@rightwidth}{\linewidth-\ebword@leftwidth-\ebword@gap}%
+}
+
+\newcommand{\ebword@startblock}{%
+  \ifebword@started
+    \par\noindent
+  \else
+    \global\ebword@startedtrue
+    \noindent
+  \fi
+}
+
+\newcommand{\ebword@ensureactive}{%
+  \ifebword@active\else
+    \PackageError{elegantbook}{The word commands must be used inside the word environment}{%
+      Wrap \string\wordbreakdown, \string\wordsense, \string\wordfamily, \string\wordphrase\space and \string\wordexample\space inside \string\begin{word}...\string\end{word}.%
+    }%
+  \fi
+}
+
+\NewDocumentCommand{\wordbreakdown}{m}{%
+  \ebword@ensureactive
+  \ebword@breakdownseentrue
+  \ebword@startblock{\bfseries #1}\par
+  \vspace{0.15\baselineskip}%
+}
+
+\NewDocumentCommand{\wordsense}{m}{%
+  \ebword@ensureactive
+  \ifebword@breakdownseen\else
+    \PackageWarning{elegantbook}{\string\wordbreakdown\space should appear before \string\wordsense\space in the word environment}%
+  \fi
+  \stepcounter{ebword@sense}%
+  \settowidth{\ebword@labelwidth}{\textcolor{structurecolor}{\arabic{ebword@sense}.}}%
+  \ebword@startblock
+  \hangindent=\dimexpr\ebword@labelwidth+0.75em\relax
+  \hangafter=1
+  \makebox[\ebword@labelwidth][l]{\textcolor{structurecolor}{\arabic{ebword@sense}.}}%
+  \hspace{0.75em}#1\par
+  \vspace{0.2\baselineskip}%
+}
+
+\NewDocumentCommand{\wordfamily}{m}{%
+  \ebword@ensureactive
+  \settowidth{\ebword@measure}{{\color{structurecolor}\bfseries 同根词：}}%
+  \ebword@startblock\hspace*{1.8em}%
+  \hangindent=\dimexpr1.8em+\ebword@measure\relax\hangafter=1
+  {\color{structurecolor}\bfseries 同根词：}#1\par
+}
+
+\NewDocumentCommand{\wordcognate}{m}{%
+  \wordfamily{#1}%
+}
+
+\NewDocumentCommand{\wordphrase}{m}{%
+  \ebword@ensureactive
+  \settowidth{\ebword@measure}{{\color{structurecolor}\bfseries 搭配：}}%
+  \ebword@startblock\hspace*{1.8em}%
+  \hangindent=\dimexpr1.8em+\ebword@measure\relax\hangafter=1
+  {\color{structurecolor}\bfseries 搭配：}#1\par
+}
+
+\NewDocumentCommand{\wordexample}{m}{%
+  \ebword@ensureactive
+  \settowidth{\ebword@measure}{{\color{structurecolor}\bfseries 例句：}}%
+  \ebword@startblock\hspace*{1.8em}%
+  \hangindent=\dimexpr1.8em+\ebword@measure\relax\hangafter=1
+  {\color{structurecolor}\bfseries 例句：}#1\par
+}
+
+\NewDocumentEnvironment{word}{O{} m m}{%
+  \par\medskip
+  \ebword@measureleft{#1}{#2}{#3}%
+  \setcounter{ebword@sense}{0}%
+  \ebword@activetrue
+  \ebword@breakdownseenfalse
+  \ebword@startedfalse
+  \begin{tcolorbox}[
+    enhanced,
+    breakable,
+    boxrule=0pt,
+    frame hidden,
+    colback=white,
+    sharp corners,
+    left=0pt,
+    right=0pt,
+    top=6pt,
+    bottom=6pt,
+    boxsep=0pt,
+    before skip=8pt,
+    after skip=8pt,
+  ]
+    \begin{list}{}{%
+      \setlength{\leftmargin}{\dimexpr\ebword@leftwidth+\ebword@gap\relax}%
+      \setlength{\rightmargin}{0pt}%
+      \setlength{\labelwidth}{0pt}%
+      \setlength{\labelsep}{0pt}%
+      \setlength{\itemindent}{0pt}%
+      \setlength{\listparindent}{0pt}%
+      \setlength{\parsep}{0pt}%
+      \setlength{\topsep}{0pt}%
+      \setlength{\partopsep}{0pt}%
+      \setlength{\itemsep}{0pt}%
+    }
+      \item[]\leavevmode
+      \makebox[0pt][r]{%
+        \raisebox{0pt}[0pt][0pt]{%
+          \parbox[t]{\ebword@leftwidth}{\ebword@leftcontent{#1}{#2}{#3}}%
+        }%
+        \hspace{\ebword@gap}%
+      }%
+      \setlength{\parindent}{0pt}%
+      \setlength{\parskip}{0pt}%
+      \ignorespaces
+}{%
+      \unskip
+    \end{list}
+  \end{tcolorbox}
+  \ebword@activefalse
+  \par\ignorespacesafterend
+}
 
 \RequirePackage{multicol}
 \tcbset{
@@ -1297,7 +1473,7 @@
   \begin{enumerate}[label=\small\protect\circled{\arabic*}]}{
   \end{enumerate}}
 
-\addbibresource[location=local]{reference.bib}
+% \addbibresource is intentionally disabled because this project has no references.
 
 \renewcommand\tableofcontents{%
   \hypersetup{linktoc=all, linkcolor=black}

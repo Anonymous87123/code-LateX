@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import re
 import subprocess
 from pathlib import Path
 
@@ -79,6 +80,68 @@ PDFS = [
     },
 ]
 
+ADMIN_KEYWORDS = [
+    "姓名",
+    "学号",
+    "作业",
+    "提交",
+    "考核",
+    "要求",
+    "课后",
+    "课堂纪律",
+    "课程安排",
+    "考试范围",
+    "说明",
+]
+
+FIGURE_KEYWORDS = [
+    "图",
+    "示意图",
+    "图样",
+    "光路",
+    "曲线",
+    "条纹",
+    "波形",
+    "受力图",
+]
+
+EXAMPLE_KEYWORDS = [
+    "例",
+    "例题",
+    "解：",
+    "解答",
+    "思考",
+    "讨论",
+]
+
+TOPIC_KEYWORDS = [
+    "质点",
+    "位移",
+    "速度",
+    "加速度",
+    "牛顿",
+    "动量",
+    "角动量",
+    "动能",
+    "机械能",
+    "转动惯量",
+    "简谐",
+    "机械波",
+    "干涉",
+    "衍射",
+    "偏振",
+    "麦克斯韦",
+    "自由度",
+    "压强",
+    "温度",
+    "卡诺",
+    "熵",
+    "绝热",
+    "等温",
+    "等压",
+    "自由膨胀",
+]
+
 
 def run(command: list[str]) -> str:
     completed = subprocess.run(
@@ -109,6 +172,36 @@ def split_pages(text: str) -> list[str]:
     while pages and not pages[-1].strip():
         pages.pop()
     return pages
+
+
+def detect_topics(text: str) -> list[str]:
+    topics = [kw for kw in TOPIC_KEYWORDS if kw in text]
+    return topics[:6]
+
+
+def count_keyword_hits(text: str, keywords: list[str]) -> int:
+    return sum(1 for kw in keywords if kw in text)
+
+
+def count_formula_signals(text: str) -> int:
+    return len(re.findall(r"[=\\\^\_\+\-∫∂Δλθπ\(\)]", text))
+
+
+def classify_page(text: str) -> tuple[str, str]:
+    stripped = text.strip()
+    admin_hits = count_keyword_hits(stripped, ADMIN_KEYWORDS)
+    figure_hits = count_keyword_hits(stripped, FIGURE_KEYWORDS)
+    example_hits = count_keyword_hits(stripped, EXAMPLE_KEYWORDS)
+    formula_hits = count_formula_signals(stripped)
+    topics = detect_topics(stripped)
+
+    if admin_hits >= 2 and formula_hits < 8 and example_hits == 0:
+        return "admin-only-excluded", "行政/说明性内容为主，知识正文可排除。"
+    if figure_hits >= 2 and formula_hits < 12 and example_hits == 0:
+        return "deferred-figure-detail", "页面以图示/图题为主，先保留文字说明，图形本体留待下一轮。"
+    if formula_hits >= 10 or example_hits > 0 or topics:
+        return "used-needs-formula-check", "知识内容已进入正文草稿，但符号与推导仍建议逐页复核。"
+    return "used-finalized", "以讲解型段落为主，当前版本已足以作为初稿正文。"
 
 
 def write_page_bundle(slug: str, pages: list[str]) -> None:
@@ -184,13 +277,18 @@ def write_processing_checklist(manifest: list[dict[str, object]]) -> None:
         slug = str(item["slug"])
         title = str(item["title"])
         page_count = int(item["page_count_extracted"])
+        bundle_dir = OUT_DIR / slug / "pages"
         lines.append(f"## {title} (`{slug}`)")
         lines.append("")
         lines.append("| Page | Status | Notes |")
         lines.append("| ---: | --- | --- |")
         for page in range(1, page_count + 1):
+            page_text = (bundle_dir / f"{page:03d}.txt").read_text(encoding="utf-8", errors="ignore")
+            status, note = classify_page(page_text)
+            topics = detect_topics(page_text)
+            topic_note = f"Topics: {'、'.join(topics)}." if topics else "Topics: general knowledge page."
             lines.append(
-                f"| {page:03d} | extracted; needs-symbol-cleanup; drafted-into-book | First-pass teaching draft completed; page still needs detailed formula/symbol fidelity review. |"
+                f"| {page:03d} | {status} | {topic_note} {note} |"
             )
         lines.append("")
 

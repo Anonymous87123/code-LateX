@@ -1,0 +1,585 @@
+\contentsline {chapter}{习题索引}{ii}{section*.2}%
+\contentsline {part}{第一部分\hspace {1em}理解模型与使用模型}{1}{part.1}%
+\contentsline {chapter}{\numberline {1}走近大语言模型：能力边界与主案例}{2}{chapter.1}%
+\contentsline {section}{\numberline {1.1}学习目标}{2}{section.1.1}%
+\contentsline {section}{\numberline {1.2}问题背景}{2}{section.1.2}%
+\contentsline {section}{\numberline {1.3}核心概念}{2}{section.1.3}%
+\contentsline {subsection}{\numberline {1.3.1}什么是工程视角下的大语言模型}{2}{subsection.1.3.1}%
+\contentsline {subsection}{\numberline {1.3.2}为什么一次惊艳演示不等于系统能力}{3}{subsection.1.3.2}%
+\contentsline {subsection}{\numberline {1.3.3}从“会说话”到“能交付”之间隔着系统设计}{3}{subsection.1.3.3}%
+\contentsline {subsection}{\numberline {1.3.4}知识、规则与实时状态不是同一种东西}{4}{subsection.1.3.4}%
+\contentsline {subsection}{\numberline {1.3.5}企业里最危险的错答，不是答不上来，而是答得像真的}{4}{subsection.1.3.5}%
+\contentsline {subsection}{\numberline {1.3.6}主流模型家族与任务差异}{4}{subsection.1.3.6}%
+\contentsline {subsection}{\numberline {1.3.7}Base 模型、聊天模型、Embedding 模型与重排序模型不是一回事}{5}{subsection.1.3.7}%
+\contentsline {subsection}{\numberline {1.3.8}同一个企业助手，往往是一套多模型协作系统}{5}{subsection.1.3.8}%
+\contentsline {subsection}{\numberline {1.3.9}什么时候根本不该优先上大语言模型}{6}{subsection.1.3.9}%
+\contentsline {subsection}{\numberline {1.3.10}注意力方向与掩码设计会改变“模型擅长什么”}{6}{subsection.1.3.10}%
+\contentsline {subsection}{\numberline {1.3.11}训练目标决定模型的“天性”}{7}{subsection.1.3.11}%
+\contentsline {subsection}{\numberline {1.3.12}为什么 Decoder-Only 会成为主流}{7}{subsection.1.3.12}%
+\contentsline {subsection}{\numberline {1.3.13}长上下文不等于无限记忆}{7}{subsection.1.3.13}%
+\contentsline {subsection}{\numberline {1.3.14}闭卷记忆、上下文记忆与外部知识是三回事}{8}{subsection.1.3.14}%
+\contentsline {subsection}{\numberline {1.3.15}涌现能力与工程误读}{8}{subsection.1.3.15}%
+\contentsline {subsection}{\numberline {1.3.16}三层能力边界}{8}{subsection.1.3.16}%
+\contentsline {subsection}{\numberline {1.3.17}Agent 不是第四层能力，而是系统层的组织方式}{9}{subsection.1.3.17}%
+\contentsline {subsection}{\numberline {1.3.18}先判断问题属于哪一层}{9}{subsection.1.3.18}%
+\contentsline {subsection}{\numberline {1.3.19}误判问题层级，会把团队带进错误的高成本路线}{10}{subsection.1.3.19}%
+\contentsline {subsection}{\numberline {1.3.20}什么问题更适合提示、RAG、微调或继续预训练}{11}{subsection.1.3.20}%
+\contentsline {subsection}{\numberline {1.3.21}质量、延迟、成本与风险不会同时最优}{11}{subsection.1.3.21}%
+\contentsline {subsection}{\numberline {1.3.22}专业领域不一定先做“行业大模型”}{12}{subsection.1.3.22}%
+\contentsline {subsection}{\numberline {1.3.23}为什么必须有一个贯穿案例}{12}{subsection.1.3.23}%
+\contentsline {section}{\numberline {1.4}主案例推进}{12}{section.1.4}%
+\contentsline {subsection}{\numberline {1.4.1}第一版的验收标准不是更聪明，而是更可控}{13}{subsection.1.4.1}%
+\contentsline {subsection}{\numberline {1.4.2}先定义用户、问题和风险}{13}{subsection.1.4.2}%
+\contentsline {subsection}{\numberline {1.4.3}先选权威知识源，不把“能搜到的文本”都接进来}{13}{subsection.1.4.3}%
+\contentsline {subsection}{\numberline {1.4.4}第一版明确不做什么}{14}{subsection.1.4.4}%
+\contentsline {subsection}{\numberline {1.4.5}为什么第一版先做高频低风险，而不是最难的问题}{14}{subsection.1.4.5}%
+\contentsline {subsection}{\numberline {1.4.6}本书后续会如何推进这个案例}{14}{subsection.1.4.6}%
+\contentsline {section}{\numberline {1.5}常见坑与工程取舍}{15}{section.1.5}%
+\contentsline {section}{\numberline {1.6}本章练习}{15}{section.1.6}%
+\contentsline {section}{\numberline {1.7}延伸阅读}{15}{section.1.7}%
+\contentsline {section}{\numberline {1.8}小结}{16}{section.1.8}%
+\contentsline {section}{\numberline {1.9}下一章过渡}{16}{section.1.9}%
+\contentsline {chapter}{\numberline {2}Transformer 核心机制：Attention、FFN、Norm 与损失}{17}{chapter.2}%
+\contentsline {section}{\numberline {2.1}学习目标}{17}{section.2.1}%
+\contentsline {section}{\numberline {2.2}问题背景}{17}{section.2.2}%
+\contentsline {section}{\numberline {2.3}核心概念}{17}{section.2.3}%
+\contentsline {subsection}{\numberline {2.3.1}先把一个 Transformer Block 看成一条数据流}{17}{subsection.2.3.1}%
+\contentsline {subsection}{\numberline {2.3.2}Token 表示与位置设计：模型先要知道“当前在看什么”}{18}{subsection.2.3.2}%
+\contentsline {subsection}{\numberline {2.3.3}Tokenizer 决定模型到底把什么当成“一个单位”}{18}{subsection.2.3.3}%
+\contentsline {subsection}{\numberline {2.3.4}输入嵌入与输出词表：模型从词表开始，也回到词表结束}{19}{subsection.2.3.4}%
+\contentsline {subsection}{\numberline {2.3.5}位置编码扩展不是“把窗口拉长”这么简单}{20}{subsection.2.3.5}%
+\contentsline {subsection}{\numberline {2.3.6}为什么条件和结论一旦隔太远，模型就更容易接错}{20}{subsection.2.3.6}%
+\contentsline {subsection}{\numberline {2.3.7}Attention：模型如何在上下文中定位信息}{20}{subsection.2.3.7}%
+\contentsline {subsection}{\numberline {2.3.8}Q、K、V 不是三个神秘字母：它们分别在问什么、标什么、带什么}{21}{subsection.2.3.8}%
+\contentsline {subsection}{\numberline {2.3.9}Attention 不是事实库：它只会在当前可见上下文里搬运信息}{21}{subsection.2.3.9}%
+\contentsline {subsection}{\numberline {2.3.10}因果 Mask：为什么生成模型只能看左边}{21}{subsection.2.3.10}%
+\contentsline {subsection}{\numberline {2.3.11}多头注意力：为什么不只看一种相关性}{21}{subsection.2.3.11}%
+\contentsline {subsection}{\numberline {2.3.12}Attention 为什么会成为工程瓶颈}{22}{subsection.2.3.12}%
+\contentsline {subsection}{\numberline {2.3.13}Attention 的工程化变体：不是改任务定义，而是改成本曲线}{22}{subsection.2.3.13}%
+\contentsline {subsection}{\numberline {2.3.14}并行 Transformer Block：不是把 Attention 和 FFN 随手并起来}{23}{subsection.2.3.14}%
+\contentsline {subsection}{\numberline {2.3.15}FFN：模型看到信息之后怎样改写表示}{24}{subsection.2.3.15}%
+\contentsline {subsection}{\numberline {2.3.16}FFN 为什么经常是参数和算力大户}{24}{subsection.2.3.16}%
+\contentsline {subsection}{\numberline {2.3.17}为什么现代大模型偏爱门控激活}{24}{subsection.2.3.17}%
+\contentsline {subsection}{\numberline {2.3.18}SwiGLU 的中间维度为什么常写成 $\frac {8}{3}h$}{25}{subsection.2.3.18}%
+\contentsline {subsection}{\numberline {2.3.19}MoE：不是让每次都算更多，而是让总参数量和单次算量脱钩}{25}{subsection.2.3.19}%
+\contentsline {subsection}{\numberline {2.3.20}残差路径：为什么信息不能每层都推倒重来}{26}{subsection.2.3.20}%
+\contentsline {subsection}{\numberline {2.3.21}DeepNorm 与残差缩放：模型越深，残差越不能随便加}{26}{subsection.2.3.21}%
+\contentsline {subsection}{\numberline {2.3.22}Norm：模型如何保持训练稳定}{26}{subsection.2.3.22}%
+\contentsline {subsection}{\numberline {2.3.23}RMSNorm、Pre-LN 与位置设计的工程取舍}{27}{subsection.2.3.23}%
+\contentsline {subsection}{\numberline {2.3.24}Norm 方案怎么选：先问你更怕什么}{27}{subsection.2.3.24}%
+\contentsline {subsection}{\numberline {2.3.25}交叉熵：模型训练到底在优化什么}{28}{subsection.2.3.25}%
+\contentsline {subsection}{\numberline {2.3.26}一次预训练更新：损失信号怎样穿过整个网络}{28}{subsection.2.3.26}%
+\contentsline {subsection}{\numberline {2.3.27}Teacher Forcing：为什么训练看起来很顺，生成时却仍可能跑偏}{28}{subsection.2.3.27}%
+\contentsline {subsection}{\numberline {2.3.28}为什么分类与生成任务通常不用 MSE}{29}{subsection.2.3.28}%
+\contentsline {subsection}{\numberline {2.3.29}Softmax 与数值稳定性：概率归一化不是实现细节}{29}{subsection.2.3.29}%
+\contentsline {subsection}{\numberline {2.3.30}熵与信息增益：为什么有时先澄清一句更值钱}{29}{subsection.2.3.30}%
+\contentsline {subsection}{\numberline {2.3.31}KL：为什么对齐训练总绕不开它}{30}{subsection.2.3.31}%
+\contentsline {subsection}{\numberline {2.3.32}交叉熵与 KL 的关系：谁在决定模型“更像谁”}{30}{subsection.2.3.32}%
+\contentsline {subsection}{\numberline {2.3.33}多任务 loss 不平衡：同一个模型学多件事时谁在主导更新}{30}{subsection.2.3.33}%
+\contentsline {subsection}{\numberline {2.3.34}相似度与对比学习：为什么后面检索训练看起来不像生成训练}{31}{subsection.2.3.34}%
+\contentsline {subsection}{\numberline {2.3.35}负样本为什么决定检索边界}{31}{subsection.2.3.35}%
+\contentsline {subsection}{\numberline {2.3.36}为什么分类、生成和对齐都会绕回这些损失}{31}{subsection.2.3.36}%
+\contentsline {subsection}{\numberline {2.3.37}从症状反推机制}{32}{subsection.2.3.37}%
+\contentsline {section}{\numberline {2.4}主案例推进}{32}{section.2.4}%
+\contentsline {subsection}{\numberline {2.4.1}为什么检索片段一多，回答反而更差}{32}{subsection.2.4.1}%
+\contentsline {subsection}{\numberline {2.4.2}为什么把表格摊平成纯文本后更容易漏字段}{32}{subsection.2.4.2}%
+\contentsline {subsection}{\numberline {2.4.3}为什么结构化输出不只是提示词问题}{32}{subsection.2.4.3}%
+\contentsline {subsection}{\numberline {2.4.4}为什么有些微调一开始就不稳}{33}{subsection.2.4.4}%
+\contentsline {section}{\numberline {2.5}常见坑与工程取舍}{33}{section.2.5}%
+\contentsline {section}{\numberline {2.6}本章练习}{33}{section.2.6}%
+\contentsline {section}{\numberline {2.7}延伸阅读}{34}{section.2.7}%
+\contentsline {section}{\numberline {2.8}小结}{34}{section.2.8}%
+\contentsline {section}{\numberline {2.9}下一章过渡}{34}{section.2.9}%
+\contentsline {chapter}{\numberline {3}从库到模型：Transformers 使用、推理与调试基础}{35}{chapter.3}%
+\contentsline {section}{\numberline {3.1}学习目标}{35}{section.3.1}%
+\contentsline {section}{\numberline {3.2}问题背景}{35}{section.3.2}%
+\contentsline {section}{\numberline {3.3}核心概念}{35}{section.3.3}%
+\contentsline {subsection}{\numberline {3.3.1}最小模型调用链路}{35}{subsection.3.3.1}%
+\contentsline {subsection}{\numberline {3.3.2}先让推理链可复现，再去追求更快}{36}{subsection.3.3.2}%
+\contentsline {subsection}{\numberline {3.3.3}先分清“库的接口”和“模型的职责”}{37}{subsection.3.3.3}%
+\contentsline {subsection}{\numberline {3.3.4}Tokenizer 不只是分词器，也是输入协议的一部分}{38}{subsection.3.3.4}%
+\contentsline {subsection}{\numberline {3.3.5}前向计算到底产出了什么}{38}{subsection.3.3.5}%
+\contentsline {subsection}{\numberline {3.3.6}从 prefill 到 decode：生成不是一次前向，而是一个循环}{39}{subsection.3.3.6}%
+\contentsline {subsection}{\numberline {3.3.7}单请求延迟和批量吞吐不是同一个优化目标}{39}{subsection.3.3.7}%
+\contentsline {subsection}{\numberline {3.3.8}Sampling 不是“创意开关”，而是风险开关}{40}{subsection.3.3.8}%
+\contentsline {subsection}{\numberline {3.3.9}流式输出不是显示动画，而是把 decode 过程暴露给上层}{41}{subsection.3.3.9}%
+\contentsline {subsection}{\numberline {3.3.10}截断、padding 与 attention mask：输入协议错了，生成再好也救不回来}{42}{subsection.3.3.10}%
+\contentsline {subsection}{\numberline {3.3.11}停止条件、结束符与 \texttt {finish\_reason} 不是小细节}{42}{subsection.3.3.11}%
+\contentsline {subsection}{\numberline {3.3.12}默认配置漂移：同一个模型在两个环境里为什么像两个人}{43}{subsection.3.3.12}%
+\contentsline {subsection}{\numberline {3.3.13}为什么要读懂模型输出结构}{43}{subsection.3.3.13}%
+\contentsline {subsection}{\numberline {3.3.14}logprob、候选与拒答阈值：它们适合做诊断，不适合当事实置信度}{44}{subsection.3.3.14}%
+\contentsline {subsection}{\numberline {3.3.15}后处理不是补锅，而是推理协议最后一层}{44}{subsection.3.3.15}%
+\contentsline {subsection}{\numberline {3.3.16}结构化输出、工具调用与最小 Agent 编排}{45}{subsection.3.3.16}%
+\contentsline {subsection}{\numberline {3.3.17}Agent 的循环式工作观：思考、行动、观察不是魔法}{46}{subsection.3.3.17}%
+\contentsline {subsection}{\numberline {3.3.18}框架能加速，也会遮住故障点}{46}{subsection.3.3.18}%
+\contentsline {subsection}{\numberline {3.3.19}先跑通，再加复杂度}{46}{subsection.3.3.19}%
+\contentsline {subsection}{\numberline {3.3.20}调试大模型时先看哪里}{47}{subsection.3.3.20}%
+\contentsline {subsection}{\numberline {3.3.21}想做可复盘调试，至少要保存一份“最小重跑包”}{48}{subsection.3.3.21}%
+\contentsline {section}{\numberline {3.4}主案例推进}{48}{section.3.4}%
+\contentsline {subsection}{\numberline {3.4.1}把线上链路拆成三段日志：输入日志、生成日志、后处理日志}{49}{subsection.3.4.1}%
+\contentsline {subsection}{\numberline {3.4.2}把流式展示稿和最终业务稿分开治理}{50}{subsection.3.4.2}%
+\contentsline {section}{\numberline {3.5}常见坑与工程取舍}{50}{section.3.5}%
+\contentsline {section}{\numberline {3.6}本章练习}{50}{section.3.6}%
+\contentsline {section}{\numberline {3.7}延伸阅读}{51}{section.3.7}%
+\contentsline {section}{\numberline {3.8}小结}{51}{section.3.8}%
+\contentsline {section}{\numberline {3.9}下一章过渡}{51}{section.3.9}%
+\contentsline {chapter}{\numberline {4}提示工程与上下文管理：Prompting、采样与长期记忆}{52}{chapter.4}%
+\contentsline {section}{\numberline {4.1}学习目标}{52}{section.4.1}%
+\contentsline {section}{\numberline {4.2}问题背景}{52}{section.4.2}%
+\contentsline {section}{\numberline {4.3}核心概念}{52}{section.4.3}%
+\contentsline {subsection}{\numberline {4.3.1}提示工程的三项职责}{52}{subsection.4.3.1}%
+\contentsline {subsection}{\numberline {4.3.2}提示工程与 Prompt Learning 的边界}{53}{subsection.4.3.2}%
+\contentsline {subsection}{\numberline {4.3.3}多层消息结构比一个超长 prompt 更可维护}{53}{subsection.4.3.3}%
+\contentsline {subsection}{\numberline {4.3.4}一个可维护的消息模板}{53}{subsection.4.3.4}%
+\contentsline {subsection}{\numberline {4.3.5}系统提示、工具状态与业务变量要分栏管理}{54}{subsection.4.3.5}%
+\contentsline {subsection}{\numberline {4.3.6}指令优先级要写成协议，而不是留给模型猜}{54}{subsection.4.3.6}%
+\contentsline {subsection}{\numberline {4.3.7}用户层不能改写系统层：提示注入本质上是层级越权}{55}{subsection.4.3.7}%
+\contentsline {subsection}{\numberline {4.3.8}拒答提示和证据提示要成对出现}{55}{subsection.4.3.8}%
+\contentsline {subsection}{\numberline {4.3.9}上下文窗口不是越长越好}{56}{subsection.4.3.9}%
+\contentsline {subsection}{\numberline {4.3.10}上下文预算要先分账，再决定往哪里塞内容}{56}{subsection.4.3.10}%
+\contentsline {subsection}{\numberline {4.3.11}上下文预算最好做成台账，而不是靠感觉}{57}{subsection.4.3.11}%
+\contentsline {subsection}{\numberline {4.3.12}Few-shot 示例不是越多越好}{58}{subsection.4.3.12}%
+\contentsline {subsection}{\numberline {4.3.13}示例教的是回答模式，不是把事实硬写进 prompt}{58}{subsection.4.3.13}%
+\contentsline {subsection}{\numberline {4.3.14}采样参数不是自由旋钮：先知道每个旋钮在调什么}{58}{subsection.4.3.14}%
+\contentsline {subsection}{\numberline {4.3.15}不同任务先给不同默认值，而不是整站共用一套参数}{59}{subsection.4.3.15}%
+\contentsline {subsection}{\numberline {4.3.16}复读机问题往往不是单一参数故障}{59}{subsection.4.3.16}%
+\contentsline {subsection}{\numberline {4.3.17}动态选例比堆固定示例更稳}{59}{subsection.4.3.17}%
+\contentsline {subsection}{\numberline {4.3.18}少量反例往往比堆更多正例更值钱}{60}{subsection.4.3.18}%
+\contentsline {subsection}{\numberline {4.3.19}输出解析器不是附属件：结构化约束要前置设计}{60}{subsection.4.3.19}%
+\contentsline {subsection}{\numberline {4.3.20}短期记忆与长期记忆}{60}{subsection.4.3.20}%
+\contentsline {subsection}{\numberline {4.3.21}短期记忆没有通吃方案}{61}{subsection.4.3.21}%
+\contentsline {subsection}{\numberline {4.3.22}长期记忆也有不同形态：字段、实体、摘要与可回捞历史}{61}{subsection.4.3.22}%
+\contentsline {subsection}{\numberline {4.3.23}记忆和知识不要混层}{62}{subsection.4.3.23}%
+\contentsline {subsection}{\numberline {4.3.24}知识层不是一句“去检索”：它有自己的供给链}{62}{subsection.4.3.24}%
+\contentsline {subsection}{\numberline {4.3.25}长期记忆的写入和回捞都要有触发条件}{63}{subsection.4.3.25}%
+\contentsline {subsection}{\numberline {4.3.26}长期记忆也要有过期、纠错与撤销}{63}{subsection.4.3.26}%
+\contentsline {subsection}{\numberline {4.3.27}用户偏好字段和业务主数据不能混写进长期记忆}{63}{subsection.4.3.27}%
+\contentsline {subsection}{\numberline {4.3.28}会话检索桥接：先把历史压成“该检索什么”}{64}{subsection.4.3.28}%
+\contentsline {subsection}{\numberline {4.3.29}上下文裁剪顺序}{64}{subsection.4.3.29}%
+\contentsline {subsection}{\numberline {4.3.30}什么时候该停止继续改 prompt}{65}{subsection.4.3.30}%
+\contentsline {subsection}{\numberline {4.3.31}什么时候该继续改 prompt，什么时候不该}{65}{subsection.4.3.31}%
+\contentsline {section}{\numberline {4.4}主案例推进}{66}{section.4.4}%
+\contentsline {section}{\numberline {4.5}常见坑与工程取舍}{66}{section.4.5}%
+\contentsline {section}{\numberline {4.6}本章练习}{67}{section.4.6}%
+\contentsline {section}{\numberline {4.7}延伸阅读}{67}{section.4.7}%
+\contentsline {section}{\numberline {4.8}小结}{67}{section.4.8}%
+\contentsline {section}{\numberline {4.9}下一章过渡}{67}{section.4.9}%
+\contentsline {part}{第二部分\hspace {1em}训练改造与数据工程}{68}{part.2}%
+\contentsline {chapter}{\numberline {5}微调路线图：SFT、PEFT、LoRA、QLoRA 与 PEFT 实战}{69}{chapter.5}%
+\contentsline {section}{\numberline {5.1}学习目标}{69}{section.5.1}%
+\contentsline {section}{\numberline {5.2}问题背景}{69}{section.5.2}%
+\contentsline {section}{\numberline {5.3}核心概念}{69}{section.5.3}%
+\contentsline {subsection}{\numberline {5.3.1}模型改造不是一道单选题，而是一道决策阶梯}{69}{subsection.5.3.1}%
+\contentsline {subsection}{\numberline {5.3.2}先回答四个问题，再决定训不训练}{70}{subsection.5.3.2}%
+\contentsline {subsection}{\numberline {5.3.3}SFT 在改什么，不在改什么}{71}{subsection.5.3.3}%
+\contentsline {subsection}{\numberline {5.3.4}继续预训练与 SFT 不是一回事：两阶段路线什么时候成立}{71}{subsection.5.3.4}%
+\contentsline {subsection}{\numberline {5.3.5}训练之前，先选对基座模型}{71}{subsection.5.3.5}%
+\contentsline {subsection}{\numberline {5.3.6}训练数据质量，比训练方法名字更决定结果}{72}{subsection.5.3.6}%
+\contentsline {subsection}{\numberline {5.3.7}Chat 基座的输入格式必须服从原协议}{72}{subsection.5.3.7}%
+\contentsline {subsection}{\numberline {5.3.8}多轮 SFT 样本不是把聊天记录直接拼起来}{73}{subsection.5.3.8}%
+\contentsline {subsection}{\numberline {5.3.9}SFT 的 loss mask：不是所有 token 都该学习}{73}{subsection.5.3.9}%
+\contentsline {subsection}{\numberline {5.3.10}LoRA 持续训练与初始化：别把适配器当成一次性补丁}{74}{subsection.5.3.10}%
+\contentsline {subsection}{\numberline {5.3.11}训练前先做一张显存账本}{74}{subsection.5.3.11}%
+\contentsline {subsection}{\numberline {5.3.12}灾难性遗忘与过拟合：轻量微调也躲不过}{75}{subsection.5.3.12}%
+\contentsline {subsection}{\numberline {5.3.13}PEFT 的价值，不只是省显存}{75}{subsection.5.3.13}%
+\contentsline {subsection}{\numberline {5.3.14}LoRA 为什么会成为默认路线}{75}{subsection.5.3.14}%
+\contentsline {subsection}{\numberline {5.3.15}LoRA 的关键超参数该怎么理解}{75}{subsection.5.3.15}%
+\contentsline {subsection}{\numberline {5.3.16}target\_modules 选在哪里，决定你到底在改什么}{76}{subsection.5.3.16}%
+\contentsline {subsection}{\numberline {5.3.17}QLoRA 优先解决的是“能不能训起来”}{76}{subsection.5.3.17}%
+\contentsline {subsection}{\numberline {5.3.18}QLoRA 的训练链，最好先检查四个环节}{77}{subsection.5.3.18}%
+\contentsline {subsection}{\numberline {5.3.19}为什么有时 LoRA 看起来训了，但行为几乎没变}{77}{subsection.5.3.19}%
+\contentsline {subsection}{\numberline {5.3.20}不是所有 PEFT 都是 LoRA：Prompt、Prefix、Adapter 与 AdaLoRA}{78}{subsection.5.3.20}%
+\contentsline {subsection}{\numberline {5.3.21}Prompt、Prefix 与 P-Tuning v2：它们更像“改输入协议”而不是“改知识”}{78}{subsection.5.3.21}%
+\contentsline {subsection}{\numberline {5.3.22}什么时候该承认 PEFT 不够，需要全参微调}{79}{subsection.5.3.22}%
+\contentsline {subsection}{\numberline {5.3.23}适配器的保存、合并与切换，本身就是部署设计}{79}{subsection.5.3.23}%
+\contentsline {subsection}{\numberline {5.3.24}\texttt {modules\_to\_save} 与制品边界：别只保存 LoRA 层就以为万事大吉}{80}{subsection.5.3.24}%
+\contentsline {subsection}{\numberline {5.3.25}多适配器协同：切换、融合、裁剪}{80}{subsection.5.3.25}%
+\contentsline {subsection}{\numberline {5.3.26}训练时的基础超参与稳定性习惯}{81}{subsection.5.3.26}%
+\contentsline {subsection}{\numberline {5.3.27}loss 突刺、warmup 与恢复训练：异常先看状态链}{81}{subsection.5.3.27}%
+\contentsline {section}{\numberline {5.4}主案例推进}{82}{section.5.4}%
+\contentsline {subsection}{\numberline {5.4.1}先把三个子任务分到不同改造手段}{82}{subsection.5.4.1}%
+\contentsline {subsection}{\numberline {5.4.2}先做第一批 SFT 数据，而不是直接追求海量}{83}{subsection.5.4.2}%
+\contentsline {subsection}{\numberline {5.4.3}为什么这里优先选 LoRA / QLoRA，而不是全参微调}{83}{subsection.5.4.3}%
+\contentsline {subsection}{\numberline {5.4.4}先做一轮适配器对照试验，再决定是否合并上线}{84}{subsection.5.4.4}%
+\contentsline {subsection}{\numberline {5.4.5}企业助手里的适配器治理}{84}{subsection.5.4.5}%
+\contentsline {section}{\numberline {5.5}常见坑与工程取舍}{84}{section.5.5}%
+\contentsline {section}{\numberline {5.6}本章练习}{85}{section.5.6}%
+\contentsline {section}{\numberline {5.7}延伸阅读}{85}{section.5.7}%
+\contentsline {section}{\numberline {5.8}小结}{85}{section.5.8}%
+\contentsline {section}{\numberline {5.9}下一章过渡}{85}{section.5.9}%
+\contentsline {chapter}{\numberline {6}数据工程与继续预训练：数据构建、样本拼接、增量预训练}{86}{chapter.6}%
+\contentsline {section}{\numberline {6.1}学习目标}{86}{section.6.1}%
+\contentsline {section}{\numberline {6.2}问题背景}{86}{section.6.2}%
+\contentsline {section}{\numberline {6.3}核心概念}{87}{section.6.3}%
+\contentsline {subsection}{\numberline {6.3.1}三类数据资产}{87}{subsection.6.3.1}%
+\contentsline {subsection}{\numberline {6.3.2}先分流，再构造：原始材料不是天然训练样本}{87}{subsection.6.3.2}%
+\contentsline {subsection}{\numberline {6.3.3}RAG 语料和训练语料，不要默认共用同一池}{87}{subsection.6.3.3}%
+\contentsline {subsection}{\numberline {6.3.4}SFT 数据的三条硬标准}{88}{subsection.6.3.4}%
+\contentsline {subsection}{\numberline {6.3.5}拒答样本、边界样本和澄清样本，不是可选配菜}{88}{subsection.6.3.5}%
+\contentsline {subsection}{\numberline {6.3.6}领域语料来源优先级}{88}{subsection.6.3.6}%
+\contentsline {subsection}{\numberline {6.3.7}数据不是越多越好，而是越可控越好}{89}{subsection.6.3.7}%
+\contentsline {subsection}{\numberline {6.3.8}数据清洗最好拆成五道离线闸门}{89}{subsection.6.3.8}%
+\contentsline {subsection}{\numberline {6.3.9}脱敏与权限隔离不是法务附录，而是训练准入条件}{90}{subsection.6.3.9}%
+\contentsline {subsection}{\numberline {6.3.10}去重、质量过滤与污染控制要做在训练前面}{91}{subsection.6.3.10}%
+\contentsline {subsection}{\numberline {6.3.11}为什么要做样本拼接}{91}{subsection.6.3.11}%
+\contentsline {subsection}{\numberline {6.3.12}样本拼接的三种常见策略}{92}{subsection.6.3.12}%
+\contentsline {subsection}{\numberline {6.3.13}样本边界怎么隔离，比“是否拼接”更影响副作用}{92}{subsection.6.3.13}%
+\contentsline {subsection}{\numberline {6.3.14}从原始材料到 SFT 样本，最好走四段流水线}{92}{subsection.6.3.14}%
+\contentsline {subsection}{\numberline {6.3.15}表格、日志与流程文本要先正规化成可训练单元}{93}{subsection.6.3.15}%
+\contentsline {subsection}{\numberline {6.3.16}SFT 样本格式先定协议，再谈规模}{93}{subsection.6.3.16}%
+\contentsline {subsection}{\numberline {6.3.17}数据验收不是抽象质量，而是一份入池合同}{94}{subsection.6.3.17}%
+\contentsline {subsection}{\numberline {6.3.18}什么时候需要继续预训练}{94}{subsection.6.3.18}%
+\contentsline {subsection}{\numberline {6.3.19}继续预训练的数据量与混合策略}{95}{subsection.6.3.19}%
+\contentsline {subsection}{\numberline {6.3.20}混比不是常数，而是一条阶段曲线}{95}{subsection.6.3.20}%
+\contentsline {subsection}{\numberline {6.3.21}MIP：继续预训练末段少量混入任务样本}{95}{subsection.6.3.21}%
+\contentsline {subsection}{\numberline {6.3.22}词表扩增通常不是领域适配的第一刀}{96}{subsection.6.3.22}%
+\contentsline {subsection}{\numberline {6.3.23}合成数据不是灌水：Self-Instruct、回译与人工种子}{96}{subsection.6.3.23}%
+\contentsline {subsection}{\numberline {6.3.24}主动学习不是“高级玩法”，而是把标注预算花在刀刃上}{97}{subsection.6.3.24}%
+\contentsline {subsection}{\numberline {6.3.25}合成样本也要做质量评分与长尾覆盖检查}{97}{subsection.6.3.25}%
+\contentsline {subsection}{\numberline {6.3.26}继续预训练中的训练信号}{98}{subsection.6.3.26}%
+\contentsline {subsection}{\numberline {6.3.27}继续预训练也要有开发集和停机标准}{98}{subsection.6.3.27}%
+\contentsline {subsection}{\numberline {6.3.28}数据版本化与质量闭环，本身就是训练资产}{98}{subsection.6.3.28}%
+\contentsline {subsection}{\numberline {6.3.29}数据漂移与新鲜度策略：不要等模型出错了才补}{99}{subsection.6.3.29}%
+\contentsline {section}{\numberline {6.4}主案例推进}{99}{section.6.4}%
+\contentsline {subsection}{\numberline {6.4.1}给三条数据线分别设刷新节奏}{100}{subsection.6.4.1}%
+\contentsline {section}{\numberline {6.5}常见坑与工程取舍}{101}{section.6.5}%
+\contentsline {section}{\numberline {6.6}本章练习}{101}{section.6.6}%
+\contentsline {section}{\numberline {6.7}延伸阅读}{101}{section.6.7}%
+\contentsline {section}{\numberline {6.8}小结}{101}{section.6.8}%
+\contentsline {section}{\numberline {6.9}下一章过渡}{102}{section.6.9}%
+\contentsline {part}{第三部分\hspace {1em}检索系统与效果评测}{103}{part.3}%
+\contentsline {chapter}{\numberline {7}RAG 基础：检索增强问答系统的最小闭环}{104}{chapter.7}%
+\contentsline {section}{\numberline {7.1}学习目标}{104}{section.7.1}%
+\contentsline {section}{\numberline {7.2}问题背景}{104}{section.7.2}%
+\contentsline {section}{\numberline {7.3}核心概念}{104}{section.7.3}%
+\contentsline {subsection}{\numberline {7.3.1}什么是 RAG}{104}{subsection.7.3.1}%
+\contentsline {subsection}{\numberline {7.3.2}RAG 解决的是知识接入问题，不是所有问题}{105}{subsection.7.3.2}%
+\contentsline {subsection}{\numberline {7.3.3}最小闭环中的离线段与在线段}{105}{subsection.7.3.3}%
+\contentsline {subsection}{\numberline {7.3.4}文档准入先决定上限}{106}{subsection.7.3.4}%
+\contentsline {subsection}{\numberline {7.3.5}文档切分不是技术细节，而是语义边界设计}{106}{subsection.7.3.5}%
+\contentsline {subsection}{\numberline {7.3.6}元数据不是附属品，而是可追溯性的骨架}{107}{subsection.7.3.6}%
+\contentsline {subsection}{\numberline {7.3.7}权限过滤要发生在召回前后两次，而不是等答案写完再补救}{107}{subsection.7.3.7}%
+\contentsline {subsection}{\numberline {7.3.8}Embedding 在 RAG 里到底做什么}{108}{subsection.7.3.8}%
+\contentsline {subsection}{\numberline {7.3.9}近似最近邻与元数据过滤：最小系统也要懂的检索底盘}{108}{subsection.7.3.9}%
+\contentsline {subsection}{\numberline {7.3.10}最小检索策略要先稳，再谈花样}{108}{subsection.7.3.10}%
+\contentsline {subsection}{\numberline {7.3.11}关键词、向量与混合检索：最小系统也要知道各自短板}{109}{subsection.7.3.11}%
+\contentsline {subsection}{\numberline {7.3.12}查询改写不是默认开关，而是症状驱动修复}{109}{subsection.7.3.12}%
+\contentsline {subsection}{\numberline {7.3.13}二级索引不是花样，而是把“好检索”和“好生成”拆开}{110}{subsection.7.3.13}%
+\contentsline {subsection}{\numberline {7.3.14}$top$-$k$ 不是越大越好}{110}{subsection.7.3.14}%
+\contentsline {subsection}{\numberline {7.3.15}候选去重与多样性控制，往往比继续增大 \texttt {top-k} 更值钱}{110}{subsection.7.3.15}%
+\contentsline {subsection}{\numberline {7.3.16}提示拼接要把规则写清楚}{111}{subsection.7.3.16}%
+\contentsline {subsection}{\numberline {7.3.17}回答契约要固定：结论、依据、风险提示按同一顺序出现}{112}{subsection.7.3.17}%
+\contentsline {subsection}{\numberline {7.3.18}证据冲突时先显式标注冲突，不要替制度拍板}{112}{subsection.7.3.18}%
+\contentsline {subsection}{\numberline {7.3.19}RAG 不是 SFT 的替身：知识接入和行为塑形要分开看}{113}{subsection.7.3.19}%
+\contentsline {subsection}{\numberline {7.3.20}日志和回放能力决定系统能否复盘}{113}{subsection.7.3.20}%
+\contentsline {subsection}{\numberline {7.3.21}知识库不是一次建完：最小闭环也要有更新纪律}{114}{subsection.7.3.21}%
+\contentsline {subsection}{\numberline {7.3.22}增量替换还是全量重建：更新策略要按知识类型分开}{114}{subsection.7.3.22}%
+\contentsline {subsection}{\numberline {7.3.23}先判断是哪一层失败}{115}{subsection.7.3.23}%
+\contentsline {section}{\numberline {7.4}主案例推进}{115}{section.7.4}%
+\contentsline {subsection}{\numberline {7.4.1}先从高价值文档开始，而不是全量入库}{116}{subsection.7.4.1}%
+\contentsline {subsection}{\numberline {7.4.2}离线建库要先产出一套固定清单}{116}{subsection.7.4.2}%
+\contentsline {subsection}{\numberline {7.4.3}在线问答要让证据链完整可见}{116}{subsection.7.4.3}%
+\contentsline {subsection}{\numberline {7.4.4}最小闭环真正要验证的不是“能答”，而是“能稳定答”}{117}{subsection.7.4.4}%
+\contentsline {section}{\numberline {7.5}常见坑与工程取舍}{117}{section.7.5}%
+\contentsline {section}{\numberline {7.6}本章练习}{118}{section.7.6}%
+\contentsline {section}{\numberline {7.7}延伸阅读}{118}{section.7.7}%
+\contentsline {section}{\numberline {7.8}小结}{118}{section.7.8}%
+\contentsline {section}{\numberline {7.9}下一章过渡}{118}{section.7.9}%
+\contentsline {chapter}{\numberline {8}文档理解与检索优化：PDF、表格、召回增强与 GraphRAG}{119}{chapter.8}%
+\contentsline {section}{\numberline {8.1}学习目标}{119}{section.8.1}%
+\contentsline {section}{\numberline {8.2}问题背景}{119}{section.8.2}%
+\contentsline {section}{\numberline {8.3}核心概念}{119}{section.8.3}%
+\contentsline {subsection}{\numberline {8.3.1}优化顺序比优化方法更重要}{119}{subsection.8.3.1}%
+\contentsline {subsection}{\numberline {8.3.2}文档理解先于检索优化}{120}{subsection.8.3.2}%
+\contentsline {subsection}{\numberline {8.3.3}为什么 PDF 与表格会单独成为问题}{120}{subsection.8.3.3}%
+\contentsline {subsection}{\numberline {8.3.4}标题树是最便宜也最常被忽视的结构恢复}{120}{subsection.8.3.4}%
+\contentsline {subsection}{\numberline {8.3.5}表格检索不要伪装成普通段落检索}{120}{subsection.8.3.5}%
+\contentsline {subsection}{\numberline {8.3.6}解析路线怎么选：规则提取、OCR 与视觉模型各有边界}{121}{subsection.8.3.6}%
+\contentsline {subsection}{\numberline {8.3.7}双栏 PDF 为什么会把证据顺序读反}{122}{subsection.8.3.7}%
+\contentsline {subsection}{\numberline {8.3.8}文档规范化、去重与版本淘汰：别让同一条制度以五种面貌入库}{122}{subsection.8.3.8}%
+\contentsline {subsection}{\numberline {8.3.9}结构保留比“切得均匀”更重要}{123}{subsection.8.3.9}%
+\contentsline {subsection}{\numberline {8.3.10}不同文档类型要用不同切分器，而不是一把尺子切到底}{123}{subsection.8.3.10}%
+\contentsline {subsection}{\numberline {8.3.11}chunk overlap 不是越大越稳：它是在保留局部依赖，不是在重复灌水}{123}{subsection.8.3.11}%
+\contentsline {subsection}{\numberline {8.3.12}父子块与多粒度切分：先让粗块找方向，再让细块给证据}{124}{subsection.8.3.12}%
+\contentsline {subsection}{\numberline {8.3.13}查询增强是在弥合“用户语言”和“文档语言”的落差}{124}{subsection.8.3.13}%
+\contentsline {subsection}{\numberline {8.3.14}RAG-Fusion 不只是多查几次：关键在融合时别丢用户意图}{125}{subsection.8.3.14}%
+\contentsline {subsection}{\numberline {8.3.15}RRF 为什么常被用作 RAG-Fusion 的默认融合器}{125}{subsection.8.3.15}%
+\contentsline {subsection}{\numberline {8.3.16}混合检索与元数据过滤：关键词、版本号和权限约束不要全交给向量}{126}{subsection.8.3.16}%
+\contentsline {subsection}{\numberline {8.3.17}FLARE 与前瞻检索：答案生成过程中也可能需要再补证据}{126}{subsection.8.3.17}%
+\contentsline {subsection}{\numberline {8.3.18}检索器对齐：让 query、doc 与生成目标说同一种话}{127}{subsection.8.3.18}%
+\contentsline {subsection}{\numberline {8.3.19}重排序与负样本在修“相关但不够好”的候选}{127}{subsection.8.3.19}%
+\contentsline {subsection}{\numberline {8.3.20}把 embedding 训对：相似度、对比学习、假负例与 SimANS}{127}{subsection.8.3.20}%
+\contentsline {subsection}{\numberline {8.3.21}先上重排序还是先训检索器：看正确证据出现在哪一层}{128}{subsection.8.3.21}%
+\contentsline {subsection}{\numberline {8.3.22}Cross-Encoder 重排序为什么常常是“最贵但最值”的那一步}{129}{subsection.8.3.22}%
+\contentsline {subsection}{\numberline {8.3.23}上下文压缩：召回之后还要再做一次“证据降噪”}{129}{subsection.8.3.23}%
+\contentsline {subsection}{\numberline {8.3.24}长上下文重排：关键证据不要埋在中间}{129}{subsection.8.3.24}%
+\contentsline {subsection}{\numberline {8.3.25}GraphRAG 适合强关系和多跳问题，不是通用终点}{130}{subsection.8.3.25}%
+\contentsline {subsection}{\numberline {8.3.26}实体命名规范先于建图：别让同一个对象裂成三份}{130}{subsection.8.3.26}%
+\contentsline {subsection}{\numberline {8.3.27}GraphRAG 落地时最难的不是建图，而是子图召回与排序}{130}{subsection.8.3.27}%
+\contentsline {subsection}{\numberline {8.3.28}多向量与多模态 RAG：图片、版面和表格都可以成为证据}{131}{subsection.8.3.28}%
+\contentsline {subsection}{\numberline {8.3.29}自适应 RAG：把检索做成条件动作，而不是固定流水线}{131}{subsection.8.3.29}%
+\contentsline {subsection}{\numberline {8.3.30}备用模型与安全兜底：不是所有问题都交给同一条链}{132}{subsection.8.3.30}%
+\contentsline {subsection}{\numberline {8.3.31}chunk size、overlap 与 top-k 要靠验证集调，不要靠直觉}{132}{subsection.8.3.31}%
+\contentsline {subsection}{\numberline {8.3.32}先查覆盖率，再查召回率：知识库里没有的答案别逼系统编}{132}{subsection.8.3.32}%
+\contentsline {subsection}{\numberline {8.3.33}先从症状判断该修哪里}{133}{subsection.8.3.33}%
+\contentsline {section}{\numberline {8.4}主案例推进}{133}{section.8.4}%
+\contentsline {subsection}{\numberline {8.4.1}第一轮优化先修输入，不先修模型}{133}{subsection.8.4.1}%
+\contentsline {subsection}{\numberline {8.4.2}第二轮优化再修用户语言与文档语言的错位}{134}{subsection.8.4.2}%
+\contentsline {subsection}{\numberline {8.4.3}第三轮优化才考虑排序和难负例}{134}{subsection.8.4.3}%
+\contentsline {subsection}{\numberline {8.4.4}不是所有关系问题都要立刻上 GraphRAG}{134}{subsection.8.4.4}%
+\contentsline {subsection}{\numberline {8.4.5}第四轮优化：只让复杂问题走重检索链}{135}{subsection.8.4.5}%
+\contentsline {subsection}{\numberline {8.4.6}第五轮优化：把版本过滤和混合检索接到主链上}{135}{subsection.8.4.6}%
+\contentsline {section}{\numberline {8.5}常见坑与工程取舍}{135}{section.8.5}%
+\contentsline {section}{\numberline {8.6}本章练习}{136}{section.8.6}%
+\contentsline {section}{\numberline {8.7}延伸阅读}{136}{section.8.7}%
+\contentsline {section}{\numberline {8.8}小结}{136}{section.8.8}%
+\contentsline {section}{\numberline {8.9}下一章过渡}{137}{section.8.9}%
+\contentsline {chapter}{\numberline {9}评测体系：模型、系统与应用层评测}{138}{chapter.9}%
+\contentsline {section}{\numberline {9.1}学习目标}{138}{section.9.1}%
+\contentsline {section}{\numberline {9.2}问题背景}{138}{section.9.2}%
+\contentsline {section}{\numberline {9.3}核心概念}{138}{section.9.3}%
+\contentsline {subsection}{\numberline {9.3.1}为什么要做分层评测}{138}{subsection.9.3.1}%
+\contentsline {subsection}{\numberline {9.3.2}先列出要评哪些能力，再谈怎么打分}{139}{subsection.9.3.2}%
+\contentsline {subsection}{\numberline {9.3.3}评测集不是一个集合，而是一组切片}{140}{subsection.9.3.3}%
+\contentsline {subsection}{\numberline {9.3.4}公开基准看通用上限，业务金标看真实可用性}{140}{subsection.9.3.4}%
+\contentsline {subsection}{\numberline {9.3.5}自动评测集、人工评测集与保留集要分工}{141}{subsection.9.3.5}%
+\contentsline {subsection}{\numberline {9.3.6}评测集也要版本化，不然分数就没有时间坐标}{141}{subsection.9.3.6}%
+\contentsline {subsection}{\numberline {9.3.7}RAG 评测要拆成独立评测与端到端评测}{142}{subsection.9.3.7}%
+\contentsline {subsection}{\numberline {9.3.8}指标要围绕“要守住什么”来选}{143}{subsection.9.3.8}%
+\contentsline {subsection}{\numberline {9.3.9}阈值不是统一门槛：要按风险等级设通过线}{143}{subsection.9.3.9}%
+\contentsline {subsection}{\numberline {9.3.10}诚实性不是附赠项：知识边界识别要单独评}{144}{subsection.9.3.10}%
+\contentsline {subsection}{\numberline {9.3.11}先定位，再打分}{144}{subsection.9.3.11}%
+\contentsline {subsection}{\numberline {9.3.12}错误分类法要固定，否则坏例很难沉淀成资产}{144}{subsection.9.3.12}%
+\contentsline {subsection}{\numberline {9.3.13}人工评测依然重要，但职责要收紧}{145}{subsection.9.3.13}%
+\contentsline {subsection}{\numberline {9.3.14}人工评测的关键不是多看，而是同口径地看}{146}{subsection.9.3.14}%
+\contentsline {subsection}{\numberline {9.3.15}LLM-as-a-Judge 要想用得稳，先把评分协议写清楚}{146}{subsection.9.3.15}%
+\contentsline {subsection}{\numberline {9.3.16}工具、赛制与平台只是载体，不是评测本身}{147}{subsection.9.3.16}%
+\contentsline {subsection}{\numberline {9.3.17}RAGAS、ARES 一类自动评测框架能加速，但别让框架替你定义目标}{147}{subsection.9.3.17}%
+\contentsline {subsection}{\numberline {9.3.18}评测成本也要分层：把最贵的人力留给最危险的样例}{147}{subsection.9.3.18}%
+\contentsline {subsection}{\numberline {9.3.19}测试集污染和评测泄漏会让分数失真}{148}{subsection.9.3.19}%
+\contentsline {subsection}{\numberline {9.3.20}评测的终点是发布门禁，而不是报告}{148}{subsection.9.3.20}%
+\contentsline {subsection}{\numberline {9.3.21}门禁也要分层：阻断项、预警项和观察项别混在一起}{148}{subsection.9.3.21}%
+\contentsline {subsection}{\numberline {9.3.22}发布门禁必须绑定回滚动作和责任人}{149}{subsection.9.3.22}%
+\contentsline {subsection}{\numberline {9.3.23}离线高分不等于线上安全：灰度、A/B 与样本回放}{149}{subsection.9.3.23}%
+\contentsline {subsection}{\numberline {9.3.24}Judge 自己也要校准：裁判漂了，分数就不再可比}{150}{subsection.9.3.24}%
+\contentsline {section}{\numberline {9.4}主案例推进}{150}{section.9.4}%
+\contentsline {subsection}{\numberline {9.4.1}先做一套能复用的样例结构}{150}{subsection.9.4.1}%
+\contentsline {subsection}{\numberline {9.4.2}把评测结果做成“分层看板”}{150}{subsection.9.4.2}%
+\contentsline {subsection}{\numberline {9.4.3}把评测结果变成发布规则}{151}{subsection.9.4.3}%
+\contentsline {subsection}{\numberline {9.4.4}把灰度坏例直接流回回放集，不要只留在群聊里}{151}{subsection.9.4.4}%
+\contentsline {subsection}{\numberline {9.4.5}总分上涨但关键切片下滑时，默认按失败处理}{151}{subsection.9.4.5}%
+\contentsline {section}{\numberline {9.5}常见坑与工程取舍}{152}{section.9.5}%
+\contentsline {section}{\numberline {9.6}本章练习}{152}{section.9.6}%
+\contentsline {section}{\numberline {9.7}延伸阅读}{153}{section.9.7}%
+\contentsline {section}{\numberline {9.8}小结}{153}{section.9.8}%
+\contentsline {section}{\numberline {9.9}下一章过渡}{153}{section.9.9}%
+\contentsline {part}{第四部分\hspace {1em}对齐、部署与大规模工程}{154}{part.4}%
+\contentsline {chapter}{\numberline {10}对齐与强化学习：RLHF、PPO 与 NLP 中的 RL}{155}{chapter.10}%
+\contentsline {section}{\numberline {10.1}学习目标}{155}{section.10.1}%
+\contentsline {section}{\numberline {10.2}问题背景}{155}{section.10.2}%
+\contentsline {section}{\numberline {10.3}核心概念}{156}{section.10.3}%
+\contentsline {subsection}{\numberline {10.3.1}为什么需要对齐}{156}{subsection.10.3.1}%
+\contentsline {subsection}{\numberline {10.3.2}RL 的最小概念集}{156}{subsection.10.3.2}%
+\contentsline {subsection}{\numberline {10.3.3}RLHF 的基本流程}{156}{subsection.10.3.3}%
+\contentsline {subsection}{\numberline {10.3.4}高质量 SFT 仍是对齐起点：LIMA 的启示不是“样本越少越神”}{157}{subsection.10.3.4}%
+\contentsline {subsection}{\numberline {10.3.5}偏好数据与奖励模型}{157}{subsection.10.3.5}%
+\contentsline {subsection}{\numberline {10.3.6}Bradley--Terry：奖励模型怎样把“哪个更好”变成可学习分数}{158}{subsection.10.3.6}%
+\contentsline {subsection}{\numberline {10.3.7}奖励模型不是黑箱评分器：先把标签协议和模型角色分清}{159}{subsection.10.3.7}%
+\contentsline {subsection}{\numberline {10.3.8}偏好样本也有格式：比较对之外，还要带上风险与证据}{159}{subsection.10.3.8}%
+\contentsline {subsection}{\numberline {10.3.9}奖励模型看什么、不看什么，要先把边界立住}{160}{subsection.10.3.9}%
+\contentsline {subsection}{\numberline {10.3.10}奖励模型也要校准：先看分歧样本，再看平均分}{160}{subsection.10.3.10}%
+\contentsline {subsection}{\numberline {10.3.11}RLHF 里的四个模型各自负责什么}{161}{subsection.10.3.11}%
+\contentsline {subsection}{\numberline {10.3.12}奖励模型与策略模型不必完全同构，但输入边界必须一致}{162}{subsection.10.3.12}%
+\contentsline {subsection}{\numberline {10.3.13}优势函数与 value model：PPO 不是只看“谁分高”}{162}{subsection.10.3.13}%
+\contentsline {subsection}{\numberline {10.3.14}Actor--Critic 的直觉：一个负责出招，一个负责估价}{162}{subsection.10.3.14}%
+\contentsline {subsection}{\numberline {10.3.15}PPO 为什么常用于 RLHF}{163}{subsection.10.3.15}%
+\contentsline {subsection}{\numberline {10.3.16}Rollout 与采样纪律：RLHF 里的“训练数据”是模型自己生成的}{163}{subsection.10.3.16}%
+\contentsline {subsection}{\numberline {10.3.17}rollout 预算不是算力细节，而是训练节奏本身}{163}{subsection.10.3.17}%
+\contentsline {subsection}{\numberline {10.3.18}探索不能脱离安全边界：rollout 配置本身也是治理点}{164}{subsection.10.3.18}%
+\contentsline {subsection}{\numberline {10.3.19}PPO 的稳定性不只靠 clip：还靠样本新鲜度、epoch 数与早停}{164}{subsection.10.3.19}%
+\contentsline {subsection}{\numberline {10.3.20}PPO 失稳时先看哪几块仪表盘}{165}{subsection.10.3.20}%
+\contentsline {subsection}{\numberline {10.3.21}KL 约束的意义}{165}{subsection.10.3.21}%
+\contentsline {subsection}{\numberline {10.3.22}奖励黑客与错配风险}{166}{subsection.10.3.22}%
+\contentsline {subsection}{\numberline {10.3.23}LIMA 与 RAFT：轻量路线提醒我们别急着上完整 RL 闭环}{167}{subsection.10.3.23}%
+\contentsline {subsection}{\numberline {10.3.24}离线偏好优化与在线 RL，是两种完全不同的投资}{167}{subsection.10.3.24}%
+\contentsline {subsection}{\numberline {10.3.25}什么时候 RRHF、DPO 或 RLAIF 可能比 RLHF 更现实}{168}{subsection.10.3.25}%
+\contentsline {subsection}{\numberline {10.3.26}先选路线，再选算法：一条更实用的对齐决策阶梯}{169}{subsection.10.3.26}%
+\contentsline {subsection}{\numberline {10.3.27}什么时候不该上 RLHF}{169}{subsection.10.3.27}%
+\contentsline {subsection}{\numberline {10.3.28}强化学习在 NLP 中的角色}{170}{subsection.10.3.28}%
+\contentsline {section}{\numberline {10.4}主案例推进}{170}{section.10.4}%
+\contentsline {subsection}{\numberline {10.4.1}对齐上线也要先离线后灰度，而且仍需规则系统托底}{171}{subsection.10.4.1}%
+\contentsline {section}{\numberline {10.5}常见坑与工程取舍}{172}{section.10.5}%
+\contentsline {section}{\numberline {10.6}本章练习}{173}{section.10.6}%
+\contentsline {section}{\numberline {10.7}延伸阅读}{173}{section.10.7}%
+\contentsline {section}{\numberline {10.8}小结}{173}{section.10.8}%
+\contentsline {section}{\numberline {10.9}下一章过渡}{173}{section.10.9}%
+\contentsline {chapter}{\numberline {11}推理与性能优化：显存、量化、吞吐与服务稳定性}{174}{chapter.11}%
+\contentsline {section}{\numberline {11.1}学习目标}{174}{section.11.1}%
+\contentsline {section}{\numberline {11.2}问题背景}{174}{section.11.2}%
+\contentsline {section}{\numberline {11.3}核心概念}{174}{section.11.3}%
+\contentsline {subsection}{\numberline {11.3.1}推理成本从哪里来}{174}{subsection.11.3.1}%
+\contentsline {subsection}{\numberline {11.3.2}推理显存粗估公式}{175}{subsection.11.3.2}%
+\contentsline {paragraph}{\numberline {11.3.2.0.1}1. 权重显存的粗估}{175}{paragraph.11.3.2.0.1}%
+\contentsline {paragraph}{\numberline {11.3.2.0.2}2. KV Cache 的粗估}{175}{paragraph.11.3.2.0.2}%
+\contentsline {paragraph}{\numberline {11.3.2.0.3}3. 运行时余量}{175}{paragraph.11.3.2.0.3}%
+\contentsline {subsection}{\numberline {11.3.3}Prefill 与 Decode：为什么会出现两种不同的慢}{176}{subsection.11.3.3}%
+\contentsline {paragraph}{\numberline {11.3.3.0.1}Prefill 阶段}{176}{paragraph.11.3.3.0.1}%
+\contentsline {paragraph}{\numberline {11.3.3.0.2}Decode 阶段}{176}{paragraph.11.3.3.0.2}%
+\contentsline {paragraph}{\numberline {11.3.3.0.3}两阶段的典型瓶颈}{176}{paragraph.11.3.3.0.3}%
+\contentsline {subsection}{\numberline {11.3.4}量化的意义：不仅是省显存}{176}{subsection.11.3.4}%
+\contentsline {subsection}{\numberline {11.3.5}训练后量化路线：PTQ、GPTQ、AWQ 解决的不是同一个问题}{177}{subsection.11.3.5}%
+\contentsline {subsection}{\numberline {11.3.6}生成参数、输出合规与多级兜底}{178}{subsection.11.3.6}%
+\contentsline {subsection}{\numberline {11.3.7}KV Cache 与上下文预算}{178}{subsection.11.3.7}%
+\contentsline {subsection}{\numberline {11.3.8}选底座时别忽略推理友好性：MQA、GQA 与 FlashAttention}{178}{subsection.11.3.8}%
+\contentsline {subsection}{\numberline {11.3.9}质量、延迟、成本三角}{179}{subsection.11.3.9}%
+\contentsline {subsection}{\numberline {11.3.10}吞吐与延迟的基本取舍}{180}{subsection.11.3.10}%
+\contentsline {subsection}{\numberline {11.3.11}尾延迟与排队效应：为什么 P99 往往比平均值更先坏}{180}{subsection.11.3.11}%
+\contentsline {subsection}{\numberline {11.3.12}高效推理运行时：连续批处理、PagedAttention 与专用引擎}{180}{subsection.11.3.12}%
+\contentsline {paragraph}{\numberline {11.3.12.0.1}连续批处理}{181}{paragraph.11.3.12.0.1}%
+\contentsline {paragraph}{\numberline {11.3.12.0.2}PagedAttention 与缓存管理}{181}{paragraph.11.3.12.0.2}%
+\contentsline {paragraph}{\numberline {11.3.12.0.3}专用推理引擎}{181}{paragraph.11.3.12.0.3}%
+\contentsline {subsection}{\numberline {11.3.13}不要只看 GPU 利用率：推理观测要拆成服务、设备和阶段}{181}{subsection.11.3.13}%
+\contentsline {subsection}{\numberline {11.3.14}一次请求的全链路账本：Tokenizer、搬运与后处理都算推理成本}{182}{subsection.11.3.14}%
+\contentsline {subsection}{\numberline {11.3.15}Profiler 与拓扑诊断：别把“GPU 忙”误当成“系统快”}{183}{subsection.11.3.15}%
+\contentsline {subsection}{\numberline {11.3.16}Cache、Warmup、Batching 与路由策略}{183}{subsection.11.3.16}%
+\contentsline {paragraph}{\numberline {11.3.16.0.1}1. Cache}{183}{paragraph.11.3.16.0.1}%
+\contentsline {paragraph}{\numberline {11.3.16.0.2}2. Warmup}{184}{paragraph.11.3.16.0.2}%
+\contentsline {paragraph}{\numberline {11.3.16.0.3}3. Batching}{184}{paragraph.11.3.16.0.3}%
+\contentsline {paragraph}{\numberline {11.3.16.0.4}4. 路由策略}{184}{paragraph.11.3.16.0.4}%
+\contentsline {subsection}{\numberline {11.3.17}超时、限流、重试与降级：稳定性护栏要先于极限吞吐}{184}{subsection.11.3.17}%
+\contentsline {subsection}{\numberline {11.3.18}LoRA 在线挂载还是预合并：适配器的推理形态也影响性能}{185}{subsection.11.3.18}%
+\contentsline {subsection}{\numberline {11.3.19}硬件选型与 Offload：用带宽换显存，不是免费增容}{185}{subsection.11.3.19}%
+\contentsline {subsection}{\numberline {11.3.20}冷启动、显存碎片与实例抖动：很多线上毛刺不是模型突然变慢}{186}{subsection.11.3.20}%
+\contentsline {subsection}{\numberline {11.3.21}容量预算：先估单卡上限，再决定怎么扩}{186}{subsection.11.3.21}%
+\contentsline {subsection}{\numberline {11.3.22}先定位瓶颈，再挑手段}{186}{subsection.11.3.22}%
+\contentsline {section}{\numberline {11.4}主案例推进}{187}{section.11.4}%
+\contentsline {subsection}{\numberline {11.4.1}第一步：先压上下文预算，而不是先动模型}{187}{subsection.11.4.1}%
+\contentsline {subsection}{\numberline {11.4.2}第二步：把 prefill 和 decode 分开看}{187}{subsection.11.4.2}%
+\contentsline {subsection}{\numberline {11.4.3}第三步：在质量、延迟、成本三角中做基线取舍}{187}{subsection.11.4.3}%
+\contentsline {subsection}{\numberline {11.4.4}第四步：加入 cache、warmup 与保守 batching}{187}{subsection.11.4.4}%
+\contentsline {subsection}{\numberline {11.4.5}第五步：建立从症状到第一检查项的诊断链}{188}{subsection.11.4.5}%
+\contentsline {section}{\numberline {11.5}常见坑与工程取舍}{189}{section.11.5}%
+\contentsline {section}{\numberline {11.6}本章练习}{189}{section.11.6}%
+\contentsline {section}{\numberline {11.7}延伸阅读}{190}{section.11.7}%
+\contentsline {section}{\numberline {11.8}小结}{190}{section.11.8}%
+\contentsline {section}{\numberline {11.9}下一章过渡}{190}{section.11.9}%
+\contentsline {chapter}{\numberline {12}分布式训练与大规模工程：并行策略、训练框架、成本与排障}{191}{chapter.12}%
+\contentsline {section}{\numberline {12.1}学习目标}{191}{section.12.1}%
+\contentsline {section}{\numberline {12.2}问题背景}{191}{section.12.2}%
+\contentsline {section}{\numberline {12.3}核心概念}{191}{section.12.3}%
+\contentsline {subsection}{\numberline {12.3.1}分布式训练首先是资源分账，而不是多卡魔法}{191}{subsection.12.3.1}%
+\contentsline {subsection}{\numberline {12.3.2}先看瓶颈属于哪一类，再谈并行策略}{192}{subsection.12.3.2}%
+\contentsline {subsection}{\numberline {12.3.3}通信基础：点对点与集体通信}{192}{subsection.12.3.3}%
+\contentsline {subsection}{\numberline {12.3.4}Ring-AllReduce 的直觉：为什么扩卡收益会先撞到同步墙}{193}{subsection.12.3.4}%
+\contentsline {subsection}{\numberline {12.3.5}数据并行：最常见的起点，但不是万能起点}{193}{subsection.12.3.5}%
+\contentsline {subsection}{\numberline {12.3.6}为什么 DDP 通常比 DataParallel 更值得讲}{193}{subsection.12.3.6}%
+\contentsline {subsection}{\numberline {12.3.7}FSDP 与 ZeRO：很多时候先分片，比先上复杂并行更稳}{193}{subsection.12.3.7}%
+\contentsline {subsection}{\numberline {12.3.8}ZeRO 阶段怎么选：先问你最缺哪一类显存}{194}{subsection.12.3.8}%
+\contentsline {subsection}{\numberline {12.3.9}AMP 与混合精度：先把每一步训练成本降下来}{194}{subsection.12.3.9}%
+\contentsline {subsection}{\numberline {12.3.10}loss scaling 与溢出监控：fp16 能跑，不等于 fp16 跑稳}{195}{subsection.12.3.10}%
+\contentsline {subsection}{\numberline {12.3.11}Offload 是兜底，不是免费的第二层显存}{195}{subsection.12.3.11}%
+\contentsline {subsection}{\numberline {12.3.12}张量并行：解决的是单层算子太大}{196}{subsection.12.3.12}%
+\contentsline {subsection}{\numberline {12.3.13}TP 内部常见切法：行并行与列并行只影响通信位置}{196}{subsection.12.3.13}%
+\contentsline {subsection}{\numberline {12.3.14}流水线并行：用调度复杂性换可训练性}{196}{subsection.12.3.14}%
+\contentsline {subsection}{\numberline {12.3.15}micro-batch 数量会直接决定流水线气泡}{196}{subsection.12.3.15}%
+\contentsline {subsection}{\numberline {12.3.16}3D 并行不是毕业礼，而是最后的组合拳}{197}{subsection.12.3.16}%
+\contentsline {subsection}{\numberline {12.3.17}拓扑先于卡数：NVLink、PCIe 与跨机网络会决定扩卡收益}{197}{subsection.12.3.17}%
+\contentsline {subsection}{\numberline {12.3.18}框架选型不是问“谁最强”，而是问“谁最适合当前阶段”}{197}{subsection.12.3.18}%
+\contentsline {subsection}{\numberline {12.3.19}框架迁移成本经常比第一次跑通更贵}{198}{subsection.12.3.19}%
+\contentsline {subsection}{\numberline {12.3.20}全局 batch 是一笔乘法账：micro-batch、梯度累积与 DP 必须一起看}{198}{subsection.12.3.20}%
+\contentsline {subsection}{\numberline {12.3.21}梯度累积和梯度检查点常一起出现，但它们不是一回事}{199}{subsection.12.3.21}%
+\contentsline {subsection}{\numberline {12.3.22}先用小模型和小数据把链路跑通，再放大}{199}{subsection.12.3.22}%
+\contentsline {subsection}{\numberline {12.3.23}启动纪律比“能跑一次”更重要：torchrun、DeepSpeed 与环境一致性}{199}{subsection.12.3.23}%
+\contentsline {subsection}{\numberline {12.3.24}NCCL 与多机启动最小检查表}{200}{subsection.12.3.24}%
+\contentsline {subsection}{\numberline {12.3.25}数据加载是隐藏的第四瓶颈：DistributedSampler、预处理与落盘速度}{201}{subsection.12.3.25}%
+\contentsline {subsection}{\numberline {12.3.26}环境栈治理：底层库升级要比 Python 包更谨慎}{201}{subsection.12.3.26}%
+\contentsline {subsection}{\numberline {12.3.27}检查点、弹性恢复与自动重启不是“运维附属项”}{201}{subsection.12.3.27}%
+\contentsline {subsection}{\numberline {12.3.28}检查点不只存模型：恢复粒度决定你是在“接着跑”还是“重开局”}{202}{subsection.12.3.28}%
+\contentsline {subsection}{\numberline {12.3.29}恢复演练要在故障发生前做，而不是在故障发生时学}{202}{subsection.12.3.29}%
+\contentsline {subsection}{\numberline {12.3.30}成本核算和实验复现，本身就是大模型工程的一部分}{202}{subsection.12.3.30}%
+\contentsline {subsection}{\numberline {12.3.31}实验最小复现包：没有这包材料，结果就只是传说}{203}{subsection.12.3.31}%
+\contentsline {subsection}{\numberline {12.3.32}把“卡忙不忙”变成可比数字：吞吐、Profiler 与有效算力}{203}{subsection.12.3.32}%
+\contentsline {subsection}{\numberline {12.3.33}通信调优不是玄学：bucket、overlap 与 sampler 纪律都能吞掉收益}{204}{subsection.12.3.33}%
+\contentsline {subsection}{\numberline {12.3.34}先定位哪一层卡住，再进入排障}{205}{subsection.12.3.34}%
+\contentsline {section}{\numberline {12.4}主案例推进}{205}{section.12.4}%
+\contentsline {subsection}{\numberline {12.4.1}从原型期到平台期，升级路径不该跳步}{205}{subsection.12.4.1}%
+\contentsline {subsection}{\numberline {12.4.2}企业助手在平台期的第一批分布式动作}{205}{subsection.12.4.2}%
+\contentsline {subsection}{\numberline {12.4.3}平台期的第一次恢复演练，比第一次扩到更多卡更值钱}{206}{subsection.12.4.3}%
+\contentsline {subsection}{\numberline {12.4.4}平台期必须补上的治理清单}{206}{subsection.12.4.4}%
+\contentsline {subsection}{\numberline {12.4.5}把前十二章重新串起来：先形成第一条主线，再进入系统深化}{206}{subsection.12.4.5}%
+\contentsline {subsection}{\numberline {12.4.6}平台期真正交付的，不是更大模型，而是更可靠的迭代能力}{207}{subsection.12.4.6}%
+\contentsline {subsection}{\numberline {12.4.7}平台期验收清单：什么时候说明训练与治理底座已经站稳}{207}{subsection.12.4.7}%
+\contentsline {section}{\numberline {12.5}常见坑与工程取舍}{207}{section.12.5}%
+\contentsline {section}{\numberline {12.6}本章练习}{208}{section.12.6}%
+\contentsline {section}{\numberline {12.7}延伸阅读}{208}{section.12.7}%
+\contentsline {section}{\numberline {12.8}小结}{208}{section.12.8}%
+\contentsline {section}{\numberline {12.9}下一章过渡}{209}{section.12.9}%
+\contentsline {part}{第五部分\hspace {1em}Agent、推理与生产落地}{210}{part.5}%
+\contentsline {chapter}{\numberline {13}Agent 与工具编排：从单轮调用到多步自主执行}{211}{chapter.13}%
+\contentsline {section}{\numberline {13.1}学习目标}{211}{section.13.1}%
+\contentsline {section}{\numberline {13.2}问题背景}{211}{section.13.2}%
+\contentsline {section}{\numberline {13.3}核心概念}{212}{section.13.3}%
+\contentsline {subsection}{\numberline {13.3.1}从函数调用到 Agent 循环}{212}{subsection.13.3.1}%
+\contentsline {subsection}{\numberline {13.3.2}工具定义的工程规范}{212}{subsection.13.3.2}%
+\contentsline {subsection}{\numberline {13.3.3}幂等性与副作用分级}{214}{subsection.13.3.3}%
+\contentsline {subsection}{\numberline {13.3.4}Agent 循环的工程实现}{214}{subsection.13.3.4}%
+\contentsline {subsection}{\numberline {13.3.5}状态管理：Agent 的记忆不只是上下文}{217}{subsection.13.3.5}%
+\contentsline {subsection}{\numberline {13.3.6}失败恢复：Agent 出错后怎么办}{217}{subsection.13.3.6}%
+\contentsline {subsection}{\numberline {13.3.7}护栏与人机协作}{218}{subsection.13.3.7}%
+\contentsline {subsection}{\numberline {13.3.8}多 Agent 协作模式}{218}{subsection.13.3.8}%
+\contentsline {subsection}{\numberline {13.3.9}案例推进：企业知识助手的 Agent 化升级}{219}{subsection.13.3.9}%
+\contentsline {section}{\numberline {13.4}常见坑与工程取舍}{219}{section.13.4}%
+\contentsline {section}{\numberline {13.5}本章练习}{220}{section.13.5}%
+\contentsline {section}{\numberline {13.6}延伸阅读}{220}{section.13.6}%
+\contentsline {section}{\numberline {13.7}小结}{221}{section.13.7}%
+\contentsline {section}{\numberline {13.8}下一章过渡}{221}{section.13.8}%
+\contentsline {chapter}{\numberline {14}推理增强：从 Chain-of-Thought 到 o1 范式}{222}{chapter.14}%
+\contentsline {section}{\numberline {14.1}学习目标}{222}{section.14.1}%
+\contentsline {section}{\numberline {14.2}问题背景}{222}{section.14.2}%
+\contentsline {section}{\numberline {14.3}核心概念}{222}{section.14.3}%
+\contentsline {subsection}{\numberline {14.3.1}为什么直接生成会失败}{222}{subsection.14.3.1}%
+\contentsline {subsection}{\numberline {14.3.2}Chain-of-Thought：让模型展示推理过程}{223}{subsection.14.3.2}%
+\contentsline {subsection}{\numberline {14.3.3}CoT 的工程陷阱}{223}{subsection.14.3.3}%
+\contentsline {subsection}{\numberline {14.3.4}Self-Consistency：用多数投票提升可靠性}{224}{subsection.14.3.4}%
+\contentsline {subsection}{\numberline {14.3.5}Tree-of-Thought：当线性推理不够时}{225}{subsection.14.3.5}%
+\contentsline {subsection}{\numberline {14.3.6}o1 范式：从提示技巧到训练范式的转变}{225}{subsection.14.3.6}%
+\contentsline {subsection}{\numberline {14.3.7}工程决策：什么时候用什么推理策略}{226}{subsection.14.3.7}%
+\contentsline {section}{\numberline {14.4}常见坑与工程取舍}{226}{section.14.4}%
+\contentsline {section}{\numberline {14.5}本章练习}{227}{section.14.5}%
+\contentsline {section}{\numberline {14.6}延伸阅读}{227}{section.14.6}%
+\contentsline {section}{\numberline {14.7}小结}{227}{section.14.7}%
+\contentsline {section}{\numberline {14.8}下一章过渡}{228}{section.14.8}%
+\contentsline {chapter}{\numberline {15}安全、合规与红队测试：守住 LLM 系统的底线}{229}{chapter.15}%
+\contentsline {section}{\numberline {15.1}学习目标}{229}{section.15.1}%
+\contentsline {section}{\numberline {15.2}问题背景}{229}{section.15.2}%
+\contentsline {section}{\numberline {15.3}核心概念}{229}{section.15.3}%
+\contentsline {subsection}{\numberline {15.3.1}LLM 系统的威胁模型}{229}{subsection.15.3.1}%
+\contentsline {subsection}{\numberline {15.3.2}提示注入：LLM 时代的 SQL 注入}{230}{subsection.15.3.2}%
+\contentsline {subsection}{\numberline {15.3.3}提示注入的多层防御}{230}{subsection.15.3.3}%
+\contentsline {subsection}{\numberline {15.3.4}数据泄露防护}{231}{subsection.15.3.4}%
+\contentsline {subsection}{\numberline {15.3.5}输出合规审查}{232}{subsection.15.3.5}%
+\contentsline {subsection}{\numberline {15.3.6}红队测试方法论}{232}{subsection.15.3.6}%
+\contentsline {subsection}{\numberline {15.3.7}安全与可用性的平衡}{233}{subsection.15.3.7}%
+\contentsline {section}{\numberline {15.4}常见坑与工程取舍}{233}{section.15.4}%
+\contentsline {section}{\numberline {15.5}本章练习}{233}{section.15.5}%
+\contentsline {section}{\numberline {15.6}延伸阅读}{234}{section.15.6}%
+\contentsline {section}{\numberline {15.7}小结}{234}{section.15.7}%
+\contentsline {section}{\numberline {15.8}下一章过渡}{234}{section.15.8}%
+\contentsline {chapter}{\numberline {16}上线运维与持续迭代：让 LLM 系统稳定运行在生产环境}{235}{chapter.16}%
+\contentsline {section}{\numberline {16.1}学习目标}{235}{section.16.1}%
+\contentsline {section}{\numberline {16.2}问题背景}{235}{section.16.2}%
+\contentsline {section}{\numberline {16.3}核心概念}{235}{section.16.3}%
+\contentsline {subsection}{\numberline {16.3.1}LLM 系统上线的特殊挑战}{235}{subsection.16.3.1}%
+\contentsline {subsection}{\numberline {16.3.2}监控指标体系}{236}{subsection.16.3.2}%
+\contentsline {subsection}{\numberline {16.3.3}灰度发布与 A/B 测试}{237}{subsection.16.3.3}%
+\contentsline {subsection}{\numberline {16.3.4}成本控制}{237}{subsection.16.3.4}%
+\contentsline {subsection}{\numberline {16.3.5}版本管理与可追溯性}{238}{subsection.16.3.5}%
+\contentsline {subsection}{\numberline {16.3.6}持续迭代的反馈闭环}{238}{subsection.16.3.6}%
+\contentsline {subsection}{\numberline {16.3.7}把前面十五章接成一套生产运行手册}{238}{subsection.16.3.7}%
+\contentsline {subsection}{\numberline {16.3.8}最小部署方案：从零到可访问的五步}{239}{subsection.16.3.8}%
+\contentsline {section}{\numberline {16.4}常见坑与工程取舍}{239}{section.16.4}%
+\contentsline {section}{\numberline {16.5}本章练习}{240}{section.16.5}%
+\contentsline {section}{\numberline {16.6}延伸阅读}{240}{section.16.6}%
+\contentsline {section}{\numberline {16.7}小结}{240}{section.16.7}%
+\contentsline {section}{\numberline {16.8}全书总结}{240}{section.16.8}%
+\contentsline {section}{\numberline {16.9}走出本书后的第一轮实践}{241}{section.16.9}%

@@ -1,0 +1,682 @@
+\chapter{推理与性能优化：显存、量化、吞吐与服务稳定性}
+
+\begin{introduction}
+\item {\heiti 本章核心问题}：在真实部署约束下，应该如何在回答质量、延迟、显存和成本之间，为企业知识助手做可落地的推理优化取舍？
+\item {\heiti 主案例推进}：把企业知识助手从“能回答”推进到“能上线、能控成本、能稳住尾延迟”。
+\item {\heiti 读完后能做什么}：当系统出现“太慢、太贵、太吃显存、偶发抖动”时，能够先定位瓶颈，再选择正确的优化动作，而不是同时乱开所有开关。
+\end{introduction}
+
+\section{学习目标}
+\begin{itemize}
+  \item 理解推理阶段的主要成本来源：参数、KV Cache、上下文长度、输出长度、并发与服务栈开销。
+  \item 掌握推理显存的拆解方式，并能用粗估公式判断问题首先出在权重、缓存还是运行时开销。
+  \item 理解 prefill 与 decode 两阶段的差异，知道为什么同一个系统会同时出现“首字慢”和“长回答更慢”两类问题。
+  \item 能够围绕质量、延迟、成本三角做工程取舍，理解量化、batching、缓存、warmup 与路由策略的作用边界。
+  \item 建立一条从症状到第一检查项的诊断链，把排障从“猜问题”提升为“按顺序排问题”。
+\end{itemize}
+
+\section{问题背景}
+到了项目中后期，团队最常抱怨的往往已经不是“模型答得不够好”，而是“太慢、太贵、太吃显存，而且一高峰就抖”。这说明系统的主要矛盾已经从“模型有没有能力”转向“模型能力能否稳定、可控地交付出来”。
+
+推理优化的难点，不在于记住多少技巧，而在于识别\textbf{瓶颈真正位于哪一层}。一次请求的慢，可能来自输入过长、输出过长、GPU 没吃满、KV Cache 爆炸、batch 策略失衡，也可能来自服务进程刚启动、缓存未命中、路由把复杂请求送给了错误模型。若没有诊断顺序，团队很容易把所有问题都归到“模型太大”，或者看到显存上升就盲目量化、截断、加缓存，最后得到一个更复杂但不一定更稳的系统。
+
+因此，本章关注的不是某个单点技巧，而是一个更工程化的问题：\textbf{怎样用有限资源，把回答质量、响应延迟、单位成本和服务稳定性拉到业务可接受区间内。}这也是企业级 LLM 系统与课堂 Demo 的分水岭。
+
+\section{核心概念}
+\subsection{推理成本从哪里来}
+推理阶段的成本通常来自四类来源：
+\begin{enumerate}
+  \item \textbf{模型权重常驻显存}：模型越大、精度越高，加载后长期占用的显存越多。
+  \item \textbf{上下文相关开销}：输入越长，prefill 阶段越重，同时 KV Cache 的占用也越大。
+  \item \textbf{输出相关开销}：生成越长，decode 阶段持续时间越长，缓存也会持续增长。
+  \item \textbf{并发与服务开销}：多请求叠加时，调度、排队、batch 合并、内存碎片与框架开销会被放大。
+\end{enumerate}
+
+若把推理显存进一步拆成工程上可讨论的几类，可写成：
+\[
+\text{推理显存} \approx \text{模型权重} + \text{KV Cache} + \text{运行时激活/缓冲区} + \text{框架与碎片开销}.
+\]
+
+这个公式不是为了得到精确到 MB 的数字，而是为了帮助团队在最早阶段回答三个问题：\textbf{显存是不是先被权重占满？是不是被长上下文和并发推高？还是服务栈本身还有明显冗余？}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{3.2cm}>{\raggedright\arraybackslash}p{3cm}>{\raggedright\arraybackslash}X}
+\toprule
+\textbf{显存组成} & \textbf{什么时候最明显} & \textbf{工程判断} \\
+\midrule
+模型权重 & 模型一加载就占住 & 与参数量、精度直接相关，量化首先作用于这一项 \\
+KV Cache & 长上下文、长输出、高并发 & RAG、多轮对话、长回答最容易把这一项放大 \\
+运行时激活与缓冲区 & 大 batch、复杂服务栈 & 吞吐配置更激进时通常上升更明显 \\
+框架与碎片开销 & 长时间运行、多实例部署 & 往往不体现在纸面估算里，需要监控与 profiler 发现 \\
+\bottomrule
+\end{tabularx}
+\caption{推理显存由多类开销叠加而成}
+\label{tab:inference-memory-components}
+\end{table}
+
+\subsection{推理显存粗估公式}
+一个够用的粗估方法，是先估\textbf{权重显存}，再估\textbf{缓存显存}，最后预留\textbf{运行时余量}。
+
+\paragraph{1. 权重显存的粗估}
+若模型参数量为 $P$，每个参数占用字节数为 $b$，则可粗估为：
+\[
+\text{权重显存} \approx P \times b.
+\]
+例如，7B 模型若以 BF16 存储，可按每参数约 2 字节粗估，权重显存大约在 $7 \times 10^9 \times 2$ 字节量级；若转为 INT8，则可近似减半；若转为 INT4，则还可进一步下降。但要注意，量化后并不意味着整机显存严格按比例下降，因为还有缓存、工作区和框架开销。
+
+\paragraph{2. KV Cache 的粗估}
+对 decoder-only 模型，可把 KV Cache 近似理解为：
+\[
+\text{KV Cache} \propto \text{层数} \times \text{隐藏维度} \times \text{token 总数} \times \text{并发请求数} \times \text{每元素字节数}.
+\]
+这里不必死记精确常数，重要的是把握增长规律：\textbf{token 总数和并发数一上升，KV Cache 就线性放大。}而 token 总数不仅包含输入 token，也包含已经生成的输出 token。因此，长 prompt 与长回答会在不同阶段共同推高显存。
+
+\paragraph{3. 运行时余量}
+即使权重和 KV Cache 都算得差不多，部署时也不能把 GPU 算到“刚刚好”。工程上通常还要留出一段安全余量，用于：
+\begin{itemize}
+  \item kernel 工作区、临时 buffer 与框架内部张量；
+  \item batch 波动带来的瞬时峰值；
+  \item 长时间运行后的内存碎片；
+  \item 热更新、滚动重启或双实例共存时的峰值。
+\end{itemize}
+
+因此，更实用的判断不是“理论上能不能放下”，而是“\textbf{在目标并发和目标上下文下，是否还能留出足够安全边际。}”
+
+\subsection{Prefill 与 Decode：为什么会出现两种不同的慢}
+很多团队把“一次生成”当成一个黑盒，但工程上更有用的拆法，是把它分为 \textbf{prefill} 和 \textbf{decode} 两阶段。
+
+\paragraph{Prefill 阶段}
+prefill 指模型先把整段输入上下文读完、完成前向计算并建立初始 KV Cache 的过程。它通常具有两个特征：
+\begin{itemize}
+  \item 对\textbf{输入长度}非常敏感，prompt 越长、检索片段越多，prefill 越重；
+  \item 更偏\textbf{大块计算}，因此较容易体现 GPU 算力与内存带宽能力。
+\end{itemize}
+
+当用户抱怨“点发送后很久才出第一个字”时，首先怀疑的往往不是输出太长，而是 prefill 太重，例如：RAG 一次塞入过多片段、历史对话没压缩、system prompt 冗长、模板说明重复堆叠。
+
+\paragraph{Decode 阶段}
+decode 是模型逐 token 生成输出的过程。它通常表现为：
+\begin{itemize}
+  \item 每一步只新增少量 token，但要反复执行很多轮；
+  \item 更偏\textbf{小步迭代}，容易受内存访问、调度、batch 策略与缓存命中影响；
+  \item 输出越长、并发越高，累计时延越明显。
+\end{itemize}
+
+因此，当系统表现为“首字不算慢，但回答写得越长越拖”“高峰期尾巴越来越长”时，就要优先看 decode 阶段：输出上限是否过大、batch 是否过激进、并发下 KV Cache 是否把资源挤满、流式返回是否被后处理堵住。
+
+\paragraph{两阶段的典型瓶颈}
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{2.6cm}>{\raggedright\arraybackslash}p{4cm}>{\raggedright\arraybackslash}X}
+\toprule
+\textbf{阶段} & \textbf{常见症状} & \textbf{第一检查项} \\
+\midrule
+Prefill & 首字慢、长文输入明显拖慢、RAG 上线后整体变慢 & 输入 token、检索片段数、历史轮次、system prompt 长度 \\
+Decode & 首字正常但回答越长越慢、高峰期尾延迟拉长 & 输出上限、流式生成速率、batch 策略、KV Cache 增长 \\
+\bottomrule
+\end{tabularx}
+\caption{Prefill 与 decode 的症状和第一检查项不同}
+\label{tab:prefill-decode-bottleneck}
+\end{table}
+
+把这两个阶段区分开，能避免很多无效优化。例如，面对 prefill 瓶颈时去提高 batch，常常只会让等待更久；面对 decode 瓶颈时只压缩 prompt，收益也可能有限。
+
+\subsection{量化的意义：不仅是省显存}
+量化通过降低权重或激活表示精度，减少显存占用，并有机会提升吞吐。常见路线包括 BF16/FP16、INT8、INT4。工程上应记住：\textbf{量化的价值不只是“省卡”，更是让原本装不下、跑不稳、并发起不来的部署形态变得可行。}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{2.2cm}>{\raggedright\arraybackslash}p{2.6cm}>{\raggedright\arraybackslash}p{3cm}>{\raggedright\arraybackslash}X}
+\toprule
+\textbf{精度方案} & \textbf{主要收益} & \textbf{主要风险} & \textbf{适用判断} \\
+\midrule
+FP16 / BF16 & 质量和稳定性通常较稳 & 显存压力仍较高 & 作为基线部署，先得到可信参考线 \\
+INT8 & 明显降低权重显存，通常较稳 & 个别任务质量回退 & 显存开始紧张，但仍要求较稳质量时优先考虑 \\
+INT4 & 进一步降低显存，便于单机部署 & 某些复杂任务更易退化 & 资源非常紧张，且有完善回归评测时再用 \\
+\bottomrule
+\end{tabularx}
+\caption{不同精度方案的收益与风险}
+\label{tab:precision-tradeoff}
+\end{table}
+
+量化最重要的工程纪律，是\textbf{量化前后必须跑同一套评测集}。对摘要、开放问答这类任务，质量下降有时不容易立刻暴露；但在结构化抽取、细粒度分类、格式严格输出等任务中，轻微精度变化就可能触发明显退化。若只看到显存下降，却没有同步验证质量，就会把成本优化变成线上风险转移。
+
+\subsection{训练后量化路线：PTQ、GPTQ、AWQ 解决的不是同一个问题}
+很多团队说“我们准备上 INT4”，但真正落地时，问题其实不只是位宽，而是\textbf{走哪一条训练后量化路线}。教材里至少要把三个常见名字区分开：
+\begin{itemize}
+  \item \textbf{PTQ（Post-Training Quantization）}：最朴素的后训练量化思路，通常依赖一小批校准样本，把训练好的模型从较高精度映射到 INT8 或更低精度，实现成本低，适合先验证“量化是否可行”。
+  \item \textbf{GPTQ}：更偏向权重量化的低比特路线，会尽量在分层或分块层面减小量化误差，常见于希望把大模型压到单卡 INT4 的场景。
+  \item \textbf{AWQ}：强调对更关键的通道或权重做保护，在少量校准数据下也尽量维持指令模型质量，适合对回答稳定性更敏感的部署。
+\end{itemize}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{2.4cm}>{\raggedright\arraybackslash}p{3cm}>{\raggedright\arraybackslash}p{2.7cm}>{\raggedright\arraybackslash}X}
+\toprule
+\textbf{路线} & \textbf{更适合什么目标} & \textbf{主要收益} & \textbf{主要提醒} \\
+\midrule
+PTQ / INT8 & 先把部署门槛降下来，保守验证量化收益 & 工程改造相对小，回归验证更容易做 & 不是所有实现都会显著提速，仍要看 kernel 与框架支持 \\
+GPTQ / INT4 & 模型必须压到更低显存，单卡部署压力大 & 权重显存下降更明显，常用于大模型落单卡 & 对校准数据和任务类型更敏感，复杂任务更容易回退 \\
+AWQ / INT4 & 想压低显存，但又更在意指令跟随稳定性 & 往往比“直接粗压”更稳，适合对话或问答模型 & 仍然需要专门回归集，不能把“能跑”当成“能上线” \\
+\bottomrule
+\end{tabularx}
+\caption{训练后量化路线的差异不只在名字，而在部署目标不同}
+\label{tab:post-training-quantization-routes}
+\end{table}
+
+工程顺序上，更稳的做法通常是：先用 BF16 或 FP16 建立可信基线，再尝试 INT8；只有当显存仍然卡得很紧，或者单卡部署价值足够大时，再认真评估 GPTQ、AWQ 一类 INT4 方案。这样做的重点不是“循序渐进更优雅”，而是让每一次压缩都对应一个清楚的问题定义：到底是在解决\textbf{装不下}、\textbf{成本太高}，还是\textbf{吞吐起不来}。
+
+\subsection{生成参数、输出合规与多级兜底}
+旧稿 \texttt{chap25.tex} 里还有一类内容不能丢：推理优化不只关心“多快”，还关心“输出是否可交付”。对企业知识助手来说，\textbf{生成参数本身就是合规控制的一部分}。温度、top-p、重复惩罚、最大输出长度这些参数，不只是文本风格旋钮，也会直接影响回答是否发散、是否越权、是否过度自信。
+
+更实际地说，推理侧至少要有三道保护：
+\begin{enumerate}
+  \item \textbf{生成前约束}：通过 prompt、模板、最大长度和结构约束，减少明显失控输出。
+  \item \textbf{生成后检查}：验证是否给出依据、是否触发禁词、是否缺少关键字段、是否违反 JSON 或表单结构。
+  \item \textbf{多级兜底}：当生成结果不合格时，允许重试、降级到更保守模板、切换更强模型，或直接触发人工复核。
+\end{enumerate}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{2.8cm}>{\raggedright\arraybackslash}p{3cm}>{\raggedright\arraybackslash}X}
+\toprule
+\textbf{控制点} & \textbf{主要手段} & \textbf{要防的风险} \\
+\midrule
+生成前 & 温度、top-p、max tokens、模板约束 & 回答发散、过长、格式失控 \\
+生成后 & 规则校验、字段校验、引用检查 & 没给依据、结构不合法、越权动作建议 \\
+兜底层 & 重试、降级模板、升级模型、人工复核 & 单次生成失败直接泄漏到用户侧 \\
+\bottomrule
+\end{tabularx}
+\caption{推理侧的合规化处理不是后处理附件，而是主链路一部分}
+\label{tab:inference-compliance}
+\end{table}
+
+\subsection{KV Cache 与上下文预算}
+对解码器模型来说，长对话与长文档会显著推高 KV Cache 成本，因此推理优化往往不只是模型层问题，也包括上游上下文管理问题。控制无效历史轮次、压缩检索片段、限制输出长度，很多时候比更换服务框架更先见效。
+
+从因果链上看，可把这一问题理解为：
+\begin{enumerate}
+  \item 输入上下文越长，需要缓存的 token 越多；
+  \item 输出越长，缓存会持续积累，而不是只在输入阶段出现；
+  \item 并发越高，多个请求的 KV Cache 会叠加得越快；
+  \item 一旦接近显存边界，尾延迟、抖动和失败率往往一起上升。
+\end{enumerate}
+
+这也是为什么一些 RAG 系统在“回答质量看起来没怎么变”的情况下，显存和延迟却突然恶化。真正被放大的，常常不是模型本身，而是上下文预算失控。
+
+\subsection{选底座时别忽略推理友好性：MQA、GQA 与 FlashAttention}
+走到部署阶段以后，团队很容易把“推理优化”理解成服务框架和量化参数的事情，但底座模型本身的架构选择也会直接影响上线成本。尤其当两套候选模型质量接近时，\textbf{谁对 KV Cache 更友好、谁对长序列更省带宽，往往就会决定后续部署体验。}
+
+对工程读者来说，这里只需要记住三个名字：
+\begin{itemize}
+  \item \textbf{MQA}：多个 query 头共享一组 key/value，目标是显著缩小 KV Cache。
+  \item \textbf{GQA}：在完全共享和完全独立之间做折中，用分组方式减少缓存压力。
+  \item \textbf{FlashAttention 一类高效注意力实现}：通过更友好的内存访问方式，降低长序列下的带宽与显存压力。
+\end{itemize}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{2.8cm}>{\raggedright\arraybackslash}p{3.2cm}>{\raggedright\arraybackslash}X}
+\toprule
+\textbf{架构或实现} & \textbf{对推理最直接的收益} & \textbf{部署时该怎样理解它} \\
+\midrule
+MQA & 大幅降低 KV Cache 占用 & 更适合高并发、长对话或长输出场景，但具体质量表现仍要实测 \\
+GQA & 在缓存压力和表达能力之间折中 & 很多现代底座会比传统多头注意力更“省部署成本” \\
+FlashAttention / 高效注意力实现 & 降低长序列时的带宽与内存压力 & 更像运行效率放大器，尤其在长上下文和大 batch 时更明显 \\
+\bottomrule
+\end{tabularx}
+\caption{有些推理优化在部署前就已经被写进了底座模型结构里}
+\label{tab:inference-arch-friendly}
+\end{table}
+
+这并不是让团队为了部署去重新设计模型结构，而是提醒一个常被忽视的判断：\textbf{若两个底座在质量上差不多，推理友好性往往足以成为选型依据。} 对企业知识助手来说，长制度问答、多轮上下文和高峰并发都很容易把 KV Cache 顶起来，此时选一个缓存更省、长序列更稳的底座，后面能少补很多服务层补丁。
+
+\subsection{质量、延迟、成本三角}
+推理优化几乎从来不是“单指标最大化”问题，而是一个三角平衡问题：
+\begin{itemize}
+  \item \textbf{质量}：回答是否准确、完整、稳定，格式是否可靠。
+  \item \textbf{延迟}：首字时间、总生成时间、P95/P99 是否可接受。
+  \item \textbf{成本}：GPU 数量、显存规格、单位请求成本、空闲资源浪费。
+\end{itemize}
+
+三者之间通常存在明显张力。更大模型、更多检索片段、较少量化，往往有助于质量，却会提高延迟和成本；更激进的批处理、更小模型、更短输出，往往有助于吞吐和成本，却可能损伤交互体验或答案完整性。
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{3.4cm}>{\raggedright\arraybackslash}p{3.2cm}>{\raggedright\arraybackslash}X}
+\toprule
+\textbf{优化动作} & \textbf{优先改善} & \textbf{常见代价} \\
+\midrule
+增加模型规模或上下文 & 质量 & 延迟和成本上升，显存压力更大 \\
+压缩 prompt 与检索片段 & 延迟、成本 & 可能损失依据覆盖，影响答案完整性 \\
+量化 & 成本、显存、吞吐 & 个别任务质量回退，需要回归验证 \\
+加大 batch & 吞吐、单位成本 & 单请求等待增大，尾延迟可能恶化 \\
+限制输出长度 & 延迟、成本 & 回答可能不够展开 \\
+\bottomrule
+\end{tabularx}
+\caption{质量、延迟、成本三角中的常见张力}
+\label{tab:quality-latency-cost}
+\end{table}
+
+因此，推理优化并不是问“哪个技巧最好”，而是先问“\textbf{业务更不能接受哪种坏结果}”。如果是员工实时问答，通常先守住 P95 和回答稳定性；如果是离线批量摘要，通常可以牺牲一些单请求延迟去换吞吐和单位成本。
+
+\subsection{吞吐与延迟的基本取舍}
+批处理通常能提高吞吐，但会抬高单请求等待时间。对企业知识助手来说，如果主要场景是交互式问答，P95 延迟往往比理论最大吞吐更重要；如果场景是离线批量处理，则可以接受更积极的 batching 策略。
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{3.2cm}>{\raggedright\arraybackslash}p{4cm}>{\raggedright\arraybackslash}X}
+\toprule
+\textbf{业务模式} & \textbf{优先目标} & \textbf{典型策略} \\
+\midrule
+交互式问答 & 降 P95 延迟、稳住抖动 & 控上下文、保守 batching、对热点问题做缓存 \\
+离线批处理 & 提吞吐、降单位成本 & 更积极 batching、更长队列、更高 GPU 利用率 \\
+混合场景 & 服务等级隔离 & 在线与离线任务拆队列，必要时拆模型配置 \\
+\bottomrule
+\end{tabularx}
+\caption{不同业务模式下的推理优化优先级不同}
+\label{tab:serving-mode-choice}
+\end{table}
+
+\subsection{尾延迟与排队效应：为什么 P99 往往比平均值更先坏}
+很多系统在压测时看起来“平均延迟还行”，一上真实流量却开始被抱怨卡顿，核心原因往往不是平均值变坏，而是\textbf{尾延迟先坏了。} 对企业知识助手来说，尾延迟尤其容易被三类请求放大：超长上下文请求、超长输出请求，以及和短请求混跑的高成本复杂请求。
+
+这背后的直觉并不复杂。推理服务本质上也是排队系统。只要少数“重请求”占住 prefill、decode 或缓存资源，后面的轻请求就可能被一起拖慢。于是就会出现一种典型错觉：GPU 利用率很好看，平均吞吐也不差，但用户体感极差，因为真正影响体验的是 P95 和 P99。
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{3cm}>{\raggedright\arraybackslash}p{3.2cm}>{\raggedright\arraybackslash}X}
+\toprule
+\textbf{尾延迟放大器} & \textbf{它为什么容易拖尾} & \textbf{第一类缓解动作} \\
+\midrule
+超长上下文请求 & prefill 很重，容易占住批次与显存 & 限制上下文预算，长短请求分流 \\
+超长输出请求 & decode 持续时间长，拖住连续批处理窗口 & 控制最大输出长度，区分交互式与离线任务 \\
+长短请求混跑 & 轻请求被重请求排队牵连 & 做优先级隔离或分队列调度 \\
+冷启动副本接流量 & 首批请求承担初始化开销 & 先 warmup 再接流量 \\
+\bottomrule
+\end{tabularx}
+\caption{很多“系统抖动”问题，本质上首先是尾延迟问题}
+\label{tab:tail-latency-amplifiers}
+\end{table}
+
+教材里要把这点讲透，是因为它直接决定优化顺序。若系统真正的痛点是尾延迟，就不该只盯平均 token/s，而要优先控制最长请求、最慢副本和最坏排队路径。
+
+\subsection{高效推理运行时：连续批处理、PagedAttention 与专用引擎}
+当系统从“偶尔调用一次模型”变成“持续接在线请求”后，单靠原生推理脚本往往不够。此时真正拉开差距的，不只是模型大小，而是\textbf{运行时如何管理请求队列、KV Cache 和算子执行路径。}
+
+旧稿里最值得保留的一条经验是：\textbf{专用推理运行时的价值，不只是更快，而是更擅长在真实流量下把碎片化请求组织成可计算的批次。} 这也是连续批处理和 PagedAttention 一类机制的重要性所在。
+
+\paragraph{连续批处理}
+传统静态 batch 往往要求“先等一批请求凑齐，再一起算”。连续批处理则更接近真实在线服务：已有请求在 decode，新请求可以在适当时机被动态插入，不必所有请求一起起跑。这样做的直接收益，是减少 GPU 因等待整齐批次而空转的时间。
+
+\paragraph{PagedAttention 与缓存管理}
+长对话、多轮上下文和高并发请求会让 KV Cache 很快变成主要瓶颈。PagedAttention 一类机制的核心价值，是把缓存管理做得更像分页内存，而不是一块连续大数组。对工程团队来说，不必死记实现细节，只要知道它主要在解决两件事：\textbf{减少缓存碎片浪费，以及让动态请求调度更可控。}
+
+\paragraph{专用推理引擎}
+生产环境里常见的路线，通常可以粗分为三类：
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{3cm}>{\raggedright\arraybackslash}p{3.1cm}>{\raggedright\arraybackslash}p{2.7cm}>{\raggedright\arraybackslash}X}
+\toprule
+\textbf{路线} & \textbf{更适合什么场景} & \textbf{主要收益} & \textbf{主要提醒} \\
+\midrule
+原生 Transformers / 简单服务封装 & 原型验证、低并发内部工具 & 改造成本低，便于快速排错 & 一旦进入高并发或长上下文，缓存和调度效率很快见顶 \\
+vLLM 一类通用高效运行时 & 在线问答、长度分布不齐、请求持续进入的服务 & 连续批处理、缓存管理和吞吐表现通常更稳 & 仍需核对模型兼容性、插件链路和观测体系 \\
+TensorRT-LLM / 专用推理引擎 & 配置相对稳定、追求更高性能上限的生产链路 & 算子和执行路径优化更深入，吞吐潜力更高 & 部署链更重，版本和编译适配成本也更高 \\
+\bottomrule
+\end{tabularx}
+\caption{高效推理运行时的价值，往往体现在真实流量下的请求组织能力}
+\label{tab:inference-runtime-choice}
+\end{table}
+
+这部分最容易出现的误判，是把“换运行时”当成通用银弹。更稳的顺序通常是：先把上下文预算、输出长度和观测链路收清，再判断瓶颈是不是已经落到缓存管理、请求调度或算子执行路径上。若前面的基础账都没算清，贸然换引擎，只会让系统更快地把问题复杂化。
+
+\subsection{不要只看 GPU 利用率：推理观测要拆成服务、设备和阶段}
+旧稿里还有一批非常实用的内容，专门讲“怎么量”和“怎么看”。这部分在教材里也应该保住，因为推理优化最怕的不是没有指标，而是\textbf{只有一张 GPU 利用率图，却没有办法判断瓶颈到底在队列、显存、带宽还是算子阶段。}
+
+更稳的做法，是把观测拆成三层：
+\begin{itemize}
+  \item \textbf{服务层}：QPS、首字时间、总时长、P95/P99、失败率；
+  \item \textbf{设备层}：显存占用、GPU 活跃度、CPU 等待、I/O 与带宽压力；
+  \item \textbf{阶段层}：prefill token/s、decode token/s、队列等待和后处理耗时。
+\end{itemize}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{2.8cm}>{\raggedright\arraybackslash}p{3.2cm}>{\raggedright\arraybackslash}X}
+\toprule
+\textbf{观测层} & \textbf{至少要看什么} & \textbf{它帮你排除什么误判} \\
+\midrule
+服务层 & QPS、首字、总时长、P95/P99 & 避免只看均值，以为系统已经稳定 \\
+设备层 & 显存、GPU 活跃度、CPU/I/O 等待 & 避免把数据搬运或排队问题误判成“模型太慢” \\
+阶段层 & prefill token/s、decode token/s、队列耗时 & 避免把首字问题和长回答拖尾混成一类问题 \\
+Profiler 证据 & PyTorch Profiler、服务 trace、算子时间分布 & 避免只凭经验猜哪一层拖慢了整条链路 \\
+\bottomrule
+\end{tabularx}
+\caption{推理观测至少要分清服务层、设备层和阶段层}
+\label{tab:inference-observability}
+\end{table}
+
+在做配置对比时，还应建立一个简单但统一的吞吐口径。对在线系统，可以记录单位时间内处理的\textbf{输入 token 与输出 token 总量}；对离线系统，则至少要有“每秒处理多少样本”和“每秒生成多少 token”两条基线。这样当你比较量化前后、batch 调整前后或不同框架前后时，才不会只看到“GPU 更忙了”，却不知道系统到底有没有真正多干活。
+
+Profiler 的价值也要说透。它不是最后才用的“专家工具”，而是当系统出现“显存够但吞吐上不去”“首字正常但尾巴拖很长”时，最能快速区分问题层次的证据来源。只要能把 prefill、decode、队列等待和后处理拆出来，很多争论就会立刻从“猜原因”变成“看证据”。
+
+\subsection{一次请求的全链路账本：Tokenizer、搬运与后处理都算推理成本}
+很多团队口中的“模型推理耗时”，实际上只指 GPU 上那一段 forward 与 sampling。但真正上线后，一次请求往往至少经过下面几层：
+\begin{enumerate}
+  \item 请求进入服务，做模板填充、权限判断、历史拼装和可能的 RAG 检索；
+  \item tokenizer 把文本转成 token，必要时还会做截断、对齐和批内 padding；
+  \item 输入从主机搬到 GPU，进入 prefill 和 decode；
+  \item 生成结果再被搬回 CPU，做反 tokenization、结构校验、引用补齐和安全检查；
+  \item 最终答案按流式或非流式方式返回给用户。
+\end{enumerate}
+
+一旦把链路写全，就会发现很多“模型怎么这么慢”的投诉，其实并不都落在模型层。比如系统 prompt 很长时，tokenizer 和模板拼装就会先变慢；批量任务里 CPU 到 GPU 的拷贝、后处理 JSON 校验或引用拼接，也可能吃掉大量时间。若这些部分都被丢进一个模糊的“其他耗时”，团队就会反复在错误位置优化。
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{3cm}>{\raggedright\arraybackslash}p{3.3cm}>{\raggedright\arraybackslash}X}
+\toprule
+\textbf{链路阶段} & \textbf{最常见的真实瓶颈} & \textbf{典型症状} \\
+\midrule
+模板与 tokenizer & prompt 过长、模板重复、CPU 侧拼装重 & 还没进 GPU，首字就已经偏慢 \\
+主机到设备搬运 & H2D 传输频繁、批次抖动、内存布局差 & GPU 利用率不低，但有效 token/s 不高 \\
+Prefill / Decode & 上下文过长、KV Cache 膨胀、模型本体太重 & 首字慢、长回答拖尾、显存陡增 \\
+反解码与后处理 & JSON 校验、引用补齐、规则检查重 & GPU 段很快，但总时长仍然不短 \\
+流式返回与网络层 & 小包过多、网关限流、前后端缓冲不一致 & 服务端看起来正常，用户端却觉得“卡字” \\
+\bottomrule
+\end{tabularx}
+\caption{推理优化要看完整服务链，而不是只看 GPU 上那一段}
+\label{tab:end-to-end-serving-pipeline}
+\end{table}
+
+因此，更成熟的观测方式不是“模型耗时多少毫秒”，而是把每一段都记账。只要团队能区分前处理、H2D 搬运、prefill、decode、后处理与网络回传，很多原本混成一团的延迟问题就能迅速分层。
+
+\subsection{Profiler 与拓扑诊断：别把“GPU 忙”误当成“系统快”}
+旧稿里还有一个非常容易被忽略的提醒：GPU 利用率本身不是结论，只是入口。利用率高，可能是算子真的跑满了，也可能是数据搬运和跨卡通信把设备拖得很忙；利用率低，则可能是 batch 太保守、队列不够、CPU 侧预处理堵住了，或者请求长度分布太碎，导致卡一直在等活干。
+
+因此，Profiler 最有价值的地方，是把“忙”具体拆开。团队至少要能回答四个问题：时间主要花在 prefill 还是 decode；算子是在吃算力还是吃带宽；主机到设备的数据搬运是否异常频繁；多卡场景下跨卡通信是否比单卡计算还重。如果这些问题答不出来，很多“感觉应该换框架”或“感觉该加卡”的判断都不稳。
+
+多卡推理场景里，拓扑诊断尤其重要。两块卡是否直连、走 NVLink 还是 PCIe、中间是否跨 NUMA、服务进程和设备绑定是否稳定，都会影响跨卡同步和张量搬运的真实成本。于是就会出现一种很典型的现象：纸面上“卡更多了”，但首字更慢、尾延迟更高。问题不一定在模型，而可能在跨卡路径本身。
+
+\subsection{Cache、Warmup、Batching 与路由策略}
+这些策略都很常见，但价值和风险点各不相同。
+
+\paragraph{1. Cache}
+缓存的目标，是避免重复计算，而不是让所有请求都走缓存。常见对象包括：
+\begin{itemize}
+  \item 重复的系统 prompt 或模板片段；
+  \item 高频 FAQ 的最终答案；
+  \item 相同文档、相同问题下的中间检索结果；
+  \item 某些支持前缀复用的场景中的前缀计算结果。
+\end{itemize}
+
+缓存最常见的工程问题不是“命中率不高”，而是\textbf{失效策略含糊}。知识库内容动态变化时，若缓存没有和文档版本、索引版本、策略版本绑定，就可能让系统快速但过时。
+
+\paragraph{2. Warmup}
+冷启动往往让系统在刚启动、刚扩容、刚切流量时表现最差。warmup 的作用包括：
+\begin{itemize}
+  \item 预加载模型权重，避免首批请求承担加载成本；
+  \item 触发常用 kernel 编译或初始化，减少第一次真实请求的额外开销；
+  \item 预热热点 prompt 或典型输入长度，提前建立更稳定的执行路径。
+\end{itemize}
+
+若系统表现为“重启后前几分钟很慢”“新副本刚加进来时特别抖”，warmup 就应进入优先检查项。
+
+\paragraph{3. Batching}
+batching 的目标是提高设备利用率，但策略要和场景绑定。工程上要特别区分：
+\begin{itemize}
+  \item 为吞吐而设计的\textbf{大 batch}；
+  \item 为交互稳定性而设计的\textbf{保守 batch}；
+  \item 按 token 数、长度区间或阶段进行的\textbf{动态 batch}。
+\end{itemize}
+
+batch 不是越大越好。若排队等待本身已经显著，大 batch 只会把平均吞吐变漂亮，却让用户更容易感知到 P95/P99 恶化。
+
+\paragraph{4. 路由策略}
+并不是所有请求都值得走同一个模型。同一系统中，常见的路由策略包括：
+\begin{itemize}
+  \item 简单问答、小任务走小模型，复杂推理走大模型；
+  \item 高频标准任务走低成本模型，疑难样本升级到高质量模型；
+  \item 在线交互走低延迟配置，离线处理走高吞吐配置。
+\end{itemize}
+
+路由真正难的地方，不是写出一个分发规则，而是保证\textbf{升级条件明确、误分成本可控、回退链路存在}。如果路由把复杂请求稳定送错地方，系统会同时失去质量和成本优势。
+
+\subsection{超时、限流、重试与降级：稳定性护栏要先于极限吞吐}
+如果这一章只讲显存、量化和吞吐，仍然不够像“正式教材”，因为线上系统真正先保的是稳定性。企业知识助手一旦接入真实流量，就必须回答几个比“平均多快”更早的问题：请求多久不返回算超时，流量超峰时先拒绝谁，失败后是否重试，模型不可用时怎么降级。
+
+这几件事本质上都是\textbf{稳定性护栏}。它们的目标不是让系统更聪明，而是防止局部拥塞或局部故障把整条链路一起拖垮。更实用的做法通常包括：
+\begin{itemize}
+  \item \textbf{超时}：分别为检索、模型生成、后处理设上限，而不是整条链路共用一个模糊超时。
+  \item \textbf{限流}：当系统进入高峰时，优先保护在线问答或高优先级任务，不让低优先级批处理抢光资源。
+  \item \textbf{重试}：只对明确的瞬时故障做保守重试，避免把本来就拥塞的系统重试得更堵。
+  \item \textbf{降级}：必要时缩短上下文、减少检索片段、切到小模型、返回保守模板或转人工，而不是硬扛到整体雪崩。
+\end{itemize}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{2.8cm}>{\raggedright\arraybackslash}p{3cm}>{\raggedright\arraybackslash}X}
+\toprule
+\textbf{护栏动作} & \textbf{主要保护什么} & \textbf{最常见的误用} \\
+\midrule
+超时 & 防止少数坏请求无限占资源 & 全链路一个统一超时，结果无法定位是哪一段先坏 \\
+限流与准入控制 & 防止峰值流量拖垮核心业务 & 不分优先级一刀切，关键请求和低价值请求同等受限 \\
+重试 & 处理短暂抖动或瞬时失败 & 对慢请求盲目重试，导致系统雪上加霜 \\
+降级与回退 & 在资源紧张时保住基本可用性 & 没有预先演练，真出事时只剩“等恢复” \\
+\bottomrule
+\end{tabularx}
+\caption{服务稳定性护栏要先设计，再谈如何把 GPU 压得更满}
+\label{tab:serving-guardrails}
+\end{table}
+
+这部分对企业知识助手尤其关键，因为它服务的常常不是“可以晚点再看”的低风险内容，而是制度咨询、流程指引和运维问答。一个平均速度很快、但高峰期经常整段超时的系统，往往还不如一个略慢但可预期、可降级、可回退的系统更有交付价值。
+
+\subsection{LoRA 在线挂载还是预合并：适配器的推理形态也影响性能}
+一旦企业知识助手进入“一个底座挂多个能力”的阶段，推理优化还会遇到另一笔账：\textbf{适配器到底在线加载，还是提前合并到权重里。} 这看起来像训练章节的话题，但它会直接影响服务复杂度、冷启动、缓存命中和回滚速度。
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{3cm}>{\raggedright\arraybackslash}p{3cm}>{\raggedright\arraybackslash}p{2.8cm}>{\raggedright\arraybackslash}X}
+\toprule
+\textbf{部署形态} & \textbf{更适合什么场景} & \textbf{主要收益} & \textbf{主要提醒} \\
+\midrule
+在线挂载单个适配器 & 线下评测、灰度发布、快速回滚 & 版本切换灵活，不必重发整套权重 & 冷启动和实例管理更复杂，需处理适配器加载时延 \\
+预合并后部署 & 单任务、稳定发布、链路尽量短 & 服务栈更简单，warmup 和缓存策略更统一 & 回滚粒度更粗，每次发布更像重新发模型 \\
+同底座热切换多个适配器 & 多任务企业助手、任务边界清晰 & 节省底座重复部署成本，便于按任务路由 & 显存预算、线程安全、版本治理都会更复杂 \\
+\bottomrule
+\end{tabularx}
+\caption{适配器推理形态不仅影响治理，也会反过来影响时延与稳定性}
+\label{tab:adapter-serving-forms}
+\end{table}
+
+工程上可以把它当成一个很实际的判断题。如果当前阶段最重要的是\textbf{快速试错与可回滚}，在线挂载通常更值；如果目标已经变成\textbf{单链路稳定交付}，预合并往往更省心；如果系统本身就是多任务平台，则必须把适配器切换、缓存失效、热加载失败和回退逻辑一起设计，而不是只把它看成一条 \texttt{load\_adapter()} 调用。
+
+\subsection{硬件选型与 Offload：用带宽换显存，不是免费增容}
+旧稿还专门讲了 CPU Offload、硬件选型和混合模式部署。新版主线里也需要明确这个判断：\textbf{offload 的本质是把一部分显存压力转移到更慢的存储层级，并不是白拿显存。}
+
+这类方案适合的场景通常是：
+\begin{itemize}
+  \item 模型权重刚好卡在显存边界，先需要“放得下”。
+  \item 请求量不高，或者更重视可部署性而不是极限延迟。
+  \item 团队可以接受部分请求更慢，但不想立即上更多 GPU。
+\end{itemize}
+
+反过来，如果系统主打高并发实时问答，offload 往往不是首选，因为它很可能把本来就紧张的尾延迟再拉长一截。硬件选型也应围绕业务模式展开：在线问答更重视单请求体验和稳定性，离线批处理更看吞吐与单位成本，而不是盲目追求“规格最高”。
+
+\subsection{冷启动、显存碎片与实例抖动：很多线上毛刺不是模型突然变慢}
+线上系统还有一类很烦人的问题：平时看着正常，但一扩容、一切流量、一天运行久了，延迟就开始莫名抖动。很多时候，这不是模型“突然不会推理了”，而是\textbf{实例状态发生了变化}。最常见的三类来源是冷启动、显存碎片和副本间状态不一致。
+
+冷启动比较好理解：新副本刚起来时，要加载权重、初始化 kernel、建立缓存路径，首批请求自然最慢。显存碎片则更隐蔽。长短请求混跑、适配器频繁切换、不同长度批次持续进入时，显存可用空间可能越来越零碎，最后表现成“理论上还有显存，但实际更容易 OOM”或“相同请求在不同时间段表现不一样”。副本间状态不一致也很常见，例如某些副本已经 warmup 过、某些还没热起来；某些副本缓存命中高、某些命中很差；某些副本挂了新适配器，某些仍在旧配置上。
+
+因此，稳定部署不能只关心“模型能不能跑”，还要关心“副本是不是在同一种状态下跑”。更成熟的习惯通常包括：副本接流量前先完成 warmup；长短请求做一定程度隔离，减少碎片放大；适配器热切换有节奏、有回收策略；定期观察不同副本的延迟分布，而不是只看集群平均值。只要把这些状态差异纳入观测，很多原本像玄学的线上毛刺，就会重新变成能解释、能缓解的工程问题。
+
+\subsection{容量预算：先估单卡上限，再决定怎么扩}
+很多推理系统扩容过早，不是因为算力真的不够，而是因为一开始就没有把容量预算算清楚。更实用的顺序通常是：先用代表性请求长度跑出单卡基线，再估平均输入 token、平均输出 token、并发峰值和安全余量，最后才决定该压上下文、做路由、换更大卡还是上多卡。
+
+这里最值得保留的工程纪律是：\textbf{容量预算要基于实测吞吐，而不是只基于理论 FLOPS。} 理论算力只能告诉你“这张卡上限可能在哪”，却不能告诉你在当前 prompt 长度、当前 RAG 片段数、当前 batch 策略和当前后处理链路下，系统到底能稳定跑到多少 token/s。只有把这些实测值和业务流量模型接起来，扩容决策才不会失真。
+
+对企业知识助手来说，一个简单但够用的容量估算流程通常包括：先固定一组高频问题和高风险长问题做压测；分别记录首字时间、稳定 token/s、P95/P99 和失败率；然后留出一段安全余量，不把系统压到“理论上刚好可用”。这样当晚高峰到来、文档切分略变长或新副本冷启动时，系统还有缓冲，而不是刚好踩在悬崖边上。
+
+\subsection{先定位瓶颈，再挑手段}
+推理优化最实用的顺序，通常不是“先上最热门框架”，而是：
+\begin{enumerate}
+  \item 先看上下文是否过长，尤其是 RAG 片段和历史对话是否失控；
+  \item 再看输出是否过长，是否缺少明确的生成上限；
+  \item 然后判断显存瓶颈是否值得用量化解决；
+  \item 再看 batch、并发和排队策略是否放大了尾延迟；
+  \item 最后才考虑更重的框架改造、多模型路由或更复杂的分布式方案。
+\end{enumerate}
+
+这条顺序的价值在于：前几步通常更便宜、更快见效，也更不容易引入额外复杂性。
+
+\section{主案例推进}
+在主案例中，企业知识助手最初的问题并不是“答不出来”，而是上线试运行后暴露出三类症状：首字慢、晚高峰抖、GPU 成本高。团队最开始直觉是换更强的服务框架，但在系统化拆分后，发现问题分布在不同层面。
+
+\subsection{第一步：先压上下文预算，而不是先动模型}
+排查发现，RAG 接入后每次请求都带入了过多片段，且历史对话没有摘要化处理，导致 prefill 时间显著上升。团队先做了三件事：
+\begin{enumerate}
+  \item 限制每次检索返回的片段数，并按相关性阈值截断；
+  \item 对历史轮次做摘要压缩，而不是无上限拼接；
+  \item 将系统提示词中的重复说明收敛为更短模板。
+\end{enumerate}
+
+这一阶段的关键认识是：\textbf{首字慢往往首先是上下文问题，不是“模型不够快”问题。}
+
+\subsection{第二步：把 prefill 和 decode 分开看}
+在压缩上下文后，首字时间明显改善，但高峰期长回答仍然拖尾。进一步分解指标后，团队把观察拆成：
+\begin{itemize}
+  \item 首字时间主要看 prefill；
+  \item 单位时间生成 token 速率主要看 decode；
+  \item 整体用户体验则要同时看首字、总时长和 P95/P99。
+\end{itemize}
+
+这一步让团队避免了“只看平均延迟”的误区。平均值下降，不代表尾延迟也下降；首字改善，也不代表长回答就一定更顺畅。
+
+\subsection{第三步：在质量、延迟、成本三角中做基线取舍}
+团队没有一开始就直接上最激进量化，而是先以 BF16 建立质量与延迟基线，再对比 INT8。原因很简单：没有稳定基线，就无法分辨后续收益究竟来自模型变化、缓存变化还是调度变化。
+
+在这一步，团队形成了明确原则：
+\begin{itemize}
+  \item 在线问答优先守住质量和 P95；
+  \item 批量报告生成优先降单位成本；
+  \item 若同一配置无法同时满足两类目标，就拆服务等级，而不是硬逼一个统一配置兼顾所有场景。
+\end{itemize}
+
+\subsection{第四步：加入 cache、warmup 与保守 batching}
+当基础性能稳定后，团队再引入服务侧策略：
+\begin{enumerate}
+  \item 对热点 FAQ 和固定模板做缓存，减少重复生成；
+  \item 对新实例做 warmup，避免扩容后前几分钟波动；
+  \item 在线路径采用保守 batching，离线路径采用更积极 batching；
+  \item 将明显简单的问题优先路由到更轻模型。
+\end{enumerate}
+
+这一步的工程价值在于，系统不再只依赖“单次推理更快”，而是通过\textbf{减少不必要的推理、平滑冷启动、按场景分配资源}来整体提效。
+
+\subsection{第五步：建立从症状到第一检查项的诊断链}
+真正让系统可运维的，不是多了多少优化技巧，而是团队终于形成了一条固定排障顺序。每次出现问题时，先看症状，再找第一检查项，而不是开会猜。
+
+\begin{table}[H]
+\small
+\centering
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{2.6cm}>{\raggedright\arraybackslash}p{2.5cm}>{\raggedright\arraybackslash}p{2.8cm}>{\raggedright\arraybackslash}X}
+\toprule
+\textbf{优化动作} & \textbf{主要收益} & \textbf{主要代价} & \textbf{适用判断} \\
+\midrule
+压缩上下文 & 降首字延迟、降显存 & 可能损失依据覆盖 & prompt 或检索片段明显过长时优先考虑 \\
+限制输出长度 & 降 decode 时长、降成本 & 回答可能不够展开 & 回答常常冗长发散时优先考虑 \\
+8-bit / 4-bit 量化 & 降权重显存、提吞吐 & 可能带来质量回退 & 显存是主瓶颈且可做回归验证时使用 \\
+batching & 提吞吐、降单位成本 & 等待时间上升 & 更适合离线或后台任务 \\
+缓存 & 降重复计算成本 & 需要版本化失效策略 & 高频重复问题且知识变化不快时适合 \\
+warmup & 降冷启动抖动 & 需要额外预热流程 & 频繁扩缩容或实例切换时必要 \\
+路由 & 同时优化成本与质量 & 规则复杂、误分有风险 & 请求复杂度差异明显时收益大 \\
+\bottomrule
+\end{tabularx}
+\caption{主案例中的优化动作、收益与代价}
+\label{tab:main-case-optimization-actions}
+\end{table}
+
+进一步地，团队把诊断顺序固化为监控面板和排障手册中的第一张表：
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{3cm}>{\raggedright\arraybackslash}p{3.6cm}>{\raggedright\arraybackslash}X}
+\toprule
+\textbf{现象} & \textbf{最该先怀疑什么} & \textbf{第一动作} \\
+\midrule
+RAG 上线后显存暴涨 & 上下文长度与 KV Cache & 先缩检索片段和历史轮次，核对 token 预算 \\
+首字明显变慢 & prefill 过重 & 看输入 token、模板长度、检索条数、system prompt \\
+首字正常但回答越写越慢 & decode 过重 & 看输出上限、生成速率、KV Cache 持续增长 \\
+平均延迟还行，但用户抱怨忽快忽慢 & 队列与尾延迟抖动 & 看 P95/P99、batch 策略、实例冷热不均 \\
+显存够，但吞吐上不去 & GPU 未吃满或 I/O 阻塞 & 做 profiler，分 prefill/decode 看设备利用率 \\
+量化后成本下降但投诉增多 & 质量回退 & 立刻跑固定评测集与关键样本回放 \\
+扩容后前几分钟很差 & 冷启动未处理 & 检查 warmup、权重预加载和缓存预热 \\
+小请求也被拖慢 & 路由或 batch 不合理 & 检查是否被大请求拖队列，必要时拆分服务等级 \\
+\bottomrule
+\end{tabularx}
+\caption{从症状到第一检查项的诊断链}
+\label{tab:inference-diagnosis}
+\end{table}
+
+\section{常见坑与工程取舍}
+\begin{itemize}
+  \item \textbf{只盯模型大小，不看上下文预算}：很多显存问题真正先失控的是 KV Cache，而不是权重本身。
+  \item \textbf{只看平均延迟，不看尾延迟}：用户更容易感知 P95/P99 抖动，而不是均值变化。
+  \item \textbf{把 batching 当成通用解}：它对吞吐有利，但对交互体验未必有利，必须分场景使用。
+  \item \textbf{量化前后不做同集回归}：省下来的 GPU，可能换来更隐蔽的质量退化。
+  \item \textbf{把缓存当“万能加速器”}：若知识频繁更新，缓存失效策略不清反而会损害可信度。
+  \item \textbf{忽视 warmup}：冷启动的慢和抖，常常会被误判为框架本身不行。
+  \item \textbf{只追求 GPU 满卡率}：利用率高不等于服务质量高，稳定性与尾延迟同样重要。
+  \item \textbf{路由只看成本，不看误分代价}：把复杂请求稳定送给便宜模型，最后会同时失去用户信任和节省效果。
+\end{itemize}
+
+这些坑背后反映出同一个事实：\textbf{推理优化首先是预算管理和服务管理问题，其次才是算子与框架调优问题。}如果预算没有边界、监控没有分层、诊断没有顺序，再多优化技巧也会被复杂度抵消。
+
+\section{本章练习}
+\begin{exercise}[推理显存粗估]
+某团队计划在单卡 GPU 上部署一个 7B 模型。若从 BF16 切到 INT8，团队为什么不能仅凭“权重显存减半”就断定系统一定能稳定支撑更高并发？
+\end{exercise}
+
+\begin{solution}
+因为推理显存不只由权重组成，还包括 KV Cache、运行时缓冲区与框架开销。INT8 主要缓解的是权重显存，但如果高并发和长上下文导致 KV Cache 才是主瓶颈，那么量化只能部分改善问题，不能自动保证更高并发稳定。正确做法是同时估算权重、缓存和运行时余量，再结合目标上下文与并发做判断。
+\end{solution}
+
+\begin{exercise}[阶段诊断与实时取舍]
+某企业知识助手接入 RAG 后，用户反馈“点击发送后要等很久才出第一个字”，高峰期还会出现长回答越来越慢的情况。系统主要服务员工实时问答，团队又面临成本压力。请说明：哪些症状更像 prefill，哪些更像 decode；以及为什么通常先考虑上下文压缩、量化和缓存，而不是直接把 batch 调得很大。
+\end{exercise}
+
+\begin{solution}
+首字慢更像{\heiti prefill}问题，应优先检查输入 token 总数、检索片段数量、历史对话是否无限拼接、system prompt 是否冗长；长回答越写越慢则更像{\heiti decode}问题，应优先看输出上限、生成速率、batch 策略和 KV Cache 持续增长。之所以在实时问答场景里通常先考虑上下文压缩、量化和缓存，而不是直接把 batch 调大，是因为前者更容易在不明显恶化交互体验的前提下降低显存与成本；而过大的 batch 虽能提升吞吐，却会增加排队等待，更容易伤害首字时间与 P95/P99。
+\end{solution}
+
+\section{延伸阅读}
+\begin{itemize}
+  \item \textbf{vLLM、TensorRT-LLM、TGI 等推理框架文档}：适合理解不同服务栈如何影响 prefill/decode、吞吐与尾延迟。
+  \item \textbf{bitsandbytes、AWQ、GPTQ 等量化资料}：适合理解量化如何改变权重显存、吞吐与质量风险。
+  \item \textbf{KV Cache、Paged Attention、Prefix Cache 相关资料}：适合理解长上下文场景下缓存是如何成为主要瓶颈的。
+  \item \textbf{PyTorch Profiler 与 GPU 监控实践}：适合理解如何把“感觉系统变慢”转化为分阶段、可量化的定位过程。
+  \item \textbf{生产系统中的 SLO/SLA 与尾延迟治理案例}：适合理解为什么平均值并不足以指导在线推理系统优化。
+\end{itemize}
+
+\section{小结}
+推理优化的核心不是把某一个指标做到极致，而是先把预算拆清楚：权重占多少、KV Cache 占多少、prefill 慢在哪里、decode 慢在哪里、质量和成本准备牺牲哪一边。成熟系统追求的不是“理论上最快”，而是\textbf{在业务可接受的质量下，把首字时间、尾延迟、显存占用和单位成本控制在稳定区间内}。做到这一点的前提，不是技巧越多越好，而是诊断顺序足够清晰。
+
+\section{下一章过渡}
+当单机推理、上下文预算和服务侧优化都逐步到位后，团队很快会遇到更大的问题：如何在更多设备、更多任务和更长运行周期下继续扩展能力。下一章将把视角从单机推理优化推进到更大规模的训练与系统工程，讨论模型能力如何在更复杂算力组织中持续演进。

@@ -31,7 +31,7 @@
         &\Leftrightarrow (x-1)\e^xy=c\Leftrightarrow y=\frac{c}{(x-1)\e^x}
     \end{align*}
     分离常数得到：$c=\e^x(x-1)y$，构造函数$c(x)=\e^x(x-1)f(x)$，求导得到\[c'(x)=\e^x\left((x-1)f(x)+(x-1)f'(x)+f(x)\right)=\e^x\left((x-1)f'(x)+xf(x)\right)\]
-    即证明存在$\xi\in(0,1)$使得$c'(\xi)=0$，又注意到$c(0)=c(1)=0$，由罗尔定理，命题显然成立.
+    即证明存在$\xi\in(0,1)$使得$c'(\xi)=0$。又由于$c(0)=c(1)=0$，由罗尔定理可知这样的 $\xi$ 必存在，命题得证.
 \end{solution}
 \newpage
 \begin{example}{$f'(\xi) = \lambda \left[ f(\xi) - \frac{\xi}{2} \right] + \frac{1}{2}$}{}
@@ -39,7 +39,7 @@
 \[f'(\xi) = \lambda \left[ f(\xi) - \frac{\xi}{2} \right] + \frac{1}{2}\]
 \end{example}
 \begin{solution}
-    解微分方程，注意到这类微分方程的标准形式是$y'+P(x)y=Q(x)$，往这方面凑就可以：
+    解线性微分方程：
     \begin{align*}
     y'=\lambda y-\frac{\lambda x}{2}+\frac12&\Leftrightarrow y'-\lambda y=-\frac{\lambda}{2}x+\frac12\\
     &\Leftrightarrow y'\e^{\int(-\lambda)\dd x}+(-\lambda)\e^{\int(-\lambda)\dd x}y=\e^{\int(-\lambda)\dd x}\left(\frac12-\frac{\lambda}{2}x\right)\\
@@ -61,14 +61,23 @@ c'(x)&=\lambda\e^{-\lambda x}(1-2f'(x)-\lambda(x-2f(x)))
 $$f'\left(\xi\right)+3f^3\left(\xi\right)=0$$
 \end{example}
 \begin{solution}
-此类构造虽然仍然是一阶构造，但是他要把部分 $f$ 视为已知函数来构造（动机是保留一阶微分方程的形式），对于本题，即 3$f^2$视为已知的函数
-考虑$y'+3f^2y=0$.解得$y=ce^{-\int_0^x3f^2(t)\dd t}$,分离变量得构造函数$c\left(x\right)=f\left(x\right)e^{\int_0^x3f^2(t)\dd t}$注意到
+把 \(3f^2\) 视为已知函数，考虑方程 \(y'+3f^2y=0\)。解得 \(y=ce^{-\int_0^x3f^2(t)\dd t}\)，于是构造
+\[
+c\left(x\right)=f\left(x\right)e^{\int_0^x3f^2(t)\dd t}.
+\]
+注意到
 $$c'\left(x\right)=e^{\int_0^x3f^2\left(t\right)dt}\left[f'\left(x\right)+3f^3\left(x\right)\right].$$
-以及由积分中值定理，我们知道存在$\theta\in(0,1)$,使得
+由积分中值定理，存在 $\theta\in(0,1)$ 使得
 $$f\left(\theta\right)=\int_0^1f\left(x\right)dx=0.$$
-注意到若$f$只有一个零点，则因为$f\left(0\right)>0,f\left(1\right)>0$,我们知道$f\left(x\right)>0,\forall x\in[0,\theta)\bigcup(\theta,1]$,从而$\int_0^1f\left(x\right)dx>$
-0,这就是一个矛盾！于是存在 $\theta_1\neq\theta_2$,使得 $f\left(\theta_1\right)=f\left(\theta_2\right)=0.$ 现在就有 $c\left(\theta_1\right)=c\left(\theta_2\right)=0$,由罗尔中值定理，存在$\xi\in\left(0,1\right)$,使
-得 $c'(\xi)=0$,即
+若 \(f\) 只有一个零点，则由 \(f\left(0\right)>0,f\left(1\right)>0\) 可知
+\[
+f\left(x\right)>0,\qquad x\in[0,\theta)\cup(\theta,1],
+\]
+从而 \(\int_0^1f\left(x\right)\dd x>0\)，与题设矛盾。故存在 $\theta_1\neq\theta_2$，使得 $f\left(\theta_1\right)=f\left(\theta_2\right)=0$。于是
+\[
+c\left(\theta_1\right)=c\left(\theta_2\right)=0.
+\]
+由罗尔中值定理，存在 $\xi\in\left(0,1\right)$ 使得 $c'(\xi)=0$，即
 $$f'\left(\xi\right)+3f^3\left(\xi\right)=0.$$
 \end{solution}
 \section{二阶构造类}
@@ -89,7 +98,7 @@ y'=\frac{2}{1-x}y&\Leftrightarrow y'+\frac{2}{x-1}y=0\\
 \begin{align*}
     c'(x)=2(x-1)f'(x)+(x-1)^2f''(x),~~c'(\xi)=0\Leftrightarrow f''(\xi)=\frac{2f'(\xi)}{1-\xi}
 \end{align*}
-即证存在$\xi\in(0,1)$使得$c'(\xi)=0$，由已知$c(1)=0$，以及罗尔中值定理知存在$\xi_1\in(0,1)$使得$f'(xi_1)=0$，所以对应$c(\xi_1)=0$，由罗尔中值定理知存在$\xi\in(0,1)$使得$c'(\xi)=0$，得证.
+即证存在$\xi\in(0,1)$使得$c'(\xi)=0$。由已知 $c(1)=0$，再由 Rolle 定理可知存在$\xi_1\in(0,1)$使得$f'(\xi_1)=0$，从而$c(\xi_1)=0$。再对$c$应用 Rolle 定理，存在$\xi\in(\xi_1,1)\subset(0,1)$使得$c'(\xi)=0$，得证.
 \end{solution}
 \begin{example}{$f''\left(\xi\right)\left(1+\xi^2\right)+2f'\left(\xi\right)\xi=0$}{}
     设 $f\in D^2\left[0,1\right],f\left(0\right)=0,f\left(\frac{1}{\sqrt{3}}\right)=\frac{\pi}{6},f\left(1\right)=\frac{\pi}{4}$,证明存在 $\xi\in(0,1)$,使得
@@ -102,7 +111,11 @@ y'=\frac{2}{1-x}y&\Leftrightarrow y'+\frac{2}{x-1}y=0\\
     &\Leftrightarrow y'\e^{\int\frac{2x}{1+x^2}\dd x}+\frac{2x}{1+x^2}\e^{\int\frac{2x}{1+x^2}\dd x}y=0\\
     &\Leftrightarrow\left(\e^{\int\frac{2x}{1+x^2}\dd x}y\right)'=0\Leftrightarrow(\e^{\ln(x^2+1)}y)' =0\Leftrightarrow(x^2+1)y=c
 \end{align*}
-构造 $c(x) = f'(x)(1 + x^2)$, 则 $c'(x) = 2xf'(x) + (1 + x^2)f''(x)$，转化为证明存在 $\xi\in(0,1)$ 使得 $c'(\xi) = 0$。注意到 $f(0)=0$, $f\!\left(\frac{1}{\sqrt{3}}\right)=\frac{\pi}{6}$, $f(1)=\frac{\pi}{4}$，而 $\arctan 0=0$, $\arctan\frac{1}{\sqrt{3}}=\frac{\pi}{6}$, $\arctan 1=\frac{\pi}{4}$，故令
+构造 $c(x)=f'(x)(1+x^2)$，则
+\[
+c'(x)=2xf'(x)+(1+x^2)f''(x).
+\]
+注意到 $f(0)=0,\ f\!\left(\frac{1}{\sqrt{3}}\right)=\frac{\pi}{6},\ f(1)=\frac{\pi}{4}$，而 $\arctan 0=0,\ \arctan\frac{1}{\sqrt{3}}=\frac{\pi}{6},\ \arctan 1=\frac{\pi}{4}$，故令
 \[
 g(x)=f(x)-\arctan x,\quad x\in[0,1].
 \]
@@ -127,7 +140,7 @@ f''(\xi)(1+\xi^2)+2f'(\xi)\xi=0.
 $$f''\left(\xi\right)-2f'\left(\xi\right)\cot\xi+f\left(\xi\right)\left(1+2\cot^2\xi\right)=0.$$
 \end{example}
 \begin{solution}
-首先，解微分方程
+解微分方程
 \[
 y'' - 2y'\cot x + y(1+2\cot^2 x)=0.
 \]
@@ -135,7 +148,7 @@ y'' - 2y'\cot x + y(1+2\cot^2 x)=0.
 \[
 \frac{y(x)}{\sin x}=Cx+D \quad\Rightarrow\quad \left(\frac{y(x)}{\sin x}\right)''=0.
 \]
-受此启发，构造函数
+令
 \[
 g(x)=\frac{f(x)}{\sin x},\quad x\in(0,\pi).
 \]
@@ -145,7 +158,11 @@ g''(x)=\frac{f''(x)-2\cot x\,f'(x)+f(x)\bigl(1+2\cot^2 x\bigr)}{\sin x},\quad x\
 \]
 因此，要证存在 $\xi\in(0,\pi)$ 使得原式成立，只需证存在 $\xi$ 使 $g''(\xi)=0$。
 
-下面证明 $g''$ 在 $(0,\pi)$ 内有零点。由 $f(0)f(\pi)<0$ 知 $f(0)$ 与 $f(\pi)$ 异号且均非零。不妨设 $f(0)>0$，则 $f(\pi)<0$（若相反则同理）。考虑 $g'(x)=\dfrac{f'(x)\sin x-f(x)\cos x}{\sin^2 x}$。当 $x\to0^+$ 时，$\sin x\sim x$，$\cos x\sim 1$，故
+证明 $g''$ 在 $(0,\pi)$ 内有零点。由 $f(0)f(\pi)<0$ 知 $f(0)$ 与 $f(\pi)$ 异号且均非零。设 $f(0)>0$，则 $f(\pi)<0$；另一种情形完全相同。考虑
+\[
+g'(x)=\dfrac{f'(x)\sin x-f(x)\cos x}{\sin^2 x}.
+\]
+当 $x\to0^+$ 时，$\sin x\sim x$，$\cos x\sim 1$，故
 \[
 g'(x)\sim -\frac{f(0)}{x^2}\to -\infty.
 \]
@@ -163,7 +180,7 @@ f''(\xi)-2f'(\xi)\cot\xi+f(\xi)(1+2\cot^2\xi)=0.
 $$f''\left(\xi\right)=f\left(\xi\right)\left(1+2\tan^{2}\xi\right)$$
 \end{example}
 \begin{solution}
-首先解微分方程
+解微分方程
 \[
 y'' = y(1+2\tan^2 x). \tag{1}
 \]
@@ -191,7 +208,7 @@ y(x) = \frac{C_2}{\cos x} + \frac{C_1}{2}\left(\frac{x}{\cos x} + \sin x\right).
 \[
 \bigl(y(x)\cos x\bigr)' = \frac{c_2}{2}(1 + \cos 2x),~~\left(\frac{(y\cos x)'}{1+\cos 2x}\right)' = 0.
 \]
-受此启发，对给定的 $f$，定义
+定义
 \[
 g(x) = f(x)\cos x,\quad x\in\left[-\frac{\pi}{2},\frac{\pi}{2}\right].
 \]
@@ -234,7 +251,7 @@ f''(\xi) = f(\xi)(1+2\tan^2\xi).
 $$f''\left(\zeta\right)=3f'\left(\zeta\right)\tan\zeta+2f\left(\zeta\right).$$
 \end{example}
 \begin{solution}
-首先考虑微分方程
+考察微分方程
 \[
 y'' = 3y'\tan x + 2y. \tag{1}
 \]
@@ -246,7 +263,7 @@ y(x) = \frac{C_1}{\cos^2 x} + C_2\frac{\sin x}{\cos^2 x},\quad C_1,C_2\in\mathbb
 \[
 y(x)\cos^2 x = C_1 + C_2\sin x,~\bigl(y(x)\cos^2 x\bigr)' = C_2\cos x,~\left(\frac{\bigl(y(x)\cos^2 x\bigr)'}{\cos x}\right)' = 0. \tag{2}
 \]
-受此启发，对给定的函数 $f(x)$，定义
+定义
 \[
 g(x) = f(x)\cos^2 x,\quad x\in\left[-\frac{\pi}{2},\frac{\pi}{2}\right].
 \]
@@ -335,8 +352,15 @@ $$|f(x)| < 1, \forall x \in [-2,2], f^2(0) + (f'(0))^2 = 4,$$
 $$f(\theta) + f''(\theta) = 0.$$
 \end{example}
 \begin{solution}
-\textbf{Method I:}首先观察微分方程 $y''+y=0$。若 $y$ 是其解，则两边乘以 $y'$ 得 $y'y''+yy'=0$，即 $\frac{1}{2}\frac{\mathrm{d}}{\mathrm{d}x}\bigl((y')^2+y^2\bigr)=0$，故 $(y')^2+y^2$ 为常数。这表明二次型 $(y')^2+y^2$ 是方程的一个首次积分。
-受此启发，对给定的函数 $f(x)$（设其二阶可导），我们构造
+由方程 $y''+y=0$ 可知，若 $y$ 是其解，则两边乘以 $y'$ 得
+\[
+y'y''+yy'=0,
+\]
+即
+\[
+\frac{1}{2}\frac{\mathrm{d}}{\mathrm{d}x}\bigl((y')^2+y^2\bigr)=0.
+\]
+故 $(y')^2+y^2$ 为常数。令
 \[
 g(x)=f^2(x)+\bigl(f'(x)\bigr)^2,\quad x\in[-2,2].
 \]
@@ -372,11 +396,11 @@ $$|f(x)| < 1, \forall x \in [-2,2], f^2(0) + (f'(0))^2 = 4,$$
 $$f(\theta) + f''(\theta) = 0.$$
 \end{example}
 \begin{solution}
-\textbf{思路：} 考虑微分方程 $y''+y=0$。若 $y$ 是其解，则计算
+考虑微分方程 $y''+y=0$。若 $y$ 是其解，则
 \[
 \frac{\dd}{\dd x}\bigl(y\sin x + y'\cos x\bigr)=y'\sin x+y\cos x+y''\cos x-y'\sin x=(y+y'')\cos x=0,
 \]
-故 $y\sin x+y'\cos x$ 为常数。这表明该线性组合是方程的一个首次积分。受此启发，对给定的函数 $f$（设二阶可导），我们构造
+故 $y\sin x+y'\cos x$ 为常数。令
 \[
 g(x)=f(x)\sin x+f'(x)\cos x,\quad x\in\left[-\frac{\pi}{2},\frac{\pi}{2}\right].
 \]
@@ -392,7 +416,7 @@ g'(x)=f'(x)\sin x+f(x)\cos x+f''(x)\cos x-f'(x)\sin x=(f(x)+f''(x))\cos x. \tag{
 \[
 |g(\frac{\pi}{2})|=|f(\frac{\pi}{2})|<1,\quad |g(-\frac{\pi}{2})|=|-f(-\frac{\pi}{2})|<1.
 \]
-假设对一切 $x\in(-\frac{\pi}{2},\frac{\pi}{2})$ 均有 $f(x)+f''(x)\neq0$，则由连续性，$f(x)+f''(x)$ 在 $(-\frac{\pi}{2},\frac{\pi}{2})$ 内恒正或恒负。不妨设恒正（否则考虑 $-f$），则由于在 $(-\frac{\pi}{2},\frac{\pi}{2})$ 内 $\cos x>0$，由 (1) 知 $g'(x)>0$，即 $g$ 严格递增。于是
+假设对一切 $x\in(-\frac{\pi}{2},\frac{\pi}{2})$ 均有 $f(x)+f''(x)\neq0$，则由连续性，$f(x)+f''(x)$ 在 $(-\frac{\pi}{2},\frac{\pi}{2})$ 内恒正或恒负。若它恒负，就改看 $-f$；因此只需讨论恒正的情形。由于在 $(-\frac{\pi}{2},\frac{\pi}{2})$ 内 $\cos x>0$，由 (1) 知 $g'(x)>0$，即 $g$ 严格递增。于是
 \[
 g\!\left(-\frac{\pi}{2}\right)<g(0)<g\!\left(\frac{\pi}{2}\right).
 \]
@@ -403,7 +427,7 @@ g\!\left(-\frac{\pi}{2}\right)<g(0)<g\!\left(\frac{\pi}{2}\right).
 设$f,g$在$[a,b]$上连续且在$(a,b)$内可导. 若对任何$x\in(a,b)$,都有$g^\prime(x)\neq0.$证明存在$\xi\in(a,b)$,使得$$\frac{f'\left(\xi\right)}{g'\left(\xi\right)}=\frac{f\left(\xi\right)-f\left(a\right)}{g\left(b\right)-g\left(\xi\right)}$$
 \end{example}
 \begin{solution}
-首先将等式两边交叉相乘（注意 $g'(\xi)\neq0$ 且 $g(b)-g(\xi)\neq0$，后者可由 $g$ 的严格单调性得到，因为 $g'(x)\neq0$ 在 $(a,b)$ 内恒正或恒负，从而 $g$ 严格单调，故当 $\xi\in(a,b)$ 时 $g(b)\neq g(\xi)$），移项得
+将等式两边交叉相乘（注意 $g'(\xi)\neq0$ 且 $g(b)-g(\xi)\neq0$，后者可由 $g$ 的严格单调性得到，因为 $g'(x)\neq0$ 在 $(a,b)$ 内恒正或恒负，从而 $g$ 严格单调，故当 $\xi\in(a,b)$ 时 $g(b)\neq g(\xi)$），移项得
 $f'(\xi)\bigl[g(b)-g(\xi)\bigr]-g'(\xi)\bigl[f(\xi)-f(a)\bigr]=0$，考虑积分：
 \begin{align*}
 &\int \left(f'(x)\bigl[g(b)-g(x)\bigr]-g'(x)\bigl[f(x)-f(a)\bigr]\right)\mathrm{d}x \\
@@ -458,7 +482,7 @@ h(a)=f'(a)g(a)-f(a)g'(a)=0,\quad h(b)=f'(b)g(b)-f(b)g'(b)=0.
 \[
 f''(\xi)g(\xi)-f(\xi)g''(\xi)=0. \tag{2}
 \]
-下证 $g(\xi)\neq0$。已知 $g''(x)\neq0$ 对一切 $x\in[a,b]$ 成立，故 $g''$ 在 $(a,b)$ 内恒正或恒负。不妨设 $g''>0$，则 $g$ 是严格凸函数。又 $g(a)=g(b)=0$，由凸函数的性质，对任意 $x\in(a,b)$ 有 $g(x)<0$（凸函数图像位于连接两端点的弦下方，而弦为 $y=0$）。同理若 $g''<0$，则 $g$ 严格凹，此时 $g(x)>0$ 对 $x\in(a,b)$ 成立。总之，$g(x)\neq0$ 对一切 $x\in(a,b)$ 成立，特别地 $g(\xi)\neq0$。又由条件 $g''(\xi)\neq0$，于是 (2) 式可化为
+证明 $g(\xi)\neq0$。已知 $g''(x)\neq0$ 对一切 $x\in[a,b]$ 成立，故 $g''$ 在 $(a,b)$ 内恒正或恒负。若 $g''>0$，则 $g$ 为严格凸函数，且由 $g(a)=g(b)=0$ 可知 $g(x)<0\ (x\in(a,b))$；若 $g''<0$，同理有 $g(x)>0$。因此 $g(x)\neq0$ 对一切 $x\in(a,b)$ 成立，特别地 $g(\xi)\neq0$。再由 $g''(\xi)\neq0$，(2) 式化为
 \[
 \frac{f(\xi)}{g(\xi)}=\frac{f''(\xi)}{g''(\xi)}.
 \]
@@ -469,11 +493,11 @@ f''(\xi)g(\xi)-f(\xi)g''(\xi)=0. \tag{2}
     设 $f\in D^2\left[0,1\right],f\left(0\right)=2,f^{\prime}\left(0\right)=-2,f\left(1\right)=1$,证明存在 $\xi\in(0,1)$,使得$$f\left(\xi\right)f'\left(\xi\right)+f''\left(\xi\right)=0$$
 \end{example}
 \begin{solution}
-首先，分部积分得到：
+分部积分得：
 \[
 \int f(x)f'(x)+f''(x) \dd x=  f'(x) + \frac{1}{2}f^2(x)
 \]
-定义辅助函数$g(x) = f'(x) + \frac{1}{2}f^2(x), x\in[0,1]$，由已知条件 $f(0)=2$, $f'(0)=-2$ 得 $g(0)=0$。因此，若能在 $(0,1]$ 内找到另一点 $x_0$ 使得 $g(x_0)=0$，则对 $g$ 在 $[0,x_0]$ 上应用罗尔定理，即存在 $\xi\in(0,x_0)\subset(0,1)$ 使 $g'(\xi)=0$，而 $g'(\xi)=f(\xi)f'(\xi)+f''(\xi)$，命题得证。下面寻找 $g$ 的另一个零点。考虑方程 $g(x)=0$ 即 $f'(x)=-\frac{1}{2}f^2(x)$，这是一阶可分离方程，其通解为 $\frac{1}{f(x)}=\frac{x}{2}+C$。受此启发，构造函数
+定义辅助函数 $g(x)=f'(x)+\frac{1}{2}f^2(x)$，则 $g(0)=0$。若能在 $(0,1]$ 内找到另一点 $x_0$ 使 $g(x_0)=0$，则对 $g$ 在 $[0,x_0]$ 上应用罗尔定理，可得存在 $\xi\in(0,1)$ 使 $g'(\xi)=0$，而 $g'(\xi)=f(\xi)f'(\xi)+f''(\xi)$。下面寻找 $g$ 的另一个零点。考虑方程 $g(x)=0$，其通解为 $\frac{1}{f(x)}=\frac{x}{2}+C$。令
 \[
 \varphi(x)=\frac{x}{2}-\frac{1}{f(x)},
 \]
@@ -489,9 +513,9 @@ f''(\xi)g(\xi)-f(\xi)g''(\xi)=0. \tag{2}
 \]
 即 $\varphi(0)=\varphi(1)$。由罗尔定理，存在 $\eta\in(0,1)$ 使得 $\varphi'(\eta)=0$，从而 $g(\eta)=0$。于是 $g(0)=g(\eta)=0$，再由罗尔定理，存在 $\xi\in(0,\eta)$ 使 $g'(\xi)=0$，得证。
 
-\paragraph{情况2：$f$ 在 $(0,1)$ 内有零点。} 设这些零点将 $(0,1)$ 分成若干个开区间，在每个这样的区间上 $f$ 不变号且不为零，因此 $\varphi$ 在该区间上连续可导。考虑其中一个区间 $(\alpha,\beta)$，其中 $\alpha,\beta$ 是相邻的零点或端点（注意 $f(0)=2\neq0$, $f(1)=1\neq0$，故端点 $0,1$ 不是零点）。于是 $\alpha$ 或 $\beta$ 至少有一个是零点（因为区间端点要么是零点要么是端点，而端点非零点，所以区间至少有一端是零点）。不妨设 $\alpha$ 是零点，则当 $x\to\alpha^+$ 时，$f(x)\to0$，故 $|\varphi(x)|\to\infty$（因为 $\frac{1}{f(x)}\to\infty$）。而 $\varphi$ 在区间另一端（可能是 $\beta$ 是零点或 $1$ 等）处或趋于无穷或取有限值。因此 $\varphi$ 在该区间上连续且在一端趋于无穷，从而 $\varphi$ 在区间内部必存在极值点（例如，若趋于 $+\infty$，则函数有最小值；若趋于 $-\infty$，则有最大值）。设该极值点为 $\eta\in(\alpha,\beta)$，则 $\varphi'(\eta)=0$，即 $g(\eta)=0$。于是 $g(0)=g(\eta)=0$，由罗尔定理，存在 $\xi\in(0,\eta)$（若 $\eta>0$）或 $\xi\in(\eta,1)$（若 $\eta<0$，但 $\eta\in(0,1)$ 故 $\eta>0$）使 $g'(\xi)=0$，得证。
+\paragraph{情况2：$f$ 在 $(0,1)$ 内有零点。} 取一个由相邻零点或端点围成的区间 $(\alpha,\beta)$，并设 $\alpha$ 为其中的零点。则 $f$ 在 $(\alpha,\beta)$ 上不变号且不为零，故 $\varphi$ 在该区间内连续可导。又当 $x\to\alpha^+$ 时，$f(x)\to0$，于是 $|\varphi(x)|\to\infty$。因此 $\varphi$ 在 $(\alpha,\beta)$ 内必有极值点 $\eta$，从而 $\varphi'(\eta)=0$，即 $g(\eta)=0$。再由 $g(0)=g(\eta)=0$ 对 $g$ 应用罗尔定理，得某个 $\xi\in(0,\eta)$ 使 $g'(\xi)=0$，结论成立。
 
-综上所述，无论 $f$ 在 $(0,1)$ 内是否有零点，总存在 $\xi\in(0,1)$ 使得
+因此，无论 $f$ 在 $(0,1)$ 内是否有零点，总存在 $\xi\in(0,1)$ 使得
 \[
 f(\xi)f'(\xi)+f''(\xi)=0.
 \]
@@ -503,15 +527,11 @@ f(\xi)f'(\xi)+f''(\xi)=0.
     设$f\in C\left[0,1\right]\bigcap D\left(0,1\right)$且$f\left(0\right)=0,f\left(1\right)=1.$证明存在互不相同的$\lambda,\mu\in\left(0,1\right)$使得\[f'\left(\lambda\right)\left(1+f'\left(\mu\right)\right)=2\]
 \end{example}
 \begin{solution}
-我们要证明存在两个不同的点 $\lambda,\mu\in(0,1)$ 使得
-\[
-f'(\lambda)\bigl(1+f'(\mu)\bigr)=2.
-\]
-思路是引入一个中间点 $c\in(0,1)$，然后分别用拉格朗日中值定理将 $f'(\lambda)$ 和 $f'(\mu)$ 用 $f(c)$ 表示出来。具体地，对任意 $c\in(0,1)$，在区间 $[0,c]$ 上应用拉格朗日中值定理，存在 $\lambda\in(0,c)$ 使得
+任取 $c\in(0,1)$。由拉格朗日中值定理，在区间 $[0,c]$ 上存在 $\lambda\in(0,c)$ 使得
 \[
 f'(\lambda)=\frac{f(c)-f(0)}{c-0}=\frac{f(c)}{c}.
 \]
-在区间 $[c,1]$ 上应用拉格朗日中值定理，存在 $\mu\in(c,1)$ 使得
+在区间 $[c,1]$ 上存在 $\mu\in(c,1)$ 使得
 \[
 f'(\mu)=\frac{f(1)-f(c)}{1-c}=\frac{1-f(c)}{1-c}.
 \]
@@ -519,11 +539,11 @@ f'(\mu)=\frac{f(1)-f(c)}{1-c}=\frac{1-f(c)}{1-c}.
 \[
 f'(\lambda)\bigl(1+f'(\mu)\bigr)=\frac{f(c)}{c}\left(1+\frac{1-f(c)}{1-c}\right)=\frac{f(c)}{c}\cdot\frac{2-c-f(c)}{1-c}.
 \]
-我们希望存在某个 $c\in(0,1)$ 使得这个乘积等于 $2$，即
+若存在 $c\in(0,1)$ 使
 \[
 \frac{f(c)(2-c-f(c))}{c(1-c)}=2\quad\Leftrightarrow f(c)(2-c-f(c))=2c(1-c)\Leftrightarrow (f(c)+(2c-2))(f(c)-c)=0
 \]
-舍$f(c)=c$，取 $f(c)=2-2c$，构造函数
+则所求结论成立。取 $f(c)=2-2c$，令
 \[
 g(x)=f(x)+2x-2,\quad x\in[0,1].
 \]
@@ -546,20 +566,23 @@ f'(\lambda)\bigl(1+f'(\mu)\bigr)=2.
 $$\sum_{i=1}^n\frac{\lambda_i}{f^{\prime}\left(x_i\right)}=1$$
 \end{example}
 \begin{solution}
-思路是引入 $n-1$ 个分点 $0 = y_0 < y_1 < \cdots < y_{n-1} < y_n = 1$，然后在每个子区间 $(y_{i-1},y_i)$ 上对 $f$ 应用拉格朗日中值定理，得到存在 $x_i \in (y_{i-1},y_i)$ 使得
+取分点 $0 = y_0 < y_1 < \cdots < y_{n-1} < y_n = 1$。在每个子区间 $(y_{i-1},y_i)$ 上对 $f$ 应用拉格朗日中值定理，存在 $x_i \in (y_{i-1},y_i)$ 使得
 \[
 f'(x_i) = \frac{f(y_i) - f(y_{i-1})}{y_i - y_{i-1}},  i=1,\dots,n\Rightarrow \sum_{i=1}^n \frac{\lambda_i}{f'(x_i)} = \sum_{i=1}^n \frac{\lambda_i (y_i - y_{i-1})}{f(y_i) - f(y_{i-1})}. \tag{1}
 \]
-我们希望这个和等于 $1$。观察发现，如果能让每个分母 $f(y_i)-f(y_{i-1})$ 恰好等于 $\lambda_i$，那么 (1) 式就变成 $\displaystyle\sum_{i=1}^n (y_i - y_{i-1}) = 1$，这正是我们需要的。
-因此问题转化为：能否在 $[0,1]$ 内选取 $n-1$ 个分点 $y_1,\dots,y_{n-1}$，使得
+若
 \[
 f(y_i) - f(y_{i-1}) = \lambda_i \quad (i=1,\dots,n),
 \]
-其中 $y_0=0$, $y_n=1$，且 $f(y_0)=f(0)=0$, $f(y_n)=f(1)=1$。注意到 $\lambda_i >0$ 且 $\displaystyle\sum_{i=1}^n \lambda_i =1$，因此这些等式相当于要求 $f(y_i)$ 依次取值为 $\lambda_1$, $\lambda_1+\lambda_2$, \dots, $\lambda_1+\cdots+\lambda_{n-1}$，而最后一个自动满足因为总和为1。即令
+则 (1) 化为 $\displaystyle\sum_{i=1}^n (y_i - y_{i-1}) = 1$。令
 \[
 t_i = \lambda_1 + \lambda_2 + \cdots + \lambda_i, \quad i=1,\dots,n-1,
 \]
-则 $0 < t_1 < t_2 < \cdots < t_{n-1} < 1$。现在 $f$ 是 $[0,1]$ 上的连续函数，且 $f(0)=0$, $f(1)=1$，由介值定理，对每个 $t_i$，存在 $y_i \in (0,1)$ 使得 $f(y_i)=t_i$。由于 $f$ 不一定单调，这些 $y_i$ 可能不按顺序排列，但我们可以通过选择适当的原像来保证它们递增。事实上，因为 $t_i$ 递增，我们可以先取 $y_1$ 为某个满足 $f(y_1)=t_1$ 的点，然后在区间 $(y_1,1]$ 上考虑函数 $f$，它仍连续且 $f(y_1)=t_1$, $f(1)=1>t_2$，所以存在 $y_2>y_1$ 使得 $f(y_2)=t_2$，依此类推。这样得到一组严格递增的点 $0<y_1<y_2<\cdots<y_{n-1}<1$，满足 $f(y_i)=t_i$。于是
+则 $0 < t_1 < t_2 < \cdots < t_{n-1} < 1$。由介值定理，对每个 $t_i$ 都存在 $y_i \in (0,1)$ 使得 $f(y_i)=t_i$。这些原像还可以按次序选取：取 $y_1$ 满足 $f(y_1)=t_1$；若已取到 $y_i$，则在区间 $(y_i,1]$ 上，函数 $f$ 连续且满足 $f(y_i)=t_i<t_{i+1}<1=f(1)$，故存在 $y_{i+1}>y_i$ 使得 $f(y_{i+1})=t_{i+1}$。于是
+\[
+0<y_1<y_2<\cdots<y_{n-1}<1,\qquad f(y_i)=t_i.
+\]
+因此
 \[
 f(y_i)-f(y_{i-1}) = t_i - t_{i-1} = \lambda_i \quad (i=1,\dots,n),
 \]
@@ -579,22 +602,19 @@ f'(x_i) = \frac{f(y_i)-f(y_{i-1})}{y_i-y_{i-1}} = \frac{\lambda_i}{y_i-y_{i-1}}\
 的$x_1,x_2,\cdots,x_N\in(0,1)$满足$$\left|\sum_{j=1}^N\frac1{2^jf'\left(x_j\right)}-1\right|<\varepsilon$$
 \end{example}
 \begin{solution}
-\noindent\textbf{第一步：选取合适的 $N$。}
 因为 $\sum_{j=1}^{\infty}\frac{1}{2^j}=1$，所以存在 $N\in\mathbb{N}$ 使得
 \[
 \left|\sum_{j=1}^N\frac{1}{2^j}-1\right|<\varepsilon.
 \]
 记 $S=\sum_{j=1}^N\frac{1}{2^j}$，则 $S\in(0,1)$ 且 $|S-1|<\varepsilon$。
 
-\noindent\textbf{第二步：构造一组正数 $\lambda_1,\dots,\lambda_N$ 满足 $\sum\lambda_i=1$。}
 令
 \[
 \lambda_i=\frac{1/2^i}{S},\quad i=1,\dots,N.
 \]
 则 $\lambda_i>0$ 且 $\sum_{i=1}^N\lambda_i=1$。
 
-\noindent\textbf{第三步：证明存在互异的 $x_1,\dots,x_N\in(0,1)$ 使得 $\sum_{i=1}^N\frac{\lambda_i}{f'(x_i)}=1$。}
-为此通过插入分点来构造。令
+再令
 \[
 t_0=0,\quad t_i=\lambda_1+\cdots+\lambda_i\;(i=1,\dots,N-1),\quad t_N=1,
 \]
@@ -615,12 +635,11 @@ f'(x_i)=\frac{f(y_i)-f(y_{i-1})}{y_i-y_{i-1}}=\frac{\lambda_i}{y_i-y_{i-1}}\Righ
 \sum_{i=1}^N\frac{\lambda_i}{f'(x_i)}=\sum_{i=1}^N(y_i-y_{i-1})=y_N-y_0=1.
 \]
 
-\noindent\textbf{第四步：回到原表达式。}
 由 $\lambda_i=\frac{1/2^i}{S}$ 知
 \[
 \sum_{j=1}^N\frac{1}{2^j f'(x_j)}=S\sum_{j=1}^N\frac{\lambda_j}{f'(x_j)}=S\cdot1=S\Rightarrow \left|\sum_{j=1}^N\frac{1}{2^j f'(x_j)}-1\right|=|S-1|<\varepsilon.
 \]
-这样就找到了所需的 $N$ 及两两不同的 $x_1,\dots,x_N\in(0,1)$，证毕。
+所求的 $N$ 及两两不同的 $x_1,\dots,x_N\in(0,1)$ 便构造出来了。
 \end{solution}
 \newpage
 \begin{example}{}{}
@@ -656,7 +675,7 @@ g'(\theta_1) = \frac{g(\theta_3)-g(0)}{\theta_3-0} = \frac{g(\theta_3)}{\theta_3
 \[
 g'(\theta_1) = \frac{g(1)}{2\theta_3}, \quad g'(\theta_2) = \frac{g(1)}{2(1-\theta_3)}\Rightarrow g'(\theta_1)\,\theta_3 = \frac{g(1)}{2}, \quad g'(\theta_2)\,(1-\theta_3) = \frac{g(1)}{2}.
 \]
-而 $\frac{g(1)}{2} = \frac{\pi}{8}\int_0^1 f$，故 (1) 成立。显然 $\theta_1,\theta_2,\theta_3$ 互不相同（$\theta_1<\theta_3<\theta_2$），这就完成了证明。
+而 $\frac{g(1)}{2} = \frac{\pi}{8}\int_0^1 f$，故 (1) 成立。$\theta_1,\theta_2,\theta_3$ 互不相同（$\theta_1<\theta_3<\theta_2$），证明完成。
 \end{solution}
 \newpage
 \begin{example}{}{}
@@ -675,7 +694,7 @@ g'(\theta_1) = \frac{g(1)}{2\theta_3}, \quad g'(\theta_2) = \frac{g(1)}{2(1-\the
 \[
 \frac{2}{3} f(\theta) = 2\cdot\frac{1}{3} f(\eta) \quad\Longrightarrow\quad f(\theta)=f(\eta). \tag{3}
 \]
-于是我们找到了两个不同的点 $\theta\in(0,\frac{2}{3})$ 和 $\eta\in(\frac{2}{3},1)$ 使得 $f(\theta)=f(\eta)$。现在考虑要证明的结论：存在 $\xi,\eta\in(0,1)$ 且 $\xi\neq\eta$ 使得
+由此得到两个不同的点 $\theta\in(0,\frac{2}{3})$ 和 $\eta\in(\frac{2}{3},1)$，满足 $f(\theta)=f(\eta)$。下证存在 $\xi\in(0,1)$ 使得
 \[
 f'(\xi)=g'(\xi)\bigl[f(\eta)-f(\xi)\bigr]. \tag{4}
 \]
@@ -683,11 +702,11 @@ f'(\xi)=g'(\xi)\bigl[f(\eta)-f(\xi)\bigr]. \tag{4}
 \[
 f'(\xi)+g'(\xi)f(\xi)=g'(\xi)f(\eta).
 \]
-这启发我们将其视为关于 $f$ 的一阶线性微分方程：若将 $\eta$ 暂时固定，则方程 $y'+g'y = g'f(\eta)$ 的通解为 $y = f(\eta) + C e^{-g(x)}$，即 $(y-f(\eta))e^{g(x)}$ 为常数。因此，对给定的 $\eta$，函数
+固定上述 $\eta$，令
 \[
 c(x)=\bigl[f(x)-f(\eta)\bigr]e^{g(x)}
 \]
-的导数恰好为
+则
 \[
 c'(x)=\bigl[f'(x)+g'(x)(f(x)-f(\eta))\bigr]e^{g(x)}. \tag{5}
 \]

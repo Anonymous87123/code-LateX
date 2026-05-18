@@ -1,0 +1,722 @@
+\chapter{从库到模型：Transformers 使用、推理与调试基础}
+
+\begin{introduction}
+\item {\heiti 本章核心问题}：如何把一个现成大语言模型稳定接入代码，形成一条可调试、可记录、可扩展的最小问答链路？
+\item {\heiti 主案例推进}：为企业知识助手搭起第一条“输入问题到输出答案”的可复盘推理链。
+\item {\heiti 读完后能做什么}：能区分 token 化、前向计算、logits、采样和后处理各自负责什么，输出失控时知道先看哪一段。
+\end{introduction}
+
+\section{学习目标}
+\begin{itemize}
+  \item 掌握使用 Transformers 加载分词器和因果语言模型的基本流程。
+  \item 理解输入张量、logits、解码参数和输出结构在工程里的意义。
+  \item 能为企业知识助手搭建最小可用、可复盘的模型调用链路。
+\end{itemize}
+
+\section{问题背景}
+很多初学者第一次接触大模型工程时，往往直接从一个封装好的聊天界面开始，结果后续遇到性能问题、输出格式问题或 token 截断问题时，不知道应该在模型层还是应用层排查。工程学习需要从更底的一层开始：明确模型是怎样被加载、编码、生成和解析的。
+
+对于教材读者来说，真正关键的不是“会跑通一段 demo”，而是把推理链路拆开看：\textbf{问题如何变成 token，token 如何变成 logits，logits 如何在采样后变成最终文本。} 只有把这条链路拆开，后面讲提示工程、RAG、评测和推理优化时，读者才知道这些模块究竟接在模型调用链的哪一段。
+
+\section{核心概念}
+\subsection{最小模型调用链路}
+一个最小的因果语言模型调用链路通常包含五步：
+\begin{enumerate}
+  \item 加载 tokenizer，定义文本如何映射为 token。
+  \item 加载模型权重，明确运行精度与设备。
+  \item 把输入编码成张量，送入模型做前向计算。
+  \item 根据 logits 做采样或贪心选择，得到输出 token。
+  \item 对输出 token 进行解码，并结合业务规则做后处理。
+\end{enumerate}
+
+这里的”明确运行精度与设备”不能一笔带过。对工程读者来说，至少要知道四个问题：tokenizer 是否和模型匹配、模型放在 CPU 还是 GPU、默认精度是 FP32 还是更省资源的低精度、输入张量是否和模型在同一设备上。很多”模型怎么突然报错”或”为什么这么慢”，并不是推理逻辑有问题，而是装配面没有对齐。
+
+下面是一段最小但完整的推理代码，读者可以直接运行来验证整条链路：
+
+\begin{lstlisting}[language=Python]
+from transformers import AutoTokenizer, AutoModelForCausalLM
+import torch
+
+# 1. 加载 tokenizer 和模型（以 Qwen2.5-1.5B 为例，可换成任何因果模型）
+model_name = “Qwen/Qwen2.5-1.5B-Instruct”
+tokenizer = AutoTokenizer.from_pretrained(model_name)
+model = AutoModelForCausalLM.from_pretrained(
+    model_name, torch_dtype=torch.float16, device_map=”auto”
+)
+
+# 2. 构造输入：用聊天模板把消息结构编译成模型真正看到的 prompt
+messages = [
+    {“role”: “system”, “content”: “你是企业知识助手，回答要简洁并注明依据。”},
+    {“role”: “user”, “content”: “出差住宿标准是多少？”}
+]
+prompt = tokenizer.apply_chat_template(
+    messages, tokenize=False, add_generation_prompt=True
+)
+
+# 3. 编码为张量并送入模型
+inputs = tokenizer(prompt, return_tensors=”pt”).to(model.device)
+
+# 4. 生成：设定采样参数
+outputs = model.generate(
+    **inputs,
+    max_new_tokens=256,
+    temperature=0.3,
+    top_p=0.9,
+    do_sample=True,
+)
+
+# 5. 解码输出（只取新生成的部分）
+new_tokens = outputs[0][inputs[“input_ids”].shape[1]:]
+answer = tokenizer.decode(new_tokens, skip_special_tokens=True)
+print(answer)
+\end{lstlisting}
+
+这段代码覆盖了前面五步的每一步。读者第一次运行时，建议逐行打印中间结果（\texttt{prompt}、\texttt{inputs[“input\_ids”].shape}、\texttt{outputs.shape}），观察数据在每一步的形态变化。
+
+\subsection{先让推理链可复现，再去追求更快}
+很多团队一上来就盯着“能不能更快”“能不能更省显存”，但对教材读者来说，推理链的第一课其实是\textbf{可复现}。如果一次回答出错后，团队连“当时到底用了哪个模型、哪个模板、哪套采样参数、哪种精度和哪个随机种子”都说不清楚，那么后面的所有性能优化都没有稳固地基。
+
+对单机实验和系统原型来说，最少应固定六类配置：模型名与 revision、tokenizer 版本、聊天模板版本、生成参数、精度与设备、随机性设置。尤其在启用采样时，\texttt{do\_sample}、\texttt{temperature}、\texttt{top\_p} 和随机种子决定了“同一问题为何这次和上次不一样”。这不是噪声细节，而是日志与排障的核心上下文。
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{3cm}>{\raggedright\arraybackslash}p{3.2cm}>{\raggedright\arraybackslash}X}
+\toprule
+\textbf{配置项} & \textbf{为什么必须固定或记录} & \textbf{漏记后最常见的问题} \\
+\midrule
+模型名 / revision & 决定权重与聊天行为基线 & 说不清回答变化来自模型升级还是别的环节 \\
+tokenizer / 模板版本 & 决定 prompt 最终长相与特殊 token & 明明“同一提示词”，模型行为却对不上 \\
+生成参数 & 决定 decode 阶段分布 & 无法区分是知识问题还是采样发散 \\
+精度 / 设备 & 决定速度、显存和部分数值行为 & 排障时把环境问题误判成模型逻辑问题 \\
+随机种子 / 是否采样 & 决定结果可重复程度 & 同题多次不一致却不知道是不是采样导致 \\
+\bottomrule
+\end{tabularx}
+\caption{工程里的第一条推理纪律，不是更快，而是可复现}
+\label{tab:reproducibility-config}
+\end{table}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+  font=\small,
+  box/.style={llm box, minimum width=2.25cm, minimum height=1cm},
+  arr/.style={llm arr}
+]
+\node[box] (text) {原始问题};
+\node[box, right=0.45cm of text] (tok) {Tokenizer\\文本转 token};
+\node[box, right=0.45cm of tok] (forward) {Forward\\得到 logits};
+\node[box, right=0.45cm of forward] (sample) {Sampling\\温度 / top-p};
+\node[box, right=0.45cm of sample] (out) {解码输出\\答案文本};
+\draw[arr] (text) -- (tok);
+\draw[arr] (tok) -- (forward);
+\draw[arr] (forward) -- (sample);
+\draw[arr] (sample) -- (out);
+\end{tikzpicture}
+\caption{从文本输入到输出答案的最小推理链路}
+\label{fig:inference-pipeline}
+\end{figure}
+
+\subsection{先分清“库的接口”和“模型的职责”}
+从库到模型，最容易混淆的一个问题是：哪些对象在负责\textbf{文本接口}，哪些对象在负责\textbf{神经网络计算}。对工程读者来说，先把这一层分清，后面很多错误就不容易误诊。
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{3.2cm}>{\raggedright\arraybackslash}p{3.3cm}>{\raggedright\arraybackslash}X}
+\toprule
+\textbf{对象} & \textbf{主要职责} & \textbf{工程上最常关注什么} \\
+\midrule
+\texttt{AutoTokenizer} & 文本与 token 之间的映射 & 特殊 token、聊天模板、截断与 padding \\
+\texttt{AutoModel} & 返回通用前向输出 & \texttt{hidden\_states}、\texttt{last\_hidden\_state} 等中间表示 \\
+\makecell[l]{\texttt{AutoModelFor}\\\texttt{CausalLM}} & 用于因果语言建模与生成 & \texttt{logits}、\texttt{generate()}、结束符与采样配置 \\
+\texttt{GenerationConfig} & 解码阶段配置 & 生成长度、温度、\texttt{top\_p}、重复惩罚 \\
+\bottomrule
+\end{tabularx}
+\caption{Transformers 中几个最常用对象的职责边界}
+\label{tab:transformers-objects}
+\end{table}
+
+这个表看起来基础，但它解决了一个很现实的问题：有些模型输出的重点是中间向量，有些模型输出的重点是下一个 token 的分布。前者更适合做表示学习、分类或检索特征提取，后者更适合生成问答系统。
+
+\subsection{Tokenizer 不只是分词器，也是输入协议的一部分}
+很多工程问题最后都不是坏在模型权重，而是坏在 tokenizer 和聊天模板。对聊天模型来说，用户问题并不是原样送进模型，而是会经过一层模板化处理，把 system、user、assistant 等角色拼成一条模型真正能识别的输入序列。
+
+因此，tokenizer 在工程里至少承担三层职责：
+\begin{itemize}
+  \item \textbf{文本编码}：把自然语言转成 token id。
+  \item \textbf{边界约定}：插入起始符、结束符、分隔符。
+  \item \textbf{聊天模板编译}：把多角色消息结构编译成模型真正看到的 prompt。
+\end{itemize}
+
+如果这一步没看清楚，就很容易出现一种常见误判：明明上层代码里写的是同一个 system 提示，但不同模型跑出来的行为完全不同。原因往往不是“模型性格不同”，而是聊天模板和特殊 token 约定不一样。
+
+\begin{lstlisting}[language=Python]
+from transformers import AutoTokenizer
+
+tokenizer = AutoTokenizer.from_pretrained(model_name)
+
+messages = [
+    {"role": "system", "content": "你是企业知识助手。"},
+    {"role": "user", "content": "请解释什么是差旅制度。"}
+]
+
+prompt = tokenizer.apply_chat_template(
+    messages,
+    tokenize=False,
+    add_generation_prompt=True
+)
+\end{lstlisting}
+
+这段代码的价值，不只是“能跑起来”，而是让团队第一次看到：消息结构和模型实际看到的 prompt 不是一回事。后续排查时，真正该记录的是\textbf{模板展开后的最终 prompt}，而不是只记录原始消息列表。
+
+\subsection{前向计算到底产出了什么}
+模型前向计算的直接结果不是答案文本，而是一组张量。对因果语言模型来说，最重要的是 \texttt{logits}，也就是每个位置上“下一个 token 取什么”的未归一化分数。
+
+\begin{lstlisting}[language=Python]
+inputs = tokenizer(prompt, return_tensors="pt")
+outputs = model(**inputs)
+
+print(outputs.logits.shape)
+\end{lstlisting}
+
+如果开启 \texttt{return\_dict=True} 或 \texttt{output\_hidden\_states=True}，你还可以拿到更丰富的结构，例如：
+\begin{itemize}
+  \item \texttt{logits}：下一个 token 的打分分布。
+  \item \texttt{hidden\_states}：每一层的隐表示，适合做分析和调试。
+  \item \texttt{attentions}：注意力矩阵，适合做可解释性观察，但不宜当作日常调试主工具。
+\end{itemize}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{3.2cm}>{\raggedright\arraybackslash}p{3.6cm}>{\raggedright\arraybackslash}X}
+\toprule
+\textbf{输出字段} & \textbf{更适合做什么} & \textbf{不建议拿来做什么} \\
+\midrule
+\texttt{logits} & 看下一个 token 分布、分析采样行为 & 直接当“最终概率结论”使用 \\
+\texttt{hidden\_states} & 做层间分析、表示对比、诊断异常 & 当作业务日志长期全量保存 \\
+\texttt{attentions} & 观察注意力模式、做研究性分析 & 当作一线排障主手段 \\
+\texttt{sequences} & 记录最终生成 token 序列 & 单独使用而不保存 prompt 和配置 \\
+\bottomrule
+\end{tabularx}
+\caption{前向输出与生成输出里，哪些字段更适合调试}
+\label{tab:model-output-fields}
+\end{table}
+
+旧稿里专门讲过 BERT 输出结构，这里保留一个最关键的工程结论：\textbf{不要把所有 Transformer 模型都当成“会直接吐答案文本”的黑盒。} 有的模型更适合取向量，有的模型更适合做生成，接口选择错了，后面一切都会错位。
+
+\subsection{从 prefill 到 decode：生成不是一次前向，而是一个循环}
+\texttt{generate()} 看起来像一个函数调用，但底层其实是两段过程：
+\begin{enumerate}
+  \item \textbf{Prefill}：先把整段输入 prompt 编码进模型，建立初始上下文状态。
+  \item \textbf{Decode}：然后逐 token 生成，每次只决定下一个 token。
+\end{enumerate}
+
+这条区分非常重要。因为很多工程现象都能从这里解释出来：长 prompt 会让第一次响应变慢，长输出会让总耗时拉长，多轮对话和 RAG 会让 prefill 成本一起升高，而采样策略主要发生在 decode 阶段。
+
+如果读者后面在第 11 章看到 KV Cache、尾延迟和吞吐问题，这里就能知道它们不是凭空出现的，而是跟 prefill 和 decode 这两段过程天然绑定。
+
+\subsection{单请求延迟和批量吞吐不是同一个优化目标}
+旧稿里有不少性能经验，如果只放在后面的部署章节，初学者容易误以为它们和模型调用链无关。其实，从这一章起就应该先建立一个判断：\textbf{让一个请求尽快回第一个 token，和让一批请求总体跑得更划算，不是同一个目标。}
+
+对交互式企业知识助手来说，用户最先感知的是 TTFT（Time To First Token），所以过长的 prompt、复杂的模板拼接和超大的检索上下文会立刻伤害体验。对后台批处理或离线生成任务来说，团队更看重的是总体吞吐，于是 batch 大小、并发策略和 GPU 利用率会更重要。两种目标不能混着调，否则就会出现一种典型误区：为了追求离线吞吐去堆大 batch，结果把交互式首 token 延迟拖得很差。
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{2.8cm}>{\raggedright\arraybackslash}p{3.1cm}>{\raggedright\arraybackslash}X}
+\toprule
+\textbf{优化目标} & \textbf{更优先关注什么} & \textbf{典型场景} \\
+\midrule
+单请求低延迟 & prompt 长度、prefill 成本、首 token 响应 & 交互式问答、在线助手、人工协同场景 \\
+整体高吞吐 & batch、并发、GPU 利用率、平均 token/s & 离线生成、批量评测、数据合成任务 \\
+稳定性优先 & 超时控制、重试策略、尾延迟分布 & 企业生产服务、带 SLA 的内部系统 \\
+\bottomrule
+\end{tabularx}
+\caption{推理优化要先分清是在追低延迟，还是追高吞吐}
+\label{tab:latency-vs-throughput}
+\end{table}
+
+\subsection{Sampling 不是“创意开关”，而是风险开关}
+\texttt{generate()} 并不是黑盒魔法。模型先输出每个位置上“下一个 token 的概率倾向”，也就是 logits；随后解码策略再决定如何从这个分布里取样。
+
+\texttt{max\_new\_tokens} 控制生成长度上限，\texttt{temperature} 控制分布平滑程度，\texttt{top\_p} 控制采样时保留的累计概率质量。除此之外，\texttt{repetition\_penalty}、\texttt{top\_k} 和 \texttt{no\_repeat\_ngram\_size} 也会直接影响输出稳定性。
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{3cm}>{\raggedright\arraybackslash}p{3.3cm}>{\raggedright\arraybackslash}X}
+\toprule
+\textbf{参数} & \textbf{主要影响} & \textbf{企业知识助手中的常见用法} \\
+\midrule
+\texttt{max\_new\_tokens} & 输出长度上限 & 明确限制冗长回答和成本失控 \\
+\texttt{temperature} & 多样性与稳定性平衡 & 知识问答通常取较低值 \\
+\texttt{top\_p} & 候选概率质量范围 & 配合低温度使用，避免发散 \\
+\makecell[l]{\texttt{repetition\_}\\\texttt{penalty}} & 缓解复读与循环 & 对长回答或摘要任务很有用 \\
+\makecell[l]{\texttt{no\_repeat\_}\\\texttt{ngram\_size}} & 限制重复短语 & 适合格式稳定但怕复读的任务 \\
+\bottomrule
+\end{tabularx}
+\caption{生成参数不是孤立开关，而是在共同塑造输出分布}
+\label{tab:generation-params}
+\end{table}
+
+如果进一步从任务类型出发，团队通常还需要一组“默认档位”作为起点，而不是每次都从零猜参数：
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{2.8cm}>{\raggedright\arraybackslash}p{2.4cm}>{\raggedright\arraybackslash}p{2.4cm}>{\raggedright\arraybackslash}p{2.2cm}>{\raggedright\arraybackslash}X}
+\toprule
+\textbf{任务类型} & \textbf{温度} & \textbf{\texttt{top\_p}} & \textbf{是否采样} & \textbf{建议} \\
+\midrule
+知识问答 & 低 & 中低 & 视场景而定 & 先求稳定、少发挥 \\
+代码生成 & 低到中 & 中低 & 通常保守 & 更重视格式和可执行性 \\
+创意写作 & 中到高 & 中高 & 通常采样 & 允许更多多样性 \\
+多轮对话 & 中等 & 中等 & 常用采样 & 在稳定和自然之间折中 \\
+\bottomrule
+\end{tabularx}
+\caption{不同任务类型的生成参数可以从不同默认档位起步}
+\label{tab:task-generation-defaults}
+\end{table}
+
+对企业知识助手这类强调稳定性的系统，一般优先采用低温度、适中的 \texttt{top\_p} 和明确的最大输出长度。这里最重要的不是背参数定义，而是理解一条原则：\textbf{采样参数越激进，模型越像在”发挥”；采样参数越保守，模型越像在”执行”。}
+
+为了让读者真正理解 temperature 和 top\_p 在做什么，下面用一个具体数值例子说明。假设模型在某一步输出了三个候选 token 的 logits：
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{2cm}>{\raggedright\arraybackslash}p{2.5cm}>{\raggedright\arraybackslash}p{2.5cm}>{\raggedright\arraybackslash}X}
+\toprule
+\textbf{候选 token} & \textbf{原始 logits} & \textbf{T=1.0 概率} & \textbf{T=0.3 概率} \\
+\midrule
+“标准” & 3.0 & 66.5\% & 97.8\% \\
+“规定” & 1.5 & 14.9\% & 2.0\% \\
+“要求” & 1.0 & 9.0\% & 0.2\% \\
+\bottomrule
+\end{tabularx}
+\caption{Temperature 的效果：除以 T 后再做 softmax，T 越小分布越尖锐}
+\label{tab:temperature-example}
+\end{table}
+
+计算过程：softmax 之前先把 logits 除以 temperature，即 $p_i = \frac{e^{z_i/T}}{\sum_j e^{z_j/T}}$。当 $T=0.3$ 时，原本 66.5\% 的首选被推高到 97.8\%，模型几乎确定性地选择”标准”。当 $T=1.0$ 时，分布更平坦，其他候选也有机会被选中。$T \to 0$ 等价于贪心解码（永远选概率最高的）。
+
+\texttt{top\_p}（核采样）则是另一种截断方式：按概率从高到低排列候选 token，只保留累计概率达到 $p$ 的那些。例如 \texttt{top\_p=0.9} 时，如果前两个 token 的概率之和已经超过 90\%，第三个及之后的候选就被直接排除。这避免了低概率长尾中的”意外”token 被选中。
+
+\subsection{流式输出不是显示动画，而是把 decode 过程暴露给上层}
+很多初学者把流式输出理解成“把整段答案一个字一个字显示出来”，但工程上更准确的理解是：\textbf{流式输出是在上层系统里显式接住 decode 过程。} 这意味着团队不再只关心最终答案是什么，还要关心中间片段什么时候出现、是否需要即时停止、是否要边生成边做审计、以及用户看到的半成品能不能被安全展示。
+
+这件事一旦讲清楚，很多界面与服务层现象就不再神秘。比如，用户觉得“模型很快”，常常不是因为总耗时短，而是因为首批片段回来得早；又比如，某些回答最终其实还不错，但流式过程中先吐出了一句不合规的草稿，这在企业场景里就已经算事故。因此，\textbf{流式输出不是纯交互优化，它同时是一层协议设计。}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{2.8cm}>{\raggedright\arraybackslash}p{3.2cm}>{\raggedright\arraybackslash}X}
+\toprule
+\textbf{阶段} & \textbf{上层最该关心什么} & \textbf{常见误判} \\
+\midrule
+首个片段返回 & 首 token 延迟、用户是否感知“系统已开始工作” & 误以为“流式一开，系统就变快了” \\
+中间片段持续输出 & 是否出现跑题、复读、敏感片段、结构破坏 & 把半成品直接当最终答案使用 \\
+最终完成与落库 & 停止原因、最终文本、后处理结果 & 流式展示过什么与最终保存什么没有分开 \\
+\bottomrule
+\end{tabularx}
+\caption{流式输出关心的不只是显示效果，更是中间过程能否被安全接管}
+\label{tab:streaming-concerns}
+\end{table}
+
+对教材读者来说，一个很重要的工程纪律是：\textbf{把“用户看到的流式片段”和“系统最终确认落库的答案”当成两份不同产物。} 前者服务交互体验，后者服务回放、评测和审计。如果把两者混成一份日志，后续就会很难回答“用户当时到底看到了什么”“最终答案又是在哪一步被修正的”。
+
+\subsection{截断、padding 与 attention mask：输入协议错了，生成再好也救不回来}
+旧稿里关于 BERT 和 Transformers 输出结构的内容，除了帮助读者理解接口，还应该留下一个更底层的工程判断：\textbf{模型生成之前，输入张量必须先是对的。} 很多看起来像“模型突然变笨”的问题，最后并不是坏在采样，而是坏在编码阶段的截断、padding 或 attention mask。
+
+对单条短请求来说，这些问题不一定会立刻暴露；一旦进入长 prompt、批量推理或多轮对话，症状就会很明显。比如系统指令被截断在窗口外，模型就像“突然不守规则”；padding 方向和模型习惯不一致，批量生成就可能前后不一致；attention mask 错配时，模型甚至可能把本应忽略的 padding 区域当成真实上下文的一部分。
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{3cm}>{\raggedright\arraybackslash}p{3.2cm}>{\raggedright\arraybackslash}X}
+\toprule
+\textbf{输入协议问题} & \textbf{最常见现象} & \textbf{第一排查动作} \\
+\midrule
+系统指令或前文被截断 & 模型突然不按角色、格式或边界回答 & 统计 token 长度，确认截断发生在什么位置 \\
+padding 方向不合适 & 单条测试正常，批量推理行为漂移 & 检查 \texttt{padding\_side} 与模型习惯是否一致 \\
+attention mask 错误 & 模型利用了不该看的位置，输出异常不稳定 & 打印 \texttt{input\_ids} 与 \texttt{attention\_mask} 对照检查 \\
+特殊 token 处理不一致 & 结束过早、角色边界混乱或模板失灵 & 核对 BOS、EOS、分隔符和聊天模板展开结果 \\
+\bottomrule
+\end{tabularx}
+\caption{生成前的输入协议如果错了，后面的采样和调参通常都救不回来}
+\label{tab:input-protocol-failures}
+\end{table}
+
+这里最容易被低估的，是\textbf{批量推理不等于把多条单请求简单拼在一起。} 单请求里，padding 往往不显眼；一旦开始 batch，padding 方向、截断策略和 mask 形状都会直接影响输出的一致性。所以工程上一个很有价值的习惯是：既要测单条样例，也要测“同一条样例在 batch 里和单独跑时是否一致”。如果这一步都不一致，问题大概率还在输入协议层，而不在模型能力层。
+
+\subsection{停止条件、结束符与 \texttt{finish\_reason} 不是小细节}
+很多初学者把生成控制理解成“长度够了就停”，但真实系统里，\texttt{generate()} 停下来的原因不止一种。它可能是正常遇到了结束符，也可能是 hit 了 \texttt{max\_new\_tokens}，还可能是命中了自定义停止词，或被上层服务超时截断。不同停止原因对应的故障含义完全不同。
+
+对企业知识助手来说，这一点尤其关键。因为“回答不完整”有时不是模型不会答，而是它被长度上限截断了；“回答忽然结束”也不一定是推理断了，而可能是错误地把某个标记当成 stop sequence；“为什么这次只回了一半”甚至可能根本是服务层超时。也就是说，\textbf{停止逻辑本身就是推理协议的一部分。}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{2.8cm}>{\raggedright\arraybackslash}p{3.4cm}>{\raggedright\arraybackslash}X}
+\toprule
+\textbf{停止原因} & \textbf{通常意味着什么} & \textbf{第一排查动作} \\
+\midrule
+正常遇到 EOS / stop token & 模型认为回答已完成 & 看回答是否真完整，模板是否定义了正确结束符 \\
+达到 \texttt{max\_new\_tokens} & 输出被长度预算硬截断 & 检查上限是否过小，是否该压缩 prompt 或调结构 \\
+命中自定义停止词 & 上层人为约束触发了结束 & 检查停止词是否误伤正文内容 \\
+服务超时或中断 & 不是模型自然完成，而是链路被截停 & 查超时阈值、并发状态和日志异常信息 \\
+\bottomrule
+\end{tabularx}
+\caption{同样是“停下来了”，不同 \texttt{finish\_reason} 的工程含义完全不同}
+\label{tab:finish-reasons}
+\end{table}
+
+\subsection{默认配置漂移：同一个模型在两个环境里为什么像两个人}
+工程里还有一种特别常见、但很耗排查时间的现象：模型名字明明没变，回答风格却在两套环境里差很多。很多时候，问题不在权重，而在\textbf{默认配置被不同层悄悄覆写了。} 例如某个环境读取了模型自带的 \texttt{generation\_config}，另一个环境又在服务层统一覆写了 \texttt{temperature}；某个脚本把 \texttt{max\_new\_tokens} 写在代码里，线上服务却又额外加了平台级 stop sequence。
+
+这类问题麻烦的地方，不是它难理解，而是它表面上看起来很像“模型性格变了”。因此团队最好尽早建立一个明确顺序：\textbf{模型默认值、代码显式参数、平台透传参数，谁最后生效。} 只要这个顺序说不清，后续做离线对线上回放时就很难知道自己到底在对比什么。
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{3cm}>{\raggedright\arraybackslash}p{3cm}>{\raggedright\arraybackslash}X}
+\toprule
+\textbf{配置来源} & \textbf{典型内容} & \textbf{最容易引发的误会} \\
+\midrule
+模型默认生成配置 & EOS、默认长度、部分采样参数 & “什么都没改，为什么版本换环境就变了” \\
+代码里的显式参数 & \texttt{temperature}、\texttt{top\_p}、\texttt{max\_new\_tokens} & 本地脚本正常，服务化后行为不一致 \\
+平台或服务层覆写 & stop sequence、超时、全局长度上限 & 团队误以为是模型退化，其实是平台规则变了 \\
+\bottomrule
+\end{tabularx}
+\caption{生成行为经常不是只由模型决定，而是由多层配置共同决定}
+\label{tab:generation-config-sources}
+\end{table}
+
+对教材读者来说，一个很实用的纪律是：每次记录失败样例时，不只保存最终 prompt，也保存\textbf{最终生效的生成配置快照}。只有把“输入长什么样”和“生成是按什么规则停、按什么分布采样”同时记住，重跑包才真的完整。
+
+\subsection{为什么要读懂模型输出结构}
+工程里不能只拿最终文本，还要知道模型在中间阶段产生了什么。例如：
+\begin{itemize}
+  \item token 长度是否超过预算。
+  \item 是否提前遇到结束符。
+  \item 某次输出是否因为截断或模板错误而偏离预期。
+  \item 是否需要保存 logits、hidden states 或生成分数做进一步分析。
+\end{itemize}
+
+这也是为什么一个成熟的推理链，除了返回文本，往往还会返回一整套 trace。没有 trace，团队只能凭“感觉变差了”来定位问题；有了 trace，团队才能把问题缩到 tokenizer、模板、采样或后处理中的某一层。
+
+\subsection{logprob、候选与拒答阈值：它们适合做诊断，不适合当事实置信度}
+旧稿里虽然没有把这一点单独讲透，但在工程实践里它非常值得补上：\textbf{token 级分数和候选分布，最适合拿来做症状诊断，而不适合直接当“模型对事实的信心分”。} 原因很简单，模型分数反映的是“在当前上下文下，这样续写有多顺”，而不是“这句话在外部世界里有多真”。
+
+即便如此，这些信号仍然很有价值。比如，团队可以观察某次拒答模板为什么突然失效，是因为模型在关键分叉点上对“拒答句式”的偏好下降了；也可以比较两个候选答案为什么一个稳定引用证据、一个却开始发散，看关键字段附近的候选 token 是否已经出现明显分歧。也就是说，\textbf{logprob 更像温度计，不像裁判。}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{3cm}>{\raggedright\arraybackslash}p{3.2cm}>{\raggedright\arraybackslash}X}
+\toprule
+\textbf{观测信号} & \textbf{更适合做什么} & \textbf{不该过度解读什么} \\
+\midrule
+关键 token 的 logprob & 看模板分叉点是否稳定、拒答句式是否被偏离 & “分数高就一定是真的” \\
+多个候选序列的差异 & 看采样发散点、结构破坏从哪里开始 & “候选越一致就越正确” \\
+整段平均分数 & 做版本间粗粒度比较、发现异常漂移 & “平均分高就代表业务表现更好” \\
+\bottomrule
+\end{tabularx}
+\caption{模型分数更适合服务调试与对比，而不是直接充当事实置信度}
+\label{tab:logprob-usage}
+\end{table}
+
+对企业知识助手来说，更稳妥的做法通常是把这些信号用在三类地方：第一，定位模板是否被模型稳定遵守；第二，筛出需要人工复核的边界样本；第三，在同一条失败样本上对比不同模型版本的分叉位置。这样它们是在帮助团队缩小排查范围，而不是替代证据、检索或人工判断。
+
+\subsection{后处理不是补锅，而是推理协议最后一层}
+从“模型吐出文本”到“系统给出业务答案”之间，常常还隔着一层后处理。旧稿里这部分散落在工具调用、输出解析和合规化处理里，新版更适合把它收束成一个判断：\textbf{后处理不是在模型失败后临时补锅，而是推理协议里本就存在的一层职责。}
+
+对企业知识助手来说，这层职责至少包括四类动作：补上引用来源、把自然语言解析成结构化字段、对敏感内容做兜底审计、以及把模型输出改写成业务系统需要的最终格式。如果不把这层单独写清，团队就很容易把“字段解析失败”“引用补挂失败”“敏感词拦截触发”统统误判成“模型回答错了”。
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{3cm}>{\raggedright\arraybackslash}p{3.2cm}>{\raggedright\arraybackslash}X}
+\toprule
+\textbf{后处理动作} & \textbf{它在保护什么} & \textbf{如果没有这层会怎样} \\
+\midrule
+引用补挂与校验 & 证据链完整性 & 模型明明答对大意，却无法追溯依据 \\
+结构化解析 & 字段稳定与系统集成 & 下游接口接不到稳定字段，只能靠正则硬猜 \\
+敏感内容兜底 & 合规与风险边界 & 半成品回答直接暴露给用户或写入系统 \\
+最终格式重写 & 业务输出一致性 & 同一任务今天像问答，明天像随笔，无法稳定接入流程 \\
+\bottomrule
+\end{tabularx}
+\caption{后处理层在把模型输出转成可交付业务结果}
+\label{tab:postprocess-role}
+\end{table}
+
+\subsection{结构化输出、工具调用与最小 Agent 编排}
+旧稿里还专门往前走了一步，讲到 Toolkits、Output Parsers、Chat History 以及 Agent 组件拼装。这些内容不适合在教材里膨胀成一个大杂烩，但也不能完全消失，因为很多工程团队真正进入系统开发时，第一步就是让模型不只“说一句话”，而是\textbf{产出一个可执行动作}。
+
+这里最关键的边界要讲清楚：{\heiti 工具调用不是模型真的去调用工具，而是模型先输出一个结构化意图；真正执行工具的是外部系统。} 也就是说，工具调用至少包含四层职责：
+\begin{itemize}
+  \item \textbf{模型层}：根据当前上下文，输出动作名称、参数或结构化 JSON；
+  \item \textbf{解析层}：检查字段是否齐全、格式是否合法、参数是否越界；
+  \item \textbf{执行层}：真正去调用检索器、数据库、API 或内部工作流；
+  \item \textbf{状态层}：把工具结果写回对话历史，让下一轮模型能继续基于它推理。
+\end{itemize}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{2.5cm}>{\raggedright\arraybackslash}p{3.2cm}>{\raggedright\arraybackslash}X}
+\toprule
+\textbf{环节} & \textbf{最小职责} & \textbf{最常见错误} \\
+\midrule
+结构化输出 & 让模型给出动作名和参数 & 返回一段“看起来像 JSON”的自然语言，无法稳定解析 \\
+Output Parser & 验证 schema、补默认值、拒绝非法参数 & 把脏输出直接放行，后面整个链路一起炸掉 \\
+工具执行 & 调检索、数据库、接口或业务函数 & 把工具失败误当成模型能力差 \\
+Chat History / 状态管理 & 保留动作结果、上下文和中间结论 & 历史堆得过长，或关键工具结果没有写回上下文 \\
+\bottomrule
+\end{tabularx}
+\caption{从模型生成到可执行工作流，中间至少还隔着这几层}
+\label{tab:tool-calling-stack}
+\end{table}
+
+一个最小的例子如下。这里的重点不是 API 名字，而是看清楚“生成动作”和“执行动作”是两件事：
+\begin{lstlisting}[language=Python]
+action = {
+    "name": "search_policy",
+    "arguments": {"query": "住宿超标审批与报销规则"}
+}
+
+validated = parser.validate(action)
+result = retriever.search(validated["arguments"]["query"])
+
+messages.append({
+    "role": "tool",
+    "name": validated["name"],
+    "content": result
+})
+\end{lstlisting}
+
+这段流程为什么重要？因为它把很多容易混淆的现象拆开了。模型参数错、解析器太松、工具本身没返回结果、聊天历史没有写回，最后表面上都可能表现成“Agent 不聪明”。旧稿里强调 Output Parser 和 Chat History，不是为了堆组件名，而是为了提醒团队：\textbf{一旦系统进入多步工作流，失败原因往往已经不只在模型里。}
+
+\subsection{Agent 的循环式工作观：思考、行动、观察不是魔法}
+旧稿里关于 Agent 和 Toolkits 还有一个很值得保留的心智模型：\textbf{Agent 不是一个会“自动完成所有事”的黑盒，而是一个围绕状态循环运转的工作流。} 最常见的最小循环可以写成四步：读当前问题与状态、决定下一步动作、执行动作、把观察结果写回状态。
+
+如果把这个循环拆开看，很多所谓“Agent 不稳定”就不再神秘。它可能是\textbf{读状态}时没拿到关键上下文，可能是\textbf{选动作}时工具描述不清，也可能是\textbf{写观察}时没有把结果结构化回填。因此，工程团队真正该设计的，不只是“给模型几个工具”，而是：当前状态里应该有哪些字段、每个工具输入输出长什么样、失败后怎么回退、什么时候停止循环。
+
+对企业知识助手来说，一个够用的 Agent 循环通常不是无限制的“想到哪做到哪”，而是保守得多：
+\begin{enumerate}
+  \item 先判断当前问题是直接回答、先检索，还是先澄清。
+  \item 如果要调工具，先输出动作名和参数。
+  \item 工具执行后，把结果写回状态，并显式记录成功、失败或依据不足。
+  \item 下一轮只在新状态上继续判断，而不是重新猜一遍发生了什么。
+\end{enumerate}
+
+\subsection{框架能加速，也会遮住故障点}
+旧稿里对 LangChain 一类框架的提醒不该丢掉。框架的价值，在于把提示模板、消息历史、输出解析、检索器和工具执行这些部件快速串起来；但它的风险也很直接，那就是\textbf{一旦封装层数太多，团队很容易不知道最终 prompt 到底长什么样、检索问题有没有被改写、解析器实际放行了什么。}
+
+因此，教材里至少要保留三条使用纪律。第一，框架组件必须能单独打印中间结果，而不是只看最终答案。第二，关键接口要版本化，例如模板版本、检索版本、解析 schema 版本。第三，框架升级或替换时，优先回放固定样本，而不是相信“API 名字差不多所以行为也差不多”。对初学者来说，这比记住某个具体框架的类名更重要。
+
+\subsection{先跑通，再加复杂度}
+对初学者来说，最稳妥的顺序不是一开始就接聊天模板、多轮记忆和工具调用，而是先把\textbf{单轮、单模型、单请求}跑通。只有最小链路足够透明，后续任何增强模块出问题时，团队才知道应该回退到哪一层排查。
+
+\begin{lstlisting}[language=Python]
+from transformers import AutoTokenizer, AutoModelForCausalLM
+
+model_name = "Qwen/Qwen2.5-1.5B-Instruct"
+tokenizer = AutoTokenizer.from_pretrained(model_name)
+model = AutoModelForCausalLM.from_pretrained(model_name)
+
+prompt = "请用三句话说明什么是检索增强生成。"
+inputs = tokenizer(prompt, return_tensors="pt")
+outputs = model.generate(
+    **inputs,
+    max_new_tokens=128,
+    temperature=0.3,
+    top_p=0.9
+)
+text = tokenizer.decode(outputs[0], skip_special_tokens=True)
+\end{lstlisting}
+
+这一阶段还应坚持一个很重要的工程顺序：先用最默认、最稳的装配把链路跑通，再去做精度压缩、量化和更激进的服务化优化。对入门读者来说，先看清“模型能不能稳定生成”，比一开始就追求“能不能用更低显存生成”更重要。
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{2.5cm}>{\raggedright\arraybackslash}p{3cm}>{\raggedright\arraybackslash}p{3cm}>{\raggedright\arraybackslash}X}
+\toprule
+\textbf{精度方案} & \textbf{主要优点} & \textbf{主要风险} & \textbf{更适合什么阶段} \\
+\midrule
+FP32 & 最稳、问题最少 & 显存和速度压力大 & 最小验证、先确认链路没错 \\
+FP16 / BF16 & 更省资源、速度更好 & 某些环境配置更敏感 & 链路跑通后的默认工程选择 \\
+INT8 及更低精度 & 更省显存、便于部署 & 质量回退需要专门验证 & 已有回归集后的优化阶段 \\
+\bottomrule
+\end{tabularx}
+\caption{从库到模型的第一课，先求跑通，再求省资源}
+\label{tab:dtype-tradeoff-intro}
+\end{table}
+
+\subsection{调试大模型时先看哪里}
+最有效的调试顺序通常是：
+\begin{enumerate}
+  \item 先看 prompt 是否真的按预期拼接。
+  \item 再看输入 token 长度与截断策略。
+  \item 然后看采样参数是否过于激进。
+  \item 再看结束符、停止词和后处理是否把输出截坏。
+  \item 最后才怀疑模型权重本身存在问题。
+\end{enumerate}
+
+这个顺序看似保守，其实是在避免一种常见误诊：把工程实现问题误判成模型能力问题。很多所谓“模型忽然变差”，最后都能追溯到 prompt 改坏了、输入被截断了，或默认采样参数被悄悄换掉了。
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{3.2cm}>{\raggedright\arraybackslash}p{3.8cm}>{\raggedright\arraybackslash}X}
+\toprule
+\textbf{现象} & \textbf{最该先怀疑什么} & \textbf{第一排查动作} \\
+\midrule
+回答突然变得很长、很散 & 采样参数或停止条件变了 & 检查 \texttt{temperature}、\texttt{top\_p}、\texttt{max\_new\_tokens} \\
+同一输入前后风格差异很大 & 模板或消息拼接变了 & 记录并比对最终 prompt \\
+模型“答非所问” & 输入被截断或系统指令被稀释 & 检查 token 长度与裁剪策略 \\
+回答开头正常，后面突然乱码或重复 & 解码策略或后处理异常 & 看结束符、重复惩罚和 decode 日志 \\
+\bottomrule
+\end{tabularx}
+\caption{从现象到第一检查项的最小调试表}
+\label{tab:inference-debug-routing}
+\end{table}
+
+\subsection{想做可复盘调试，至少要保存一份“最小重跑包”}
+到这一步，教材读者应该已经能看出：真正可调试的系统，不是“能把答案打印出来”的系统，而是“能把一次回答重新跑出来”的系统。为此，团队最好把每次调用至少压成一份最小重跑包，包含：最终 prompt、模型与 tokenizer 版本、生成参数、停止原因、输入输出 token 统计，以及必要时的随机种子。
+
+这份重跑包的价值不在于日志更华丽，而在于它能让团队把争论从“感觉这版变差了”变成“这条样例在同一配置下就是和上周不一样”。只要能重跑，后面无论是模板改动、参数回退还是模型替换，都有了客观对照。不能重跑的系统，就很难真正建立起工程意义上的回归测试。
+
+\section{主案例推进}
+在企业知识助手的第一版里，我们先不引入检索、记忆和工具调用，只要求系统能接受一个问题并生成可读答案。这个阶段的目标不是“回答完全正确”，而是建立一条可验证的最小闭环。
+
+第一版系统应该记录以下信息：
+\begin{itemize}
+  \item 原始输入问题。
+  \item 实际送入模型的完整 prompt。
+  \item 输入 token 数和输出 token 数。
+  \item 生成参数配置。
+  \item 模型返回文本与耗时。
+\end{itemize}
+
+下面是一份足够支撑第一版排查的最小日志结构：
+\begin{lstlisting}[language=Python]
+trace = {
+    "question": question,
+    "prompt": prompt,
+    "input_tokens": len(inputs["input_ids"][0]),
+    "generation_config": {
+        "max_new_tokens": 128,
+        "temperature": 0.3,
+        "top_p": 0.9
+    },
+    "output_text": text,
+    "latency_ms": latency_ms,
+    "finish_reason": finish_reason
+}
+\end{lstlisting}
+
+如果要把这条链路做得更像工程系统，还应再加两项意识。
+
+第一，\textbf{配置版本化}。模型名、tokenizer 版本、聊天模板版本、生成参数版本，最好都能落到日志里。第二，\textbf{样本回放能力}。当一次回答出错时，团队应该能拿着当时的 prompt 和参数，把它重新跑一遍，而不是只能靠记忆猜。
+
+在主案例里，这些日志字段最大的价值不在“记录得更全”，而在于它让团队第一次拥有了复盘样本的能力。没有复盘，后续所有优化都只能停留在主观印象层面。
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{3.1cm}>{\raggedright\arraybackslash}p{3.3cm}>{\raggedright\arraybackslash}X}
+\toprule
+\textbf{日志字段} & \textbf{为什么值得保留} & \textbf{典型用途} \\
+\midrule
+最终 prompt & 这是模型真正看到的输入 & 回放失败样本、比对模板变更 \\
+输入输出 token 数 & 反映预算、截断和成本 & 查为什么突然变慢或被截断 \\
+生成参数配置 & 反映 decode 阶段行为 & 查为什么输出风格突然漂移 \\
+\texttt{finish\_reason} & 反映是正常结束还是被截断 & 判断回答不完整是不是停早了 \\
+耗时和异常信息 & 反映服务层状态 & 查超时、失败和慢请求 \\
+\bottomrule
+\end{tabularx}
+\caption{推理日志不必全，但至少要保住这些字段}
+\label{tab:trace-fields}
+\end{table}
+
+如果再进一步把企业知识助手的推理链路拆成工程职责，可以得到下面这张表：
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{2.8cm}>{\raggedright\arraybackslash}p{3.4cm}>{\raggedright\arraybackslash}X}
+\toprule
+\textbf{链路段} & \textbf{谁负责它} & \textbf{最容易出的问题} \\
+\midrule
+消息到 prompt & 应用层模板代码 & system 指令丢失、角色顺序错、裁剪过度 \\
+prompt 到 token & tokenizer 与 chat template & 特殊 token 不一致、截断方式错误 \\
+token 到 logits & 模型前向与设备配置 & 设备错配、精度不当、输入张量异常 \\
+logits 到文本 & 生成参数与解码策略 & 发散、复读、过长、提前停止 \\
+文本到业务输出 & 后处理层 & 引用丢失、格式破坏、字段抽取失败 \\
+\bottomrule
+\end{tabularx}
+\caption{企业知识助手的推理链不止模型一层}
+\label{tab:inference-responsibility}
+\end{table}
+
+\subsection{把线上链路拆成三段日志：输入日志、生成日志、后处理日志}
+如果系统只保存一份最终文本，它最多算“留痕”，还谈不上“可调试”。更稳的做法是把一次问答拆成三段日志。第一段是输入日志，记录原始消息、展开后的 prompt、token 长度、截断位置和模板版本；第二段是生成日志，记录生成参数、停止原因、耗时、输出 token 统计；第三段是后处理日志，记录引用补充、结构化解析、字段提取或工具执行有没有失败。
+
+这三段日志分开保存的价值在于：团队能更快判断故障到底发生在哪一层。如果输入日志已经显示系统指令被截断，那就没必要继续怀疑采样；如果生成日志显示 \texttt{finish\_reason=max\_new\_tokens}，那就别先去怪模型“答一半”；如果后处理日志显示 JSON 解析失败，问题就不该被统称成“模型乱说了”。
+
+对企业知识助手这类要长期维护的系统来说，这个拆法几乎是后续一切评测和回放的前提。因为只有输入、生成、后处理三段都能被单独对照，团队才可能在未来回答“这次是模型行为变了，还是应用协议变了，还是业务约束变了”。
+
+\subsection{把流式展示稿和最终业务稿分开治理}
+如果企业知识助手要对用户做流式输出，这里还要再补一条常被忽略的治理动作：\textbf{流式展示稿和最终业务稿不要混成同一个状态。} 流式阶段的文本可能会被后续 token 修正，也可能在后处理阶段补上引用、裁掉越权内容或转成结构化格式。若系统把中间片段直接当正式答案落库，后续回放和追责都会变得混乱。
+
+更稳的做法是保留两份产物：一份是面向交互体验的展示流，重点记录首片段时间、中途是否被中断、用户最终看到了什么；另一份是面向系统治理的最终稿，重点记录结束原因、后处理结果、结构化字段和审计标记。这样做并不会让链路“更官僚”，恰恰相反，它是在提前避免后面最贵的那类争议：到底是模型说错了，还是中间片段被误展示了，还是最终落库稿和展示稿根本不是一回事。
+
+\section{常见坑与工程取舍}
+\begin{itemize}
+  \item \textbf{只保存最终文本，不保存 prompt}：后续几乎无法复盘失败样本。
+  \item \textbf{默认采样参数不加区分}：创作型参数直接拿来做知识问答，容易让输出漂移。
+  \item \textbf{忽略 tokenizer 差异}：不同模型的聊天模板、特殊 token 和截断规则不完全一致。
+  \item \textbf{把业务错误误判为模型错误}：很多失败是输入拼接、模板拼装或后处理造成的。
+\end{itemize}
+
+再补四条旧稿里很值得保留的提醒：
+\begin{itemize}
+  \item \textbf{不要把 logits 当概率直觉使用}：它们在 softmax 之前，真正的行为还受解码策略影响。
+  \item \textbf{低温度不等于一定正确}：它只是在让模型更保守，不会自动补足知识缺口。
+  \item \textbf{复读不是单一参数问题}：既可能来自采样设置，也可能来自 prompt、训练分布和停止条件。
+  \item \textbf{最小链路先别上太多框架封装}：封装越厚，越看不清问题究竟出在库、模型还是业务层。
+\end{itemize}
+
+\section{本章练习}
+\begin{exercise}[输出失控先看哪一层]
+某次版本更新后，企业知识助手开始输出很长的发散回答，但模型权重没有变化。你应先检查哪两类信息？
+\end{exercise}
+
+\begin{solution}
+应先检查{\heiti prompt 是否被改坏}以及{\heiti 采样参数是否被调得更激进}。模型权重没变时，最常见的原因是输入拼接和解码配置发生了变化，而不是模型突然失去能力。
+\end{solution}
+
+\begin{exercise}[复盘最小日志]
+如果日志里只能保留三项字段来支持后续复盘，你会优先保留哪三项？为什么？
+\end{exercise}
+
+\begin{solution}
+优先保留 {\heiti 完整 prompt、输入输出 token 数、生成参数配置}。完整 prompt 决定模型实际看到了什么，token 数决定是否存在截断和预算问题，生成参数决定输出是否因为采样策略而漂移。这三项能最快把问题缩到正确层面。
+\end{solution}
+
+\section{延伸阅读}
+\begin{itemize}
+  \item \textbf{Hugging Face Transformers 官方文档}：最适合把 API 调用与模型行为逐项对应起来。
+  \item \textbf{vLLM、TGI 等推理服务文档}：适合理解从本地单请求到服务化推理之间多了哪些工程层。
+  \item \textbf{生成退化与 repetition 相关资料}：适合理解为什么复读和发散不能只靠“再调一点温度”解决。
+\end{itemize}
+
+\section{小结}
+本章把大模型从“抽象概念”落实为可执行链路：加载、编码、前向、采样、解码和日志记录。对工程实践而言，能读懂这条链路，比会调几个孤立参数更重要；而真正稳定的系统，靠的也不是记住几个 API 名字，而是知道每一段职责在哪里、出错时先查哪一层。
+
+\section{下一章过渡}
+当最小问答链路跑通之后，新的问题马上出现：同一个模型为什么有时回答稳定，有时又前后不一致？下一章将进入提示工程与上下文管理，讨论如何通过输入设计让模型行为更可控。
