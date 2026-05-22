@@ -1,10 +1,10 @@
-\chapter{算子代换法}
+﻿\chapter{算子代换法}
 \section{算子的定义与运算性质}
-\begin{definition}{算子 $E$}{}
-    针对椭圆方程，定义输入为任意两点 $M(x_M, y_M)$ 与 $N(x_N, y_N)$ 的二元函数（输出为实数）：
+\begin{definition}[算子 $E$]
+    针对椭圆方程，定义作用于任意两点 $M(x_M, y_M)$ 与 $N(x_N, y_N)$ 的二元函数：
 $$ E(M, N) = \frac{x_M x_N}{a^2} + \frac{y_M y_N}{b^2} $$
 \end{definition}
-显然，$E(M,N)=E(N,M)$。下面验证分配律。设存在任意三点 $A(x_A, y_A), B(x_B, y_B), C(x_C, y_C)$，并设
+显然，$E(M,N)=E(N,M)$。设任意三点 $A(x_A, y_A), B(x_B, y_B), C(x_C, y_C)$，并设
 \[
 P=\alpha A+\beta B,
 \]
@@ -15,7 +15,7 @@ E(P, C) &= E( \alpha A + \beta B, C) \\
 &= \alpha \left( \frac{x_A x_C}{a^2} + \frac{y_A y_C}{b^2} \right) + \beta \left( \frac{x_B x_C}{a^2} + \frac{y_B y_C}{b^2} \right) =\alpha E(A,C) + \beta E(B,C) 
 \end{align*}
 另一种情况同理。
-\begin{definition}{算子 $T$}{}
+\begin{definition}[算子 $T$]
 再定义
 $$ T(M, N) = E(M, N) - 1 = \frac{x_M x_N}{a^2} + \frac{y_M y_N}{b^2} - 1. $$
 当 $M=N$ 且 $M$ 在椭圆上时，有 $T(M,M)=0$。
@@ -30,7 +30,7 @@ P=\alpha A+\beta B,\qquad \alpha+\beta=1,
   &=\alpha E(A,C) + \beta E(B,C) - 1 =\alpha E(A,C) + \beta E(B,C)-\alpha - \beta\\
   &= \alpha E(A,C) - \alpha + \beta E(B,C) - \beta= \alpha T(A,C) + \beta T(B,C)
 \end{align*}
-\begin{definition}{外积 $W$}{}
+\begin{definition}[外积 $W$]
 对于以原点为起点的两个位置向量 $\overrightarrow{OM} = (x_M, y_M)$ 与 $\overrightarrow{ON} = (x_N, y_N)$，定义：
 $$ W(M, N) = x_M y_N - x_N y_M $$
 \end{definition}
@@ -43,7 +43,7 @@ $$ W(M, N) = x_M y_N - x_N y_M $$
 \begin{align*}W(C, P) &= W(C, \alpha A + \beta B) = -W(\alpha A + \beta B, C)= -\big(\alpha W(A, C) + \beta W(B, C)\big) \\&= \alpha \big(-W(A, C)\big) + \beta \big(-W(B, C)\big) = \alpha W(C, A) + \beta W(C, B)\end{align*}
 \end{itemize}
 
-\begin{definition}{内积 $I$}{}
+\begin{definition}[内积 $I$]
 $$ I(M, N) = x_M x_N + y_M y_N $$
 \end{definition}
 \begin{itemize}
@@ -56,7 +56,7 @@ $$ I(M, N) = x_M x_N + y_M y_N $$
     \item 与标准内积的联系：$I(M,N) = \overrightarrow{OM} \cdot \overrightarrow{ON}$，即欧几里得空间中的点积。
 \end{itemize}
 
-\begin{definition}{直线式 $F$}{}
+\begin{definition}[直线式 $F$]
     对于三点共线的$A(x_A,y_A),B(x_B,y_B),X(x,y)$，记
     \[F_{AB}(X)=y(x_A-x_B)+x(y_B-y_A)-(x_Ay_B-x_By_A)\]
 \end{definition}
@@ -85,7 +85,7 @@ $$ I(M, N) = x_M x_N + y_M y_N $$
 
 \section{几个基本结论}
 
-\begin{conclusion}{定比公式及其推论}{}
+\begin{conclusion}[定比公式及其推论]
 已知二次曲线 $C$ 上有两点 $A, B$。直线 $AB$ 上有一动点 $P$ 满足 $\overrightarrow{AP} = \lambda \overrightarrow{PB}$。则必然成立：
 \begin{enumerate}
     \item 比例关系：
@@ -115,7 +115,6 @@ T(P,A) \cdot T(P,B) &= \left( \frac{\lambda}{1+\lambda} T(A,B) \right) \cdot \le
 \end{align*}
 再结合插入律 $T(A,B) = T(P,A) + T(P,B)$，可化为：
 $$ T(P,P) = \frac{2 T(P,A) T(P,B)}{T(P,A) + T(P,B)} $$
-下面证明扩展的定比律：
 \begin{align*}
 &T(P,A) = T(\frac{A+\lambda B}{1+\lambda},A)=\frac{1}{1+\lambda} T(A,A) +\frac{\lambda}{1+\lambda} T(B,A)=\frac{\lambda}{1+\lambda} T(B,A)=\beta T(A,B)\\
 &T(P,B) =T(\frac{A+\lambda B}{1+\lambda},B)=\frac{1}{1+\lambda} T(A,B) +\frac{\lambda}{1+\lambda} T(B,B)=\frac{1}{1+\lambda} T(A,B)=\alpha T(A,B)\\
@@ -124,7 +123,7 @@ $$ T(P,P) = \frac{2 T(P,A) T(P,B)}{T(P,A) + T(P,B)} $$
 &\implies\beta=\frac{T(P,A)}{T(A,B)}=\frac{T(P,A)\cdot T(P,B)}{T(A,B)\cdot T(P,B)}=\frac{\frac12T(A,B)\cdot T(P,P)}{T(A,B)\cdot T(P,B)}=\frac12\frac{T(P,P)}{T(P,B)}
 \end{align*}
 
-\begin{conclusion}{差分律（中点共轭律）}{}
+\begin{conclusion}[差分律（中点共轭律）]
 已知二次曲线 $C$ 上有两点 $A, B$。直线 $AB$ 上一动点 $P$ 满足 $\overrightarrow{AP} = \lambda \overrightarrow{PB}$。则：
 $$ E(P, \overrightarrow{BA}) = T(P,A) - T(P,B) = \frac{\lambda - 1}{\lambda + 1} T(A,B) $$
 \textbf{点差法：}当 $P$ 为弦 $AB$ 的中点时，必然成立 $E(P, \overrightarrow{BA}) = 0$。将其展开为坐标形式即：
@@ -138,7 +137,7 @@ T(P,A) - T(P,B) &= \frac{\lambda}{1+\lambda} T(A,B) - \frac{1}{1+\lambda} T(A,B)
 T(P,A) - T(P,B) &= \big(E(P,A) - 1\big) - \big(E(P,B) - 1\big) = E(P,A) - E(P,B)=E(P, \overrightarrow{BA})
 \end{align*}
 
-\begin{conclusion}{一个内积关系式}{}
+\begin{conclusion}[一个内积关系式]
 椭圆上两点 $A, B$ 坐标为$(x_1,y_1),(x_2,y_2)$，中点为$M$，弦 $AB$ 对应的极点（即过 $A,B$ 的切线交点）为 $P$
 $$ \frac{x_1y_1+x_2y_2}{x_1y_2+x_2y_1} = E(A,B) = 2E(M,M) - 1 = \frac{1 - T(P,P)}{1 + T(P,P)}  $$
 \end{conclusion}
@@ -153,14 +152,14 @@ $$ \frac{x_1y_1+x_2y_2}{x_1y_2+x_2y_1} = E(A,B) = 2E(M,M) - 1 = \frac{1 - T(P,P)
     \implies E(A,B) &= 2E(M,M) - 1\end{align*}
 也可以反过来写。
 
-\textbf{证明最后一个等号：}假设$\overrightarrow{OA}$ 与 $\overrightarrow{OB}$ 不共线，它们可作为平面的一组基。因此可设：
+假设$\overrightarrow{OA}$ 与 $\overrightarrow{OB}$ 不共线，它们可作为平面的一组基。因此可设：
 $ P = \alpha A + \beta B $，由于点 $A, B$ 在曲线上，$P$在$A,B$的极线上，故
 \begin{align*}
 1=E(P, A) &= E(\alpha A + \beta B, A) = \alpha E(A,A) + \beta E(B,A) \implies \alpha + \beta E(A,B) = 1 \\
 1=E(P, B) &= E(\alpha A + \beta B, B) = \alpha E(A,B) + \beta E(B,B) \implies \alpha E(A,B) + \beta = 1\\
 \text{相减：}&(\alpha - \beta) - (\alpha - \beta) E(A,B) = 0 \implies (\alpha - \beta)\big[1 - E(A,B)\big] = 0
 \end{align*}
-对于椭圆上两个不同的点 $A \neq B$，必有 $E(A-B, A-B)= 2 - 2E(A,B) > 0 > 0$。故$ \alpha = \beta $解得精准的伸缩系数：
+对于椭圆上两个不同的点 $A \neq B$，必有 $E(A-B, A-B)= 2 - 2E(A,B) > 0 > 0$。故$ \alpha = \beta $，从而解得伸缩系数：
 $$ \alpha = \beta = \frac{1}{1 + E(A,B)} \implies P = \frac{A + B}{1 + E(A,B)} $$
 再计算极点 $P$ 的自内积 $E(P,P)$：
 \begin{align*}
@@ -171,9 +170,9 @@ E(P,P) &= E\left( \frac{A+B}{1+E(A,B)}, \frac{A+B}{1+E(A,B)} \right) = \frac{E(A
 $$ 1 + E(A,B) = \frac{2}{E(P,P)} \implies E(A,B) = \frac{2}{E(P,P)} - 1= \frac{1 - T(P,P)}{1 + T(P,P)} $$
 
 \textit{用参数方程也可以验证这一结果。设 $A(a\cos\alpha, b\sin\alpha), B(a\cos\beta, b\sin\beta)$。\\
-先看分子：
+分子为：
 $$ x_1y_1 + x_2y_2 = ab\cos\alpha\sin\alpha + ab\cos\beta\sin\beta = \frac{1}{2}ab(\sin 2\alpha + \sin 2\beta) = ab\sin(\alpha+\beta)\cos(\alpha-\beta) $$
-再看分母：
+分母为：
 $$ x_1y_2 + x_2y_1 = ab\cos\alpha\sin\beta + ab\cos\beta\sin\alpha = ab\sin(\alpha+\beta) $$
 两式相除可得
 \[
@@ -183,7 +182,7 @@ $$ x_1y_2 + x_2y_1 = ab\cos\alpha\sin\beta + ab\cos\beta\sin\alpha = ab\sin(\alp
 $$ E(A,B) = \frac{a\cos\alpha \cdot a\cos\beta}{a^2} + \frac{b\sin\alpha \cdot b\sin\beta}{b^2} = \cos\alpha\cos\beta + \sin\alpha\sin\beta = \cos(\alpha-\beta) $$
 所以两者相等。再由半角公式，也可把 $T(P,P)$ 写成 $\tan^2\frac{\alpha-\beta}{2}$。}
 
-\begin{conclusion}{一个化简公式}{}
+\begin{conclusion}[一个化简公式]
 椭圆上两点$(x_1,y_1),(x_2,y_2)$，非椭圆上一点$P(m,n)$，则
 \[(x_1y_2+x_2y_1)\left(\dfrac{m^2}{a^2}+\dfrac{n^2}{b^2}\right)=m(y_1+y_2) + n(x_1+x_2) - 2mn \]
 \end{conclusion}
@@ -205,7 +204,7 @@ m = \alpha x_1 + \beta x_2,\qquad n = \alpha y_1 + \beta y_2,\qquad \alpha+\beta
 \end{align*}
 
 
-\begin{conclusion}{直线参数方程}{}
+\begin{conclusion}[直线参数方程]
 设有一条以定点 $P(x_0, y_0)$ 为基点、以向量 $\vec{v} = (v_x, v_y)$ 为方向向量的射线（或直线），其参数方程可写成 $X = P + t\vec{v}$。把 $X$ 代入二次曲线方程后，得到关于 $t$ 的二次方程：
 $$ T(X,X) = E(\vec{v},\vec{v}) t^2 + 2T(P, \vec{v}) t + T(P,P) $$
 这里记
@@ -224,7 +223,7 @@ T(X,X)& = E(P + t\vec{v}, P + t\vec{v}) - 1 = E(P, P+t\vec{v}) + E(t\vec{v}, P+t
 \end{align*}
 因此，点写成参数式以后，曲线方程就化为关于 $t$ 的二次方程。
 
-\begin{conclusion}{斜率与外积的关系}{}
+\begin{conclusion}[斜率与外积的关系]
 定义水平方向单位向量 $\vec{i} = (1, 0)$ 和竖直方向单位向量 $\vec{j} = (0, 1)$。
 对于平面上任意一条以向量 $\vec{v}$ 为方向的直线，其斜率 $k$ 满足
 $$ k = \frac{W(\vec{i}, \vec{v})}{W(\vec{v}, \vec{j})} $$
@@ -236,16 +235,16 @@ W(\vec{i}, \vec{v}) = v_y,\qquad W(\vec{v}, \vec{j}) = v_x.
 \]
 两式相除便得 $k = \frac{v_y}{v_x}$。
 \begin{remark}
-因此，用 $W$ 处理斜率差时，往往比直接通分更简洁。
+因此，用 $W$ 处理斜率差时，通常比直接通分更简洁。
 \end{remark}
 
-\begin{conclusion}{调和线束中的一个关系式}{}
+\begin{conclusion}[调和线束中的一个关系式]
 对于任意定点 $P$ 与共线的三点 $A, B, C$，有
 $$ \frac{k_{PA}-k_{PC}}{k_{PB}-k_{PC}} \cdot \frac{x_A-x_P}{x_B-x_P} = -\frac{T(C,A)}{T(C,B)} = \frac{\overrightarrow{AC}}{\overrightarrow{BC}} $$
 \end{conclusion}
 
 \textbf{证明：}
-先计算斜率差：
+计算斜率差：
 $$ k_{PA} - k_{PC} = \frac{y_A-y_P}{x_A-x_P} - \frac{y_C-y_P}{x_C-x_P} = \frac{W(\overrightarrow{PC}, \overrightarrow{PA})}{(x_A-x_P)(x_C-x_P)} $$
 同理可得 $k_{PB}-k_{PC}$。两式相除后，
 $$ \frac{k_{PA}-k_{PC}}{k_{PB}-k_{PC}} = \frac{W(\overrightarrow{PC}, \overrightarrow{PA})}{W(\overrightarrow{PC}, \overrightarrow{PB})} \cdot \frac{x_B-x_P}{x_A-x_P} $$
@@ -261,7 +260,7 @@ W(\overrightarrow{PC}, \overrightarrow{PB}) &= W\left(\frac{\overrightarrow{PA} 
 所以
 $$ \frac{W(\overrightarrow{PC}, \overrightarrow{PA})}{W(\overrightarrow{PC}, \overrightarrow{PB})} = -\lambda = -\frac{T(C,A)}{T(C,B)} \implies\frac{k_{PA}-k_{PC}}{k_{PB}-k_{PC}} \frac{x_A-x_P}{x_B-x_P} = -\lambda = \frac{\overrightarrow{AC}}{\overrightarrow{BC}} $$
 
-\begin{conclusion}{一个斜率关系式}{}
+\begin{conclusion}[一个斜率关系式]
 椭圆$\frac{x^2}{a^2}+\frac{y^2}{b^2}=1$上有$P(x_0,y_0),A(x_1,y_1),B(x_2,y_2)$三个点，令$k_1=k_{PA},k_2=k_{PB}$，那么
     $$\frac{a^2}{b^2} k_1 k_2 - \frac{x_1 + x_2}{y_1 - y_2}(k_1 - k_2) + 1 = 0 $$
 \end{conclusion}
@@ -273,9 +272,9 @@ $$ \frac{W(\overrightarrow{PC}, \overrightarrow{PA})}{W(\overrightarrow{PC}, \ov
 \[
 k_1 = \frac{u_y}{u_x},\qquad k_2 = \frac{v_y}{v_x}.
 \]
-先计算斜率差：
+由斜率定义可先写出斜率差：
 $$k_1 - k_2 = \frac{u_y}{u_x} - \frac{v_y}{v_x} = \frac{u_y v_x - v_y u_x}{u_x v_x}=\frac{-W(\vec{u}, \vec{v})}{u_x v_x}$$
-再看内积：
+再写内积：
 $$E(\vec{u}, \vec{v}) = u_x v_x \left( \frac{1}{a^2} + \frac{1}{b^2} \frac{u_y v_y}{u_x v_x} \right) = u_x v_x \left( \frac{1}{a^2} + \frac{k_1 k_2}{b^2} \right)\implies a^2 E(\vec{u}, \vec{v}) = u_x v_x \left( 1 + \frac{a^2}{b^2} k_1 k_2 \right)$$
 两式相除可得
 \[
@@ -335,7 +334,7 @@ $$\frac{ \frac{2a^2 y_M}{b^2 (x_A - x_B)} W(A-B, M-P) }{ -W(A-B, M-P) } = - \fra
 \frac{a^2}{b^2} k_1 k_2 - \frac{x_1 + x_2}{y_1 - y_2}(k_1 - k_2) + 1 = 0.
 \]
 
-\begin{conclusion}{拉格朗日恒等式}{}
+\begin{conclusion}[拉格朗日恒等式]
 对于平面上任意两个向量 $\vec{u}, \vec{v}$，其外积 $W$ 与椭圆内积 $E$ 满足
 $$ \big[W(\vec{u},\vec{v})\big]^2 = a^2 b^2 \Big[ E(\vec{u},\vec{u})E(\vec{v},\vec{v}) - \big[E(\vec{u},\vec{v})\big]^2 \Big] $$
 \end{conclusion}
@@ -347,13 +346,13 @@ $$ \big[W(\vec{u},\vec{v})\big]^2 = a^2 b^2 \Big[ E(\vec{u},\vec{u})E(\vec{v},\v
 W(\vec{u},\vec{v})^2 + a^2b^2 E(\vec{u},\vec{v})^2 &= x_1^2 y_2^2 + x_2^2 y_1^2 + \frac{b^2}{a^2}x_1^2 x_2^2 + \frac{a^2}{b^2}y_1^2 y_2^2 \\
 &= x_1^2 \left( y_2^2 + \frac{b^2}{a^2}x_2^2 \right) + y_1^2 \left( x_2^2 + \frac{a^2}{b^2}y_2^2 \right)
 \end{align*}
-再把括号中的式子整理为内积：
+括号中的式子可写为
 $y_2^2 + \frac{b^2}{a^2}x_2^2 = b^2 \left( \frac{x_2^2}{a^2} + \frac{y_2^2}{b^2} \right) = b^2 E(\vec{v},\vec{v})$。同理，后半部分的括号等于 $a^2 E(\vec{v},\vec{v})$。
 于是
 $$ x_1^2 \big[b^2 E(\vec{v},\vec{v})\big] + y_1^2 \big[a^2 E(\vec{v},\vec{v})\big] = a^2 b^2 E(\vec{v},\vec{v}) \left(\frac{x_1^2}{a^2} + \frac{y_1^2}{b^2}\right) = a^2 b^2 E(\vec{v},\vec{v}) E(\vec{u},\vec{u}) $$
 移项即得。
 
-\begin{conclusion}{弦长公式}{}
+\begin{conclusion}[弦长公式]
 已知直线过定点 $P$，且方向向量为 $\vec{v}$，交二次曲线于 $A, B$ 两点。则弦长 $|AB|$ 可写成
 $$ |AB| = \frac{2\sqrt{\big[E(P, \vec{v})\big]^2 - E(\vec{v}, \vec{v})T(P, P)}}{E(\vec{v}, \vec{v})} \sqrt{I(\vec{v}, \vec{v})} = 2 \frac{\sqrt{E(\vec{v},\vec{v}) - \frac{\big[W(P,\vec{v})\big]^2}{a^2 b^2}}}{E(\vec{v},\vec{v})} \cdot \sqrt{I(\vec{v},\vec{v})} $$
 特别地，当 $P$ 是弦 $AB$ 的中点时，公式化为
@@ -366,14 +365,14 @@ $$ E(\vec{v},\vec{v})t^2 + 2E(P, \vec{v})t + T(P,P) = 0 $$
 设交点对应的参数为 $t_1, t_2$。弦长就是参数之差乘以方向向量的欧氏长度：$|AB| = |t_1 - t_2| \cdot |\vec{v}|$。
 由判别式可得
 $$ |t_1 - t_2| = \frac{\sqrt{4\big[E(P, \vec{v})\big]^2 - 4E(\vec{v}, \vec{v})T(P, P)}}{E(\vec{v}, \vec{v})} $$
-再由 $T(P,P) = E(P,P) - 1$ 以及前面的拉格朗日恒等式，
+由 $T(P,P) = E(P,P) - 1$ 以及前面的拉格朗日恒等式，
 \begin{align*}
 \frac{\Delta}{4} &= E(P,\vec{v})^2 - \big(E(P,P) - 1\big)E(\vec{v},\vec{v}) = E(\vec{v},\vec{v}) - \Big[ E(P,P)E(\vec{v},\vec{v}) - E(P,\vec{v})^2 \Big] \\
 &= E(\vec{v},\vec{v}) - \frac{\big[W(P,\vec{v})\big]^2}{a^2 b^2}
 \end{align*}
 又因为 $|\vec{v}| = \sqrt{I(\vec{v}, \vec{v})}$，相乘即得所求公式。
 
-\begin{conclusion}{原点三角形 $OAB$ 面积公式}{}
+\begin{conclusion}[原点三角形 $OAB$ 面积公式]
 已知椭圆上有两点 $A, B$。则由原点 $O$ 与 $A,B$ 构成的三角形面积可写成
 $$ S_{\triangle OAB} = \frac{1}{2} ab \sqrt{-T(A,B) \big(T(A,B)+2\big)} $$
 \end{conclusion}
@@ -385,7 +384,7 @@ $$ \big[W(A,B)\big]^2 = a^2 b^2 \big(1 \times 1 - E(A,B)^2\big) = a^2 b^2 \big(1
 $$ 1 - \big(T(A,B)+1\big)^2 = 1 - \big(T(A,B)^2 + 2T(A,B) + 1\big) = -T(A,B)\big(T(A,B)+2\big) $$
 开根号并乘以 $1/2$，得证。
 
-\begin{conclusion}{内接三角形的海伦型公式}{}
+\begin{conclusion}[内接三角形的海伦型公式]
 已知椭圆内接三角形 $\triangle ABC$。
 记
 $$ t_1 = -T(B,C), \quad t_2 = -T(A,C), \quad t_3 = -T(A,B) $$
@@ -407,7 +406,7 @@ $$ \big[W(\vec{u}, \vec{v})\big]^2 = a^2 b^2 \Big[ E(\vec{u}, \vec{u}) E(\vec{v}
 \[
 E(\vec{u}, \vec{v}) = E(B-A, C-A) = E(B,C) - E(A,B) - E(A,C) + E(A,A).
 \]
-把它改写成 $T$ 的形式，得
+写成 $T$ 的形式，得
 \[
 E(\vec{u}, \vec{v}) = -t_1 + t_3 + t_2.
 \]
@@ -422,11 +421,11 @@ E(\vec{u}, \vec{v}) = -t_1 + t_3 + t_2.
 
 \section{圆锥曲线经典性质的证明}
 
-\begin{definition}{极点与极线}{}
+\begin{definition}[极点与极线]
 对于二次曲线内（或外）的任意定点 $P$，满足方程 $T(P, X) = 0$ 的所有动点 $X$ 构成一条直线，称为点 $P$ 对应的极线（Polar Line）。
 \end{definition}
 
-\begin{conclusion}{完全四边形极点极线定理}{}
+\begin{conclusion}[完全四边形极点极线定理]
 已知二次曲线 $\mathcal{C}$ 内（或外）有一点 $P$。过 $P$ 作两条弦 $AB$ 与 $CD$。连接 $AD, BC$ 交于点 $Q$；连接 $AC, BD$ 交于点 $R$。
 则交点 $Q$ 和 $R$ 必然都在点 $P$ 的极线上，即必然成立：
 $$ T(P, Q) = 0 \quad \text{且} \quad T(P, R) = 0 $$
@@ -449,7 +448,7 @@ T(P,R) &= T\left(P, \frac{\alpha_1 A - \alpha_2 C}{m}\right) = \frac{1}{m} \big[
 \end{align*}
 所以 $R$ 也在点 $P$ 的极线上。
 
-\begin{conclusion}{坎迪定理（Candy's Theorem）与 蝴蝶定理}{}
+\begin{conclusion}[坎迪定理（Candy's Theorem）与 蝴蝶定理]
     已知二次曲线 $\mathcal{C}$ 上有弦 $PQ$，直线 $PQ$ 上有一动点 $M$。过 $M$ 作两弦 $AB$ 和 $CD$。连结 $AD, BC$ 分别交直线 $PQ$ 于点 $X, Y$。则关于有向线段必有比例式：$$ \frac{1}{MX} + \frac{1}{MY} = \frac{1}{MP} + \frac{1}{MQ} $$\textbf{推论（蝴蝶定理）：}当 $M$ 为弦 $PQ$ 中点时，$M$ 必然也是 $XY$ 的中点。
 \end{conclusion}
 以 $M$ 为基点，设直线 $PQ$ 的方向向量为 $\vec{v}$，弦 $AB, CD$ 的方向向量分别为 $\vec{u}, \vec{w}$。
@@ -497,11 +496,11 @@ $$ \frac{1}{MX} + \frac{1}{MY} = \frac{1}{MP} + \frac{1}{MQ} $$
 \]
 从而 $M$ 也是 $XY$ 的中点。
 
-\begin{conclusion}{帕斯卡定理（Pascal's Theorem）}{}
+\begin{conclusion}[帕斯卡定理（Pascal's Theorem）]
     圆锥曲线内接六边形 $A_1A_2A_3A_4A_5A_6$ 的三对对边交点 $P=A_1A_2 \cap A_4A_5$，$Q=A_2A_3 \cap A_5A_6$，$R=A_3A_4 \cap A_6A_1$ 必然共线。
 \end{conclusion}
 \textbf{证明：}
-先说明下面要用到的线段乘积关系。设直线 $\mathcal{L}$ 交二次曲线于 $A, B$ 两点，该直线上还有两个不同的定点 $K, M$。取同一方向向量 $\vec{v}$，把直线上的点分别写成
+设直线 $\mathcal{L}$ 交二次曲线于 $A, B$ 两点，该直线上还有两个不同的定点 $K, M$。取同一方向向量 $\vec{v}$，把直线上的点分别写成
 \[
 X = K + t_K\vec{v},\qquad X = M + t_M\vec{v}.
 \]
@@ -544,7 +543,7 @@ t_{KA} t_{KB} = \frac{T(K, K)}{E(\vec{v}, \vec{v})},\qquad t_{MA} t_{MB} = \frac
 \end{itemize}
 将这三个等式连乘，并把与 $P,Q,R$ 有关的部分提出：
 $$ \underbrace{\left( \frac{\overrightarrow{KP}}{\overrightarrow{PM}} \frac{\overrightarrow{MQ}}{\overrightarrow{QL}} \frac{\overrightarrow{LR}}{\overrightarrow{RK}} \right)}_{\text{目标待证组}} \cdot \underbrace{\left( \frac{\overrightarrow{KA_1}}{\overrightarrow{A_1M}} \frac{\overrightarrow{KA_2}}{\overrightarrow{A_2M}} \right)}_{\text{边 } KM \text{ 上的交点}} \cdot \underbrace{\left( \frac{\overrightarrow{LA_3}}{\overrightarrow{A_3K}} \frac{\overrightarrow{LA_4}}{\overrightarrow{A_4K}} \right)}_{\text{边 } KL \text{ 上的交点}} \cdot \underbrace{\left( \frac{\overrightarrow{MA_5}}{\overrightarrow{A_5L}} \frac{\overrightarrow{MA_6}}{\overrightarrow{A_6L}} \right)}_{\text{边 } LM \text{ 上的交点}} = -1 $$
-把分母方向改写成以基点为起点的线段后，等式化为
+将分母方向写成以基点为起点的线段后，等式化为
 \[
 \left( \frac{\overrightarrow{KP}}{\overrightarrow{PM}} \frac{\overrightarrow{MQ}}{\overrightarrow{QL}} \frac{\overrightarrow{LR}}{\overrightarrow{RK}} \right)
 \cdot \left( \frac{\overrightarrow{KA_1} \cdot \overrightarrow{KA_2}}{\overrightarrow{MA_1} \cdot \overrightarrow{MA_2}} \right)
@@ -567,7 +566,7 @@ $$ \underbrace{\left( \frac{\overrightarrow{KP}}{\overrightarrow{PM}} \frac{\ove
 \]
 而 $P,Q,R$ 分别在三角形 $\triangle KLM$ 的三边所在直线上，所以由梅涅劳斯定理的逆定理知，$P,Q,R$ 共线。
 
-\begin{conclusion}{布列安桑定理（Brianchon's Theorem）}{}
+\begin{conclusion}[布列安桑定理（Brianchon's Theorem）]
 圆锥曲线外切六边形 $V_1V_2V_3V_4V_5V_6$ 的三条主对角线 $V_1V_4, V_2V_5, V_3V_6$ 必然共点。
 \end{conclusion}
 \textbf{证明：}这一定理是帕斯卡定理的对偶形式。
@@ -644,28 +643,28 @@ AB:&\ -k_1k_2\frac{a^2}{b^2}(y + y_0)^2+ (k_1+k_2)(x + x_0)(y + y_0) - \frac{b^2
     \item 双曲线：$(b^2 + k_1k_2 a^2) \cdot E(P^*, X) - S \cdot W(P^*, X) + (b^2 - k_1k_2 a^2) = 0$
     \item 抛物线：$ k_1k_2 \cdot T(P^*, X) + p (k_1+k_2) \cdot (y - y_{P^*}) - 2p^2 = 0 $
 \end{itemize}
-既然引入了 $P^*$，也可以继续讨论直接用 $P$ 与 $P^*$ 做同类整理时会得到什么结论。
+既然引入了 $P^*$，也可以继续讨论直接用 $P$ 与 $P^*$ 做同类整理时得到的结论。
 
 例如椭圆 $\frac{x^2}{4} + y^2 = 1$。基点为上顶点 $P_2(0,1)$，设两交点与基点连线的斜率和为 $S$。
 \begin{itemize}
-\item 提取参数：椭圆参数 $a^2=4, b^2=1$，基点 $(x_0,y_0)=(0,1)$，设斜率和为 $S=k_1+k_2$，斜率积为 $K=k_1k_2$。
-\item 公式代入：直接代入前文对称齐次化导出的椭圆弦 $AB$ 方程公式：
+\item 椭圆参数为 $a^2=4, b^2=1$，基点 $(x_0,y_0)=(0,1)$，设斜率和为 $S=k_1+k_2$，斜率积为 $K=k_1k_2$。
+\item 代入前文对称齐次化导出的椭圆弦 $AB$ 方程公式：
 $$ \left( \frac{1}{4} \cdot 0 - K \cdot 0 + S \cdot 1 \right) x + \left( K \cdot \frac{4}{1} \cdot 1 - 1 + S \cdot 0 \right) y + K \cdot 4 + 1 = 0 $$
-\item 提取直线：化简整理，得到原坐标系下直线 $AB$ 的方程为 $Sx + (4K-1)y + 4K + 1 = 0$。
-\item 定点计算：将直线方程按独立参数 $K$ 整理为 $K(4y+4) + (Sx-y+1) = 0$。令 $4y+4=0$ 且 $Sx-y+1=0$，解得 $y=-1, x=-2/S$。即直线恒过定点 $(-2/S, -1)$。若已知直线过定点 $(2,-1)$，则可反推得 $S=-1$。
+\item 化简整理，得到原坐标系下直线 $AB$ 的方程为 $Sx + (4K-1)y + 4K + 1 = 0$。
+\item 将直线方程按独立参数 $K$ 整理为 $K(4y+4) + (Sx-y+1) = 0$。令 $4y+4=0$ 且 $Sx-y+1=0$，解得 $y=-1, x=-2/S$。即直线恒过定点 $(-2/S, -1)$。若已知直线过定点 $(2,-1)$，则可反推得 $S=-1$。
 \end{itemize}
 椭圆 $x^2/4 + y^2/3 = 1$。基点为右顶点 $M(2,0)$，已知斜率积 $k_1k_2 = -1$。
 \begin{itemize}
-\item 提取参数：椭圆参数 $a^2=4, b^2=3$，基点 $(x_0,y_0)=(2,0)$，已知斜率积 $K=k_1k_2=-1$，设斜率和为 $S=k_1+k_2$。
-\item 公式代入：直接代入前文对称齐次化导出的椭圆弦 $AB$ 方程公式：
+\item 椭圆参数为 $a^2=4, b^2=3$，基点 $(x_0,y_0)=(2,0)$，已知斜率积 $K=k_1k_2=-1$，设斜率和为 $S=k_1+k_2$。
+\item 代入前文对称齐次化导出的椭圆弦 $AB$ 方程公式：
 $$ \left( \frac{3}{4} \cdot 2 - K \cdot 2 + S \cdot 0 \right) x + \left( K \cdot \frac{4}{3} \cdot 0 - 0 + S \cdot 2 \right) y + K \cdot 4 + 3 = 0 $$
-\item 提取直线：整理得到 $\left( \frac{3}{2} - 2K \right)x + 2Sy + 4K + 3 = 0$。将已知条件 $K=-1$ 代入，得 $\frac{7}{2}x + 2Sy - 1 = 0$，即 $7x + 4Sy - 2 = 0$。
-\item 定点计算：由于此直线方程中含有 $S$ 的项仅为 $4Sy$，故该直线独立于参数 $S$ 恒过定点。令 $y=0$，解得 $x = 2/7$，即直线恒过定点 $\left(\frac{2}{7}, 0\right)$。
+\item 整理得到 $\left( \frac{3}{2} - 2K \right)x + 2Sy + 4K + 3 = 0$。将已知条件 $K=-1$ 代入，得 $\frac{7}{2}x + 2Sy - 1 = 0$，即 $7x + 4Sy - 2 = 0$。
+\item 由于此直线方程中含有 $S$ 的项仅为 $4Sy$，故该直线独立于参数 $S$ 恒过定点。令 $y=0$，解得 $x = 2/7$，即直线恒过定点 $\left(\frac{2}{7}, 0\right)$。
 \end{itemize}
 
 \section{同解法}
 
-\begin{conclusion}{直线的几个基本方程}{}
+\begin{conclusion}[直线的几个基本方程]
 已知二次曲线的方程为 ${C}: T(X,X)=0$。
 \begin{enumerate}
     \item \textbf{割线方程$AB$}：$ F_{AB}(X) = T(X,A) + T(X,B) - T(A,B) = 0 $
@@ -691,7 +690,7 @@ $$ T(X,A) + T(X,B) = (\alpha + \beta) T(A,B) = 1 \cdot T(A,B) $$
 再用恒等式 $E = T + 1$，便得 $T(X,P) = T(P,P)$。
 \end{itemize}
 
-\begin{conclusion}{几类常见交点曲线系}{}
+\begin{conclusion}[几类常见交点曲线系]
 设原二次曲线为 $\mathcal{C}: T(X,X)=0$。
 \begin{enumerate}
     \item \textbf{四交点系}：过 $C$ 上 $A, B, C, D$ 四点的新二次曲线族：$$ T(X,X) + \lambda \cdot \underbrace{F_{AB}(X)}_{\text{割线}AB} \cdot \underbrace{F_{CD}(X)}_{\text{割线}CD} = 0 $$
@@ -730,7 +729,7 @@ $$ T(X,A) + T(X,B) = (\alpha + \beta) T(A,B) = 1 \cdot T(A,B) $$
 \begin{solution}
 已知椭圆方程为 $T(X,X) = 0$。由于点 $P(x_0,y_0)$ 在椭圆上，所以 $T(P,P) = 0$。
 过点 $P$ 的两条割线方程可分别表示为 $F(P,A,X)=0$ 与 $F(P,B,X)=0$。
-考虑经过点 $P, P$（即在点 $P$ 处与椭圆相切）以及点 $A, B$ 的二次曲线系。根据四交点曲线系原理，该曲线系必定可由原椭圆方程与退化线对 $PA \cup PB$ 的方程线性组合而成。同时，该曲线系也包含了由点 $P$ 处的切线 $T(P,X)=0$ 与割线 $L_{AB}(X)=0$ 构成的退化二次曲线。因此，必然存在唯一实常数 $\mu$，使得如下多项式恒等式成立：
+取在点 $P$ 处与椭圆相切，并经过点 $A,B$ 的二次曲线系。根据四交点曲线系原理，该曲线系必定可由原椭圆方程与退化线对 $PA \cup PB$ 的方程线性组合而成。同时，该曲线系也包含了由点 $P$ 处的切线 $T(P,X)=0$ 与割线 $L_{AB}(X)=0$ 构成的退化二次曲线。因此，必然存在唯一实常数 $\mu$，使得如下多项式恒等式成立：
 \[ T(X,X) - \mu F(P,A,X)F(P,B,X) \equiv T(P,X) L_{AB}(X). \]
 为求解常数 $\mu$，在切线 $T(P,X)=0$ 上选取一点 $Q$，使得 $Q \neq P$。由椭圆在点 $P$ 处的切线方向向量为 $\vec{t} = (a^2 y_0, -b^2 x_0)$，可构造切线上一点
 \[ Q = P + \vec{t} = (x_0 + a^2 y_0, y_0 - b^2 x_0). \]
@@ -833,7 +832,7 @@ T(P,C) + \mu_1 F(A,B,C) = 0,
 \]
 令 $k_1 = \frac{T(P,C)}{F(A,B,C)}$ 且 $k_2 = \frac{T(P,A)}{F(C,D,A)}$，则割线 $AC$ 的方程为
 \[ F_{AC}(X) \equiv T(P,X) - k_1 F_{AB}(X) - k_2 F_{CD}(X) = 0. \]
-下面求直线 $BD$ 的方程。点 $B$ 为直线 $PA$ 与椭圆的交点，所以可写成
+点 $B$ 为直线 $PA$ 与椭圆的交点，所以可写成
 \[
 B = \frac{P + \lambda A}{1+\lambda}.
 \]
@@ -864,12 +863,12 @@ D \propto 2T(P,C)P - T(P,P)C.
 \[ 2T(P,X) - T(P,X) + k_1 F_{AB}(X) + k_2 F_{CD}(X) = 0. \]
 最终得出对角割线 $BD$ 的方程为
 \[ F_{BD}(X) \equiv T(P,X) + k_1 F_{AB}(X) + k_2 F_{CD}(X) = 0. \]
-接下来，同理推导对角割线 $AD$ 与 $BC$ 的方程。
+同理可推得对角割线 $AD$ 与 $BC$ 的方程。
 由于割线 $AD$ 不经过点 $P$，也可设
 \[ F_{AD}(X) = T(P,X) + \mu_1 F_{AB}(X) + \mu_2 F_{CD}(X) = 0. \]
-首先，将点 $X = A$ 代入该方程。因点 $A$ 位于割线 $PAB$ 上，满足 $F(A,B,A) = 0$。方程化简为 $T(P,A) + \mu_2 F(C,D,A) = 0$，解得
+将点 $X = A$ 代入该方程。因点 $A$ 位于割线 $PAB$ 上，满足 $F(A,B,A) = 0$。方程化简为 $T(P,A) + \mu_2 F(C,D,A) = 0$，解得
 \[ \mu_2 = -\frac{T(P,A)}{F(C,D,A)} = -k_2. \]
-其次，将点 $X = D$ 代入。因点 $D$ 位于割线 $PCD$ 上，满足 $F(C,D,D) = 0$。方程化简为 $T(P,D) + \mu_1 F(A,B,D) = 0$，解得
+将点 $X = D$ 代入。因点 $D$ 位于割线 $PCD$ 上，满足 $F(C,D,D) = 0$。方程化简为 $T(P,D) + \mu_1 F(A,B,D) = 0$，解得
 \[ \mu_1 = -\frac{T(P,D)}{F(A,B,D)}. \]
 为了计算 $\mu_1$，可仿照前面求点 $B$ 的方法。点 $D$ 是直线 $PC$ 与椭圆的另一交点，所以
 \[
@@ -886,7 +885,7 @@ F(A,B,D) &\propto 2T(P,C)F(A,B,P) - T(P,P)F(A,B,C).
 \[ \mu_1 = -\frac{T(P,D)}{F(A,B,D)} = -\frac{T(P,P)T(P,C)}{-T(P,P)F(A,B,C)} = \frac{T(P,C)}{F(A,B,C)} = k_1. \]
 代回得
 \[ F_{AD}(X) \equiv T(P,X) + k_1 F_{AB}(X) - k_2 F_{CD}(X) = 0. \]
-最后求割线 $BC$。同样设
+同理可求割线 $BC$。设
 \[
 F_{BC}(X) = T(P,X) + \nu_1 F_{AB}(X) + \nu_2 F_{CD}(X) = 0.
 \]
@@ -969,7 +968,7 @@ E(M, N) = \frac{x_M x_N}{4} + \frac{y_M y_N}{3},\qquad W(M, N) = x_M y_N - x_N y
 \[
 E(Q, Q) = \frac{1}{4} + \frac{1}{3} = \frac{7}{12}.
 \]
-（1）先求直线 $CD$。由 $\overrightarrow{AQ} = 2\overrightarrow{QC}$ 得
+（1）直线 $CD$ 可由 $\overrightarrow{AQ} = 2\overrightarrow{QC}$ 求出：
 \[
 A = 3Q - 2C.
 \]
@@ -989,12 +988,12 @@ E(3Q - 2C, 3Q - 2C) &= 9E(Q,Q) - 12E(Q,C) + 4E(C,C)\\
 \[
 16E(Q,X) - 11 = 0.
 \]
-再把 $E(Q,X) = \frac{x}{4} + \frac{y}{3}$ 展开，可得
+将 $E(Q,X) = \frac{x}{4} + \frac{y}{3}$ 展开，可得
 \[
 12x + 16y - 33 = 0.
 \]
 
-（2）再求直线 $BC$。先求直线 $AB$。由
+（2）求直线 $BC$。由
 \[
 C = \frac{3}{2}Q - \frac{1}{2}A
 \]
@@ -1019,7 +1018,7 @@ C = \frac{3}{2}Q - \frac{1}{2}A
 8E(Q,X) - 3 = 0.
 \]
 
-（3）再看过 $A,B,C,D$ 四点的二次曲线系：
+（3）过 $A,B,C,D$ 四点的二次曲线系为：
 \begin{align*}
 & E(X,X) - 1 + \lambda \big( 8E(Q,X) - 3 \big)\big( 16E(Q,X) - 11 \big) = 0\\
 \Longleftrightarrow & E(X,X) - 1 + \lambda \left( 128E(Q,X)^2 - 136E(Q,X) + 33 \right) = 0
@@ -1084,7 +1083,7 @@ W(Q,X)=y-x,\qquad E(Q,X)-1=\frac{x}{4}+\frac{y}{3}-1=\frac{3x+4y-12}{12},
     已知 \(P\) 为椭圆 \(C: \frac{x^2}{4} + \frac{y^2}{3} = 1\) 上一动点，过点 \(P\) 作圆 \(O: x^2 + y^2 = 1\) 的两条切线分别交椭圆 \(C\) 于 \(A,B\) 两点，求证：直线 \(OP\) 与直线 \(AB\) 的斜率之积为定值；
 \end{exercise}
 \begin{solution}
-首先，设点 $P(x_0, y_0)$ 满足方程 $\frac{x_0^2}{4} + \frac{y_0^2}{3} = 1$。
+设点 $P(x_0, y_0)$ 满足方程 $\frac{x_0^2}{4} + \frac{y_0^2}{3} = 1$。
 对于圆 $O: x^2 + y^2 = 1$，记其极化式为 $T_O(M, N) = x_M x_N + y_M y_N - 1$。
 根据切线方程，过点 $P$ 向圆 $O$ 作出的两条切线 $PA, PB$ 的联合方程为
 \[ T_O(P, X)^2 - T_O(P, P)T_O(X, X)=(x_0 x + y_0 y - 1)^2 - (x_0^2 + y_0^2 - 1)(x^2 + y^2 - 1) = 0\]
@@ -1116,7 +1115,7 @@ W(Q,X)=y-x,\qquad E(Q,X)-1=\frac{x}{4}+\frac{y}{3}-1=\frac{3x+4y-12}{12},
 当 $x_0 y_0 \neq 0$ 时，等式两端约去非零因子 $x_0 y_0$，得到
 \[ 2 = \frac{C_0}{6} + \frac{7}{6}. \]
 解得 $C_0 = 5$。
-\item 对于 $x_0 y_0 = 0$ 的情形，由 $\frac{x_0^2}{4} + \frac{y_0^2}{3} = 1$ 可知，当 $x_0 = 0$ 时 $y_0^2 = 3$。比较 $x^2$ 项系数，左侧为 $1 - y_0^2 + \frac{\lambda}{4} = -2 + \frac{3 + C_0}{4}$，右侧为 $0$，解得 $C_0 = 5$。当 $y_0 = 0$ 时 $x_0^2 = 4$。比较 $y^2$ 项系数，左侧为 $1 - x_0^2 + \frac{\lambda}{3} = -3 + \frac{4 + C_0}{3}$，右侧为 $0$，同样解得 $C_0 = 5$。综上所述，常数 $C_0 = 5$ 恒成立。
+\item 对于 $x_0 y_0 = 0$ 的情形，由 $\frac{x_0^2}{4} + \frac{y_0^2}{3} = 1$ 可知，当 $x_0 = 0$ 时 $y_0^2 = 3$。比较 $x^2$ 项系数，左侧为 $1 - y_0^2 + \frac{\lambda}{4} = -2 + \frac{3 + C_0}{4}$，右侧为 $0$，解得 $C_0 = 5$。当 $y_0 = 0$ 时 $x_0^2 = 4$。比较 $y^2$ 项系数，左侧为 $1 - x_0^2 + \frac{\lambda}{3} = -3 + \frac{4 + C_0}{3}$，右侧为 $0$，同样解得 $C_0 = 5$。因此常数 $C_0 = 5$ 恒成立。
 将 $C_0 = 5$ 代回 $A, B$ 的表达式，分别求得 $A = \frac{13}{4} x_0$ 与 $B = \frac{11}{3} y_0$。
 \end{itemize}
 因此，割线 $AB$ 的直线方程为 $\frac{13}{4} x_0 x + \frac{11}{3} y_0 y + 5 = 0$。将等号两侧同乘 $12$，可化为一般式
@@ -1225,7 +1224,7 @@ L_{AB}(1,0)(x - 2) + \frac{1}{2} L_{AB}(X) = 0.
 \begin{align*}
 \frac{k_{AB}}{k_{CD}} = \frac{k}{5k} = \frac{1}{5}.
 \end{align*}
-综上所述，比值 $\frac{k_{AB}}{k_{CD}}$ 为定值 $\frac{1}{5}$。
+因此比值 $\frac{k_{AB}}{k_{CD}}$ 为定值 $\frac{1}{5}$。
 \end{solution}
 
 \begin{exercise}
@@ -1255,7 +1254,7 @@ L_{AB}(1,0)(x - 2) + \frac{1}{2} L_{AB}(X) = 0.
 \[ 2L_{AB}(R)T(R, X) - T(R, R)L_{AB}(X) = 0. \]
 所以这就是直线 $CD$ 的方程：
 \[ L_{CD}(X) = 2L_{AB}(R)T(R, X) - T(R, R)L_{AB}(X) = 0. \]
-为证明直线 $CD$ 恒过定点，设该点为 $T$。我们希望无论满足 $L_{AB}(S) = 0$ 的直线 $AB$ 如何变化，都有 $L_{CD}(T) = 0$。
+为证明直线 $CD$ 恒过定点，设该点为 $T$。需证无论满足 $L_{AB}(S) = 0$ 的直线 $AB$ 如何变化，都有 $L_{CD}(T) = 0$。
 已知定点 $R(r, 0)$ 与 $S(s, 0)$ 都在 $x$ 轴上。假设待求点 $T$ 也在 $x$ 轴上，则可写成
 设 $T = \alpha S + \beta R$，其中 $\alpha + \beta = 1$。
 把点 $T$ 代入直线 $AB$ 的方程，得
@@ -1272,7 +1271,7 @@ L_{AB}(1,0)(x - 2) + \frac{1}{2} L_{AB}(X) = 0.
 解得对应的仿射参数：
 \[ \beta = \frac{2T(R, S)}{2T(R, S) - T(R, R)}, \quad \alpha = 1 - \beta = \frac{-T(R, R)}{2T(R, S) - T(R, R)}. \]
 由于参数 $\alpha$ 与 $\beta$ 只由定点 $R,S$ 的位置决定，与直线 $AB$ 的变化无关，因此点 $T$ 为定点。\\
-下面求这个定点的坐标。将 $S(s, 0)$ 与 $R(r, 0)$ 代入：
+将 $S(s, 0)$ 与 $R(r, 0)$ 代入：
 \[ T(R, S) = \frac{rs}{a^2} - 1, \quad T(R, R) = \frac{r^2}{a^2} - 1. \]
 计算参数的分母部分：
 \[ 2T(R, S) - T(R, R) = 2\left(\frac{rs}{a^2} - 1\right) - \left(\frac{r^2}{a^2} - 1\right) = \frac{2rs - r^2 - a^2}{a^2}. \]
@@ -1286,7 +1285,7 @@ x_T &= \alpha s + \beta r = \frac{-s T(R, R) + 2r T(R, S)}{2T(R, S) - T(R, R)} \
 将分子与分母同时乘 $-1$，整理得：
 \[ x_T = \frac{2a^2r - a^2s - r^2s}{a^2 + r^2 - 2rs}. \]
 由此可得，在 $a^2 + r^2 - 2rs \neq 0$ 时，直线 $CD$ 恒经过 $x$ 轴上的定点 $\left( \frac{2a^2r - a^2s - r^2s}{a^2 + r^2 - 2rs}, 0 \right)$。结论成立。\\
-最后，计算并验证直线 $CD$ 与 $AB$ 的斜率比值。
+再计算直线 $CD$ 与 $AB$ 的斜率比值。
 设直线 $AB$ 的方程为 $x = my + s$，其斜率为 $k_{AB} = \frac{1}{m}$。它也可写成 $L_{AB}(X) = x_X - m y_X - s$。
 代入定点 $R(r, 0)$ 得到 $L_{AB}(R) = r - s$。对于动点 $X(x, y)$，有 $L_{AB}(X) = x - my - s$。
 代入直线 $CD$ 的方程：
@@ -1305,7 +1304,7 @@ x_T &= \alpha s + \beta r = \frac{-s T(R, R) + 2r T(R, S)}{2T(R, S) - T(R, R)} \
 \end{solution}
 
 
-\begin{conclusion}{弦对原点张角的联合方程}{}
+\begin{conclusion}[弦对原点张角的联合方程]
     已知不经过原点的直线交椭圆于 $A, B$ 两点。设这条直线对应的极点为 $M$，即直线方程写成 $E(M,X) = 1$。那么连接原点与交点的两条射线 $OA, OB$ 构成的一对直线满足
     $$ E(X,X) - \big[E(M,X)\big]^2 = 0 $$
 \end{conclusion}
@@ -1318,9 +1317,9 @@ x_T &= \alpha s + \beta r = \frac{-s T(R, R) + 2r T(R, S)}{2T(R, S) - T(R, R)} \
 \implies \frac{1}{a^2} + \frac{1}{b^2} = \frac{x_M^2}{a^4} + \frac{y_M^2}{b^4}.
 \]
 \end{itemize}
-下面再来看曲线外一点引两条切线的联合方程。
+现讨论曲线外一点引两条切线的联合方程。
 
-\begin{conclusion}{外切线对联合方程与蒙日圆}{}
+\begin{conclusion}[外切线对联合方程与蒙日圆]
     从二次曲线外一点 $P$ 作原曲线的两条切线，则其联合方程为
     $$ \big[T(P,X)\big]^2 = T(P,P) \cdot T(X,X) $$
     \textbf{推论（蒙日圆）：} 若这两条切线互相垂直，点 $P$ 的轨迹满足 $x_P^2 + y_P^2 = a^2 + b^2$。
@@ -1372,7 +1371,7 @@ x_P^2 + y_P^2 = a^2 + b^2.
 
 
 \section{参数方程法说明}
-这里可以直接从过左顶点 $S(-a, 0)$ 的割线出发。取方向向量
+可直接从过左顶点 $S(-a, 0)$ 的割线出发。取方向向量
 \[
 \vec{v} = (a, bt),
 \]
@@ -1410,7 +1409,7 @@ E(P_{12}, X) = 1.
 \end{align*}
 把上面刚求出的 $x_0, y_0$ 放进极线方程 $E(P_{12}, X) = 1$：
 $$ \frac{1-t_1t_2}{1+t_1t_2} \frac{x}{a} + \frac{t_1+t_2}{1+t_1t_2} \frac{y}{b} = 1 $$
-再看常见的判别常数 $\Delta_0 = a^2A^2+b^2B^2-1 = C^2$。对弦方程
+常见的判别常数 $\Delta_0 = a^2A^2+b^2B^2-1 = C^2$ 可继续写成。对弦方程
 \[
 \frac{x_0}{a^2}x + \frac{y_0}{b^2}y = 1
 \]
@@ -1418,7 +1417,7 @@ $$ \frac{1-t_1t_2}{1+t_1t_2} \frac{x}{a} + \frac{t_1+t_2}{1+t_1t_2} \frac{y}{b} 
 \[
 \Delta_0 = a^2\left(\frac{x_0}{a^2}\right)^2 + b^2\left(\frac{y_0}{b^2}\right)^2 - 1 = \frac{x_0^2}{a^2} + \frac{y_0^2}{b^2} - 1 = T(P_{12},P_{12}).
 \]
-下面把 $x_0, y_0$ 代入计算：
+将 $x_0, y_0$ 代入，得
 \begin{align*}
 T(P_{12}, P_{12}) &= \left(\frac{1-t_1t_2}{1+t_1t_2}\right)^2 + \left(\frac{t_1+t_2}{1+t_1t_2}\right)^2 - 1 \\
 &= \frac{(1 - 2t_1t_2 + t_1^2t_2^2) + (t_1^2 + 2t_1t_2 + t_2^2) - (1+2t_1t_2+t_1^2t_2^2)}{(1+t_1t_2)^2} \\
@@ -1429,3 +1428,5 @@ T(P_{12}, P_{12}) &= \left(\frac{1-t_1t_2}{1+t_1t_2}\right)^2 + \left(\frac{t_1+
 \Delta_0 = \left(\frac{t_1-t_2}{1+t_1t_2}\right)^2,
 \]
 它也就是极点 $P_{12}$ 的极化值 $T(P_{12},P_{12})$。
+
+

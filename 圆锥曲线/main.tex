@@ -1,43 +1,170 @@
-\documentclass[12pt,a4paper, oneside,UTF8]{ctexbook}
-\input{config}
+\documentclass[lang=cn,11pt,thmcnt=section]{elegantbook}
+
+\title{高中数学}
+\subtitle{解析几何教程}
+
+\author{还在尬黑}
+\institute{圆锥曲线专题整理}
+\date{\today}
+\version{1.0}
+\bioinfo{版本}{第1版}
+\extrainfo{本书内容全部使用 \LaTeX{} 进行排版。}
+
+\logo{flg/logo.png}
+\cover{flg/example.png}
+
+\usepackage{amsmath,amssymb,mathtools}
+\usepackage{array}
+\usepackage{bm}
+\usepackage{mathrsfs}
+\usepackage{enumitem}
+\setlist{nosep}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric,arrows.meta,calc,intersections,positioning}
+\usepackage{ulem}
+\usepackage{caption}
+\usepackage{bookmark}
+\usepackage{cleveref}
+\usepackage{xparse}
+\usepackage{newunicodechar}
+
+\allowdisplaybreaks
+\setlength{\emergencystretch}{3em}
+\hbadness=10000
+\vbadness=10000
+\hfuzz=131pt
+\vfuzz=131pt
+\setcounter{tocdepth}{2}
 \hypersetup{colorlinks=true,linkcolor=black}
+
+\makeatletter
+\@ifundefined{setCJKfamilyfont}{}{%
+  \IfFontExistsTF{KaiTi}{%
+    \setCJKfamilyfont{codexkaiti}[AutoFakeBold=2.5]{KaiTi}%
+    \renewcommand{\kaishu}{\CJKfamily{codexkaiti}}%
+  }{}%
+  \IfFontExistsTF{FangSong}{%
+    \setCJKfamilyfont{codexfangsong}[AutoFakeBold=2.5]{FangSong}%
+    \renewcommand{\fangsong}{\CJKfamily{codexfangsong}}%
+  }{}%
+}
+
+\@addtoreset{exam}{section}
+\renewcommand{\theexam}{\thesection.\arabic{exam}}
+
+\@addtoreset{exer}{section}
+\renewcommand{\theexer}{\thesection.\arabic{exer}}
+
+\@addtoreset{prop}{section}
+\renewcommand{\theprop}{\thesection.\arabic{prop}}
+
+\@addtoreset{prob}{section}
+\renewcommand{\theprob}{\thesection.\arabic{prob}}
+
+\providecommand{\listexamplename}{List of Examples}
+\ifdefstring{\ELEGANT@lang}{cn}{%
+  \renewcommand{\listexamplename}{例题索引}%
+}{\relax}
+\newlistof{examples}{loex}{\listexamplename}
+
+\renewcommand{\makeenvindex}{%
+  \listofdefinitions
+  \listoftheorems
+  \listofexamples
+  \listofexercises
+  \listofproperties
+}
+\newcommand{\kt}{\kaishu}
+\newcommand{\st}{\songti}
+\newcommand{\dd}{\mathop{}\!\mathrm{d}}
+\newcommand{\dif}{\mathop{}\!\mathrm{d}}
+
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\PP}{\mathbb{P}}
+\newcommand{\RP}{\mathbb{RP}}
+\newcommand{\CP}{\mathbb{CP}}
+\newcommand{\A}{\mathbb{A}}
+\newcommand{\F}{\mathbb{F}}
+\DeclareMathOperator{\Span}{span}
+
+
+\newunicodechar{，}{\ifmmode\text{，}\else，\fi}
+
+\RenewDocumentEnvironment{example}{o}{%
+  \refstepcounter{exam}%
+  \phantomsection\addcontentsline{loex}{examples}{%
+    \elegantbook@titlepdfsafe{\theexam\IfNoValueTF{#1}{\hspace{1em}\examplename}{\hspace{1em}#1}}%
+  }%
+  \par\noindent\textbf{\color{main}{\examplename} \theexam\IfNoValueTF{#1}{}{\ #1}}\par
+  \rmfamily\sloppy
+}{\par}
+\makeatother
+
+\RenewDocumentEnvironment{solution}{}{%
+  \par\noindent\textbf{\color{main}\solutionname}\par
+  \citshape\sloppy
+}{\par}
+
+\newcounter{concl}[section]
+\renewcommand{\theconcl}{\thesection.\arabic{concl}}
+\RenewDocumentEnvironment{conclusion}{o}{%
+  \refstepcounter{concl}%
+  \par\noindent\textbf{\color{third}{\conclusionname} \theconcl\IfNoValueTF{#1}{}{\ #1}} \citshape
+}{\par}
+
+\newcommand{\criterionname}{准则}
+\newcounter{crit}[section]
+\renewcommand{\thecrit}{\thesection.\arabic{crit}}
+\NewDocumentEnvironment{criterion}{o}{%
+  \refstepcounter{crit}%
+  \par\noindent\textbf{\color{third}{\criterionname} \thecrit\IfNoValueTF{#1}{}{\ #1}} \citshape
+}{\par}
+
+\NewDocumentEnvironment{myproof}{o}{%
+  \IfNoValueTF{#1}{\begin{proof}}{\begin{proof}[#1]}%
+}{\end{proof}}
+
 \begin{document}
-\include{cover}
-% 前言部分
+
+\maketitle
 \frontmatter
-\pagestyle{frontmatter} % 应用前言样式
-% 前言内容
+
 \chapter*{前言}
-本书内容全部使用\LaTeX{}进行排版，作者"还在尬黑"是一位准大一学生，高中毕业于广东深圳中学。"还在尬黑"拥有知乎（同名），微信公众号（同名），小红书号（同名）等账号，头像是一个右手三叶结。以及不同名不同头像的GitHub账号，发表原创优质内容百余篇，且固定更新频率，堪称发文的“螺丝钉”。
+\addcontentsline{toc}{chapter}{前言}
 
-“还在尬黑”对圆锥曲线的解题研究有着浓厚兴趣，并在书中将其总结成了一套完整的解析几何教程。本书适合高中解析几何解题体系未成熟的高二高三学生，以及前来自学的高一学生以及初中生，也可作为高中数学教材。笔者衷心希望本书能够帮助读者提高圆锥曲线解题速度和解题能力，并能够准确地识别班内的"大佬"是用什么东西来装逼的，当然，本书和市面上的某些书不同，不会直接甩给学生们根本用不明白也不懂从何而来的技巧大招，而是会侧重解析一种方法的产生过程，以及如何恰当的选择方法解决具体问题。
+本书内容全部使用\LaTeX{}进行排版，围绕圆锥曲线及相关解析几何问题，整理出一套以解析法为主的学习材料。
 
-学习圆锥曲线（包括高考数学的一些其它内容）的过程中，最重要也最需要大家认真做的就是历年的高考题，本书内容涵盖了大部分恢复高考以来所有的高考解析几何压轴题，并且每一道题都经过了笔者的精挑细选，放到了合适的位置上，后续笔者会在书末尾出一个索引表，帮助只想刷高考题的同学快速使用本书。
+本书面向高中阶段的解析几何学习，适合高一至高三读者自学、复习，也可供教学参考。全书写作时尽量把常见方法放回其产生过程，说明每一步变形的依据与使用条件，避免只罗列结论，而把重点放在方法的形成与选择上。
 
-除了经典而偏基础的高考题外，本书后面还有些部分为选学内容，难度较高，属于高考不怎么考的范畴，这部分留给同学们或解析几何爱好者们进行自我提高和兴趣拓展。当然，建议读者先打牢必学内容的基础，再来进行进一步的学习。在创作本书的过程中，笔者也得到了朋友们和热心群众的帮助，在此向他们表示感谢！十分感谢读者朋友们的支持和赞助！祝大家健康进步，高考成功！
+书中选入了较多高考题与改编题，并按知识与方法的递进顺序编排，尽量覆盖解析几何中的常见题型。后文还将补充索引，便于按题源或主题检索使用。
+
+除基础与常规内容外，书末还安排了部分选学专题，供进一步拓展使用。建议先完成主体部分，再阅读这些较难内容。成书过程中得到许多朋友与读者的帮助，在此一并致谢。
+
 \begin{flushright}
-    \vspace{1\baselineskip} % 在署名前留出两行空白
-    \kt 还在尬黑 \\ % 楷体斜体
+    \vspace{1\baselineskip}
+    \kt 还在尬黑 \\
     \today
 \end{flushright}
+
 \begin{figure*}[htbp]
-	\centering
-    \includegraphics[width=0.25\textwidth]{flg/logo.png}%
-	\caption{我的头像}
-	\label{fig0-1}
+    \centering
+    \includegraphics[width=0.25\textwidth]{flg/logo.png}
+    \caption{我的头像}
+    \label{fig0-1}
 \end{figure*}
 
 \newpage
-\ctexset{tocdepth=2}% 设置目录深度为章和节
 \tableofcontents
-\thispagestyle{tocmatter} 
-% 正文部分
-\mainmatter
-\pagestyle{mainmatter} % 应用正文样式
+\makeenvindex
 
-% 章节内容
+\mainmatter
 \include{chapters/chap4}
 \include{chapters/chap5}
 \include{chapters/chap6}
 \include{chapters/chap7}
+
 \end{document}

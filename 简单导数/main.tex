@@ -1,18 +1,104 @@
-\documentclass[12pt, a4paper, oneside,UTF8]{ctexbook}
-\input{config}
-\hypersetup{colorlinks=true,linkcolor=black}
+\documentclass[lang=cn,11pt,thmcnt=section]{elegantbook}
+
+\title{简单导数}
+\subtitle{群题整理}
+
+\author{夏同}
+\institute{华南理工大学}
+\date{\today}
+\version{1.0}
+\bioinfo{整理}{导数、积分与不等式题型}
+\extrainfo{收录简单导数群题，部分 CMC 非数类题型。}
+
+\logo{figure/logo-blue.png}
+\cover{figure/751_01.png}
+
+\usepackage{amsmath,amssymb,mathtools}
+\usepackage{array}
+\usepackage{bm}
+\usepackage{mathrsfs}
+\usepackage{enumitem}
+\setlist{nosep}
+\usepackage{graphicx}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{tikz}
+\usetikzlibrary{arrows,shapes.geometric,circuits.logic.US,positioning}
+\usepackage{circuitikz}
+\usepackage{ulem}
+\usepackage{caption}
+\usepackage{bookmark}
+\usepackage{cleveref}
+
+\allowdisplaybreaks
+\setcounter{tocdepth}{2}
+
+\makeatletter
+\@ifundefined{setCJKfamilyfont}{}{%
+  \IfFontExistsTF{KaiTi}{%
+    \setCJKfamilyfont{codexkaiti}[AutoFakeBold=2.5]{KaiTi}%
+    \renewcommand{\kaishu}{\CJKfamily{codexkaiti}}%
+  }{}%
+  \IfFontExistsTF{FangSong}{%
+    \setCJKfamilyfont{codexfangsong}[AutoFakeBold=2.5]{FangSong}%
+    \renewcommand{\fangsong}{\CJKfamily{codexfangsong}}%
+  }{}%
+}
+
+\@addtoreset{exam}{section}
+\renewcommand{\theexam}{\thesection.\arabic{exam}}
+
+\@addtoreset{exer}{section}
+\renewcommand{\theexer}{\thesection.\arabic{exer}}
+
+\@addtoreset{prop}{section}
+\renewcommand{\theprop}{\thesection.\arabic{prop}}
+
+\providecommand{\listexamplename}{List of Examples}
+\ifdefstring{\ELEGANT@lang}{cn}{%
+  \renewcommand{\listexamplename}{例题索引}%
+}{\relax}
+\newlistof{examples}{loex}{\listexamplename}
+
+\renewenvironment{example}[1][]{%
+  \refstepcounter{exam}%
+  \phantomsection\addcontentsline{loex}{examples}{%
+    \elegantbook@titlepdfsafe{\theexam\ifstrempty{#1}{\hspace{1em}\examplename}{\hspace{1em}#1}}%
+  }%
+  \par\noindent\textbf{\color{main}{\examplename} \theexam\ifstrempty{#1}{}{ #1 } }\rmfamily%
+}{%
+  \par\ignorespacesafterend%
+}
+
+\renewcommand{\makeenvindex}{%
+  \listofdefinitions
+  \listoftheorems
+  \listofexamples
+  \listofexercises
+  \listofproperties
+}
+\makeatother
+
+\newcommand{\e}{\mathrm{e}}
+\newcommand{\dd}{\mathop{}\!\mathrm{d}}
+\newcommand{\nothing}{\varnothing}
+
+\DeclareMathOperator{\arccosh}{arccosh}
+
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\N}{\mathbb{N}}
+
 \begin{document}
-\include{cover}
 
-% 前言部分
+\maketitle
 \frontmatter
-\pagestyle{frontmatter}
 
-% 前言
 \chapter*{前言}
 \addcontentsline{toc}{chapter}{前言}
 
-收录简单导数群题，部分CMC非数类题型。
+收录简单导数群题，部分 CMC 非数类题型。
 
 \vspace{0.5cm}
 \begin{flushright}
@@ -21,22 +107,10 @@
 \today
 \end{flushright}
 
-% 目录
-\newpage
-\ctexset{tocdepth=2}
 \tableofcontents
-\thispagestyle{tocmatter} 
-
-% 环境索引页（暂时禁用）
-\cleardoublepage
-\pagestyle{indexmatter}
 \makeenvindex
-\cleardoublepage
 
-% 正文部分
 \mainmatter
-\pagestyle{mainmatter} % 应用正文样式
-% 章节内容
 \include{chapters/chap1}
 \include{chapters/chap2}
 \include{chapters/special}
@@ -49,4 +123,5 @@
 \include{chapters/chap9}
 \include{chapters/chap10}
 \include{chapters/chap11}
+
 \end{document}

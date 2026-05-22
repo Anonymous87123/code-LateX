@@ -1,67 +1,59 @@
-﻿\chapter{双元法与mod法}
+\chapter{双元法与mod法}
 \section{mod法}
 有理分式分解 $\frac{P(x)}{A(x)B(x)}=\frac{U(x)}{A(x)} + \frac{V(x)}{B(x)}$。通分，等价于求解：
 $$ U(x)B(x) + V(x)A(x) = P(x) $$
 在等式两边对 $A(x)$ 取模（也就是令 $A(x)=0$），那么 $V(x)A(x)$ 这一项消失，式子变成：
 $$ U(x)B(x) \equiv P(x) \pmod{A(x)} \implies U(x) \equiv P(x) \cdot \color{white}{B^{-1}(x)} \pmod{A(x)}$$
 问题转化为求 $B(x)$ 在模 $A(x)$ 下的“乘法逆元” $B^{-1}(x)$（也就是多项式的倒数）。
-\begin{itemize}
-\item 只要 $A(x)$ 和 $B(x)$ 没公因式，必存在多项式 $u(x)$ 和 $v(x)$使${u(x)A(x) + v(x)B(x) = 1}$。
-\item 遇到重因式 $(x^2+1)^2$ 时，可把分子连续对 $(x^2+1)$ 取余，逐步拆开。
-\item 二项式升幂法：若分母含混合重因式 $A^m B^n$，可由一次情形的裴蜀等式出发，再两边取 $(m+n-1)$ 次方展开。
-\end{itemize}
+只要 $A(x)$ 和 $B(x)$ 没有公因式，就存在多项式 $u(x)$ 和 $v(x)$ 使 $u(x)A(x) + v(x)B(x) = 1$，因此逆元总能从裴蜀等式里构造出来。遇到重因式 $(x^2+1)^2$ 时，可以把分子连续对 $(x^2+1)$ 取余，逐步拆开；若分母含混合重因式 $A^m B^n$，则可从一次情形的裴蜀等式出发，再把等式两边取 $(m+n-1)$ 次方展开，这里用到的就是这种二项式升幂法。
 
-\begin{example}{混合分解 $\frac{x^3+2}{(x-1)^2(x^2+1)}$}{}
+\begin{example}[混合分解 $\frac{x^3+2}{(x-1)^2(x^2+1)}$]
     分解 $\displaystyle F(x) = \frac{x^3+2}{(x-1)^2(x^2+1)}$
 \end{example}
 \begin{solution}
 原分母含重根线性因式 $(x-1)^2$ 与二次因式 $(x^2+1)$。先处理 $(x-1)^2$。设分解形式中包含 $\frac{A}{x-1} + \frac{B}{(x-1)^2}$，令剩余部分函数为 $G(x) = \frac{x^3+2}{x^2+1}$。
-\begin{itemize}
-\item \textbf{求 $B$：}
-直接将 $x=1$ 代入 $G(x)$ 中：
-$$ B = G(1) = \frac{1^3+2}{1^2+1} = \frac{3}{2} $$
-\item \textbf{求 $A$：}
-对 $G(x)$ 求一阶导数，并代入 $x=1$：
+直接代入 $x=1$ 得
+$$ B = G(1) = \frac{1^3+2}{1^2+1} = \frac{3}{2}. $$
+再对 $G(x)$ 求一阶导数并代入 $x=1$，
 \begin{align*}
 G'(x) &= \frac{3x^2(x^2+1) - (x^3+2)(2x)}{(x^2+1)^2} ,~~A = G'(1) = \frac{3(2) - (3)(2)}{2^2} = 0
 \end{align*}
-因此，关于 $(x-1)$ 的部分分式仅有一项 $\frac{3/2}{(x-1)^2}$。
-\item \textbf{作差相消与化简：}
-将已求得的部分分式从原分式中减去，设剩余部分为 $H(x)$：
+所以关于 $(x-1)$ 的部分只剩 $\frac{3/2}{(x-1)^2}$。从原式中减去这项，记剩余部分为 $H(x)$，则
 \begin{align*}
-H(x) = \frac{x^3+2}{(x-1)^2(x^2+1)} - \frac{3/2}{(x-1)^2} = \frac{x^3+2 - \frac{3}{2}(x^2+1)}{(x-1)^2(x^2+1)} = \frac{x^3 - \frac{3}{2}x^2 + \frac{1}{2}}{(x-1)^2(x^2+1)}
+H(x) = \frac{x^3+2}{(x-1)^2(x^2+1)} - \frac{3/2}{(x-1)^2} = \frac{x^3+2 - \frac{3}{2}(x^2+1)}{(x-1)^2(x^2+1)} = \frac{x^3 - \frac{3}{2}x^2 + \frac{1}{2}}{(x-1)^2(x^2+1)}.
 \end{align*}
-根据代数基本定理，分子必然含有 $(x-1)^2$ 因式。通过多项式综合除法或观察法对其进行因式分解：
-$$ x^3 - \frac{3}{2}x^2 + \frac{1}{2} = (x-1)^2 \left(x + \frac{1}{2}\right) $$
-代回 $H(x)$ 中并直接约去 $(x-1)^2$：
-$$ H(x) = \frac{(x-1)^2 \left(x + \frac{1}{2}\right)}{(x-1)^2(x^2+1)} = \frac{x + \frac{1}{2}}{x^2+1} $$
-\item \textbf{合并结果：}
-此时所有因式已被完全分离，直接组合即可得到最终分解式：
-$$ F(x) = \frac{3}{2(x-1)^2} + \frac{2x+1}{2(x^2+1)} $$
-\end{itemize}
+这时分子必含 $(x-1)^2$ 因式，因而
+$$ x^3 - \frac{3}{2}x^2 + \frac{1}{2} = (x-1)^2 \left(x + \frac{1}{2}\right). $$
+代回并约去 $(x-1)^2$，得到
+$$ H(x) = \frac{(x-1)^2 \left(x + \frac{1}{2}\right)}{(x-1)^2(x^2+1)} = \frac{x + \frac{1}{2}}{x^2+1}. $$
+于是
+$$ F(x) = \frac{3}{2(x-1)^2} + \frac{2x+1}{2(x^2+1)}. $$
 （注：若 $H(x)$ 的分母中仍包含多个高次不可约多项式，此时再对其应用带余除法的 mod 法，即可规避复数运算与庞大的方程组。）
 \end{solution}
 
-\begin{example}{分解$\frac{x+2}{(x^2+2x+2)(x^2+1)}$}{}
+\begin{example}[分解$\frac{x+2}{(x^2+2x+2)(x^2+1)}$]
 分解$\dfrac{x+2}{(x^2+2x+2)(x^2+1)}$
 \end{example}
 \begin{solution}
 设大分母 $A = x^2+2x+2$，小分母 $B = x^2+1$。目标是将它们线性组合成 $1$。
-\begin{itemize}
-\item 先大除以小（列竖式即可）：得到$A \equiv 2x+1 \pmod{x^2+1}$
-\item 然后用除数$B= x^2+1$除以余式$2x+1$，继续列竖式，可得商 $\frac{2x-1}{4}$，余数 $\frac{5}{4}$
-\item 写带余除法：$B - (2x+1)\left(\frac{2x-1}{4}\right) = \frac{5}{4}$，将原本余式$2x+1$替换为$A$和$B$的带余除法式$2x+1=A-B$:\[\frac{5}{4} = B - (A - B)\left(\frac{2x-1}{4}\right)\Leftrightarrow 5 = B\left(2x+3\right) - A\left(2x-1\right)\]
-\item 所以原式可以如下分解：
+先用 $A$ 除以 $B$，得到 $A \equiv 2x+1 \pmod{x^2+1}$；再用 $B=x^2+1$ 除以余式 $2x+1$，可得商 $\frac{2x-1}{4}$，余数 $\frac{5}{4}$，于是
+\[
+B - (2x+1)\left(\frac{2x-1}{4}\right) = \frac{5}{4}.
+\]
+再把余式 $2x+1$ 用 $A-B$ 替换，就有
+\[
+\frac{5}{4} = B - (A - B)\left(\frac{2x-1}{4}\right)\Leftrightarrow 5 = B\left(2x+3\right) - A\left(2x-1\right).
+\]
+原式因此可写成
 \begin{align*}
 \frac{x+2}{AB}=&\frac{(x+2)5}{5AB}=\frac{(x+2)\left( B\left(2x+3\right) - A\left(2x-1\right)\right)}{5AB}\\
 =&\frac{(x+2)(2x+3)}{5(x^2+2x+2)} - \frac{(x+2)(2x-1)}{5(x^2+1)}=\frac{2x^2+7x+6}{5(x^2+2x+2)} - \frac{2x^2+3x-2}{5(x^2+1)}\\
 =&\frac{2x^2+7x+6}{5(x^2+2x+2)}-\frac25 - \left(\frac{2x^2+3x-2}{5(x^2+1)}-\frac25\right)\\
-=&\frac{4-3x}{5(x^2+1)}+ \frac{3x+2}{5(x^2+2x+2)}
+=&\frac{4-3x}{5(x^2+1)}+ \frac{3x+2}{5(x^2+2x+2)}.
 \end{align*}
-\end{itemize}
 \end{solution}
 
-\begin{example}{提取 $\frac{x^3+3x}{(x^2+1)^2}$}{}
+\begin{example}[提取 $\frac{x^3+3x}{(x^2+1)^2}$]
 提取 $\dfrac{x^3+3x}{(x^2+1)^2}$
 \end{example}
 \begin{solution}
@@ -71,176 +63,176 @@ $$ F(x) = \frac{3}{2(x-1)^2} + \frac{2x+1}{2(x^2+1)} $$
 \end{align*}
 \end{solution}
 
-\begin{example}{分解$\frac{1}{(x-1)^2(x^2+1)^2}$}{}
+\begin{example}[分解$\frac{1}{(x-1)^2(x^2+1)^2}$]
 分解$\dfrac{1}{(x-1)^2(x^2+1)^2}$
 \end{example}
 \begin{solution}
 设 $A = x-1, B = x^2+1$。
-\begin{itemize}
-\item 竖式计算得$B$除以$A$的商$x+1$，余式$2$，即$B - A(x+1) = (x^2+1) - (x^2-1) = 2$
-\item 分母 $A^2 B^2$指数之和减一 $2+2-1 = 3$，把上面的等式两边三次方：$ \left(B - (x+1)A\right)^3=8 $
-\item 展开：$B^3-3(x+1)AB^2+3(x+1)^2A^2B-(x+1)^3A^3=8$
-\item 按 $B^2$ 和 $A^2$ 提取公因式分组：$$ 8 = B^2 \underbrace{\left[ B -3(x+1)A \right]}_{\text{这是} A^2 \text{的分子} U(x)} + A^2 \underbrace{\left[ {3(x+1)^2}B - (x+1)^3A \right]}_{\text{这是} B^2\text{ 的分子} V(x)} $$
-\item 代入$A = x-1, B = x^2+1$展开括号：$8=B^2(4-2x^2)+A^2(2x^4+4x^3+6x^2+8x+4)$
-\item 继续竖式除法：\begin{align*}
+先算得 $B$ 除以 $A$ 的商为 $x+1$，余式为 $2$，即
+$$ B - A(x+1) = (x^2+1) - (x^2-1) = 2. $$
+分母是 $A^2B^2$，指数之和减一为 $2+2-1=3$，因此把上式两边立方：
+$$ \left(B - (x+1)A\right)^3=8. $$
+展开后有
+$$ B^3-3(x+1)AB^2+3(x+1)^2A^2B-(x+1)^3A^3=8, $$
+再按 $B^2$ 和 $A^2$ 分组，
+$$ 8 = B^2 \underbrace{\left[ B -3(x+1)A \right]}_{\text{这是} A^2 \text{的分子} U(x)} + A^2 \underbrace{\left[ {3(x+1)^2}B - (x+1)^3A \right]}_{\text{这是} B^2\text{ 的分子} V(x)}. $$
+代入 $A = x-1, B = x^2+1$ 展开括号，得到
+$$ 8=B^2(4-2x^2)+A^2(2x^4+4x^3+6x^2+8x+4). $$
+继续做竖式除法，
+\begin{align*}
 U(x) \div (x-1)^2 &\implies 4-2x^2 =-2(x-1)^2 + 6-4x\\
-V(x) \div (x^2+1)^2 &\implies 2x^4+4x^3+6x^2+8x+4= 2(x^2+1)^2 +4x^3+2x^2+8x+2
+V(x) \div (x^2+1)^2 &\implies 2x^4+4x^3+6x^2+8x+4= 2(x^2+1)^2 +4x^3+2x^2+8x+2,
 \end{align*}
-\item 分离出的常数抵消。结果：$ \frac{3-2x}{4(x-1)^2} + \frac{2x^3+x^2+4x+1}{4(x^2+1)^2}$
-\end{itemize}
+分离出的常数正好抵消，于是结果为
+$$ \frac{3-2x}{4(x-1)^2} + \frac{2x^3+x^2+4x+1}{4(x^2+1)^2}. $$
 \end{solution}
 
 
 
-\begin{example}{分解 $\frac{2x^2 + 3}{(x-1)(x^2+x+1)}$}{}
+\begin{example}[分解 $\frac{2x^2 + 3}{(x-1)(x^2+x+1)}$]
     分解 $\displaystyle F(x) = \frac{2x^2 + 3}{(x-1)(x^2+x+1)}$
 \end{example}
 \begin{solution}
 设二次因式 $A = x^2+x+1$，一次因式 $B = x-1$。
-\begin{itemize}
-\item 利用带余除法，多项式 $A$ 除以 $B$ 可得商为 $x+2$，余数为 $3$，即 $A = B(x+2) + 3$。
-\item 移项并两边同除以 $3$，构造出关于常数 $1$ 的恒等式：
-$$ 1 = \frac{1}{3}A - \frac{x+2}{3}B $$
-\item 将原分式的分子 $P(x) = 2x^2+3$ 乘以该恒等式，并除以总分母 $AB$ 进行裂项：
+用带余除法可得 $A = B(x+2) + 3$，于是
+$$ 1 = \frac{1}{3}A - \frac{x+2}{3}B. $$
+把它乘到原分式分子 $P(x)=2x^2+3$ 上，再除以总分母 $AB$，便有
 \begin{align*}
-\frac{P(x)}{AB} &= \frac{P(x) \left(\frac{1}{3}A - \frac{x+2}{3}B\right)}{AB} = \frac{2x^2+3}{3B} - \frac{(2x^2+3)(x+2)}{3A}
+\frac{P(x)}{AB} &= \frac{P(x) \left(\frac{1}{3}A - \frac{x+2}{3}B\right)}{AB} = \frac{2x^2+3}{3B} - \frac{(2x^2+3)(x+2)}{3A}.
 \end{align*}
-\item 对拆分后的两部分分别通过加减项进行分子降次，化为真分式：
+接着分别把两项分子降次：
 \begin{align*}
 \frac{2x^2+3}{3(x-1)} &= \frac{2(x^2-1)+5}{3(x-1)} = \frac{2(x+1)}{3} + \frac{5}{3(x-1)} \\
 \frac{(2x^2+3)(x+2)}{3(x^2+x+1)} &= \frac{2x^3+4x^2+3x+6}{3(x^2+x+1)} = \frac{2x(x^2+x+1) + 2(x^2+x+1) - x + 4}{3(x^2+x+1)} \\
-&= \frac{2x+2}{3} + \frac{-x+4}{3(x^2+x+1)}
+&= \frac{2x+2}{3} + \frac{-x+4}{3(x^2+x+1)}.
 \end{align*}
-\item 将上述两式相减，分离出的多项式部分天然抵消，得到最终结果：
+两式相减时，多项式部分自然抵消，最终得到
 \begin{align*}
 F(x) &= \left(\frac{2x+2}{3} + \frac{5}{3(x-1)}\right) - \left(\frac{2x+2}{3} + \frac{-x+4}{3(x^2+x+1)}\right) \\
-&= \frac{5}{3(x-1)} + \frac{x-4}{3(x^2+x+1)}
+&= \frac{5}{3(x-1)} + \frac{x-4}{3(x^2+x+1)}.
 \end{align*}
-\end{itemize}
 \end{solution}
 
-\begin{example}{分解 $\frac{x^5}{(x^2+1)^3}$}{}
+\begin{example}[分解 $\frac{x^5}{(x^2+1)^3}$]
     分解 $\displaystyle F(x) = \frac{x^5}{(x^2+1)^3}$
 \end{example}
 \begin{solution}
-\begin{itemize}
-\item 观察分母结构，令 $t = x^2+1$，则隐含关系为 $x^2 = t-1$。
-\item 将分子 $x^5$ 写成以 $t$ 为基底的多项式展开：
-$$ x^5 = x \cdot (x^2)^2 = x(t-1)^2 = x(t^2 - 2t + 1) = x \cdot t^2 - 2x \cdot t + x $$
-\item 将 $t$ 替换回 $x^2+1$，代回原式，连同分母 $(x^2+1)^3$ 按项约分：
+令 $t = x^2+1$，则 $x^2 = t-1$。于是
+$$ x^5 = x \cdot (x^2)^2 = x(t-1)^2 = x(t^2 - 2t + 1) = x \cdot t^2 - 2x \cdot t + x. $$
+把 $t$ 换回 $x^2+1$ 并代回原式，连同分母 $(x^2+1)^3$ 逐项约分，便得
 \begin{align*}
 F(x) &= \frac{x(x^2+1)^2 - 2x(x^2+1) + x}{(x^2+1)^3} \\
-&= \frac{x}{x^2+1} - \frac{2x}{(x^2+1)^2} + \frac{x}{(x^2+1)^3}
+&= \frac{x}{x^2+1} - \frac{2x}{(x^2+1)^2} + \frac{x}{(x^2+1)^3}.
 \end{align*}
-\end{itemize}
 \end{solution}
 
-\begin{example}{分解 $\frac{x}{(x-1)^2(x+1)^2}$}{}
+\begin{example}[分解 $\frac{x}{(x-1)^2(x+1)^2}$]
     分解 $\displaystyle F(x) = \frac{x}{(x-1)^2(x+1)^2}$
 \end{example}
 \begin{solution}
 设 $A = x+1$，$B = x-1$。
-\begin{itemize}
-\item 观察因式关系易得 $A - B = 2$，即 $1 = \frac{A - B}{2}$。
-\item 原分母包含 $A^2 B^2$，总指数为 $4$。将上述关系式两端同时升至 $3$ 次方（即 $4-1$ 次）：
-$$ 1 = \left(\frac{A - B}{2}\right)^3 = \frac{1}{8}(A^3 - 3A^2B + 3AB^2 - B^3) $$
-\item 按 $A^2$ 和 $B^2$ 提取公因式进行分组：
-$$ 1 = A^2 \left( \frac{A - 3B}{8} \right) + B^2 \left( \frac{3A - B}{8} \right) $$
-\item 将 $A=x+1, B=x-1$ 代回括号内化简，得到 $1$ 的恒等代换：
-$$ 1 = A^2 \left( \frac{2-x}{4} \right) + B^2 \left( \frac{x+2}{4} \right) $$
-\item 将该等式代入原分式分子，并与分母 $A^2B^2$ 约分：
-$$ F(x) = \frac{x \cdot 1}{A^2 B^2} = \frac{x(2-x)}{4 B^2} + \frac{x(x+2)}{4 A^2} = \frac{2x-x^2}{4(x-1)^2} + \frac{x^2+2x}{4(x+1)^2} $$
-\item 对两项分别通过加减项化为真分式：
+由 $A - B = 2$ 可得
+$$ 1 = \frac{A - B}{2}. $$
+原分母含 $A^2B^2$，总指数为 $4$，于是把上式两边升到 $3$ 次方：
+$$ 1 = \left(\frac{A - B}{2}\right)^3 = \frac{1}{8}(A^3 - 3A^2B + 3AB^2 - B^3). $$
+按 $A^2$ 和 $B^2$ 提取公因式后，
+$$ 1 = A^2 \left( \frac{A - 3B}{8} \right) + B^2 \left( \frac{3A - B}{8} \right). $$
+再代入 $A=x+1, B=x-1$ 化简，得到
+$$ 1 = A^2 \left( \frac{2-x}{4} \right) + B^2 \left( \frac{x+2}{4} \right). $$
+把它代回原分式分子并与分母 $A^2B^2$ 约分，
+$$ F(x) = \frac{x \cdot 1}{A^2 B^2} = \frac{x(2-x)}{4 B^2} + \frac{x(x+2)}{4 A^2} = \frac{2x-x^2}{4(x-1)^2} + \frac{x^2+2x}{4(x+1)^2}. $$
+两项分别降次为
 \begin{align*}
 \frac{2x-x^2}{4(x-1)^2} &= \frac{-(x^2-2x+1)+1}{4(x-1)^2} = -\frac{1}{4} + \frac{1}{4(x-1)^2} \\
-\frac{x^2+2x}{4(x+1)^2} &= \frac{(x^2+2x+1)-1}{4(x+1)^2} = \frac{1}{4} - \frac{1}{4(x+1)^2}
+\frac{x^2+2x}{4(x+1)^2} &= \frac{(x^2+2x+1)-1}{4(x+1)^2} = \frac{1}{4} - \frac{1}{4(x+1)^2},
 \end{align*}
-\item 两式相加，常数项抵消，得到最终结果：
-$$ F(x) = \frac{1}{4(x-1)^2} - \frac{1}{4(x+1)^2} $$
-\end{itemize}
+相加后常数项抵消，因此
+$$ F(x) = \frac{1}{4(x-1)^2} - \frac{1}{4(x+1)^2}. $$
 \end{solution}
 
-\begin{example}{分解 $\frac{x^2}{(x^2+1)^2(x^2+x+1)}$}{}
+\begin{example}[分解 $\frac{x^2}{(x^2+1)^2(x^2+x+1)}$]
     分解 $\displaystyle F(x) = \frac{x^2}{(x^2+1)^2(x^2+x+1)}$
 \end{example}
 \begin{solution}
 设 $A = x^2+x+1$，$B = x^2+1$。原式分母结构为 $A B^2$。
-\begin{itemize}
-\item 由 $x^2=B-1$，得
-$$ \frac{x^2}{A B^2} = \frac{B - 1}{A B^2} = \frac{1}{AB} - \frac{1}{A B^2} $$
-下面分别分解 $\frac{1}{AB}$ 与 $\frac{1}{A B^2}$。
-\item 对 $\frac{1}{AB}$ 进行分解：由 $A - B = x$，利用带余除法 $B \div x$ 得到 $B = x \cdot x + 1$。
-将 $x = A-B$ 代入余式关系得 $1 = B - x(A-B) = (x+1)B - xA$。除以 $AB$ 得到：
-$$ \frac{1}{AB} = \frac{(x+1)B - xA}{AB} = \frac{x+1}{A} - \frac{x}{B} $$
-\item 对 $\frac{1}{A B^2}$ 进行分解：由上述结果两边同除以 $B$ 可得 $\frac{1}{AB^2} = \frac{x+1}{AB} - \frac{x}{B^2}$。
-为求 $\frac{x+1}{AB}$，将恒等式 $1 = (x+1)B - xA$ 两端同乘 $(x+1)$：
-$$ x+1 = (x+1)^2 B - x(x+1)A $$
-除以 $AB$ 得 $\frac{x+1}{AB} = \frac{(x+1)^2}{A} - \frac{x^2+x}{B}$。因此：
-$$ \frac{1}{A B^2} = \frac{(x+1)^2}{A} - \frac{x^2+x}{B} - \frac{x}{B^2} $$
-\item 通过加减项，对上述项进行分子降次化简：
+由 $x^2=B-1$ 可先写成
+$$ \frac{x^2}{A B^2} = \frac{B - 1}{A B^2} = \frac{1}{AB} - \frac{1}{A B^2}, $$
+所以只需分别分解 $\frac{1}{AB}$ 与 $\frac{1}{AB^2}$。由 $A-B=x$，再利用带余除法 $B \div x$ 得 $B = x \cdot x + 1$，把 $x=A-B$ 代入余式关系便有
+$$ 1 = B - x(A-B) = (x+1)B - xA, $$
+从而
+$$ \frac{1}{AB} = \frac{(x+1)B - xA}{AB} = \frac{x+1}{A} - \frac{x}{B}. $$
+把它两边同除以 $B$，可得
+$$ \frac{1}{AB^2} = \frac{x+1}{AB} - \frac{x}{B^2}. $$
+再将恒等式 $1 = (x+1)B - xA$ 两端同乘 $(x+1)$，
+$$ x+1 = (x+1)^2 B - x(x+1)A, $$
+除以 $AB$ 后得到
+$$ \frac{x+1}{AB} = \frac{(x+1)^2}{A} - \frac{x^2+x}{B}, $$
+于是
+$$ \frac{1}{A B^2} = \frac{(x+1)^2}{A} - \frac{x^2+x}{B} - \frac{x}{B^2}. $$
+再把分子降次：
 \begin{align*}
 \frac{(x+1)^2}{A} &= \frac{x^2+2x+1}{x^2+x+1} = \frac{(x^2+x+1)+x}{x^2+x+1} = 1 + \frac{x}{A} \\
-\frac{x^2+x}{B} &= \frac{x^2+x}{x^2+1} = \frac{(x^2+1)+x-1}{x^2+1} = 1 + \frac{x-1}{B}
+\frac{x^2+x}{B} &= \frac{x^2+x}{x^2+1} = \frac{(x^2+1)+x-1}{x^2+1} = 1 + \frac{x-1}{B},
 \end{align*}
-代回得 $\frac{1}{A B^2} = \left(1 + \frac{x}{A}\right) - \left(1 + \frac{x-1}{B}\right) - \frac{x}{B^2} = \frac{x}{A} - \frac{x-1}{B} - \frac{x}{B^2}$。
-\item 最终两式相减合并：
+代回便是
+$$ \frac{1}{A B^2} = \left(1 + \frac{x}{A}\right) - \left(1 + \frac{x-1}{B}\right) - \frac{x}{B^2} = \frac{x}{A} - \frac{x-1}{B} - \frac{x}{B^2}. $$
+最后相减合并：
 \begin{align*}
 F(x) &= \frac{1}{AB} - \frac{1}{AB^2} = \left(\frac{x+1}{A} - \frac{x}{B}\right) - \left(\frac{x}{A} - \frac{x-1}{B} - \frac{x}{B^2}\right) \\
 &= \frac{x+1-x}{A} + \frac{-x+(x-1)}{B} + \frac{x}{B^2} \\
-&= \frac{1}{x^2+x+1} - \frac{1}{x^2+1} + \frac{x}{(x^2+1)^2}
+&= \frac{1}{x^2+x+1} - \frac{1}{x^2+1} + \frac{x}{(x^2+1)^2}.
 \end{align*}
-\end{itemize}
 \end{solution}
 
-\begin{example}{分解 $F(x) = \frac{1}{x(x-1)(x^2+1)}$}{}
+\begin{example}[分解 $F(x) = \frac{1}{x(x-1)(x^2+1)}$]
     分解 $\displaystyle F(x) = \frac{1}{x(x-1)(x^2+1)}$
 \end{example}
 \begin{solution}
-\begin{itemize}
-\item 先拆出因式 $x$。设 $A = x$，其余部分 $M = (x-1)(x^2+1) = x^3 - x^2 + x - 1$。
-利用带余除法，$M \div A$ 可得商为 $x^2-x+1$，余数为 $-1$，即 $M = A(x^2-x+1) - 1$。
-\item 移项得常数代换 $1 = A(x^2-x+1) - M$，代入原分式分子并裂项：
-$$ \frac{1}{AM} = \frac{A(x^2-x+1) - M}{AM} = \frac{x^2-x+1}{M} - \frac{1}{A} = \frac{x^2-x+1}{(x-1)(x^2+1)} - \frac{1}{x} $$
-得
-\item 接下来分解新分式 $\frac{x^2-x+1}{(x-1)(x^2+1)}$。设 $B = x^2+1$，$C = x-1$。
-带余除法 $B \div C$ 得商为 $x+1$，余数为 $2$，即 $B = C(x+1) + 2$。
-\item 构造恒等式 $1 = \frac{1}{2}B - \frac{x+1}{2}C$，乘入分子 $P(x) = x^2-x+1$ 并除以 $BC$：
+先拆出因式 $x$。设 $A = x$，其余部分 $M = (x-1)(x^2+1) = x^3 - x^2 + x - 1$。由带余除法知 $M \div A$ 的商为 $x^2-x+1$，余数为 $-1$，即
+$$ M = A(x^2-x+1) - 1. $$
+于是
+$$ 1 = A(x^2-x+1) - M, $$
+代入原分式并裂项可得
+$$ \frac{1}{AM} = \frac{A(x^2-x+1) - M}{AM} = \frac{x^2-x+1}{M} - \frac{1}{A} = \frac{x^2-x+1}{(x-1)(x^2+1)} - \frac{1}{x}. $$
+再分解新分式 $\frac{x^2-x+1}{(x-1)(x^2+1)}$。设 $B = x^2+1$，$C = x-1$，则 $B \div C$ 的商为 $x+1$，余数为 $2$，也就是
+$$ B = C(x+1) + 2. $$
+因此可构造
+$$ 1 = \frac{1}{2}B - \frac{x+1}{2}C, $$
+把它乘入分子 $P(x) = x^2-x+1$ 并除以 $BC$，有
 \begin{align*}
-\frac{P(x)}{BC} &= \frac{P(x)\left(\frac{1}{2}B - \frac{x+1}{2}C\right)}{BC} = \frac{x^2-x+1}{2(x-1)} - \frac{(x^2-x+1)(x+1)}{2(x^2+1)}
+\frac{P(x)}{BC} &= \frac{P(x)\left(\frac{1}{2}B - \frac{x+1}{2}C\right)}{BC} = \frac{x^2-x+1}{2(x-1)} - \frac{(x^2-x+1)(x+1)}{2(x^2+1)}.
 \end{align*}
-\item 对两部分分别通过加减项降次：
+两部分分别降次：
 \begin{align*}
 \frac{x^2-x+1}{2(x-1)} &= \frac{x(x-1)+1}{2(x-1)} = \frac{x}{2} + \frac{1}{2(x-1)} \\
-\frac{x^3+1}{2(x^2+1)} &= \frac{x(x^2+1)-x+1}{2(x^2+1)} = \frac{x}{2} + \frac{1-x}{2(x^2+1)}
+\frac{x^3+1}{2(x^2+1)} &= \frac{x(x^2+1)-x+1}{2(x^2+1)} = \frac{x}{2} + \frac{1-x}{2(x^2+1)}.
 \end{align*}
-\item 将上述两式相减，分离出的一次式天然抵消：
-$$ \left(\frac{x}{2} + \frac{1}{2(x-1)}\right) - \left(\frac{x}{2} + \frac{1-x}{2(x^2+1)}\right) = \frac{1}{2(x-1)} + \frac{x-1}{2(x^2+1)} $$
-\item 因此，原分式分解为：
-$$ F(x) = -\frac{1}{x} + \frac{1}{2(x-1)} + \frac{x-1}{2(x^2+1)} $$
-\end{itemize}
+相减后一次式自然抵消，
+$$ \left(\frac{x}{2} + \frac{1}{2(x-1)}\right) - \left(\frac{x}{2} + \frac{1-x}{2(x^2+1)}\right) = \frac{1}{2(x-1)} + \frac{x-1}{2(x^2+1)}, $$
+故原分式分解为
+$$ F(x) = -\frac{1}{x} + \frac{1}{2(x-1)} + \frac{x-1}{2(x^2+1)}. $$
 \end{solution}
 
-\begin{example}{分解 $\frac{x^3}{(x-1)(x+1)(x^2+x+1)}$}{}
+\begin{example}[分解 $\frac{x^3}{(x-1)(x+1)(x^2+x+1)}$]
     分解 $\displaystyle F(x) = \frac{x^3}{(x-1)(x+1)(x^2+x+1)}$
 \end{example}
 \begin{solution}
-\begin{itemize}
-\item 对于一次因式 $(x-1)$ 和 $(x+1)$，可直接利用赋值法求出其对应的部分分式分子：
-令 $x=1$，掩去分母中的 $(x-1)$，代入剩余部分得 $\frac{1^3}{(1+1)(1+1+1)} = \frac{1}{6}$，即含 $\frac{1/6}{x-1}$。
-令 $x=-1$，掩去分母中的 $(x+1)$，代入剩余部分得 $\frac{(-1)^3}{(-1-1)(1-1+1)} = \frac{1}{2}$，即含 $\frac{1/2}{x+1}$。
-\item 将这两项合并通分：
-$$ \frac{1}{6(x-1)} + \frac{1}{2(x+1)} = \frac{1(x+1) + 3(x-1)}{6(x^2-1)} = \frac{4x-2}{6(x^2-1)} = \frac{2x-1}{3(x^2-1)} $$
-\item 将原分式减去已分离的部分，求得剩余分式：
-$$ \text{剩余项} = \frac{x^3}{(x^2-1)(x^2+x+1)} - \frac{2x-1}{3(x^2-1)} $$
-通分相减，计算分子部分：
-$$ 3x^3 - (2x-1)(x^2+x+1) = 3x^3 - (2x^3+x^2+x-1) = x^3 - x^2 - x + 1 $$
-\item 对该分子提取公因式，天然构造出与分母相同的因式以供约分：
-$$ x^3 - x^2 - x + 1 = x^2(x-1) - (x-1) = (x^2-1)(x-1) $$
-\item 代回并约去 $(x^2-1)$：
-$$ \text{剩余项} = \frac{(x^2-1)(x-1)}{3(x^2-1)(x^2+x+1)} = \frac{x-1}{3(x^2+x+1)} $$
-\item 因此，三部分合并得到最终结果：
-$$ F(x) = \frac{1}{6(x-1)} + \frac{1}{2(x+1)} + \frac{x-1}{3(x^2+x+1)} $$
-\end{itemize}
+对一次因式 $(x-1)$ 和 $(x+1)$ 可以直接赋值。令 $x=1$，掩去分母中的 $(x-1)$，代入剩余部分得
+$$ \frac{1^3}{(1+1)(1+1+1)} = \frac{1}{6}, $$
+所以含 $\frac{1/6}{x-1}$；令 $x=-1$，掩去分母中的 $(x+1)$，代入剩余部分得
+$$ \frac{(-1)^3}{(-1-1)(1-1+1)} = \frac{1}{2}, $$
+所以含 $\frac{1/2}{x+1}$。先把这两项合并：
+$$ \frac{1}{6(x-1)} + \frac{1}{2(x+1)} = \frac{1(x+1) + 3(x-1)}{6(x^2-1)} = \frac{4x-2}{6(x^2-1)} = \frac{2x-1}{3(x^2-1)}. $$
+从原式中减去这部分，剩余项为
+$$ \text{剩余项} = \frac{x^3}{(x^2-1)(x^2+x+1)} - \frac{2x-1}{3(x^2-1)}. $$
+通分相减后，分子变成
+$$ 3x^3 - (2x-1)(x^2+x+1) = 3x^3 - (2x^3+x^2+x-1) = x^3 - x^2 - x + 1, $$
+而它恰好可以写成
+$$ x^3 - x^2 - x + 1 = x^2(x-1) - (x-1) = (x^2-1)(x-1). $$
+代回并约去 $(x^2-1)$，得到
+$$ \text{剩余项} = \frac{(x^2-1)(x-1)}{3(x^2-1)(x^2+x+1)} = \frac{x-1}{3(x^2+x+1)}. $$
+因此最终结果为
+$$ F(x) = \frac{1}{6(x-1)} + \frac{1}{2(x+1)} + \frac{x-1}{3(x^2+x+1)}. $$
 \end{solution}
 
 
@@ -248,57 +240,36 @@ $$ F(x) = \frac{1}{6(x-1)} + \frac{1}{2(x+1)} + \frac{x-1}{3(x^2+x+1)} $$
 本章省略了常数$C$。
 \subsection{双元微分公式}
 \begin{theorem}[微分公式]
-\begin{itemize}
-\item 实圆：$x\dd x+y\dd y=0$；虚圆：$x\dd x=y\dd y$；
-\item 参数微元，实圆：$\frac{\dd x}{y}=-\dd\theta, \quad \frac{\dd y}{x}=\dd\theta$；
-\item 参数微元，虚圆：$\frac{\dd x}{y}=\dd\phi,\quad \frac{\dd y}{x}=\dd\phi$；
-\item 面积2倍的微元，$y\dd x-x\dd y=(x^2\pm y^2)\dd\theta$，注意顺序和微分的顺序一致；
-\item 比值微元，$\dd\left(\frac{x}{y}\right)=\frac{y\dd x-x\dd y}{y^2}$；
-\end{itemize}
+实圆：$x\dd x+y\dd y=0$；虚圆：$x\dd x=y\dd y$。参数微元方面，实圆满足 $\frac{\dd x}{y}=-\dd\theta, \quad \frac{\dd y}{x}=\dd\theta$，虚圆满足 $\frac{\dd x}{y}=\dd\phi,\quad \frac{\dd y}{x}=\dd\phi$。面积 $2$ 倍的微元可写成 $y\dd x-x\dd y=(x^2\pm y^2)\dd\theta$，这里要注意顺序和微分的顺序一致；比值微元则是 $\dd\left(\frac{x}{y}\right)=\frac{y\dd x-x\dd y}{y^2}$。
 \end{theorem}
-1. 实圆：$x\dd x+y\dd y=0$；虚圆：$x\dd x=y\dd y$；几何解释如下：
-\begin{itemize}
-\item 实圆：瞬时位移向量 $(\dd x, \dd y)$ 必须垂直于位置向量$(x,y)$，二者内积为零
-\item 虚圆：等价于：$\frac{\dd x}{x} = \frac{\dd y}{y}  $，即 $x$ 与 $y$ 的相对变化率（对数微分）必须严格相等。
-\end{itemize}
-2. 参数微元，实圆：$\frac{\dd x}{y}=\frac{\dd y}{x}=-\dd\theta, \quad \frac{\dd y}{x}=\dd\theta$；虚圆：$\frac{\dd x}{y}=\dd\phi,\quad \frac{\dd y}{x}=\dd\phi$；几何解释如下：
-\begin{itemize}
-\item 实圆:$ \dd\theta  $ 是位置向量绕原点逆时针转过的有向小角（数学正方向）。此时指针尖端的位移大小等于弧长 $  a\dd\theta  $，方向正好是 $  \vec{r}  $ 逆时针旋转 90° 得到的向量 $  (-y, x)  $，模也是$a$。所以
+实圆关系 $x\dd x+y\dd y=0$ 的几何意义是，瞬时位移向量 $(\dd x, \dd y)$ 必须垂直于位置向量 $(x,y)$，二者内积为零；虚圆关系 $x\dd x=y\dd y$ 则等价于 $\frac{\dd x}{x} = \frac{\dd y}{y}$，也就是 $x$ 与 $y$ 的相对变化率必须相等。
+
+参数微元也可以直接从几何看出。对实圆，$\dd\theta$ 是位置向量绕原点逆时针转过的有向小角，此时指针尖端的位移大小等于弧长 $a\dd\theta$，方向正好是 $\vec{r}$ 逆时针旋转 $90^\circ$ 后得到的向量 $(-y, x)$，模仍为 $a$，所以
 \[(\dd x, \dd y)=\dd\theta(-y,x)\]
-\item 虚圆：$\dd\phi$ 是位置向量绕原点逆时针转过的有向小角，此时指针尖端的位移大小等于 $  a\dd\phi  $，方向正好与 $\vec{r}$ 沿$y=x$对称的向量$(y,x)$一致。所以
+对虚圆，$\dd\phi$ 是位置向量绕原点逆时针转过的有向小角，此时指针尖端的位移大小等于 $a\dd\phi$，方向正好与 $\vec{r}$ 沿 $y=x$ 对称的向量 $(y,x)$ 一致，所以
 \[(\dd x, \dd y)=\dd\theta(y,x)\]
-\end{itemize}
-3. 面积2倍的微元，利用扇形面积两倍等于半径平方乘以角度（弧度）即得，注意方向。面积微元可以等比例地转化为角度微元，角度微元可以等比例地转化为面积微元。
-\begin{itemize}
-\item $x\dd y-y\dd x=(x^2\pm y^2)\dd\theta$（逆向面积），对应逆时针角度微元$\dd\theta$，即实圆关系的$\frac{\dd y}{x}$，虚圆关系的$\frac{\dd y}{x},\frac{\dd x}y$
-\item $y\dd x-x\dd y=(x^2\pm y^2)(-\dd\theta)$（顺向面积）对应顺时针角度微元$-\dd\theta$，即实圆关系的$\frac{\dd x}{y}$.
-\end{itemize}
-这个关系也便于记忆。实际计算时，可以先补出分母中的 \(x^2\pm y^2\)，再观察分子与分母的对应关系：
-\begin{itemize}
-\item 对于$\frac{x\dd y-y\dd x}{x^2+y^2}$，观察到分子左侧的$x\dd y$和分母的$x^2$，相除就是$\frac{\dd y}{x}$，所以这是$\frac{\dd y}{x},-\frac{\dd x}{y}$的合分比之后的结果。
-\item 对于$\frac{y\dd x-x\dd y}{x^2+y^2}$，观察到分子左侧的$y\dd x$和分母的$y^2$（无关哪一侧，加法满足交换律），相除就是$\frac{\dd x}{y}$，所以这是$\frac{\dd x}{y},-\frac{\dd y}{x}$的合分比之后的结果。
-\item 对于$\frac{x\dd y-y\dd x}{x^2-y^2}$，观察到分子左侧的$x\dd y$和分母的$x^2$，相除就是$\frac{\dd y}{x}$，所以这是$\frac{\dd y}{x},\frac{\dd x}{y}$的合分比之后的结果。
-\item 对于$\frac{y\dd x-x\dd y}{x^2-y^2}$，观察到分子左侧的$y\dd x$和分母的$-y^2$，相除就是$-\frac{\dd x}{y}$，所以这是$-\frac{\dd x}{y},-\frac{\dd y}{x}$的合分比之后的结果。
-\end{itemize}
-4. 比值微元，$\dd\left(\frac{x}{y}\right)=\frac{y\dd x-x\dd y}{y^2}$；这个式子经常反过来用作积分降次。它也可以用相似三角形来理解：
-\begin{itemize}
-\item \textbf{把 $\frac{x}{y}$ 看成辅助直线上的横坐标：} 取参考线 $y=1$。将原点与动点 $P(x,y)$ 连成一条射线，交这条参考线于 $P'$。由相似三角形可知，$P'$ 的坐标正是 $\left(\frac{x}{y}, 1\right)$。因此，$\frac{x}{y}$ 就是这个辅助点的横坐标。
-\item \textbf{辅助点移动时的小三角形面积：} 当 $P'$ 在直线上发生水平微移 $\dd\left(\frac{x}{y}\right)$ 时，它与原点围成一个很小的三角形，底为 $\dd\left(\frac{x}{y}\right)$，高为 1。按 2 倍有向面积计算，恰有
+
+面积 $2$ 倍的微元来自扇形面积两倍等于半径平方乘以角度，方向则要随着微分顺序一起看。因此
+\[
+x\dd y-y\dd x=(x^2\pm y^2)\dd\theta
+\]
+表示逆向面积，对应逆时针角度微元 $\dd\theta$，也就是实圆关系中的 $\frac{\dd y}{x}$，以及虚圆关系中的 $\frac{\dd y}{x},\frac{\dd x}y$；而
+\[
+y\dd x-x\dd y=(x^2\pm y^2)(-\dd\theta)
+\]
+表示顺向面积，对应顺时针角度微元 $-\dd\theta$，也就是实圆关系中的 $\frac{\dd x}{y}$。实际计算时，可以先补出分母里的 \(x^2\pm y^2\)，再观察分子与分母的对应关系：$\frac{x\dd y-y\dd x}{x^2+y^2}$ 对应 $\frac{\dd y}{x},-\frac{\dd x}{y}$ 的合分比，$\frac{y\dd x-x\dd y}{x^2+y^2}$ 对应 $\frac{\dd x}{y},-\frac{\dd y}{x}$ 的合分比，$\frac{x\dd y-y\dd x}{x^2-y^2}$ 对应 $\frac{\dd y}{x},\frac{\dd x}{y}$ 的合分比，$\frac{y\dd x-x\dd y}{x^2-y^2}$ 则对应 $-\frac{\dd x}{y},-\frac{\dd y}{x}$ 的合分比。
+
+比值微元 $\dd\left(\frac{x}{y}\right)=\frac{y\dd x-x\dd y}{y^2}$ 经常反过来用作积分降次，也可以用相似三角形来理解。取参考线 $y=1$，将原点与动点 $P(x,y)$ 连成一条射线，交参考线于 $P'$，由相似三角形可知 $P'$ 的坐标正是 $\left(\frac{x}{y}, 1\right)$，因此 $\frac{x}{y}$ 就是辅助点的横坐标。当 $P'$ 在直线上发生水平微移 $\dd\left(\frac{x}{y}\right)$ 时，它与原点围成的小三角形按 $2$ 倍有向面积计算满足
 \[
 \frac{x}{y}\cdot 0 - 1\cdot\dd\left(\frac{x}{y}\right) = -\dd\left(\frac{x}{y}\right).
 \]
-\item \textbf{再用相似三角形把面积放回原点：} 实际动点 $P(x,y)$ 和辅助点 $P'$ 在同一条射线上，长度比为 $y:1$，所以对应面积按相似比的平方放大为 $y^2$ 倍。
-\item \textbf{公式推导：} 因此
-\[ x\dd y - y\dd x = y^2 \left[ -\dd\left(\frac{x}{y}\right) \right] \]
-将负号移入括号并整理，得到 $\dd\left(\frac{x}{y}\right)=\frac{y\dd x-x\dd y}{y^2}$。
-\end{itemize}
+另一方面，实际动点 $P(x,y)$ 与辅助点 $P'$ 在同一条射线上，长度比为 $y:1$，所以对应面积按相似比的平方放大为 $y^2$ 倍，于是
+\[ x\dd y - y\dd x = y^2 \left[ -\dd\left(\frac{x}{y}\right) \right]. \]
+把负号移入括号整理，便得到 $\dd\left(\frac{x}{y}\right)=\frac{y\dd x-x\dd y}{y^2}$。
 
 \subsection{双元积分公式}
 \begin{theorem}[基本积分公式]
-\begin{itemize}
-    \item 实圆：$\int\frac{\dd x}{y}=\arctan\frac{x}{y}$；
-    \item 虚圆：$\int \frac{\dd x}{y}=\ln(x+y)$.
-\end{itemize}
+实圆：$\int\frac{\dd x}{y}=\arctan\frac{x}{y}$；虚圆：$\int \frac{\dd x}{y}=\ln(x+y)$。
 \end{theorem}
 对于虚圆 \(x^2 - y^2 = 1\)（或一般常数），参数方程可写为 \(x = \cosh \phi\)，\(y = \sinh \phi\)，那么：
 \[
@@ -383,42 +354,49 @@ $$ \mathbf{\mp x^2 = y^2 - C} $$
 I_n = \int y^{2n-1} \dd x \qquad (n \ge 1).
 \]
 
-\textbf{第一步：分部积分。}
-将 $y^{2n-1}$ 视为 $1 \cdot y^{2n-1}$，作分部积分：
+对 $I_n$ 作分部积分，
 \begin{align*}
 I_n &= \int y^{2n-1} \dd x = x y^{2n-1} - \int x \dd\left(y^{2n-1}\right) \\
-&= x y^{2n-1} - (2n-1) \int x y^{2n-2} \dd y 
+&= x y^{2n-1} - (2n-1) \int x y^{2n-2} \dd y.
 \end{align*}
 
-\textbf{第二步：微元交换与代数降次。}
-将积分中的 $x y^{2n-2} \dd y$ 改写为 $x y^{2n-3}(y\dd y)$，并利用微分关系 $\mathbf{y \dd y = \mp x \dd x}$：
+再把积分中的
+\[
+x y^{2n-2} \dd y
+\]
+改写为
+\[
+x y^{2n-3}(y\dd y),
+\]
+并利用微分关系
+\[
+\mathbf{y \dd y = \mp x \dd x}.
+\]
 \begin{align*}
 \int x y^{2n-2} \dd y &= \int x y^{2n-3} (y \dd y) \\
 &= \int x y^{2n-3} (\mp x \dd x) \\
-&= \int y^{2n-3} (\mp x^2) \dd x
+&= \int y^{2n-3} (\mp x^2) \dd x.
 \end{align*}
 再利用代换式 $\mp x^2 = y^2 - C$ 消去 $x^2$：
 \begin{align*}
 \int y^{2n-3} (\mp x^2) \dd x &= \int y^{2n-3} (y^2 - C) \dd x \\
 &= \int y^{2n-1} \dd x - C \int y^{2n-3} \dd x \\
-&= \mathbf{I_n - C I_{n-1}}
+&= \mathbf{I_n - C I_{n-1}}.
 \end{align*}
 
-\textbf{第三步：建立递推关系。}
-将上一步结果代回分部积分公式：
+把这个结果代回分部积分公式，
 \begin{align*}
 I_n &= x y^{2n-1} - (2n-1) \big( I_n - C I_{n-1} \big) \\
-I_n &= x y^{2n-1} - (2n-1)I_n + (2n-1)C I_{n-1}
+I_n &= x y^{2n-1} - (2n-1)I_n + (2n-1)C I_{n-1}.
 \end{align*}
-整理含 $I_n$ 的项，得
+整理含 $I_n$ 的项，便得
 \begin{align*}
 2n I_n &= x y^{2n-1} + (2n-1)C I_{n-1} \\
-\implies \mathbf{I_n} &\mathbf{= \frac{1}{2n} x y^{2n-1} + \frac{2n-1}{2n} C I_{n-1}}
+\implies \mathbf{I_n} &\mathbf{= \frac{1}{2n} x y^{2n-1} + \frac{2n-1}{2n} C I_{n-1}}.
 \end{align*}
 这就得到双元降次递推公式。
 
-\textbf{第四步：递推展开并写成双阶乘形式。}
-将递推式继续展开：
+继续展开递推式：
 \begin{align*}
 I_n &= \frac{1}{2n} x y^{2n-1} + \frac{2n-1}{2n} C \left( \frac{1}{2n-2} x y^{2n-3} + \frac{2n-3}{2n-2} C I_{n-2} \right) \\
 &= \frac{1}{2n} x y^{2n-1} + \frac{2n-1}{2n(2n-2)} C x y^{2n-3} + \frac{(2n-1)(2n-3)}{2n(2n-2)} C^2 I_{n-2} \\
@@ -426,16 +404,17 @@ I_n &= \frac{1}{2n} x y^{2n-1} + \frac{2n-1}{2n} C \left( \frac{1}{2n-2} x y^{2n
 \end{align*}
 观察第 $k$ 次降次（$k=0, 1, \dots, n-1$）产生的多项式项的系数规律。其分子是由奇数组成的连乘，分母是由偶数组成的连乘：
 $$ \text{第 } k \text{ 项系数} = \frac{(2n-1)(2n-3)\cdots(2n-2k+1)}{(2n)(2n-2)\cdots(2n-2k)} $$
-为了写成双阶乘（$!!$）形式，只需把分子与分母补齐：
-\begin{itemize}
-    \item 分子补齐：$\displaystyle (2n-1)(2n-3)\cdots(2n-2k+1) = \frac{(2n-1)!!}{\mathbf{(2n-2k-1)!!}} $
-    \item 分母补齐：$\displaystyle (2n)(2n-2)\cdots(2n-2k) = \frac{(2n)!!}{\mathbf{(2n-2k-2)!!}} $
-\end{itemize}
-两者相除后，第 \(k\) 项系数可写成：
+把分子与分母分别补齐成双阶乘，就有
+\[
+(2n-1)(2n-3)\cdots(2n-2k+1) = \frac{(2n-1)!!}{\mathbf{(2n-2k-1)!!}},
+\]
+\[
+(2n)(2n-2)\cdots(2n-2k) = \frac{(2n)!!}{\mathbf{(2n-2k-2)!!}}.
+\]
+两者相除后，第 \(k\) 项系数可写成
 $$ \mathbf{\frac{(2n-1)!!(2n-2k-2)!!}{(2n)!!(2n-2k-1)!!}} $$
 对应的代数项为 $C^k x y^{2n-1-2k}$，将 $C$ 替换回 $y^2 \pm x^2$，即 $\mathbf{\left(y^2 \pm x^2\right)^k x y^{2n-1-2k}}$。
 
-\textbf{第五步：整理末项。}
 当降次进行到 $k=n$ 时，剩下的积分项为
 \[
 I_0 = \int y^{-1} \dd x = \int \frac{\dd x}{y}.
@@ -444,7 +423,7 @@ I_0 = \int y^{-1} \dd x = \int \frac{\dd x}{y}.
 $$ \frac{(2n-1)(2n-3)\cdots 1}{(2n)(2n-2)\cdots 2} = \mathbf{\frac{(2n-1)!!}{(2n)!!}} $$
 同时保留因子 $C^n = \left(y^2 \pm x^2\right)^n$。
 
-将各项汇总，得到通式：
+把各项汇总，得到通式：
 \begin{align*}
 \int y^{2n-1}\mathrm{d}x =& \sum_{k=0}^{n-1}\frac{(2n-1)!!\left(2n-2k-2\right)!!}{(2n)!!\left(2n-2k-1\right)!!}\left(y^2\pm x^2\right)^k x y^{2n-1-2k} \\
 &+ \frac{(2n-1)!!}{(2n)!!}\left(y^2\pm x^2\right)^n\int\frac{\mathrm{d}x}{y}
@@ -622,7 +601,7 @@ $$ \frac{(2n-1)(2n-3)\cdots 1}{(2n)(2n-2)\cdots 2} = \mathbf{\frac{(2n-1)!!}{(2n
 \end{align*}
 
 \section{例题}
-\begin{example}{$\int \sqrt{1 + x^2} \dd x$}{}
+\begin{example}[$\int \sqrt{1 + x^2} \dd x$]
 \[\int \sqrt{1 + x^2} \dd x\]
 \end{example}
 \begin{solution}
@@ -634,7 +613,7 @@ $$ \frac{(2n-1)(2n-3)\cdots 1}{(2n)(2n-2)\cdots 2} = \mathbf{\frac{(2n-1)!!}{(2n
 \end{align*}
 \end{solution}
 
-\begin{example}{$\int \frac{x^2}{\sqrt{1 - x^2}} dx$}{}
+\begin{example}[$\int \frac{x^2}{\sqrt{1 - x^2}} dx$]
 求 $\int \frac{x^2}{\sqrt{1 - x^2}} \dd x$
 \end{example}
 \begin{solution}
@@ -647,7 +626,7 @@ $$ \frac{(2n-1)(2n-3)\cdots 1}{(2n)(2n-2)\cdots 2} = \mathbf{\frac{(2n-1)!!}{(2n
 \end{align*}
 \end{solution}
 
-\begin{example}{$\int\frac{1}{2} \left( 1 + \sqrt{1 + 4x^2} \right)\dd x$}{}
+\begin{example}[$\int\frac{1}{2} \left( 1 + \sqrt{1 + 4x^2} \right)\dd x$]
 求$\displaystyle\int\frac{1}{2} \left( 1 + \sqrt{1 + 4x^2} \right)\dd x$
 \end{example}
 \begin{solution}
@@ -659,7 +638,7 @@ $$ \frac{(2n-1)(2n-3)\cdots 1}{(2n)(2n-2)\cdots 2} = \mathbf{\frac{(2n-1)!!}{(2n
 \end{align*}
 \end{solution}
 
-\begin{example}{$\int \frac{\mathrm{d}x}{\sqrt{1 - \sin^4 x}}$}{}
+\begin{example}[$\int \frac{\mathrm{d}x}{\sqrt{1 - \sin^4 x}}$]
 求$\displaystyle\int \frac{\mathrm{d}x}{\sqrt{1 - \sin^4 x}}$
 \end{example}
 \begin{solution}
@@ -672,7 +651,7 @@ $$ \frac{(2n-1)(2n-3)\cdots 1}{(2n)(2n-2)\cdots 2} = \mathbf{\frac{(2n-1)!!}{(2n
     \end{align*}
 \end{solution}
 
-\begin{example}{$\int x^2\sqrt{1+x^2}\dd x$}{}
+\begin{example}[$\int x^2\sqrt{1+x^2}\dd x$]
     \[\int x^2\sqrt{1+x^2}\dd x\]
 \end{example}
 \begin{solution}
@@ -683,7 +662,7 @@ $$ \frac{(2n-1)(2n-3)\cdots 1}{(2n)(2n-2)\cdots 2} = \mathbf{\frac{(2n-1)!!}{(2n
     \end{align*}
 \end{solution}
 
-\begin{example}{$\int\frac{\dd x}{x+\sqrt{x^2+x+1}}$}{}
+\begin{example}[$\int\frac{\dd x}{x+\sqrt{x^2+x+1}}$]
 \[\int\frac{\dd x}{x+\sqrt{x^2+x+1}}\]
 \end{example}
 \begin{solution}
@@ -710,7 +689,7 @@ $$ \frac{(2n-1)(2n-3)\cdots 1}{(2n)(2n-2)\cdots 2} = \mathbf{\frac{(2n-1)!!}{(2n
 \end{align*}
 \end{solution}
 
-\begin{example}{$\int\frac{x^2\dd x}{\sqrt{x^2+a^2}}$}{}
+\begin{example}[$\int\frac{x^2\dd x}{\sqrt{x^2+a^2}}$]
 \[\int\frac{x^2\dd x}{\sqrt{x^2+a^2}}\]
 \end{example}
 \begin{solution}
@@ -721,7 +700,7 @@ $$ \frac{(2n-1)(2n-3)\cdots 1}{(2n)(2n-2)\cdots 2} = \mathbf{\frac{(2n-1)!!}{(2n
 \end{align*}
 \end{solution}
 
-\begin{example}{$\int\frac{\dd x}{(1-x^2)^2}$}{}
+\begin{example}[$\int\frac{\dd x}{(1-x^2)^2}$]
 \[\int\frac{\dd x}{(1-x^2)^2}\]
 \end{example}
 \begin{solution}

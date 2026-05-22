@@ -1,7 +1,7 @@
 
 \chapter{伪装导数题}
 \section{概率}
-\begin{example}{}{}
+\begin{example}
 事件 $A$、$B$ 是随机试验中的两个事件，$P(A)$、$P(B) \neq 0$，且 $P(A)+P(B)=\frac{1}{2}$，\[\frac{1}{P(B|A)}+\frac{1}{P(A|B)}=\frac{1}{P(B)-P(AB)}+\frac{1}{P(A)-P(AB)}+2\]下列说法正确的是\\
 \begin{tabular}{@{}p{0.45\textwidth} p{0.45\textwidth}@{}}
 A. 事件 $A$、$B$ 一定不相互独立 & B. 若 $P(A)=\frac{1}{4}$，则 $P(AB)=\frac{1}{16}$ \\
@@ -9,120 +9,604 @@ C. $P(AB)\in\left(0,\frac{3-2\sqrt{2}}{4}\right]$ & D. $P(AB)\in\left(0,\frac{\s
 \end{tabular}
 \end{example}
 \begin{solution}
-设 $P(A) = x$，$P(B) = y$，$P(AB) = z$。则 $x > 0$，$y > 0$ 且 $x+y = \frac{1}{2}$。条件概率 $P(B|A) = \frac{P(AB)}{P(A)} = \frac{z}{x}$， $P(A|B) = \frac{P(AB)}{P(B)} = \frac{z}{y}$。
-由于原等式中包含 $\frac{1}{P(B|A)}$ 等项作分母，可知 $z \neq 0$，即 $z > 0$。同时分母 $P(A)-P(AB) = x-z \neq 0$ 且 $P(B)-P(AB) = y-z \neq 0$，说明 $z < x$ 且 $z < y$。结合 $x+y=\frac{1}{2}$，必然有 $z < \frac{1}{4}$。将上述变量代入原等式：
-\[\frac{x}{z} + \frac{y}{z} = \frac{1}{2z}=\frac{1}{y-z} + \frac{1}{x-z} + 2\Leftrightarrow xy = \frac{3}{2}z - z^2\]
-已知 $x+y = \frac{1}{2}$ 且 $xy = \frac{3}{2}z - z^2$。根据韦达定理，$x$ 和 $y$ 是关于 $t$ 的一元二次方程 $t^2 - \frac{1}{2}t + \left(\frac{3}{2}z - z^2\right) = 0$ 的两个实数根。
-为了保证实数根存在，判别式必须满足 $\Delta \ge 0$，即 $16z^2 - 24z + 1 \ge 0$。
-解得 $z \le \frac{3-2\sqrt{2}}{4}$ 或 $z \ge \frac{3+2\sqrt{2}}{4}$。
-结合前提 $0 < z < \frac{1}{4}$，且 $\frac{3-2\sqrt{2}}{4} \approx 0.0428 < \frac{1}{4}$，可得 $z$ 的严格取值范围为：
-\[z \in \left(0, \frac{3-2\sqrt{2}}{4}\right]\]
-\begin{itemize}
-    \item \textbf{选项 A：}假设事件 $A, B$ 相互独立，则 $P(AB) = P(A)P(B)$，即 $z = xy$。代入推导出的关系式 $xy = \frac{3}{2}z - z^2$，得 $z = \frac{3}{2}z - z^2 \implies z^2 - \frac{1}{2}z = 0$。解得 $z=0$ 或 $z=\frac{1}{2}$。但这都不在有效定义域 $\left(0, \frac{3-2\sqrt{2}}{4}\right]$ 内。因此假设不成立，事件 $A, B$ 一定不相互独立，\textbf{故 A 正确}。
-    \item \textbf{选项 B：}若 $P(A) = \frac{1}{4}$，由 $P(A)+P(B)=\frac{1}{2}$ 得 $P(B) = \frac{1}{4}$。此时 $xy = \frac{1}{16}$。代入关系式有 $\frac{1}{16} = \frac{3}{2}z - z^2$，化简为 $16z^2 - 24z + 1 = 0$。解得 $z = \frac{3-2\sqrt{2}}{4}$（另一根大于 $\frac{1}{4}$ 故舍去）。因为 $\frac{3-2\sqrt{2}}{4} \neq \frac{1}{16}$，\textbf{故 B 错误}。
-    \item \textbf{选项 C：}$P(AB) = z$ 的取值范围确为 $\left(0, \frac{3-2\sqrt{2}}{4}\right]$，\textbf{故 C 正确}。
-    \item \textbf{选项 D：}由于C正确，\textbf{故 D 正确}。
-\end{itemize}
-因此，正确的说法是 ACD。
+设 $P(A)=x,\ P(B)=y,\ P(AB)=z$，则
+\[
+x>0,\qquad y>0,\qquad x+y=\frac12.
+\]
+由条件概率公式，
+\[
+P(B\mid A)=\frac{z}{x},\qquad P(A\mid B)=\frac{z}{y}.
+\]
+原式中这些量都出现在分母里，所以
+\[
+z\ne0,\qquad x-z\ne0,\qquad y-z\ne0.
+\]
+又因为 $0<z\le x,\ 0<z\le y$，这里只能取
+\[
+0<z<x,\qquad 0<z<y,
+\]
+于是
+\[
+0<z<\frac14.
+\]
+
+把 $x,y,z$ 代回原式，得到
+\[
+\frac{x}{z}+\frac{y}{z}=\frac1{y-z}+\frac1{x-z}+2.
+\]
+再用 $x+y=\frac12$ 化简，
+\[
+\frac1{2z}=\frac{x+y-2z}{(x-z)(y-z)}+2
+\iff
+xy=\frac32z-z^2.
+\]
+这样一来，$x,y$ 就是方程
+\[
+t^2-\frac12t+\left(\frac32z-z^2\right)=0
+\]
+的两个实根。要让这两个实根存在，判别式必须非负，于是
+\[
+\frac14-4\left(\frac32z-z^2\right)\ge0
+\iff
+16z^2-24z+1\ge0.
+\]
+解得
+\[
+z\le \frac{3-2\sqrt2}{4}\quad\text{或}\quad z\ge \frac{3+2\sqrt2}{4}.
+\]
+结合 $0<z<\frac14$，只剩
+\[
+0<z\le \frac{3-2\sqrt2}{4}.
+\]
+所以 C 正确，而 D 所给区间更大，也正确。
+
+若 A、B 相互独立，则 $z=xy$。代入
+\[
+xy=\frac32z-z^2
+\]
+得到
+\[
+z=\frac32z-z^2
+\iff
+z^2-\frac12z=0.
+\]
+这迫使 $z=0$ 或 $z=\frac12$，都不满足上面的取值范围，所以 A 也正确。
+
+若 $P(A)=\frac14$，则 $P(B)=\frac14$，于是 $xy=\frac1{16}$。再代入
+\[
+xy=\frac32z-z^2
+\]
+得
+\[
+16z^2-24z+1=0.
+\]
+满足 $0<z<\frac14$ 的根只有
+\[
+z=\frac{3-2\sqrt2}{4}\ne \frac1{16},
+\]
+所以 B 错误。
+
+正确的说法是 ACD。
 \end{solution}
 
 
-\begin{example}{}{}
+\begin{example}
 已知无穷数列$\left\{a_n\right\}$满足$a_n\in\mathbf{N}^*$,且$\left\{a_n\right\}$前$n$项的中位数为$n.$\\
 (1)若$\{a_n\}$是递增数列，求$\{a_n\}$的通项公式；\\
 (2)证明：$a_n\geqslant n$ ;\\
 (3)给定$k\in\mathbb{N}^*$,求关于$n$的方程$a_n=k$所有可能的解集.
 \end{example}
 \begin{solution}
-(1) 由于 $\{a_n\}$ 是递增数列，当 $n=2k-1$ 时，前 $2k-1$ 项的中位数为第 $k$ 项，故 $a_k = 2k-1$；当 $n=2k$ 时，前 $2k$ 项的中位数为 $\frac{a_k + a_{k+1}}{2} = 2k$。将 $a_k = 2k-1$ 代入解得 $a_{k+1} = 2k+1$。故 $\{a_n\}$ 的通项公式为 $a_n = 2n-1$。
+若数列递增，前 $2m-1$ 项的中位数就是第 $m$ 项，所以
+\[
+a_m=2m-1.
+\]
+再看前 $2m$ 项，中位数为
+\[
+\frac{a_m+a_{m+1}}{2}=2m.
+\]
+把 $a_m=2m-1$ 代入，得 $a_{m+1}=2m+1$，于是
+\[
+a_n=2n-1.
+\]
 
-(2) 记 $S_n = \{a_1, a_2, \dots, a_n\}$，将其元素升序排列为 $x_{n, 1} \leqslant x_{n, 2} \leqslant \dots \leqslant x_{n, n}$，并记 $C_n(x)$ 为 $S_n$ 中不超过 $x$ 的元素个数。
-对于 $n=2k-1$，中位数为 $x_{2k-1, k} = 2k-1$，说明 $C_{2k-1}(2k-2) \leqslant k-1$ 且 $C_{2k-1}(2k-1) \geqslant k$。
-对于 $n=2k$，中位数满足 $x_{2k, k} + x_{2k, k+1} = 4k$。因为 $x_{2k, k} \leqslant 2k \leqslant x_{2k, k+1}$，无论 $x_{2k, k} = 2k$ 还是 $x_{2k, k} \leqslant 2k-1$，均有 $C_{2k}(2k-1) \leqslant k$。
-由于 $S_{2k} = S_{2k-1} \cup \{a_{2k}\}$，故 $k \geqslant C_{2k}(2k-1) = C_{2k-1}(2k-1) + I(a_{2k} \leqslant 2k-1) \geqslant k + I(a_{2k} \leqslant 2k-1)$，这迫使 $I(a_{2k} \leqslant 2k-1) = 0$，即 $a_{2k} \geqslant 2k$。
-类似地，对于 $n=2k-2\ (k \geqslant 2)$，中位数满足 $x_{2k-2, k-1} + x_{2k-2, k} = 4k-4$。若 $x_{2k-2, k} \leqslant 2k-2$，则必有 $x_{2k-2, k-1} = x_{2k-2, k} = 2k-2$，导致 $C_{2k-2}(2k-2) \geqslant k$。但 $S_{2k-1}$ 包含 $S_{2k-2}$，这会导致 $k-1 \geqslant C_{2k-1}(2k-2) \geqslant C_{2k-2}(2k-2) \geqslant k$ 的矛盾。
-故 $x_{2k-2, k} \geqslant 2k-1$，使得 $C_{2k-2}(2k-2) = k-1$。进而 $k-1 \geqslant C_{2k-1}(2k-2) = C_{2k-2}(2k-2) + I(a_{2k-1} \leqslant 2k-2) = k-1 + I(a_{2k-1} \leqslant 2k-2)$，迫使 $I(a_{2k-1} \leqslant 2k-2) = 0$，即 $a_{2k-1} \geqslant 2k-1$。结合 $a_1=1 \geqslant 1$，对任意 $n \in \mathbb{N}^*$ 均有 $a_n \geqslant n$。
+下面不再假设递增。把前 $n$ 项按从小到大排成
+\[
+x_{n,1}\le x_{n,2}\le \cdots \le x_{n,n},
+\]
+并记前 $n$ 项中不超过 $t$ 的个数为 $C_n(t)$。当前 $n=2m-1$ 时，中位数等于 $2m-1$，于是
+\[
+x_{2m-1,m}=2m-1,
+\]
+这就给出
+\[
+C_{2m-1}(2m-2)\le m-1,\qquad C_{2m-1}(2m-1)\ge m.
+\]
+当前 $n=2m$ 时，中位数满足
+\[
+x_{2m,m}+x_{2m,m+1}=4m.
+\]
+其中 $x_{2m,m}\le 2m\le x_{2m,m+1}$。若 $x_{2m,m}\le 2m-1$，则不超过 $2m-1$ 的项至多只有前 $m$ 个；若 $x_{2m,m}=2m$，由两数和为 $4m$ 可知 $x_{2m,m+1}=2m$，这时不超过 $2m-1$ 的项只有前 $m-1$ 个。两种情形都说明
+\[
+C_{2m}(2m-1)\le m.
+\]
+把第 $2m$ 项添进去，便有
+\[
+C_{2m}(2m-1)=C_{2m-1}(2m-1)+\mathbf 1_{a_{2m}\le 2m-1}.
+\]
+左边至多是 $m$，右边第一项至少是 $m$，于是只能有
+\[
+a_{2m}\ge 2m.
+\]
 
-(3) 由(2)推导可知 $C_{2m}(2m-1) = m$ 且 $x_{2m, m} \leqslant 2m-1$，结合 $x_{2m, m} + x_{2m, m+1} = 4m$ 推得 $x_{2m, m+1} \geqslant 2m+1$。于是数列中不可能出现偶数，否则若 $a_n = 2m$，由 $a_n \geqslant n$ 必有 $n \leqslant 2m$，导致 $2m \in S_{2m}$，产生矛盾。
-因此，当 $k$ 为偶数时，可能解集仅有 $\emptyset$。
-当 $k$ 为奇数时，令 $k = 2m-1$。为满足前 $2m$ 项恰有 $m$ 个数 $\leqslant 2m-1$ 且无偶数，这 $m$ 个数必须是 $1, 3, \dots, 2m-1$ 的无重复排列。再分析 $n=2m-2$ 时的中位数，可知 $x_{2m-2, m-1} = 2m-3$，故 $x_{2m-2, m} = 2m-1$。这说明元素 $2m-1$ 必定已出现在 $S_{2m-2}$ 中，其位置 $n \leqslant 2m-2 = k-1$。
-结合无重复元素及 $a_n \geqslant n$ 的约束：当 $k=1$ 时，$n \leqslant 1$，解集仅有 $\{1\}$；当 $k=3$ 时，$n \leqslant 2$ 且 $a_1=1$，解集仅有 $\{2\}$。对于奇数 $k \geqslant 5$，因为 $a_1, a_2$ 已被固定为 $1, 3$，新元素 $n$ 的范围放宽至 $3 \leqslant n \leqslant k-1$。在此范围内，总能通过灵活安排后续冗余奇数来构造合法的数列，使得 $a_n=k$ 成立。
-综上，关于 $n$ 的方程 $a_n=k$ 所有可能的解集为：当 $k$ 为偶数时为 $\emptyset$；当 $k=1$ 时为 $\{1\}$；当 $k=3$ 时为 $\{2\}$；当奇数 $k \geqslant 5$ 时为 $\{3\}, \{4\}, \dots, \{k-1\}$。
+奇数项也可以这样逼出来。前 $2m-2$ 项的中位数为 $2m-2$，所以
+\[
+x_{2m-2,m-1}+x_{2m-2,m}=4m-4.
+\]
+若 $x_{2m-2,m}\le 2m-2$，则两项都只能等于 $2m-2$，从而不超过 $2m-2$ 的项至少有 $m$ 个。这样一来，到了前 $2m-1$ 项时仍有
+\[
+C_{2m-1}(2m-2)\ge m,
+\]
+可这与上面已经得到的 $C_{2m-1}(2m-2)\le m-1$ 矛盾。因此
+\[
+x_{2m-2,m}\ge 2m-1,
+\]
+也就是
+\[
+C_{2m-2}(2m-2)=m-1.
+\]
+再把第 $2m-1$ 项添进去，
+\[
+C_{2m-1}(2m-2)=C_{2m-2}(2m-2)+\mathbf 1_{a_{2m-1}\le 2m-2}.
+\]
+左边至多是 $m-1$，右边第一项已经等于 $m-1$，于是只能有
+\[
+a_{2m-1}\ge 2m-1.
+\]
+偶数项和奇数项合起来，就得到
+\[
+a_n\ge n\qquad (n\in\mathbb N^*).
+\]
+
+现在看方程 $a_n=k$。先设 $k=2m$ 为偶数。若有 $a_n=2m$，由 $a_n\ge n$ 立刻得到 $n\le 2m$，也就是说，$2m$ 必须出现在前 $2m$ 项里。可前面已经知道
+\[
+C_{2m}(2m-1)\le m,
+\]
+而前 $2m-1$ 项里至少已有 $m$ 项不超过 $2m-1$，所以前 $2m$ 项里恰好有 $m$ 项不超过 $2m-1$。这时
+\[
+x_{2m,m}\le 2m-1,\qquad x_{2m,m+1}\ge 2m+1,
+\]
+因此前 $2m$ 项里根本不可能出现 $2m$，矛盾。所以偶数不会在数列中出现。
+
+再设 $k=2m-1$ 为奇数。因为偶数不会出现，而前 $2m$ 项里恰好有 $m$ 项不超过 $2m-1$，这 $m$ 项只能是
+\[
+1,3,5,\dots,2m-1.
+\]
+所以值 $2m-1$ 一定出现，而且在前 $2m$ 项里只能出现一次。再看前 $2m-2$ 项。上面已经得到
+\[
+C_{2m-2}(2m-2)=m-1,
+\]
+所以前 $2m-2$ 项中不超过 $2m-2$ 的只有
+\[
+1,3,5,\dots,2m-3.
+\]
+中位数条件又给出
+\[
+x_{2m-2,m-1}+x_{2m-2,m}=4m-4.
+\]
+其中 $x_{2m-2,m-1}=2m-3$，于是
+\[
+x_{2m-2,m}=2m-1.
+\]
+这说明值 $2m-1$ 在前 $2m-2$ 项里已经出现，所以若 $a_n=2m-1$，必有
+\[
+n\le 2m-2=k-1.
+\]
+再和 $a_n\ge n$ 合起来，就得到所有可能的位置都满足 $n\le k-1$。
+
+当 $k=1$ 时，只有 $a_1=1$，解集只能是 $\{1\}$；当 $k=3$ 时，$a_1=1,\ a_2=3$，解集只能是 $\{2\}$。下面设 $k\ge5$，并写成
+\[
+k=2m-1.
+\]
+任取一个位置
+\[
+3\le n\le k-1=2m-2.
+\]
+先看标准数列
+\[
+b_j=2j-1\qquad (j\in\mathbb N^*),
+\]
+它显然满足题设要求，而且 $b_m=2m-1=k$。现在把第 $m$ 项这个 $k$ 从原来的位置取出来，放到第 $n$ 个位置，其余各项的先后次序都不变，得到新数列 $\{a_j\}$。这样构造以后，第 $n$ 项自然就是 $k$。只要证明新数列仍满足“前 $r$ 项的中位数是 $r$”即可。
+
+若
+\[
+r<\min\{m,n\}\quad\text{或}\quad r\ge \max\{m,n\},
+\]
+那么前 $r$ 项所含的元素与标准数列前 $r$ 项完全相同，只是次序可能不同，所以中位数不变，仍然等于 $r$。
+
+若 $n<m$，再取
+\[
+n\le r<m,
+\]
+这时前 $r$ 项恰好是
+\[
+1,3,5,\dots,2r-3,2m-1.
+\]
+因为
+\[
+2m-1>2r-1,
+\]
+排好序以后，中间位置仍然落在连续奇数列
+\[
+1,3,5,\dots,2r-3
+\]
+里面，所以奇数长度前缀的中位数仍是 $r$，偶数长度前缀中间两项仍是 $r-1$ 与 $r+1$，平均数还是 $r$。
+
+若 $m<n$，再取
+\[
+m\le r<n,
+\]
+这时前 $r$ 项恰好是
+\[
+1,3,5,\dots,2r+1
+\]
+中删去一个 $2m-1$。由于
+\[
+r\le n-1\le 2m-3,
+\]
+被删去的这个 $2m-1$ 还在中间位置的右边，没有碰到决定中位数的那一项或那两项，所以中位数仍和标准数列一样，还是 $r$。
+
+这样一来，不论 $r$ 取何值，前 $r$ 项的中位数都等于 $r$，而且第 $n$ 项正好等于 $k$。因此当 $k\ge 5$ 为奇数时，方程 $a_n=k$ 的可能解集恰好是
+\[
+\{3\},\{4\},\dots,\{k-1\}.
+\]
+
+综上，关于 $n$ 的方程 $a_n=k$ 的所有可能解集为：$k$ 为偶数时是 $\varnothing$；$k=1$ 时是 $\{1\}$；$k=3$ 时是 $\{2\}$；$k\ge 5$ 为奇数时是
+\[
+\{3\},\{4\},\dots,\{k-1\}.
+\]
 \end{solution}
 
 
 
-\begin{example}{导数与零点题}{}
+\begin{example}[导数与零点题]
     已知函数$f(x)=x-(a+1)\ln x-\frac{a}{x},(a>1)$\\
     （1）讨论$f(x)$的单调性；\\
     （2）若$f(x_1)=f(x_2)=f(x_3),(x_1<x_2<x_3)$，证明$f(x_1x_2x_3)>1-a$.
 \end{example}
+\begin{solution}
+（1）定义域为 $(0,+\infty)$。求导得
+\[
+f'(x)=1-\frac{a+1}x+\frac a{x^2}=\frac{x^2-(a+1)x+a}{x^2}=\frac{(x-1)(x-a)}{x^2}.
+\]
+故 $f$ 在 $(0,1)$ 和 $(a,+\infty)$ 上递增，在 $(1,a)$ 上递减，极大值为 $f(1)=1-a$，极小值为 $f(a)=a-1-(a+1)\ln a$。
+
+（2）设三根的公共值为 $c$。三根同时存在时，必有
+\[
+f(a)<c<f(1)=1-a.
+\]
+于是
+\[
+x_1<1<x_2<a<x_3.
+\]
+又因为 $f$ 在 $(a,+\infty)$ 上严格递增，方程
+\[
+f(x)=f(1)=1-a
+\]
+在 $x>a$ 上只有一个解，记作 $r$。要证 $f(x_1x_2x_3)>1-a$，只需证
+\[
+x_1x_2x_3>r.
+\]
+直接比较这个乘积与 $r$ 很难，于是把三根都看成 $c$ 的函数：
+\[
+x_1=x_1(c),\quad x_2=x_2(c),\quad x_3=x_3(c),\quad c\in(f(a),1-a).
+\]
+记
+\[
+P(c)=x_1x_2x_3.
+\]
+若能证明 $P(c)$ 在 $(f(a),1-a)$ 上严格递减，那么当 $c\to(1-a)^-$ 时，$x_1,x_2\to1$，$x_3\to r$，从而
+\[
+P(c)>\lim_{c\to(1-a)^-}P(c)=r,
+\]
+结论就出来了。下面只需判断 $P'(c)$ 的符号。
+
+由于每个根都落在各自的单调区间内，且 $f'(x_i)\neq 0$，可对
+\[
+f(x_i(c))=c
+\]
+作隐函数求导，得到
+\[
+f'(x_i)\,x_i'(c)=1,\qquad x_i'(c)=\frac{1}{f'(x_i)}.
+\]
+于是
+\[
+\frac{P'(c)}{P(c)}=\sum_{i=1}^3\frac{x_i'(c)}{x_i}=\sum_{i=1}^3\frac{1}{x_i f'(x_i)}.
+\]
+现在问题落在三项和的符号上。这个式子里既有根 $x_i$，又有导数 $f'(x_i)$，不便直接比较，所以把方程 $f(x)=c$ 改写成一个以 $x_i$ 为零点的函数。令
+\[
+Q_c(x)=\frac{x^2-cx-a}{a+1},\qquad h_c(x)=x\ln x-Q_c(x).
+\]
+则
+\[
+h_c(x)=-\frac{x}{a+1}(f(x)-c),
+\]
+因此 $h_c(x_i)=0$，并且
+\[
+h_c'(x_i)=-\frac{x_i}{a+1}f'(x_i).
+\]
+从而
+\[
+\frac{P'(c)}{P(c)}=-\dfrac{1}{a+1}\left(\frac{1}{h_c'(x_1)}+\frac{1}{h_c'(x_2)}+\frac{1}{h_c'(x_3)}\right).
+\]
+于是只要看这三个零点处导数倒数之和的符号。因为 $x_1,x_2,x_3$ 全是 $h_c$ 的零点，可写成
+\[
+h_c(x)=(x-x_1)(x-x_2)(x-x_3)\,q(x),\qquad q(x)=\frac{h_c(x)}{(x-x_1)(x-x_2)(x-x_3)}\ (x\neq x_i).
+\]
+记
+\[
+p(x)=(x-x_1)(x-x_2)(x-x_3).
+\]
+则 $h_c(x)=p(x)q(x)$，且
+\[
+h_c'(x_i)=p'(x_i)q(x_i)=-\frac{x_i}{a+1}f'(x_i).
+\]
+于是
+\begin{align*}
+\frac{P'(c)}{P(c)}&=-\frac{1}{a+1}\sum_{i=1}^3\frac{1}{p'(x_i)q(x_i)}\\
+\sum_{i=1}^3\frac{1}{p'(x_i)q(x_i)}
+&=\frac{1}{x_3-x_1}\left[\frac{1/q(x_3)-1/q(x_2)}{x_3-x_2}-\frac{1/q(x_2)-1/q(x_1)}{x_2-x_1}\right].
+\end{align*}
+令
+\[
+\theta=\frac{x_3-x_2}{x_3-x_1},
+\]
+则
+\[
+x_2=\theta x_1+(1-\theta)x_3,\qquad 0<\theta<1,
+\]
+并且
+\[
+\sum_{i=1}^3\frac{1}{p'(x_i)q(x_i)}
+=\frac{1}{(x_3-x_1)^2}\cdot
+\frac{\theta/q(x_1)-1/q(x_2)+(1-\theta)/q(x_3)}{\theta(1-\theta)}.
+\]
+所以现在只要证明 $1/q$ 在三点 $x_1,x_2,x_3$ 上满足一条凹性不等式即可。为此先把 $q$ 的来路写清。
+
+由
+\[
+\frac{1}{q(x)}=\frac{(x-x_1)(x-x_2)(x-x_3)}{x\ln x-\frac{x^2-cx-a}{a+1}}
+\]
+可见 $q$ 本质上来自 $x\ln x$ 扣掉一个二次式后的三次余项。把
+\[
+g(x)=x\ln x
+\]
+写成积分形式：
+\begin{align*}
+\ln x
+&=\int_1^x\frac1u\dd u
+=\int_0^\infty\left(\frac{1}{1+t}-\frac{1}{x+t}\right)\dd t,\\
+g(x)=x\ln x
+&=\int_0^\infty\left(\frac{x}{1+t}-1+\frac{t}{x+t}\right)\dd t.
+\end{align*}
+对固定 $t>0$，$\dfrac{x}{1+t}-1$ 只是一次式，扣去二次项以后，真正留下三次余项的只有 $\dfrac{t}{x+t}$。因此只需计算 $\dfrac{1}{x+t}$ 的三阶差商。记 $u(x)=\dfrac{1}{x+t}$，则
+\[
+u[x_1,x_2]=-\frac{1}{(x_1+t)(x_2+t)},\qquad
+u[x_1,x_2,x_3]=\frac{1}{(x_1+t)(x_2+t)(x_3+t)},
+\]
+从而
+\[
+u[x_1,x_2,x_3,x]=-\frac{1}{(t+x_1)(t+x_2)(t+x_3)(t+x)}.
+\]
+乘上常数 $t$ 再积分，便得到
+\[
+q(x)= -\int_{0}^{\infty}\frac{t\dd t}{(t+x_1)(t+x_2)(t+x_3)(t+x)}.
+\]
+因此 $q(x)<0$。设
+\[
+s(x)=-q(x)>0,\qquad \phi(x)=\frac{1}{s(x)}=-\frac{1}{q(x)},
+\]
+以及
+\[
+w(t)=\frac{t}{(t+x_1)(t+x_2)(t+x_3)}>0.
+\]
+由于 $w(t)=O(t^{-2})$，可在积分号下求导：
+\[
+s(x)=\int_0^\infty \frac{w(t)}{x+t}\dd t,\quad
+s'(x)=-\int_0^\infty \frac{w(t)}{(x+t)^2}\dd t,\quad
+s''(x)=2\int_0^\infty \frac{w(t)}{(x+t)^3}\dd t.
+\]
+令
+\[
+A(t)=\frac{\sqrt{w(t)}}{(x+t)^{1/2}},\qquad
+B(t)=\frac{\sqrt{w(t)}}{(x+t)^{3/2}}.
+\]
+由柯西--施瓦兹不等式，
+\[
+\left(\int_0^\infty\frac{w(t)}{(x+t)^2}\dd t\right)^2
+\le
+\left(\int_0^\infty\frac{w(t)}{x+t}\dd t\right)
+\left(\int_0^\infty\frac{w(t)}{(x+t)^3}\dd t\right)
+=\frac12\,s(x)s''(x).
+\]
+这就是
+\[
+2(s'(x))^2\le s(x)s''(x).
+\]
+于是
+\[
+\phi''(x)=\frac{2(s')^2-ss''}{s^3}\le 0.
+\]
+若这里取等，则 $A(t)$ 与 $B(t)$ 必须成比例，也就是 $(x+t)$ 必须恒定，这显然不可能，因此 \(\phi\) 还是严格凹的。由
+\[
+x_2=\theta x_1+(1-\theta)x_3
+\]
+可得
+\[
+\phi(x_2)>\theta\phi(x_1)+(1-\theta)\phi(x_3).
+\]
+代回 $\phi=-1/q$ 并整理得
+\[
+\theta\frac1{q(x_1)}-\frac1{q(x_2)}+(1-\theta)\frac1{q(x_3)}>0.
+\]
+于是
+\[
+\sum_{i=1}^3\frac{1}{p'(x_i)q(x_i)}>0,
+\qquad
+\frac{P'(c)}{P(c)}<0.
+\]
+所以 $P(c)=x_1(c)x_2(c)x_3(c)$ 在 $(f(a),1-a)$ 上严格递减。再让 $c\to(1-a)^-$，便有
+\[
+P(c)>r.
+\]
+也就是
+\[
+f(x_1x_2x_3)>f(r)=1-a.
+\]
+\end{solution}
 
 
 
 
-\begin{example}{}{}
+\begin{example}
     已知函数 $f(x)=\ln x+ax^{2}+bx(a,b\in R)$.\\
 (1) 若 $a=\frac{1}{e^{4}}, b=-\frac{3}{e^{2}}$, 求函数 $y=f(x)$ 的单调递减区间;\\
 (2) 若存在实数 $b$, 使得函数 $f(x)$ 有三个不同的零点 $x_{1}, x_{2}, x_{3}$.求 $a$ 的取值范围;若 $x_{1}, x_{2}, x_{3}$ 成等差数列, 求证: $x_{2}^{2}>e^{3}$.
 \end{example}
 \begin{solution}
-\textbf{（1）}函数 $f(x) = \ln x + ax^2 + bx$ 的定义域为 $(0, +\infty)$。当 $a = \dfrac{1}{e^4},\ b = -\dfrac{3}{e^2}$ 时，
-\begin{align*}
-f(x) &= \ln x + \frac{1}{e^4}x^2 - \frac{3}{e^2}x, \\
-f'(x) &= \frac{1}{x} + \frac{2}{e^4}x - \frac{3}{e^2} = \frac{2x^2 - 3e^2x + e^4}{e^4 x}.
-\end{align*}
-在定义域内分母恒正，令 $f'(x) \le 0$，即
-\[2x^2 - 3e^2x + e^4 \le 0 \implies (2x - e^2)(x - e^2) \le 0.\]
-解得 $\dfrac{e^2}{2} \le x \le e^2$。故 $y = f(x)$ 的单调递减区间为 $\left[\dfrac{e^2}{2},\ e^2\right]$。
+函数的定义域为 $(0,+\infty)$。当
+\[
+a=\frac1{e^4},\qquad b=-\frac3{e^2}
+\]
+时，
+\[
+f'(x)=\frac1x+\frac{2x}{e^4}-\frac3{e^2}
+=\frac{2x^2-3e^2x+e^4}{e^4x}
+=\frac{(2x-e^2)(x-e^2)}{e^4x}.
+\]
+定义域内分母恒正，所以 $f'(x)\le 0$ 当且仅当
+\[
+(2x-e^2)(x-e^2)\le 0.
+\]
+解得
+\[
+\frac{e^2}{2}\le x\le e^2.
+\]
+因此单调递减区间为
+\[
+\left[\frac{e^2}{2},\,e^2\right].
+\]
 
-\textbf{（2）} 命题"存在实数 $b$ 使得 $f(x)$ 有三个不同的零点"等价于方程 $\ln x + ax^2 + bx = 0$ 在 $(0, +\infty)$ 上有三个不同的实数根。两边同除以 $x$ 分离参数：
-\[-b = \frac{\ln x}{x} + ax.\]
-令 $g(x) = \dfrac{\ln x}{x} + ax\ (x > 0)$，问题转化为直线 $y = -b$ 与 $y = g(x)$ 有 3 个不同交点，这要求 $g(x)$ 既有局部极大值又有局部极小值，即 $g'(x) = 0$ 至少有两个不同正根。
-\begin{align*}
-g'(x) &= \frac{1 - \ln x}{x^2} + a = \frac{ax^2 - \ln x + 1}{x^2}.
-\end{align*}
-令 $h(x) = ax^2 - \ln x + 1\ (x > 0)$，则 $g'(x)$ 的符号由 $h(x)$ 决定。
-\begin{align*}
-h'(x) = 2ax - \frac{1}{x} = \frac{2ax^2 - 1}{x}.
-\end{align*}
-对参数 $a$ 的符号分类讨论如下：
+再看存在三个不同零点时 $a$ 的范围。把方程
+\[
+\ln x+ax^2+bx=0
+\]
+两边同除以 $x$，得
+\[
+-b=\frac{\ln x}{x}+ax.
+\]
+令
+\[
+g(x)=\frac{\ln x}{x}+ax\qquad (x>0),
+\]
+问题就变成水平直线 $y=-b$ 与曲线 $y=g(x)$ 有三个不同交点。要出现三次相交，$g$ 必须先升后降再升，所以 $g'(x)=0$ 至少要有两个不同正根。由
+\[
+g'(x)=\frac{1-\ln x}{x^2}+a=\frac{ax^2-\ln x+1}{x^2}
+\]
+可知，关键只在
+\[
+h(x)=ax^2-\ln x+1.
+\]
+继续求导，
+\[
+h'(x)=2ax-\frac1x=\frac{2ax^2-1}{x}.
+\]
+若 $a\le 0$，则对一切 $x>0$ 都有 $h'(x)<0$，于是 $h$ 严格递减，只能有至多一个零点，这时 $g'$ 也至多有一个零点，曲线 $g$ 不可能与某条水平线有三个交点，所以 $a\le 0$ 不行。
 
-\begin{enumerate}
-\item 若 $a \le 0$：对任意 $x > 0$，$2ax^2 \le 0$，故 $h'(x) < 0$ 恒成立。$h(x)$ 严格单调递减，$h(x) = 0$ 至多 1 个根，从而 $g'(x) = 0$ 至多 1 个变号零点，$g(x)$ 至多一次折返，任意水平直线与 $g(x)$ 最多 2 个交点，无法产生三个零点。故 $a \le 0$ 不满足条件。
+因此只能有 $a>0$。这时
+\[
+h'(x)=0
+\]
+只有一个解
+\[
+x_0=\frac1{\sqrt{2a}},
+\]
+于是 $h$ 在 $x_0$ 处取得最小值。把 $x_0$ 代回，
+\[
+h(x_0)=a\cdot \frac1{2a}-\ln\frac1{\sqrt{2a}}+1
+=\frac32+\frac12\ln(2a).
+\]
+要让 $h(x)=0$ 有两个不同正根，就必须也只需这个最小值小于零，即
+\[
+\frac32+\frac12\ln(2a)<0.
+\]
+化简得
+\[
+0<a<\frac1{2e^3}.
+\]
+在这个范围内，$h(x)\to +\infty$ 当 $x\to 0^+$ 或 $x\to+\infty$，所以 $h$ 的确有两个不同正根，$g$ 也就有一大一小两个极值点。再利用
+\[
+g(x)\to -\infty\quad(x\to 0^+),\qquad g(x)\to+\infty\quad(x\to+\infty),
+\]
+只要把 $-b$ 取在极大值与极小值之间，就能得到三个不同零点。因此
+\[
+a\in\left(0,\frac1{2e^3}\right).
+\]
 
-\item 若 $a > 0$：$h'(x) = 0$ 的唯一驻点为 $x_0 = \dfrac{1}{\sqrt{2a}}$。$h(x)$ 在 $x_0$ 处取得最小值：
-\begin{align*}
-h_{\min} &= h\!\left(\frac{1}{\sqrt{2a}}\right) = a \cdot \frac{1}{2a} - \ln\frac{1}{\sqrt{2a}} + 1 = \frac{3}{2} + \frac{1}{2}\ln(2a).
-\end{align*}
-要求 $h(x) = 0$ 有两个不同正根，需 $h_{\min} < 0$，即
-\[\frac{3}{2} + \frac{1}{2}\ln(2a) < 0 \implies 2a < e^{-3} \implies 0 < a < \frac{1}{2e^3}.\]
-此时 $h(x) \to +\infty$（$x \to 0^+$ 及 $x \to +\infty$），由零点定理，$h(x) = 0$ 恰有两个根 $x_1' < x_0 < x_2'$。$g'(x)$ 在 $(0, x_1')$ 为正，$(x_1', x_2')$ 为负，$(x_2', +\infty)$ 为正，故 $g(x)$ 在 $x_1'$ 处取极大值，$x_2'$ 处取极小值。又 $g(x) \to -\infty$（$x \to 0^+$），$g(x) \to +\infty$（$x \to +\infty$），取 $-b \in \bigl(g(x_2'),\, g(x_1')\bigr)$ 即得 3 个交点。
-\end{enumerate}
-因此，$a$ 的取值范围为 $\left(0,\ \dfrac{1}{2e^3}\right)$。\\
-（2）设三个正实数根 $x_1 < x_2 < x_3$ 成等差数列，公差为 $d > 0$，则 $x_1 = x_2 - d$，$x_3 = x_2 + d$，且由 $x_1 > 0$ 得 $0 < d < x_2$。将三个根分别代入 $f(x) = 0$：
-\begin{align*}
-&\ln(x_2 - d) + a(x_2 - d)^2 + b(x_2 - d) = 0, \tag{1} \\
-&\ln x_2 + ax_2^2 + bx_2 = 0, \tag{2} \\
-&\ln(x_2 + d) + a(x_2 + d)^2 + b(x_2 + d) = 0. \tag{3}
-\end{align*}
-取 $(1) + (3) - 2 \times (2)$，消去含 $b$ 的一次项，二次项与对数项分别化简：
-\begin{align*}
-&\; b(2x_2 - 2x_2) = 0, \\
-&a\bigl[(x_2-d)^2 + (x_2+d)^2 - 2x_2^2\bigr] = 2ad^2, \\
-&\ln(x_2-d) + \ln(x_2+d) - 2\ln x_2 = \ln\!\left(1 - \frac{d^2}{x_2^2}\right).
-\end{align*}
-合并得
-\[\ln\!\left(1 - \frac{d^2}{x_2^2}\right) + 2ad^2 = 0.\]
-令 $t = \dfrac{d^2}{x_2^2} \in (0, 1)$，上式两边同除以 $t$ 可写为
-\[2ax_2^2 = \frac{-\ln(1 - t)}{t}.\]
-为建立右端下界，构造 $\varphi(t) = -\ln(1 - t) - t$（$t \in [0, 1)$）。求导得
-\[\varphi'(t) = \frac{1}{1-t} - 1 = \frac{t}{1-t}.\]
-当 $t \in (0, 1)$ 时 $\varphi'(t) > 0$，$\varphi(t)$ 严格单调递增，故 $\varphi(t) > \varphi(0) = 0$，即 $-\ln(1 - t) > t$。两边同除以 $t$ 得 $\dfrac{-\ln(1-t)}{t} > 1$，代入上式得
-\[2ax_2^2 > 1 \implies x_2^2 > \frac{1}{2a}.\]
-由（1）的结论 $0 < a < \dfrac{1}{2e^3}$，有 $\dfrac{1}{2a} > e^3$，故
-\[x_2^2 > \frac{1}{2a} > e^3.\]
-即 $x_2^2 > e^3$。
+若三个零点 $x_1<x_2<x_3$ 成等差数列，设公差为 $d>0$，则
+\[
+x_1=x_2-d,\qquad x_3=x_2+d,\qquad 0<d<x_2.
+\]
+把这三个根代回 $f(x)=0$，然后把两端的方程相加，再减去中间方程的两倍，含 $b$ 的一次项就被消掉，只剩
+\[
+\ln(x_2-d)+\ln(x_2+d)-2\ln x_2+2ad^2=0.
+\]
+整理为
+\[
+\ln\left(1-\frac{d^2}{x_2^2}\right)+2ad^2=0.
+\]
+令
+\[
+t=\frac{d^2}{x_2^2}\in(0,1),
+\]
+则上式化为
+\[
+2ax_2^2=\frac{-\ln(1-t)}{t}.
+\]
+现在只要估计右边。函数
+\[
+\varphi(t)=-\ln(1-t)-t\qquad (0\le t<1)
+\]
+满足
+\[
+\varphi'(t)=\frac1{1-t}-1=\frac{t}{1-t}>0\qquad (0<t<1),
+\]
+所以 $\varphi(t)>\varphi(0)=0$，也就是
+\[
+-\ln(1-t)>t.
+\]
+两边同除以 $t$，得到
+\[
+\frac{-\ln(1-t)}{t}>1.
+\]
+代回前式便有
+\[
+2ax_2^2>1,
+\qquad
+x_2^2>\frac1{2a}.
+\]
+而上面已经求得
+\[
+0<a<\frac1{2e^3},
+\]
+于是
+\[
+\frac1{2a}>e^3.
+\]
+所以
+\[
+x_2^2>\frac1{2a}>e^3.
+\]
 \end{solution}
 
 

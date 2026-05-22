@@ -18,29 +18,50 @@ A = \cosh t, \quad G = 1, \quad L = \frac{\sinh t}{t}, \quad I = \exp(t\coth t -
 
 \section{基础部分与幂平均性质}
 
-\begin{example}{}{}
+\begin{example}
 证明基础均值不等式链：$M_1 \ge I \ge L \ge M_0 \ge M_{-1}$。
 \end{example}
 \begin{solution}
-由于对称性，设 $0 < x < y$，令 $t = \frac{y}{x} > 1$。
-\begin{itemize}
-    \item \textbf{证明 $A \ge I$：}
-    两边取对数化简得 $\ln(1+t) - \ln 2 \ge \frac{t\ln t}{t-1} - 1$。
-    构造 $f(t) = [\ln(1+t)-\ln 2+1](t-1) - t\ln t$。求导得 $f'(t) = \frac{2t}{t+1} - \ln\left(\frac{2t}{t+1}\right) - 1$。利用基本不等式 $k-1 \ge \ln k$，可得 $f'(t) \ge 0$，故 $f(t) \ge f(1) = 0$ 成立。
+由于对称性，设 $0 < x < y$，令 $t = \frac{y}{x} > 1$。对 $A \ge I$，两边取对数后化为
+\[
+\ln(1+t) - \ln 2 \ge \frac{t\ln t}{t-1} - 1.
+\]
+构造
+\[
+f(t) = [\ln(1+t)-\ln 2+1](t-1) - t\ln t,
+\]
+则
+\[
+f'(t) = \frac{2t}{t+1} - \ln\left(\frac{2t}{t+1}\right) - 1.
+\]
+由基本不等式 $k-1 \ge \ln k$ 可知 $f'(t) \ge 0$，因而 $f(t) \ge f(1) = 0$，于是 $A \ge I$。
 
-    \item \textbf{证明 $I \ge L$：}
-    取对数化简得 $f(t) = \frac{t\ln t}{t-1} - \ln(t-1) + \ln(\ln t) - 1 \ge 0$。
-    求导得 $f'(t) = \frac{(t-1)^2 - t\ln^2 t}{t(t-1)^2\ln t}$。令分子 $g(t) = (t-1)^2 - t\ln^2 t$，其二阶导数为 $g''(t) = \frac{2(t-1-\ln t)}{t} > 0$。因而 $g'(t)$ 递增，$g'(t) > g'(1) = 0$，进而 $g(t) > g(1) = 0$。故 $f'(t) > 0$，从而 $f(t) \ge 0$。
+对 $I \ge L$，取对数后化为
+\[
+f(t) = \frac{t\ln t}{t-1} - \ln(t-1) + \ln(\ln t) - 1 \ge 0.
+\]
+此时
+\[
+f'(t) = \frac{(t-1)^2 - t\ln^2 t}{t(t-1)^2\ln t}.
+\]
+记分子为 $g(t) = (t-1)^2 - t\ln^2 t$，则
+\[
+g''(t) = \frac{2(t-1-\ln t)}{t} > 0.
+\]
+因此 $g'(t)$ 递增，且 $g'(t) > g'(1) = 0$，从而 $g(t) > g(1) = 0$。于是 $f'(t) > 0$，进而 $f(t) \ge 0$，故 $I \ge L$。
 
-    \item \textbf{证明 $L \ge G$：}
-    化简等价于 $\frac{t-1}{\ln t} \ge \sqrt{t}$。构造 $f(t) = t - 1 - \sqrt{t}\ln t$，求导得 $f'(t) = \frac{\sqrt{t}-1-\ln\sqrt{t}}{\sqrt{t}} \ge 0$，故得证。
-
-    \item \textbf{证明 $G \ge H$：}
-    等价于 $\sqrt{xy} \ge \frac{2xy}{x+y} \iff x+y \ge 2\sqrt{xy} \iff (\sqrt{x}-\sqrt{y})^2 \ge 0$，结论即得。
-\end{itemize}
+不等式 $L \ge G$ 等价于 $\frac{t-1}{\ln t} \ge \sqrt{t}$。构造 $f(t) = t - 1 - \sqrt{t}\ln t$，有
+\[
+f'(t) = \frac{\sqrt{t}-1-\ln\sqrt{t}}{\sqrt{t}} \ge 0,
+\]
+于是结论成立。最后，
+\[
+\sqrt{xy} \ge \frac{2xy}{x+y} \iff x+y \ge 2\sqrt{xy} \iff (\sqrt{x}-\sqrt{y})^2 \ge 0,
+\]
+故 $G \ge H$，从而得到 $M_1 \ge I \ge L \ge M_0 \ge M_{-1}$。
 \end{solution}
 
-\begin{example}{}{}
+\begin{example}
 证明幂平均的递增性：若 $p > q$，则 $M_p \ge M_q$。
 \end{example}
 \begin{solution}
@@ -50,7 +71,7 @@ $f\left(\frac{x_1+x_2+\cdots+x_n}{n}\right) \le \frac{f(x_1)+f(x_2)+\cdots+f(x_n
 取 $x_i = a_i^\alpha$，两边同时进行 $\frac{1}{\beta}$ 次乘方运算即可得证。对于 $\alpha<\beta<0$ 等其余区间，也可通过凹凸性引起的不等号方向变化完成证明。
 \end{solution}
 
-\begin{example}{}{}
+\begin{example}
 证明幂平均的混合放缩性质：当 $p, q \ge 0, pq \le 0, \alpha, \beta > 0$ 时，$\frac{\alpha M_p + \beta M_q}{\alpha+\beta} \ge M_{\frac{\alpha p + \beta q}{\alpha+\beta}}$。
 \end{example}
 \begin{solution}
@@ -60,46 +81,66 @@ $f\left(\frac{x_1+x_2+\cdots+x_n}{n}\right) \le \frac{f(x_1)+f(x_2)+\cdots+f(x_n
 
 \section{混合平均不等式}
 
-\begin{example}{}{}
+\begin{example}
 证明：(1) $2G+A \ge 3L$ \qquad (2) $2A+H \ge 3L$
 \end{example}
 \begin{solution}
-利用最佳系数逼近定理，已知 $L \le M_{1/3}$。
-(1) $2G+A = 2M_0 + M_1 \ge 3M_{1/3} \ge 3L$。若使用微分法，令 $x=t^2 \ge 1$，构造
+利用最佳系数逼近定理，已知 $L \le M_{1/3}$，于是
+\[
+2G+A = 2M_0 + M_1 \ge 3M_{1/3} \ge 3L,\qquad
+2A+H = 2M_1 + M_{-1} \ge 3M_{1/3} \ge 3L.
+\]
+前一式若改用微分法，可令 $x=t^2 \ge 1$，构造
 \[
 f = \ln x - \frac{3(x-1)}{\frac{1+x}{2} + 2\sqrt{x}},
 \]
-求导后把共同因子提出来
+求导后提出共同因子，得到
 \[
 f_1'(t) = \frac{(t-1)^4}{t(t^2+4t+1)^2} \ge 0,
 \]
-即可完成证明。
-(2) $2A+H = 2M_1 + M_{-1} \ge 3M_{1/3} \ge 3L$。类似地，也可通过连续求导逐步化简对数项完成证明。
+便可得到同样的结论。后一式也可沿相同思路，通过连续求导逐步化简对数项得到。
 \end{solution}
 
-\begin{example}{}{}
+\begin{example}
 证明乘法与加法界限：(1) $AG \le LI$ \qquad (2) $A+G \ge L+I$
 \end{example}
 \begin{solution}
-利用双曲参数化代入各项。
-(1) $AG \le LI \iff \cosh t \le \frac{\sinh t}{t} \exp(t\coth t - 1)$。由于 $\cosh t = \frac{\sinh t}{t}(t\coth t)$，利用基本不等式 $u \le \exp(u-1)$（令 $u = t\coth t$），代入即刻得证。
-(2) $A+G \ge L+I \iff \cosh t + 1 \ge \frac{\sinh t}{t} + \exp(t\coth t - 1)$。构造函数 $f(t) = \ln\left(\cosh t + 1 - \frac{\sinh t}{t}\right) - t\coth t + 1$。将其求导并展开麦克劳林级数，级数每一项的系数 $C_n = \frac{3}{4}(9^{n+1}-1) - 2(n+1)(2n+3)(4^n-2n+1)$ 在 $n \ge 3$ 时恒正，故导数 $f'(t) > 0$，从 $f(0)=0$ 逆推得证。
+利用双曲参数化代入各项，
+\[
+AG \le LI \iff \cosh t \le \frac{\sinh t}{t} \exp(t\coth t - 1).
+\]
+又因为 $\cosh t = \frac{\sinh t}{t}(t\coth t)$，再用基本不等式 $u \le \exp(u-1)$（取 $u = t\coth t$），便得 $AG \le LI$。
+
+另一方面，
+\[
+A+G \ge L+I \iff \cosh t + 1 \ge \frac{\sinh t}{t} + \exp(t\coth t - 1).
+\]
+构造函数 $f(t) = \ln\left(\cosh t + 1 - \frac{\sinh t}{t}\right) - t\coth t + 1$。将其求导并展开麦克劳林级数后，级数各项的系数
+\[
+C_n = \frac{3}{4}(9^{n+1}-1) - 2(n+1)(2n+3)(4^n-2n+1)
+\]
+在 $n \ge 3$ 时恒正，因此 $f'(t) > 0$。结合 $f(0)=0$，便有 $A+G \ge L+I$。
 \end{solution}
 
-\begin{example}{}{}
+\begin{example}
 证明：(1) $2A+G \le 3I$ \quad (2) $A+L \le 2I$ \quad (3) $G+I \ge 2L$ \quad (4) $AL \le I^2$
 \end{example}
 \begin{solution}
-均可利用“最佳系数问题”的结论及单调性放缩处理：
-(1) 海伦平均中转：$\frac{2A+G}{3} = He_1 \le M_{2/3} \le I$。
-(2) $A+L \le M_1 + M_{1/3} \le 2M_{2/3} \le 2I$。
-(3) $G+I \ge M_0 + M_{2/3} \ge 2M_{1/3} \ge 2L$。
-(4) $AL \le M_1 M_{1/3} \le M_{2/3}^2 \le I^2$。
+这些结论都可由“最佳系数问题”的结论和单调性放缩推出。具体地，
+\[
+\frac{2A+G}{3} = He_1 \le M_{2/3} \le I,\qquad
+A+L \le M_1 + M_{1/3} \le 2M_{2/3} \le 2I,
+\]
+\[
+G+I \ge M_0 + M_{2/3} \ge 2M_{1/3} \ge 2L,\qquad
+AL \le M_1 M_{1/3} \le M_{2/3}^2 \le I^2.
+\]
+四式分别对应所求的不等式。
 \end{solution}
 
 \section{若干补充不等式}
 
-\begin{example}{}{}
+\begin{example}
 高阶放缩补充：证明 $AG^2 \le L^3$。
 \end{example}
 \begin{solution}
@@ -108,10 +149,10 @@ f_1'(t) = \frac{(t-1)^4}{t(t^2+4t+1)^2} \ge 0,
 左侧 $= \sum_{n=1}^{\infty} \frac{1}{(2n-2)!} t^{2n+1}$，
 右侧利用三倍角公式 $= \sum_{n=1}^{\infty} \frac{3^{2n+1}-3}{4(2n+1)!} t^{2n+1}$。
 对比 $t^{2n+1}$ 的系数：$n=1$ 与 $n=2$ 时两边系数精准相等（1 与 1/2）。
-当 $n \ge 3$ 时，需证 $3^{2n+1}-3 > 4(2n+1)(2n)(2n-1)$。指数级增长彻底碾压三次多项式，系数作差后全为正，不等式严格成立。
+当 $n \ge 3$ 时，需证 $3^{2n+1}-3 > 4(2n+1)(2n)(2n-1)$。左端随 $n$ 指数增长，右端仅为三次多项式，因此该不等式对一切 $n \ge 3$ 成立，系数之差均为正，不等式严格成立。
 \end{solution}
 
-\begin{example}{}{}
+\begin{example}
 关于 $M_{1/2}$ 的极值界定：证明 $L+I \le 2M_{1/2}$ 与 $LI \le M_{1/2}^2$。
 \end{example}
 \begin{solution}
@@ -120,43 +161,47 @@ f_1'(t) = \frac{(t-1)^4}{t(t^2+4t+1)^2} \ge 0,
 对于乘积形式，根据基础 AM-GM 不等式，有 $\sqrt{LI} \le \frac{L+I}{2}$。结合已证的 $\frac{L+I}{2} \le M_{1/2}$，连起来平方即得 $LI \le M_{1/2}^2$。
 \end{solution}
 
-\begin{example}{}{}
+\begin{example}
 连续分式极值：证明 $\frac{1}{3} < \frac{I-L}{A-G} < \frac{2}{e} < \frac{I+L}{A+G}$。
 \end{example}
 \begin{solution}
-分别证明三部分不等式：
-\begin{itemize}
-    \item \textbf{证左端 $\frac{I-L}{A-G} > \frac{1}{3}$}：即 $3I - 3L > A-G$。因已知 $2A+G \le 3I \implies 3I \ge 2A+G$；又 $2G+A \ge 3L \implies -3L \ge -A-2G$。两式相加得 $3I - 3L \ge A-G$，因 $x \neq y$ 严格大于号成立。
-    
-    \item \textbf{证右端 $\frac{I+L}{A+G} > \frac{2}{e}$}：即 $e(I+L) > 2A+2G$。可分解为 $eL > 2G$ 与 $eI > 2A$。前者由 $L>G$ 及 $e>2$ 立即得到。对于后者，等价于 $e^{t\coth t} > 2\cosh t$。两边取对数并换元 $u = e^{-2t} \in (0,1)$，可化为
-    \[
-    -\frac{u\ln u}{1-u} > \ln(1+u).
-    \]
-    对应辅助函数的二阶导数恒小于 $0$，且两端取值为 $0$，故区间内部恒为正。
+左端不等式等价于 $3I - 3L > A-G$。由已知 $2A+G \le 3I$ 得 $3I \ge 2A+G$，又由 $2G+A \ge 3L$ 得 $-3L \ge -A-2G$。两式相加即有 $3I - 3L \ge A-G$，而 $x \neq y$ 时不等号严格，故
+\[
+\frac{I-L}{A-G} > \frac{1}{3}.
+\]
 
-    \item \textbf{证中端 $\frac{I-L}{A-G} < \frac{2}{e}$}：即 $e(I-L) < 2(A-G)$。构造差值函数
-    \[
-    H(t) = 2(\cosh t - 1) - e\exp(t\coth t - 1) + e\frac{\sinh t}{t}.
-    \]
-    在 $t=0$ 附近作泰勒展开：
-    \[
-    H(t) = \left(1-\frac{e}{6}\right)t^2 + \left(\frac{1}{12}-\frac{e}{40}\right)t^4 + \cdots .
-    \]
-    由展开式可见，$H(t)$ 在 $t>0$ 时恒为正，因此得到
-    \[
-    \frac{I-L}{A-G} < \frac{2}{e}.
-    \]
-\end{itemize}
+右端不等式等价于 $e(I+L) > 2A+2G$。其中 $eL > 2G$ 由 $L>G$ 与 $e>2$ 立即得到；对 $eI > 2A$，将双曲形式代入后等价于 $e^{t\coth t} > 2\cosh t$。两边取对数并令 $u = e^{-2t} \in (0,1)$，可化为
+\[
+-\frac{u\ln u}{1-u} > \ln(1+u).
+\]
+对应辅助函数的二阶导数恒小于 $0$，且两端取值都为 $0$，因此区间内部恒为正，于是
+\[
+\frac{I+L}{A+G} > \frac{2}{e}.
+\]
+
+中间不等式等价于 $e(I-L) < 2(A-G)$。构造
+\[
+H(t) = 2(\cosh t - 1) - e\exp(t\coth t - 1) + e\frac{\sinh t}{t}.
+\]
+在 $t=0$ 附近作泰勒展开，
+\[
+H(t) = \left(1-\frac{e}{6}\right)t^2 + \left(\frac{1}{12}-\frac{e}{40}\right)t^4 + \cdots .
+\]
+由展开式可见，$H(t)$ 在 $t>0$ 时恒为正，因此
+\[
+\frac{I-L}{A-G} < \frac{2}{e}.
+\]
+综上，$\frac{1}{3} < \frac{I-L}{A-G} < \frac{2}{e} < \frac{I+L}{A+G}$。
 \end{solution}
 
-\begin{example}{}{}
-在附加条件 $\mathbf{0 < x < y \le e}$ 下，证明不对称幂链
+\begin{example}
+在附加条件 $0 < x < y \le e$ 下，证明不对称幂链
 \[
 G^A < L^I < I^L < A^G.
 \]
 \end{example}
 \begin{solution}
-\textbf{说明：} 原命题若不加范围限制并不成立。例如取 $x=10,\ y=1$，则
+原命题若不加范围限制并不成立。例如取 $x=10,\ y=1$，则
 \[
 A^G \approx 219.4 < G^A \approx 562.3.
 \]
@@ -164,47 +209,50 @@ A^G \approx 219.4 < G^A \approx 562.3.
 \[
 0 < G < L < I < A \le e.
 \]
-\begin{itemize}
-    \item \textbf{证明 $L^I < I^L$}：考察函数 $f(z) = \frac{\ln z}{z}$。其导数
-    \[
-    f'(z) = \frac{1-\ln z}{z^2}
-    \]
-    在区间 \((0,e]\) 上严格为正，因此 \(f\) 单调递增。由 \(L<I\le e\) 可得
-    \[
-    \frac{\ln L}{L}<\frac{\ln I}{I},
-    \]
-    从而 \(L^I<I^L\)。
 
-    \item \textbf{证明 $I^L < A^G$}：取对数后，问题等价于
-    \[
-    L \ln I < G \ln A.
-    \]
-    除以 \(G\) 后写成
-    \[
-    L_0 \ln(I_0 G) < \ln(A_0 G),
-    \]
-    其中下标 \(0\) 表示 \(x=Ge^v,\ y=Ge^{-v}\) 时对应的双曲均值形式。
-    因为限制了 $x,y \le e$，故必有 $\ln G + v \le 1 \implies \ln G \le 1-v$。
-    只需证极值界限：$(1-v)(L_0 - 1) < \ln A_0 - L_0 \ln I_0$。
-    移项后构造辅助函数
-    \[
-    D(v) = \ln A_0 - L_0 \ln I_0 - (1-v)(L_0 - 1).
-    \]
-    代入
-    \[
-    A_0 = \cosh v,\qquad L_0 = \frac{\sinh v}{v},\qquad \ln I_0 = v\coth v - 1,
-    \]
-    可化为
-    \begin{align*}
-    D(v) &= \ln \cosh v - \frac{\sinh v}{v}(v\coth v - 1) - (1-v)\left(\frac{\sinh v}{v} - 1\right) \\
-    &= \mathbf{\ln \cosh v - \cosh v + \sinh v + 1 - v}
-    \end{align*}
-    再求导：
-    \[
-    D'(v) = \tanh v - \sinh v + \cosh v - 1
-    = \tanh v + e^{-v} - 1
-    = \frac{e^{-v}(1-e^{-v})^2}{1+e^{-2v}} > 0.
-    \]
-    因为 \(D(0)=0\) 且 \(D'(v)>0\)，所以 \(D(v)>0\)，从而 \(I^L<A^G\)。另一侧不等式 \(G^A<L^I\) 同理。
-\end{itemize}
+关系 $L^I < I^L$ 可由函数 $f(z) = \frac{\ln z}{z}$ 的单调性推出。其导数
+\[
+f'(z) = \frac{1-\ln z}{z^2}
+\]
+在区间 \((0,e]\) 上严格为正，因此 \(f\) 单调递增。由 \(L<I\le e\) 可得
+\[
+\frac{\ln L}{L}<\frac{\ln I}{I},
+\]
+从而 \(L^I<I^L\)。
+
+而 $I^L < A^G$ 在取对数后等价于
+\[
+L \ln I < G \ln A.
+\]
+除以 \(G\) 后写成
+\[
+L_0 \ln(I_0 G) < \ln(A_0 G),
+\]
+其中下标 \(0\) 表示 \(x=Ge^v,\ y=Ge^{-v}\) 时对应的双曲均值形式。因为限制了 $x,y \le e$，故必有 $\ln G + v \le 1 \implies \ln G \le 1-v$，于是只需证极值界限
+\[
+(1-v)(L_0 - 1) < \ln A_0 - L_0 \ln I_0.
+\]
+移项后构造辅助函数
+\[
+D(v) = \ln A_0 - L_0 \ln I_0 - (1-v)(L_0 - 1).
+\]
+代入
+\[
+A_0 = \cosh v,\qquad L_0 = \frac{\sinh v}{v},\qquad \ln I_0 = v\coth v - 1,
+\]
+可化为
+\begin{align*}
+D(v) &= \ln \cosh v - \frac{\sinh v}{v}(v\coth v - 1) - (1-v)\left(\frac{\sinh v}{v} - 1\right) \\
+&= \ln \cosh v - \cosh v + \sinh v + 1 - v.
+\end{align*}
+再求导得
+\[
+D'(v) = \tanh v - \sinh v + \cosh v - 1
+= \tanh v + e^{-v} - 1
+= \frac{e^{-v}(1-e^{-v})^2}{1+e^{-2v}} > 0.
+\]
+因为 \(D(0)=0\) 且 \(D'(v)>0\)，所以 \(D(v)>0\)，从而 \(I^L<A^G\)。另一侧不等式 \(G^A<L^I\) 同理，于是得到
+\[
+G^A < L^I < I^L < A^G.
+\]
 \end{solution}
