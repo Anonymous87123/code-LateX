@@ -813,6 +813,15 @@
   \newcommand{\historyname}{バージョン更新履歴}
 }{\relax}
 
+\providecommand{\skillname}{Skill}
+\providecommand{\useskillsname}{Skills Used}
+\providecommand{\listskillname}{List of Skills}
+
+\ifdefstring{\ELEGANT@lang}{cn}{
+  \renewcommand{\skillname}{技巧}
+  \renewcommand{\useskillsname}{调用技巧}
+  \renewcommand{\listskillname}{技巧索引}
+}{\relax}
 
 \graphicspath{{./figure/}{./figures/}{./image/}{./images/}{./graphics/}{./graphic/}{./pictures/}{./picture/}}
 
@@ -1070,6 +1079,51 @@
   \par\noindent\textbf{\color{main}{\problemname} \theprob #1 }\rmfamily}{
   \par\ignorespacesafterend}
 
+\newcounter{skill}[chapter]
+\setcounter{skill}{0}
+\renewcommand{\theskill}{\thechapter.\arabic{skill}}
+\newcommand{\elegantbook@solutionskills}{}
+\newcommand{\elegantbook@currentskillref}{}
+\newcommand{\setsolutionskills}[1]{\gdef\elegantbook@solutionskills{#1}}
+\newcommand{\resetsolutionskills}{\gdef\elegantbook@solutionskills{}}
+\newcommand{\addtosolutionskills}[1]{%
+  \ifstrempty{\elegantbook@solutionskills}
+    {\gdef\elegantbook@solutionskills{#1}}
+    {\gappto\elegantbook@solutionskills{，#1}}}
+\newenvironment{skill}[1][]{
+  \refstepcounter{skill}
+  \phantomsection\addcontentsline{losk}{skills}{\elegantbook@titlepdfsafe{\theskill\ifstrempty{#1}{}{\hspace{1em}#1}}}%
+  \gdef\elegantbook@currentskillref{\skillname~\theskill}
+  \addtosolutionskills{\elegantbook@currentskillref}
+  \begin{tcolorbox}[
+    enhanced,
+    breakable,
+    colframe=third,
+    colback=third!5,
+    coltitle=white,
+    colbacktitle=third,
+    fonttitle=\bfseries,
+    boxrule=0.5pt,
+    sharp corners,
+    top=8pt,
+    bottom=6pt,
+    left=8pt,
+    right=8pt,
+    before skip=8pt,
+    after skip=8pt,
+    attach boxed title to top left={yshift=-3mm,xshift=4mm},
+    boxed title style={
+      boxrule=0pt,
+      colframe=third,
+      colback=third,
+      arc=0pt,
+      outer arc=0pt},
+    title={\skillname~\theskill\ifstrempty{#1}{}{\ (#1)}}]
+  \rmfamily
+}{
+  \end{tcolorbox}
+  \ignorespacesafterend}
+
 \newenvironment{note}[1][]{
   \par\noindent\makebox[-3pt][r]{
     \scriptsize\color{red!90}\textdbend\quad}
@@ -1081,10 +1135,30 @@
   % \hfill$\Box$\quad
   \par}
 
-\newenvironment{solution}{\par\noindent\textbf{\color{main}\solutionname} \citshape}{\par}
+\newenvironment{solution}{%
+  \par\noindent\textbf{\color{main}\solutionname} \citshape%
+  \ifstrempty{\elegantbook@solutionskills}{}{\par\noindent{\rmfamily\small\textbf{\color{third}\useskillsname:} \elegantbook@solutionskills}\par\citshape}%
+}{\par}
 \newenvironment{remark}[1][]{\noindent\textbf{\color{second}\remarkname\ifstrempty{#1}{}{\ (#1)}}}{\par}
 \newenvironment{assumption}{\par\noindent\textbf{\color{third}\assumptionname} \citshape}{\par}
 \newenvironment{conclusion}{\par\noindent\textbf{\color{third}\conclusionname} \citshape}{\par}
+
+\pretocmd{\chapter}{\resetsolutionskills}{}{}
+\pretocmd{\section}{\resetsolutionskills}{}{}
+\pretocmd{\subsection}{\resetsolutionskills}{}{}
+\pretocmd{\subsubsection}{\resetsolutionskills}{}{}
+
+% Explicit skill references for exam-oriented solutions
+\newcommand{\elegantbook@solutionuseskills}{}
+\newcommand{\useskills}[1]{\gdef\elegantbook@solutionuseskills{#1}}
+\newcommand{\clearuseskills}{\gdef\elegantbook@solutionuseskills{}}
+\newcommand{\skillref}[1]{\hyperref[#1]{\skillname~\ref*{#1}}}
+\renewcommand{\addtosolutionskills}[1]{}
+\renewcommand{\setsolutionskills}[1]{\useskills{#1}}
+\renewcommand{\resetsolutionskills}{\clearuseskills}
+\renewenvironment{solution}{%
+  \par\noindent\textbf{\color{main}\solutionname} \citshape%
+}{\par\clearuseskills}
 
 %% Property with counter
 \newcounter{prop}[chapter]
@@ -1220,34 +1294,49 @@
   \ebword@activetrue
   \ebword@breakdownseenfalse
   \ebword@startedfalse
-  \noindent
-  \begin{list}{}{%
-    \setlength{\leftmargin}{\dimexpr\ebword@leftwidth+\ebword@gap\relax}%
-    \setlength{\rightmargin}{0pt}%
-    \setlength{\labelwidth}{0pt}%
-    \setlength{\labelsep}{0pt}%
-    \setlength{\itemindent}{0pt}%
-    \setlength{\listparindent}{0pt}%
-    \setlength{\parsep}{0pt}%
-    \setlength{\topsep}{0pt}%
-    \setlength{\partopsep}{0pt}%
-    \setlength{\itemsep}{0pt}%
-  }
-    \item[]\leavevmode
-    \makebox[0pt][r]{%
-      \raisebox{0pt}[0pt][0pt]{%
-        \parbox[t]{\ebword@leftwidth}{\ebword@leftcontent{#1}{#2}{#3}}%
+  \begin{tcolorbox}[
+    enhanced,
+    breakable,
+    boxrule=0pt,
+    frame hidden,
+    colback=white,
+    sharp corners,
+    left=0pt,
+    right=0pt,
+    top=6pt,
+    bottom=6pt,
+    boxsep=0pt,
+    before skip=8pt,
+    after skip=8pt,
+  ]
+    \begin{list}{}{%
+      \setlength{\leftmargin}{\dimexpr\ebword@leftwidth+\ebword@gap\relax}%
+      \setlength{\rightmargin}{0pt}%
+      \setlength{\labelwidth}{0pt}%
+      \setlength{\labelsep}{0pt}%
+      \setlength{\itemindent}{0pt}%
+      \setlength{\listparindent}{0pt}%
+      \setlength{\parsep}{0pt}%
+      \setlength{\topsep}{0pt}%
+      \setlength{\partopsep}{0pt}%
+      \setlength{\itemsep}{0pt}%
+    }
+      \item[]\leavevmode
+      \makebox[0pt][r]{%
+        \raisebox{0pt}[0pt][0pt]{%
+          \parbox[t]{\ebword@leftwidth}{\ebword@leftcontent{#1}{#2}{#3}}%
+        }%
+        \hspace{\ebword@gap}%
       }%
-      \hspace{\ebword@gap}%
-    }%
-    \setlength{\parindent}{0pt}%
-    \setlength{\parskip}{0pt}%
-    \ignorespaces
+      \setlength{\parindent}{0pt}%
+      \setlength{\parskip}{0pt}%
+      \ignorespaces
 }{%
-    \unskip
-  \end{list}%
+      \unskip
+    \end{list}
+  \end{tcolorbox}
   \ebword@activefalse
-  \par\medskip\ignorespacesafterend
+  \par\ignorespacesafterend
 }
 
 \RequirePackage{multicol}
@@ -1496,6 +1585,7 @@
 \providecommand{\listdefinitionname}{List of Definitions}
 \providecommand{\listtheoremname}{List of Theorems}
 \providecommand{\listexercisename}{List of Exercises}
+\providecommand{\listskillname}{List of Skills}
 \providecommand{\listpropertyname}{List of Properties}
 
 \ifdefstring{\ELEGANT@lang}{cn}{
@@ -1508,12 +1598,15 @@
 \newlistof{definitions}{lod}{\listdefinitionname}
 \newlistof{theorems}{loth}{\listtheoremname}
 \newlistof{exercises}{loexer}{\listexercisename}
+\newlistof{skills}{losk}{\listskillname}
 \newlistof{properties}{lopr}{\listpropertyname}
+\newcommand{\listskills}{\listofskills}
 
 \newcommand{\makeenvindex}{
   \listofdefinitions
   \listoftheorems
   \listofexercises
+  \listofskills
   \listofproperties
 }
 % -------------------------------------------------------------

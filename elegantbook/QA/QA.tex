@@ -1,0 +1,183 @@
+\documentclass[lang=cn,11pt]{elegantbook}
+
+\title{高考数学}
+\subtitle{讲义}
+
+\author{夏同}
+\institute{深圳中学}
+\date{\today}
+\version{1.0}
+\bioinfo{自定义}{信息}
+
+\extrainfo{靡不有初，鲜克有终}
+
+\setcounter{tocdepth}{3}
+
+\logo{logo-blue.png}
+\cover{751_01.png}
+
+% 本文档命令
+\usepackage{array}
+
+\newcommand{\ccr}[1]{\makecell{{\color{#1}\rule{1cm}{1cm}}}}
+
+\begin{document}
+
+\maketitle
+\frontmatter
+
+\tableofcontents
+
+\mainmatter
+
+\chapter{三角函数}
+
+\begin{exercise}
+设 $T = \sin x - \sin y = 2\sin(x-y)$，$T^2$ 的最大值是 $A$.
+设 $B = \sin^2 29^\circ + \sin^2 31^\circ + \sin 29^\circ \sin 31^\circ$，则 $100AB = \underline{\qquad}$.
+\end{exercise}
+\begin{solution}
+（1）首先求出$A$，已知$\sin x - \sin y = 2\sin(x-y)$，左侧是正弦值相减，不难想到理由和差化积：
+\begin{align*}
+&\sin x - \sin y = 2\sin\left(\frac{x-y}{2}\right)\cos\left(\frac{x+y}{2}\right),~2\sin(x-y) = 4\sin\left(\frac{x-y}{2}\right)\cos\left(\frac{x-y}{2}\right)\\
+\implies & 2\sin\left(\frac{x-y}{2}\right)\cos\left(\frac{x+y}{2}\right) = 4\sin\left(\frac{x-y}{2}\right)\cos\left(\frac{x-y}{2}\right)
+\end{align*}
+当 $\sin(\frac{x-y}{2}) = 0$ 时。此时 $T = 0$，对应的 $T^2 = 0$。当 $\sin(\frac{x-y}{2}) \neq 0$ 时。两边同时除以 $2\sin(\frac{x-y}{2})$，得到：
+$$\cos\left(\frac{x+y}{2}\right) = 2\cos\left(\frac{x-y}{2}\right)$$
+回到目标 $T^2$。根据 $T = 2\sin(x-y)$，有：
+$$T^2 = 4\sin^2(x-y) = 16\sin^2\left(\frac{x-y}{2}\right)\cos^2\left(\frac{x-y}{2}\right)$$
+所以关键就是搞清楚$\cos\left(\frac{x-y}{2}\right)$的取值范围，因为余弦函数的值域为 $[-1, 1]$，即 $-1 \le \cos(\frac{x+y}{2}) \le 1$，所以必须满足：
+$$-1 \le 2\cos\left(\frac{x-y}{2}\right) \le 1\implies\cos^2\left(\frac{x-y}{2}\right) \le \frac{1}{4}$$
+令 $u = \cos^2(\frac{x-y}{2})$，$0 \le u \le \frac{1}{4}$。将 $\sin^2(\frac{x-y}{2})$ 替换为 $(1 - u)$，则 $T^2$ 可以表示为
+$$T=f(u) = 16u(1 - u) = -16u^2 + 16u$$
+这是个开口向下的抛物线，对称轴$u = \frac{1}{2}$。由于 $u$限制在 $[0, \frac{1}{4}]$ 之间，函数在这个区间内是单调递增的。因此，当 $u = \frac{1}{4}$ 时，$T^2$ 取得最大值：$$T^2_{\max} = 16 \times \frac{1}{4} \times \left(1 - \frac{1}{4}\right) = 4 \times \frac{3}{4} = 3$$结合两种情况，$T^2$ 的最大值 $A = 3$。\\
+（2）然后求解$B$，我们需要计算：
+\begin{align*}
+B &= \sin^2 29^\circ + \sin^2 31^\circ + \sin 29^\circ \sin 31^\circ\\
+&=\frac{1 - \cos 58^\circ}{2} + \frac{1 - \cos 62^\circ}{2} + \frac{\cos(29^\circ - 31^\circ) - \cos(29^\circ + 31^\circ)}{2}\\
+&=\frac{1 - \cos 58^\circ + 1 - \cos 62^\circ + \cos(-2^\circ) - \cos 60^\circ}{2}\\
+&= \frac{2 - (\cos 58^\circ + \cos 62^\circ) + \cos 2^\circ - 0.5}{2}\\
+&= \frac{2 - 2\cos\left(\frac{120^\circ}{2}\right)\cos\left(\frac{-4^\circ}{2}\right) + \cos 2^\circ - 0.5}{2}=\frac{3}{4}
+\end{align*}
+那么$100AB=225$.
+\end{solution}
+
+\chapter{解三角形}
+\begin{exercise}
+在$\triangle ABC$中,角$A,B,C$所对的边分别为$a,b,c$,$BD$平分$\angle ABC$并交$AC$边于点$D$,若$\cos\angle ABC=-\dfrac{7}{25}$,$BD=2$,则下列说法正确的是(\quad )\\
+A. $\triangle ABC$的面积有最小值$\dfrac{16}{3}$~~~~B. $(a-1)c=a$\\
+C. $a+c$有最小值$\dfrac{20}{3}$~~~~D. $a+4c$有最小值$15$
+\end{exercise}
+\begin{solution}
+因为 $BD$ 平分 $\angle ABC$，所以可以将 $\triangle ABC$ 的面积拆分为两个小三角形面积之和：
+$$S_{\triangle ABC} = S_{\triangle ABD} + S_{\triangle CBD}$$
+根据三角形面积公式：
+$$\frac{1}{2}ac\sin B = \frac{1}{2}c \cdot BD \cdot \sin\frac{B}{2} + \frac{1}{2}a \cdot BD \cdot \sin\frac{B}{2}$$
+已知 $\cos B = -\frac{7}{25}$，且 $B \in (0, \pi)$，可得 $\sin B = \sqrt{1 - \left(-\frac{7}{25}\right)^2} = \frac{24}{25}$。通过半角公式求 $\sin\frac{B}{2}$：
+$$\cos B = 1 - 2\sin^2\frac{B}{2} = -\frac{7}{25} \implies \sin^2\frac{B}{2} = \frac{16}{25} \implies \sin\frac{B}{2} = \frac{4}{5}$$
+将已知量代入面积等式（其中 $BD = 2$）：
+$$\frac{1}{2}ac \cdot \frac{24}{25} = \frac{1}{2}c \cdot 2 \cdot \frac{4}{5} + \frac{1}{2}a \cdot 2 \cdot \frac{4}{5}\Longleftrightarrow\frac{12}{25}ac = \frac{4}{5}(a+c) \implies 3ac = 5(a+c)$$
+\begin{itemize}
+\item 分析选项 B：由 $3ac = 5(a+c)$ 可得 $3ac - 5c = 5a \implies c(3a - 5) = 5a \implies c = \frac{5a}{3a-5}$。这与选项中的 $(a-1)c = a$ 不符，故 B 错误。
+\item 选项 A 和 C可以放在一起分析，根据基本不等式 $a+c \ge 2\sqrt{ac}$（当且仅当 $a=c$ 时取等号），代入前面的关系式：$$3ac = 5(a+c) \ge 10\sqrt{ac}\implies 3\sqrt{ac} \ge 10 \implies \sqrt{ac} \ge \frac{10}{3} \implies ac \ge \frac{100}{9}$$
+所以$$a+c = \frac{3}{5}ac \ge \frac{3}{5} \times \frac{100}{9} = \frac{20}{3}$$当 $a = c = \frac{10}{3}$ 时取最小值，故 C 正确。然后用之前算的面积公式验证 A：$$\triangle ABC \text{ 的面积 } S = \frac{12}{25}ac \ge \frac{12}{25} \times \frac{100}{9} = \frac{16}{3}$$面积的最小值为 $\frac{16}{3}$，故 A 正确。
+\item 选项 D：已知 $3ac = 5(a+c)$，同除以 $ac$ 得：$$\frac{5}{c} + \frac{5}{a} = 3 \implies \frac{1}{a} + \frac{1}{c} = \frac{3}{5}$$
+利用常数代换求 $a+4c$ 的最小值：$$a+4c = \frac{5}{3} (a+4c) \times \frac{3}{5} = \frac{5}{3} (a+4c)\left(\frac{1}{a} + \frac{1}{c}\right)=\frac53\left(5 + \left(\frac{a}{c} + \frac{4c}{a}\right)\right)$$
+应用基本不等式：$$\frac{a}{c} + \frac{4c}{a} \ge 2\sqrt{\frac{a}{c} \cdot \frac{4c}{a}} = 4$$当且仅当 $\frac{a}{c} = \frac{4c}{a}$ 即 $a = 2c$ 时等号成立。将最小值代回原式：$$a+4c \ge \frac{5}{3} \times (5 + 4) = \frac{5}{3} \times 9 = 15$$联立 $a=2c$ 与 $\frac{1}{a}+\frac{1}{c}=\frac{3}{5}$，解得 $c=2.5, a=5$（此时满足三角形三边关系），故最小值为 15。D 正确。
+\end{itemize}
+\end{solution}
+
+
+\begin{exercise}
+三角形$ABC$中，$h$为$BC$边上的高，$b+c=a+h$，求$\sin A$的最小值？
+\end{exercise}
+\begin{solution}
+全部转化成角度，即由正弦定理将边长转化为正弦值，并结合 $h = c\sin B = b\sin C$，代入 $b+c=a+h$ 可得：
+\[ \sin B + \sin C = \sin A + \sin B\sin C \]
+移项并利用和差化积与倍角公式进行化简：
+\begin{align*}
+\sin B\sin C &= \sin B + \sin C - \sin A \\
+&= 2\sin \frac{B+C}{2}\cos \frac{B-C}{2} - \sin(B+C) \\
+&= 2\sin \frac{B+C}{2}\left(\cos \frac{B-C}{2} - \cos \frac{B+C}{2}\right) \\
+&= 4\sin \frac{B}{2}\sin \frac{C}{2}\sin \frac{B+C}{2}
+\end{align*}
+又因为 $\sin B\sin C = 4\sin \frac{B}{2}\cos \frac{B}{2}\sin \frac{C}{2}\cos \frac{C}{2}$，将上式两边同时除以 $4\sin \frac{B}{2}\sin \frac{C}{2}\cos \frac{B}{2}\cos \frac{C}{2}$，可得：
+\[ 1 = \frac{\sin \frac{B+C}{2}}{\cos \frac{B}{2}\cos \frac{C}{2}} = \frac{\sin \frac{B}{2}\cos \frac{C}{2} + \cos \frac{B}{2}\sin \frac{C}{2}}{\cos \frac{B}{2}\cos \frac{C}{2}} = \tan \frac{B}{2} + \tan \frac{C}{2} \]
+设 $t_1 = \tan \frac{B}{2} > 0$，$t_2 = \tan \frac{C}{2} > 0$，则 $t_1 + t_2 = 1$。
+根据基本不等式：
+\[ 0 < t_1t_2 \le \left(\frac{t_1+t_2}{2}\right)^2 = \frac{1}{4} \]
+设 $t = \tan \frac{A}{2}$，利用诱导公式和两角和的正切公式展开：
+\[ t = \tan \frac{A}{2} = \cot \frac{B+C}{2} = \frac{1 - \tan \frac{B}{2}\tan \frac{C}{2}}{\tan \frac{B}{2} + \tan \frac{C}{2}} = \frac{1-t_1t_2}{t_1+t_2} = 1 - t_1t_2 \]
+由 $0 < t_1t_2 \le \frac{1}{4}$ 可知：
+\[ 1 > t \ge 1 - \frac{1}{4} = \frac{3}{4} \]
+利用万能公式求 $\tan A$ 和 $\sin A$ 的最小值：
+\[ \tan A = \frac{2t}{1-t^2} \]
+因为 $y = \frac{2t}{1-t^2}$ 在 $t \in \left[\frac{3}{4}, 1\right)$ 上单调递增，所以当 $t = \frac{3}{4}$ 时取得最小值：
+\[ \tan A \ge \frac{2 \times \frac{3}{4}}{1 - \left(\frac{3}{4}\right)^2} = \frac{24}{7} \]
+同理，若求 $\sin A$ 的最小值：
+\[ \sin A = \frac{2t}{1+t^2} \]
+该函数在 $t \in \left[\frac{3}{4}, 1\right)$ 上同样单调递增，当 $t = \frac{3}{4}$ 时取得最小值：
+\[ \sin A \ge \frac{2 \times \frac{3}{4}}{1 + \left(\frac{3}{4}\right)^2} = \frac{24}{25} \]
+\end{solution}
+
+\begin{solution}
+设 $\triangle ABC$ 的内切圆半径为 $r$，该圆与 $AC$ 切于点 $D$。由切线长定理及三角形面积公式有：
+\[b+c-a = 2AD = 2r\cot\frac{A}{2}, h = \frac{2S_{\triangle ABC}}{a} = \frac{r(a+b+c)}{a} = r\left( 1+\frac{b+c}{a} \right).\]
+根据已知条件 $b+c=a+h$，即 $b+c-a=h$，由此可得：
+\[ 2r\cot\frac{A}{2} = r\left( 1+\frac{b+c}{a} \right) \iff 2\cot\frac{A}{2} = 1+\frac{b+c}{a}. \]
+显然上式右边大于 $2$，即 $\cot\frac{A}{2} > 1$，因此 $A$ 必为锐角。
+由正弦定理及和差化积公式可得：
+\[ \frac{a}{b+c} = \frac{\sin A}{\sin B + \sin C} = \frac{2\sin\frac{A}{2}\cos\frac{A}{2}}{2\sin\frac{B+C}{2}\cos\frac{B-C}{2}} = \frac{2\sin\frac{A}{2}\cos\frac{A}{2}}{2\cos\frac{A}{2}\cos\frac{B-C}{2}} = \frac{\sin\frac{A}{2}}{\cos\frac{B-C}{2}}. \]
+因为 $\cos\frac{B-C}{2} \le 1$，所以有：
+\[ \frac{a}{b+c} \ge \sin\frac{A}{2} \implies \frac{b+c}{a} \le \frac{1}{\sin\frac{A}{2}}. \]
+将此不等式代入前式，于是有：
+\[ 2\cot\frac{A}{2} \le 1+\frac{1}{\sin\frac{A}{2}}. \]
+将 $\cot\frac{A}{2} = \frac{\cos\frac{A}{2}}{\sin\frac{A}{2}}$ 代入并去分母即得：
+\begin{align*}
+2\cos\frac{A}{2} \le \sin\frac{A}{2}+1 &\implies 4\cos^2\frac{A}{2} \le (\sin\frac{A}{2}+1)^2 \\
+&\implies 4(1-\sin^2\frac{A}{2}) \le \sin^2\frac{A}{2} + 2\sin\frac{A}{2} + 1 \\
+&\implies 5\sin^2\frac{A}{2} + 2\sin\frac{A}{2} - 3 \ge 0 \\
+&\implies (5\sin\frac{A}{2}-3)(\sin\frac{A}{2}+1) \ge 0 \\
+&\implies \sin\frac{A}{2} \ge \frac{3}{5}.
+\end{align*}
+由 $\sin\frac{A}{2} \ge \frac{3}{5}$ 且 $A$ 为锐角，可推得 $\tan\frac{A}{2} \ge \frac{3}{4}$。
+最后，利用正切的倍角公式得出：
+\[ \tan A = \frac{2\tan\frac{A}{2}}{1-\tan^2\frac{A}{2}} \ge \frac{2 \times \frac{3}{4}}{1-\left(\frac{3}{4}\right)^2} = \frac{24}{7}. \]
+\end{solution}
+
+\newpage
+\begin{exercise}
+已知$X\sim B(20,0.5)$，则$E(X^3)=$（~~~）\\
+A.1000~~~~B.1150~~~~C.1300~~~~D.1350
+\end{exercise}
+\begin{solution}
+首先这道题的选项设置是有马脚的，如果 $X$ 就是均值 10 ，那么 $X^3$ 就是 1000。但在现实中 $X$ 是有波动的。因为 $y=x^3$ 在 $x>0$ 时是一个开口向上（凸）的曲线。这意味着：$X$ 变大时（比如到 12），$X^3$ 增加的量非常猛；$X$ 变小时（比如到 8），$X^3$ 减少的量相对较小。两边一平均，波动的存在必然会把整体的期望“拉高”。所以 $E(X^3) > 1000$，直接排除 A。
+
+没注意到这个也没关系，大家应该都知道在 $n$ 重伯努利试验中，当试验次数 $n$ 足够大，并且单次成功概率 $p$ 适中时，我们可以使用正态分布来近似二项分布。所以计算均值 $\mu = 20 \times 0.5 = 10$，方差 $\sigma^2 = 20 \times 0.5 \times 0.5 = 5$，得到标准差 $\sigma = \sqrt{5} \approx 2.2$。
+根据正态分布的 $3\sigma$ 原则，数据落在 $\mu \pm \sigma$（也就是大约 $[7.8, 12.2]$ 之间） 的区间内的概率约68\%，当 $X = 12$ 时，$12^3 = 1728$；当 $X = 8$ 时，$8^3 = 512$；这两个对称点的平均值是：$(1728 + 512) \div 2 = 2240 \div 2 =$ 1120；所以最终值应该就比$1120$大一些就行了（更极端的波动影响较小），由此直接选$B$.
+\begin{note}
+如果你在大学里学了正态分布 $Y \sim N(\mu, \sigma^2)$，它的三阶原点矩$E(X^3)$有一个固定公式就是 $\mu^3 + 3\mu\sigma^2$。把 $\mu=10$ 和 $\sigma^2=5$ 代进去：
+$1000 + 3 \times 10 \times 5 = 1150$，也可以算出来答案。
+\end{note}
+\end{solution}
+
+
+
+
+
+
+
+\chapter{圆锥曲线}
+
+
+
+
+
+
+
+
+
+
+
+
+\end{document}
