@@ -141,7 +141,7 @@
   \geometry{
     a4paper,
     top=25.4mm, bottom=25.4mm,
-    left=20mm, right=20mm,
+    left=15mm, right=15mm,
     headheight=2.17cm,
     headsep=4mm,
     footskip=12mm

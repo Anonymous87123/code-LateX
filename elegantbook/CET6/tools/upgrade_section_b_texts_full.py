@@ -1,0 +1,448 @@
+from __future__ import annotations
+
+import re
+from difflib import SequenceMatcher
+from pathlib import Path
+
+import pdfplumber
+
+from rebuild_section_b_texts_clean import TEXTS
+from manual_full_texts_real import MANUAL_FULL_TEXTS_REAL
+
+
+ROOT = Path(__file__).resolve().parent.parent
+BASE = ROOT / "cet 6"
+OUT = BASE / "_analysis_output" / "section_b_texts"
+
+
+MANUAL_FULL_TEXTS: dict[str, str] = {
+    "2016年6月英语六级真题(第1套).txt": """Section B
+Directions: In this section, you are going to read a passage with ten statements attached to it. Each statement contains information given in one of the paragraphs. Identify the paragraph from which the information is derived. You may choose a paragraph more than once. Each paragraph is marked with a letter. Answer the questions by marking the corresponding letter on Answer Sheet 2.
+Can Societies Be Rich and Green?
+A) "If our economies are to flourish, if global poverty is to be eliminated and if the well-being of the world's people enhanced-not just in this generation but in succeeding generations-we must make sure we take care of the natural environment and resources on which our economic activity depends." That statement comes not, as you might imagine, from a stereotypical tree-hugging, save-the-world greenie, but from Gordon Brown, a politician with a reputation for rigor, thoroughness and above all, caution.
+
+B) A surprising thing for the man who runs one of the world's most powerful economies to say? Perhaps; though in the run-up to the five-year review of the Millennium Goals, he is far from alone. The roots of his speech, given in March at the roundtable meeting of environment and energy ministers from the G20 group of nations, stretch back to 1972, and the United Nations Conference on the Human Environment in Stockholm.
+
+C) "The protection and improvement of the human environment is a major issue which affects the well-being of peoples and economic development throughout the world," read the final declaration from this gathering, the first of a sequence which would lead to the Rio de Janeiro Earth Summit in 1992 and the World Development Summit in Johannesburg three years ago.
+
+D) Hunt through the reports prepared by UN agencies and development groups-many for conferences such as this year's Millennium Goals review-and you will find that the linkage between environmental protection and economic progress is a common thread.
+
+E) Managing ecosystems sustainably is more profitable than exploiting them, according to the Millennium Ecosystem Assessment. But finding hard evidence to support the thesis is not so easy. Thoughts turn first to some sort of global statistic, some indicator which would rate the wealth of nations in both economic and environmental terms and show a relationship between the two.
+
+F) If such an indicator exists, it is well hidden. And on reflection, this is not surprising; the single word "environment" has so many dimensions, and there are so many other factors affecting wealth-such as the oil deposits-that teasing out a simple economy-environment relationship would be almost impossible.
+
+G) The Millennium Ecosystem Assessment, a vast four-year global study which reported its initial conclusions earlier this year, found reasons to believe that managing ecosystems sustainably-working with nature rather than against it-might be less profitable in the short term, but certainly brings long-term rewards.
+
+H) And the World Resources Institute (WRI) in its World Resources 2005 report, issued at the end of August, produced several such examples from Africa and Asia; it also demonstrated that environmental degradation affects the poor more than the rich, as poorer people derive a much higher proportion of their income directly from the natural resources around them.
+
+I) But there are also many examples of growing wealth by trashing the environment, in rich and poor parts of the world alike, whether through unregulated mineral extraction, drastic water use for agriculture, slash-and-burn farming, or fossil-fuel-guzzling transport. Of course, such growth may not persist in the long term-which is what Mr. Brown and the Stockholm declaration were both attempting to point out. Perhaps the best example of boom growth and bust decline is the Grand Banks fishery. For almost five centuries a very large supply of cod provided abundant raw material for an industry which at its peak employed about 40,000 people, sustaining entire communities in Newfoundland. Then, abruptly, the cod population collapsed. There were no longer enough fish in the sea for the stock to maintain itself, let alone an industry. More than a decade later, there was no sign of the ecosystem re-building itself. It had, apparently, been fished out of existence; and the once mighty Newfoundland fleet now gropes about frantically for crab on the sea floor.
+
+J) There is a view that modern humans are inevitably sowing the seeds of a global Grand Banks-style disaster. The idea is that we are taking more out of what you might call the planet's environmental bank balance than it can sustain; we are living beyond our ecological means. One recent study attempted to calculate the extent of this "ecological overshoot of the human economy," and found that we are using 1.2 Earth's-worth of environmental goods and services-the implication being that at some point the debt will be called in, and all those services-the things which the planet does for us for free-will grind to a halt.
+
+K) Whether this is right, and if so where and when the ecological axe will fall, is hard to determine with any precision-which is why governments and financial institutions are only beginning to bring such risks into their economic calculations. It is also the reason why development agencies are not united in their view of environmental issues; while some, like the WRI, maintain that environmental progress needs to go hand-in-hand with economic development, others argue that the priority is to build a thriving economy, and then use the wealth created to tackle environmental degradation.
+
+L) This view assumes that rich societies will invest in environmental care. But is this right? Do things get better or worse as we get richer? Here the Stockholm declaration is ambiguous. "In the developing countries," it says, "most of the environmental problems are caused by under-development." So it is saying that economic development should make for a cleaner world? Not necessarily; "In the industralized countries, environmental problems are generally related to industrialization and technological development," it continues. In other words, poor and rich both over-exploit the natural world, but for different reasons. It's simply not true that economic growth will surely make our world cleaner.
+
+M) Clearly, richer societies are able to provide environmental improvements which lie well beyond the reach of poorer communities. Citizens of wealthy nations demand national parks, clean rivers, clean air and poison-free food. They also, however, use far more natural resources-fuel, water (all those baths and golf courses) and building materials.
+
+N) A case can be made that rich nations export environmental problems, the most graphic example being climate change. As a country's wealth grows, so do its greenhouse gas emissions. The figures available will not be completely accurate. Measuring emissions is not a precise science, particularly when it comes to issues surrounding land use; not all nations have released up-to-date data, and in any case, emissions from some sectors such as aviation are not included in national statistics. But the data is exact enough for a clear trend to be easily discernible. As countries become richer, they produce more greenhouse gases; and the impact of those gases will fall primarily in poor parts of the world.
+
+O) Wealth is not, of course, the only factor involved. The average Norwegian is better off than the average US citizen, but contributes about half as much to climate change. But could Norway keep its standard of living and yet cut its emissions to Moroccan or even Ethiopian levels? That question, repeated across a dozen environmental issues and across our diverse planet, is what will ultimately determine whether the human race is living beyond its ecological means as it pursues economic revival.
+36. Examples show that both rich and poor countries exploited the environment for economic progress.
+37. Environmental protection and improvement benefit people all over the world.
+38. It is not necessarily true that economic growth will make our world cleaner.
+39. The common theme of the UN reports is the relation between environmental protection and economic growth.
+40. Development agencies disagree regarding how to tackle environment issues while ensuring economic progress.
+41. It is difficult to find solid evidence to prove environmental friendliness generates more profits than exploiting the natural environment.
+42. Sustainable management of ecosystems will prove rewarding in the long run.
+43. A politician noted for being cautious asserts that sustainable human development depends on the natural environment.
+44. Poor countries will have to bear the cost for rich nations' economic development.
+45. One recent study warns us of the danger of the exhaustion of natural resources on Earth.
+""",
+    "2016年6月英语六级真题(第3套).txt": """Section B
+Directions: In this section, you are going to read a passage with ten statements attached to it. Each statement contains information given in one of the paragraphs. Identify the paragraph from which the information is derived. You may choose a paragraph more than once. Each paragraph is marked with a letter. Answer the questions by marking the corresponding letter on Answer Sheet 2.
+The Changing Generation
+A) It turns out today's teenagers aren't so scary after all. Results of USA WEEKEND's Teens & Parents survey reveal a generation of young people who get along well with their parents and approve of the way they're being raised. They think of their parents with affection and respect. They speak with Mom or Dad when they have a problem. Most feel that their parents understand them, and they believe their family is the No. 1 priority in their parents' lives. Many even think their parents are cool! Although more than a third have an object in their rooms they would like to keep secret from their parents, rarely is it anything more alarming than a diary or off-color book or CD.
+
+B) Such results may seem surprising against the background of shocking incidents that color the way the mass media portray the young. In October 2000, the same month the survey was taken, the Washington-based Center for Media and Public Affairs wrote in its publication Media Monitor that, in a recent month of TV news coverage of American youth, just 2% of teens were shown at home, and just 1% were portrayed in a work setting. In contrast, the criminal justice system accounted for nearly one out of every five visual backgrounds. No wonder parents worry their own kids might spin out of control once they hit the turbulent waters of adolescence.
+
+C) The overall facts ought to reassure us. The survey shows us that today's teens are affectionate, sensible and far happier than the angry and tortured souls that have been painted for us by stereotypes. From other sources, we also know teenage crime, drug abuse and premarital sex are in general decline. We, of course, need to pay attention to youngsters who are filled with discontent and hostility, but we should not allow these extreme cases to distort our view of most young people.
+
+D) My own research at the Stanford Center on Adolescence uses in-depth interviews with small samples of youngsters rather than large-scale survey. Still, in my studies and others I have read, I find the same patterns as in USA WEEKEND'S survey. Today's teenagers admire their parents and welcome parental guidance about important matters such as career choice-though certainly not Mom and Dad's advice on matters of personal taste, such as music or fashion. When we ask teens to choose a hero, they usually select an older family member rather than a remote public figure. Most teens say they enjoy the company of both parents and friends.
+
+E) Contrary to some stereotypes, most adolescents believe they must be tolerant of differences among individuals (though they do not always find this easy in the cliquish environment of high school). Many of them volunteer for community service with disadvantaged people. One prevalent quality we have found in teens' statements about themselves, their friends and their families is a strikingly positive emotional tone. By and large, these are very nice kids, and as the band The Who used to sing, "The kids are alright."
+
+F) How much is today's spirit of harmony a change from our more turbulent past? A mere generation ago, parentchild relations were described as "the generation gap." Yet even then reports of widespread youth rebellion were overdone: Most kids in the '60s and '70s shared their parents' basic values. Still, it is true that American families are growing closer at the dawn of this new millennium. Perhaps there is less to fight about, with the country in a period of tranquility and the dangers of drug abuse and other unwholesome behavior well known. Perhaps in the face of impersonal and intimidating globalization, a young person's family feels more like a friendly haven than an oppressive trap. And perhaps parents are acting more like parents than in the recent past. Within just the past five years, I have noticed parents returning to a belief that teenagers need the guidance of elders rather than the liberal, "anything goes" mode of child-rearing that became popular in the second half of the 20th century.
+
+G) But missing from all these data is the sense that today's young care very much about their country, about the broader civic and political environment, or about the future of their society. They seem to be turning inward-generally in a pro-social manner, certainly with positive benefits for intimate relationships, but too often at the expense of a connection with the present and future world beyond, including the society they will one day inherit.
+
+H) Recently, we examined more than 400 essays on the "laws of life" that teens from two communities had written as part of an educational program initiated by the John Templeton Foundation in Radnor, Pa. In those essays, and in follow-up interviews with a few of the teenagers, we found lots of insight, positive feeling and inspirational thinking. But we also found little interest in civic life beyond the tight circles of their family and immediate friends.
+
+I) For example, only one boy said he would like to be president when he grows up. When I was in high school, dozens in my class alone would have answered differently. In fact, other recent studies have found there has never been a time in American history when so small a proportion of young people have sought or accepted leadership roles in local civic organizations. It is also troubling that voting rates among our youngest eligible voters-18- to 24-year-olds-are way down: Little more than one in four now go to the polls, even in national elections, compared with almost twice that many when 18-year-olds were first given the vote.
+
+J) In our interviews, many students viewed politics with suspicion and distaste. "Most politicians are kind of crooked," one student declared. Another, discussing national politics, said, "I feel like one person can't do that much, and I get the impression most people don't think a group of people can do that much." Asked what they would like to change in the world, the students mentioned only personal concerns such as slowing down the pace of life, gaining good friends, becoming more spiritual, becoming either more materially successful or less materially oriented (depending on the student's values), and being more respectful of the Earth, animals and other people. One boy said, "I'd rather be concentrating on artistic efforts than saving the world or something."
+
+K) It is fine and healthy for teens to cultivate their personal interests, and it is good news when young people enjoy harmonious relations with their family and friends. But there is also a place in a young life for noble purposes that include a dedication to the broader society, a love of country and an aspiration to make their own leadership contributions.
+
+L) In the past, the young have eagerly participated in national service and civic affairs, often with lots of energy and idealism. If this is not happening today, we should ask why. Our society needs the full participation of its younger citizens if it is to continue to thrive. We know the promise is there-this is a well-grounded, talented, warm-hearted group of youngsters. We have everything to gain by encouraging them to explore the world beyond their immediate experience and to prepare themselves for their turn at shaping that world.
+36. Not many young people eligible for voting are interested in local or national elections these days.
+37. Parents are concerned that their children may get involved in criminal offences once they reach their teens.
+38. Even during the turbulent years of last century, youth rebellion was often exaggerated in the media.
+39. Teenagers of today often turn to their parents for advice on such important matters as career choice.
+40. The incidence of teenage crime and misbehavior is decreasing nowadays.
+41. Young people should have lofty ideals in life and strive to be leaders.
+42. Some young people like to keep something to themselves and don't want their parents to know about it.
+43. It is beneficial to encourage young people to explore the broader world and get ready to make it a better place.
+44. Many teenagers now offer to render service to the needy.
+45. Interviews with students find many of them are only concerned about personal matters.
+""",
+    "2016年12月英语六级真题(第1套).txt": """Section B
+Directions: In this section, you are going to read a passage with ten statements attached to it. Each statement contains information given in one of the paragraphs. Identify the paragraph from which the information is derived. You may choose a paragraph more than once. Each paragraph is marked with a letter. Answer the questions by marking the corresponding letter on Answer Sheet 2.
+Are We in an Innovation Lull?
+A) Scan the highlights of this year's Consumer Electronics Show (CES), and you may get a slight feeling of having seen them before. Many of the coolest gadgets this year are the same as the coolest gadgets last year-or the year before, even. The booths are still exciting, and the demos are still just as crazy. It is still easy to be dazzled by the display of drones, 3D printers, virtual reality goggles and more "smart" devices than you could ever hope to catalog. Upon reflection, however, it is equally easy to feel like you have seen it all before. And it is hard not to think: Are we in an innovation lull?
+
+B) In some ways, the answer is yes. For years, smartphones, televisions, tablets, laptops and desktops have made up a huge part of the market and driven innovation. But now these segments are looking at slower growth curves-or shrinking markets in some cases-as consumers are not as eager to spend money on new gadgets. Meanwhile, emerging technologies-the drones, 3D printers and smart-home devices of the world-now seem a bit too old to be called "the next big thing."
+
+C) Basically the tech industry seems to be in an awkward period now. "There is not any one-hit wonder, and there will not be one for years to come," said Gary Shapiro, president and chief executive of the Consumer Technology Association (CTA). In his eyes, however, that doesn't necessarily mean that innovation has stopped. It has just grown up a little. "Many industries are going out of infancy and becoming adolescents," Shapiro said.
+
+D) For instance, new technologies that are building upon existing technology have not found their footing well enough to appeal to a mass audience, because, in many cases, they need to work effectively with other devices to realize their full appeal. Take the evolution of the smart home, for example. Companies are pushing it hard but make it almost overwhelming even to dip a toe in the water for the average consumer, because there are so many compatibility issues to think about. No average person wants to figure out whether their favorite calendar software works with their fridge or whether their washing machine and tablet get along. Having to install a different app for each smart appliance in your home is annoying; it would be nicer if you could manage everything together. And while you may forgive your smartphone an occasional fault, you probably have less patience for error messages from your door lock.
+
+E) Companies are promoting their own standards, and the market has not had time to choose a winner yet as this is still very new. Companies that have long focused on hardware now have to think of ecosystems instead to give consumers practical solutions to their everyday problems. "The dialogue is changing from what is technologically possible to what is technologically meaningful," said economist Shawn DuBravac. DuBravac works for CTA-which puts on the show each year-and said that this shift to a search for solutions has been noticeable as he researched his predictions for 2016.
+
+F) "So much of what CES has been about is the cool. It is about the flashiness and the gadgets," said John Curran, managing director of research at Accenture. "But over the last couple of years, and in this one in particular, we are starting to see companies shift from what is the largest screen size, the smallest form factor or the shiniest object and more into what all of these devices do that is practical in a consumer's life." Even the technology press conferences, which have been high-profile in the past and reached a level of drama and theatrics fitting for a Las Vegas stage, have a different bent to them. Rather than just dazzling with a high cool factor, there is a focus on the practical. Fitbit, for example, released its first smartwatch Monday, selling with a clear purpose-to improve your fitness-and promoting it as a "tool, not a toy." Not only that, it supports a number of platforms: Apple's iOS, Google's Android and Microsoft's Windows phone.
+
+G) That seems to be what consumers are demanding, after all. Consumers are becoming increasingly bored with what companies have to offer: A survey of 28,000 consumers in 28 countries released by Accenture found consumers are not as excited about technology as they once were. For example, when asked whether they would buy a new smartphone this year, only 48 percent said yes-a six-point drop from 2015.
+
+H) And when it comes to the hyper-connected super-smart world that technology firms are painting for us, it seems that consumers are growing more uneasy about handing over the massive amounts of consumer data needed to provide the personalized, customized solutions that companies need to improve their services. That could be another explanation for why companies seem to be strengthening their talk of the practicality of their devices.
+
+I) Companies have already won part of the battle, having driven tech into every part of our lives, tracking our steps and our very heartbeats. Yet the persistent question of "Why do I need that?"-or, perhaps more tellingly, "Why do you need to know that?"-dogs the steps of many new ventures. Only 13 percent of respondents said that they were interested in buying a smartwatch in 2016, for example-an increase of just one percent from the previous year despite a year of high-profile launches. That is bad news for any firm that may hope that smartwatches can make up ground for maturing smartphone and tablet markets. And the survey found flat demand for fitness monitors, smart thermostats and connected home cameras, as well.
+
+J) According to the survey, that lack of enthusiasm could stem from concerns about privacy and security. Even among people who have bought connected devices of some kind, 37 percent said that they are going to be more cautions about using these devices and services in the future. A full 18 percent have even returned devices until they feel they can get safer guarantees against having their sensitive information hacked.
+
+K) That, too, explains the heavy Washington presence at this year's show, as these new technologies intrude upon heavily regulated areas. In addition to many senior officials from the Federal Trade and Federal Communications commissions, this year's list of policy makers also includes appearances from Transportation Secretary Anthony Foxx, to talk about smart cities, and Federal Aviation Administration Administrator Michael Huerta, to talk about drones.
+
+L) Curran, the Accenture analyst, said that increased government interest in the show makes sense as technology becomes a larger part of our lives. "There is an incompatibility in the rate at which these are advancing relative to the way we're digesting it," he said. "Technology is becoming bigger and more aspirational, and penetrating almost every aspect of our lives. We have to understand and think about the implications, and balance these great innovations with the potential downsides they naturally carry with them."
+36. Consumers are often hesitant to try smart-home devices because they are worried about compatibility problems.
+37. This year's electronics show featured the presence of many officials from the federal government.
+38. The market demand for electronic devices is now either declining or not growing as fast as before.
+39. One analyst suggests it is necessary to accept both the positive and negative aspects of innovative products.
+40. The Consumer Electronics Show in recent years has begun to focus more on the practical value than the showiness of electronic devices.
+41. Fewer innovative products were found at this year's electronic products show.
+42. Consumers are becoming more worried about giving personal information to tech companies to get customized products and services.
+43. The Consumer Technology Association is the sponsor of the annual Consumer Electronics Show.
+44. Many consumers wonder about the necessity of having their fitness monitored.
+45. The electronic industry is maturing even though no wonder products hit the market.
+""",
+    "2021年6月英语六级真题(第1套).txt": """Section B
+Directions: In this section, you are going to read a passage with ten statements attached to it. Each statement contains information given in one of the paragraphs. Identify the paragraph from which the information is derived. You may choose a paragraph more than once. Each paragraph is marked with a letter. Answer the questions by marking the corresponding letter on Answer Sheet 2.
+How Marconi Gave Us the Wireless World
+A) Marconi's father was a rich Italian landowner from Bologna, his mother was Annie Jameson, one of the granddaughters of John Jameson, founder of the whiskey distillery. Guglielmo Marconi was born in 1874 and grew up in a country house outside Bologna. As a young man, he attended school irregularly and was mainly taught at home. He spent some time in his teens at the Livorno Technical Institute, where he was taught physics and chemistry. In 1894, when he was 20 years old, he started experimenting in his family's attic with radio waves after reading about the work of German physicist Heinrich Hertz. Within two years, he had developed the basic apparatus for wireless telegraphy.
+
+B) To call Marconi a genius is to misunderstand the nature of his remarkable achievement. He did not make a single decisive breakthrough, no one dramatic discovery. Rather, he saw farther than most scientists and engineers of his time into the future of communication itself. In the late 19th century, the relationship between people and communication was changing in ways that Marconi would exploit. Over the course of the 19th century, newspapers had become the people’s medium, available to all, and journalists had become national figures, operating on a stage far larger than ever before. Society itself was becoming a mass phenomenon, and industrialization meant the ever-faster movement of both goods and people. With the rise வர of the railroads, populations had started to get mobile. The need for communication in all these contexts became a mass need.
+
+C) As a young man, Marconi had one big, clear, overriding interest: the possibility of global mobile communication over long distances. He didn't care about the radio as a scientific curiosity, a simple extension of the telegraph, or even as a substitute for the telephone. Rather, he wanted to use wireless communication to connect people globally. That was what drove him, and he thought about little else. In the late 19th and early 20th centuries, this was an idea so far ahead of its time that it would take the globe a century to catch up. By most people's standards, Marconi was a genius, if genius is understood as a certain kind of vision, not merely technical ability.
+
+D) In 1901 he succeeded in signaling across the Atlantic, from the west coast of England to Newfoundland in the USA, despite the claims of science that it could not be done. In 1924 he convinced the British government to encircle the world with a chain of wireless stations using the latest technology that he had devised, shortwave radio. There are some who say Marconi lost his edge when commercial broadcasting came along; he didn't see that radio could or should be used to frivolous ends. In one of his last public speeches, a radio broadcast to the United States in March 1937, he deplored that broadcasting had become a one-way means of communication and foresaw it moving in another direction, toward communication as a means of exchange. That was visionary genius.
+
+E) Marconi's career was devoted to making wireless communication happen cheaply, efficiently, smoothly, and with an elegance that would appear to be intuitive and uncomplicated to the user-user-friendly, if you will. There is a direct connection from Marconi to today's social media, search engines, and program streaming that can best be summed up by an admittedly provocative exclamation: the 20th century did not exist. In a sense, Marconi's vision jumped from his time to our own.
+
+F) Marconi invented the idea of global communication-or, more straightforwardly, globally networked, mobile, wireless communication. Initially, this was wireless Morse code telegraphy, the principal communication technology of his day. Marconi was the first to develop a practical method for wireless telegraphy using radio waves. He borrowed technical details from many sources, but what set him apart was a self-confident vision of the power of communication technology on the one hand, and, on the other, of the steps that needed to be taken to consolidate his own position as a player in that field. Tracing Marconi's lifeline leads us into the story of modern communication itself. There were other important figures, but Marconi towered over them all in reach, power, and influence, as well as in the grip he had on the popular imagination of his time. Marconi was quite simply the central figure in the emergence of a modern understanding of communication.
+
+G) In his lifetime, Marconi foresaw the development of television and the fax machine, GPS, radar, and the portable hand-held telephone. Two months before he died, newspapers were reporting that he was working on a "death ray," and that he had "killed a rat with an intricate device at a distance of three feet." By then, anything Marconi said or did was newsworthy. Stock prices rose or sank according to his pronouncements. If Marconi said he thought it might rain, there was likely to be a run on umbrellas.
+
+H) Marconi's biography is also a story about choices and the motivations behind them. At one level, Marconi could be fiercely autonomous and independent of the constraints of his own social class. On another scale, he was a perpetual outsider. Wherever he went, he was never "of" the group; he was always the "other," considered foreign in Britain, British in Italy, and "not American" in the United States. At the same time, he also suffered tremendously from a need for acceptance that drove, and sometimes stained, every one of his relationships.
+
+I) Marconi placed a permanent stamp on the way we live. He was the first person to imagine a practical application for the wireless spectrum, and to develop it successfully into a global communication system-in both terms of the word; that is, worldwide and all-inclusive. He was able to do this because of a combination of factors-most important, timing and opportunity-but the single-mindedness and determination with which he carried out his self-imposed mission was fundamentally character-based; millions of Marconi's contemporaries had the same class, gender, race, and colonial privilege as he, but only a handful did anything with it. Marconi needed to achieve the goal that was set in his mind as an adolescent; by the time he reached adulthood, he understood, intuitively, that in order to have an impact he had to both develop an independent economic base and align himself with political power. Disciplined, uncritical loyalty to political power became his compass for the choices he had to make.
+
+J) At the same time, Marconi was uncompromisingly independent intellectually. Shortly after Marconi's death, the nuclear physicist Enrico Fermi-soon to be the developer of the Manhattan Project-wrote that Marconi proved that theory and experimentation were complementary features of progress. "Experience can rarely, unless guided by a theoretical concept, arrive at results of any great significance ... on the other hand, an excessive trust in theoretical conviction would have prevented Marconi from persisting in experiments which were destined to bring about a revolution in the technique of radio-communications." In other words, Marconi had the advantage of not being burdened by preconceived assumptions.
+
+K) The most controversial aspect of Marconi's life-and the reason why there has been no satisfying biography of Marconi until now-was his uncritical embrace of Benito Mussolini. At first this was not problematic for him. But as the regressive nature of Mussolini's regime became clear, he began to suffer a crisis of conscience. However, after a lifetime of moving within the circles of power, he was unable to break with authority, and served Mussolini faithfully (as president of Italy's national research council and royal academy, as well as a member of the Fascist Grand Council) until the day he died-conveniently-in 1937, shortly before he would have had to take a stand in the conflict that consumed a world that he had, in part, created.
+36. Marconi was central to our present-day understanding of communication.
+37. As an adult, Marconi had an intuition that he had to be loyal to politicians in order to be influential.
+38. Marconi disapproved of the use of wireless communication for commercial broadcasting.
+39. Marconi's example demonstrates that theoretical concepts and experiments complement each other in making progress in science and technology.
+40. Marconi's real interest lay in the development of worldwide wireless communication.
+41. Marconi spent his whole life making wireless communication simple to use.
+42. Because of his long-time connection with people in power, Marconi was unable to cut himself off from the fascist regime in Italy.
+43. In his later years, Marconi exerted a tremendous influence on all aspects of people's life.
+44. What connected the 19th century and our present time was the development of wireless communication.
+45. Despite his autonomy, Marconi felt alienated and suffered from a lack of acceptance.
+""",
+    "2021年12月英语六级真题(第1套).txt": """Section B
+Directions: In this section, you are going to read a passage with ten statements attached to it. Each statement contains information given in one of the paragraphs. Identify the paragraph from which the information is derived. You may choose a paragraph more than once. Each paragraph is marked with a letter. Answer the questions by marking the corresponding letter on Answer Sheet 2.
+No one in fashion is surprised that Burberry burnt 28 million of stock
+A) Last week, Burberry's annual report revealed that 28.6 million worth of stock was burnt last year. The news has left investors and consumers outraged but comes as little surprise to those in the fashion industry.
+
+B) The practice of destroying unsold stock, and even rolls of unused fabric, is commonplace for luxury labels. Becoming too widely available at a cheaper price through discount stores discourages full-price sales. Sending products for recycling leaves them vulnerable to being stolen and sold on the black market. Jasmine Bina, CEO of brand strategy agency Concept Bureau explains, "Typically, luxury brands rally around exclusivity to protect their business interests, namely intellectual property and preservation of brand equity." She stated she had heard rumors of stock burning but not specific cases until this week.
+
+C) Another reason for the commonplace practice is a financial incentive for brands exporting goods to America. United States Customs states that if imported merchandise is unused and destroyed under their supervision, 99% of the duties, taxes or fees paid on the merchandise may be recovered. It is incredibly difficult to calculate how much dead stock currently goes to waste. While there are incentives to do it, there's no legal obligation to report it.
+
+D) A source, who chose to remain anonymous, shared her experience working in a Burberry store in New York in October 2016. "My job was to toss items in boxes so they could be sent to be burned. It was killing me inside because all that leather and fur went to waste and animals had died for nothing. I couldn't stay there any longer, their business practices threw me off the roof." In May this year, Burberry announced it was taking fur out of its catwalk shows and reviewing its use elsewhere in the business. "Even though we asked the management, they refused to give us detailed answers as to why they would do this with their collection," continued the source, who left her role within two weeks. She has since worked with another high-profile, luxury label.
+
+E) In an online forum post, which asked if it's true that Louis Vuitton burned its bags, Ahmed Bouchfaa, who claimed to work for Louis Vuitton, responded that the brand holds sales of old stock for staff members twice a year. Items which have still not sold after several sales are destroyed. "Louis Vuitton doesn't have public sales. They either sell a product at a given price or discontinue it. This is to make sure that everybody pays the same price for an item," he says. He goes on to disclose the strict guidelines around the employee sales: "You may buy gifts for someone, but they track each item, and if your gift ends up online they know who to ask." One investor commenting on the Burberry figures was reportedly outraged that the unsold goods were not even offered to investors before they were destroyed.
+
+F) Richemont, who owns several luxury brands, hit the headlines in May for taking back 437 million of watches for destruction in the last two years to avoid marked-down prices. It's not just luxury brands either. In October last year, a Danish TV show exposed H&M for burning 12 tonnes of unsold clothing since 2013. In a statement, the high street retailer defended itself by saying that the burnt clothing had failed safety tests: "The products to which the media are referring have been tested in external laboratories. The test results show that one of the products is mold infested and the other product contains levels of lead that are too high. Those products have rightly been stopped in accordance with our safety routines." In March, a report revealed that H&M was struggling with $4.3 billion worth of unsold stock. The brand told The New York Times that the plan was to reduce prices to move the stock, arguably encouraging consumers to buy and throw away with little thought.
+
+G) Over-production is perhaps the biggest concern for Burberry. While there has been much outrage at the elitist connotation of burning goods rather than making them affordable, executives at the British fashion house are no doubt struggling to defend how they miscalculated production. The waste has been put down to burning old cosmetic stock to make way for their new beauty range. However, while the value of destroyed stock is up from 26.9 million last year, it's an even more significant increase from 2016's figure of 18.8 million, highlighting that this is an ongoing issue.
+
+H) In September 2016, Burberry switched to a "see now, buy now" catwalk show format. The move was a switch to leverage on the coverage of their fashion week show to make stock available immediately to consumers. This is opposed to the traditional format of presenting to the industry, taking orders for production and becoming available in six months' time. While Burberry announced "record-breaking" online reach and engagement, there has been little evidence to suggest that the strategy has had a significant effect on sales, particularly as the hype slows across the season. In February they made adjustments to the format, dropping some catwalk items immediately and promising that others would launch in the coming months.
+
+I) In a statement, Burberry denied that switching to "see now, buy now" has had an impact on waste. A Burberry spokesperson further said, "On the occasions when disposal of products is necessary, we do so in a responsible manner. We are always seeking ways to reduce and revalue our waste. This is a core part of our strategy and we have forged partnerships and committed support to innovative organizations to help reach this goal."
+
+J) One such partnership is with Elvis & Kresse, an accessories brand working with reclaimed materials. Co-founder Kresse Wesling said, "Late last year we launched an ambitious five-year partnership with the Burberry Foundation. The main aim of this is to scale our leather rescue project, starting with off-cuts from the production of Burberry leather goods. We are working tirelessly to expand our solutions and would love to welcome anyone to our workshop to come and see what we are doing." At the moment, the partnership only addresses waste at the production stage and not unsold goods.
+
+K) While these are honorable schemes, it makes it harder for Burberry to defend these latest figures. Fifteen years ago, Burberry was at crisis point as their signature check pattern was widely imitated by cheap, imitation brands. It deterred luxury consumers who found their expensive clothing more closely associated with working-class youth culture than a prestigious heritage fashion house. In the year 2004, at the height of over-exposure of the Burberry check, the brand's turnover was 715.5 million. Under Christopher Bailey as creative director they turned the brand around and this past year revenue hit 2.73 billion.
+
+L) Bina believes that brands need to readdress their exclusivity tactic. "Exclusivity is starting to be challenged," she says, "I think that goes hand in hand with how luxury itself is being challenged. Access to fashion, and the brands who police it, are becoming less and less relevant. Things like health, enlightenment, and social and environmental responsibility are the new luxuries. These all come from within, not without. That's the challenge that traditional luxury brands will have to contend with in the mid-to long-term future."
+36. Burberry's executives are trying hard to attribute their practice of destroying old products to miscalculated production.
+37. Selling products at a discount will do greater harm to luxury brands than destroying them.
+38. Imitated Burberry products discouraged luxury consumers from buying its genuine products.
+39. Staff members of a luxury brand may buy its old stock at cheaper prices, but they are not allowed to resell them.
+40. In future traditional luxury brands will have to adapt their business strategies to the changing concepts of luxury.
+41. One luxury brand employee quit her job because she simply couldn't bear to see the destruction of unsold products.
+42. Destroying old stock is a practice not just of luxury brands but of less prestigious fashion brands.
+43. Burberry is working with a partner to make full use of leather materials to reduce waste.
+44. Burberry's plan to destroy its unsold products worth millions of dollars aroused public indignation.
+45. Burberry's change of marketing strategy to make a product available as soon as consumers see it on the fashion show did not turn out to be as effective as expected.
+""",
+    "2021年12月英语六级真题(第2套).txt": """Section B
+Directions: In this section, you are going to read a passage with ten statements attached to it. Each statement contains information given in one of the paragraphs. Identify the paragraph from which the information is derived. You may choose a paragraph more than once. Each paragraph is marked with a letter. Answer the questions by marking the corresponding letter on Answer Sheet 2.
+Do music lessons really make children smarter?
+A) A recent analysis found that most research mischaracterizes the relationship between music and skills enhancement.
+
+B) In 2004, a paper appeared in the journal Psychological Science, titled "Music Lessons Enhance IQ." The author, composer and psychologist Glenn Schellenberg had conducted an experiment with 144 children randomly assigned to four groups: one learned the keyboard for a year, one took singing lessons, one joined an acting class, and a control group had no extracurricular training. The IQ of the children in the two musical groups rose by an average of seven points in the course of a year; those in the other two groups gained an average of 4.3 points.
+
+C) Schellenberg had long been skeptical of the science supporting claims that music education enhances children's abstract reasoning, math, or language skills. If children who play the piano are smarter, he says, it doesn't necessarily mean they are smarter because they play the piano. It could be that the youngsters who play the piano also happen to be more ambitious or better at focusing on a task. Correlation, after all, does not prove causation.
+
+D) The 2004 paper was specifically designed to address those concerns. And as a passionate musician, Schellenberg was delighted when he turned up credible evidence that music has transfer effects on general intelligence. But nearly a decade later, in 2013, the Education Endowment Foundation funded a bigger study with more than 900 students. That study failed to confirm Schellenberg's findings, producing no evidence that music lessons improved math and literacy skills.
+
+E) Schellenberg took that news in stride while continuing to cast a skeptical eye on the research in his field. Recently, he decided to formally investigate just how often his fellow researchers in psychology and neuroscience make what he believes are erroneous-or at least premature-causal connections between music and intelligence. His results, published in May, suggest that many of his peers do just that.
+
+F) For his recent study, Schellenberg asked two research assistants to look for correlational studies on the effects of music education. They found a total of 114 papers published since 2000. To assess whether the authors claimed any causation, researchers then looked for telltale verbs in each paper's title and abstract, verbs like "enhance," "promote," "facilitate," and "strengthen." The papers were categorized as neuroscience if the study employed a brain imaging method like magnetic resonance, or if the study appeared in a journal that had "brain," "neuroscience," or a related term in its title. Otherwise the papers were categorized as psychology. Schellenberg didn't tell his assistants what exactly he was trying to prove.
+
+G) After computing their assessments, Schellenberg concluded that the majority of the articles erroneously claimed that music training had a causal effect. The overselling, he also found, was more prevalent among neuroscience studies, three quarters of which mischaracterized a mere association between music training and skills enhancement as a cause-and-effect relationship. This may come as a surprise to some. Psychologists have been battling charges that they don't do "real" science for some time-in large part because many findings from classic experiments have proved unreproducible. Neuroscientists, on the other hand, armed with brain scans and EEGs, have not been subject to the same degree of critique.
+
+H) To argue for a cause-and-effect relationship, scientists must attempt to explain why and how a connection could occur. When it comes to transfer effects of music, scientists frequently point to brain plasticity-the fact that the brain changes according to how we use it. When a child learns to play the violin, for example, several studies have shown that the brain region responsible for the fine motor skills of the left hand's fingers is likely to grow. And many experiments have shown that musical training improves certain hearing capabilities, like filtering voices from background noise or distinguishing the difference between the consonants 'b' and 'g'.
+
+I) But Schellenberg remains highly critical of how the concept of plasticity has been applied in his field. "Plasticity has become an industry of its own," he wrote in his May paper. Practice does change the brain, he allows, but what is questionable is the assertion that these changes affect other brain regions, such as those responsible for spatial reasoning or math problems.
+
+J) Neuropsychologist Lutz Jancke agrees. "Most of these studies don't allow for causal inferences," he said. For over two decades, Jancke has researched the effects of music lessons, and like Schellenberg, he believes that the only way to truly understand their effects is to run longitudinal studies. In such studies, researchers would need to follow groups of children with and without music lessons over a long period of time-even if the assignments are not completely random. Then they could compare outcomes for each group.
+
+K) Some researchers are starting to do just that. The neuroscientist Peter Schneider from Heidelberg University in Germany, for example, has been following a group of children for ten years now. Some of them were handed musical instruments and given lessons through a school-based program in the Ruhr region of Germany called Jedem Kind ein Instrument, or "an instrument for every child," which was carried out with government funding. Among these children, Schneider has found that those who were enthusiastic about music and who practiced voluntarily showed improvements in hearing ability, as well as in more general competencies, such as the ability to concentrate.
+
+L) To establish whether effects such as improved concentration are caused by music participation itself, and not by investing time in an extracurricular activity of any kind, Assal Habibi, a psychology professor at the University of Southern California, is conducting a five-year longitudinal study with children from low-income communities in Los Angeles. The youngsters fall into three groups: those who take after-school music, those who do after-school sports, and those with no structured after-school program at all. After two years, Habibi and her colleagues reported seeing structural changes in the brains of the musically trained children, both locally and in the pathways connecting different parts of the brain.
+
+M) That may seem compelling, but Habibi's children were not selected randomly. Did the children who were drawn to music perhaps have something in them from the start that made them different but eluded the brain scanners? "As somebody who started taking piano lessons at the age of five and got up every morning at seven to practice, that experience changed me and made me part of who I am today," Schellenberg said. "The question is whether those kinds of experiences do so systematically across individuals and create exactly the same changes. And I think that is that huge leap of faith."
+
+N) Did he have a hidden talent that others didn't have? Or more endurance than his peers? Music researchers tend, like Schellenberg, to be musicians themselves, and as he noted in his recent paper, "the idea of positive cognitive and neural side effects from music training (and other pleasurable activities) is inherently appealing." He also admits that if he had children of his own, he would encourage them to take music lessons and go to university. "I would think that it makes them better people, more critical, just wiser in general," he said.
+
+O) But those convictions should be checked at the entrance to the lab, he added. Otherwise, the work becomes religion or faith. "You have to let go of your faith if you want to be a scientist."
+36. Glenn Schellenberg's latest research suggests many psychologists and neuroscientists wrongly believe in the causal relationship between music and IQ.
+37. The belief in the positive effects of music training appeals to many researchers who are musicians themselves.
+38. Glenn Schellenberg was doubtful about the claim that music education helps enhance children's intelligence.
+39. Glenn Schellenberg came to the conclusion that most of the papers assessed made the wrong claim regarding music's effect on intelligence.
+40. You must abandon your unverified beliefs before you become a scientist.
+41. Lots of experiments have demonstrated that people with music training can better differentiate certain sounds.
+42. Glenn Schellenberg's findings at the beginning of this century were not supported by a larger study carried out some ten years later.
+43. One researcher shares Glenn Schellenberg' view that it is necessary to conduct long-term developmental studies to understand the effects of music training.
+44. Glenn Schellenberg's research assistants had no idea what he was trying to prove in his new study.
+45. Glenn Schellenberg admits that practice can change certain areas of the brain but doubts that the change can affect other areas.
+""",
+    "2021年12月英语六级真题(第3套).txt": """Section B
+Directions: In this section, you are going to read a passage with ten statements attached to it. Each statement contains information given in one of the paragraphs. Identify the paragraph from which the information is derived. You may choose a paragraph more than once. Each paragraph is marked with a letter. Answer the questions by marking the corresponding letter on Answer Sheet 2.
+Why facts don't change our minds
+A) The economist J. K. Galbraith once wrote, "Faced with a choice between changing one's mind and proving there is no need to do so, almost everyone gets busy with the proof."
+
+B) Leo Tolstoy was even bolder: "The most difficult subjects can be explained to the most slow-witted man if he has not formed any idea of them already; but the simplest thing cannot be made clear to the most intelligent man if he is firmly persuaded that he knows already, without a shadow of a doubt, what is laid before him."
+
+C) What's going on here? Why don't facts change our minds? And why would someone continue to believe a false or inaccurate idea anyway? How do such behaviors serve us? Humans need a reasonably accurate view of the world in order to survive. If your model of reality is wildly different from the actual world, then you struggle to take effective actions each day. However, truth and accuracy are not the only things that matter to the human mind. Humans also seem to have a deep desire to belong.
+
+D) In Atomic Habits, I wrote, "Humans are herd animals. We want to fit in, to bond with others, and to earn the respect and approval of our peers. Such inclinations are essential to our survival. For most of our evolutionary history, our ancestors lived in tribes. Becoming separated from the tribe-or worse, being cast out-was a death sentence."
+
+E) Understanding the truth of a situation is important, but so is remaining part of a tribe. While these two desires often work well together, they occasionally come into conflict. In many circumstances, social connection is actually more helpful to your daily life than understanding the truth of a particular fact or idea. The Harvard psychologist Steven Pinker put it this way, "People are embraced or condemned according to their beliefs, so one function of the mind may be to hold beliefs that bring the belief-holder the greatest number of allies, protectors, or disciples, rather than beliefs that are most likely to be true."
+
+F) We don't always believe things because they are correct. Sometimes we believe things because they make us look good to the people we care about. I thought Kevin Simler put it well when he wrote, "If a brain anticipates that it will be rewarded for adopting a particular belief, it's perfectly happy to do so, and doesn't much care where the reward comes from-whether it's pragmatic (better outcomes resulting from better decisions), social (better treatment from one's peers), or some mix of the two)."
+
+G) False beliefs can be useful in a social sense even if they are not useful in a factual sense. For lack of a better phrase, we might call this approach "factually false, but socially accurate." When we have to choose between the two, people often select friends and family over facts. This insight not only explains why we might hold our tongue at a dinner party or look the other way when our parents say something offensive, but also reveals a better way to change the minds of others.
+
+H) Convincing someone to change their mind is really the process of convincing them to change their tribe. If they abandon their beliefs, they run the risk of losing social ties. You can't expect someone to change their mind if you take away their community too. You have to give them somewhere to go. Nobody wants their worldview torn apart if loneliness is the outcome.
+
+I) The way to change people's minds is to become friends with them, to integrate them into your tribe, to bring them into your circle. Now, they can change their beliefs without the risk of being abandoned socially.
+
+J) Perhaps it is not difference, but distance, that breeds tribalism and hostility. As proximity increases, so does understanding. I am reminded of Abraham Lincoln's quote, "I don't like that man. I must get to know him better."
+
+K) Facts don't change our minds. Friendship does. Years ago, Ben Casnocha mentioned an idea to me that I haven't been able to shake: The people who are most likely to change our minds are the ones we agree with on 98 percent of topics. If someone you know, like, and trust believes a radical idea, you are more likely to give it merit, weight, or consideration. You already agree with them in most areas of life. Maybe you should change your mind on this one too. But if someone wildly different than you proposes the same radical idea, well, it's easy to dismiss them as nuts.
+
+L) One way to visualize this distinction is by mapping beliefs on a spectrum. If you divide this spectrum into 10 units and you find yourself at Position 7, then there is little sense in trying to convince someone at Position 1. The gap is too wide. When you're at Position 7, your time is better spent connecting with people who are at Positions 6 and 8, gradually pulling them in your direction.
+
+M) The most heated arguments often occur between people on opposite ends of the spectrum, but the most frequent learning occurs from people who are nearby. The closer you are to someone, the more likely it becomes that the one or two beliefs you don't share will bleed over into your own mind and shape your thinking. The further away an idea is from your current position, the more likely you are to reject it outright. When it comes to changing people's minds, it is very difficult to jump from one side to another. You can't jump down the spectrum. You have to slide down it.
+
+N) Any idea that is sufficiently different from your current worldview will feel threatening. And the best place to ponder a threatening idea is in a non-threatening environment. As a result, books are often a better vehicle for transforming beliefs than conversations or debates. In conversation, people have to carefully consider their status and appearance. They want to save face and avoid looking stupid. When confronted with an uncomfortable set of facts, the tendency is often to double down on their current position rather than publicly admit to being wrong. Books resolve this tension. With a book, the conversation takes place inside someone's head and without the risk of being judged by others. It's easier to be open-minded when you aren't feeling defensive.
+
+O) There is another reason bad ideas continue to live on, which is that people continue to talk about them. Silence is death for any idea. An idea that is never spoken or written down dies with the person who conceived it. Ideas can only be remembered when they are repeated. They can only be believed when they are repeated. I have already pointed out that people repeat ideas to signal they are part of the same social group. But here's a crucial point most people miss: People also repeat bad ideas when they complain about them. Before you can criticize an idea, you have to reference that idea. You end up repeating the ideas you're hoping people will forget-but, of course, people can't forget them because you keep talking about them. The more you repeat a bad idea, the more likely people are to believe it.
+
+P) Let's call this phenomenon Clear's Law of Recurrence: The number of people who believe an idea is directly proportional to the number of times it has been repeated during the last year-even if the idea is false.
+36. According to the author, humans can hardly survive if separated from their community.
+37. People often accept false beliefs because they prioritize social bonds rather than facts.
+38. Most often people learn from those close to them.
+39. Sometimes people adopt certain beliefs in order to leave a favorable impression on those dear to them.
+40. Compared with face-to-face communication, books often provide a better medium for changing people's beliefs.
+41. On many occasions in daily life, people benefit more from their social bonds than from knowing the truth.
+42. If you want to change somebody's beliefs, you should first establish social connection with them.
+43. Humans cannot survive without a fair knowledge of the actual world.
+44. Repetition of bad ideas increases their chances of being accepted.
+45. Nobody is willing to give up their beliefs at the risk of getting isolated.
+""",
+}
+
+
+def normalize_line(text: str) -> str:
+    text = text.replace("\u2019", "'").replace("\u2018", "'")
+    text = text.replace("\u201c", '"').replace("\u201d", '"')
+    text = text.replace("\u2013", "-").replace("\u2014", "-")
+    text = text.replace("\u00a3", "")
+    text = re.sub(r"https?://\S+", "", text)
+    text = re.sub(r"[ \t]+", " ", text.strip())
+    return text
+
+
+def key(text: str) -> str:
+    return re.sub(r"[^a-z0-9]+", "", normalize_line(text).lower())
+
+
+def read_pdf_text(path: Path) -> str:
+    parts = []
+    with pdfplumber.open(path) as pdf:
+        for page in pdf.pages:
+            parts.append(page.extract_text() or "")
+    text = "\n".join(parts)
+    text = text.replace("\x00", " ")
+    text = text.replace("\r", "\n")
+    text = text.replace("\u2019", "'").replace("\u2018", "'")
+    text = text.replace("\u201c", '"').replace("\u201d", '"')
+    text = text.replace("\u2013", "-").replace("\u2014", "-")
+    text = re.sub(r"https?://\S+", "", text)
+    text = re.sub(r"\n{2,}", "\n", text)
+    return text
+
+
+def find_title_index(lines: list[str], title: str) -> int:
+    target = key(title)
+    best_idx = -1
+    best_score = 0.0
+    for idx, line in enumerate(lines):
+        candidate = key(line)
+        if not candidate:
+            continue
+        if target in candidate or candidate in target:
+            return idx
+        score = SequenceMatcher(None, target, candidate).ratio()
+        if score > best_score:
+            best_score = score
+            best_idx = idx
+    if best_score >= 0.55:
+        return best_idx
+    raise ValueError(f"title not found: {title}")
+
+
+def parse_paragraphs_and_questions(text: str) -> tuple[list[tuple[str, str]], list[tuple[int, str]]]:
+    para_pattern = re.compile(
+        r"(?ms)^\s*\[?\s*([A-R])[\)\]\.]?\s*(.+?)(?=^\s*\[?\s*[A-R][\)\]\.]?\s*|^\s*36\.\s*|\Z)"
+    )
+    q_pattern = re.compile(
+        r"(?ms)^\s*(3[6-9]|4[0-5])\.\s*(.+?)(?=^\s*(?:3[6-9]|4[0-5])\.\s*|\Z)"
+    )
+    paragraphs = [(letter, re.sub(r"\s+", " ", body).strip()) for letter, body in para_pattern.findall(text)]
+    questions = [(int(num), re.sub(r"\s+", " ", body).strip()) for num, body in q_pattern.findall(text)]
+    return paragraphs, questions
+
+
+def find_question_block(text: str) -> tuple[int, int]:
+    q_pattern = re.compile(
+        r"(?ms)^\s*(3[6-9]|4[0-5])\.\s*(.+?)(?=^\s*(?:3[6-9]|4[0-5])\.\s*|\Z)"
+    )
+    matches = list(q_pattern.finditer(text))
+    nums = [int(m.group(1)) for m in matches]
+    target = list(range(36, 46))
+    for idx in range(0, max(0, len(nums) - 9)):
+        if nums[idx : idx + 10] == target:
+            return matches[idx].start(), matches[idx + 9].end()
+    raise ValueError("cannot locate contiguous question block 36-45")
+
+
+def build_output(title: str, paragraphs: list[tuple[str, str]], questions: list[tuple[int, str]]) -> str:
+    lines = [
+        "Section B",
+        "Directions: In this section, you are going to read a passage with ten statements attached to it. Each statement contains information given in one of the paragraphs. Identify the paragraph from which the information is derived. You may choose a paragraph more than once. Each paragraph is marked with a letter. Answer the questions by marking the corresponding letter on Answer Sheet 2.",
+        title,
+    ]
+    for letter, body in paragraphs:
+        lines.append(f"{letter}) {body}")
+    for num, body in questions:
+        lines.append(f"{num}. {body}")
+    return "\n".join(lines) + "\n"
+
+
+def main() -> None:
+    OUT.mkdir(parents=True, exist_ok=True)
+    merged_manual = dict(MANUAL_FULL_TEXTS_REAL)
+
+    for filename, text in merged_manual.items():
+        if not text.endswith("\n"):
+            text += "\n"
+        (OUT / filename).write_text(text, encoding="utf-8")
+
+    failures: list[str] = []
+    for filename, spec in TEXTS.items():
+        if not filename.startswith(("2016", "2017", "2018", "2019", "2020", "2021")):
+            continue
+        if filename in merged_manual:
+            continue
+        pdf_path = BASE / filename.replace(".txt", ".pdf")
+        if not pdf_path.exists():
+            failures.append(f"{filename}: missing pdf")
+            continue
+
+        raw_text = read_pdf_text(pdf_path)
+        lines = [normalize_line(line) for line in raw_text.splitlines() if normalize_line(line)]
+        try:
+            title_idx = find_title_index(lines, spec["title"])
+        except Exception as exc:
+            failures.append(f"{filename}: {exc}")
+            continue
+
+        tail = "\n".join(lines[title_idx + 1 :])
+        first_para = re.search(r"(?m)^\s*\[?\s*[A-R][\)\]\.]?\s*", tail)
+        if not first_para:
+            failures.append(f"{filename}: cannot locate paragraphs/questions")
+            continue
+
+        try:
+            question_start, question_end = find_question_block(tail)
+        except Exception as exc:
+            failures.append(f"{filename}: {exc}")
+            continue
+
+        para_text = tail[first_para.start() : question_start]
+        question_text = tail[question_start:question_end]
+        paragraphs, _ = parse_paragraphs_and_questions(para_text)
+        _, questions = parse_paragraphs_and_questions(question_text)
+
+        expected_letters = spec["letters"]
+        got_letters = [letter for letter, _ in paragraphs]
+        if got_letters != expected_letters or len(questions) != 10:
+            failures.append(
+                f"{filename}: parsed letters={got_letters} expected={expected_letters} questions={len(questions)}"
+            )
+            continue
+
+        output = build_output(spec["title"], paragraphs, questions)
+        (OUT / filename).write_text(output, encoding="utf-8")
+
+    if failures:
+        report = "\n".join(failures)
+        raise SystemExit(report)
+
+
+if __name__ == "__main__":
+    main()

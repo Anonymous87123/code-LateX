@@ -1,0 +1,49 @@
+The Changing Generation
+
+Current answers: 36:I 37:B 38:F 39:D 40:C 41:K 42:A 43:L 44:E 45:J
+
+Statements
+36. [I] Not many young people eligible for voting are interested in local or national elections these days.
+
+37. [B] Parents are concerned that their children may get involved in criminal offences once they reach their teens.
+
+38. [F] Even during the turbulent years of last century, youth rebellion was often exaggerated in the media.
+
+39. [D] Teenagers of today often turn to their parents for advice on such important matters as career choice.
+
+40. [C] The incidence of teenage crime and misbehavior is decreasing nowadays.
+
+41. [K] Young people should have lofty ideals in life and strive to be leaders.
+
+42. [A] Some young people like to keep something to themselves and don't want their parents to know about it.
+
+43. [L] It is beneficial to encourage young people to explore the broader world and get ready to make it a better place.
+
+44. [E] Many teenagers now offer to render service to the needy.
+
+45. [J] Interviews with students find many of them are only concerned about personal matters.
+
+Paragraphs
+A) It turns out today's teenagers aren't so scary after all. Results of USA WEEKEND's Teens & Parents survey reveal a generation of young people who get along well with their parents and approve of the way they're being raised. They think of their parents with affection and respect. They speak with Mom or Dad when they have a problem. Most feel that their parents understand them, and they believe their family is the No. 1 priority in their parents' lives. Many even think their parents are cool! Although more than a third have an object in their rooms they would like to keep secret from their parents, rarely is it anything more alarming than a diary or off-color book or CD.
+
+B) Such results may seem surprising against the background of shocking incidents that color the way the mass media portray the young. In October 2000, the same month the survey was taken, the Washington-based Center for Media and Public Affairs wrote in its publication Media Monitor that, in a recent month of TV news coverage of American youth, just 2% of teens were shown at home, and just 1% were portrayed in a work setting. In contrast, the criminal justice system accounted for nearly one out of every five visual backgrounds. No wonder parents worry their own kids might spin out of control once they hit the turbulent waters of adolescence.
+
+C) The overall facts ought to reassure us. The survey shows us that today's teens are affectionate, sensible and far happier than the angry and tortured souls that have been painted for us by stereotypes. From other sources, we also know teenage crime, drug abuse and premarital sex are in general decline. We, of course, need to pay attention to youngsters who are filled with discontent and hostility, but we should not allow these extreme cases to distort our view of most young people.
+
+D) My own research at the Stanford Center on Adolescence uses in-depth interviews with small samples of youngsters rather than large-scale survey. Still, in my studies and others I have read, I find the same patterns as in USA WEEKEND'S survey. Today's teenagers admire their parents and welcome parental guidance about important matters such as career choice-though certainly not Mom and Dad's advice on matters of personal taste, such as music or fashion. When we ask teens to choose a hero, they usually select an older family member rather than a remote public figure. Most teens say they enjoy the company of both parents and friends.
+
+E) Contrary to some stereotypes, most adolescents believe they must be tolerant of differences among individuals (though they do not always find this easy in the cliquish environment of high school). Many of them volunteer for community service with disadvantaged people. One prevalent quality we have found in teens' statements about themselves, their friends and their families is a strikingly positive emotional tone. By and large, these are very nice kids, and as the band The Who used to sing, "The kids are alright."
+
+F) How much is today's spirit of harmony a change from our more turbulent past? A mere generation ago, parentchild relations were described as "the generation gap." Yet even then reports of widespread youth rebellion were overdone: Most kids in the '60s and '70s shared their parents' basic values. Still, it is true that American families are growing closer at the dawn of this new millennium. Perhaps there is less to fight about, with the country in a period of tranquility and the dangers of drug abuse and other unwholesome behavior well known. Perhaps in the face of impersonal and intimidating globalization, a young person's family feels more like a friendly haven than an oppressive trap. And perhaps parents are acting more like parents than in the recent past. Within just the past five years, I have noticed parents returning to a belief that teenagers need the guidance of elders rather than the liberal, "anything goes" mode of child-rearing that became popular in the second half of the 20th century.
+
+G) But missing from all these data is the sense that today's young care very much about their country, about the broader civic and political environment, or about the future of their society. They seem to be turning inward-generally in a pro-social manner, certainly with positive benefits for intimate relationships, but too often at the expense of a connection with the present and future world beyond, including the society they will one day inherit.
+
+H) Recently, we examined more than 400 essays on the "laws of life" that teens from two communities had written as part of an educational program initiated by the John Templeton Foundation in Radnor, Pa. In those essays, and in follow-up interviews with a few of the teenagers, we found lots of insight, positive feeling and inspirational thinking. But we also found little interest in civic life beyond the tight circles of their family and immediate friends.
+
+I) For example, only one boy said he would like to be president when he grows up. When I was in high school, dozens in my class alone would have answered differently. In fact, other recent studies have found there has never been a time in American history when so small a proportion of young people have sought or accepted leadership roles in local civic organizations. It is also troubling that voting rates among our youngest eligible voters-18- to 24-year-olds-are way down: Little more than one in four now go to the polls, even in national elections, compared with almost twice that many when 18-year-olds were first given the vote.
+
+J) In our interviews, many students viewed politics with suspicion and distaste. "Most politicians are kind of crooked," one student declared. Another, discussing national politics, said, "I feel like one person can't do that much, and I get the impression most people don't think a group of people can do that much." Asked what they would like to change in the world, the students mentioned only personal concerns such as slowing down the pace of life, gaining good friends, becoming more spiritual, becoming either more materially successful or less materially oriented (depending on the student's values), and being more respectful of the Earth, animals and other people. One boy said, "I'd rather be concentrating on artistic efforts than saving the world or something."
+
+K) It is fine and healthy for teens to cultivate their personal interests, and it is good news when young people enjoy harmonious relations with their family and friends. But there is also a place in a young life for noble purposes that include a dedication to the broader society, a love of country and an aspiration to make their own leadership contributions.
+
+L) In the past, the young have eagerly participated in national service and civic affairs, often with lots of energy and idealism. If this is not happening today, we should ask why. Our society needs the full participation of its younger citizens if it is to continue to thrive. We know the promise is there-this is a well-grounded, talented, warm-hearted group of youngsters. We have everything to gain by encouraging them to explore the world beyond their immediate experience and to prepare themselves for their turn at shaping that world.
