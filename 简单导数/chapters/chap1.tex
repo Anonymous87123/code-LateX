@@ -3,16 +3,14 @@
 
 题目通常给出函数 $f(x)$ 的若干值、若干阶导数值以及待证结论。证明时先构造插值多项式 $p(x)$，再令 $G(x)=f(x)-p(x)$，对 $G$ 反复应用罗尔中值定理。
 
-插值多项式的次数等于各点插值阶数（含 $0$ 阶）之和减 $1$，余项阶数比它高 $1$。再结合余项阶数与原函数的光滑性条件即可判断题型。
+插值多项式的次数等于各点插值阶数（含 $0$ 阶）之和减 $1$，余项阶数比它高 $1$。余项阶数与原函数的光滑性条件合在一起，便能确定应当使用的证明模型。
 \section{插值法}
 
 \begin{example}
 $f(x)$满足$f(0) = f'(0) = 0, f''(x) = \cos f(x)\ (x \in \mathbb{R})$，
-\text{证明：}
-\begin{enumerate}
-    \item[(1)] $f(x) \leqslant \pi$.
-    \item[(2)] $f'(x) > \sin\left(\sqrt{2}\right) \ \left(x \in \left[\sqrt{2},\ \frac{\pi}{\sqrt{2}}\right]\right)$
-\end{enumerate}
+\text{证明：}\\
+（1）$f(x) \leqslant \pi$.\\
+（2）$f'(x) > \sin\left(\sqrt{2}\right) \ \left(x \in \left[\sqrt{2},\ \frac{\pi}{\sqrt{2}}\right]\right)$.
 \end{example}
 \begin{solution}
 （1）由$f''(x) = \cos f(x)$得$2f'(x)f''(x) = 2f'(x)\cos f(x)$，两边积分：
@@ -24,7 +22,7 @@ $$\int 2f'(x)f''(x) dx = \int 2f'(x)\cos f(x) dx\implies(f'(x))^2 = 2\sin f(x) +
 利用 $f''(x) = \cos f(x) \leqslant 1$ 积分两次得到的上限：$$f(x) \leqslant \frac{x^2}{2}$$
 把区间的最右端 $x = \frac{\pi}{\sqrt{2}}$ 代入这个上限
 $$f\left(\frac{\pi}{\sqrt{2}}\right) \leqslant \frac{\left(\frac{\pi}{\sqrt{2}}\right)^2}{2} = \frac{\pi^2}{4}<\pi$$
-既然在整个区间 $(0, \frac{\pi}{\sqrt{2}}]$ 内都有 $f(x) < \pi$，则 $\sin f(x)$ 不会降为 $0$，$f'(x)$ 也不会变为非正。故该区间内 $f(x)$ 单调递增。又因为 $\sin y$ 在 $[0, \pi]$ 上是向下凹的，故 $f'(x) = \sqrt{2\sin f(x)}$ 的最小值取在两端点。下面估计 $f'(\sqrt{2})$ 和 $f'\left(\frac{\pi}{\sqrt{2}}\right)$ 的下界。\\
+既然在整个区间 $(0, \frac{\pi}{\sqrt{2}}]$ 内都有 $f(x) < \pi$，则 $\sin f(x)$ 不会降为 $0$，$f'(x)$ 也不会变为非正。故该区间内 $f(x)$ 单调递增。又因为 $\sin y$ 在 $[0, \pi]$ 上是向下凹的，故 $f'(x) = \sqrt{2\sin f(x)}$ 的最小值取在两端点。为了得到区间内的统一下界，分别控制 $f'(\sqrt{2})$ 和 $f'\left(\frac{\pi}{\sqrt{2}}\right)$。\\
 先估计 $f\left(\frac{\pi}{\sqrt{2}}\right)$。已知对于 $u \in \left[0, \frac{\pi}{2}\right]$，有 $\sin u \geqslant \dfrac{2u}{\pi}$。由
 \[\dd x = \dfrac{\dd f}{\sqrt{2\sin f}}\implies x = \int_0^{f(x)} \frac{\dd u}{\sqrt{2\sin u}}\]
 假设 $f\left(\frac{\pi}{\sqrt{2}}\right) < \frac{\pi}{2}$，则：
@@ -102,7 +100,7 @@ f'''(\xi)=p'''(\xi)=6k=\frac{6(f'(b)+f'(a))}{(b-a)^2}-\frac{12(f(b)-f(a))}{(b-a)
 设$f\in C[0,2]\cap D(0,2)$，满足$f(0)=f(2)=0,|f'(x)|\leqslant M,\forall x\in(0,2)$，证明\[\left|\int_0^2f(x)\dd x\right|\leqslant M\]
 \end{example}
 \begin{solution}
-    这里只用到端点函数值，不必加入导数条件。分别在区间$[0,1]$与$[1,2]$上对靠近的端点作一次展开即可。
+    端点条件给出两侧的线性控制：在左半区间从 $0$ 展开，在右半区间从 $2$ 展开。
     
     当$x\in[0,1]$时，由拉格朗日中值定理，
     \[f(x)=f(0)+f'(\xi(x))x=f'(\xi(x))x,\]
@@ -122,7 +120,7 @@ f'''(\xi)=p'''(\xi)=6k=\frac{6(f'(b)+f'(a))}{(b-a)^2}-\frac{12(f(b)-f(a))}{(b-a)
 设$f\in D^2[0,1],f(0)=f(1)=0,|f''(x)|\leqslant M$，证明$\displaystyle \left|\int_0^1f(x)\dd x\right|\leqslant \dfrac{M}{12}$
 \end{example}
 \begin{solution}
-这里只需满足$f(0),f(1)$两个函数值条件，不需加入导数条件，因此插值多项式取一次即可。由余项公式，存在$\theta(x)\in(0,1)$使得
+由 $f(0)=f(1)=0$ 可取一次插值余项表示 $f(x)$，从而把积分估计转化为二阶导数的界。由余项公式，存在$\theta(x)\in(0,1)$使得
 \[f(x)=\frac{f''(\theta(x))}{2}x(x-1),\forall x\in[0,1]\]
 这一式子也可用 $K$ 值法推出。令
 \[
@@ -200,7 +198,7 @@ G''''(x)=f'''(x)-p''''(x)=f'''(x),
 \[
 g(x)=\int_0^xF(t)\dd t,
 \]
-则$g'(0)=0,g'(1)=\dfrac52$，且$g(0)=0,g(1)=1$。于是只需证明：$g(x)$在$(0,1)$上三阶可导，且存在$\xi\in(0,1)$使得$g'''(\xi)=3$。按这四个条件作三次插值，
+则$g'(0)=0,g'(1)=\dfrac52$，且$g(0)=0,g(1)=1$。于是问题落到函数 $g$ 上；若能得到某点 $g'''(\xi)=3$，便由 $g'''=F''=f'$ 得到原结论。按这四个条件作三次插值，
 \[p(x)=\frac{x-0}{1-0}g(1)+\frac{x-1}{0-1}g(0)+(kx+m)x(x-1)=x+(kx+m)x(x-1)\]
 求导并令$p'(0)=g'(0),p'(1)=g'(1)$：
 \begin{align*}
@@ -247,7 +245,7 @@ p'(0)=&\frac12-c=0\Rightarrow c=\frac{1}{2}
     $f(x)\in C^4[0,1]$，三次多项式$p(x)$满足$p(0)=f(0),p(1)=f(1),p'(0)=f'(0),p'(1)=f'(1)$，证明\[|f(x)-p(x)|\leqslant \frac1{384}\max_{x\in[0,1]}\{f''''(x)\}\]
 \end{example}
 \begin{solution}
-构造$G(x)=f(x)-p(x)$，则$G(0)=G(1)=0,G'(0)=G'(1)=0$。继续应用 Rolle 定理，只能推出存在$\xi\in(0,1)$使得$G'''(\xi)=0$。若要进一步得到四阶导数的信息，还需额外添入一个零点。于是只需证明
+构造$G(x)=f(x)-p(x)$，则$G(0)=G(1)=0,G'(0)=G'(1)=0$。继续应用 Rolle 定理可推出存在$\xi\in(0,1)$使得$G'''(\xi)=0$。四阶信息需要再引入一个随 $x$ 变化的零点，因此把 $G(x)$ 与 $x^2(x-1)^2$ 的比例联系起来，转为证明
 \[
 -\frac1{384}\max_{x\in[0,1]}\{f''''(x)\}\leqslant G(x)\leqslant \frac1{384}\max_{x\in[0,1]}\{f''''(x)\}.
 \]
@@ -292,7 +290,7 @@ p(x)=&L(x)+s(x)
     设$f\in C^2[0,1]$，满足$f(0)=f(1)=0,\displaystyle\min_{x\in[0,1]}f(x)=-1$，证明$\displaystyle\max_{x\in[0,1]}f''(x)\geqslant8$
 \end{example}
 \begin{solution}
-取$c\in(0,1)$使得$f(c)=-1$。于是插值条件为$f(0)=f(1)=0,f(c)=-1,f'(c)=0$。下面分别在区间$[0,c]$和$[c,1]$上作插值。
+取$c\in(0,1)$使得$f(c)=-1$。于是插值条件为$f(0)=f(1)=0,f(c)=-1,f'(c)=0$。点 $c$ 将区间分为两段；左段由 $0,c$ 的条件给出一条估计，右段由 $c,1$ 的条件给出另一条估计。
 
 在区间$[0,c]$上插$f(0),f(c),f'(c)$，构造插值多项式：
 \begin{align*}
@@ -324,7 +322,7 @@ f''(\xi_2)=\frac{2}{c^2},\qquad f''(\xi_4)=\frac{2}{(1-c)^2}.
 证明$(1)~a\geqslant\sqrt2\quad (2)~a>\sqrt2.$
 \end{example}
 \begin{solution}
-    现有微分条件不足以直接同时处理四个插值点，因此把区间分成左右两段，并取公共点$x=0$来连接两边的插值式。
+    现有条件自然分布在两端，取公共点 $x=0$ 连接左右两段的插值式。
 
 在区间$[-a,0]$上插$f(-a),f(0),f'(-a)$，构造插值多项式：
 \begin{align*}
@@ -375,7 +373,7 @@ f(0)=f(a)+f'(a)(0-a)+\int_{a}^0(0-t)f''(t)\dd t=1-\int_{0}^{a}t f''(t)\,\mathrm{
 其中\[k(x,y)=\begin{cases}\frac{x-a}{b-a}(y-b),&b\geqslant y\geqslant x\geqslant a\\\frac{b-x}{b-a}(a-y),&b\geqslant x\geqslant y\geqslant a\end{cases}\]
 \end{theorem}
 考虑\[g(x)=f(x)-\left(\frac{x-b}{a-b}f(a)+\frac{x-a}{b-a}f(b)\right)\]
-那么$g(a)=g(b)=0,g''=f''$，拆分积分余项即可发现：
+那么$g(a)=g(b)=0,g''=f''$，拆分积分余项后得到：
 \begin{align*}\int_a^bg^{\prime\prime}\left(y\right)k\left(x,y\right)dy&\begin{aligned}=\frac{b-x}{b-a}\int_{a}^{x}g^{\prime\prime}\left(y\right)\left(a-y\right)dy+\frac{x-a}{b-a}\int_{x}^{b}g^{\prime\prime}\left(y\right)\left(y-b\right)dy\end{aligned}\\&=\frac{b-x}{b-a}\left[\left(a-x\right)g^{\prime}\left(x\right)+\int_{a}^{x}g^{\prime}\left(y\right)dy\right]+\frac{x-a}{b-a}\left[-g^{\prime}\left(x\right)\left(x-b\right)-\int_{x}^{b}g^{\prime}\left(y\right)dy\right]\\&=\frac{b-x}{b-a}\left[\left(a-x\right)g^{\prime}\left(x\right)+g\left(x\right)\right]+\frac{x-a}{b-a}\left[-g^{\prime}\left(x\right)\left(x-b\right)+g\left(x\right)\right]\\&=g\left(x\right).\end{align*}
 \newpage
 \begin{example}[$\int_a^b\left|\frac{f''(x)}{f(x)}\right|\dd x\geqslant \frac{4}{b-a}$]
@@ -399,7 +397,7 @@ f(0)=f(a)+f'(a)(0-a)+\int_{a}^0(0-t)f''(t)\dd t=1-\int_{0}^{a}t f''(t)\,\mathrm{
     |f(x)| \le \frac{b-x}{b-a} \int_a^x (y-a) \left|\frac{f''(y)}{f(y)}\right| |f(y)| \dd y 
            + \frac{x-a}{b-a} \int_x^b (b-y) \left|\frac{f''(y)}{f(y)}\right| |f(y)| \dd y.
     \]
-    设 $\displaystyle M = \max_{x\in[a,b]} |f(x)|$，则 $M>0$（否则 $f\equiv0$，不等式成立）。取 $c\in(a,b)$ 使 $|f(c)|=M$。在上式中令 $x=c$，并注意到 $|f(y)|\le M$，$y-a\le c-a$（当 $y\in[a,c]$），$b-y\le b-c$（当 $y\in[c,b]$），故
+    设 $\displaystyle M = \max_{x\in[a,b]} |f(x)|$，则 $M>0$（否则 $f\equiv0$，不等式成立）。取 $c\in(a,b)$ 使 $|f(c)|=M$。在上式中令 $x=c$。由于 $|f(y)|\le M$，且左、右两段分别有 $y-a\le c-a$、$b-y\le b-c$，故
     \begin{align*}
         M &\le \frac{b-c}{b-a} \int_a^c (c-a) \left|\frac{f''(y)}{f(y)}\right| M \dd y 
            + \frac{c-a}{b-a} \int_c^b (b-c) \left|\frac{f''(y)}{f(y)}\right| M \dd y \\
@@ -417,7 +415,7 @@ f(0)=f(a)+f'(a)(0-a)+\int_{a}^0(0-t)f''(t)\dd t=1-\int_{0}^{a}t f''(t)\,\mathrm{
     \[
     \int_a^b \left|\frac{f''(y)}{f(y)}\right| \dd y \ge \frac{4}{b-a}.
     \]
-    （等号成立条件可进一步讨论，此处略。）
+    等号情形不影响本题所需下界，估计至此完成。
 \end{solution}
 \newpage
 \begin{example}[（2004年全国II卷）]
@@ -449,7 +447,7 @@ g(x)&=\frac{(x-a)(x-b)}{(\frac{a+b}{2}-a)(\frac{a+b}{2}-b)}f\left(\frac{a+b}{2}\
     &f'(\theta(x))-K=0\Rightarrow K=f'(\theta(x))\Rightarrow F(x)=f'(\theta(x))\frac{(x-a)(x-b)}{2!}\\
     &|F(x)|\leqslant \frac{M}{2}|(x-a)(x-b)|\leqslant \frac{M}{2}\left(\frac{b-a}{2}\right)^2=\frac{M(b-a)^2}{8}
 \end{align*}
-(2) $F(x)$两阶可导，$|F''(x)|\leqslant M,F(a)=F(b)=F'(a)=F'(b)=0$。取$x_0\in(a,b)$ 为 $|F(x)|$ 的极大值点；若极值在端点取得，则结论直接成立。分别在区间$[a,x_0]$和$(x_0,b)$上作展开：
+(2) $F(x)$两阶可导，$|F''(x)|\leqslant M,F(a)=F(b)=F'(a)=F'(b)=0$。取$x_0\in(a,b)$ 为 $|F(x)|$ 的极大值点；若极值在端点取得，则由 $F(a)=F(b)=0$ 已满足估计。否则 $x_0$ 为内部极大点，从两侧 Taylor 关系同时夹住 $F(x_0)$：
 \begin{align*}
     F(x)=F(a)+F'(a)(x-a)+\frac{(x-a)^2}{2!}F''(\xi_1)=\frac{(x-a)^2}{2!}F''(\xi_1)\\
     F(x)=F(x_0)+F'(x_0)(x-x_0)+\frac{(x-x_0)^2}{2!}F''(\xi_2)=\frac{(x-x_0)^2}{2!}F''(\xi_2)

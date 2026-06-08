@@ -101,11 +101,11 @@ p_n(x)=f_n(x)-f_n(g_n(x)).
 \[
 h_n'(x)=e^{p_n(x)}(1+x\,p_n'(x))-1.
 \]
-所以只要在 \(x>1\) 上证
+因此目标归结为在 \(x>1\) 上证明
 \[
 p_n(x)>0,\qquad p_n'(x)>0
 \]
-即可。
+这两式成立后，便有 \(h_n'(x)>0\)。
 
 记
 \[
@@ -130,11 +130,11 @@ p_n'(x)>f_{n-1}'(x)\Bigl(1-\frac{1}{f_{n-1}(x)}\Bigr)-f_{n-1}'(g_n(x))\,g_n'(x)\
 \[
 p_n'(x)>q_n'(x)\Bigl(1-\frac{1}{f_{n-1}(x)}\Bigr)>0
 \]
-因为 \(f_{n-1}(x)>1\)。所以问题可以继续降到
+因为 \(f_{n-1}(x)>1\)。所以问题继续降到
 \[
 r_n(x)=f_1(x)-f_1(g_n(x)),
 \]
-最后只要证 \(r_n'(x)>0\) 即可。
+最后归结为证明 \(r_n'(x)>0\)。
 
 先看 \(n=2\)。这时
 \[
@@ -194,7 +194,7 @@ h_n'(x)>0\qquad (x>1).
 证明不等式 $4x^2(1-x)^2 + x(1-x) \leqslant x^{1-x}\cdot(1-x)^x$ 在 $x \in [0, 1]$ 上成立
 \end{example}
 \begin{solution}
-当 \(x=0\) 或 \(x=1\) 时两端都为 \(0\)。下面只看 \(x\in(0,1)\)。
+当 \(x=0\) 或 \(x=1\) 时两端都为 \(0\)。端点处理完后，余下讨论 \(x\in(0,1)\)。
 
 原不等式可写成
 \[
@@ -221,7 +221,7 @@ x(1-x)=\frac{1-u^2}{4},\qquad 1+4x(1-x)=2-u^2,
 \[
 F(u)=\frac{1+u}{2}\ln(1+u)+\frac{1-u}{2}\ln(1-u)-\ln2+\ln(2-u^2).
 \]
-这是偶函数，只需看 \(u\in[0,1)\)。
+这是偶函数，讨论 \(u\in[0,1)\) 后便覆盖整个区间。
 
 求导得
 \[
@@ -280,7 +280,7 @@ x^{\frac{1}{x+1}}=\left(\frac{1+s}{1-s}\right)^{\frac{1-s}{2}}.
 \[
 Q(s)=\frac{1-s}{2}\ln\frac{1+s}{1-s}-\ln(1+s)-\ln\left(1-\frac{s^2}{2}\right).
 \]
-只要证 \(Q(s)\ge0\) 即可。又 \(Q\) 是偶函数，所以只看 \(s\in[0,1)\)。
+原不等式化为证明 \(Q(s)\ge0\)。又 \(Q\) 是偶函数，讨论 \(s\in[0,1)\) 便覆盖 \(s\in(-1,1)\)。
 
 求导得
 \begin{align*}
@@ -318,7 +318,7 @@ Q(0)=0.
 \[
 f(x) = \ln(x+1) + \frac{x}{\sqrt{\frac{1}{2}x^2+1}} + \frac{1}{2}x^2 - 2x.
 \]
-只要证 \(f(x)\ge0\) 对一切 \(x\ge0\) 成立即可。先记
+原题即为证明 \(f(x)\ge0\) 对一切 \(x\ge0\) 成立。先记
 \[
 f(0)=0.
 \]
@@ -328,11 +328,11 @@ f(0)=0.
 f'(x) = \frac{1}{x+1} + \frac{1}{\left(\frac{1}{2}x^2+1\right)^{\frac{3}{2}}} + x - 2.
 \]
 
-下面估计中间那一项。对任意 \(y\ge0\)，有
+中间那一项需要一个只含 \(y\) 的下界。对任意 \(y\ge0\)，有
 \[
 (1+y)^{\frac32}\le 1+\frac32y+\frac38y^2.
 \]
-把两边平方即可验证，因为平方后的差正好是
+两边平方后，差为
 \[
 \frac18y^3+\frac{9}{64}y^4\ge0.
 \]
@@ -372,7 +372,7 @@ H(x)=3x^4-3x^3+21x^2-24x+8.
 \[
 H(x)=3\left(x^2-\frac12x\right)^2+\frac{81}{4}\left(x-\frac{16}{27}\right)^2+\frac89>0.
 \]
-因此对 \(x\ge0\)，有 \(N(x)\ge0\)，而分母显然为正，所以
+因此对 \(x\ge0\)，有 \(N(x)\ge0\)，分母中的 \(x+1\) 与 \(3x^4+24x^2+32\) 也都为正，所以
 \[
 f'(x)\ge0.
 \]
@@ -392,7 +392,7 @@ f(x)\ge f(0)=0\qquad (x\ge0).
 \[
 g(x)=\ln f(x)=x \ln(\ln(x+1)) - (\ln x)^2
 \]
-严格递增即可，也就是证明 $g'(x)>0$。直接求导：
+严格递增，也就是证明 $g'(x)>0$。求导得：
 $$g'(x) = \ln(\ln(x+1)) + \frac{x}{(x+1)\ln(x+1)} - \frac{2\ln x}{x}$$
 
 令
@@ -405,7 +405,7 @@ $$P(y) = g'(e^y - 1) = \ln y + \frac{1 - e^{-y}}{y} - \frac{2\ln(e^y - 1)}{e^y -
 
 利用双曲正弦函数恒等式 $e^y - 1 = 2e^{y/2}\sinh(y/2) = y e^{y/2} \frac{\sinh(y/2)}{y/2}$，对其两边取自然对数得：
 $$\ln(e^y - 1) = \ln y + \frac{y}{2} + \ln\left(\frac{\sinh(y/2)}{y/2}\right)$$
-下面用到估计
+这里需要估计
 \[
 \ln\left(\frac{\sinh u}{u}\right) < \frac{u^2}{6}\qquad (u>0).
 \]
@@ -429,7 +429,7 @@ u \coth u = 1 + \sum_{k=1}^\infty \frac{2u^2}{u^2 + k^2\pi^2}
 \]
 所以 \(h'(u)>0\)，从而 \(h(u)>0\)。
 
-在引理中代入 $u = y/2$，可得不等式 $\ln(e^y - 1) < \ln y + \frac{y}{2} + \frac{y^2}{24}$。将此上界代入 $P(y)$ 的表达式中，由于前置系数 $-\frac{2}{e^y-1}$ 为负，代入上界将构成 $P(y)$ 的严格下界 $B(y)$：
+把 \(u=y/2\) 代入刚得到的估计，便有 $\ln(e^y - 1) < \ln y + \frac{y}{2} + \frac{y^2}{24}$。在 $P(y)$ 中，$\ln(e^y-1)$ 前的系数为 $-\frac{2}{e^y-1}<0$，所以用这个上界替换它时，得到的是 $P(y)$ 的严格下界：
 $$P(y) > \ln y + \frac{1 - e^{-y}}{y} - \frac{2(\ln y + y/2 + y^2/24)}{e^y - 1} = \frac{e^y - 3}{e^y - 1}\ln y + \frac{1 - e^{-y}}{y} - \frac{y + y^2/12}{e^y - 1} \equiv B(y)$$
 因为 $\dfrac{e^y - 3}{e^y - 1}$ 在 $y = \ln 3$ 处变号，接下来改看
 $$Q(y) = \ln y - \frac{y^2 e^y + \frac{1}{12}y^3 e^y - (e^y - 1)^2}{y e^y (e^y - 3)}$$
@@ -515,7 +515,7 @@ S_{3n} + S_{5n} + S_{10n} - S_{2n} - S_{7n} - S_{9n} = r,
 \[
 \left(\frac{b-1}{b+1}\right)^x+\left(\frac{b}{b+1}\right)^x=1.
 \]
-于是只看
+于是考察
 \[
 g(x)=\left(\frac{b-1}{b+1}\right)^x+\left(\frac{b}{b+1}\right)^x.
 \]
@@ -579,7 +579,7 @@ $$M(t)=6+11t+15t^{2}+17t^{3}+18t^{4}+18t^{5}+18t^{6}+18t^{7}+17t^{8}+16t^{9},$$
 $$S(t)=t(t+1)(t^{2}-t+1)(t^{2}+t+1)^{2},$$
 $$R(t)=t^{2}(t+1)(t^{2}+1)(t^{2}+t+1).$$
  
-直接计算
+将 \(D(t)\) 展开并整理为
 \[
 D(t) = M(t)R(t) - S(t)^2,
 \]
@@ -621,7 +621,7 @@ $$f^{\prime}(x)=\frac{1}{2\sqrt{x}}-\frac{1}{2\sqrt{x^{3}}}=\frac{x-1}{2\sqrt{x^
 
 再证 $f(x)\ge0$。由均值不等式，
 $$f(x)\ge2\sqrt{\sqrt{\frac{x^{a}}{a}}\cdot\sqrt{\frac{a^{x}}{x}}}-2=2\sqrt[4]{x^{a-1}a^{x-1}}-2.$$
-当 $a>1$ 且 $x>1$, 或 $0<a<1$ 且 $0<x<1$ 时, 有 $x^{a-1}a^{x-1}>1$, 从而 $f(x)>0$。当 $a=1$ 时，由上面的单调性知 $f(x)\ge f(1)=0$。又原式关于 $a,x$ 对称，所以只剩 $0<a<1<x$ 的情形。
+当 $a>1$ 且 $x>1$, 或 $0<a<1$ 且 $0<x<1$ 时, 有 $x^{a-1}a^{x-1}>1$, 从而 $f(x)>0$。当 $a=1$ 时，由上面的单调性知 $f(x)\ge f(1)=0$。又原式关于 $a,x$ 对称，余下处理 $0<a<1<x$ 的情形。
 
 令 $x=p^{2}$, $a=q^{2}$, 其中 $p>1>q>0$，则原不等式化为
 \[\frac{p^{q^{2}}}{q}+\frac{q^{p^{2}}}{p}\ge2\]
@@ -642,7 +642,7 @@ $$=\frac{q^{2}(1-q)(p-1)[q^{2}(p-1)+p(1-q)]}{p(p+q-pq)(pq^{2}-q^{2}-pq+p+q)}.$$
 \[
 q^{p^{2}}\ge1+p\left(\frac{q}{p+q-pq}-1\right).
 \]
-由于左边恒正，只需考虑右边为正，即
+由于左边恒正，右边为正时才需要继续比较，即
 \[
 1+p\left(\frac{q}{p+q-pq}-1\right)>0,
 \]
@@ -661,11 +661,11 @@ $$=\frac{(p+q)(p+q-pq)+(p+q)pq-4pq(p+q-pq)}{pq(p+q-pq)}$$
 $$=\frac{p^{2}+q^{2}+4p^{2}q^{2}+2pq-4p^{2}q-4pq^{2}}{pq(p+q-pq)}=\frac{(p+q-2pq)^{2}}{pq(p+q-pq)}\ge0.$$
 原不等式得证。
 
-还可直接用琴生不等式。$a\ne1$ 时，原不等式等价于
+同一结论也可由琴生不等式推出。$a\ne1$ 时，原不等式等价于
 $$\frac{x}{x+a}x^{\frac{a-1}{2}}+\frac{a}{x+a}a^{\frac{x-1}{2}}\ge\frac{2\sqrt{xa}}{x+a}.$$
 由琴生不等式，
 $$\frac{x}{x+a}x^{\frac{a-1}{2}}+\frac{a}{x+a}a^{\frac{x-1}{2}}\ge e^{\frac{x(a-1)\ln x+a(x-1)\ln a}{2(x+a)}},$$
-故只要证
+因此目标转化为证明
 \[
 \frac{x(a-1)\ln x+a(x-1)\ln a}{2(x+a)}\ge \ln\frac{2\sqrt{xa}}{x+a}.
 \]
@@ -745,7 +745,7 @@ k(v)=((e+2)v-1)e^{(e+1)v}+v-1 \quad (v>0),
 \[
 k'(v)=e^{(e+1)v}\bigl[(e+1)(e+2)v+1\bigr]+1>0.
 \]
-故 $k(v)$ 在 $(0,+\infty)$ 上严格递增，零点至多一个。直接验得
+故 $k(v)$ 在 $(0,+\infty)$ 上严格递增，零点至多一个。代入
 \[
 k\!\left(\frac1{e+1}\right)=0,
 \]
@@ -850,9 +850,9 @@ $$2 + s - cs = 2 + s - \left(3 - \frac{6}{e}\right)s = 2(1-s) + \frac{6s}{e}$$
 代回得
 $$P'\left(\frac{1}{s}\right) = \frac{1}{s} \left[ 2(1-s) + \frac{6s}{e} + \frac{1-s}{s}e^{-\frac{1}{s}} - (2+2s+s^2+s^3)e^{-s} \right]$$
 
-其中第三项恒正，接下来验证
+其中第三项恒正。余下只要验证
 $$f(s) = 2(1-s) + \frac{6s}{e} - (2+2s+s^2+s^3)e^{-s}$$
-在 $(0,1)$ 内恒正。注意到
+在 $(0,1)$ 内恒正。由
 $$f(0) = 2 - 2 = 0$$
 $$f(1) = \frac{6}{e} - (2+2+1+1)e^{-1} = 0$$
 再求导：
@@ -890,7 +890,7 @@ f'(x) &= -\mathrm{e}^{\frac{1}{2}-x}\left(\frac{3}{4}x+\frac{\sqrt{5}}{4}\sqrt{x
 &= \frac{\mathrm{e}^{\frac{1}{2}-x}}{4\sqrt{x^2+1}} \left[ \sqrt{x^2+1}(3-3x) - \sqrt{5}(x^2-x+1) \right]
 \end{aligned}
 \]
-令 $f'(x) = 0$，只需方括号内部分为零，即：$\sqrt{x^2+1}(3-3x) = \sqrt{5}(x^2-x+1)$。右侧
+令 $f'(x) = 0$，括号内部分必须为零，即 \(\sqrt{x^2+1}(3-3x) = \sqrt{5}(x^2-x+1)\)。右侧
 \[
 x^2-x+1=\left(x-\frac{1}{2}\right)^2 + \frac{3}{4}>0
 \]
@@ -924,7 +924,7 @@ f\left(\frac{1}{2}\right) = \mathrm{e}^{0}\left(\frac{3}{4} \cdot \frac{1}{2} + 
     \[a=\sqrt{\left(\frac{x_0}{4\sqrt{x_0+1}}\right)^2+\dfrac{\sqrt{x_0}}{4}}-\frac{x_0}{4\sqrt{x_0+1}}>0\]
     代入第一个方程，得到
     \[\ln x_0=\frac{x_0}{2\left(\sqrt{\left(\frac{x_0}{4\sqrt{x_0+1}}\right)^2+\frac{\sqrt{x_0}}{4}}-\frac{x_0}{4\sqrt{x_0+1}}\right)^2}-\dfrac{\sqrt{1+x_0}}{\left(\sqrt{\left(\frac{x_0}{4\sqrt{x_0+1}}\right)^2+\frac{\sqrt{x_0}}{4}}-\frac{x_0}{4\sqrt{x_0+1}}\right)}\]
-    由此得到候选范围 $a\in\left(0,\dfrac{\sqrt{2}}{4}\right]$。下面验证这个范围的充分性：
+    由此得到候选范围 $a\in\left(0,\dfrac{\sqrt{2}}{4}\right]$。充分性还要反过来验证：
     \[f(x)\leq0\Rightarrow-2\ln x-\frac{2\sqrt{x+1}}{a}+\frac{\sqrt{x}}{a^2}\geq0\]
     将其视为关于 \(\frac{1}{a}\) 的不等式，并用求根公式整理，得
     \[\Leftrightarrow \dfrac{1}{a}\geq\sqrt{1+\frac{1}{x}}+\sqrt{1+\frac{1}{x}+\frac{2\ln x}{\sqrt x}}\Rightarrow 2\sqrt2\geq\sqrt{1+\frac{1}{x}}+\sqrt{1+\frac{1}{x}+\frac{2\ln x}{\sqrt x}}\]
@@ -953,7 +953,7 @@ f\left(\frac{1}{2}\right) = \mathrm{e}^{0}\left(\frac{3}{4} \cdot \frac{1}{2} + 
     \[f(x)=\frac{1}{ \sqrt{1+\tan^2\theta}}+ \frac{1}{3}+ \sqrt{ \frac{\tan^2\theta}{\tan^2\theta+1}}\\=\cos \theta+ \frac{1}{3}+ \sin \theta\\=\sqrt{2}\sin(\theta+\frac{\pi}{4})+\frac13\]
     由$\theta\in(0,\frac{\pi}{2})$，所以$\sin(\theta+\frac{\pi}{4})$在$(0,\frac{\pi}{4})$上单调递增，在$(\frac{\pi}{4},\frac{\pi}{2})$上单调递减，所以$f(x)$在$(0,1)$上单调递增，在$(1,+\infty)$上单调递减。
 
-    （2）将原式改写为对称形式即可避免直接求导。令$f \left( x \right)= \frac{1}{ \sqrt{1+x}}+ \frac{1}{ \sqrt{1+y}}+ \sqrt{ \frac{xy}{xy+8}},x,y \in \left( 0,+ \infty \right)$:
+    （2）将原式改写为对称形式可以避免在原变量上求导。令$f \left( x \right)= \frac{1}{ \sqrt{1+x}}+ \frac{1}{ \sqrt{1+y}}+ \sqrt{ \frac{xy}{xy+8}},x,y \in \left( 0,+ \infty \right)$:
     \[
     \begin{cases}a=\dfrac{1}{\sqrt{1+x}}\in(0,1)\\b=\dfrac{1}{ \sqrt{1+y}}\in(0,1)\\c=\sqrt{ \dfrac{xy}{xy+8}}\in(0,1)\end{cases}\Rightarrow 
     \begin{cases}a^2=\dfrac{1}{1+x},x=\dfrac{1}{a^2}-1\\[1.2ex]b^2=\dfrac{1}{1+y},y=\dfrac{1}{b^2}-1\\[1.2ex]c^2=\dfrac{ax}{ax+8}=1-\dfrac{8}{ax+8}\end{cases}
@@ -980,7 +980,7 @@ c^2=1-\dfrac{8}{ax+8}=1-\dfrac{8}{(\dfrac{1}{a^2}-1)(\dfrac{1}{b^2}-1)+8}\Righta
 \[
 z\ge2,\qquad xy\le4.
 \]
-下界直接由
+下界由
 \[
 \frac{1}{\sqrt{1+x}}+\frac{1}{\sqrt{1+y}}>
 \frac{1}{1+\frac{x}{2}}+\frac{1}{1+\frac{y}{2}}
@@ -1000,7 +1000,7 @@ z\ge2,\qquad xy\le4.
 \iff
 8>1+2t
 \]
-而这对 $0<t\le2$ 显然成立。另一方面，
+而 \(0<t\le2\) 时有 \(1+2t\le5<8\)，所以上式成立。另一方面，
 \[
 \left(1-\frac{1}{\sqrt{1+x}}\right)\left(1-\frac{1}{\sqrt{1+y}}\right)>0
 \]
@@ -1028,7 +1028,7 @@ f(x)<1+\frac{1}{1+\sqrt{xy}}+\frac{\sqrt{xy}}{1+\sqrt{xy}}=2.
 &=\frac{\left(ax^{2}-8 \right) \left(-x^{2}a^{2}-24xa-8a+64x \right)}{2\sqrt{x}(1+x)^{\frac{3}{2}}(ax+8)^{\frac{3}{2}}\left[8\sqrt{a}(1+x)^{\frac{3}{2}}+\sqrt{x}(ax+8)^{\frac{3}{2}}\right]}\\
 &=\frac{(\sqrt{a}x-2\sqrt2)(\sqrt{a}x+2\sqrt2)(-a^2x^2+(64-24a)x-8a)}{2\sqrt{x}(1+x)^{\frac{3}{2}}(ax+8)^{\frac{3}{2}}\left[8\sqrt{a}(1+x)^{\frac{3}{2}}+\sqrt{x}(ax+8)^{\frac{3}{2}}\right]}
 \end{align*}
-上式的分母恒正，只需判断分子符号。继续分解后，关键在二次因子
+上式的分母恒正，符号由分子决定。继续分解后，关键在二次因子
 \[
 -a^2x^2+(64-24a)x-8a
 \]
@@ -1036,7 +1036,7 @@ f(x)<1+\frac{1}{1+\sqrt{xy}}+\frac{\sqrt{xy}}{1+\sqrt{xy}}=2.
 \[\Delta = (64-24a)^2-32a^3=32(-a^3+18a^2-96a+128)=32(2-a)(a-8)^2\]
 若约定 $a\geq 2$，则 $\Delta\leq 0$。又因该二次式的二次项系数为负，所以它恒小于等于 $0$。这一约定是可行的，因为根号下的三个量 $a,\ x,\ \dfrac{8}{ax}$ 的乘积为 $8$，三者在结构上对称，可不失一般性地按大小顺序安排，使 $a\geq 2$。
 
-再考察一次因子 $\sqrt{a}x-2\sqrt2$ 的符号，即可得到
+再考察一次因子 $\sqrt{a}x-2\sqrt2$ 的符号，得到
 \[
 f'(x)>0 \quad \text{在 } \left(0,\sqrt{\frac{8}{a}}\right),
 \qquad
@@ -1054,7 +1054,7 @@ f(x)\to 1+\frac{1}{\sqrt{1+a}}.
 \[
 1+\frac{1}{\sqrt{1+a}}<f(x)<\frac{2}{\sqrt{1+\sqrt{\frac{8}{a}}}}+\frac{1}{\sqrt{1+a}}.
 \]
-最后只剩
+最后还需证明
 \[
 g(a)=\frac{2}{\sqrt{1+\sqrt{\frac{8}{a}}}}+\frac{1}{\sqrt{1+a}}<2.
 \]
@@ -1096,7 +1096,7 @@ g(a)=\frac{2}{\sqrt{1+\sqrt{\frac{8}{a}}}}+\frac{1}{\sqrt{1+a}}<2.
 \Leftrightarrow
 \left( \frac{1}{\tan x} - \frac{1}{x} + \frac{9}{8} \right)x^2 < \frac{9\pi^2}{32}\Leftrightarrow f(x)< \frac{9\pi^2}{32}
 \]
-下面验证 \( f(x) \) 在 \( (0,\frac{\pi}{2}) \) 上递减，并且
+接下来把目标压到 \(f\) 的单调性上：证明 \( f(x) \) 在 \( (0,\frac{\pi}{2}) \) 上递减，并且
 \[
 \lim_{x\to 0^+} f(x) = \frac{9\pi^2}{32}.
 \]
@@ -1104,12 +1104,12 @@ g(a)=\frac{2}{\sqrt{1+\sqrt{\frac{8}{a}}}}+\frac{1}{\sqrt{1+a}}<2.
 \[
 f'(x) = \frac{x(x-3\tan x)^2 - 4x^2(1+\tan^2 x)}{4(x-\tan x)^2}
 \]
-分母恒正，只看分子。令 \( t = \tan x > 0 \)，则
+分母恒正，符号由分子决定。令 \( t = \tan x > 0 \)，则
 \[
 \ (x-3t)^2 < 4x^2(1+t^2)
 \iff (9-4x^2)t^2 - 6xt - 3x^2 < 0.
 \]
-当 \( x \ge \frac{3}{2} \) 时，二次项系数 \(9-4x^2\le0\)，而一次项与常数项都为负，所以对一切 \(t>0\) 都有该二次式小于 \(0\)。于是只剩 \(0<x<\frac32\)。这时可用夹在中间的不等式
+当 \( x \ge \frac{3}{2} \) 时，二次项系数 \(9-4x^2\le0\)，而一次项与常数项都为负，所以对一切 \(t>0\) 都有该二次式小于 \(0\)。余下区间为 \(0<x<\frac32\)，这时可用夹在中间的不等式
 \[
 \tan x < \frac{x(x^2-12)}{5x^2-12} < \frac{6x + x\sqrt{36+12(9-4x^2)}}{2(9-4x^2)}
 \]
@@ -1117,7 +1117,11 @@ f'(x) = \frac{x(x-3\tan x)^2 - 4x^2(1+\tan^2 x)}{4(x-\tan x)^2}
 \[
 \tan x(5x^2-12) < x(x^2-12) \iff (2x^2-21x+36)^2 < 3(3-x)(5x-12)^2
 \]
-直接展开化简即可。
+而右减左为
+\[
+3(3-x)(5x-12)^2-(2x^2-21x+36)^2=x^3(9-4x)>0
+\]
+因为此时 \(0<x<\frac32\)。于是 \(f'(x)<0\)，原不等式成立。
 \end{solution}
 
 \begin{example}[$\frac{3}{4} \tan x + \frac{1}{\tan x} > \frac{\pi^{2}}{x(\pi^{2}-4x^{2})}$]
@@ -1163,7 +1167,7 @@ x-\sin x>\frac{x^3}{6}-\frac{x^5}{120},
 \[
 f'(x) > \frac{4(x \cos x - \sin x)}{(x - \sin x)^2} + \frac{48}{x^3}.
 \]
-因此只需验证
+因此转为验证
 \[
 x^3(x \cos x - \sin x) + 12(x - \sin x)^2 > 0 \quad (x \in (0,\pi)).
 \]
@@ -1360,7 +1364,7 @@ f'(A)=\frac{\Delta(A,B)}{A(A+B)^2},
 \[
 \Delta(A,B)=(A+B)(B\csc^2B-A\csc^2A)-(A-B)(\cot A+\cot B).
 \]
-分母恒正，只需判断 \(\Delta(A,B)\)。
+分母恒正，符号由 \(\Delta(A,B)\) 决定。
 
 记
 \[
@@ -1499,7 +1503,7 @@ t=\frac{x}{k}\in(0,\pi),\qquad f(t)=\frac{\ln\left(\frac{t}{\sin t}\right)}{t^2}
 \[
 \exp\!\left(2x^2f\!\left(\frac{x}{k}\right)\right)
 \]
-随 $k$ 递减，所以右边在 $k=\frac12$ 时最大，只需比较这一端点。先求
+随 $k$ 递减，所以右边在 $k=\frac12$ 时最大，比较这一端点。先求
 $$ f'(t) = \frac{\frac{\sin t}{t} \cdot \frac{\sin t - t \cos t}{\sin^2 t} \cdot t^2 - 2t \ln\left(\frac{t}{\sin t}\right)}{t^4} = \frac{1}{t^3} \left[ \frac{\sin t - t \cos t}{\sin t} - 2 \ln\left(\frac{t}{\sin t}\right) \right] $$
 令 $p(t) = \frac{\sin t - t \cos t}{\sin t} - 2 \ln\left(\frac{t}{\sin t}\right) = 1 - t \cot t - 2 \ln\left(\frac{t}{\sin t}\right)$，对其求导：
 $$ p'(t) = -\cot t + t \csc^2 t - \frac{2}{t} + 2 \cot t = \cot t + t \csc^2 t - \frac{2}{t} $$
@@ -1574,12 +1578,12 @@ f_a(x) = 2e^{b \cos y} \cosh(b \sin y).
 \[
 g(t) = \sqrt{b^2 - t^2} + \ln \cosh t.
 \]
-$g$ 是偶函数，只看 $t \in [0,b]$。有
+$g$ 是偶函数，讨论 $t \in [0,b]$。有
 \[
 g'(t) = \tanh t - \frac{t}{\sqrt{b^2 - t^2}},\qquad
 g''(t) = \operatorname{sech}^2 t - \frac{b^2}{(b^2 - t^2)^{3/2}}.
 \]
-其中两项都随 $t$ 递减，所以 $g''(t)$ 也递减。再看 $g''(0) = 1 - \frac{1}{b}$，分两种情况即可。
+其中两项都随 $t$ 递减，所以 $g''(t)$ 也递减。再看 $g''(0) = 1 - \frac{1}{b}$，便可按 \(b\) 与 \(1\) 的大小继续讨论。
 
 若 $b \leq 1$（即 $1 < a \leq e^{\sqrt{2}}$），则 $g''(0) \leq 0$。由 $g''(t)$ 严格递减可知 $g''(t) < 0$ 对一切 $t \in (0, b]$ 成立，故 $g'(t)$ 在 $[0, b]$ 上严格递减。又 $g'(0) = 0$，故在 $t \in (0, b]$ 内 $g'(t) < 0$，函数 $g(t)$ 在 $[0, b]$ 上严格递减。此时最大值在 $t = 0$ 处取得，即 $g(0) = b$。对应 $x = 2k\pi + \frac{\pi}{4}$ 时，原函数取得最大值 $2e^b = 2a^{1/\sqrt{2}}$。
 
@@ -1661,7 +1665,7 @@ M(p,q)\ge 2\cos\left(\frac{\pi}{p+q}\right).
 \[
 M(p,q)\ge 2\cos\left(\frac{\pi}{8}\right)=\sqrt{2+\sqrt{2}}> \sqrt3.
 \]
-因此想把最大值压到 $\sqrt3$ 以下，$p+q$ 就不可能达到 $8$。于是只剩本类别里的唯一例外 $p+q=4$，而这时互素正整数只能是
+因此想把最大值压到 $\sqrt3$ 以下，$p+q$ 就不可能达到 $8$。本类别里的唯一例外为 $p+q=4$，而这时互素正整数只能是
 \[
 \{p,q\}=\{1,3\}.
 \]
@@ -1908,7 +1912,7 @@ q(x)\triangleq \frac{\ln y(x)}{x}=a.
 \[
 F(x)=e^x+\ln(x+1)-2\tan x-1.
 \]
-直接求导可得
+对 \(F\) 求导得
 \[
 F'(x)=e^x+\frac{1}{x+1}-\frac{2}{\cos^2 x}<0\qquad \left(-\frac12<x<0\right).
 \]
@@ -1926,7 +1930,7 @@ q(x)=\frac{\ln y(x)}{x}>1\qquad \left(-\frac12<x<0\right).
 \]
 所以当 $a\le1$ 时，$f(x)=0$ 在这段区间内无解。
 
-再看 $\left(-1,-\frac12\right]$。直接计算
+再看 $\left(-1,-\frac12\right]$。对 \(\ln y(x)\) 求二阶导并整理，得到
 \[
 (\ln y(x))''=\frac{y(x)y''(x)-y'(x)^2}{y(x)^2}>0,
 \]

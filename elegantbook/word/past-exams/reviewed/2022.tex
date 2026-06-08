@@ -1,0 +1,637 @@
+\section{2022级工科数学分析下 A卷}
+
+\subsection{资料来源}
+\begin{itemize}
+  \item 2022级A卷无答案.pdf（试题，扫描型 PDF，已按页面人工转写）。
+  \item 2022级A卷学生答案.pdf（学生答案，扫描型 PDF；能辨认处用于校对，缺口处按教材方法补写解析）。
+\end{itemize}
+
+\subsection{试题}
+
+\paragraph*{一、填空题（共 5 题，每题 2 分，共 10 分）}
+\begin{enumerate}
+  \item 微分方程 $y''+2y'+6y=0$ 的通解为 \underline{\hspace{4cm}}。
+  \item 设函数 $u=2x^2+2y^2+3z^2$，则 $\operatorname{div}(\operatorname{grad}u)=$ \underline{\hspace{3cm}}。
+  \item 设 $\Gamma$ 为 $y^2=2x$ 上从原点到 $(2,2)$ 的一段，则第一类曲线积分
+  \[
+    \int_\Gamma y\,ds=
+  \]
+  \underline{\hspace{3cm}}。
+  \item 参数曲线
+  \[
+    \begin{cases}
+      x=t-\cos t,\\
+      y=\sin t,\\
+      z=2t
+    \end{cases}
+  \]
+  在 $t=0$ 对应的点处的切线方程为 \underline{\hspace{5cm}}。
+  \item 设周期为 $2\pi$ 的函数
+  \[
+    f(x)=
+    \begin{cases}
+      -1, & -\pi<x\le 0,\\
+      1+x, & 0<x\le \pi,
+    \end{cases}
+  \]
+  则 $f(x)$ 的傅里叶级数在 $x=\pi$ 处收敛于 \underline{\hspace{3cm}}。
+\end{enumerate}
+
+\paragraph*{二、选择题（共 5 题，每题 2 分，共 10 分）}
+\begin{enumerate}
+  \item 关于未知函数 $y$ 的微分方程
+  \[
+    (y-\cos^2 x)\,dx+e^x\,dy=0
+  \]
+  是（\quad）。
+
+  \begin{tabular}{llll}
+    A. 可分离变量方程； & B. 一阶线性非齐次方程； &
+    C. 一阶线性齐次方程； & D. 非线性方程。
+  \end{tabular}
+
+  \item 若二元函数 $f(x,y)$ 满足
+  \[
+    \lim_{(x,y)\to(0,0)}
+    \frac{f(x,y)-f(0,0)+3x-5y}{\sqrt{x^2+y^2}}=0,
+  \]
+  则（\quad）。
+
+  \begin{tabular}{ll}
+    A. $df(0,0)=0$； & B. $df(0,0)=3dx-5dy$；\\
+    C. $df(0,0)=-3dx+5dy$； & D. $df(0,0)$ 不存在。
+  \end{tabular}
+
+  \item 设函数 $f(x,y)$ 与 $\varphi(x,y)$ 均可微，且 $\varphi_y(x,y)\ne0$。若 $(x_0,y_0)$ 是 $f(x,y)$ 在约束条件
+  $\varphi(x,y)=0$ 下的一个极值点，则下列选项正确的是（\quad）。
+
+  \begin{tabular}{ll}
+    A. 若 $f_x(x_0,y_0)=0$，则 $f_y(x_0,y_0)=0$； &
+    B. 若 $f_x(x_0,y_0)=0$，则 $f_y(x_0,y_0)\ne0$；\\
+    C. 若 $f_x(x_0,y_0)\ne0$，则 $f_y(x_0,y_0)=0$； &
+    D. 若 $f_x(x_0,y_0)\ne0$，则 $f_y(x_0,y_0)\ne0$。
+  \end{tabular}
+
+  \item 函数 $\ln(1+x)$ 在 $x=0$ 处的泰勒展开式正确的是（\quad）。
+
+  \begin{tabular}{ll}
+    A. $\displaystyle \ln(1+x)=\sum_{n=1}^{\infty}\frac{(-1)^n}{n}x^n,\ x\in(-1,1]$； &
+    B. $\displaystyle \ln(1+x)=\sum_{n=1}^{\infty}\frac{(-1)^{n-1}}{n}x^n,\ x\in(-1,1]$；\\
+    C. $\displaystyle \ln(1+x)=-\sum_{n=1}^{\infty}\frac{1}{n}x^n,\ x\in[-1,1)$； &
+    D. $\displaystyle \ln(1+x)=\sum_{n=1}^{\infty}\frac{1}{n}x^n,\ x\in[-1,1)$。
+  \end{tabular}
+
+  \item 使得级数
+  \[
+    \sum_{n=1}^{\infty}\frac{(-1)^n}{n^p}
+  \]
+  条件收敛的常数 $p$ 的取值范围是（\quad）。
+
+  \begin{tabular}{llll}
+    A. $p\le0$； & B. $0<p\le1$； & C. $0<p<1$； & D. $p>1$。
+  \end{tabular}
+\end{enumerate}
+
+\paragraph*{三、计算题（共 3 题，每题 10 分，共 30 分）}
+\begin{enumerate}
+  \item 设
+  \[
+    z=\frac{1}{x}f(x+y,x-y)+g(xy),
+  \]
+  其中函数 $f$ 有二阶连续的偏导数，且 $g$ 二阶可导，计算 $\dfrac{\partial z}{\partial x}$ 和
+  $\dfrac{\partial^2z}{\partial x\partial y}$。
+
+  \item 计算累次积分
+  \[
+    \int_{-\sqrt2}^{0}dx\int_{-x}^{\sqrt{4-x^2}}\sqrt{x^2+y^2}\,dy
+    +\int_{0}^{2}dx\int_{\sqrt{2x-x^2}}^{\sqrt{4-x^2}}\sqrt{x^2+y^2}\,dy.
+  \]
+
+  \item 计算锥面 $z=\sqrt{x^2+y^2}$ 被柱面 $x^2+y^2=4x$ 截下的部分锥面面积。
+\end{enumerate}
+
+\paragraph*{四、综合题（共 3 题，每题 10 分，共 30 分）}
+\begin{enumerate}
+  \item 设 $\Sigma$ 是
+  \[
+    \frac{x^2}{a^2}+\frac{y^2}{b^2}+\frac{z^2}{c^2}=1\quad (z\ge0)
+  \]
+  的上侧，且 $a,b,c$ 都是正实数。计算第二类曲面积分
+  \[
+    \iint_\Sigma (x^2-y\sin x)\,dy\,dz+(y^2-z^2)\,dz\,dx+(z^2-x^2)\,dx\,dy.
+  \]
+
+  \item 计算曲线积分
+  \[
+    \int_\Gamma
+    \frac{(x+y)\,dx-(x-y)\,dy}{x^2+y^2},
+  \]
+  其中曲线 $\Gamma$ 是从点 $A(-1,0)$ 到点 $B(1,0)$ 的一条不经过原点的光滑曲线 $y=f(x)$，
+  $-1\le x\le1$。
+
+  \item 求幂级数
+  \[
+    \sum_{n=0}^{\infty}(n+1)x^{2n+1}
+  \]
+  的收敛域及和函数。
+\end{enumerate}
+
+\paragraph*{五、证明题（共 1 题，每题 10 分，共 10 分）}
+证明函数项级数
+\[
+  \sum_{n=1}^{\infty}\sin\frac{n!x^n}{x^2+n^n}
+\]
+在区间 $[-2,2]$ 上一致收敛。
+
+\paragraph*{六、应用题（共 1 题，每题 10 分，共 10 分）}
+制作一个体积为 $2$ 的长方体盒子，利用拉格朗日乘数法求出长、宽和高分别为多少时才能使其表面积最小。
+
+\subsection{答案与解析}
+
+\paragraph*{一、填空题}
+\begin{enumerate}
+  \item 特征方程为 $r^2+2r+6=0$，根为 $r=-1\pm\sqrt5\,i$，故
+  \[
+    y=e^{-x}\left(C_1\cos\sqrt5\,x+C_2\sin\sqrt5\,x\right).
+  \]
+  \item $\operatorname{div}(\operatorname{grad}u)=\Delta u=u_{xx}+u_{yy}+u_{zz}=4+4+6=14$。
+  \item 令 $y=t,\ x=\dfrac{t^2}{2}$，$0\le t\le2$，则 $ds=\sqrt{1+t^2}\,dt$，所以
+  \[
+    \int_\Gamma y\,ds=\int_0^2 t\sqrt{1+t^2}\,dt
+    =\frac{(1+t^2)^{3/2}}{3}\bigg|_0^2
+    =\frac{5\sqrt5-1}{3}.
+  \]
+  \item 当 $t=0$ 时点为 $(-1,0,0)$，切向量为 $(1,1,2)$，故切线方程为
+  \[
+    \frac{x+1}{1}=\frac{y}{1}=\frac{z}{2}.
+  \]
+  \item 傅里叶级数在跳跃点收敛于左右极限的平均值。因
+  \[
+    f(\pi-0)=1+\pi,\qquad f(\pi+0)=f(-\pi+0)=-1,
+  \]
+  所以收敛值为 $\dfrac{\pi}{2}$。
+\end{enumerate}
+
+\paragraph*{二、选择题}
+\begin{enumerate}
+  \item 方程可化为 \(y'+e^{-x}y=e^{-x}\cos^2x\)，是一阶线性非齐次方程。选 B。
+  \item 由可微定义，线性主部为 \(-3x+5y\)，故 \(df(0,0)=-3\,dx+5\,dy\)。选 C。
+  \item 约束极值必要条件给出 \(f_x\varphi_y-f_y\varphi_x=0\)。因 \(\varphi_y\ne0\)，若 \(f_x\ne0\) 则必有 \(f_y\ne0\)。选 D。
+  \item \(\displaystyle \ln(1+x)=\sum_{n=1}^{\infty}\frac{(-1)^{n-1}}{n}x^n\)，收敛区间为 $(-1,1]$。选 B。
+  \item 交错 $p$ 级数在 $p>0$ 时收敛，在 $p>1$ 时绝对收敛，所以条件收敛范围为 $0<p\le1$。选 B。
+\end{enumerate}
+
+\paragraph*{三、计算题}
+\begin{enumerate}
+  \item 记 $u=x+y,\ v=x-y$，并把 $f_1,f_2,f_{11},f_{22}$ 均理解为在 $(u,v)$ 处的取值，把 $g',g''$
+  理解为在 $xy$ 处的取值。先对 $x$ 求导：
+  \[
+    \frac{\partial z}{\partial x}
+    =-\frac{f}{x^2}+\frac{f_1+f_2}{x}+y\,g'(xy).
+  \]
+  再对 $y$ 求导，利用 $u_y=1,\ v_y=-1$，得
+  \[
+    \frac{\partial^2z}{\partial x\partial y}
+    =-\frac{f_1-f_2}{x^2}+\frac{f_{11}-f_{22}}{x}+g'(xy)+xy\,g''(xy).
+  \]
+
+  \item 第一部分区域为极坐标下
+  \[
+    \frac{\pi}{2}\le\theta\le\frac{3\pi}{4},\qquad 0\le r\le2,
+  \]
+  第二部分区域为
+  \[
+    0\le\theta\le\frac{\pi}{2},\qquad 2\cos\theta\le r\le2.
+  \]
+  因 $\sqrt{x^2+y^2}=r$，面积元为 $r\,dr\,d\theta$，所以原积分为
+  \[
+    \int_0^{\pi/2}\int_{2\cos\theta}^{2}r^2\,dr\,d\theta
+    +\int_{\pi/2}^{3\pi/4}\int_0^2r^2\,dr\,d\theta
+    =2\pi-\frac{16}{9}.
+  \]
+
+  \item 锥面写成 $z=\sqrt{x^2+y^2}$ 时，
+  \[
+    dS=\sqrt{1+z_x^2+z_y^2}\,dx\,dy=\sqrt2\,dx\,dy.
+  \]
+  投影区域为圆 $x^2+y^2\le4x$，即半径为 $2$ 的圆盘，面积为 $4\pi$。故锥面面积为
+  \[
+    S=\sqrt2\cdot4\pi=4\sqrt2\,\pi.
+  \]
+\end{enumerate}
+
+\paragraph*{四、综合题}
+\begin{enumerate}
+  \item 记
+  \[
+    P=x^2-y\sin x,\qquad Q=y^2-z^2,\qquad R=z^2-x^2.
+  \]
+  用底面
+  \[
+    \Sigma_0:\ z=0,\quad \frac{x^2}{a^2}+\frac{y^2}{b^2}\le1
+  \]
+  补成上半椭球体 $\Omega$ 的外侧闭曲面，底面取向向下。由高斯公式，
+  \[
+    I_\Sigma+I_{\Sigma_0}
+    =\iiint_\Omega (P_x+Q_y+R_z)\,dV
+    =\iiint_\Omega (2x-y\cos x+2y+2z)\,dV.
+  \]
+  上半椭球关于 $x,y$ 对称，含 $x,y$ 的奇函数项积分为 $0$，故
+  \[
+    I_\Sigma+I_{\Sigma_0}=\iiint_\Omega 2z\,dV
+    =\frac{\pi ab c^2}{2}.
+  \]
+  底面向下时
+  \[
+    I_{\Sigma_0}=\iint_{\frac{x^2}{a^2}+\frac{y^2}{b^2}\le1}x^2\,dx\,dy
+    =\frac{\pi a^3b}{4}.
+  \]
+  因而
+  \[
+    I_\Sigma=\frac{\pi ab c^2}{2}-\frac{\pi a^3b}{4}.
+  \]
+
+  \item 积分可拆成
+  \[
+    \frac{(x+y)\,dx-(x-y)\,dy}{x^2+y^2}
+    =\frac{x\,dx+y\,dy}{x^2+y^2}
+    +\frac{y\,dx-x\,dy}{x^2+y^2}
+    =d\ln r-d\theta.
+  \]
+  两端点到原点的距离都为 $1$，故 $d\ln r$ 的积分为 $0$。剩下的值由曲线绕过原点的方向决定。若
+  $f(0)>0$，曲线从上半平面绕过原点，$\theta$ 可由 $\pi$ 连续变到 $0$，积分为 $\pi$；若
+  $f(0)<0$，曲线从下半平面绕过原点，积分为 $-\pi$。因此
+  \[
+    \int_\Gamma
+    \frac{(x+y)\,dx-(x-y)\,dy}{x^2+y^2}
+    =
+    \begin{cases}
+      \pi, & f(0)>0,\\
+      -\pi, & f(0)<0.
+    \end{cases}
+  \]
+
+  \item 令 $t=x^2$，则
+  \[
+    \sum_{n=0}^{\infty}(n+1)x^{2n+1}
+    =x\sum_{n=0}^{\infty}(n+1)t^n.
+  \]
+  当 $|t|<1$ 即 $|x|<1$ 时，
+  \[
+    \sum_{n=0}^{\infty}(n+1)t^n=\frac{1}{(1-t)^2},
+  \]
+  所以和函数为
+  \[
+    S(x)=\frac{x}{(1-x^2)^2},\qquad |x|<1.
+  \]
+  当 $x=\pm1$ 时通项不趋于 $0$，故发散。因此收敛域为 $(-1,1)$。
+\end{enumerate}
+
+\paragraph*{五、证明题}
+对任意 $x\in[-2,2]$，有
+\[
+  \left|\sin\frac{n!x^n}{x^2+n^n}\right|
+  \le
+  \left|\frac{n!x^n}{x^2+n^n}\right|
+  \le
+  \frac{n!\,2^n}{n^n}.
+\]
+令 $M_n=\dfrac{n!\,2^n}{n^n}$，则
+\[
+  \frac{M_{n+1}}{M_n}
+  =2\left(\frac{n}{n+1}\right)^n\longrightarrow \frac{2}{e}<1.
+\]
+故 $\sum M_n$ 收敛。由魏尔斯特拉斯判别法，原函数项级数在 $[-2,2]$ 上一致收敛。
+
+\paragraph*{六、应用题}
+设长方体长、宽、高分别为 $x,y,z>0$，体积约束为 $xyz=2$，闭盒子的表面积为
+\[
+  S=2(xy+xz+yz).
+\]
+设
+\[
+  L=2(xy+xz+yz)+\lambda(xyz-2).
+\]
+由拉格朗日乘数法，
+\[
+  2(y+z)+\lambda yz=0,\qquad
+  2(x+z)+\lambda xz=0,\qquad
+  2(x+y)+\lambda xy=0.
+\]
+两两相减得 $x=y=z$。再由 $xyz=2$，得
+\[
+  x=y=z=\sqrt[3]{2}.
+\]
+因此长、宽和高都等于 $\sqrt[3]{2}$ 时表面积最小。
+
+\section{2022级工科数学分析下 B卷}
+
+\subsection{试题}
+
+\paragraph*{一、填空题：共 5 题，每题 2 分，共 10 分。}
+\begin{enumerate}
+  \item 微分方程 $y''+3y'+2y=0$ 的通解为\underline{\hspace{4cm}}。
+  \item 函数 $u=2xy-z^2$ 在点 $(2,-1,-1)$ 处方向导数的最大值为\underline{\hspace{4cm}}。
+  \item 设 $\Gamma$ 是圆周 $x^2+y^2=1$ 在第一象限的部分，则第一类曲线积分
+  \[
+    \int_\Gamma (x+y)^2\,ds=\underline{\hspace{4cm}}.
+  \]
+  \item 级数 $\displaystyle \sum_{n=0}^{\infty}(-1)^n\dfrac{2n+3}{(2n+1)!}$ 的和为\underline{\hspace{4cm}}。
+  \item 设周期为 $2\pi$ 的函数
+  \[
+    f(x)=
+    \begin{cases}
+      x^2, & -\pi<x\le 0,\\
+      0, & 0<x\le \pi,
+    \end{cases}
+  \]
+  则 $f(x)$ 的傅里叶（Fourier）级数在 $x=-\pi$ 处收敛于\underline{\hspace{4cm}}。
+\end{enumerate}
+
+\paragraph*{二、选择题：共 5 题，每题 2 分，共 10 分。}
+\begin{enumerate}
+  \item 下列微分方程中，属于二阶线性常微分方程的是（\quad）
+  \begin{enumerate}
+    \item $y''+x^3y'+(\ln x)y=\tan x$；
+    \item $(x^2+y^2)\,dy+y^2\,dx=0$；
+    \item $(y'')^2+x^2y=1$；
+    \item $y''+2\ln y=2x$。
+  \end{enumerate}
+  \item 已知函数 $f(x)$ 具有二阶连续导函数，且 $f(x)>0,\ f'(0)=0$（$f$ 在 $0$ 处的导数为 $0$）。则函数 $z=f(x)\ln f(y)$ 在点 $(0,0)$ 处取得极小值的一个充分条件是（\quad）
+  \begin{enumerate}
+    \item $f(0)>1,\ f''(0)>0$；
+    \item $f(0)>1,\ f''(0)<0$；
+    \item $f(0)<1,\ f''(0)>0$；
+    \item $f(0)<1,\ f''(0)<0$。
+  \end{enumerate}
+  \item 函数 $f(x,y)=1+x+y$ 在区域 $\{(x,y)\mid x^2+y^2\le 1\}$ 上的最大值与最小值之积是（\quad）
+  \begin{enumerate}
+    \item $-1$；
+    \item $1$；
+    \item $3-\sqrt2$；
+    \item $1+\sqrt2$。
+  \end{enumerate}
+  \item 设 $\Gamma$ 是以 $(1,1),(-1,1),(-1,-1),(1,-1)$ 为顶点的正方形边界，则第一类曲线积分
+  \[
+    \oint_\Gamma \frac{x+y+1}{|x|+|y|}\,ds
+  \]
+  等于（\quad）
+  \begin{enumerate}
+    \item $0$；
+    \item $8$；
+    \item $4\ln 2$；
+    \item $8\ln 2$。
+  \end{enumerate}
+  \item 设 $a$ 为常数，则级数
+  \[
+    \sum_{n=1}^{\infty}\left(\frac{\sin(an)}{n^2}-\frac1{\sqrt n}\right)
+  \]
+  （\quad）
+  \begin{enumerate}
+    \item 发散；
+    \item 绝对收敛；
+    \item 条件收敛；
+    \item 敛散性与 $a$ 的取值相关。
+  \end{enumerate}
+\end{enumerate}
+
+\paragraph*{三、计算题：共 3 题，每题 10 分，共 30 分。}
+\begin{enumerate}
+  \item 设
+  \[
+    g(x,y)=f\left(xy,\frac12(x^2-y^2)\right),
+  \]
+  其中 $f(u,v)$ 具有连续的二阶偏导数，且满足
+  \[
+    \frac{\partial^2 f}{\partial u^2}+\frac{\partial^2 f}{\partial v^2}=1.
+  \]
+  计算二阶偏导数 $\displaystyle \frac{\partial^2 g}{\partial x^2}+\frac{\partial^2 g}{\partial y^2}$。
+  \item 计算累次积分
+  \[
+    \int_0^1 dx\int_0^x dy\int_0^y \frac{\sin z}{(1-z)^2}\,dz.
+  \]
+  \item 计算二重积分
+  \[
+    \iint_D \sqrt{x^2+y^2}\,dx\,dy,
+  \]
+  其中 $D$ 是由 $x=\sqrt{2y-y^2}$ 与 $y=x$ 所围成的闭区域。
+\end{enumerate}
+
+\paragraph*{四、综合题：共 3 题，每题 10 分，共 30 分。}
+\begin{enumerate}
+  \item 设 $\Sigma$ 是曲面 $z=1-x^2-y^2\ (z\ge 0)$ 的上侧，计算第二型曲面积分
+  \[
+    \iint_\Sigma 2x^3\,dy\,dz+2y^3\,dz\,dx+3(z^2-1)\,dx\,dy.
+  \]
+  \item 计算曲线积分
+  \[
+    \oint_L yz\,dx+3zx\,dy-xy\,dz,
+  \]
+  其中 $L$ 是曲线
+  \[
+    \begin{cases}
+      x^2+y^2=2y,\\
+      y-z=1,
+    \end{cases}
+  \]
+  其方向从 $z$ 轴正向往 $z$ 轴负向看去为逆时针方向。
+  \item 将函数
+  \[
+    f(x)=\frac{x}{x^2-5x+6}
+  \]
+  展开成 $x-1$ 的幂级数，并指出其收敛域。
+\end{enumerate}
+
+\paragraph*{五、证明题：共 1 题，每题 10 分，共 10 分。}
+证明函数项级数
+\[
+  \sum_{n=1}^{\infty}\arctan\frac{2x}{x^2+n^3}
+\]
+在区间 $(-\infty,+\infty)$ 上一致收敛。
+
+\paragraph*{六、解答题：共 1 题，每题 10 分，共 10 分。}
+限制点 $(x,y)$ 在圆周 $(x-1)^2+y^2=1$ 上变化时，求函数 $f(x,y)=xy$ 的最小值与最大值。
+
+\subsection{答案与解析}
+
+\paragraph*{一、填空题}
+\begin{enumerate}
+  \item 特征方程 $r^2+3r+2=0$，得 $r=-1,-2$，故通解为
+  \[
+    y=C_1e^{-x}+C_2e^{-2x}.
+  \]
+  \item $\nabla u=(2y,2x,-2z)$，在 $(2,-1,-1)$ 处为 $(-2,4,2)$，方向导数最大值为
+  \[
+    |\nabla u|=\sqrt{(-2)^2+4^2+2^2}=2\sqrt6.
+  \]
+  \item 令 $x=\cos t,\ y=\sin t,\ 0\le t\le \dfrac{\pi}{2}$，则
+  \[
+    \int_\Gamma (x+y)^2\,ds
+    =\int_0^{\pi/2}(\cos t+\sin t)^2\,dt
+    =\frac{\pi}{2}+1.
+  \]
+  \item
+  \[
+    \sum_{n=0}^{\infty}(-1)^n\frac{2n+3}{(2n+1)!}
+    =
+    \sum_{n=0}^{\infty}\frac{(-1)^n}{(2n)!}
+    +2\sum_{n=0}^{\infty}\frac{(-1)^n}{(2n+1)!}
+    =\cos 1+2\sin 1.
+  \]
+  \item 在 $x=-\pi$ 处，周期延拓函数的右极限为 $\pi^2$，左极限为 $0$，故 Fourier 级数收敛于
+  \[
+    \frac{\pi^2+0}{2}=\frac{\pi^2}{2}.
+  \]
+\end{enumerate}
+
+\paragraph*{二、选择题}
+\begin{enumerate}
+  \item 选 A。A 为二阶线性非齐次常微分方程；B 为一阶方程；C 含 $(y'')^2$，D 含 $\ln y$，均非二阶线性方程。
+  \item 选 A。由 $f'(0)=0$，点 $(0,0)$ 为驻点。Hessian 矩阵对角元为 $f''(0)\ln f(0)$ 与 $f''(0)$，交叉项为 $0$；当 $f(0)>1,\ f''(0)>0$ 时正定，故取得极小值。
+  \item 选 A。在线性函数 $1+x+y$ 在单位圆盘上，最大值为 $1+\sqrt2$，最小值为 $1-\sqrt2$，二者乘积为 $-1$。
+  \item 选 D。沿正方形四条边分段计算，位于上边与右边的积分各为 $4\ln2$，下边与左边的积分和为 $0$，故总积分为 $8\ln2$。
+  \item 选 A。$\sum \sin(an)/n^2$ 绝对收敛，而 $\sum 1/\sqrt n$ 发散，故原级数发散。
+\end{enumerate}
+
+\paragraph*{三、计算题}
+\begin{enumerate}
+  \item 记 $u=xy,\ v=\dfrac12(x^2-y^2)$，并用 $f_1,f_2$ 表示 $f$ 对第一、第二个变量的偏导数。则
+  \[
+    g_x=yf_1+xf_2,\qquad g_y=xf_1-yf_2.
+  \]
+  继续求导得
+  \[
+    g_{xx}=y^2f_{11}+2xyf_{12}+x^2f_{22}+f_2,
+  \]
+  \[
+    g_{yy}=x^2f_{11}-2xyf_{12}+y^2f_{22}-f_2.
+  \]
+  因此
+  \[
+    g_{xx}+g_{yy}=(x^2+y^2)(f_{11}+f_{22})=x^2+y^2.
+  \]
+  \item 积分区域为 $0\le z\le y\le x\le 1$。交换积分次序得
+  \[
+    \int_0^1\frac{\sin z}{(1-z)^2}
+    \left(\int_z^1dy\int_y^1dx\right)dz
+    =
+    \int_0^1\frac{\sin z}{(1-z)^2}\cdot\frac{(1-z)^2}{2}\,dz.
+  \]
+  故原式为
+  \[
+    \frac12\int_0^1\sin z\,dz=\frac{1-\cos 1}{2}.
+  \]
+  \item 曲线 $x=\sqrt{2y-y^2}$ 等价于 $x^2+(y-1)^2=1$，在极坐标下边界为 $r=2\sin\theta$；直线 $y=x$ 为 $\theta=\dfrac{\pi}{4}$。故
+  \[
+    D:\quad 0\le \theta\le \frac{\pi}{4},\quad 0\le r\le 2\sin\theta.
+  \]
+  于是
+  \[
+    \iint_D\sqrt{x^2+y^2}\,dx\,dy
+    =
+    \int_0^{\pi/4}\int_0^{2\sin\theta}r^2\,dr\,d\theta
+    =
+    \frac{16-10\sqrt2}{9}.
+  \]
+\end{enumerate}
+
+\paragraph*{四、综合题}
+\begin{enumerate}
+  \item 用平面 $\Sigma_1:z=0,\ x^2+y^2\le 1$ 补成闭曲面，取外侧方向。由高斯公式，
+  \[
+    \iint_{\Sigma+\Sigma_1}2x^3\,dy\,dz+2y^3\,dz\,dx+3(z^2-1)\,dx\,dy
+    =
+    \iiint_\Omega (6x^2+6y^2+6z)\,dV=2\pi.
+  \]
+  在补面 $\Sigma_1$ 上取下侧，积分为
+  \[
+    I_{\Sigma_1}=-\iint_{x^2+y^2\le 1}3(z^2-1)\,dx\,dy=3\pi.
+  \]
+  因此所求曲面积分为
+  \[
+    2\pi-3\pi=-\pi.
+  \]
+  \item 按题设方向可取参数
+  \[
+    x=\cos t,\qquad y=1+\sin t,\qquad z=\sin t,\qquad 0\le t\le 2\pi.
+  \]
+  代入得
+  \[
+    \oint_L yz\,dx+3zx\,dy-xy\,dz
+    =
+    \int_0^{2\pi}\left[-(1+\sin t)\sin^2t+3\sin t\cos^2t-(1+\sin t)\cos^2t\right]dt.
+  \]
+  利用一个周期内奇函数项积分为 $0$，得
+  \[
+    -\int_0^{2\pi}\sin^2t\,dt-\int_0^{2\pi}\cos^2t\,dt=-2\pi.
+  \]
+  \item 分解为
+  \[
+    \frac{x}{x^2-5x+6}=\frac{3}{x-3}-\frac{2}{x-2}.
+  \]
+  令 $t=x-1$，则
+  \[
+    \frac{3}{x-3}=-\frac32\cdot\frac1{1-t/2}
+    =-\frac32\sum_{n=0}^{\infty}\left(\frac{t}{2}\right)^n,\quad |t|<2,
+  \]
+  \[
+    -\frac{2}{x-2}=\frac2{1-t}
+    =2\sum_{n=0}^{\infty}t^n,\quad |t|<1.
+  \]
+  因此
+  \[
+    f(x)=\sum_{n=0}^{\infty}\left(2-\frac{3}{2^{n+1}}\right)(x-1)^n,
+    \qquad |x-1|<1.
+  \]
+  收敛域为 $(0,2)$。
+\end{enumerate}
+
+\paragraph*{五、证明题}
+对任意 $x\in\mathbb R$，由 $|\arctan u|\le |u|$ 以及
+\[
+  x^2+n^3\ge 2|x|n^{3/2}
+\]
+可得
+\[
+  \left|\arctan\frac{2x}{x^2+n^3}\right|
+  \le
+  \frac{2|x|}{x^2+n^3}
+  \le
+  \frac1{n^{3/2}}.
+\]
+而级数 $\sum_{n=1}^{\infty}n^{-3/2}$ 收敛，故由 Weierstrass 判别法知
+\[
+  \sum_{n=1}^{\infty}\arctan\frac{2x}{x^2+n^3}
+\]
+在 $(-\infty,+\infty)$ 上一致收敛。
+
+\paragraph*{六、解答题}
+令约束函数
+\[
+  \varphi(x,y)=(x-1)^2+y^2-1=0.
+\]
+对 $F(x,y,\lambda)=xy+\lambda\varphi(x,y)$，有
+\[
+  y+2\lambda(x-1)=0,\qquad x+2\lambda y=0.
+\]
+由约束得 $x^2+y^2=2x$。当 $\lambda=0$ 时得点 $(0,0)$，函数值为 $0$，不是最值点。设 $y\ne0$，由第二个方程得
+\[
+  \lambda=-\frac{x}{2y}.
+\]
+代入第一个方程，得
+\[
+  y^2=x(x-1).
+\]
+再与 $y^2=2x-x^2$ 联立，得
+\[
+  x(x-1)=2x-x^2,\qquad x=\frac32,\qquad y=\pm\frac{\sqrt3}{2}.
+\]
+因此
+\[
+  f\left(\frac32,\frac{\sqrt3}{2}\right)=\frac{3\sqrt3}{4}
+  \]
+为最大值，
+\[
+  f\left(\frac32,-\frac{\sqrt3}{2}\right)=-\frac{3\sqrt3}{4}
+  \]
+为最小值。

@@ -1,0 +1,544 @@
+\section{2020级工科数学分析（二）期末考试 A 卷}
+
+\subsection{试题}
+
+\paragraph*{一、计算题（共 5 小题，每小题 8 分，共 40 分）}
+\begin{enumerate}
+  \item 设 $z=f(xy^2,x^2y)$，求 $\dfrac{\partial^2 z}{\partial y^2}$。
+  \item 设
+  \[
+    f(x)=
+    \begin{cases}
+      -x, & |x|\le \dfrac{\pi}{2},\\
+      x, & \dfrac{\pi}{2}<|x|\le \pi,
+    \end{cases}
+  \]
+  写出 $f(x)$ 的以 $2\pi$ 为周期的 Fourier 级数的和函数 $S(x)$ 在 $[-\pi,\pi]$ 上的表达式。
+  \item 计算二次积分
+  \[
+    \int_0^2 dx\int_{x/2}^1 e^{y^2}\,dy.
+  \]
+  \item 计算曲线积分
+  \[
+    I=\oint_L\frac{-y\,dx+x\,dy}{x^2+y^2},
+  \]
+  其中 $L:\dfrac{x^2}{a^2}+\dfrac{y^2}{b^2}=1$，取逆时针方向。
+  \item 计算曲面积分
+  \[
+    I=\iint_\Sigma (4xz+x)\,dy\,dz-2yz\,dz\,dx+(1-z^2)\,dx\,dy,
+  \]
+  其中 $\Sigma:z=x^2+y^2$，$0\le z\le 1$，取下侧。
+\end{enumerate}
+
+\paragraph*{二、解答下列各题（共 5 小题，每小题 8 分，共 40 分）}
+\begin{enumerate}
+  \item 求曲线
+  \[
+    \Gamma:
+    \begin{cases}
+      x^2+y^2+z^2-3x=0,\\
+      x+y-z=0
+    \end{cases}
+  \]
+  在点 $(1,1,1)$ 处的单位切向量 $\vec t$，并求函数
+  \[
+    u(x,y,z)=\ln(x^2+y^2+z^2)
+  \]
+  在点 $(1,1,1)$ 处沿该单位切向量 $\vec t$ 的方向导数。
+  \item 求曲面 $\Sigma:z=\sqrt{x^2+y^2}$ 夹在两曲面 $x^2+y^2=y$，$x^2+y^2=2y$ 之间的那部分面积。
+  \item 求微分方程 $y''-6y'+9y=0$ 的通解，并写出 $y''-6y'+9y=(x+1)e^{3x}$ 的特解形式。
+  \item 判断方程 $(x^2-y)\,dx-x\,dy=0$ 是否是全微分方程，如果是，求其通解。
+  \item 求幂级数
+  \[
+    \sum_{n=0}^{\infty}(-1)^n\frac{2n^2+1}{(2n+1)!}x^{2n+1}
+  \]
+  的和函数，并指出其收敛域。
+\end{enumerate}
+
+\paragraph*{三、证明下列各题（共 2 小题，每小题 6 分，共 12 分）}
+\begin{enumerate}
+  \item 设幂级数 $\sum_{n=0}^\infty a_nx^n$ 的收敛半径为 $R_1$，幂级数 $\sum_{n=0}^\infty b_nx^n$ 的收敛半径为 $R_2$，且 $R_1<R_2$。证明幂级数
+  \[
+    \sum_{n=0}^\infty (a_n+b_n)x^n
+  \]
+  的收敛半径为 $R_1$。
+  \item 证明函数项级数
+  \[
+    \sum_{n=0}^\infty \frac{\cos(nx)}{2^n}
+  \]
+  在 $(-\infty,+\infty)$ 上一致收敛。
+\end{enumerate}
+
+\paragraph*{四、应用题（本题 8 分）}
+在第一象限内作椭球面
+\[
+  \frac{x^2}{a^2}+\frac{y^2}{b^2}+\frac{z^2}{c^2}=1
+\]
+的切平面，使得切平面与三个坐标面所围成的四面体体积最小，求切点坐标。
+
+\subsection{答案与解析}
+
+\paragraph*{一、计算题}
+\begin{enumerate}
+  \item 令 $u=xy^2$，$v=x^2y$。记 $f_1,f_2$ 为 $f$ 对第一、第二个变量的偏导数，则
+  \[
+    z_y=f_1u_y+f_2v_y=2xyf_1+x^2f_2.
+  \]
+  继续对 $y$ 求导，得
+  \[
+    z_{yy}=4x^2y^2f_{11}+4x^3yf_{12}+x^4f_{22}+2xf_1,
+  \]
+  其中各偏导数均在 $(xy^2,x^2y)$ 处取值。
+  \item 函数 $f$ 是奇函数，因此只需考虑间断点处 Fourier 级数取左右极限平均值。故
+  \[
+    S(x)=
+    \begin{cases}
+      -x, & |x|<\dfrac{\pi}{2},\\
+      x, & \dfrac{\pi}{2}<|x|<\pi,\\
+      0, & x=\pm\dfrac{\pi}{2}\text{ 或 }x=\pm\pi.
+    \end{cases}
+  \]
+  \item 积分区域为 $0\le x\le 2$，$x/2\le y\le 1$。交换积分次序得
+  \[
+    0\le y\le 1,\qquad 0\le x\le 2y.
+  \]
+  因此
+  \[
+    \int_0^2 dx\int_{x/2}^1 e^{y^2}\,dy
+    =\int_0^1dy\int_0^{2y}e^{y^2}\,dx
+    =\int_0^1 2y e^{y^2}\,dy=e-1.
+  \]
+  \item 被积表达式为极角微分 $d\theta$。椭圆 $L$ 逆时针绕原点一周，故极角总增量为 $2\pi$，所以
+  \[
+    I=2\pi.
+  \]
+  \item 令
+  \[
+    P=4xz+x,\qquad Q=-2yz,\qquad R=1-z^2.
+  \]
+  曲面 $\Sigma$ 与平面 $z=1$ 围成区域
+  \[
+    \Omega=\{(x,y,z):x^2+y^2\le z\le 1\}.
+  \]
+  $\Sigma$ 取下侧时正好是 $\Omega$ 的外侧。由高斯公式，
+  \[
+    \nabla\cdot(P,Q,R)=(4z+1)-2z-2z=1.
+  \]
+  上盖圆盘 $z=1$ 上 $R=1-z^2=0$，通量为 $0$。于是
+  \[
+    I=\iiint_\Omega 1\,dV
+    =\iint_{x^2+y^2\le 1}(1-x^2-y^2)\,dx\,dy
+    =\frac{\pi}{2}.
+  \]
+\end{enumerate}
+
+\paragraph*{二、解答题}
+\begin{enumerate}
+  \item 设
+  \[
+    F=x^2+y^2+z^2-3x,\qquad G=x+y-z.
+  \]
+  在 $(1,1,1)$ 处，
+  \[
+    \nabla F=(-1,2,2),\qquad \nabla G=(1,1,-1).
+  \]
+  因此切向量可取
+  \[
+    \nabla F\times\nabla G=(-4,1,-3),
+  \]
+  单位切向量为
+  \[
+    \vec t=\pm\frac{(-4,1,-3)}{\sqrt{26}}.
+  \]
+  又
+  \[
+    \nabla u(1,1,1)=\left(\frac23,\frac23,\frac23\right).
+  \]
+  若取 $\vec t=(-4,1,-3)/\sqrt{26}$，方向导数为
+  \[
+    D_{\vec t}u=\nabla u\cdot \vec t=-\frac4{\sqrt{26}}.
+  \]
+  若取相反方向，则方向导数为 $4/\sqrt{26}$。
+  \item 用柱坐标表示两圆柱为 $r=\sin\theta$ 与 $r=2\sin\theta$，其中 $0\le\theta\le\pi$。圆锥 $z=r$ 的面积元为
+  \[
+    dS=\sqrt{1+z_x^2+z_y^2}\,dx\,dy=\sqrt2\,r\,dr\,d\theta.
+  \]
+  故所求面积
+  \[
+    S=\sqrt2\int_0^\pi\int_{\sin\theta}^{2\sin\theta}r\,dr\,d\theta
+    =\frac{3\sqrt2}{2}\int_0^\pi\sin^2\theta\,d\theta
+    =\frac{3\pi\sqrt2}{4}.
+  \]
+  \item 齐次方程的特征方程为
+  \[
+    \lambda^2-6\lambda+9=(\lambda-3)^2=0.
+  \]
+  因此通解为
+  \[
+    y=(C_1+C_2x)e^{3x}.
+  \]
+  对方程 $y''-6y'+9y=(x+1)e^{3x}$，由于 $3$ 是二重特征根，特解可设为
+  \[
+    y_p=x^2(Ax+B)e^{3x}.
+  \]
+  \item 记 $P=x^2-y$，$Q=-x$。因为
+  \[
+    P_y=-1,\qquad Q_x=-1,
+  \]
+  所以这是全微分方程。设势函数为 $\Phi$，则
+  \[
+    \Phi_x=x^2-y,
+  \]
+  从而
+  \[
+    \Phi=\frac{x^3}{3}-xy+\varphi(y).
+  \]
+  由 $\Phi_y=-x+\varphi'(y)=Q=-x$，得 $\varphi'(y)=0$。通解为
+  \[
+    \frac{x^3}{3}-xy=C.
+  \]
+  \item 设
+  \[
+    S(x)=\sum_{n=0}^{\infty}(-1)^n\frac{2n^2+1}{(2n+1)!}x^{2n+1}.
+  \]
+  对 $\sin x=\sum_{n=0}^\infty(-1)^n\dfrac{x^{2n+1}}{(2n+1)!}$ 使用算子 $D=x\dfrac{d}{dx}$。因 $2n+1=m$ 时
+  \[
+    2n^2+1=\frac{m^2-2m+3}{2},
+  \]
+  所以
+  \[
+    S(x)=\frac12(D^2-2D+3)\sin x.
+  \]
+  又
+  \[
+    D\sin x=x\cos x,\qquad D^2\sin x=x\cos x-x^2\sin x.
+  \]
+  故
+  \[
+    S(x)=\frac{(3-x^2)\sin x-x\cos x}{2}.
+  \]
+  该幂级数由正弦级数逐项微分和线性组合得到，收敛域为 $(-\infty,+\infty)$。
+\end{enumerate}
+
+\paragraph*{三、证明题}
+\begin{enumerate}
+  \item 当 $|x|<R_1$ 时，两个幂级数都收敛，所以 $\sum(a_n+b_n)x^n$ 收敛，故其收敛半径至少为 $R_1$。若其收敛半径大于 $R_1$，取 $x_0$ 使
+  \[
+    R_1<|x_0|<R_2.
+  \]
+  则 $\sum b_nx_0^n$ 收敛，而 $\sum a_nx_0^n$ 发散。若 $\sum(a_n+b_n)x_0^n$ 收敛，则
+  \[
+    \sum a_nx_0^n=\sum(a_n+b_n)x_0^n-\sum b_nx_0^n
+  \]
+  也应收敛，矛盾。因此 $\sum(a_n+b_n)x^n$ 的收敛半径为 $R_1$。
+  \item 对一切实数 $x$，
+  \[
+    \left|\frac{\cos(nx)}{2^n}\right|\le \frac1{2^n}.
+  \]
+  而
+  \[
+    \sum_{n=0}^{\infty}\frac1{2^n}
+  \]
+  收敛，所以由 Weierstrass 判别法，原函数项级数在 $(-\infty,+\infty)$ 上一致收敛。
+\end{enumerate}
+
+\paragraph*{四、应用题}
+设切点为 $(x_0,y_0,z_0)$，其中 $x_0,y_0,z_0>0$。椭球面在该点的切平面为
+\[
+  \frac{x_0x}{a^2}+\frac{y_0y}{b^2}+\frac{z_0z}{c^2}=1.
+\]
+它在三个坐标轴上的截距分别为
+\[
+  \frac{a^2}{x_0},\qquad \frac{b^2}{y_0},\qquad \frac{c^2}{z_0}.
+\]
+故四面体体积为
+\[
+  V_T=\frac16\frac{a^2}{x_0}\frac{b^2}{y_0}\frac{c^2}{z_0}
+  =\frac{a^2b^2c^2}{6x_0y_0z_0}.
+\]
+因此要使 $V_T$ 最小，只需在约束
+\[
+  \frac{x_0^2}{a^2}+\frac{y_0^2}{b^2}+\frac{z_0^2}{c^2}=1
+\]
+下使 $x_0y_0z_0$ 最大。令
+\[
+  X=\frac{x_0}{a},\qquad Y=\frac{y_0}{b},\qquad Z=\frac{z_0}{c},
+\]
+则 $X^2+Y^2+Z^2=1$。由对称性或拉格朗日乘数法，最大值在
+\[
+  X=Y=Z=\frac1{\sqrt3}
+\]
+处取得。所以所求切点为
+\[
+  \left(\frac{a}{\sqrt3},\frac{b}{\sqrt3},\frac{c}{\sqrt3}\right).
+\]
+
+\section{2020级工科数学分析（二）期末考试 B 卷}
+
+\subsection{试题}
+
+\paragraph*{一、计算题（共 5 小题，每小题 8 分，共 40 分）}
+\begin{enumerate}
+  \item 设 $z=f(x+y,xy)$，求 $\dfrac{\partial^2z}{\partial x\partial y}$。
+  \item 设
+  \[
+    f(x)=
+    \begin{cases}
+      x+1, & -\pi\le x<0,\\
+      x^2, & 0\le x<\pi,
+    \end{cases}
+  \]
+  写出 $f(x)$ 的以 $2\pi$ 为周期的 Fourier 级数的和函数 $S(x)$ 在 $[-\pi,\pi]$ 上的表达式。
+  \item 计算二次积分
+  \[
+    \int_0^1dy\int_{y^2}^{y}y\sin(x^2)\,dx.
+  \]
+  \item 计算曲线积分
+  \[
+    I=\oint_L\frac{-y\,dx+x\,dy}{4x^2+y^2},
+  \]
+  其中 $L:(x-1)^2+y^2=4$，取逆时针方向。
+  \item 计算曲面积分
+  \[
+    I=\iint_\Sigma \frac{x^3\,dy\,dz+y^3\,dz\,dx+z^3\,dx\,dy}{\sqrt{x^2+y^2+z^2}},
+  \]
+  其中 $\Sigma:z=\sqrt{a^2-x^2-y^2}$，取下侧。
+\end{enumerate}
+
+\paragraph*{二、解答下列各题（共 5 小题，每小题 8 分，共 40 分）}
+\begin{enumerate}
+  \item 求曲线
+  \[
+    \Gamma:
+    \begin{cases}
+      x^2+y^2+z^2=6,\\
+      x+y+z=0
+    \end{cases}
+  \]
+  在点 $(1,-2,1)$ 处的单位切向量 $\vec t$，并求函数
+  \[
+    u(x,y,z)=x^2+y^2+z^2
+  \]
+  在点 $(1,-2,1)$ 处沿该单位切向量 $\vec t$ 的方向导数。
+  \item 求密度 $\rho=1$ 的均匀上半球面 $\Sigma:z=\sqrt{a^2-x^2-y^2}$ 对 $z$ 轴的转动惯量。
+  \item 求微分方程 $y'+y\tan x=\cos x$ 的通解。
+  \item 求微分方程 $y''-y=0$ 的通解，并写出 $y''-y=4xe^{-x}$ 的特解形式。
+  \item 求幂级数
+  \[
+    \sum_{n=1}^{\infty}\frac{n^2+1}{2^n n!}x^n
+  \]
+  的和函数，并指出其收敛域。
+\end{enumerate}
+
+\paragraph*{三、证明下列各题（共 2 小题，每小题 6 分，共 12 分）}
+\begin{enumerate}
+  \item 设正项级数 $\sum_{n=0}^{\infty}a_n$ 收敛，证明正项级数
+  \[
+    \sum_{n=1}^{\infty}\frac{\sqrt{a_n}}{n}
+  \]
+  也收敛。【原卷第二个求和下限印作 $n=0$，但含分母 $n$，本稿按 $n=1$ 校正。】
+  \item 设正项级数 $\sum_{n=0}^{\infty}a_n$ 收敛，证明函数
+  \[
+    f(x)=\sum_{n=0}^{\infty}a_nx^n
+  \]
+  在 $(-1,1)$ 上连续。
+\end{enumerate}
+
+\paragraph*{四、应用题（本题 8 分）}
+要造一容积为 $V$ 的长方体无盖铝盒，请问怎样设计尺寸，使它的表面积最小？
+
+\subsection{答案与解析}
+
+\paragraph*{一、计算题}
+\begin{enumerate}
+  \item 令 $u=x+y$，$v=xy$。则
+  \[
+    z_x=f_1+ yf_2.
+  \]
+  对 $y$ 求导，注意 $u_y=1$，$v_y=x$，得
+  \[
+    z_{xy}=f_{11}+xf_{12}+yf_{21}+xyf_{22}+f_2.
+  \]
+  因 $f_{12}=f_{21}$，可写为
+  \[
+    z_{xy}=f_{11}+(x+y)f_{12}+xyf_{22}+f_2,
+  \]
+  其中各偏导数均在 $(x+y,xy)$ 处取值。
+  \item Fourier 级数在连续点处收敛到函数值，在跳跃间断点处收敛到左右极限的平均值。故
+  \[
+    S(x)=
+    \begin{cases}
+      x+1, & -\pi<x<0,\\
+      x^2, & 0<x<\pi,\\
+      \dfrac12, & x=0,\\
+      \dfrac{\pi^2-\pi+1}{2}, & x=\pm\pi.
+    \end{cases}
+  \]
+  \item 积分区域为 $0\le y\le 1$，$y^2\le x\le y$。交换积分次序得
+  \[
+    0\le x\le 1,\qquad x\le y\le \sqrt{x}.
+  \]
+  因此
+  \[
+    \int_0^1dy\int_{y^2}^{y}y\sin(x^2)\,dx
+    =\int_0^1\sin(x^2)\,dx\int_x^{\sqrt{x}}y\,dy
+    =\frac12\int_0^1(x-x^2)\sin(x^2)\,dx.
+  \]
+  进一步化简，
+  \[
+    \frac12\int_0^1x\sin(x^2)\,dx=\frac{1-\cos1}{4},
+  \]
+  且
+  \[
+    \int_0^1x^2\sin(x^2)\,dx=-\frac{\cos1}{2}+\frac12\int_0^1\cos(x^2)\,dx.
+  \]
+  所以
+  \[
+    I=\frac14\left(1-\int_0^1\cos(x^2)\,dx\right).
+  \]
+  其中 $\int_0^1\cos(x^2)\,dx$ 可用 Fresnel 积分表示。
+  \item 作变量变换 $u=2x$，$v=y$，则
+  \[
+    \frac{-y\,dx+x\,dy}{4x^2+y^2}
+    =\frac12\frac{-v\,du+u\,dv}{u^2+v^2}.
+  \]
+  曲线 $L$ 在 $(u,v)$ 平面中的像仍逆时针绕原点一周，因此
+  \[
+    I=\frac12\cdot 2\pi=\pi.
+  \]
+  \item 在上半球面上 $\sqrt{x^2+y^2+z^2}=a$，向外单位法向量为 $(x,y,z)/a$。题设取下侧，即取相反方向。因此
+  \[
+    I=-\iint_\Sigma \frac{x^4+y^4+z^4}{a^2}\,dS.
+  \]
+  由对称性，上半球面上
+  \[
+    \iint_\Sigma x^4\,dS=\iint_\Sigma y^4\,dS=\iint_\Sigma z^4\,dS=\frac{2\pi a^6}{5}.
+  \]
+  故
+  \[
+    I=-\frac1{a^2}\cdot 3\cdot\frac{2\pi a^6}{5}
+    =-\frac{6\pi a^4}{5}.
+  \]
+\end{enumerate}
+
+\paragraph*{二、解答题}
+\begin{enumerate}
+  \item 令
+  \[
+    F=x^2+y^2+z^2,\qquad G=x+y+z.
+  \]
+  在 $(1,-2,1)$ 处，
+  \[
+    \nabla F=(2,-4,2),\qquad \nabla G=(1,1,1).
+  \]
+  切向量可取
+  \[
+    \nabla F\times\nabla G=(-6,0,6),
+  \]
+  故单位切向量为
+  \[
+    \vec t=\pm\frac{(-1,0,1)}{\sqrt2}.
+  \]
+  又 $\nabla u(1,-2,1)=(2,-4,2)$，所以
+  \[
+    D_{\vec t}u=\nabla u\cdot\vec t=0.
+  \]
+  \item 对 $z$ 轴的转动惯量为
+  \[
+    J_z=\iint_\Sigma (x^2+y^2)\rho\,dS.
+  \]
+  用球坐标参数化上半球面，$x^2+y^2=a^2\sin^2\varphi$，$dS=a^2\sin\varphi\,d\varphi\,d\theta$，其中 $0\le\varphi\le\pi/2$，$0\le\theta\le2\pi$。于是
+  \[
+    J_z=\int_0^{2\pi}\int_0^{\pi/2}a^2\sin^2\varphi\cdot a^2\sin\varphi\,d\varphi\,d\theta
+    =2\pi a^4\cdot\frac23
+    =\frac{4\pi a^4}{3}.
+  \]
+  \item 这是线性方程。积分因子为
+  \[
+    \mu(x)=e^{\int\tan x\,dx}=\sec x.
+  \]
+  因而
+  \[
+    (y\sec x)'=1.
+  \]
+  积分得
+  \[
+    y\sec x=x+C,
+  \]
+  即
+  \[
+    y=(x+C)\cos x.
+  \]
+  \item 齐次方程 $y''-y=0$ 的特征根为 $\lambda=\pm1$，故通解为
+  \[
+    y=C_1e^x+C_2e^{-x}.
+  \]
+  对 $y''-y=4xe^{-x}$，因 $e^{-x}$ 对应特征根 $-1$，且重数为 $1$，特解可设为
+  \[
+    y_p=x(Ax+B)e^{-x}.
+  \]
+  \item 令 $t=x/2$。则
+  \[
+    \sum_{n=1}^{\infty}\frac{n^2+1}{2^n n!}x^n
+    =\sum_{n=1}^{\infty}\frac{(n^2+1)t^n}{n!}.
+  \]
+  利用
+  \[
+    \sum_{n=1}^{\infty}\frac{n^2t^n}{n!}=(t^2+t)e^t,\qquad
+    \sum_{n=1}^{\infty}\frac{t^n}{n!}=e^t-1,
+  \]
+  得和函数
+  \[
+    S(x)=\left(\frac{x^2}{4}+\frac{x}{2}+1\right)e^{x/2}-1.
+  \]
+  该幂级数收敛域为 $(-\infty,+\infty)$。
+\end{enumerate}
+
+\paragraph*{三、证明题}
+\begin{enumerate}
+  \item 对任意 $N$，由 Cauchy--Schwarz 不等式，
+  \[
+    \sum_{n=1}^{N}\frac{\sqrt{a_n}}{n}
+    \le
+    \left(\sum_{n=1}^{N}a_n\right)^{1/2}
+    \left(\sum_{n=1}^{N}\frac1{n^2}\right)^{1/2}.
+  \]
+  由于 $\sum a_n$ 与 $\sum 1/n^2$ 均收敛，右侧对 $N$ 有一致上界。又原级数为正项级数，其部分和单调递增且有上界，故
+  \[
+    \sum_{n=1}^{\infty}\frac{\sqrt{a_n}}{n}
+  \]
+  收敛。
+  \item 对 $x\in(-1,1)$，每一项 $a_nx^n$ 都连续。并且在 $[-1,1]$ 上
+  \[
+    |a_nx^n|\le a_n.
+  \]
+  因为 $\sum a_n$ 收敛，由 Weierstrass 判别法，$\sum a_nx^n$ 在 $[-1,1]$ 上一致收敛，从而其和函数在 $[-1,1]$ 上连续，特别地在 $(-1,1)$ 上连续。
+\end{enumerate}
+
+\paragraph*{四、应用题}
+设无盖铝盒底面边长分别为 $x,y$，高为 $h$。约束条件为
+\[
+  xyh=V.
+\]
+表面积为
+\[
+  S=xy+2xh+2yh=xy+\frac{2V}{y}+\frac{2V}{x}.
+\]
+求偏导并令其为零：
+\[
+  S_x=y-\frac{2V}{x^2}=0,\qquad
+  S_y=x-\frac{2V}{y^2}=0.
+\]
+由此得 $x=y$。设 $x=y=t$，则
+\[
+  t^3=2V,\qquad h=\frac{V}{t^2}=\frac{t}{2}.
+\]
+所以当底面为正方形，边长
+\[
+  t=\sqrt[3]{2V},
+\]
+高为
+\[
+  h=\frac12\sqrt[3]{2V}
+\]
+时，表面积最小。

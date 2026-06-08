@@ -1,18 +1,19 @@
-﻿\chapter{曲线系}
+\chapter{曲线系}
 \section{曲线系引入}
 \begin{example}[（椭圆上的中点弦直线）]
 设椭圆$\dfrac{x^2}{a^2}+\dfrac{y^2}{b^2}=1$内有一点$P(x_0,y_0)$，求以$P$为弦中点的直线方程.
 \end{example}
 \begin{solution}
-    构造两个椭圆\[\begin{cases}\dfrac{x^2}{a^2}+\dfrac{y^2}{b^2}=1\\\dfrac{(2x_0-x)^2}{a^2}+\dfrac{(2y_0-y)^2}{b^2}=1\end{cases}\]
+    设弦上一端为 $X(x,y)$。由于 $P(x_0,y_0)$ 是中点，另一端为 $X'(2x_0-x,2y_0-y)$。两端都在椭圆上，故联立
+    \[\begin{cases}\dfrac{x^2}{a^2}+\dfrac{y^2}{b^2}=1\\\dfrac{(2x_0-x)^2}{a^2}+\dfrac{(2y_0-y)^2}{b^2}=1\end{cases}\]
     两式相减，得\[\dfrac{x_0x}{a^2}+\dfrac{y_0y}{b^2}=\dfrac{x_0^2}{a^2}+\dfrac{y_0^2}{b^2}\]
 \end{solution}
 \begin{example}[（椭圆上的直线两点式）]
 设椭圆$\dfrac{x^2}{a^2}+\dfrac{y^2}{b^2}=1$上有两点$A(x_1,y_1),B(x_2,y_2)$，求$AB$方程.
 \end{example}
 \begin{solution}
-    构造曲线
-    \[\dfrac{(x-x_1)(x-x_2)}{a^2}+\dfrac{(y-y_1)(y-y_2)}{b^2}=1\]
+    构造同样经过 $A,B$ 的二次式，再与原方程相减，可得到过 $A,B$ 的一次方程。取
+    \[\dfrac{(x-x_1)(x-x_2)}{a^2}+\dfrac{(y-y_1)(y-y_2)}{b^2}=0\]
     与原椭圆方程相减，整理得$AB$的方程
     \[\dfrac{x_1+x_2}{a^2}x+\dfrac{y_1+y_2}{b^2}y=1+\dfrac{x_1x_2}{a^2}+\dfrac{y_1y_2}{b^2}\]
     代入椭圆参数方程，可写成参数形式的两点式。
@@ -21,71 +22,98 @@
 设$y^2=2px$上有两点$A(x_1,y_1),B(x_2,y_2)$，求$AB$方程.
 \end{example}
 \begin{solution}
-    构造直线系$(y-y_1)(y-y_2)=0$，与抛物线方程相减，得
+    取同过 $A,B$ 的直线对 $(y-y_1)(y-y_2)=0$，与抛物线方程相减，得
     \[y^2-(y-y_1)(y-y_2)=2px\Leftrightarrow 2px-(y_1+y_2)y+y_1y_2=0\]
 \end{solution}
-\begin{example}[（利用梯形构造四点共圆）]
+\begin{example}[（利用梯形得到四点共圆）]
     二次函数$y=x^2+(a+1)x+a-2$与坐标轴交于$A,B,C$三点，求$\triangle ABC$的外接圆的方程，并验证圆心是否在定直线上，以及外接圆是否过定点.
 \end{example}
 \begin{solution}
-    构造直线系$(y-0)(y-(a-2))=y(y-a+2)$，并与抛物线$x^2+(a+1)x-y+a-2=0$相加，得
+    抛物线与坐标轴的交点中，两点在 $x$ 轴上，另一点在 $y=a-2$ 这条水平线上。于是用 $y(y-a+2)=0$ 表示经过这两条水平线的退化二次式，再与抛物线
+    \[
+    x^2+(a+1)x-y+a-2=0
+    \]
+    相加，得
     \[x^2+y^2+(a+1)x-y-ay+2y+a-2=x^2+y^2+(a+1)x+(1-a)y+a-2=0\]
-    圆心$\bigg(\dfrac{a+1}{-2},\dfrac{1-a}{-2}\bigg)$一定在定直线上。将方程改写为
+    圆心为
+    \[
+    \left(-\frac{a+1}{2},\frac{a-1}{2}\right),
+    \]
+    其横纵坐标之和恒为 $-1$，所以圆心一定在定直线
+    \[
+    x+y+1=0
+    \]
+    上。将方程改写为
     \[a(x-y+1)+x^2+y^2+x+y-2=0\]
     代入$(0,1)$和$(-2,-1)$时，含 $a$ 的项都为 $0$，所以外接圆恒过定点$(0,1),(-2,-1)$。
 \end{solution}
-\begin{example}[（2025八省联考）]
+    \begin{example}[（2025八省联考）]
     椭圆$\dfrac{x^2}{9}+\dfrac{y^2}{8}=1$，$A(-3,0),B(2,0)$，过$B$的弦$MN$与点$A$形成的三角形$AMN$外心为$D$，证明$k_{MN}k_{OD}$为定值.
 \end{example}
 \begin{solution}
-    由斜率互为相反数，可转用圆系处理。构造直线系$(x-ty-2)(x-ty+3)=0$，并与椭圆联立：
-    \[\begin{cases}(x-ty-2)(x-ty+3)=0\\8x^2+9y^2-72=0\end{cases}\]
-    取原椭圆方程的适当倍数，使 $x^2,y^2$ 的系数相等，于是
+    若弦 $MN$ 竖直，则 $k_{MN}$ 不存在，与题意不符；故设弦 $MN$ 的方程为 $x-ty-2=0$。要得到 $\triangle AMN$ 的外接圆，需要先构造一个过 $A,M,N$ 的二次式。取过 $A(-3,0)$ 的直线 $x+ty+3=0$，与 $MN$ 合成
+\[\begin{cases}(x-ty-2)(x+ty+3)=0\\8x^2+9y^2-72=0\end{cases}\]
+    前一式已经过 $A,M,N$。再取原椭圆方程的适当倍数，使 $x^2,y^2$ 的系数相等，就得到过 $A,M,N$ 的圆：
     \begin{align*}&(t^{2}+1)(8x^{2}+9y^{2}-72)+(x-ty-2)(x+ty+3)=0\\&\Leftrightarrow{}(8t^{2}+9)x^{2}+(8t^{2}+9)y^{2}+x-5ty-72t^{2}-78=0\end{align*}
     则$k_{OD}=-5t,k_{MN}=\dfrac1{t}$，定值为$-5$.
 \end{solution}
-\begin{example}[（直径圆的构造）]
+\begin{example}[（直径圆的求法）]
     已知抛物线$y^2=2px$和弦$AB$所在的直线$x=ty+m$，求$A,B$的直径圆方程.
 \end{example}
 \begin{solution}
     消去$x$得到\[y^2=2p(ty+m)=2pty+2pm\Rightarrow y^2-2pty-2pm=0\]
-    消去$y$得到\[t^2y^2=(x-m)^2=2p^2t^2x\Rightarrow x^2-(2m+2p^2t^2)x+m^2=0\]
+    消去$y$得到\[(x-m)^2=t^2y^2=2pt^2x\Rightarrow x^2-(2m+2pt^2)x+m^2=0\]
     两式相加，得直径圆方程
-    \[x^2+y^2-(2m+2p^2t^2)x-2pty+m^2-2pm=0\]
-    这是因为消去$x,y$后分别得到关于两端点横坐标、纵坐标的二次方程，于是相加后正好得到以$AB$为直径的圆。
+    \[x^2+y^2-(2m+2pt^2)x-2pty+m^2-2pm=0\]
+    上述相加的依据是：消去$x,y$后分别得到关于两端点横坐标、纵坐标的二次方程，两式相加即得到以$AB$为直径的圆。
 \end{solution}
 \begin{example}[（过两点的圆系方程例题）]
-    已知$C:y^2=4x,l:y=x+1$交于$A,B$两点，求经过$A,B$且与$x=-1$相切的圆的方程.
+    已知$C:y^2=4x,l:x=1$交于$A,B$两点，求经过$A,B$且与$x=-1$相切的圆的方程.
 \end{example}
 \begin{solution}
-    联立有：\[\begin{cases}y^2=4(y-1)\\(x+1)^2=4x\end{cases}\Rightarrow 
-    \begin{cases}y^2-4y+4=0\\x^2-2x+1=0\end{cases}\]
-    相加得
-    \[x^2+y^2-2x-4y+5=0\]
-    这是直径圆。过$A,B$的圆系可写为：
-    \[x^{2}+y^{2}-6x-4y-3+\lambda(x-y-1)=0\]
-    代入$x=-1$，得到\[y^{2}-4y+4+\lambda(-2-y)=0\]
-    并让$\Delta=0$，得到：\[\Delta=(4+\lambda)^{2}-4(4-2\lambda)=0\Rightarrow 
-    \lambda_1=0,\lambda_2=-16\]
-    因此圆方程有两个：$x^2+y^2-2x-4y+5=0$和$x^2+y^2-18x+12y+21=0$。
+    联立 $x=1$ 与 $y^2=4x$，得
+    \[
+    A(1,2),\qquad B(1,-2).
+    \]
+    过 $A,B$ 的圆心必在 $x$ 轴上，设圆方程为
+    \[
+    x^2+y^2+Dx+F=0.
+    \]
+    代入 $A(1,2)$，得
+    \[
+    5+D+F=0.
+    \]
+    该圆与直线 $x=-1$ 相切，等价于把 $x=-1$ 代入后关于 $y$ 的方程有重根：
+    \[
+    y^2+1-D+F=0.
+    \]
+    因为其中没有一次项，所以重根只能为 $y=0$，故
+    \[
+    1-D+F=0.
+    \]
+    解得 $D=-2,\ F=-3$。因此所求圆为
+    \[
+    x^2+y^2-2x-3=0.
+    \]
 \end{solution}
 \begin{example}[（直径圆习题）]
-    已知椭圆$\dfrac{x^2}{a^2}+\dfrac{y^2}{b^2}=1$，弦$AB$过定点$(m,0)$，其直径圆与椭圆交于点$C,D$，证明直线$CD$过定点.
+    已知椭圆$3x^2+4y^2=12$，弦$AB$过定点$(m,0)$，其直径圆与椭圆交于点$C,D$，证明直线$CD$过定点.
 \end{example}
 \begin{solution}
-    设$AB:x=ty+m$，其中$m$已知，联立韦达：\[\begin{cases}3x^{2}+4y^{2}-12=0\\x=ty+m&\end{cases}\Rightarrow\begin{cases}(3t^{2}+4)y^{2}+6tmy+3m^{2}-12=0\\(3t^{2}+4)x^{2}-8mx+4m^{2}-12t^{2}=0\end{cases}\]
+    设$AB:x=ty+m$，其中$m$已知。分别消去 $x$ 与 $y$，由韦达定理得到端点横、纵坐标满足的二次方程：
+    \[\begin{cases}3x^{2}+4y^{2}-12=0\\x=ty+m&\end{cases}\Rightarrow\begin{cases}(3t^{2}+4)y^{2}+6tmy+3m^{2}-12=0\\(3t^{2}+4)x^{2}-8mx+4m^{2}-12t^{2}=0\end{cases}\]
     两式相加得到:\[(3t^2+4)x^2+(3t^2+4)y^2-8mx+6tmy+7m^2-12-12t^2=0\]
     减去适当倍数的原椭圆方程，可把它整理成两个一次因子的乘积：
     \[-(t^2+1)(3x^{2}+4y^{2}-12)+(3t^{2}+4)(x^{2}+y^{2})-8mx+6tmy+7m^{2}-12-12t^{2}=0\]
     因式分解成\[(x-ty-m)(x+ty-7m)=0\]，所以$CD$过定点$(7m,0)$.
 \end{solution}
 \begin{example}[（角平分线）]
-    已知椭圆$\dfrac{x^2}{a^2}+\dfrac{y^2}{b^2}=1$，弦$AB$过定点$P(1,0)$，$C(4,0)$，证明$x$轴平分$\angle{ACB}$
+    已知椭圆$3x^2+4y^2=12$，弦$AB$过定点$P(1,0)$，$C(4,0)$，证明$x$轴平分$\angle{ACB}$
 \end{example}
 \begin{solution}
-    由$AB:x=ty+1$，由对称性可以设$A'B':x=-ty+1$，得到退化二次曲线\[(x-ty-1)(x+ty-1)=0\]
-    再减去适当倍数的原椭圆方程，并整理成
-    \[(x-?y-4)(x+?y-4)=0\]中的常数项，得到$\lambda=-\dfrac14$
+    由$AB:x=ty+1$。设 $A'B'$ 为 $AB$ 关于 $x$ 轴的对称直线，则 $A'B':x=-ty+1$，对应端点也是 $A,B$ 关于 $x$ 轴的对称点。于是得到直线对
+    \[(x-ty-1)(x+ty-1)=0\]
+    再减去适当倍数的原椭圆方程。为了让所得式子表示两条过 $C(4,0)$ 的对称直线，把常数项配成 $(x-4)^2$ 的形式，由此确定倍数为 $-\dfrac14$：
     \[-(3x^{2}+4y^{2}-12)+4(x-ty-1)(x+ty-1)=0\]
     得到$(x-4)^2=(4+t^2)y^2$，这等价于\[(x+\sqrt{4+t^2}y-4)(x-\sqrt{4+t^2}y-4)=0\]
     这两条直线分别经过 $A,B$，斜率互为相反数，所以$x$轴平分$\angle ACB$。
@@ -98,23 +126,48 @@
     设直线方程$MN:y=kx+m\Leftrightarrow kx=y-m$，并联立
     \vspace{-5pt}
     \[\begin{cases}(1):(4k^2+1)x^2+8kmx+4m^2-4=0\\(2):(4k^2+1)y^2-2my+m^2-4k^2=0\\(3):y-kx-m=0\end{cases}\vspace{-5pt}\]
-    将$(1)+(2)+2m(3)$相加，得过$A,B$两点且圆心在$x$轴上的圆\vspace{-5pt}
+    将$(1)+(2)+2m(3)$相加，得过$M,N$且圆心在$x$轴上的圆\vspace{-5pt}
     \[(4k^2+1)(x^2+y^2)+6kmx+3m^2-4k^2-4=0\vspace{-5pt}\]
     代入$F(\sqrt3,0)$，得直线$MN$到焦点$(\sqrt3,0)$的距离 $d$：\vspace{-5pt}
     \[8k^2+6\sqrt{3}km+3m^2=1\Leftrightarrow d=\dfrac{\sqrt{3}k+m}{\sqrt{k^2+1}}=\dfrac{1}{\sqrt3}\vspace{-5pt}\]
     设圆半径为$R$。由等面积关系，
     \vspace{-5pt}\[\begin{cases}S_{\triangle{MNF}}=\dfrac12|FM||FN|\sin\angle{MFN}=\dfrac12|MN|d=\dfrac{1}{2}\dfrac{1}{\sqrt3}|MN|\\\sqrt{3}|FM||FN|=2|MN|\end{cases}\Rightarrow \sin\angle{MFN}=\dfrac12\vspace{-5pt}\]
-    再设$M(x_1,y_1),N(x_2,y_2)$，由向量公式得
+    设$M(x_1,y_1),N(x_2,y_2)$。由 $\sin\angle MFN=\frac12$，可设
+    \[
+    \cos\angle MFN=\varepsilon\frac{\sqrt3}{2},\qquad \varepsilon=\pm1.
+    \]
+    椭圆 $\frac{x^2}{4}+y^2=1$ 的右焦点为 $F(\sqrt3,0)$，右准线为 $x=\frac4{\sqrt3}$，故椭圆上点 $X(x,y)$ 到右焦点的距离为
+    \[
+    |FX|=2-\frac{\sqrt3}{2}x.
+    \]
+    于是
     \begin{align*}
-        \cos\angle{MFN}=&\dfrac{\sqrt3}{2}=\dfrac{\overrightarrow{FM}\cdot\overrightarrow{FN}}{|FM||FN|}=\dfrac{(x_1-\sqrt3)(x_2-\sqrt3)+y_1y_2}{(2-\frac{\sqrt3}{2}x_1)(2-\frac{\sqrt3}{2}x_2)}=\dfrac{(x_1-\sqrt3)(x_2-\sqrt3)+y_1y_2}{\frac34(\frac{4}{\sqrt3}-x_1)(\frac{4}{\sqrt3}-x_2)}\\
+        \dfrac{\overrightarrow{FM}\cdot\overrightarrow{FN}}{|FM||FN|}
+        =&\dfrac{(x_1-\sqrt3)(x_2-\sqrt3)+y_1y_2}{(2-\frac{\sqrt3}{2}x_1)(2-\frac{\sqrt3}{2}x_2)}=\dfrac{(x_1-\sqrt3)(x_2-\sqrt3)+y_1y_2}{\frac34(\frac{4}{\sqrt3}-x_1)(\frac{4}{\sqrt3}-x_2)}\\
         =&\dfrac{4}{3}\dfrac{12k^2+8\sqrt{3}km+4m^2-1+m^2-4k^2}{(4k^2+1)\frac{16}{3}+\frac{32}{\sqrt3}km+4m^2-4}=\dfrac{8k^2+8\sqrt{3}km+5m^2-1}{16k^2+8\sqrt{3}km+3m^2+1}\\
         =&\frac{8k^2+8\sqrt{3}km+5m^2-(8k^2+6\sqrt{3}km+3m^2)}{16k^2+8\sqrt{3}km+3m^2+8k^2+6\sqrt{3}km+3m^2}=\frac{\sqrt3km+m^2}{12k^2+7\sqrt3km+3m^2}
     \end{align*}
-    令$t=\dfrac{m}{k}$，把式子同除以$k^2$，得
+    若 $\varepsilon=-1$，令 $t=\frac{m}{k}$ 后得到
+    \[
+    (2+3\sqrt3)t^2+(21+2\sqrt3)t+12\sqrt3=0,
+    \]
+    其两根为 $-\sqrt3$ 与 $-\dfrac{12}{2+3\sqrt3}$。代入
+    \[
+    k^2=\frac{d^2}{(t+\sqrt3)^2-d^2}
+    \]
+    时，分母均为负数，故 $k^2<0$，不合直线斜率为实数。故只能取 $\varepsilon=1$。令$t=\dfrac{m}{k}$，把式子同除以$k^2$，得
     \[(3\sqrt3-2)t^2+(21-2\sqrt3)t+12\sqrt3=0.\]
-    取符合条件的一根
+    两根中，$t=-\sqrt3$ 会使 $\sqrt3k+m=0$，与前面 $d=\frac1{\sqrt3}$ 不符，因此取另一根
     \[t=\dfrac{12}{2-3\sqrt3},\qquad t^2=\dfrac{144}{31-12\sqrt3}.\vspace{-5pt}\]
-    由前面求出的距离，利用斜率的定义计算：
+    由距离式
+    \[
+    \frac{\sqrt3k+m}{\sqrt{k^2+1}}=\frac1{\sqrt3}
+    \]
+    两边平方，并把 $m=tk$ 代入，得到
+    \[
+    k^2=\frac{d^2}{(t+\sqrt3)^2-d^2},\qquad d=\frac1{\sqrt3}.
+    \]
+    于是
     \[k^2=\dfrac{d^2}{(-\frac{m}{k}-\sqrt3)^2-d^2}=\dfrac{1}{3(\frac{3+2\sqrt3}{3\sqrt3-2})^2-1}=\dfrac{31-12\sqrt3}{3(3+2\sqrt3)^2-(3\sqrt3-2)^2}=\dfrac{1}{16}\dfrac{31-12\sqrt3}{2+3\sqrt3}\vspace{-5pt}\]
     \[m^2=k^2\dfrac{m^2}{k^2}=\dfrac{1}{16}\dfrac{31-12\sqrt3}{2+3\sqrt3}\dfrac{144}{31-12\sqrt3}=\dfrac{9}{2+3\sqrt3},km=\dfrac34\dfrac{2-3\sqrt3}{2+3\sqrt3}\]\vspace{-10pt}
     于是
@@ -124,17 +177,21 @@
     \end{align*}
 \end{solution}
 \newpage
-\begin{example}[（焦点、外心与面积）]
+\begin{example}[（焦点、外心与面积，圆系解法）]
     椭圆$x^2+4y^2=4$的右焦点为$(\sqrt3,0)$，点$M,N$在$x$轴上方的椭圆上，且$\triangle{MNF}$的外心$D$在$x$轴上，$\sqrt{3}|FM||FN|=2|MN|$，求$S_{\triangle{MNF}}$
 \end{example}
 \begin{solution}
-    也可直接联立圆与椭圆：
+    也可以联立圆与椭圆。设外心为 $D(m,0)$，圆过焦点 $F(\sqrt3,0)$，故
+    \[
+    r^2=(m-\sqrt3)^2.
+    \]
+    于是
     \[\begin{cases}(x-m)^2+y^2=r^2\\\dfrac{x^2}{4}+y^2=1\end{cases}\Rightarrow \dfrac{3}{4}x^2-2mx+2\sqrt{3}m-2=0\]
     设$M(x_1,y_1),N(x_2,y_2)$，由$\sqrt{3}|FM||FN|=2|MN|$得到：
     \begin{align*}|MN|=&\dfrac{\sqrt3}{2}\left(2-\dfrac{\sqrt3}{2}x_1\right)\left(2-\dfrac{\sqrt3}{2}x_2\right)=\dfrac{3\sqrt3}{8}\left(\dfrac{4}{\sqrt3}-x_1\right)\left(\dfrac{4}{\sqrt3}-x_2\right)\\=&\dfrac{3\sqrt3}{8}\dfrac43\left(\dfrac{3}{4}\dfrac{16}{3}-\dfrac{8m}{\sqrt3}+2m-2\right)
     =\dfrac{\sqrt3}{2}(2-\dfrac{2}{\sqrt{3}}m)=\sqrt3-m\end{align*}
     由于圆经过椭圆焦点，有\[(\sqrt3-m)^2=r^2\Rightarrow \sqrt3-m=|MN|=r=\dfrac{\sqrt{3}}{2}|FM||FN|\]
-    设圆心为$D$，有等边三角形$MDN$，圆周角定理得到$\angle{MFN}=\dfrac{\pi}{6}$，所求面积为
+    设圆心为$D$，则 $DM=DN=r$，又已得 $MN=r$，所以 $\triangle MDN$ 为等边三角形。点 $F$ 也在该圆上，圆周角 $\angle MFN$ 与圆心角 $\angle MDN$ 对同一弦 $MN$，因此 $\angle{MFN}=\dfrac{\pi}{6}$，所求面积为
     \[S_{\triangle{MNF}}=\dfrac12\sin\angle{MFN}|FM||FN|=\dfrac{1}{4}|FM||FN|=\dfrac{\sqrt3}{6}r\]
     $r$ 可由三角形$MNF$的余弦定理求出：
     \[|MF|^2+|NF|^2-\sqrt3|MF||NF|=|MF|^2+|NF|^2-2r=|MN|^2=r^2\Rightarrow |MF|^2+|NF|^2=r^2+2r\]

@@ -1,11 +1,47 @@
-﻿% 第二章：导数与微分
+% 第二章：导数与微分
 \chapter{手稿}
 \section{杂题收录}
 \begin{example}
     已知$x,y>0$，且$x^2+9y^2=12$，则$\dfrac{x+2}{y+1}-3x$的最小值为\underline{\hspace{2cm}}.
 \end{example}
 \begin{solution}
-
+记
+\[
+F=\frac{x+2}{y+1}-3x.
+\]
+因为 $y>0$，要证 $F\ge -6$，等价于
+\[
+x+2+(6-3x)(y+1)\ge 0,
+\]
+即
+\[
+8-2x+6y-3xy\ge 0.
+\]
+由 $x^2+9y^2=12$ 得
+\[
+y=\frac{\sqrt{12-x^2}}{3},\qquad 0<x<2\sqrt3.
+\]
+代入上式，需证
+\[
+8-2x+2\sqrt{12-x^2}-x\sqrt{12-x^2}\ge0.
+\]
+当 $0<x\le2$ 时，左式中 $8-2x>0$ 且 $2\sqrt{12-x^2}-x\sqrt{12-x^2}\ge0$，不等式成立。
+当 $x>2$ 时，上式等价于
+\[
+2(4-x)\ge (x-2)\sqrt{12-x^2}.
+\]
+两边均非负，平方后化为
+\[
+4(4-x)^2-(x-2)^2(12-x^2)=(x^2-2x-4)^2\ge0.
+\]
+等号在
+\[
+x=1+\sqrt5,\qquad y=\frac{\sqrt5-1}{3}
+\]
+时取得。因此最小值为
+\[
+-6.
+\]
 \end{solution}
 \newpage
 \begin{example}[（高考题改编）]
@@ -16,46 +52,19 @@
     \end{tabular}
 \end{example}
 \begin{solution}
-    可利用 Wallis 公式：
-    \begin{align*}
-I(n) = \int_0^{\frac{\pi}{2}} \sin^n x \, \mathrm{d}x 
-&= \int_0^{\frac{\pi}{2}} \sin^{n-1} x \, \mathrm{d}(-\cos x) \\
-&= (-\cos x \sin^{n-1} x) \rvert_{0}^{\frac{\pi}{2}} - \int_{0}^{\frac{\pi}{2}} (-\cos x) \, \mathrm{d}\sin^{n-1} x \\
-&= (-\cos x \sin^{n-1} x) |_0^{\frac{\pi}{2}} - \int_0^{\frac{\pi}{2}} (-\cos^2 x) (n-1) \sin^{n-2} x \, \mathrm{d}x \\
-&= (n-1) \int_0^{\frac{\pi}{2}} (\sin^{n-2} x - \sin^n x) \, \mathrm{d}x 
-= (n-1) I(n-2) - (n-1) I(n) \\
-\Rightarrow I(n) = \frac{n-1}{n} I(n-2) 
-&\Rightarrow 
-\begin{cases}
-\dfrac{I(2n+1)}{I(2n-1)} = \dfrac{2n}{2n+1} \\
-\dfrac{I(2n)}{I(2n-2)} = \dfrac{2n-1}{2n}
-\end{cases}
-\end{align*}
-所以累乘有：
-\begin{align*}
-    \dfrac{I(3)}{I(1)} \cdot \dfrac{I(5)}{I(3)} \cdots \dfrac{I(2n+1)}{I(2n-1)} &= \dfrac{2 \times 1}{2 \times 1 + 1} \times \dfrac{2 \times 2}{2 \times 2 + 1} \times \cdots \times \dfrac{2n}{2n + 1} = \dfrac{(2n)!!}{(2n + 1)!!}\\
-    \dfrac{I(2)}{I(0)} \cdot \dfrac{I(4)}{I(2)} \cdots \dfrac{I(2n)}{I(2n - 2)} &= \dfrac{2 \times 1 - 1}{2 \times 1} \times \dfrac{2 \times 2 - 1}{2 \times 2} \times \cdots \times \dfrac{2n - 1}{2n} = \dfrac{(2n - 1)!!}{(2n)!!}\end{align*}
-又因为：
-\begin{align*}
-I(2k+1)<I(2k)<I(2k-1)&\Rightarrow \frac{(2k)!!}{(2k+1)!!}<\frac{(2k-1)!!}{(2k)!!}\frac{\pi}{2}<\frac{(2k-2)!!}{(2k-1)!!} \\&\Rightarrow \frac{1}{2k+1}\cdot[\frac{(2k)!!}{(2k-1)!!}]^{2}<\frac{\pi}{2}<\frac{1}{2k}\cdot[\frac{(2k)!!}{(2k-1)!!}]^{2}
-\end{align*}\vspace{-10pt}
-\[\Rightarrow \frac{\pi}{2}=\prod_{n=1}^\infty\frac{4n^2}{4n^2-1}=\prod_{n=1}^\infty(\frac{2n}{2n+1}\cdot\frac{2n}{2n-1})=(\frac{2}{1}\cdot\frac{2}{3})\cdot(\frac{4}{3}\cdot\frac{4}{5})\cdot(\frac{6}{5}\cdot\frac{6}{7})(\frac{8}{7}\cdot\frac{8}{9})\]
-所以：
-    \begin{align*}
-        T^2=&\dfrac21\cdot\dfrac21\cdot\dfrac{4}{3}\cdot\dfrac{4}{3}\cdot\dfrac{6}{5}\cdot\dfrac{6}{5}\cdots\dfrac{2n}{2n-1}\cdot\dfrac{2n}{2n-1}
-        \approx\dfrac{\dfrac21\cdot\dfrac21\cdot\dfrac{4}{3}\cdot\dfrac{4}{3}\cdot\dfrac{6}{5}\cdot\dfrac{6}{5}\cdots\dfrac{2n}{2n-1}\cdot\dfrac{2n}{2n-1}}{(\dfrac{2}{1}\cdot\dfrac{2}{3})\cdot(\dfrac{4}{3}\cdot\dfrac{4}{5})\cdot(\dfrac{6}{5}\cdot\dfrac{6}{7})\cdots\dfrac{2n}{2n-1}\cdot\dfrac{2n}{2n+1}}\dfrac{\pi}{2}
-    \end{align*}
-则$T^2\approx\dfrac{(2n+1)\pi}{2}$，由此可知选B.
-\newpage
-也可作放缩。将原式平方后估计下界：
-\begin{align*}T^{2}&=\frac{2}{1}\cdot\frac{2}{1}\cdot\frac{4}{3}\cdot\frac{4}{3}\cdot\frac{6}{5}\cdot\frac{6}{5}\cdots\frac{200}{199}\cdot\frac{200}{199}\\&>\frac{2}{1}\cdot\frac{2}{1}\cdot\frac{4}{3}\cdot\frac{5}{4}\cdot\frac{6}{5}\cdot\frac{7}{6}\cdots\frac{200}{199}\cdot\frac{201}{200}\\&=268>16^2\end{align*}
-所以 $T>16$。为区分 B、C、D，还需估计上界：
-\begin{align*}T^2=&\frac{2}{1}\cdot\frac{2}{1}\cdot\frac{4}{3}\cdot\frac{4}{3}\cdots\frac{18}{17}\cdot\frac{18}{17}\cdot\frac{20}{19}\cdot\frac{20}{19}\cdot\frac{22}{21}\cdot\frac{22}{21}\cdot\frac{24}{23}\cdot\frac{24}{23}\cdots\frac{200}{199}\cdot\frac{200}{199}\\
-    =&\frac{2}{1}\cdot\frac{2}{1}\cdot\frac{4}{3}\cdot\frac{4}{3}\cdots\frac{18}{17}\cdot\frac{18}{17}\cdot\frac{20}{19}\cdot\frac{20}{19}\cdot\frac{22}{21}\cdot\boxed{\frac{22}{21}}\cdot\frac{24}{23}\cdot\boxed{\frac{23}{22}}\cdots\frac{200}{199}\cdot\boxed{\frac{199}{198}}\\
-    \Rightarrow T\leq&\frac{2}{1}\cdot\frac{4}{3}\cdot\frac{6}{5}\cdots\frac{20}{19}\cdot\sqrt{\frac{200}{20}}=\frac{512\times 512}{(15-4)(15-2)(15+2)(15+4)}\sqrt{10}\\
-    =&\frac{262144}{46189}\sqrt{10}<3.1623\times5.68<18
-\end{align*}
-由$\sqrt{10}<3.1623$和$\frac{262144}{46189}<5.68$可得$T<18$，因此本题选B.
+    由 Wallis 乘积的标准估计，
+    \[
+    \frac{1}{2n+1}\left(\frac{(2n)!!}{(2n-1)!!}\right)^2<\frac{\pi}{2}<\frac{1}{2n}\left(\frac{(2n)!!}{(2n-1)!!}\right)^2.
+    \]
+    取 $n=100$，并记 $T=\dfrac{(200)!!}{199!!}$，则
+    \[
+    100\pi<T^2<\frac{201\pi}{2}.
+    \]
+    而 $17^2=289<100\pi<\frac{201\pi}{2}<324=18^2$，所以
+    \[
+    17<T<18.
+    \]
+    故选 B.
 \end{solution}
 \begin{example}[（高考题改编）]
     （单选）数列$a_{n}$各项为正整数且递增，$a_{n+2}=C_{a_{n+1}}^{a_{n}}$，则（~~~~~）
@@ -66,7 +75,7 @@ I(2k+1)<I(2k)<I(2k-1)&\Rightarrow \frac{(2k)!!}{(2k+1)!!}<\frac{(2k-1)!!}{(2k)!!
     \end{tabular}
 \end{example}
 \begin{solution}
-由于$a_n$递增，A 错。对 B、D，可得
+由 $a_n$ 递增可知 $a_n\ge a_{n-1}+1$，故 A 不成立。若 B 或 D 成立，则存在某个 $n$ 使得 $a_n,a_{n+1},a_{n+2}$ 成等比数列，于是
 \[
     a_na_{n+2} = a_nC_{a_{n+1}}^{a_{n}}=a_{n+1}C_{a_{n+1}-1}^{a_{n}-1}=a_{n+1}^2\\\Rightarrow a_{n+1}=C_{a_{n+1}-1}^{a_{n}-1}
 \]
@@ -75,32 +84,50 @@ I(2k+1)<I(2k)<I(2k-1)&\Rightarrow \frac{(2k)!!}{(2k+1)!!}<\frac{(2k-1)!!}{(2k)!!
 
 当$a_n=2$时，代入表达式得到$a_{n+1}=C_{a_{n+1}-1}^{1}=a_{n+1}-1<a_{n+1}$，矛盾；
 
-当$a_n>2$时，$a_{n+1}-1>2$，代入表达式得
-\[a_{n+1}=C_{a_{n+1}-1}^{a_{n}-1}\ge C_{a_{n+1}-1}^{2}=\dfrac{(a_{n+1}-1)(a_{n+1}-2)}{2}\]
+当 $a_n>2$ 时，令 $N=a_{n+1}-1,\ r=a_n-1$，则 $2\le r\le N-1$，且需要
+\[
+C_N^r=N+1.
+\]
+若 $r=N-1$，则 $C_N^r=N<N+1$；若 $2\le r\le N-2$，则
+\[
+C_N^r\ge C_N^2=\frac{N(N-1)}2>N+1.
+\]
+所以 B、D 均不成立。
 
-解方程可知无整数解。又因为$C_{a_{n+1}-1}^{1}=a_{n+1}-1$是小于$a_{n+1}$的最大整数，且
-
-\[C_{a_{n+1}-1}^{1}<C_{a_{n+1}-1}^{2},~~C_{a_{n+1}-1}^{2}\ne a_{n+1}\]
-
-因此只可能有$C_{a_{n+1}-1}^{2}> a_{n+1}$。
-
-$C_{a_{n+1}-1}^{2}$和$C_{a_{n+1}-1}^{1}$之间没有数可以等于$C_{a_{n+1}-1}^{m}$，所以 B、D 错；
-
-对 C 项，可得$a_1\ne1,a_2\ge 4,a_3\ge6,a_4=C_{a_3}^{a_2}>2a_3+1$，并且
-\[a_5=C_{a_4}^{a_3}>a_3a_4 \Rightarrow a_3^2<C_{a_{4}-1}^{a_{3}-1}<C_{2a_3}^{a_3-1}\]
-
-这转化为$a_3^3+a_3<C_{2a_3}^{a_3}$，因此选 C。
+验证 C 项。若 $a_1=1$，则 $a_3=C_{a_2}^{1}=a_2$，与数列递增矛盾，故 $a_1\ne1$。于是 $a_1\ge2,\ a_2\ge3$。若 $a_1=2,\ a_2=3$，则 $a_3=C_3^2=3$，仍不递增；故实际有 $a_2\ge4$，从而
+\[
+a_3=C_{a_2}^{a_1}\ge C_4^2=6.
+\]
+若 $a_3=a_2+1$，则 $C_{a_2}^{a_1}=a_2+1$。当 $a_1=a_2-1$ 时左端为 $a_2$；当 $2\le a_1\le a_2-2$ 时左端至少为 $C_{a_2}^{2}>a_2+1$，均不可能。因此 $a_3\ge a_2+2$。
+此时 $4\le a_2\le a_3-2$。由二项式系数的对称性与前半段递增性，
+\[
+a_4=C_{a_3}^{a_2}\ge C_{a_3}^{2}>2a_3+1.
+\]
+又
+\[
+a_5=C_{a_4}^{a_3}=\frac{a_4}{a_3}C_{a_4-1}^{a_3-1}.
+\]
+由 $a_4>2a_3+1$ 得 $a_4-1\ge2a_3+1$。固定下标 $a_3-1$ 时，上标增大组合数不减；又 $2\le a_3-1\le \lfloor(2a_3+1)/2\rfloor$，所以在前半段可与第二项比较，故
+\[
+C_{a_4-1}^{a_3-1}\ge C_{2a_3+1}^{a_3-1}\ge C_{2a_3+1}^{2}=a_3(2a_3+1)>a_3^2.
+\]
+代回即得
+\[
+a_5>a_3a_4.
+\]
+因此选 C。
 \end{solution}
 \begin{example}
     已知$\triangle{ABC}$中，$A=3B=9C$，则$\cos A\cos B+\cos B\cos C+\cos C\cos A=$\underline{\hspace{1cm}}.
 \end{example}
 \begin{solution}
-解得$A=\dfrac{9\pi}{13},B=\dfrac{3\pi}{13},C=\dfrac{\pi}{13}$考虑积化和差：
+    解得$A=\dfrac{9\pi}{13},B=\dfrac{3\pi}{13},C=\dfrac{\pi}{13}$，用积化和差整理：
 \begin{align*}
 &\cos A\cos B+\cos B\cos C+\cos C\cos A\\
-&=\dfrac12(\cos(A+B)+\cos(A-B)+\cos(B+C)+\cos(B-C)+\cos(A+C)+\cos(A+C))\\
+&=\dfrac12(\cos(A+B)+\cos(A-B)+\cos(B+C)+\cos(B-C)+\cos(A+C)+\cos(A-C))\\
 &=\dfrac12(\cos\dfrac{12\pi}{13}+\cos\dfrac{6\pi}{13}+\cos\dfrac{4\pi}{13}+\cos\dfrac{2\pi}{13}+\cos\dfrac{10\pi}{13}+\cos\dfrac{8\pi}{13})\\
 &=\dfrac{1}{2\sin\dfrac{\pi}{13}}\sin\dfrac{\pi}{13}(\cos\dfrac{2\pi}{13}+\cos\dfrac{4\pi}{13}+\cos\dfrac{6\pi}{13}+\cos\dfrac{8\pi}{13}+\cos\dfrac{10\pi}{13}+\cos\dfrac{12\pi}{13})\\
+\intertext{为把余弦和化成望远镜和，乘以 $\sin\dfrac{\pi}{13}$，再用 $2\sin u\cos v=\sin(u+v)-\sin(v-u)$。}
 &=\dfrac{1}{4\sin\dfrac{\pi}{13}}(\sin\dfrac{\pi}{13}-\sin\dfrac{3\pi}{13}+\sin\dfrac{3\pi}{13}-\sin\dfrac{5\pi}{13}+\sin\dfrac{5\pi}{13}-\sin\dfrac{7\pi}{13}\\
 &~~~~~~~~~~~~~~~~+\sin\dfrac{7\pi}{13}-\sin\dfrac{9\pi}{13}+\sin\dfrac{9\pi}{13}-\sin\dfrac{11\pi}{13}+\sin\dfrac{11\pi}{13}-\sin\dfrac{13\pi}{13})\\
 &=-\dfrac14
@@ -108,7 +135,7 @@ $C_{a_{n+1}-1}^{2}$和$C_{a_{n+1}-1}^{1}$之间没有数可以等于$C_{a_{n+1}-
 \end{solution}
 \begin{theorem}[阿贝尔求和]
     设$B_n$是数列$b_n$的前$n$项和，当$n\ge 2$时，有:\vspace{-5pt}\[
-    \sum_{i=1}^na_ib_i=a_nB_n-\sum_{i=1}^{n-1}(a_{i+1}-a_i)B_n\]
+    \sum_{i=1}^na_ib_i=a_nB_n-\sum_{i=1}^{n-1}(a_{i+1}-a_i)B_i\]
 \end{theorem}
 \begin{myproof}
     当$n\ge 2$时，有
@@ -116,7 +143,7 @@ $C_{a_{n+1}-1}^{2}$和$C_{a_{n+1}-1}^{1}$之间没有数可以等于$C_{a_{n+1}-
         \sum_{i=1}^na_ib_i=&a_1b_1+\sum_{i=2}^{n}a_i(B_i-B_{i-1})\\
         =&a_1b_1+\sum_{i=2}^{n}a_iB_i-\sum_{i=2}^{n}a_iB_{i-1}\\
         =&\sum_{i=1}^{n}a_iB_i-\sum_{i=1}^{n-1}a_{i+1}B_i\\
-        =&a_nB_n-\sum_{i=1}^{n-1}(a_{i+1}-a_i)B_n
+        =&a_nB_n-\sum_{i=1}^{n-1}(a_{i+1}-a_i)B_i
     \end{align*}
 \end{myproof}
 \begin{example}[（来自Fiddie）]
@@ -134,9 +161,9 @@ $C_{a_{n+1}-1}^{2}$和$C_{a_{n+1}-1}^{1}$之间没有数可以等于$C_{a_{n+1}-
     \]\[
     \Rightarrow a_{n+2}+a_{n-1}=|a_n|-a_n+|a_{n+1}|-a_{n+1}\ge 0
     \]
-    若$n\ge 2$时$a_n>0$,上式化为$a_{n+2}+a_{n-1}=0$，矛盾，故存在大于$1$的正整数$m$使得$a_m\le 0$
+    若所有 $a_n(n>1)$ 都为正，取 $n\ge3$，则上式化为 $a_{n+2}+a_{n-1}=0$。但此时 $a_{n+2}>0,\ a_{n-1}>0$，矛盾，故存在大于$1$的正整数$m$使得$a_m\le 0$
  
-    \noindent(2)已证存在大于$1$的整数$m$使得$a_m\le 0$。现假设不存在正整数$k$使得$a_k\le 0,~a_{k+1}\le 0$。不妨设$a_m$为首个不大于$0$的项，则
+    \noindent(2)已证存在大于$1$的整数$m$使得$a_m\le 0$。现假设不存在正整数$k$使得$a_k\le 0,~a_{k+1}\le 0$。取满足 $m>1,\ a_m\le0$ 的最小正整数 $m$，则
     \[
     a_1,a_2,\ldots,a_{m-1}>0,\quad a_m\le 0,\quad a_{m+1}>0.
     \]
@@ -148,24 +175,37 @@ $C_{a_{n+1}-1}^{2}$和$C_{a_{n+1}-1}^{1}$之间没有数可以等于$C_{a_{n+1}-
     a_{m+4}+a_{m+2}=|a_{m+3}|&=-a_{m}\Rightarrow a_{m+4}=-a_{m}-a_{m+2}=-a_{m+1}<0\\
     a_{m+5}+a_{m+3}=|a_{m+4}|&=a_{m+1}\Rightarrow a_{m+5}=a_{m+1}-a_{m+3}=a_m+a_{m+1}=-a_{m-1}<0
     \end{align*}
-    由$a_{m+4}<0,a_{m+5}<0$知矛盾，故存在正整数$k$使得$a_k\le 0,~a_{k+1}\le 0$.
+    这与假设中不存在相邻两项同为非正矛盾，故存在正整数$k$使得$a_k\le 0,~a_{k+1}\le 0$.
 
-\noindent(3)沿用第二问中的记号，有
-    \vspace{-5pt}\begin{align*}
-    a_{m+6}+a_{m+4}=|a_{m+5}|&=a_{m-1}\Rightarrow a_{m+6}=a_{m-1}-a_{m+4}=a_{m-1}+a_{m+1}=-a_m\\
-    a_{m+7}+a_{m+5}=|a_{m+6}|&=-a_{m}\Rightarrow a_{m+7}=-a_{m}-a_{m+5}=a_{m-1}-a_m\\
-    a_{m+8}+a_{m+6}=|a_{m+7}|&=a_{m-1}-a_m\Rightarrow a_{m+8}=a_{m-1}-a_m-a_{m+6}=a_{m-1}\\
-    a_{m+9}+a_{m+7}=|a_{m+8}|&=a_{m-1}\Rightarrow a_{m+9}=a_{m-1}-a_{m+7}=a_{m-1}-a_{m-1}+a_{m}=a_m
-    \end{align*}\vspace{-15pt}
-    由上式知$a_{m+9}=a_m,\ a_{m+8}=a_{m-1}$。设$T=9$，则
-    \[\begin{cases}a_{m}=a_{m+nT},n\in N\\a_{m-1}=a_{m-1+nT},n\in N\end{cases}\]
-    由递推式
-    \[a_{m-2+nT}=|a_{m-1+nT}|-a_{m+nT}=|a_{m-1}|-a_{m}=a_{m-2}\]
-    继续向前递推，可得
-    \[
-    a_k=a_{k+nT},k\in N_+,k\leq m.
-    \]
-    取$m>T$，便知数列$\{a_n\}$是周期数列，且$9$是它的一个周期。
+\noindent(3)由第二问可取相邻两项同为非正，记
+\[
+u=a_m\le0,\qquad v=a_{m+1}\le0.
+\]
+递推式可改写为
+\[
+a_{n+1}=|a_n|-a_{n-1}.
+\]
+从 $a_m=u,\ a_{m+1}=v$ 出发逐项推出
+\[
+\begin{array}{c|ccccccccccc}
+\text{下标} & m&m+1&m+2&m+3&m+4&m+5&m+6&m+7&m+8&m+9&m+10\\
+\hline
+\text{值} & u&v&-u-v&-u-2v&-v&u+v&-u&-2u-v&-u-v&u&v
+\end{array}
+\]
+由于 $u\le0,\ v\le0$，有
+\[
+-u-v\ge0,\quad -u-2v\ge0,\quad -v\ge0,\quad u+v\le0,\quad -u\ge0,\quad -2u-v\ge0.
+\]
+这些符号与递推式中绝对值的取法一致，因此表中每一项都由前两项唯一推出，特别地
+\[
+(a_{m+9},a_{m+10})=(a_m,a_{m+1}).
+\]
+从这对相邻项向后递推，得到 $a_{n+9}=a_n\ (n\ge m)$；再由
+\[
+a_{n-1}=|a_n|-a_{n+1}
+\]
+向前递推，得到 $n<m$ 时同样成立。因此 $a_{n+9}=a_n$。
 \end{solution}
 \begin{example}[（南通9调14题）]
     已知$x,y$满足$(\sqrt{x^2+1}-x)(\sqrt{y^2+4}-y)=2$，则$4^{x}+2^{y-1}$的最小值为\underline{\hspace{1cm}}.
@@ -173,12 +213,16 @@ $C_{a_{n+1}-1}^{2}$和$C_{a_{n+1}-1}^{1}$之间没有数可以等于$C_{a_{n+1}-
 \begin{solution}
     作变量代换：\[
     \begin{cases}
-        m=\sqrt{x^2+1}-x\Rightarrow x=\dfrac{1}{2m}-\dfrac{2}{m}\\[8pt]
+        m=\sqrt{x^2+1}-x\Rightarrow x=\dfrac{1}{2m}-\dfrac{m}{2}\\[8pt]
         n=\sqrt{y^2+4}-y\Rightarrow y=\dfrac{2}{n}-\dfrac{n}{2}\end{cases}
     \]
     再由$mn=2\Rightarrow n=\dfrac{2}{m}$：
     \[y=\dfrac{2}{n}-\dfrac{n}{2}=m-\dfrac{1}{m}\Rightarrow y=-2x\]
-    所以：\[4^{x}+2^{y-1}=4^{x}+\dfrac{1}{2\times 4^x}\geq 2\sqrt{\dfrac{1}{2}}=\sqrt2\]当$x=\frac14$时取得等号
+    所以：
+    \[
+    4^{x}+2^{y-1}=4^{x}+\dfrac{1}{2\times 4^x}\geq 2\sqrt{\dfrac{1}{2}}=\sqrt2.
+    \]
+    等号成立时 $4^x=\frac1{\sqrt2}$，即 $x=-\frac14$，此时由 $y=-2x$ 得 $y=\frac12$，满足原条件。
 \end{solution}
 \newpage
 \begin{example}[（深圳中学2025届二轮一阶）]
@@ -191,7 +235,8 @@ $C_{a_{n+1}-1}^{2}$和$C_{a_{n+1}-1}^{1}$之间没有数可以等于$C_{a_{n+1}-
     \]
 \end{example}
 \begin{solution}
-      设\[
+      因为 $Q$ 同时位于 $BD$ 与 $CE$ 上，先分别用这两条线段上的仿射参数表示 $\overrightarrow{AQ}$。设
+      \[
       \begin{cases}\overrightarrow{AQ}=x\overrightarrow{AD}+(1-x)\overrightarrow{AB}=x\dfrac{\lambda}{1+\lambda}\overrightarrow{AC}+(1-x)\overrightarrow{AB}\\[10pt]
       \overrightarrow{AQ}=y\overrightarrow{AE}+(1-y)\overrightarrow{AC}=y\dfrac{\mu}{1+\mu}\overrightarrow{AB}+(1-y)\overrightarrow{AC}\end{cases}\Rightarrow \begin{cases}x=\dfrac{\lambda+1}{1+\lambda+\mu}\\[8pt]y=\dfrac{\mu+1}{1+\lambda+\mu}\end{cases}
       \]
@@ -205,10 +250,17 @@ $C_{a_{n+1}-1}^{2}$和$C_{a_{n+1}-1}^{1}$之间没有数可以等于$C_{a_{n+1}-
           \Rightarrow \overrightarrow{PA}&+\lambda\overrightarrow{PC}+\mu\overrightarrow{PB}=(1+\lambda+\mu)\overrightarrow{PQ}
       \end{align*}
     平方得：\[
-PA^2+\lambda^2PC^2+\mu^2PB^2+2\lambda\overrightarrow{PA}\cdot\overrightarrow{PC}+2\mu\overrightarrow{PA}\cdot\overrightarrow{PB}+2\lambda\mu\overrightarrow{PC}\cdot\overrightarrow{PB}=(1+\lambda+\mu)^2PQ^2\]分别
-代入\[\begin{cases}2\lambda\overrightarrow{PA}\cdot\overrightarrow{PC}=\lambda\bigg(PA^2+PC^2-(\overrightarrow{PA}-\overrightarrow{PC})\bigg)^2=\lambda(PA^2+PC^2-AC^2)\\
-    2\mu\overrightarrow{PA}\cdot\overrightarrow{PB}=\mu\bigg(PA^2+PB^2-(\overrightarrow{PA}-\overrightarrow{PB})\bigg)^2=\mu(PA^2+PB^2-AB^2)\\
-    2\lambda\mu\overrightarrow{PC}\cdot\overrightarrow{PB}=\lambda\mu\bigg(PC^2+PB^2-(\overrightarrow{PC}-\overrightarrow{PB})\bigg)^2=\lambda\mu(PC^2+PB^2-BC^2)
+PA^2+\lambda^2PC^2+\mu^2PB^2+2\lambda\overrightarrow{PA}\cdot\overrightarrow{PC}+2\mu\overrightarrow{PA}\cdot\overrightarrow{PB}+2\lambda\mu\overrightarrow{PC}\cdot\overrightarrow{PB}=(1+\lambda+\mu)^2PQ^2\]
+由
+\[
+2\overrightarrow{PA}\cdot\overrightarrow{PC}=PA^2+PC^2-AC^2,\quad
+2\overrightarrow{PA}\cdot\overrightarrow{PB}=PA^2+PB^2-AB^2,\quad
+2\overrightarrow{PC}\cdot\overrightarrow{PB}=PC^2+PB^2-BC^2
+\]
+代入得
+\[\begin{cases}2\lambda\overrightarrow{PA}\cdot\overrightarrow{PC}=\lambda(PA^2+PC^2-AC^2)\\
+    2\mu\overrightarrow{PA}\cdot\overrightarrow{PB}=\mu(PA^2+PB^2-AB^2)\\
+    2\lambda\mu\overrightarrow{PC}\cdot\overrightarrow{PB}=\lambda\mu(PC^2+PB^2-BC^2)
 \end{cases}\]
     整理得：\[
     PQ^2=\dfrac{PA^2+\mu PB^2+\lambda PC^2}{1+\lambda+\mu}-\dfrac{\lambda\mu BC^2+\lambda AC^2+\mu AB^2}{\left(1+\lambda+\mu\right)^2}\]
@@ -236,13 +288,49 @@ PA^2+\lambda^2PC^2+\mu^2PB^2+2\lambda\overrightarrow{PA}\cdot\overrightarrow{PC}
 这里的三角形面积取有向面积。计算时按字母顺序确定方向，与另外两个方向相反的面积取负值。
 \end{example}
 \begin{solution}
-
+记有向面积
+\[
+[XYZ]=\frac12\begin{vmatrix}
+x_X & y_X & 1\\
+x_Y & y_Y & 1\\
+x_Z & y_Z & 1
+\end{vmatrix}.
+\]
+点 $P$ 关于 $\triangle ABC$ 的有向面积坐标满足
+\[
+[PBC]+[APC]+[ABP]=[ABC],
+\]
+且
+\[
+[PBC]A+[APC]B+[ABP]C=[ABC]P.
+\]
+两边同减去 $[ABC]P$，便得
+\[
+[PBC]\overrightarrow{PA}+[APC]\overrightarrow{PB}+[ABP]\overrightarrow{PC}=\vec0.
+\]
+把有向面积写成行列式形式，即为题中公式。
 \end{solution}
 \begin{example}[外心向量关系]
-    已知平面直角坐标系$xOy$中有一个$\triangle{ABC}$，则其外心满足关系式：
+    已知平面直角坐标系$xOy$中有一个$\triangle{ABC}$，若其外心为$U(x,y)$，则$U$满足
+    \[
+    2U\cdot(B-A)=|B|^2-|A|^2,\qquad
+    2U\cdot(C-A)=|C|^2-|A|^2.
+    \]
 \end{example}
 \begin{solution}
-
+外心到三顶点距离相等，因此
+\[
+|U-A|^2=|U-B|^2,\qquad |U-A|^2=|U-C|^2.
+\]
+展开第一式：
+\[
+|U|^2-2U\cdot A+|A|^2=|U|^2-2U\cdot B+|B|^2,
+\]
+移项即得
+\[
+2U\cdot(B-A)=|B|^2-|A|^2.
+\]
+第二式同理。
 \end{solution}
 \begin{example}[三角形外心坐标]
     已知平面直角坐标系$xOy$中有一个$\triangle{ABC}$，则其外心的坐标为\[
@@ -265,7 +353,42 @@ PA^2+\lambda^2PC^2+\mu^2PB^2+2\lambda\overrightarrow{PA}\cdot\overrightarrow{PC}
 \end{vmatrix}}\right)
 \]\end{example}
 \begin{solution}
-
+设外心为 $U(x,y)$。由上一题，
+\[
+\begin{cases}
+2x(x_B-x_A)+2y(y_B-y_A)=OB^2-OA^2,\\
+2x(x_C-x_A)+2y(y_C-y_A)=OC^2-OA^2.
+\end{cases}
+\]
+把它看作关于 $x,y$ 的二元一次方程组。记
+\[
+\Delta=\begin{vmatrix}
+x_B-x_A&y_B-y_A\\
+x_C-x_A&y_C-y_A
+\end{vmatrix}
+=\begin{vmatrix}
+x_A&y_A&1\\
+x_B&y_B&1\\
+x_C&y_C&1
+\end{vmatrix}.
+\]
+由克莱姆法则，
+\[
+x=\frac{(OB^2-OA^2)(y_C-y_A)-(OC^2-OA^2)(y_B-y_A)}{2\Delta}.
+\]
+分子等于把
+\[
+\begin{vmatrix}
+OA^2&y_A&1\\
+OB^2&y_B&1\\
+OC^2&y_C&1
+\end{vmatrix}
+\]
+的第二、三行分别减去第一行后得到的二阶行列式。$y$ 坐标同理：
+\[
+y=\frac{(x_B-x_A)(OC^2-OA^2)-(x_C-x_A)(OB^2-OA^2)}{2\Delta},
+\]
+对应题中第二个三阶行列式。
 \end{solution}
 \begin{example}[三角形垂心坐标]
     已知平面直角坐标系$xOy$中有一个$\triangle{ABC}$，则其垂心的坐标为\[
@@ -288,6 +411,45 @@ PA^2+\lambda^2PC^2+\mu^2PB^2+2\lambda\overrightarrow{PA}\cdot\overrightarrow{PC}
     \end{vmatrix}}\right)\]
 \end{example}
 \begin{solution}
+设垂心为 $H(x,y)$。由 $AH\perp BC$ 与 $BH\perp AC$，
+\[
+(H-A)\cdot(B-C)=0,\qquad (H-B)\cdot(A-C)=0.
+\]
+也就是
+\[
+\begin{cases}
+x(x_B-x_C)+y(y_B-y_C)=x_A(x_B-x_C)+y_A(y_B-y_C),\\
+x(x_A-x_C)+y(y_A-y_C)=x_B(x_A-x_C)+y_B(y_A-y_C).
+\end{cases}
+\]
+对这个二元一次方程组使用克莱姆法则。其系数行列式为
+\[
+\begin{vmatrix}
+x_B-x_C&y_B-y_C\\
+x_A-x_C&y_A-y_C
+\end{vmatrix}
+=-\begin{vmatrix}
+x_A&y_A&1\\
+x_B&y_B&1\\
+x_C&y_C&1
+\end{vmatrix}.
+\]
+以 $x$ 坐标为例，克莱姆法则的分子为
+\[
+\begin{vmatrix}
+x_A(x_B-x_C)+y_A(y_B-y_C)&y_B-y_C\\
+x_B(x_A-x_C)+y_B(y_A-y_C)&y_A-y_C
+\end{vmatrix}.
+\]
+把第一列按点积展开，并作行列式的初等行变换，可化为
+\[
+\begin{vmatrix}
+x_Bx_C+y_By_C&y_A&1\\
+x_Ax_C+y_Ay_C&y_B&1\\
+x_Ax_B+y_Ay_B&y_C&1
+\end{vmatrix}.
+\]
+$y$ 坐标的化简对应进行，只是把上述行列式中的第二列换成点积列，得到题中公式。
 \end{solution}
 \begin{example}[三角形的内心坐标]
     已知平面直角坐标系$xOy$中有一个$\triangle{ABC}$，则其内心的坐标为\[
@@ -295,23 +457,36 @@ PA^2+\lambda^2PC^2+\mu^2PB^2+2\lambda\overrightarrow{PA}\cdot\overrightarrow{PC}
     \]
 \end{example}
 \begin{solution}
-
+设内心为 $I$，内切圆半径为 $r$。若
+\[
+a=|BC|,\quad b=|CA|,\quad c=|AB|,
+\]
+则
+\[
+[IBC]=\frac12ar,\qquad [ICA]=\frac12br,\qquad [IAB]=\frac12cr.
+\]
+因此 $I$ 关于 $\triangle ABC$ 的面积坐标为 $a:b:c$，即
+\[
+I=\frac{aA+bB+cC}{a+b+c}.
+\]
+写成坐标形式就是题中公式。
 \end{solution}
 \begin{example}[容斥原理练习]
     某学校举办比赛，有$20$个参赛名额，现在分给$4$个不同的班，保证至少有一个班的名额为$4$个，且每一个班都有名额，则共有\underline{\hspace{1cm}}种分法。
 \end{example}
 \begin{solution}
     设四个班的名额为$x_1,x_2,x_3,x_4\in N_+$，则分法数就是集合$A_i=\{(x_1,x_2,x_3,x_4)|x_i=4,x_1+x_2+x_3+x_4=20\}$的元素个数，又因为
-    \begin{align*}|A_{1}|&=\{(x_{1},x_{3},x_{4})\mid x_{2}+x_{3}+x_{4}=16,x_{2},x_{3},x_{4}>0\}=C_{15}^{2}\\|A_{1}\cap A_{2}|&=\{(x_{3},x_{4})\mid x_{3}+x_{4}=12,x_{3},x_{4}>0\}=C_{11}^{1}\\|A_{1}\cap A_{2}\cap A_{3}|&=1\\
+    \begin{align*}|A_{1}|&=\#\{(x_{2},x_{3},x_{4})\mid x_{2}+x_{3}+x_{4}=16,x_{2},x_{3},x_{4}>0\}=C_{15}^{2}\\|A_{1}\cap A_{2}|&=\#\{(x_{3},x_{4})\mid x_{3}+x_{4}=12,x_{3},x_{4}>0\}=C_{11}^{1}\\|A_{1}\cap A_{2}\cap A_{3}|&=1\\
     |A_1\cup A_2\cup A_3\cup A_4|&=C_4^1|A_1|-C_4^2|A_1\cap A_2|+C_4^3|A_1\cap A_2\cap A_3|\\
-        &=C_4^1C_{15}^2-C_4^2+C_4^3C_{11}^1=358\end{align*}
+        &=C_4^1C_{15}^2-C_4^2C_{11}^1+C_4^3=358\end{align*}
 \end{solution}
 \newpage
 \begin{example}[求和]
     计算$\displaystyle \sum_{i=0}^{n-1}(-1)^{i}C_{n-1}^{i}(i+1)^k$，其中$k<n-1,k\in N_+$
 \end{example}
 \begin{solution}
-    定义函数并对其求$k$阶导数：\begin{align*}f(x)=&\displaystyle\sum_{i=0}^{n-1}(-1)^{i}C_{n-1}^{i}x^{i+1}
+    为把交错组合和转化为导数值，取生成函数
+    \begin{align*}f(x)=&\displaystyle\sum_{i=0}^{n-1}(-1)^{i}C_{n-1}^{i}x^{i+1}
         =\displaystyle x\sum_{i=0}^{n-1}(-x)^{i}C_{n-1}^{i}\\
         =&\displaystyle x(1-x)^{n-1}
         =(x-1+1)(1-x)^{n-1}
@@ -340,7 +515,7 @@ PA^2+\lambda^2PC^2+\mu^2PB^2+2\lambda\overrightarrow{PA}\cdot\overrightarrow{PC}
     (4)\quad&\frac{\cos A - \cos B}{\sin A + \sin B} - \frac{\sin A + \sin B}{\cos A - \cos B} = \frac{\cos A + \cos B}{\sin A - \sin B} - \frac{\sin A - \sin B}{\cos A + \cos B} = 2\cot(A-B)\end{align*}
 \end{example}
 \begin{solution}
-以第二式为例，作通分化简：
+第二式通分整理得：
 \begin{align*}
 &\dfrac{\sin B - \cos A}{\sin A - \cos B} - \dfrac{\sin A - \cos B}{\sin B - \cos A}\\[1.2ex]
 &=\dfrac{(\sin B - \cos A)^2 - (\sin A - \cos B)^2}{(\sin B - \cos A)\left(\sin A - \cos B\right)}\\[1.2ex]
@@ -350,7 +525,7 @@ PA^2+\lambda^2PC^2+\mu^2PB^2+2\lambda\overrightarrow{PA}\cdot\overrightarrow{PC}
 =\dfrac{2\left[1 - \sin\left(A + B\right)\right]\sin\left(A - B\right)}{\left[1 - \sin\left(A + B\right)\right]\cos\left(A - B\right)}
 \\[1.2ex]&=\dfrac{2\sin\left(A - B\right)}{\cos\left(A - B\right)} = 2\tan\left(A - B\right).
 \end{align*}
-同理，第三式可化为：
+第三式同样通分可得：
 \begin{align*}
 &\dfrac{\cos A - \cos B}{\sin A - \sin B} - \dfrac{\sin A - \sin B}{\cos A - \cos B}\\[1.2ex]
 &=\dfrac{(\cos A - \cos B)^2 - (\sin A - \sin B)^2}{(\cos A - \cos B)(\sin A - \sin B)}\\[1.2ex]
@@ -361,30 +536,14 @@ PA^2+\lambda^2PC^2+\mu^2PB^2+2\lambda\overrightarrow{PA}\cdot\overrightarrow{PC}
 &=\dfrac{2\cos(A + B)[\cos(A - B) - 1]}{\sin(A + B)[\cos(A - B) - 1]}
 =\dfrac{2\cos(A + B)}{\sin(A + B)} = 2\cot(A + B).
 \end{align*}
-若改用和差化积，仍以第二式为例：
-\begin{align*}
-&\dfrac{\sin B - \cos A}{\sin A - \cos B} - \dfrac{\sin A - \cos B}{\sin B - \cos A}\\[1.2ex]
-&=\dfrac{\cos\left(\dfrac{\pi}{2} - B\right) - \cos A}{\sin A - \sin\left(\dfrac{\pi}{2} - B\right)} - \dfrac{\sin A - \sin\left(\dfrac{\pi}{2} - B\right)}{\cos\left(\dfrac{\pi}{2} - B\right) - \cos A}\\[1.2ex]
-&=\dfrac{-2\sin\left(\dfrac{\pi}{4} + \dfrac{A - B}{2}\right)\sin\left(\dfrac{\pi}{4} - \dfrac{A + B}{2}\right)}{2\cos\left(\dfrac{\pi}{4} + \dfrac{A - B}{2}\right)\sin\left(\dfrac{A + B}{2} - \dfrac{\pi}{4}\right)} - \dfrac{2\cos\left(\dfrac{\pi}{4} + \dfrac{A - B}{2}\right)\sin\left(\dfrac{A + B}{2} - \dfrac{\pi}{4}\right)}{-2\sin\left(\dfrac{\pi}{4} + \dfrac{A - B}{2}\right)\sin\left(\dfrac{\pi}{4} - \dfrac{A + B}{2}\right)}\\[1.2ex]
-&=\dfrac{\sin\left(\dfrac{\pi}{4} + \dfrac{A - B}{2}\right)}{\cos\left(\dfrac{\pi}{4} + \dfrac{A - B}{2}\right)} - \dfrac{\cos\left(\dfrac{\pi}{4} + \dfrac{A - B}{2}\right)}{\sin\left(\dfrac{\pi}{4} + \dfrac{A - B}{2}\right)} = \dfrac{\sin^2\left(\dfrac{\pi}{4} + \dfrac{A - B}{2}\right) - \cos^2\left(\dfrac{\pi}{4} + \dfrac{A - B}{2}\right)}{\sin\left(\dfrac{\pi}{4} + \dfrac{A - B}{2}\right)\cos\left(\dfrac{\pi}{4} + \dfrac{A - B}{2}\right)}\\[1.2ex]
-&=-2\dfrac{\cos\left[2 \cdot \left(\dfrac{\pi}{4} + \dfrac{A - B}{2}\right)\right]}{\sin\left[2 \cdot \left(\dfrac{\pi}{4} + \dfrac{A - B}{2}\right)\right]} = -2\dfrac{\cos\left(\dfrac{\pi}{2} + A - B\right)}{\sin\left(\dfrac{\pi}{2} + A - B\right)}\\[1.2ex]
-&=-2\dfrac{-\sin\left(A - B\right)}{\cos\left(A - B\right)} = 2\tan\left(A - B\right).
-\end{align*}
-同理，第三式可化为：
-\begin{align*}
-&\dfrac{\cos A - \cos B}{\sin A - \sin B} - \dfrac{\sin A - \sin B}{\cos A - \cos B}\\[1.2ex]
-&=\dfrac{\sin\left(\dfrac{A+B}{2}\right)\sin\left(\dfrac{A-B}{2}\right)}{\cos\left(\dfrac{A+B}{2}\right)\sin\left(\dfrac{A-B}{2}\right)} - \dfrac{\cos\left(\dfrac{A+B}{2}\right)\sin\left(\dfrac{A-B}{2}\right)}{\sin\left(\dfrac{A+B}{2}\right)\sin\left(\dfrac{A-B}{2}\right)}\\[1.2ex]
-&=\dfrac{\sin\left(\dfrac{A+B}{2}\right)}{\cos\left(\dfrac{A+B}{2}\right)} - \dfrac{\cos\left(\dfrac{A+B}{2}\right)}{\sin\left(\dfrac{A+B}{2}\right)} = \dfrac{\sin^2\left(\dfrac{A+B}{2}\right) - \cos^2\left(\dfrac{A+B}{2}\right)}{\sin\left(\dfrac{A+B}{2}\right)\cos\left(\dfrac{A+B}{2}\right)}\\[1.2ex]
-&=-\dfrac{\cos\left[2 \cdot \dfrac{A+B}{2}\right]}{\dfrac{1}{2}\sin\left[2 \cdot \dfrac{A+B}{2}\right]} = -\dfrac{\cos(A+B)}{\dfrac{1}{2}\sin(A+B)}\\[1.2ex]
-&=-2\dfrac{\cos(A+B)}{\sin(A+B)} = 2\cot(A+B).
-\end{align*}
+第一式可由第二式把 $B$ 换成 $\pi-B$ 得到；第四式中的两种写法，分别由第三式把 $B$ 换成 $-B$ 与 $\pi-B$ 得到。
 \end{solution}
 \newpage
 \begin{example}[（椭圆弦与平行条件）]
     平面直角坐标系$xOy$中，椭圆$\frac{x^2}{16}+\frac{y^2}{a^2}=1,(a>4)$，椭圆的弦$AB$过点$D(-2,0)$，连接$OA,OB$，线段$OB$交圆$(x+1)^2+y^2=4$于$C$，若$DC$平行于$OA$，求$a=$\underline{\hspace{1.2cm}}.
 \end{example}
 \begin{solution}
-    设$B(x_1,y_1),A(x_2,y_2),C(x_3,y_3)$，并记
+    设$B(x_1,y_1),A(x_2,y_2),C(x_3,y_3)$。由于 $A,D,B$ 共线且 $D(-2,0)$，可用有向比记录 $D$ 分割 $AB$ 的位置，记
     \[
     -\lambda=\dfrac{x_1+2}{x_2+2}=\dfrac{y_1}{y_2}.
     \]
@@ -394,16 +553,48 @@ PA^2+\lambda^2PC^2+\mu^2PB^2+2\lambda\overrightarrow{PA}\cdot\overrightarrow{PC}
     \begin{align*}\dfrac{-(x_1-\lambda x_2)}{8(1-\lambda)}=1&\Rightarrow \lambda=\dfrac{x_1+8}{x_2+8}\Rightarrow -\lambda=\dfrac{x_1+2}{x_2+2}=\dfrac{y_1}{y_2}=\dfrac{x_1+8}{-x_2-8}\\
     &\Rightarrow y_2=\dfrac{-3y_1}{x_1+5},\quad x_2=\dfrac{-3(x_1+2)}{x_1+5}-2=\dfrac{-5x_1-16}{x_1+5}
 \end{align*}
-设$y_1=kx_1$，则代入$\dfrac{x^2}{16}+\dfrac{y^2}{a^2}=1$得$\dfrac{x_1^2}{16}+\dfrac{k^2x_1^2}{a^2}=1\Rightarrow \begin{cases}x_1=\pm\dfrac{4}{\sqrt{a^2+16k^2}}\\[1.2ex]y_1=\pm\dfrac{4k}{\sqrt{a^2+16k^2}}\end{cases}$\newline
-再代入圆方程，得到$(x+1)^2+k^2x^2=4\Rightarrow (k^2+1)x^2+2x-3=0\Rightarrow \begin{cases}x_3=\dfrac{-1\pm\sqrt{3k^2+4}}{k^2+1}\\y_3=\dfrac{-k\pm k\sqrt{3k^2+4}}{k^2+1}\end{cases}$.\newline
-取上下同号，即上下的正负号同时取正或同时取负：
+设$y_1=kx_1$，则代入$\dfrac{x^2}{16}+\dfrac{y^2}{a^2}=1$得
+\[
+\dfrac{x_1^2}{16}+\dfrac{k^2x_1^2}{a^2}=1\Rightarrow \begin{cases}x_1=\pm\dfrac{4a}{\sqrt{a^2+16k^2}}\\[1.2ex]y_1=\pm\dfrac{4ak}{\sqrt{a^2+16k^2}}\end{cases}
+\]
+再代入圆方程，得到
+\[
+(x+1)^2+k^2x^2=4\Rightarrow (k^2+1)x^2+2x-3=0\Rightarrow \begin{cases}x_3=\dfrac{-1\pm\sqrt{3k^2+4}}{k^2+1}\\y_3=\dfrac{-k\pm k\sqrt{3k^2+4}}{k^2+1}\end{cases}.
+\]
+点 $B,C$ 都在直线 $OB$ 上，所取正负号需对应同一射线方向，即上下的正负号同时取正或同时取负：
 \begin{align*}
-    k_{AO}&=\dfrac{3y_1}{5x_1+16}=\dfrac{\dfrac{\pm 12k}{\sqrt{a^2+16k^2}}}{\pm\dfrac{20}{\sqrt{a^2+16k^2}}+16}=\dfrac{\pm 3k}{4\sqrt{a^2+16k^2}\pm 5}\\[1.2ex]
+    k_{AO}&=\dfrac{3y_1}{5x_1+16}=\dfrac{\dfrac{\pm 12ak}{\sqrt{a^2+16k^2}}}{\pm\dfrac{20a}{\sqrt{a^2+16k^2}}+16}=\dfrac{\pm 3ak}{4\sqrt{a^2+16k^2}\pm 5a}\\[1.2ex]
     k_{DC}&=\dfrac{\dfrac{-k\pm k\sqrt{3k^2+4}}{k^2+1}}{\dfrac{-1\pm\sqrt{3k^2+4}}{k^2+1}+2}=\dfrac{-k\pm k\sqrt{3k^2+4}}{2k^2+1\pm \sqrt{3k^2+4}}
 \end{align*}
-由$k_{AO}=k_{CD}$得到$\dfrac{-1\pm \sqrt{3k^2+4}}{2k^2+1\pm \sqrt{3k^2+4}}=\dfrac{\pm 3}{4\sqrt{a^2+16k^2}\pm 5}$，整理得
-\[\pm 1=\dfrac{1}{\sqrt{3k^2+4}}-\dfrac{2\sqrt{a^2+16k^2}}{3k^2+4}\pm 2\sqrt{\dfrac{a^2+16k^2}{3k^2+4}}\]
-要使上式成立且$a$为常数，必须有$\dfrac{a^2+16k^2}{3k^2+4}$为常数，由此解得$a=\dfrac{8}{\sqrt{3}}>4$。代回原式检验可知条件满足，所以
+记 $r=\sqrt{3k^2+4}$。因为
+\[
+2k^2+1\pm r=\frac{(r\mp1)(2r\pm5)}3,
+\]
+所以
+\[
+\frac{-1\pm r}{2k^2+1\pm r}=\frac{\pm3}{2r\pm5}.
+\]
+由 $k_{AO}=k_{CD}$ 得
+\[
+\frac{\pm3}{2r\pm5}=\frac{\pm3a}{4\sqrt{a^2+16k^2}\pm5a}.
+\]
+交叉相乘并消去相同项，得到
+\[
+\frac{\sqrt{a^2+16k^2}}{\sqrt{3k^2+4}}=\frac a2.
+\]
+题目要求由过 $D$ 的动弦得到同一个参数 $a$，所以平行条件不能依赖某一个特定斜率。于是上式应对这族弦对应的可取 $k$ 都成立；把左端视为 $k^2$ 的函数，只能是常数，故
+\[
+\frac{a^2+16k^2}{3k^2+4}=\frac{a^2}{4}
+\]
+与 $k$ 无关。比较 $k^2$ 项，得
+\[
+\frac{16}{3}=\frac{a^2}{4},
+\]
+从而 $a=\dfrac{8}{\sqrt{3}}>4$。此时代回上式有
+\[
+\sqrt{a^2+16k^2}=\frac a2\sqrt{3k^2+4},
+\]
+故斜率等式成立，所以
 \[
 a=\dfrac{8}{\sqrt{3}}.
 \]
@@ -414,26 +605,78 @@ a=\dfrac{8}{\sqrt{3}}.
     （2）若过$B(-2,2)$的一条直线交椭圆于$M,N$，$A(2,0)$，连接直线$AM,AN$交直线$OB$于$P,Q$，求$\dfrac{|OP|}{|OQ|}$的值.
 \end{example}
 \begin{solution}
-    （1）由于直线$MF,NF$关于$x$轴对称，所以它们也关于$y$轴对称。又因为直线$MN$斜率存在，所以$M,N$在$x$轴同侧，且$k_{MF}+k_{NF}=0$。设直线$MN$的方程为$x=my+n$，则
-    \[\begin{cases}(x+1+ty)(x+1-ty)=0\\x=my+n\end{cases}\Leftrightarrow \begin{cases}\dfrac{x^2}{4}+\dfrac{y^2}{3}=1\\x=my+n\end{cases}\]
-    \[(m^2-t^2)y^2+2m(n+1)y+(n+1)^2=0=(3m^2+4)y^2+6mny+3n^2-12=0\]
-\[\Rightarrow \begin{cases}(3m^2 + 4)(m^2 - t^2) y^2 + 2m(n+1)(3m^2 + 4) y + (n+1)^2 (3m^2 + 4) = 0\\(m^2 - t^2)(3m^2 + 4) y^2 + 6mn(m^2 - t^2) y + (3n^2 - 12)(m^2 - t^2) = 0\end{cases}\]\[\Rightarrow \begin{cases} 2m(n+1)(3m^2 + 4) = 6mn(m^2 - t^2)\\(n+1)^2(3m^2 + 4) = (3n^2-12)(m^2 - t^2)\end{cases}\Rightarrow n=-4\]
-由这两式相除可得$n=-4$，因此直线$MN$过定点$(-4,0)$。若直接比较$\dfrac{1}{x_1}+\dfrac{1}{x_2}$，也得到同样的结论。\vspace{10pt}\newline
+    （1）设过焦点 $F(-1,0)$ 且关于 $x$ 轴对称的两条直线为 $x+1+ty=0$ 与 $x+1-ty=0$。又设直线$MN$的方程为$x=my+n$，则
+    \[\begin{cases}(x+1+ty)(x+1-ty)=0\\x=my+n\end{cases}\]
+与
+\[
+\begin{cases}\dfrac{x^2}{4}+\dfrac{y^2}{3}=1\\x=my+n\end{cases}
+\]
+对应的 $y$ 根同为 $M,N$ 的纵坐标，故两个关于 $y$ 的二次方程成比例。分别化为
+\[
+(m^2-t^2)y^2+2m(n+1)y+(n+1)^2=0,
+\]
+\[
+(3m^2+4)y^2+6mny+3n^2-12=0.
+\]
+比较一次项与常数项，得
+    \[\begin{cases} 2m(n+1)(3m^2 + 4) = 6mn(m^2 - t^2)\\(n+1)^2(3m^2 + 4) = (3n^2-12)(m^2 - t^2)\end{cases}\]
+由于直线 $MN$ 的斜率存在，$m\ne0$；若 $n=0$，第一式左端非零而右端为零，不合，故 $n\ne0$。由第一式解得
+\[
+m^2-t^2=\frac{(n+1)(3m^2+4)}{3n}.
+\]
+代入第二式并约去非零因子 $3m^2+4$，得
+\[
+(n+1)^2=\frac{(3n^2-12)(n+1)}{3n}.
+\]
+非退化情形下 $n+1\ne0$，否则前一组退化二次式会恒为零，不能给出两点 $M,N$。于是
+\[
+n(n+1)=n^2-4,
+\]
+解得 $n=-4$。因此直线$MN$过定点$(-4,0)$。若直接比较$\dfrac{1}{x_1}+\dfrac{1}{x_2}$，也得到同样的结论。
     （2）设$M\bigg(\dfrac{2(1-t_1^2)}{1+t_1^2},\dfrac{2\sqrt{3}t_1}{1+t_1^2}\bigg),N\bigg(\dfrac{2(1-t_2^2)}{1+t_2^2},\dfrac{2\sqrt{3}t_2}{1+t_2^2}\bigg)$，则\[MA:x=\dfrac{x_1-2}{y_1}y+2=\dfrac{\frac{2(1-t_1^2)}{1+t_1^2}-2}{\frac{2\sqrt{3}t_1}{1+t_1^2}}y+2=-\dfrac{2t_1}{\sqrt3}y+2~~~~~~NA:x=-\dfrac{2t_2}{\sqrt3}y+2\]由直线$MA,NA$与$y=-x$联立得到
-    \[y_P=\dfrac{2\sqrt3}{2t_1-\sqrt3},y_Q=\dfrac{2\sqrt3}{2t_2-\sqrt3}\Rightarrow \dfrac{|OP|}{|OQ|}=-\dfrac{2t_2-\sqrt3}{2t_1-\sqrt3}\]
-    由直线$MN$的方程
+    \[y_P=\dfrac{2\sqrt3}{2t_1-\sqrt3},y_Q=\dfrac{2\sqrt3}{2t_2-\sqrt3}\Rightarrow \dfrac{|OP|}{|OQ|}=\left|\dfrac{2t_2-\sqrt3}{2t_1-\sqrt3}\right|\]
+    由题设，直线 $MN$ 经过 $B(-2,2)$。椭圆参数式下，过参数 $t_1,t_2$ 两点的直线可写为
+    \[
+    \frac{x}{2}\frac{1-t_1t_2}{1+t_1t_2}+\frac{y}{\sqrt3}\frac{t_1+t_2}{1+t_1t_2}=1.
+    \]
+    把 $B$ 代入，得到
     \[\dfrac{-2}{2}\dfrac{1-t_1t_2}{1+t_1t_2}+\dfrac{2}{\sqrt3}\dfrac{t_1+t_2}{1+t_1t_2}=1\Rightarrow t_1+t_2=\sqrt3\]
-    得到$\dfrac{|OP|}{|OQ|}=1$.
+    因而 $2t_2-\sqrt3=-(2t_1-\sqrt3)$，得到$\dfrac{|OP|}{|OQ|}=1$.
 \end{solution}
 
-\begin{conclusion}[比值代换法]
+\begin{conclusion}[比值代换法（坐标式）]
 \noindent 椭圆$\dfrac{x^2}{a^2}+\dfrac{y^2}{b^2}=1$上两点$A(x_1,y_1),B(x_2,y_2)$与不在椭圆上的点$P(x_0,y_0)$满足$\overrightarrow{AP}=\lambda\overrightarrow{PB}$，则
 \[\begin{cases}\lambda=\dfrac{x_1-x_0}{x_0-x_2}=\dfrac{y_1-y_0}{y_0-y_2}=-\dfrac{\dfrac{x_0x_1}{a^2}+\dfrac{y_0y_1}{b^2}-1}{\dfrac{x_0x_2}{a^2}+\dfrac{y_0y_2}{b^2}-1}\\(1+\lambda)^2\bigg(\dfrac{x_0^2}{a^2}+\dfrac{y_0^2}{b^2}-1\bigg)=2\lambda\bigg(\dfrac{x_1x_2}{a^2}+\dfrac{y_1y_2}{b^2}-1\bigg)\end{cases}\]
 \end{conclusion}
 \begin{myproof}
+记
+\[
+T(M,N)=\frac{x_Mx_N}{a^2}+\frac{y_My_N}{b^2}-1.
+\]
+由
+\[
+P=\frac{A+\lambda B}{1+\lambda}
+\]
+可得
+\[
+T(P,A)=\frac{T(A,A)+\lambda T(B,A)}{1+\lambda}
+=\frac{\lambda T(A,B)}{1+\lambda},
+\]
+\[
+T(P,B)=\frac{T(A,B)+\lambda T(B,B)}{1+\lambda}
+=\frac{T(A,B)}{1+\lambda}.
+\]
+于是
+\[
+\lambda=\frac{T(P,A)}{T(P,B)}.
+\]
+再由 $P=\frac{A+\lambda B}{1+\lambda}$ 代入 $T(P,P)$，并利用 $T(A,A)=T(B,B)=0$，即可推出
+\[
+T(P,P)T(A,B)=2T(P,A)T(P,B).
+\]
 \end{myproof}
 
-\begin{conclusion}[比值代换法]
+\begin{conclusion}[比值代换法（极化式）]
 \noindent 记
 \[
 T(M, N) = \dfrac{x_M x_N}{a^2} + \dfrac{y_M y_N}{b^2} - 1.
@@ -454,29 +697,41 @@ T(A,B)=T(P,A)+T(P,B),\qquad T(P,P)\,T(A,B)=2\,T(P,A)\,T(P,B).
 
 
 \begin{example}[比较关系]
-    椭圆$\dfrac{x^2}{a^2}+\dfrac{y^2}{b^2}=1$上两点$A(x_1,y_1),B(x_2,y_2)$，计算$(x_1y_2+x_2y_1)\left(\frac{x_1x_2}{a^2}+\frac{y_1y_2}{b^2}\right)$和$x_1y_1+x_2y_2$的大小关系，证明你的结论.
+    椭圆$\dfrac{x^2}{a^2}+\dfrac{y^2}{b^2}=1$上两点$A(x_1,y_1),B(x_2,y_2)$，比较$(x_1y_2+x_2y_1)\left(\frac{x_1x_2}{a^2}+\frac{y_1y_2}{b^2}\right)$和$x_1y_1+x_2y_2$的大小关系，并说明结论.
 \end{example}
+\begin{solution}
+令
+\[
+X_i=\frac{x_i}{a},\qquad Y_i=\frac{y_i}{b}\quad(i=1,2).
+\]
+则 $X_i^2+Y_i^2=1$。设
+\[
+X_i=\cos\theta_i,\qquad Y_i=\sin\theta_i.
+\]
+于是
+\[
+\frac{x_1x_2}{a^2}+\frac{y_1y_2}{b^2}
+=\cos(\theta_1-\theta_2),
+\]
+且
+\[
+x_1y_2+x_2y_1=ab\sin(\theta_1+\theta_2).
+\]
+另一方面，
+\[
+x_1y_1+x_2y_2
+=ab(\cos\theta_1\sin\theta_1+\cos\theta_2\sin\theta_2)
+=ab\sin(\theta_1+\theta_2)\cos(\theta_1-\theta_2).
+\]
+两式相同，故
+\[
+(x_1y_2+x_2y_1)\left(\frac{x_1x_2}{a^2}+\frac{y_1y_2}{b^2}\right)
+=x_1y_1+x_2y_2.
+\]
+\end{solution}
 
 \begin{conclusion}[参数方程]
     过椭圆$\dfrac{x^2}{a^2}+\dfrac{y^2}{b^2}=1$上两点$A\left(a\dfrac{1-t_1^2}{1+t_1^2},b\dfrac{2t_1}{1+t_1^2}\right),B\left(a\dfrac{1-t_2^2}{1+t_2^2},b\dfrac{2t_2}{1+t_2^2}\right)$的直线方程为\[\dfrac{x(1-t_1t_2)}{a(1+t_1t_2)}+\dfrac{y(t_1+t_2)}{b(1+t_1t_2)}=1\]
 \end{conclusion}
-
-\begin{align*}
-&(x_1y_2+x_2y_1)\left(\dfrac{m^2}{a^2}+\dfrac{n^2}{b^2}\right)\\ 
-&= (x_1y_2+x_2y_1) \left[ \dfrac{1}{(1+\lambda)^2} \left( \dfrac{(x_1+\lambda x_2)^2}{a^2} + \dfrac{(y_1+\lambda y_2)^2}{b^2} \right) \right] \\
-&= \dfrac{x_1y_2+x_2y_1}{(1+\lambda)^2} \left[ \left(\dfrac{x_1^2}{a^2}+\dfrac{y_1^2}{b^2}\right) + \lambda^2\left(\dfrac{x_2^2}{a^2}+\dfrac{y_2^2}{b^2}\right) + 2\lambda\left(\dfrac{x_1x_2}{a^2}+\dfrac{y_1y_2}{b^2}\right) \right] \\
-&= \dfrac{x_1y_2+x_2y_1}{(1+\lambda)^2} \left[ 1 + \lambda^2 + 2\lambda\left(\dfrac{x_1x_2}{a^2}+\dfrac{y_1y_2}{b^2}\right) \right] \\
-&= \dfrac{1}{(1+\lambda)^2} \Big[ (1+\lambda^2)(x_1y_2+x_2y_1) + 2\lambda (x_1y_2+x_2y_1)\left(\dfrac{x_1x_2}{a^2}+\dfrac{y_1y_2}{b^2}\right) \Big] \\
-&= \dfrac{1}{(1+\lambda)^2} \Big[ (1+\lambda^2)(x_1y_2+x_2y_1) + 2\lambda(x_1y_1+x_2y_2) \Big]  \\
-&= \dfrac{1}{(1+\lambda)^2} \Big[ (1+2\lambda+\lambda^2)(x_1y_2+x_2y_1) - 2\lambda(x_1y_2+x_2y_1) + 2\lambda x_1y_1 + 2\lambda x_2y_2 \Big] \\
-&= \dfrac{1}{(1+\lambda)^2} \Big[ (1+\lambda)^2(x_1y_2+x_2y_1) + \underbrace{2(1+\lambda)x_1y_1 - 2x_1y_1}_{\text{配凑 } 2\lambda x_1y_1} + \underbrace{2\lambda(1+\lambda)x_2y_2 - 2\lambda^2x_2y_2}_{\text{配凑 } 2\lambda x_2y_2} - 2\lambda(x_1y_2+x_2y_1) \Big] \\
-&= \dfrac{1}{(1+\lambda)^2} \Big[ (1+\lambda)^2(x_1y_2+x_2y_1) + 2(1+\lambda)x_1y_1 + 2\lambda(1+\lambda)x_2y_2 - 2\big(x_1y_1 + \lambda x_1y_2 + \lambda x_2y_1 + \lambda^2x_2y_2\big) \Big] \\
-&= \dfrac{1}{(1+\lambda)^2} \Big[ (1+\lambda) \big( (1+\lambda)(x_1y_2+x_2y_1) + 2x_1y_1 + 2\lambda x_2y_2 \big) - 2(x_1+\lambda x_2)(y_1+\lambda y_2) \Big] \\
-&= \dfrac{1}{1+\lambda} \Big[ x_1y_2 + x_2y_1 + \lambda x_1y_2 + \lambda x_2y_1 + 2x_1y_1 + 2\lambda x_2y_2 \Big] - 2 \left(\dfrac{x_1+\lambda x_2}{1+\lambda}\right)\left(\dfrac{y_1+\lambda y_2}{1+\lambda}\right) \\
-&= \dfrac{1}{1+\lambda} \Big[ \big(x_1y_1 + x_1y_2 + \lambda x_2y_1 + \lambda x_2y_2\big) + \big(x_1y_1 + x_2y_1 + \lambda x_1y_2 + \lambda x_2y_2\big) \Big] - 2mn \\
-&= \dfrac{1}{1+\lambda} \Big[ (x_1+\lambda x_2)(y_1+y_2) + (y_1+\lambda y_2)(x_1+x_2) \Big] - 2mn \\
-&= \dfrac{x_1+\lambda x_2}{1+\lambda}(y_1+y_2) + \dfrac{y_1+\lambda y_2}{1+\lambda}(x_1+x_2) - 2mn \\
-&= m(y_1+y_2) + n(x_1+x_2) - 2mn
-\end{align*}
 
 

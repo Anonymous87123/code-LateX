@@ -66,7 +66,7 @@ $$f'\left(\xi\right)+3f^3\left(\xi\right)=0$$
 \[
 c\left(x\right)=f\left(x\right)e^{\int_0^x3f^2(t)\dd t}.
 \]
-注意到
+对 $c(x)$ 求导，得到
 $$c'\left(x\right)=e^{\int_0^x3f^2\left(t\right)dt}\left[f'\left(x\right)+3f^3\left(x\right)\right].$$
 由积分中值定理，存在 $\theta\in(0,1)$ 使得
 $$f\left(\theta\right)=\int_0^1f\left(x\right)dx=0.$$
@@ -116,7 +116,11 @@ y'=\frac{2}{1-x}y&\Leftrightarrow y'+\frac{2}{x-1}y=0\\
 \[
 c'(x)=2xf'(x)+(1+x^2)f''(x).
 \]
-注意到 $f(0)=0,\ f\!\left(\frac{1}{\sqrt{3}}\right)=\frac{\pi}{6},\ f(1)=\frac{\pi}{4}$，而 $\arctan 0=0,\ \arctan\frac{1}{\sqrt{3}}=\frac{\pi}{6},\ \arctan 1=\frac{\pi}{4}$，故令
+三个给定函数值与 $\arctan x$ 在对应点一致，即
+\[
+f(0)=\arctan 0,\qquad f\!\left(\frac{1}{\sqrt{3}}\right)=\arctan\frac{1}{\sqrt{3}},\qquad f(1)=\arctan 1,
+\]
+因此令
 \[
 g(x)=f(x)-\arctan x,\quad x\in[0,1].
 \]
@@ -157,9 +161,9 @@ g(x)=\frac{f(x)}{\sin x},\quad x\in(0,\pi).
 \[
 g''(x)=\frac{f''(x)-2\cot x\,f'(x)+f(x)\bigl(1+2\cot^2 x\bigr)}{\sin x},\quad x\in(0,\pi).
 \]
-因此，要证存在 $\xi\in(0,\pi)$ 使得原式成立，只需证存在 $\xi$ 使 $g''(\xi)=0$。
+由于 $\sin x>0$ 在 $(0,\pi)$ 内恒成立，原式为零等价于 $g''(\xi)=0$。
 
-证明 $g''$ 在 $(0,\pi)$ 内有零点。由 $f(0)f(\pi)<0$ 知 $f(0)$ 与 $f(\pi)$ 异号且均非零。设 $f(0)>0$，则 $f(\pi)<0$；另一种情形完全相同。考虑
+由 $f(0)f(\pi)<0$ 知 $f(0)$ 与 $f(\pi)$ 异号且均非零。设 $f(0)>0$，则 $f(\pi)<0$。考虑
 \[
 g'(x)=\dfrac{f'(x)\sin x-f(x)\cos x}{\sin^2 x}.
 \]
@@ -171,7 +175,7 @@ g'(x)\sim -\frac{f(0)}{x^2}\to -\infty.
 \[
 g'(x)\sim \frac{f(\pi)}{t^2}\to -\infty.
 \]
-因此 $g'$ 在 $(0,\pi)$ 内连续，且两端趋于 $-\infty$，从而 $g'$ 在 $(0,\pi)$ 内必取得最大值（例如，取 $\delta>0$ 足够小，使在 $(0,\delta)$ 和 $(\pi-\delta,\pi)$ 上 $g'(x)<g'(\pi/2)$，则 $g'$ 在 $[\delta,\pi-\delta]$ 上有最大值，该最大值即为整个区间上的最大值）。设最大值点为 $\xi\in(0,\pi)$，则 $g'(\xi)$ 为极大值，故 $g''(\xi)=0$。若 $f(0)<0$，则 $g'$ 两端趋于 $+\infty$，同理取最小值点即得 $g''(\xi)=0$。因此存在 $\xi\in(0,\pi)$ 使 $g''(\xi)=0$，代入即得
+因此 $g'$ 在 $(0,\pi)$ 内连续，且两端趋于 $-\infty$，从而 $g'$ 在 $(0,\pi)$ 内必取得最大值（例如，取 $\delta>0$ 足够小，使在 $(0,\delta)$ 和 $(\pi-\delta,\pi)$ 上 $g'(x)<g'(\pi/2)$，则 $g'$ 在 $[\delta,\pi-\delta]$ 上有最大值，该最大值即为整个区间上的最大值）。设最大值点为 $\xi\in(0,\pi)$，则 $g'(\xi)$ 为极大值，故 $g''(\xi)=0$。若 $f(0)<0$，则上述两端极限同时改为 $+\infty$，改取内部最小值点，同样得到 $g''(\xi)=0$。因此存在 $\xi\in(0,\pi)$ 使 $g''(\xi)=0$，代入即得
 \[
 f''(\xi)-2f'(\xi)\cot\xi+f(\xi)(1+2\cot^2\xi)=0.
 \]
@@ -256,7 +260,12 @@ $$f''\left(\zeta\right)=3f'\left(\zeta\right)\tan\zeta+2f\left(\zeta\right).$$
 \[
 y'' = 3y'\tan x + 2y. \tag{1}
 \]
-直接验证可知，函数 $y_1(x)=\dfrac{1}{\cos^2 x}$ 和 $y_2(x)=\dfrac{\sin x}{\cos^2 x}$ 均为 (1) 的解，故通解为
+代入方程可得
+\[
+y_1''-3y_1'\tan x-2y_1=0,\qquad
+y_2''-3y_2'\tan x-2y_2=0,
+\]
+其中 $y_1(x)=\dfrac{1}{\cos^2 x}$，$y_2(x)=\dfrac{\sin x}{\cos^2 x}$，且二者线性无关，故通解为
 \[
 y(x) = \frac{C_1}{\cos^2 x} + C_2\frac{\sin x}{\cos^2 x},\quad C_1,C_2\in\mathbb{R}.
 \]
@@ -340,7 +349,7 @@ g''(x) = e^{x^3/3}\bigl[f''(x) + 2x^2 f'(x) + (x^4 + 2x)f(x)\bigr]. \tag{2}
 \[
 g'(\xi_1)=0,\quad g'(\xi_2)=0.
 \]
-再对 $g'$ 在 $[\xi_1,\xi_2]$ 上应用罗尔定理，存在 $\xi\in(\xi_1,\xi_2)$ 使得 $g''(\xi)=0$。代入 (2) 并注意到 $e^{\xi^3/3}\neq 0$，即得
+再对 $g'$ 在 $[\xi_1,\xi_2]$ 上应用罗尔定理，存在 $\xi\in(\xi_1,\xi_2)$ 使得 $g''(\xi)=0$。由 $e^{\xi^3/3}>0$，式 (2) 中括号内表达式必须为零，因此
 \[
 f''(\xi) + 2\xi^2 f'(\xi) + (\xi^4 + 2\xi)f(\xi)=0.
 \]
@@ -417,7 +426,7 @@ g'(x)=f'(x)\sin x+f(x)\cos x+f''(x)\cos x-f'(x)\sin x=(f(x)+f''(x))\cos x. \tag{
 \[
 |g(\frac{\pi}{2})|=|f(\frac{\pi}{2})|<1,\quad |g(-\frac{\pi}{2})|=|-f(-\frac{\pi}{2})|<1.
 \]
-假设对一切 $x\in(-\frac{\pi}{2},\frac{\pi}{2})$ 均有 $f(x)+f''(x)\neq0$，则由连续性，$f(x)+f''(x)$ 在 $(-\frac{\pi}{2},\frac{\pi}{2})$ 内恒正或恒负。若它恒负，就改看 $-f$；因此只需讨论恒正的情形。由于在 $(-\frac{\pi}{2},\frac{\pi}{2})$ 内 $\cos x>0$，由 (1) 知 $g'(x)>0$，即 $g$ 严格递增。于是
+假设对一切 $x\in(-\frac{\pi}{2},\frac{\pi}{2})$ 均有 $f(x)+f''(x)\neq0$，则由连续性，$f(x)+f''(x)$ 在 $(-\frac{\pi}{2},\frac{\pi}{2})$ 内恒正或恒负。若它恒负，对 $-f$ 作同一论证；以下以恒正情形写出推导。由于在 $(-\frac{\pi}{2},\frac{\pi}{2})$ 内 $\cos x>0$，由 (1) 知 $g'(x)>0$，即 $g$ 严格递增。于是
 \[
 g\!\left(-\frac{\pi}{2}\right)<g(0)<g\!\left(\frac{\pi}{2}\right).
 \]
@@ -483,7 +492,7 @@ h(a)=f'(a)g(a)-f(a)g'(a)=0,\quad h(b)=f'(b)g(b)-f(b)g'(b)=0.
 \[
 f''(\xi)g(\xi)-f(\xi)g''(\xi)=0. \tag{2}
 \]
-证明 $g(\xi)\neq0$。已知 $g''(x)\neq0$ 对一切 $x\in[a,b]$ 成立，故 $g''$ 在 $(a,b)$ 内恒正或恒负。若 $g''>0$，则 $g$ 为严格凸函数，且由 $g(a)=g(b)=0$ 可知 $g(x)<0\ (x\in(a,b))$；若 $g''<0$，同理有 $g(x)>0$。因此 $g(x)\neq0$ 对一切 $x\in(a,b)$ 成立，特别地 $g(\xi)\neq0$。再由 $g''(\xi)\neq0$，(2) 式化为
+还需保证分式有意义。已知 $g''(x)\neq0$ 对一切 $x\in[a,b]$ 成立，故 $g''$ 在 $(a,b)$ 内恒正或恒负。若 $g''>0$，则 $g$ 为严格凸函数，且由 $g(a)=g(b)=0$ 可知 $g(x)<0\ (x\in(a,b))$；若 $g''<0$，同理有 $g(x)>0$。因此 $g(x)\neq0$ 对一切 $x\in(a,b)$ 成立，特别地 $g(\xi)\neq0$。再由 $g''(\xi)\neq0$，(2) 式化为
 \[
 \frac{f(\xi)}{g(\xi)}=\frac{f''(\xi)}{g''(\xi)}.
 \]
@@ -498,7 +507,7 @@ f''(\xi)g(\xi)-f(\xi)g''(\xi)=0. \tag{2}
 \[
 \int f(x)f'(x)+f''(x) \dd x=  f'(x) + \frac{1}{2}f^2(x)
 \]
-定义辅助函数 $g(x)=f'(x)+\frac{1}{2}f^2(x)$，则 $g(0)=0$。若能在 $(0,1]$ 内找到另一点 $x_0$ 使 $g(x_0)=0$，则对 $g$ 在 $[0,x_0]$ 上应用罗尔定理，可得存在 $\xi\in(0,1)$ 使 $g'(\xi)=0$，而 $g'(\xi)=f(\xi)f'(\xi)+f''(\xi)$。下面寻找 $g$ 的另一个零点。考虑方程 $g(x)=0$，其通解为 $\frac{1}{f(x)}=\frac{x}{2}+C$。令
+定义辅助函数 $g(x)=f'(x)+\frac{1}{2}f^2(x)$，则 $g(0)=0$。若能在 $(0,1]$ 内找到另一点 $x_0$ 使 $g(x_0)=0$，则对 $g$ 在 $[0,x_0]$ 上应用罗尔定理，可得存在 $\xi\in(0,1)$ 使 $g'(\xi)=0$，而 $g'(\xi)=f(\xi)f'(\xi)+f''(\xi)$。为得到第二个零点，转而考察方程 $g(x)=0$ 所对应的辅助函数。令
 \[
 \varphi(x)=\frac{x}{2}-\frac{1}{f(x)},
 \]
@@ -506,15 +515,15 @@ f''(\xi)g(\xi)-f(\xi)g''(\xi)=0. \tag{2}
 \[
 \varphi'(x)=\frac{1}{2}+\frac{f'(x)}{f^2(x)}=\frac{\frac{1}{2}f^2(x)+f'(x)}{f^2(x)}=\frac{g(x)}{f^2(x)}.
 \]
-因此 $\varphi'(x)=0$ 当且仅当 $g(x)=0$（在 $f(x)\neq0$ 处）。现在分两种情况讨论。
+因此 $\varphi'(x)=0$ 当且仅当 $g(x)=0$（在 $f(x)\neq0$ 处）。
 
-\paragraph{情况1：$f$ 在 $(0,1)$ 内无零点。} 此时 $f(x)\neq0$ 对一切 $x\in[0,1]$ 成立，故 $\varphi$ 在 $[0,1]$ 上连续可导。计算端点值：
+若 $f$ 在 $(0,1)$ 内无零点，则 $f(x)\neq0$ 对一切 $x\in[0,1]$ 成立，故 $\varphi$ 在 $[0,1]$ 上连续可导。计算端点值：
 \[
 \varphi(0)=0-\frac{1}{2}=-\frac{1}{2},\qquad \varphi(1)=\frac{1}{2}-\frac{1}{1}=-\frac{1}{2},
 \]
 即 $\varphi(0)=\varphi(1)$。由罗尔定理，存在 $\eta\in(0,1)$ 使得 $\varphi'(\eta)=0$，从而 $g(\eta)=0$。于是 $g(0)=g(\eta)=0$，再由罗尔定理，存在 $\xi\in(0,\eta)$ 使 $g'(\xi)=0$，得证。
 
-\paragraph{情况2：$f$ 在 $(0,1)$ 内有零点。} 取一个由相邻零点或端点围成的区间 $(\alpha,\beta)$，并设 $\alpha$ 为其中的零点。则 $f$ 在 $(\alpha,\beta)$ 上不变号且不为零，故 $\varphi$ 在该区间内连续可导。又当 $x\to\alpha^+$ 时，$f(x)\to0$，于是 $|\varphi(x)|\to\infty$。因此 $\varphi$ 在 $(\alpha,\beta)$ 内必有极值点 $\eta$，从而 $\varphi'(\eta)=0$，即 $g(\eta)=0$。再由 $g(0)=g(\eta)=0$ 对 $g$ 应用罗尔定理，得某个 $\xi\in(0,\eta)$ 使 $g'(\xi)=0$，结论成立。
+若 $f$ 在 $(0,1)$ 内有零点，则取一个由相邻零点或端点围成的区间 $(\alpha,\beta)$，并设 $\alpha$ 为其中的零点。于是 $f$ 在 $(\alpha,\beta)$ 上不变号且不为零，故 $\varphi$ 在该区间内连续可导。又当 $x\to\alpha^+$ 时，$f(x)\to0$，于是 $|\varphi(x)|\to\infty$。因此 $\varphi$ 在 $(\alpha,\beta)$ 内必有极值点 $\eta$，从而 $\varphi'(\eta)=0$，即 $g(\eta)=0$。再由 $g(0)=g(\eta)=0$ 对 $g$ 应用罗尔定理，得某个 $\xi\in(0,\eta)$ 使 $g'(\xi)=0$，结论成立。
 
 因此，无论 $f$ 在 $(0,1)$ 内是否有零点，总存在 $\xi\in(0,1)$ 使得
 \[
@@ -715,7 +724,7 @@ c'(x)=\bigl[f'(x)+g'(x)(f(x)-f(\eta))\bigr]e^{g(x)}. \tag{5}
 \[
 c(\theta)=\bigl[f(\theta)-f(\eta)\bigr]e^{g(\theta)}=0,\quad c(\eta)=\bigl[f(\eta)-f(\eta)\bigr]e^{g(\eta)}=0.
 \]
-因此 $c$ 在 $[\theta,\eta]$ 上满足 $c(\theta)=c(\eta)=0$（注意 $\theta<\eta$）。由罗尔中值定理，存在 $\xi\in(\theta,\eta)\subset(0,1)$ 使得 $c'(\xi)=0$。代入 (5) 并注意到 $e^{g(\xi)}>0$，即得
+由于 $\theta<\eta$，函数 $c$ 在 $[\theta,\eta]$ 上满足 $c(\theta)=c(\eta)=0$。由罗尔中值定理，存在 $\xi\in(\theta,\eta)\subset(0,1)$ 使得 $c'(\xi)=0$。再由 $e^{g(\xi)}>0$，式 (5) 化为
 \[
 f'(\xi)+g'(\xi)(f(\xi)-f(\eta))=0 \quad\Longrightarrow\quad f'(\xi)=g'(\xi)\bigl[f(\eta)-f(\xi)\bigr].
 \]

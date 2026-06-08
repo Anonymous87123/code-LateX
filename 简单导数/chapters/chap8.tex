@@ -1,6 +1,5 @@
 \section{利用逼近误差比较截线宽度}
 
-\subsection*{证明}
 这里比较同一高度处的截线宽度。先比较导数或二阶导数，再判断左右两侧交点的相对位置。用到 $\ln x$ 在 $x=1$ 附近的 Pad\'e 逼近式
 \[
 R(x) = \frac{x^2+4x-5}{4x+2},
@@ -20,23 +19,237 @@ R(x) = \frac{x^2+4x-5}{4x+2},
 x_1 < x_3 < 1 < x_2 < x_4.
 \]
 
-进一步比较左右两侧的截线宽度。由
+把变量平移到极小值点。令
 \[
-H''(x)=\frac{16(x-1)^3}{x(2x+1)^2}
+F(s)=f(1+s),\qquad G(s)=g(1+s),
 \]
-可见，靠近 $x=0$ 时两函数的曲率差异更明显，而在 $x\to+\infty$ 时这种差异逐渐减弱。因此左侧交点之间的距离增量大于右侧的距离减量，即
+并设
 \[
-x_3 - x_1 > x_4 - x_2.
+x_1=1-p,\quad x_2=1+q,\quad x_3=1-r,\quad x_4=1+w
 \]
-移项即得
+其中 $p,r\in(0,1),q,w>0$。由前面的根序可知 $p>r$ 且 $w>q$，原结论等价于
 \[
-x_2 + x_3 > x_1 + x_4.
+p-r>w-q.
 \]
+由于
+\[
+F(s)=2s^2+18s-27\ln\left(1+\frac{2s}{3}\right),\qquad
+G(s)=16((1+s)\ln(1+s)-s),
+\]
+记
+\[
+K(s)=\frac{F(s)-G(s)}{G'(s)}.
+\]
+由 $F(-p)=G(-r)$ 得
+\[
+G(-p)-G(-r)=G(-p)-F(-p).
+\]
+又 $G'$ 在 $(-1,0)$ 上递增且为负，于是
+\[
+G(-p)-G(-r)<(p-r)(-G'(-p)),
+\]
+从而
+\[
+p-r>K(-p).
+\]
+同理，由 $F(q)=G(w)$ 与 $G'$ 在 $(0,+\infty)$ 上递增且为正，得到
+\[
+G(w)-G(q)=F(q)-G(q)>(w-q)G'(q),
+\]
+因此
+\[
+w-q<K(q).
+\]
+所以宽度比较归结为证明
+\[
+K(-p)>K(q),\qquad F(-p)=F(q).
+\]
+这一步需要保留高阶精度，不能仅由二阶曲率符号推出。先把参数范围收紧。由于 $F(-t)$ 在 $0<t<1$ 上严格递增，且
+\[
+F\left(-\frac{59}{60}\right)-13
+=27\ln\frac{90}{31}-\frac{51779}{1800}>0,
+\]
+其中
+\[
+\ln\frac{90}{31}
+=2\sum_{k=0}^{\infty}\frac{1}{2k+1}\left(\frac{59}{121}\right)^{2k+1}
+>2\sum_{k=0}^{4}\frac{1}{2k+1}\left(\frac{59}{121}\right)^{2k+1}
+>\frac{51779}{48600},
+\]
+所以 $F(-p)=a<13$ 给出
+\[
+0<p<\frac{59}{60}.
+\]
+
+再将右根夹住。令
+\[
+\phi(p)=\frac{8p}{8-3p},\qquad J(p)=F(\phi(p))-F(-p).
+\]
+则 $J(0)=0$，并且
+\[
+J'(p)=
+\frac{-72p^2(21p^4-222p^3+448p^2+768p-1024)}
+{(2p-3)(3p-8)^3(7p+24)}.
+\]
+在 $0<p<1$ 中分母为正，而
+\[
+\begin{aligned}
+&21p^4-222p^3+448p^2+768p-1024\\
+={}&-1024(1-p)^4-3328p(1-p)^3-3392p^2(1-p)^2\\
+&\quad -1118p^3(1-p)-9p^4<0.
+\end{aligned}
+\]
+故 $J'(p)>0$，从而 $F(\phi(p))>F(-p)=F(q)$。由 $F$ 在正半轴上递增，得到
+\[
+q<\phi(p).
+\]
+
+还要说明 $K$ 在正半轴上递增。记 $\Delta(s)=F(s)-G(s)$，则 $\Delta(0)=G'(0)=0$。因为
+\[
+G''(s)=\frac{16}{1+s},
+\]
+可考察
+\[
+\frac{\Delta'(s)}{G''(s)}=\frac{(1+s)\Delta'(s)}{16}.
+\]
+其导数符号由 $\Delta'(s)+(1+s)\Delta''(s)$ 决定，而
+\[
+\frac{\dd}{\dd s}\left[\Delta'(s)+(1+s)\Delta''(s)\right]
+=\frac{16s^2(4s^2+14s+9)}{(1+s)(2s+3)^3}>0\qquad(s>0),
+\]
+并且 $\Delta'(0)+\Delta''(0)=0$。故 $\Delta'/G''$ 在 $(0,+\infty)$ 上递增，由柯西中值定理的单调形式，$K=\Delta/G'$ 在 $(0,+\infty)$ 上递增。于是只要证明
+\[
+K(-p)>K(\phi(p))\qquad\left(0<p<\frac{59}{60}\right),
+\]
+就有 $K(-p)>K(q)$。
+
+对 $K(-p)>K(\phi(p))$ 通分化简。令
+\[
+u=-\ln(1-p),\quad v=-\ln\left(1-\frac{2p}{3}\right),\quad
+\alpha=\ln\frac{8+5p}{8-3p},\quad
+\beta=\ln\frac{24+7p}{24-9p},
+\]
+则该不等式等价于
+\[
+E(p):=\alpha(34p-2p^2-27v)+27u\beta
+-\frac{16p(136-43p)}{(8-3p)^2}u
++\frac{16p(16-3p)}{8-3p}u\alpha>0.
+\]
+这个式子的低阶项连续抵消到七阶，必须用带余项的估计保留精度。把四个对数统一写成
+\[
+L(z)=\ln\frac{1+z}{1-z}
+\]
+的形式：
+\[
+\alpha=L\left(\frac{4p}{8+p}\right),\qquad
+\beta=L\left(\frac{8p}{24-p}\right),\qquad
+u=L\left(\frac{p}{2-p}\right),\qquad
+v=L\left(\frac{p}{3-p}\right).
+\]
+当 $0<z<1$ 时，记
+\[
+T_m(z)=2\sum_{k=0}^{m}\frac{z^{2k+1}}{2k+1},\qquad
+U_m(z)=T_m(z)+\frac{2z^{2m+3}}{(2m+3)(1-z^2)}.
+\]
+由
+\[
+L(z)=2\sum_{k=0}^{\infty}\frac{z^{2k+1}}{2k+1}
+\]
+及
+\[
+\sum_{k=m+1}^{\infty}\frac{z^{2k+1}}{2k+1}
+<\frac{z^{2m+3}}{(2m+3)(1-z^2)}
+\]
+可得
+\[
+T_m(z)<L(z)<U_m(z).
+\]
+
+记
+\[
+A=34p-2p^2,\qquad R=\frac{16p(136-43p)}{(8-3p)^2},\qquad S=\frac{16p(16-3p)}{8-3p}.
+\]
+根据
+\[
+E=\alpha(A-27v)+u(27\beta-R+S\alpha)
+\]
+中各项符号，得到下界
+\begin{align*}
+\Phi_m(p)=&A\,T_m\!\left(\frac{4p}{8+p}\right)
+-27\,U_m\!\left(\frac{4p}{8+p}\right)U_m\!\left(\frac{p}{3-p}\right)\\
+&+27\,T_m\!\left(\frac{p}{2-p}\right)T_m\!\left(\frac{8p}{24-p}\right)
+-R\,U_m\!\left(\frac{p}{2-p}\right)
++S\,T_m\!\left(\frac{p}{2-p}\right)T_m\!\left(\frac{4p}{8+p}\right),
+\end{align*}
+且 $E(p)>\Phi_m(p)$。
+
+在 $(0,\frac12]$ 上取 $m=3$。把 $\Phi_3=N_3/D_3$ 化为有理函数，可得 $D_3<0$，并且 $N_3=p^7M_3(p)$。多项式 $M_3$ 在 $[0,\frac12]$ 上的 Sturm 序列显示无零点，且 $M_3(0)<0$，故 $N_3<0$，从而 $\Phi_3>0$。
+
+余下区间仍用同一类有理下界。对每个区间 $[a,b]$，把 $\Phi_m=N_m/D_m$ 化为有理函数，均有 $D_m<0$。再把
+\[
+-N_m(a+(b-a)t)\qquad(0\le t\le1)
+\]
+写成 Bernstein 基底下的多项式；所得 Bernstein 系数全为正有理数，因此 $N_m<0$，于是 $\Phi_m>0$。所用证书为
+\[
+\begin{array}{c|c|c}
+\text{区间} & m & \deg(-N_m(a+(b-a)t))\\
+\hline
+\left[\frac12,\frac7{10}\right] & 4 & 43\\
+\left[\frac7{10},\frac45\right] & 5 & 51\\
+\left[\frac45,\frac9{10}\right] & 9 & 83\\
+\left[\frac9{10},\frac{19}{20}\right] & 16 & 139\\
+\left[\frac{19}{20},\frac{97}{100}\right] & 30 & 251
+\end{array}
+\]
+这些区间与前面的 $(0,\frac12]$ 合起来，已经覆盖到 $\frac{97}{100}$。
+
+最后处理 $\left[\frac{97}{100},\frac{59}{60}\right]$。令
+\[
+Q(p)=A-27v,\qquad M(p)=27\beta-R+S\alpha,
+\]
+则 $E=\alpha Q+uM$。在该区间中
+\[
+Q'(p)=-\frac{8(p^2-10p+6)}{2p-3}<0,
+\]
+故 $Q$ 递减。另一方面
+\[
+M'(p)=\frac{16(C(p)\alpha+D(p))}{(3p-8)^3(5p+8)(7p+24)},
+\]
+其中
+\[
+C(p)=(3p-8)(5p+8)(7p+24)(9p^2-48p+128)<0,
+\]
+\[
+D(p)=-64(63p^4+17p^3-1224p^2+704p-1536).
+\]
+由于 $\alpha>p$，且 $C(p)p+D(p)<0$ 在该区间上成立，其中 $-(C(p)p+D(p))$ 化到 Bernstein 基底后系数全正，所以 $C(p)\alpha+D(p)<0$。分母也为负，故 $M'(p)>0$，即 $M$ 递增。
+
+由同一组 $T_m,U_m$ 的有理界可取到
+\[
+\alpha\left(\frac{97}{100}\right)>\frac{463}{500},\qquad
+Q\left(\frac{59}{60}\right)>\frac{68}{25},
+\]
+\[
+u\left(\frac{59}{60}\right)<\frac{21}{5},\qquad
+M\left(\frac{97}{100}\right)>-\frac{59}{100}.
+\]
+因此当 $\frac{97}{100}\le p<\frac{59}{60}$ 时，
+\[
+E(p)\ge
+\alpha\left(\frac{97}{100}\right)Q\left(\frac{59}{60}\right)
+ +u\left(\frac{59}{60}\right)M\left(\frac{97}{100}\right)
+>\frac{463}{500}\cdot\frac{68}{25}-\frac{21}{5}\cdot\frac{59}{100}
+=\frac{509}{12500}>0.
+\]
+于是 $E(p)>0$ 在整个 $0<p<\frac{59}{60}$ 上成立，从而 $K(-p)>K(\phi(p))>K(q)$，最后得到
+\[
+p-r>w-q.
+\]
+这与 $x_2+x_3>x_1+x_4$ 等价，命题得证。
 \end{solution}
 
 \section{奇次项作用下的截线比较}
 
-\subsection*{证明}
 若以偶函数作为基准，再加入高一阶奇次项，就会在左右两侧产生不对称的截线宽度。这里取
 \[
 g(x)=(x-1)^{2k},\qquad
@@ -80,7 +293,7 @@ x_1 < x_3 < 1 < x_2 < x_4.
 \[
 x_4 - x_3 = 2a^{1/4}.
 \]
-因此只需证明
+因此原命题落到宽度比较上，即证明
 \[
 x_2 - x_1 > 2a^{1/4}.
 \]
@@ -94,7 +307,6 @@ x_2 - x_1 > 2a^{1/4}.
 
 \section{超越函数情形的宽度比较}
 
-\subsection*{证明}
 对超越函数，交点往往难以显式写出。此时把同一高度下左右两根的距离记为
 \[
 W(a)=x_R-x_L,
@@ -113,7 +325,7 @@ $$ W_f'(a) = \frac{1}{f'(x_2)} - \frac{1}{f'(x_1)} = \frac{1}{e^{x_2}-1} + \frac
 $$ W_f'(a) \ge \frac{4}{(e^{x_2}-1) + (1-e^{x_1})} = \frac{4}{e^{x_2} - e^{x_1}} $$
 联立原方程得 $e^{x_2}-x_2-1 = e^{x_1}-x_1-1 = a$，相减即有 $e^{x_2}-e^{x_1} = x_2-x_1 = W_f(a)$。由此建立常微分不等式 $W_f'(a) \ge \frac{4}{W_f(a)}$，变形为 $(W_f^2(a))' \ge 8$。
 在区间 $[0, a]$ 上积分，解得下界 $W_f(a) \ge \sqrt{8a}$。
-对于偶函数 $g$，由 $\cosh x_4 - 1 = a$ 结合泰勒不等式 $\cosh x_4 > 1 + \frac{x_4^2}{2}$，推知 $2a > x_4^2$。故对称宽度满足 $W_g(a) = 2x_4 < \sqrt{8a}$。两相比较即可得到 $W_f(a) > W_g(a)$，命题得证。
+对于偶函数 $g$，由 $\cosh x_4 - 1 = a$ 结合泰勒不等式 $\cosh x_4 > 1 + \frac{x_4^2}{2}$，推知 $2a > x_4^2$。故对称宽度满足 $W_g(a) = 2x_4 < \sqrt{8a}$。两条宽度估计合在一起，便得到 $W_f(a) > W_g(a)$，命题得证。
 \end{solution}
 
 \begin{example}
@@ -131,7 +343,6 @@ $$ W_f'(a) = \frac{1-x_2}{2x_2} - \frac{1-x_1}{2x_1} = \frac{1}{2x_2} + \frac{1}
 
 \section{参数化导数估计}
 
-\subsection*{证明}
 若要得到 \(a^{1/2n}\) 量级的界限，可从宽度导数
 \[
 W'(a) \ge \frac{W(a)}{2na}
@@ -198,12 +409,11 @@ W_f(a) > 2a^{1/6}.
 
 \section{常数项抵消与宽度下界}
 
-\subsection*{证明}
 在某些问题中，可以先把导数倒数写成“主项加常数项”的形式。若两侧交点同时作隐函数求导，这个常数项会自动相消，从而得到更便于积分的宽度导数公式。具体地，若
 \[
 \frac{1}{f'(x)} = \frac{1}{g'(x)} + k.
 \]
-则在宽度导数的差值中，常数项 \(k\) 会直接消去。
+则在宽度导数的差值中，常数项 \(k\) 相互抵消。
 
 \begin{example}
 已知函数 $f(x) = 2\ln(x+1) + \frac{2}{x+1} - 2$（定义域 $x>-1$），与 $g(x) = \ln(x^2+1)$。设常数 $a > 0$，直线 $y=a$ 与 $f(x)$ 交于 $x_1 < x_2$，与 $g(x)$ 交于 $x_3 < x_4$。证明：$x_2 + x_3 \ge x_1 + x_4$。
@@ -275,7 +485,6 @@ W_g(a) = 2\arccosh\left(1+\frac{a}{2}\right),
 
 \section{两类函数的交错根比较}
 
-\subsection*{证明}
 若两函数不再关于同一点对称，可以从导数倒数的共同主项出发。设
 \[
 \frac{1}{f'(x)} = \frac{1}{S'(x)} + k_1,\qquad
@@ -298,7 +507,7 @@ W_g(a) = 2\arccosh\left(1+\frac{a}{2}\right),
 \[
 x_3 < x_1 < 0 < x_4 < x_2.
 \]
-于是只需比较宽度 $W_f(a)$ 与 $W_g(a)$。
+于是原来的根和比较转化为宽度 $W_f(a)$ 与 $W_g(a)$ 的比较。
 
 对左右两根作隐函数求导后，两函数都满足
 \[
@@ -344,7 +553,7 @@ H(M) = \frac{4\sinh(W(a)/2)\cosh(M/2)}{\cosh W(a) - \cosh M}.
 \[
 W_f'(a)>W_g'(a).
 \]
-再对 $a$ 积分即可得到
+再对 $a$ 积分得到
 \[
 W_f(a)>W_g(a),
 \]

@@ -40,9 +40,9 @@ P(x) \ge (x\ln x)^2,\qquad e^x - ex \ge P(x).
 \]
 平方整理即得
 \[
-\frac{5}{x^2}+\frac{1}{x}-3\ge0,
+\frac{5}{x^2}+\frac{1}{x}-3\ge0.
 \]
-这在 $0<x\le1$ 上显然成立，故 $F(x)\ge0$。
+因为 \(0<x\le1\) 时 \(\frac5{x^2}\ge5\)、\(\frac1x\ge1\)，所以上式左端至少为 \(3\)。故 \(F(x)\ge0\)。
 
 当 $x \in [1, +\infty)$ 时，
 \[
@@ -118,7 +118,7 @@ b = \frac{3}{2},
 \[
 M(x) = 2x^2(1-x)^2 + \frac{3}{2}x(1-x).
 \]
-三者都关于 $x=\frac12$ 对称，所以只看
+三者都关于 $x=\frac12$ 对称；证明右半段后，左半段由对称性自动得到。因此余下讨论
 \[
 L(x)\le M(x)\le R(x)\qquad \left(0<x\le \frac12\right).
 \]
@@ -127,7 +127,7 @@ L(x)\le M(x)\le R(x)\qquad \left(0<x\le \frac12\right).
 当 $x \in (0, \frac{1}{2}]$ 时，两端函数值均大于 $0$。对不等式两边同时取自然对数，即证 $(1-x)\ln x + x\ln(1-x) \le \ln\left(2x^2(1-x)^2 + \frac{3}{2}x(1-x)\right)$ 成立。
 令 $t = x(1-x)$，当 $x \in (0, \frac{1}{2}]$ 时，$t \in (0, \frac{1}{4}]$ 且单调递增。不等式左边可恒等变形为 $\ln t - x\ln x - (1-x)\ln(1-x)$，右侧可化为 $\ln t + \ln\left(2t + \frac{3}{2}\right)$。消去两侧相同的 $\ln t$，原不等式等价于证明 $-x\ln x - (1-x)\ln(1-x) \le \ln\left(2t + \frac{3}{2}\right)$。
 记 $H(x) = \ln\left(2t + \frac{3}{2}\right) + x\ln x + (1-x)\ln(1-x)$。证明 $L(x)\le M(x)$ 就是要说明 $H(x)\ge0$。
-对 $H(x)$ 求一阶导数，注意到 $\frac{\mathrm{d}t}{\mathrm{d}x} = 1-2x$，有
+由 \(t=x(1-x)\) 得 $\frac{\mathrm{d}t}{\mathrm{d}x} = 1-2x$，于是
 $$ H'(x) = \frac{2(1-2x)}{2t + \frac{3}{2}} + \ln x + 1 - \ln(1-x) - 1 = \frac{4(1-2x)}{4t + 3} + \ln x - \ln(1-x). $$
 继续对 $H'(x)$ 求二阶导数，利用除法求导法则得
 $$ H''(x) = \frac{-8(4t+3) - 4(1-2x) \cdot 4(1-2x)}{(4t+3)^2} + \frac{1}{x} + \frac{1}{1-x}. $$
@@ -298,7 +298,7 @@ L(t)-\frac{t+1}{2}=\frac{t-1}{2}+\ln(\ln t)-\ln(t-1).
 $$g(t)=\frac{t-1}{2}+\ln(\ln t)-\ln(t-1).$$
 则
 $$g'(t) = \frac{1}{2} + \frac{1}{t\ln t} - \frac{1}{t-1} = \frac{t(t-3)\ln t + 2(t-1)}{2t(t-1)\ln t}.$$
-分母恒正，只看分子
+分母恒正，导数符号由分子决定。记
 $$k(t) = t(t-3)\ln t + 2(t-1).$$
 继续求导，
 $$k'(t) = (2t-3)\ln t + t - 1,$$
@@ -377,13 +377,13 @@ C(x)=\frac{s}{2}+\ln\left(\cosh\frac{s}{2}\right).
 \]
 可得
 \[
-C(x)=\frac12(e^x-x-1)+\frac18(e^x-x-1)^2+\mathcal O\!\left((e^x-x-1)^4\right),
+C(x)=\frac12(e^x-x-1)+\frac18(e^x-x-1)^2+\mathcal O\!\left((e^x-x-1)^4\right).
 \]
-它正好和
+这一展开说明它与
 \[
 (e^x-x)-\sqrt{e^x-x}
 \]
-在 $x=0$ 附近同阶。再用
+在 $x=0$ 附近具有相同的主阶。再用
 \[
 \cosh y=\frac{e^y+e^{-y}}{2}
 \]
@@ -506,7 +506,7 @@ e^x\le P_3(x)\qquad(x>0).
 \]
 恒为正。
 
-再比 $P_3(x)$ 与 $U(x)$。两边分母都为正，只看
+再比 $P_3(x)$ 与 $U(x)$。两边分母都为正，差值的符号由分子决定，即比较
 $$ \Delta(x) = (x^5+3x^4+5x^3+8x^2+12x+8)(120-60x+12x^2-x^3) - (x^3+12x^2+60x+120)(x^3+4x+8). $$
 展开后
 $$ \Delta(x) = x^3(-x^5+9x^4-30x^3-20x^2+80x+80). $$
@@ -573,7 +573,7 @@ t(x)+\frac{4t(1/x)}{t(1/x)+1}\ge3.
 \[
 (t(x)+1)(t(1/x)+1)\ge4.
 \]
-这一步已经完全对称，所以只看 \(0<x\le1\) 即可。
+这一步已经完全对称。证明 \(0<x\le1\) 的部分后，\(x>1\) 可由 \(x\mapsto1/x\) 得到。
 
 取
 \[

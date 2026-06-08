@@ -1,0 +1,96 @@
+\documentclass[lang=cn,11pt,thmcnt=section]{elegantbook}
+
+\usepackage{amsmath,amssymb,mathtools}
+\usepackage{array}
+\usepackage{bm}
+\usepackage{mathrsfs}
+\usepackage{enumitem}
+\setlist{nosep}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric,arrows.meta,calc,intersections,positioning}
+\usepackage{ulem}
+\usepackage{caption}
+\usepackage{bookmark}
+\usepackage{cleveref}
+\usepackage{xparse}
+\usepackage{newunicodechar}
+
+\allowdisplaybreaks
+\setlength{\emergencystretch}{3em}
+\hbadness=10000
+\vbadness=10000
+\hfuzz=131pt
+\vfuzz=131pt
+\setcounter{tocdepth}{2}
+\hypersetup{colorlinks=true,linkcolor=black}
+
+\makeatletter
+\@addtoreset{exam}{section}
+\renewcommand{\theexam}{\thesection.\arabic{exam}}
+\@addtoreset{exer}{section}
+\renewcommand{\theexer}{\thesection.\arabic{exer}}
+\@addtoreset{prop}{section}
+\renewcommand{\theprop}{\thesection.\arabic{prop}}
+\@addtoreset{prob}{section}
+\renewcommand{\theprob}{\thesection.\arabic{prob}}
+\makeatother
+
+\newcommand{\kt}{\kaishu}
+\newcommand{\st}{\songti}
+\newcommand{\dd}{\mathop{}\!\mathrm{d}}
+\newcommand{\dif}{\mathop{}\!\mathrm{d}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\PP}{\mathbb{P}}
+\newcommand{\RP}{\mathbb{RP}}
+\newcommand{\CP}{\mathbb{CP}}
+\newcommand{\A}{\mathbb{A}}
+\newcommand{\F}{\mathbb{F}}
+\DeclareMathOperator{\Span}{span}
+
+\newunicodechar{，}{\ifmmode\text{，}\else，\fi}
+
+\RenewDocumentEnvironment{example}{o}{%
+  \refstepcounter{exam}%
+  \par\noindent\textbf{\color{main}{\examplename} \theexam\IfNoValueTF{#1}{}{\ #1}}\par
+  \rmfamily\sloppy
+}{\par}
+
+\RenewDocumentEnvironment{solution}{}{%
+  \par\noindent\textbf{\color{main}\solutionname}\par
+  \citshape\sloppy
+}{\par}
+
+\newcounter{concl}[section]
+\renewcommand{\theconcl}{\thesection.\arabic{concl}}
+\RenewDocumentEnvironment{conclusion}{o}{%
+  \refstepcounter{concl}%
+  \par\noindent\textbf{\color{third}{\conclusionname} \theconcl\IfNoValueTF{#1}{}{\ #1}} \citshape
+}{\par}
+
+\newcommand{\criterionname}{准则}
+\newcounter{crit}[section]
+\renewcommand{\thecrit}{\thesection.\arabic{crit}}
+\NewDocumentEnvironment{criterion}{o}{%
+  \refstepcounter{crit}%
+  \par\noindent\textbf{\color{third}{\criterionname} \thecrit\IfNoValueTF{#1}{}{\ #1}} \citshape
+}{\par}
+
+\NewDocumentEnvironment{myproof}{o}{%
+  \IfNoValueTF{#1}{\begin{proof}}{\begin{proof}[#1]}%
+}{\end{proof}}
+
+\begin{document}
+\include{chapters/chap1}
+\include{chapters/chap2}
+\include{chapters/chap3}
+\include{chapters/chap4}
+\include{chapters/chap5}
+\include{chapters/chap6}
+\include{chapters/chap7}
+\include{chapters/chap8}
+\include{chapters/chap9}
+\end{document}

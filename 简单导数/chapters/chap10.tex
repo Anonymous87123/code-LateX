@@ -12,11 +12,11 @@
 \[
 X = \frac{n-1}{(n-1)^2+1},\qquad Y = \frac{n+1}{(n+1)^2+1}.
 \]
-直接计算 \(\frac{X-Y}{1+XY}\)。分子与分母通分后都出现公共因子
+先分别通分 \(X-Y\) 与 \(1+XY\)。两者分子中都出现公共因子
 \[
 n^4+4=(n^2-2n+2)(n^2+2n+2),
 \]
-约去后便得到题中的分式。
+约去这个因子后，差角公式中的分式与题中的分式一致。
 
 由基本公式 \(\arctan X - \arctan Y = \arctan \frac{X-Y}{1+XY}\) 可得，代入上述 \(X,Y\) 后，原级数化为：
 \[
@@ -34,15 +34,15 @@ n^4+4=(n^2-2n+2)(n^2+2n+2),
 \[
 X = \frac{a_{n+1}}{a_n},\qquad Y = \frac{a_n}{a_{n-1}}.
 \]
-由反余切差角公式，只需验证
+要把反余切差角公式落到题中这一项，关键是验证
 \[
 \frac{XY+1}{Y-X}=a_n^2.
 \]
-其中分子可由递推式化简，分母可利用不变量
+其中分子由递推式化简，分母由不变量
 \[
 a_{n+1}a_{n-1}-a_n^2=-4
 \]
-化简，于是得到所需裂项结构。
+化简，于是右端确实等于 \(a_n^2\)，裂项结构由此确定。
 
 代入 \( X,Y \) 后，\(\frac{XY+1}{Y-X} = a_n^2\)，因此原级数可写成 \(\sum (\operatorname{arccot} X - \operatorname{arccot} Y)\)。求和得：
 \[
@@ -68,9 +68,9 @@ X=\sqrt{\frac{3}{2}}F_{2n},\qquad Y=\sqrt{\frac{3}{2}}F_{2n-2}.
 \[
 F_{2n}F_{2n-2}=F_{2n-1}^2-1,
 \]
-即可把每一项写成相邻两项反正切之差。
+可把差角公式中的分母整理成 \(1+XY\) 的形状，因此每一项都写成相邻两项反正切之差。
 
-令 \( X_n = \sqrt{\frac{3}{2}}F_{2n} \)，则每一项等于 \(\arctan X_n - \arctan X_{n-1}\)。对对称部分和求极限，得该和为 \(\frac{\pi}{2}\)。同理，另一和也为 \(\frac{\pi}{2}\)。
+令 \( X_n = \sqrt{\frac{3}{2}}F_{2n} \)，则每一项等于 \(\arctan X_n - \arctan X_{n-1}\)。对对称部分和求极限，得第一和为 \(\frac{\pi}{2}\)。把上面的 \(X_n\) 改为 \(-X_n\) 时，差角公式中的 \(+1\) 相应变为 \(-1\)，同样得到一组首尾相消的反正切差，因此第二和也为 \(\frac{\pi}{2}\)。
 \end{solution}
 
 \begin{example}[$\frac{\sinh\pi}{\cosh(2n\pi)-\cosh\pi}$]
@@ -127,7 +127,7 @@ a_{n+1}a_{n-1}-a_n^2=-1
 \[
 X=\frac{n}{n^2+1},\qquad Y=\frac{n+1}{n^2+2n+2}.
 \]
-直接计算 \(\frac{X-Y}{1+XY}\) 即可得到题中的分式，因此原级数可以写成反正切差。
+把 \(X,Y\) 代入差角公式，先化分子 \(X-Y\)，再化分母 \(1+XY\)，二者合并后得到题中的分式，因此原级数可以写成反正切差。
 
 因此原级数化为 \(\sum (\arctan X - \arctan Y)\)，从而
 \[
@@ -224,7 +224,7 @@ a^4+b^4+(a+b)^4=2(a^2+ab+b^2)^2.
 \[
 \frac{1}{\sqrt{n}}-\frac{1}{\sqrt{n+1}}
 \]
-出发做逆向有理化，即可得到题中的分母结构。
+出发通分，分母会出现题中的和式结构，于是原项被识别为相邻差。
 
 原项等于 \(\frac{\sqrt{n+1} - \sqrt{n}}{\sqrt{n(n+1)}} \cdot \frac{\sqrt{n+1} + \sqrt{n}}{\sqrt{n+1} + \sqrt{n}} = \frac{1}{n} - \frac{1}{n+1}\)。求和得：
 \[
@@ -237,7 +237,7 @@ a^4+b^4+(a+b)^4=2(a^2+ab+b^2)^2.
 \[\displaystyle \sum_{n=1}^{99} \frac{n}{n^4+n^2+1}\]
 \end{example}
 \begin{solution}
-把 \(n^4 + n^2 + 1\) 写成 \((n^2+1)^2 - n^2 = (n^2-n+1)(n^2+n+1)\)。再利用 \((n+1)^2 - (n+1) + 1 = n^2+n+1\)，即可得到
+把 \(n^4 + n^2 + 1\) 写成 \((n^2+1)^2 - n^2 = (n^2-n+1)(n^2+n+1)\)。后一因式与下一项的前一因式相同，因为 \((n+1)^2 - (n+1) + 1 = n^2+n+1\)，于是设置相邻分式差：
 \[
 \frac{n}{n^4+n^2+1} = \frac{1}{2}\left(\frac{1}{n^2-n+1}-\frac{1}{n^2+n+1}\right).
 \]
@@ -299,7 +299,18 @@ a^4+b^4+(a+b)^4=2(a^2+ab+b^2)^2.
    设数列满足首项 \(a_1 = \sqrt{2}\)，且 \(a_{n+1} = a_n^3 - 3a_n\)。计算$$ \prod_{n=1}^{10} (a_n + 1) = (a_1+1)(a_2+1) \cdots (a_{10}+1) $$
 \end{example}
 \begin{solution}
-由三倍角公式 \(\cos 3\alpha = 4\cos^3\alpha - 3\cos\alpha\)，令 \(a_n = 2\cos(2\cdot 3^{n-1} x)\)，可得所需递推。再取 \(x=\pi/8\)，便有 \(a_n + 1 = \frac{\sin(3^n x)}{\sin(3^{n-1} x)}\)。
+递推式 \(a_{n+1}=a_n^3-3a_n\) 与三倍角公式相配，因为若 \(a_n=2\cos u\)，则
+\[
+a_{n+1}=2\cos 3u.
+\]
+取 \(u=2\cdot 3^{n-1}x\)，便有 \(a_n=2\cos(2\cdot3^{n-1}x)\)。再令 \(x=\pi/8\)，使 \(a_1=2\cos\frac{\pi}{4}=\sqrt2\)。由
+\[
+2\cos u+1=\frac{\sin\frac{3u}{2}}{\sin\frac{u}{2}},
+\]
+得到
+\[
+a_n+1=\frac{\sin(3^n x)}{\sin(3^{n-1}x)}.
+\]
 
 连乘后相邻项相消，得到
 \[
@@ -390,7 +401,11 @@ x^3-1=(x-1)(x^2+x+1).
     设数列满足 \(a_1 = 3\)，且 \(a_{n+1} = a_n^3 - 3a_n\)。计算无穷级数：$$ \sum_{n=1}^{\infty} 9^n \frac{a_n^2+2}{(a_n^2-1)^2} $$
 \end{example}
 \begin{solution}
-令 \(A=y^2-4\)。在立方递推下可得到 \(A(A+3)^2\) 的分母结构，再由常数项消去确定系数 \(9\)。
+令 \(A=y^2-4\)。由 \(y_{n+1}=y_n^3-3y_n\) 可推出
+\[
+y_{n+1}^2-4=(y_n^2-4)(y_n^2-1)^2.
+\]
+因此相邻两项通分时，分母自然出现 \((a_n^2-4)(a_n^2-1)^2\)。系数 \(9\) 使分子中最高阶部分约去，剩下的正是 \(a_n^2+2\)。
 
 原级数化为
 \[
@@ -470,7 +485,11 @@ f(u)=\frac{1+u}{1-u}.
 \[
 f(u)-f(u^2)=\frac{2u}{1-u^2}.
 \]
-再平方并代入 \(u=x^{2^n}\)，即可得到题中的项。
+先计算
+\[
+f(u)^2-f(u^2)^2=\frac{4u(u^2+u+1)}{(1-u^2)^2}.
+\]
+再令 \(u=x^{2^n}\)，便得到题中的项。
 
 原级数化为
 \[
@@ -492,10 +511,6 @@ f(u)-f(u^2)=\frac{2u}{1-u^2}.
 故求和得 \(\csc^2 x-\frac{1}{x^2}\)。
 \end{solution}
 
-\begin{conclusion}[三角裂项补充]
-    $$\frac{1}{\cos n^\circ \cos (n+1)^\circ} = \frac{\sin 1^\circ}{\sin 1^\circ} \cdot \frac{\tan(n+1)^\circ - \tan n^\circ}{\sin 1^\circ} = \frac{1}{\sin 1^\circ}(\tan(n+1)^\circ - \tan n^\circ)$$
-\end{conclusion}
-
 三角函数中也常出现同样的裂项结构。由
 \[
 \tan A-\tan B=\frac{\sin(A-B)}{\cos A\cos B}
@@ -506,15 +521,15 @@ f(u)-f(u^2)=\frac{2u}{1-u^2}.
 \]
 因此某些只含 \(\cos\) 分母的级数，也能写成正切差的裂项。
 
-\begin{example}[俄罗斯数学奥林匹克经典题（角度制）]
+\begin{example}[$\displaystyle\sum_{n=1}^{88}\frac{1}{\cos n^\circ\cos(n+1)^\circ}$]
     计算求和：\[\sum_{n=1}^{88} \frac{1}{\cos n^\circ \cos (n+1)^\circ}\]
 \end{example}
 \begin{solution}
-直接使用正切差公式
+把 \(A=(n+1)^\circ,\ B=n^\circ\) 代入正切差公式，得到
 \[
 \tan(n+1)^\circ-\tan n^\circ=\frac{\sin1^\circ}{\cos n^\circ\cos(n+1)^\circ},
 \]
-即可把原项写成相邻两项正切之差。
+分母就是相邻两个余弦的乘积，因此原项可写成相邻两项正切之差。
 
 由上式可得，原项可写为
 \[
@@ -537,7 +552,7 @@ f(u)-f(u^2)=\frac{2u}{1-u^2}.
 \]
 从而把连乘改写为相邻正弦项的连锁消去。
 
-\begin{example}[高中奥数联赛经典门题目]
+\begin{example}[$\cos20^\circ\cos40^\circ\cos80^\circ$]
     求纯数值表达式的值：\[\cos 20^\circ \cdot \cos 40^\circ \cdot \cos 80^\circ\]
 \end{example}
 \begin{solution}
@@ -554,21 +569,23 @@ f(u)-f(u^2)=\frac{2u}{1-u^2}.
 
 \end{solution}
 
-同理，也可直接用于三角函数。
+类似的相邻角裂项也可用于三角函数。
 
-\begin{example}[对任意常数 \(\theta \in (0, \pi)\)]
-    计算三角级数：\[\sum_{n=1}^{\infty} \frac{1}{\sin(2^n \theta)}\]
+\begin{example}[$\displaystyle\sum_{n=1}^{N} \frac{1}{\sin(2^n \theta)}$]
+    设 \(N\in\mathbb N^*\)，且 \(\sin(2^n\theta)\ne0\ (1\le n\le N)\)，计算
+    \[\sum_{n=1}^{N} \frac{1}{\sin(2^n \theta)}.\]
 \end{example}
 \begin{solution}
 利用恒等式
 \[
 \cot x-\cot 2x=\frac{1}{\sin 2x},
 \]
-再把 \(x\) 替换为 \(2^{n-1}\theta\)，即可得到所需裂项。
+再把 \(x\) 替换为 \(2^{n-1}\theta\)，得到所需裂项。
 
-原项可写为 \(\cot(2^{n-1}\theta) - \cot(2^n\theta)\)。求和得：
+原项可写为 \(\cot(2^{n-1}\theta) - \cot(2^n\theta)\)。有限求和时中间项全部消去，得到
 \[
-\cot \theta - \lim_{n\to\infty} \cot(2^n \theta) = \cot \theta
+\sum_{n=1}^{N}\frac{1}{\sin(2^n\theta)}
+=\cot\theta-\cot(2^N\theta).
 \]
 
 \end{solution}

@@ -12,13 +12,13 @@ $$ U(x)B(x) \equiv P(x) \pmod{A(x)} \implies U(x) \equiv P(x) \cdot \color{white
 \end{example}
 \begin{solution}
 原分母含重根线性因式 $(x-1)^2$ 与二次因式 $(x^2+1)$。先处理 $(x-1)^2$。设分解形式中包含 $\frac{A}{x-1} + \frac{B}{(x-1)^2}$，令剩余部分函数为 $G(x) = \frac{x^3+2}{x^2+1}$。
-直接代入 $x=1$ 得
+二阶极点的最高阶系数来自 \((x-1)^2F(x)\) 在 \(x=1\) 的值，因此代入 \(x=1\) 得
 $$ B = G(1) = \frac{1^3+2}{1^2+1} = \frac{3}{2}. $$
 再对 $G(x)$ 求一阶导数并代入 $x=1$，
 \begin{align*}
 G'(x) &= \frac{3x^2(x^2+1) - (x^3+2)(2x)}{(x^2+1)^2} ,~~A = G'(1) = \frac{3(2) - (3)(2)}{2^2} = 0
 \end{align*}
-所以关于 $(x-1)$ 的部分只剩 $\frac{3/2}{(x-1)^2}$。从原式中减去这项，记剩余部分为 $H(x)$，则
+由于导数值为 \(0\)，一阶项消失，重根部分目前只保留 \(\frac{3/2}{(x-1)^2}\)。从原式中减去这项，记剩余部分为 $H(x)$，则
 \begin{align*}
 H(x) = \frac{x^3+2}{(x-1)^2(x^2+1)} - \frac{3/2}{(x-1)^2} = \frac{x^3+2 - \frac{3}{2}(x^2+1)}{(x-1)^2(x^2+1)} = \frac{x^3 - \frac{3}{2}x^2 + \frac{1}{2}}{(x-1)^2(x^2+1)}.
 \end{align*}
@@ -28,7 +28,7 @@ $$ x^3 - \frac{3}{2}x^2 + \frac{1}{2} = (x-1)^2 \left(x + \frac{1}{2}\right). $$
 $$ H(x) = \frac{(x-1)^2 \left(x + \frac{1}{2}\right)}{(x-1)^2(x^2+1)} = \frac{x + \frac{1}{2}}{x^2+1}. $$
 于是
 $$ F(x) = \frac{3}{2(x-1)^2} + \frac{2x+1}{2(x^2+1)}. $$
-（注：若 $H(x)$ 的分母中仍包含多个高次不可约多项式，此时再对其应用带余除法的 mod 法，即可规避复数运算与庞大的方程组。）
+（注：若 $H(x)$ 的分母中仍包含多个高次不可约多项式，可以继续对相应因式取余；这样每一步只处理低次多项式，避免复数根和大方程组。）
 \end{solution}
 
 \begin{example}[分解$\frac{x+2}{(x^2+2x+2)(x^2+1)}$]
@@ -57,7 +57,7 @@ B - (2x+1)\left(\frac{2x-1}{4}\right) = \frac{5}{4}.
 提取 $\dfrac{x^3+3x}{(x^2+1)^2}$
 \end{example}
 \begin{solution}
-竖式计算可得
+先把 \(x^3+3x\) 写成 \(x(x^2+1)+2x\)，再除以 \((x^2+1)^2\)，得到
 \begin{align*}
 \frac{x(x^2+1) + 2x}{(x^2+1)^2} = {\frac{x}{x^2+1} + \frac{2x}{(x^2+1)^2}} 
 \end{align*}
@@ -83,7 +83,7 @@ $$ 8=B^2(4-2x^2)+A^2(2x^4+4x^3+6x^2+8x+4). $$
 U(x) \div (x-1)^2 &\implies 4-2x^2 =-2(x-1)^2 + 6-4x\\
 V(x) \div (x^2+1)^2 &\implies 2x^4+4x^3+6x^2+8x+4= 2(x^2+1)^2 +4x^3+2x^2+8x+2,
 \end{align*}
-分离出的常数正好抵消，于是结果为
+把两次降次得到的整式部分分别写出后，常数项一正一负相抵，剩余部分为
 $$ \frac{3-2x}{4(x-1)^2} + \frac{2x^3+x^2+4x+1}{4(x^2+1)^2}. $$
 \end{solution}
 
@@ -157,7 +157,7 @@ $$ F(x) = \frac{1}{4(x-1)^2} - \frac{1}{4(x+1)^2}. $$
 设 $A = x^2+x+1$，$B = x^2+1$。原式分母结构为 $A B^2$。
 由 $x^2=B-1$ 可先写成
 $$ \frac{x^2}{A B^2} = \frac{B - 1}{A B^2} = \frac{1}{AB} - \frac{1}{A B^2}, $$
-所以只需分别分解 $\frac{1}{AB}$ 与 $\frac{1}{AB^2}$。由 $A-B=x$，再利用带余除法 $B \div x$ 得 $B = x \cdot x + 1$，把 $x=A-B$ 代入余式关系便有
+于是原式先拆成 \(\frac{1}{AB}\) 与 \(\frac{1}{AB^2}\) 两块。由 $A-B=x$，再利用带余除法 $B \div x$ 得 $B = x \cdot x + 1$，把 $x=A-B$ 代入余式关系便有
 $$ 1 = B - x(A-B) = (x+1)B - xA, $$
 从而
 $$ \frac{1}{AB} = \frac{(x+1)B - xA}{AB} = \frac{x+1}{A} - \frac{x}{B}. $$
@@ -217,7 +217,7 @@ $$ F(x) = -\frac{1}{x} + \frac{1}{2(x-1)} + \frac{x-1}{2(x^2+1)}. $$
     分解 $\displaystyle F(x) = \frac{x^3}{(x-1)(x+1)(x^2+x+1)}$
 \end{example}
 \begin{solution}
-对一次因式 $(x-1)$ 和 $(x+1)$ 可以直接赋值。令 $x=1$，掩去分母中的 $(x-1)$，代入剩余部分得
+对单根项，先把对应因子乘回原分式，再令该因子为零取值，这样得到该简单极点的系数。令 $x=1$，掩去分母中的 $(x-1)$，代入剩余部分得
 $$ \frac{1^3}{(1+1)(1+1+1)} = \frac{1}{6}, $$
 所以含 $\frac{1/6}{x-1}$；令 $x=-1$，掩去分母中的 $(x+1)$，代入剩余部分得
 $$ \frac{(-1)^3}{(-1-1)(1-1+1)} = \frac{1}{2}, $$
@@ -244,9 +244,9 @@ $$ F(x) = \frac{1}{6(x-1)} + \frac{1}{2(x+1)} + \frac{x-1}{3(x^2+x+1)}. $$
 \end{theorem}
 实圆关系 $x\dd x+y\dd y=0$ 的几何意义是，瞬时位移向量 $(\dd x, \dd y)$ 必须垂直于位置向量 $(x,y)$，二者内积为零；虚圆关系 $x\dd x=y\dd y$ 则等价于 $\frac{\dd x}{x} = \frac{\dd y}{y}$，也就是 $x$ 与 $y$ 的相对变化率必须相等。
 
-参数微元也可以直接从几何看出。对实圆，$\dd\theta$ 是位置向量绕原点逆时针转过的有向小角，此时指针尖端的位移大小等于弧长 $a\dd\theta$，方向正好是 $\vec{r}$ 逆时针旋转 $90^\circ$ 后得到的向量 $(-y, x)$，模仍为 $a$，所以
+参数微元也可从几何关系得到。对实圆，$\dd\theta$ 是位置向量绕原点逆时针转过的有向小角，此时指针尖端的位移方向为 $\vec{r}$ 逆时针旋转 $90^\circ$ 后得到的方向，坐标为 $(-y,x)$，长度为弧长 $a\dd\theta$，所以
 \[(\dd x, \dd y)=\dd\theta(-y,x)\]
-对虚圆，$\dd\phi$ 是位置向量绕原点逆时针转过的有向小角，此时指针尖端的位移大小等于 $a\dd\phi$，方向正好与 $\vec{r}$ 沿 $y=x$ 对称的向量 $(y,x)$ 一致，所以
+对虚圆，$\dd\phi$ 是位置向量沿等相对变化率运动时的参数微元。由 \(x\dd x=y\dd y\) 可取 \((\dd x,\dd y)\) 与 \((y,x)\) 同向，长度由参数微元吸收进 \(\dd\phi\)，所以
 \[(\dd x, \dd y)=\dd\theta(y,x)\]
 
 面积 $2$ 倍的微元来自扇形面积两倍等于半径平方乘以角度，方向则要随着微分顺序一起看。因此
@@ -296,7 +296,7 @@ x + y = \cosh \phi + \sinh \phi = e^\phi,\quad\phi = \ln(x + y).
 \int \frac{\dd x}{x^2y}&=\int\frac{1}{x^2}\frac{\dd x}{y}=\int\frac{1}{x^2}\frac{y\dd x-x\dd y}{y^2\pm x^2}=\frac{-1}{y^2\pm x^2}\int\dd\left(\frac{y}{x}\right)
 \end{align*}
 \end{theorem}
-这里先判断第一组公式不能直接使用，再借助微分公式完成转化。
+遇到的式子若缺少匹配的面积微元或比值微元，就先补出 \(y\dd x-x\dd y\) 这类结构，再借助微分公式完成转化。
 
 \begin{theorem}[线性微元型]
 \vspace{-15pt}
@@ -305,7 +305,7 @@ x + y = \cosh \phi + \sinh \phi = e^\phi,\quad\phi = \ln(x + y).
 \int y\dd x&=\int\frac12\left(y\dd x+x\dd y+y\dd x-x\dd y\right)=\frac12\int\dd(xy)+\frac{x^2\pm y^2}2\int\dd\frac{y}{x}
 \end{align*}
 \end{theorem}
-做法是先拆成两组，再分别整理成微分形式。
+拆分的目标是把一组整理成 \(\dd(xy)\)，另一组整理成面积微元，再分别积分。
 
 \begin{theorem}[混合微元型]
 \vspace{-15pt}
@@ -431,26 +431,26 @@ $$ \frac{(2n-1)(2n-3)\cdots 1}{(2n)(2n-2)\cdots 2} = \mathbf{\frac{(2n-1)!!}{(2n
 
 \begin{theorem}[sec 奇次幂型]
 \vspace{-15pt}
-\begin{align*}&\int\sec x\mathrm{d}x=1\ln|\sec x+\tan x|\\&\int\sec^{3}x\mathrm{d}x=\frac{1}{2}\tan x\sec x+\frac{1}{2}1\ln|\sec x+\tan x|\\&\int\sec^{5}x\mathrm{d}x=\frac{1}{4}\tan x\sec^{3}x+\frac{1}{4}\frac{3}{2}\tan x\sec x+\frac{1}{2}\frac{3}{2}1\ln|\sec x+\tan x|\\&\int\sec^{7}x\mathrm{d}x=\frac{1}{6}\tan x\sec^{5}x+\frac{1}{6}\frac{5}{4}\tan x\sec^{3}x+\frac{1}{6}\frac{5}{4}\frac{3}{2}\tan x\sec x+\frac{1}{6}\frac{5}{4}\frac{3}{2}1\ln|\sec x+\tan x|\end{align*}
+\begin{align*}&\int\sec x\mathrm{d}x=\ln|\sec x+\tan x|\\&\int\sec^{3}x\mathrm{d}x=\frac{1}{2}\tan x\sec x+\frac{1}{2}\ln|\sec x+\tan x|\\&\int\sec^{5}x\mathrm{d}x=\frac{1}{4}\tan x\sec^{3}x+\frac{1}{4}\frac{3}{2}\tan x\sec x+\frac{1}{2}\frac{3}{2}\ln|\sec x+\tan x|\\&\int\sec^{7}x\mathrm{d}x=\frac{1}{6}\tan x\sec^{5}x+\frac{1}{6}\frac{5}{4}\tan x\sec^{3}x+\frac{1}{6}\frac{5}{4}\frac{3}{2}\tan x\sec x+\frac{1}{6}\frac{5}{4}\frac{3}{2}\ln|\sec x+\tan x|\end{align*}
 \end{theorem}
-置$P=\sec x,q=\tan x,2,1p^{2}=q^{2}+1$，且$\dd q=p^{2}\dd x$，则$\displaystyle\int\sec^{2n+1}x\dd x=\int p^{2n-1}\dd q$.
+置$p=\sec x,\ q=\tan x$，则$p^{2}=q^{2}+1$，且$\dd q=p^{2}\dd x$，于是$\displaystyle\int\sec^{2n+1}x\dd x=\int p^{2n-1}\dd q$.
 
 \begin{theorem}[csc 奇次幂型]
 \vspace{-15pt}
-\begin{align*}&\int\csc x\mathrm{d}x=-1\ln|\csc x+\cot x|\\&\int\csc^3x\mathrm{d}x=-\frac{1}{2}\cot x\csc x-\frac{1}{2}1\ln|\csc x+\cot x|\\&\int\csc^5x\mathrm{~d}x=-\frac{1}{4}\cot x\csc^3x-\frac{1}{4}\frac{3}{2}\cot x\csc x-\frac{1}{4}\frac{3}{2}1\ln|\csc x+\cot x|\\&\int\csc^7x\mathrm{~d}x=-\frac{1}{6}\cot x\csc^5x-\frac{1}{6}\frac{5}{4}\cot x\csc^3x-\frac{1}{6}\frac{5}{4}\frac{3}{2}\cot x\csc x-\frac{1}{6}\frac{5}{4}\frac{3}{2}1\ln|\csc x+\cot x|\end{align*}
+\begin{align*}&\int\csc x\mathrm{d}x=-\ln|\csc x+\cot x|\\&\int\csc^3x\mathrm{d}x=-\frac{1}{2}\cot x\csc x-\frac{1}{2}\ln|\csc x+\cot x|\\&\int\csc^5x\mathrm{~d}x=-\frac{1}{4}\cot x\csc^3x-\frac{1}{4}\frac{3}{2}\cot x\csc x-\frac{1}{4}\frac{3}{2}\ln|\csc x+\cot x|\\&\int\csc^7x\mathrm{~d}x=-\frac{1}{6}\cot x\csc^5x-\frac{1}{6}\frac{5}{4}\cot x\csc^3x-\frac{1}{6}\frac{5}{4}\frac{3}{2}\cot x\csc x-\frac{1}{6}\frac{5}{4}\frac{3}{2}\ln|\csc x+\cot x|\end{align*}
 \end{theorem}
 留意到恒等式\[\csc^{2}x=\frac{1}{\sin^{2}x}=\frac{\sin^{2}x+\cos^{2}x}{\sin^{2}x}=1+\cot^{2}x\]
-置$p=\csc x,q=\cot x,nyp^{2}=q^{2}+1$，并且\[\dd q=\dd\left(\frac{\cos x}{\sin x}\right)=\frac{-\sin^{2}x-\cos^{2}x}{\sin^{2}x}\dd x=-p^{2}\cdot \dd x\implies\int\csc^{2n+1}x\dd x=-\int p^{2n-1}\dd q\]
+置$p=\csc x,\ q=\cot x$，则$p^{2}=q^{2}+1$，并且\[\dd q=\dd\left(\frac{\cos x}{\sin x}\right)=\frac{-\sin^{2}x-\cos^{2}x}{\sin^{2}x}\dd x=-p^{2}\cdot \dd x\implies\int\csc^{2n+1}x\dd x=-\int p^{2n-1}\dd q\]
 
 \begin{theorem}[cos 偶次幂型]
 \vspace{-15pt}
 \begin{align*}
-\int\mathrm{d}x&=1x\\
-\int\cos^2x\operatorname{d}x&=\frac{1}{2}\sin x\cos x+\frac{1}{2}1x\\
-\int\cos^4x\operatorname{d}x&=\frac{1}{4}\sin x\cos^{3}x+\frac{1}{4}\frac{3}{2}\sin x\cos x+\frac{1}{4}\frac{3}{2}1x\\
-\int\cos^6x\operatorname{d}x&=\frac{1}{6}\sin x\cos^5x+\frac{1}{6}\frac{5}{4}\sin x\cos^3x+\frac{1}{6}\frac{5}{4}\frac{3}{2}\sin x\cos x+\frac{1}{6}\frac{5}{4}\frac{3}{2}1x\\
+\int\mathrm{d}x&=x\\
+\int\cos^2x\operatorname{d}x&=\frac{1}{2}\sin x\cos x+\frac{1}{2}x\\
+\int\cos^4x\operatorname{d}x&=\frac{1}{4}\sin x\cos^{3}x+\frac{1}{4}\frac{3}{2}\sin x\cos x+\frac{1}{4}\frac{3}{2}x\\
+\int\cos^6x\operatorname{d}x&=\frac{1}{6}\sin x\cos^5x+\frac{1}{6}\frac{5}{4}\sin x\cos^3x+\frac{1}{6}\frac{5}{4}\frac{3}{2}\sin x\cos x+\frac{1}{6}\frac{5}{4}\frac{3}{2}x\\
 \int\cos^8x\operatorname{d}x&=\frac{1}{8}\sin x\cos^7x+\frac{1}{8}\frac{7}{6}\sin x\cos^5x+\frac{1}{8}\frac{7}{6}\frac{5}{4}\sin x\cos^3x+\frac{1}{8}\frac{7}{6}\frac{5}{4}\frac{3}{2}\sin x\cos x\\
-&~~~~+\frac{1}{8}\frac{7}{6}\frac{5}{4}\frac{3}{2}1x
+&~~~~+\frac{1}{8}\frac{7}{6}\frac{5}{4}\frac{3}{2}x
 \end{align*}
 \end{theorem}
 置$p=\cos x,q=\sin x$，则$\dd q=p\dd x$，$\int\cos^mx\dd x=\int p^{2n-1}\dd q$
@@ -458,12 +458,12 @@ $$ \frac{(2n-1)(2n-3)\cdots 1}{(2n)(2n-2)\cdots 2} = \mathbf{\frac{(2n-1)!!}{(2n
 \begin{theorem}[sin 偶次幂型]
     \vspace{-15pt}
     \begin{align*}
-        \int\mathrm{d}x=&1x\\
-        \int\sin^2x\mathrm{d}x=&-\frac{1}{2}\sin x\cos x+\frac{1}{2}1x\\
-        \int\sin^4x\operatorname{d}x=&-\frac{1}{4}\sin^3x\cos x-\frac{1}{4}\frac{3}{2}\sin x\cos x+\frac{1}{4}\frac{3}{2}1x\\
-        \int\sin^6x\operatorname{d}x=&-\frac{1}{6}\sin^5x\cos x-\frac{1}{6}\frac{5}{4}\sin^3x\cos x-\frac{1}{6}\frac{5}{4}\frac{3}{2}\sin x\cos x+\frac{1}{6}\frac{5}{4}\frac{3}{2}1x\\
+        \int\mathrm{d}x=&x\\
+        \int\sin^2x\mathrm{d}x=&-\frac{1}{2}\sin x\cos x+\frac{1}{2}x\\
+        \int\sin^4x\operatorname{d}x=&-\frac{1}{4}\sin^3x\cos x-\frac{1}{4}\frac{3}{2}\sin x\cos x+\frac{1}{4}\frac{3}{2}x\\
+        \int\sin^6x\operatorname{d}x=&-\frac{1}{6}\sin^5x\cos x-\frac{1}{6}\frac{5}{4}\sin^3x\cos x-\frac{1}{6}\frac{5}{4}\frac{3}{2}\sin x\cos x+\frac{1}{6}\frac{5}{4}\frac{3}{2}x\\
         \int\sin^8x\operatorname{d}x=&-\frac{1}{8}\sin^7x\cos x-\frac{1}{8}\frac{7}{6}\sin^5x\cos x-\frac{1}{8}\frac{7}{6}\frac{5}{4}\sin^3x\cos x-\frac{1}{8}\frac{7}{6}\frac{5}{4}\frac{3}{2}\sin x\cos x\\
-        &+\frac{1}{8}\frac{7}{6}\frac{5}{4}\frac{3}{2}1x
+        &+\frac{1}{8}\frac{7}{6}\frac{5}{4}\frac{3}{2}x
     \end{align*}
 \end{theorem}
 置$p=\sin x,q=\cos x$，则$\dd q=p\dd x$，$\int\sin^{2n}x\dd x=\int p^{2n-1}\dd q$.
@@ -472,11 +472,11 @@ $$ \frac{(2n-1)(2n-3)\cdots 1}{(2n)(2n-2)\cdots 2} = \mathbf{\frac{(2n-1)!!}{(2n
     \vspace{-15pt}
     \begin{align*}
         \int\frac{1}{1+x^2}\mathrm{d}x=&\arctan x\\
-        \int\frac{1}{\left(1+x^2\right)^2}\mathrm{d}x=&\frac{1}{2}\frac{x}{1+x^2}+\frac{1}{2}1\arctan x\\
-        \int\frac{1}{\left(1+x^2\right)^3}\mathrm{d}x=&\frac{1}{4}\frac{x}{\left(1+x^2\right)^2}+\frac{1}{4}\frac{3}{2}\frac{x}{1+x^2}+\frac{1}{4}\frac{3}{2}1\arctan x\\
-        \int\frac{1}{\left(1+x^{2}\right)^{4}}\mathrm{d}x=&\frac{1}{6}\frac{x}{\left(1+x^{2}\right)^{3}}+\frac{1}{6}\frac{5}{4}\frac{x}{\left(1+x^{2}\right)^{2}}+\frac{1}{6}\frac{5}{4}\frac{3}{2}\frac{x}{1+x^{2}}+\frac{1}{6}\frac{5}{4}\frac{3}{2}1\arctan x\\
+        \int\frac{1}{\left(1+x^2\right)^2}\mathrm{d}x=&\frac{1}{2}\frac{x}{1+x^2}+\frac{1}{2}\arctan x\\
+        \int\frac{1}{\left(1+x^2\right)^3}\mathrm{d}x=&\frac{1}{4}\frac{x}{\left(1+x^2\right)^2}+\frac{1}{4}\frac{3}{2}\frac{x}{1+x^2}+\frac{1}{4}\frac{3}{2}\arctan x\\
+        \int\frac{1}{\left(1+x^{2}\right)^{4}}\mathrm{d}x=&\frac{1}{6}\frac{x}{\left(1+x^{2}\right)^{3}}+\frac{1}{6}\frac{5}{4}\frac{x}{\left(1+x^{2}\right)^{2}}+\frac{1}{6}\frac{5}{4}\frac{3}{2}\frac{x}{1+x^{2}}+\frac{1}{6}\frac{5}{4}\frac{3}{2}\arctan x\\
         \int\frac{1}{\left(1+x^{2}\right)^{5}}\mathrm{d}x=&\frac{1}{8}\frac{x}{\left(1+x^{2}\right)^{4}}+\frac{1}{8}\frac{7}{6}\frac{x}{\left(1+x^{2}\right)^{3}}+\frac{1}{8}\frac{7}{6}\frac{5}{4}\frac{x}{\left(1+x^{2}\right)^{2}}+\frac{1}{8}\frac{7}{6}\frac{5}{4}\frac{3}{2}\frac{x}{1+x^{2}}\\
-        &+\frac{1}{8}\frac{7}{6}\frac{5}{4}\frac{3}{2}1\arctan x
+        &+\frac{1}{8}\frac{7}{6}\frac{5}{4}\frac{3}{2}\arctan x
     \end{align*}
 \end{theorem}
 记$y=\sqrt{1+x^{2}}$，则$y^2=x^2+1,\dd y=\frac{x}{\sqrt{1+x^2}}\dd x=\frac{x}{y}\dd x$
@@ -488,11 +488,11 @@ $$ \frac{(2n-1)(2n-3)\cdots 1}{(2n)(2n-2)\cdots 2} = \mathbf{\frac{(2n-1)!!}{(2n
 \vspace{-15pt}
 \begin{align*}
 \int\frac{1}{1-x^2}\mathrm{d}x=&\operatorname{artanh}x\quad(\text{注:}\operatorname{artanh}x=\frac{1}{2}\ln\left|\frac{1+x}{1-x}\right|)\\
-\int\frac{1}{\left(1-x^2\right)^2}\mathrm{d}x=&\frac{1}{2}\frac{x}{1-x^2}+\frac{1}{2}1\operatorname{artanh}x\\
-\int\frac{1}{\left(1-x^2\right)^3}\mathrm{d}x=&\frac{1}{4}\frac{x}{\left(1-x^2\right)^2}+\frac{1}{4}\frac{3}{2}\frac{x}{1-x^2}+\frac{1}{4}\frac{3}{2}1\operatorname{artanh}x\\
-\int\frac{1}{(1-x^{2})^{4}}\mathrm{d}x=&\frac{1}{6}\frac{x}{(1-x^2)^3}+\frac{1}{6}\frac{5}{4}\frac{x}{(1-x^2)^2}+\frac{1}{6}\frac{5}{4}\frac{3}{2}\frac{x}{1-x^2}+\frac{1}{6}\frac{5}{4}\frac{3}{2}1\operatorname{artanh}x\\
+\int\frac{1}{\left(1-x^2\right)^2}\mathrm{d}x=&\frac{1}{2}\frac{x}{1-x^2}+\frac{1}{2}\operatorname{artanh}x\\
+\int\frac{1}{\left(1-x^2\right)^3}\mathrm{d}x=&\frac{1}{4}\frac{x}{\left(1-x^2\right)^2}+\frac{1}{4}\frac{3}{2}\frac{x}{1-x^2}+\frac{1}{4}\frac{3}{2}\operatorname{artanh}x\\
+\int\frac{1}{(1-x^{2})^{4}}\mathrm{d}x=&\frac{1}{6}\frac{x}{(1-x^2)^3}+\frac{1}{6}\frac{5}{4}\frac{x}{(1-x^2)^2}+\frac{1}{6}\frac{5}{4}\frac{3}{2}\frac{x}{1-x^2}+\frac{1}{6}\frac{5}{4}\frac{3}{2}\operatorname{artanh}x\\
 \int\frac{1}{\left(1-x^{2}\right)^{5}}\dd x=&\frac{1}{8}\frac{x}{\left(1-x^{2}\right)^{4}}+\frac{1}{8}\frac{7}{6}\frac{x}{\left(1-x^{2}\right)^{3}}+\frac{1}{8}\frac{7}{6}\frac{5}{4}\frac{x}{\left(1-x^{2}\right)^{2}}+\frac{1}{8}\frac{7}{6}\frac{5}{4}\frac{3}{2}\frac{x}{1-x^{2}}\\
-&+\frac{1}{8}\frac{7}{6}\frac{5}{4}\frac{3}{2}1\mathrm{artanh}x\end{align*}
+&+\frac{1}{8}\frac{7}{6}\frac{5}{4}\frac{3}{2}\mathrm{artanh}x\end{align*}
 \end{theorem}
 记$y=\sqrt{1-x^{2}}$，则$x^2+y^2=1$，则
 \begin{align*}
@@ -504,11 +504,11 @@ $$ \frac{(2n-1)(2n-3)\cdots 1}{(2n)(2n-2)\cdots 2} = \mathbf{\frac{(2n-1)!!}{(2n
     \vspace{-15pt}
     \begin{align*}
         \int\frac{1}{\sqrt{1-x^{2}}}\mathrm{d}x=&-\arccos x\\
-        \int\frac{x^2}{\sqrt{1-x^2}}\mathrm{d}x=&-\frac{1}{2}x\sqrt{1-x^2}-\frac{1}{2}1\arccos x\\
-        \int\frac{x^4}{\sqrt{1-x^2}}\mathrm{d}x=&-\frac{1}{4}x^3\sqrt{1-x^2}-\frac{1}{4}\frac{3}{2}x\sqrt{1-x^2}-\frac{1}{4}\frac{3}{2}1\arccos x\\
-        \int\frac{x^{6}}{\sqrt{1-x^{2}}}\mathrm{d}x=&-\frac{1}{6}x^5\sqrt{1-x^2}-\frac{1}{6}\frac{5}{4}x^3\sqrt{1-x^2}-\frac{1}{6}\frac{5}{4}\frac{3}{2}x\sqrt{1-x^2}-\frac{1}{6}\frac{5}{4}\frac{3}{2}1\arccos x\\
+        \int\frac{x^2}{\sqrt{1-x^2}}\mathrm{d}x=&-\frac{1}{2}x\sqrt{1-x^2}-\frac{1}{2}\arccos x\\
+        \int\frac{x^4}{\sqrt{1-x^2}}\mathrm{d}x=&-\frac{1}{4}x^3\sqrt{1-x^2}-\frac{1}{4}\frac{3}{2}x\sqrt{1-x^2}-\frac{1}{4}\frac{3}{2}\arccos x\\
+        \int\frac{x^{6}}{\sqrt{1-x^{2}}}\mathrm{d}x=&-\frac{1}{6}x^5\sqrt{1-x^2}-\frac{1}{6}\frac{5}{4}x^3\sqrt{1-x^2}-\frac{1}{6}\frac{5}{4}\frac{3}{2}x\sqrt{1-x^2}-\frac{1}{6}\frac{5}{4}\frac{3}{2}\arccos x\\
         \int\frac{x^{8}}{\sqrt{1-x^{2}}}\mathrm{d}x=&-\frac{1}{8}x^{7}\sqrt{1-x^{2}}-\frac{1}{8}\frac{7}{6}x^{5}\sqrt{1-x^{2}}-\frac{1}{8}\frac{7}{6}\frac{5}{4}x^{3}\sqrt{1-x^{2}}-\frac{1}{8}\frac{7}{6}\frac{5}{4}\frac{3}{2}x\sqrt{1-x^{2}}\\
-        &-\frac{1}{8}\frac{7}{6}\frac{5}{4}\frac{3}{2}1\arccos x
+        &-\frac{1}{8}\frac{7}{6}\frac{5}{4}\frac{3}{2}\arccos x
     \end{align*}
 \end{theorem}
 记$y=\sqrt{1-x^{2}}$，$y^{2}+x^{2}=1\Rightarrow x\dd x=-y\dd y$
@@ -522,11 +522,11 @@ $$ \frac{(2n-1)(2n-3)\cdots 1}{(2n)(2n-2)\cdots 2} = \mathbf{\frac{(2n-1)!!}{(2n
     \vspace{-15pt}
     \begin{align*}
     \int\frac{1}{x\sqrt{1-x^2}}\mathrm{d}x=&-\ln\frac{1+\sqrt{1-x^2}}{x}\\
-    \int\frac{1}{x^{3}\sqrt{1-x^{2}}}\mathrm{d}x=&-\frac{1}{2}\frac{\sqrt{1-x^{2}}}{x^{2}}-\frac{1}{2}1\ln\frac{1+\sqrt{1-x^{2}}}{x}\\
-    \int\frac{1}{x^5\sqrt{1-x^2}}\mathrm{d}x=&-\frac{1}{4}\frac{\sqrt{1-x^2}}{x^4}-\frac{1}{4}\frac{3}{2}\frac{\sqrt{1-x^2}}{x^2}-\frac{1}{4}\frac{3}{2}1\ln\frac{1+\sqrt{1-x^2}}{x}\\
-    \int\frac{1}{x^7\sqrt{1-x^2}}\dd x=&-\frac{1}{6}\frac{\sqrt{1-x^2}}{x^6}-\frac{1}{6}\frac{5}{4}\frac{\sqrt{1-x^2}}{x^4}-\frac{1}{6}\frac{5}{4}\frac{3}{2}\frac{\sqrt{1-x^2}}{x^2}-\frac{1}{6}\frac{5}{4}\frac{3}{2}1\ln\frac{1+\sqrt{1-x^2}}{x}\\
+    \int\frac{1}{x^{3}\sqrt{1-x^{2}}}\mathrm{d}x=&-\frac{1}{2}\frac{\sqrt{1-x^{2}}}{x^{2}}-\frac{1}{2}\ln\frac{1+\sqrt{1-x^{2}}}{x}\\
+    \int\frac{1}{x^5\sqrt{1-x^2}}\mathrm{d}x=&-\frac{1}{4}\frac{\sqrt{1-x^2}}{x^4}-\frac{1}{4}\frac{3}{2}\frac{\sqrt{1-x^2}}{x^2}-\frac{1}{4}\frac{3}{2}\ln\frac{1+\sqrt{1-x^2}}{x}\\
+    \int\frac{1}{x^7\sqrt{1-x^2}}\dd x=&-\frac{1}{6}\frac{\sqrt{1-x^2}}{x^6}-\frac{1}{6}\frac{5}{4}\frac{\sqrt{1-x^2}}{x^4}-\frac{1}{6}\frac{5}{4}\frac{3}{2}\frac{\sqrt{1-x^2}}{x^2}-\frac{1}{6}\frac{5}{4}\frac{3}{2}\ln\frac{1+\sqrt{1-x^2}}{x}\\
     \int\frac{1}{x^9\sqrt{1-x^2}}\mathrm{d}x=&-\frac{1}{8}\frac{\sqrt{1-x^{2}}}{x^{8}}-\frac{1}{8}\frac{7}{6}\frac{\sqrt{1-x^{2}}}{x^{6}}-\frac{1}{8}\frac{7}{6}\frac{5}{4}\frac{\sqrt{1-x^{2}}}{x^{4}}-\frac{1}{8}\frac{7}{6}\frac{5}{4}\frac{3}{2}\frac{\sqrt{1-x^{2}}}{x^{2}}\\
-    &-\frac{1}{8}\frac{7}{6}\frac{5}{4}\frac{3}{2}1\ln\frac{1+\sqrt{1-x^{2}}}{x}
+    &-\frac{1}{8}\frac{7}{6}\frac{5}{4}\frac{3}{2}\ln\frac{1+\sqrt{1-x^{2}}}{x}
     \end{align*}
 \end{theorem}
 记$y=\sqrt{1-x^{2}}\Rightarrow y^{2}+x^{2}=1\Rightarrow x\dd x=-y\dd y$
@@ -536,11 +536,11 @@ $$ \frac{(2n-1)(2n-3)\cdots 1}{(2n)(2n-2)\cdots 2} = \mathbf{\frac{(2n-1)!!}{(2n
     \vspace{-15pt}
     \begin{align*}
     \int\frac{1}{\sqrt{x^{2}-1}}dx=&\operatorname{arcosh}x=\ln\left|x+\sqrt{x^2-1}\right|\\
-    \int\frac{x^{2}}{\sqrt{x^{2}-1}}\mathrm{d}x=&\frac{1}{2}x\sqrt{x^2-1}+\frac{1}{2}1\operatorname{arcosh}x\\
-    \int\frac{x^4}{\sqrt{x^2-1}}\mathrm{d}x=&\frac{1}{4}x^3\sqrt{x^2-1}+\frac{1}{4}\frac{3}{2}x\sqrt{x^2-1}+\frac{1}{4}\frac{3}{2}1\operatorname{arcosh}x\\
-    \int\frac{x^{6}}{\sqrt{x^{2}-1}}\mathrm{d}x=&\frac{1}{6}x^5\sqrt{x^2-1}+\frac{1}{6}\frac{5}{4}x^3\sqrt{x^2-1}+\frac{1}{6}\frac{5}{4}\frac{3}{2}x\sqrt{x^2-1}+\frac{1}{6}\frac{5}{4}\frac{3}{2}1\mathrm{arcosh}x\\
+    \int\frac{x^{2}}{\sqrt{x^{2}-1}}\mathrm{d}x=&\frac{1}{2}x\sqrt{x^2-1}+\frac{1}{2}\operatorname{arcosh}x\\
+    \int\frac{x^4}{\sqrt{x^2-1}}\mathrm{d}x=&\frac{1}{4}x^3\sqrt{x^2-1}+\frac{1}{4}\frac{3}{2}x\sqrt{x^2-1}+\frac{1}{4}\frac{3}{2}\operatorname{arcosh}x\\
+    \int\frac{x^{6}}{\sqrt{x^{2}-1}}\mathrm{d}x=&\frac{1}{6}x^5\sqrt{x^2-1}+\frac{1}{6}\frac{5}{4}x^3\sqrt{x^2-1}+\frac{1}{6}\frac{5}{4}\frac{3}{2}x\sqrt{x^2-1}+\frac{1}{6}\frac{5}{4}\frac{3}{2}\mathrm{arcosh}x\\
     \int\frac{x^8}{\sqrt{x^2-1}}\dd x=&\frac{1}{8}x^7\sqrt{x^2-1}+\frac{1}{8}\frac{7}{6}x^5\sqrt{x^2-1}+\frac{1}{8}\frac{7}{6}\frac{5}{4}x^3\sqrt{x^2-1}+\frac{1}{8}\frac{7}{6}\frac{5}{4}\frac{3}{2}x\sqrt{x^2-1}\\
-    &+\frac{1}{8}\frac{7}{6}\frac{5}{4}\frac{3}{2}1\mathrm{arcosh}~x
+    &+\frac{1}{8}\frac{7}{6}\frac{5}{4}\frac{3}{2}\mathrm{arcosh}~x
     \end{align*}
 \end{theorem}
 置$y=\sqrt{x^{2}-1}\Rightarrow x^{2}-y^{2}=1$，则
@@ -552,11 +552,11 @@ $$ \frac{(2n-1)(2n-3)\cdots 1}{(2n)(2n-2)\cdots 2} = \mathbf{\frac{(2n-1)!!}{(2n
 \vspace{-15pt}
 \begin{align*}
     \int\frac{1}{x\sqrt{x^{2}-1}}\mathrm{d}x=&\arccos\frac{1}{|x|}\\
-    \int\frac{1}{x^{3}\sqrt{x^{2}-1}}\mathrm{d}x=&\frac{1}{2}\frac{\sqrt{x^{2}-1}}{x^{2}}+\frac{1}{2}1\arccos\frac{1}{|x|}\\
-    \int\frac{1}{x^5\sqrt{x^2-1}}\mathrm{d}x=&\frac{1}{4}\frac{\sqrt{x^2-1}}{x^4}+\frac{1}{4}\frac{3}{2}\frac{\sqrt{x^2-1}}{x^2}+\frac{1}{4}\frac{3}{2}1\arccos\frac{1}{|x|}\\
-    \int\frac{1}{x^7\sqrt{x^2-1}}\mathrm{d}x=&\frac{1}{6}\frac{\sqrt{x^2-1}}{x^6}+\frac{1}{6}\frac{5}{4}\frac{\sqrt{x^2-1}}{x^4}+\frac{1}{6}\frac{5}{4}\frac{3}{2}\frac{\sqrt{x^2-1}}{x^2}+\frac{1}{6}\frac{5}{4}\frac{3}{2}1\arccos\frac{1}{|x|}\\
+    \int\frac{1}{x^{3}\sqrt{x^{2}-1}}\mathrm{d}x=&\frac{1}{2}\frac{\sqrt{x^{2}-1}}{x^{2}}+\frac{1}{2}\arccos\frac{1}{|x|}\\
+    \int\frac{1}{x^5\sqrt{x^2-1}}\mathrm{d}x=&\frac{1}{4}\frac{\sqrt{x^2-1}}{x^4}+\frac{1}{4}\frac{3}{2}\frac{\sqrt{x^2-1}}{x^2}+\frac{1}{4}\frac{3}{2}\arccos\frac{1}{|x|}\\
+    \int\frac{1}{x^7\sqrt{x^2-1}}\mathrm{d}x=&\frac{1}{6}\frac{\sqrt{x^2-1}}{x^6}+\frac{1}{6}\frac{5}{4}\frac{\sqrt{x^2-1}}{x^4}+\frac{1}{6}\frac{5}{4}\frac{3}{2}\frac{\sqrt{x^2-1}}{x^2}+\frac{1}{6}\frac{5}{4}\frac{3}{2}\arccos\frac{1}{|x|}\\
     \int\frac{1}{x^{9}\sqrt{x^{2}-1}}\mathrm{d}x=&\frac{1}{8}\frac{\sqrt{x^{2}-1}}{x^{8}}+\frac{1}{8}\frac{7}{6}\frac{\sqrt{x^{2}-1}}{x^{6}}+\frac{1}{8}\frac{7}{6}\frac{5}{4}\frac{\sqrt{x^{2}-1}}{x^{4}}+\frac{1}{8}\frac{7}{6}\frac{5}{4}\frac{3}{2}\frac{\sqrt{x^{2}-1}}{x^{2}}\\
-    &+\frac{1}{8}\frac{7}{6}\frac{5}{4}\frac{3}{2}1\arccos\frac{1}{|x|}
+    &+\frac{1}{8}\frac{7}{6}\frac{5}{4}\frac{3}{2}\arccos\frac{1}{|x|}
 \end{align*}
 \end{theorem}
 置$y=\sqrt{x^{2}-1}$，则$x^2-y^2=1$，则
@@ -567,11 +567,11 @@ $$ \frac{(2n-1)(2n-3)\cdots 1}{(2n)(2n-2)\cdots 2} = \mathbf{\frac{(2n-1)!!}{(2n
     \vspace{-15pt}
     \begin{align*}
         \int\frac{1}{\sqrt{x^2+1}}\mathrm{d}x=&\operatorname{arcsinh}x\\
-        \int\frac{x^2}{\sqrt{x^2+1}}\mathrm{d}x=&\frac{1}{2}x\sqrt{x^2+1}-\frac{1}{2}1\operatorname{arcsinh}x\\
-        \int\frac{x^4}{\sqrt{x^2+1}}\mathrm{d}x=&\frac{1}{4}x^{3}\sqrt{x^{2}+1}-\frac{1}{4}\frac{3}{2}x\sqrt{x^{2}+1}+\frac{1}{4}\frac{3}{2}1\operatorname{arcsinh}x\\
-        \int\frac{x^6}{\sqrt{x^2+1}}\mathrm{d}x=&\frac{1}{6}x^5\sqrt{x^2+1}-\frac{1}{6}\frac{5}{4}x^3\sqrt{x^2+1}+\frac{1}{6}\frac{5}{4}\frac{3}{2}x\sqrt{x^2+1}-\frac{1}{6}\frac{5}{4}\frac{3}{2}1\operatorname{arcsinh}x\\
+        \int\frac{x^2}{\sqrt{x^2+1}}\mathrm{d}x=&\frac{1}{2}x\sqrt{x^2+1}-\frac{1}{2}\operatorname{arcsinh}x\\
+        \int\frac{x^4}{\sqrt{x^2+1}}\mathrm{d}x=&\frac{1}{4}x^{3}\sqrt{x^{2}+1}-\frac{1}{4}\frac{3}{2}x\sqrt{x^{2}+1}+\frac{1}{4}\frac{3}{2}\operatorname{arcsinh}x\\
+        \int\frac{x^6}{\sqrt{x^2+1}}\mathrm{d}x=&\frac{1}{6}x^5\sqrt{x^2+1}-\frac{1}{6}\frac{5}{4}x^3\sqrt{x^2+1}+\frac{1}{6}\frac{5}{4}\frac{3}{2}x\sqrt{x^2+1}-\frac{1}{6}\frac{5}{4}\frac{3}{2}\operatorname{arcsinh}x\\
         \int\frac{x^8}{\sqrt{x^2+1}}\mathrm{d}x=&\frac{1}{8}x^{7}\sqrt{x^{2}+1}-\frac{1}{8}\frac{7}{6}x^{5}\sqrt{x^{2}+1}+\frac{1}{8}\frac{7}{6}\frac{5}{4}x^{3}\sqrt{x^{2}+1}-\frac{1}{8}\frac{7}{6}\frac{5}{4}\frac{3}{2}x\sqrt{x^{2}+1}\\
-        &+\frac{1}{8}\frac{7}{6}\frac{5}{4}\frac{3}{2}1\mathrm{arcsinh}x
+        &+\frac{1}{8}\frac{7}{6}\frac{5}{4}\frac{3}{2}\mathrm{arcsinh}x
     \end{align*}
 \end{theorem}
 置$y=\sqrt{x^{2}+1}$，则$y^2-x^2=1$，于是：
@@ -586,11 +586,11 @@ $$ \frac{(2n-1)(2n-3)\cdots 1}{(2n)(2n-2)\cdots 2} = \mathbf{\frac{(2n-1)!!}{(2n
     \vspace{-15pt}
     \begin{align*}
         \int\frac{1}{x\sqrt{x^2+1}}\mathrm{d}x&=-\ln\frac{1+\sqrt{x^{2}+1}}{x}\\
-        \int\frac{1}{x^3\sqrt{x^2+1}}\mathrm{d}x=&-\frac{1}{2}\frac{\sqrt{x^2+1}}{x^2}+\frac{1}{2}1\ln\frac{1+\sqrt{x^2+1}}{x}\\
-        \int\frac{1}{x^{5}\sqrt{x^{2}+1}}\mathrm{d}x=&-\frac{1}{4}\frac{\sqrt{x^2+1}}{x^4}+\frac{1}{4}\frac{3}{2}\frac{\sqrt{x^2+1}}{x^2}-\frac{1}{4}\frac{3}{2}1\ln\frac{1+\sqrt{x^2+1}}{x}\\
-        \int\frac{1}{x^7\sqrt{x^2+1}}\mathrm{d}x=&-\frac{1}{6}\frac{\sqrt{x^2+1}}{x^6}+\frac{1}{6}\frac{5}{4}\frac{\sqrt{x^2+1}}{x^4}-\frac{1}{6}\frac{5}{4}\frac{3}{2}\frac{\sqrt{x^2+1}}{x^2}+\frac{1}{6}\frac{5}{4}\frac{3}{2}1\ln\frac{1+\sqrt{x^2+1}}{x}\\
+        \int\frac{1}{x^3\sqrt{x^2+1}}\mathrm{d}x=&-\frac{1}{2}\frac{\sqrt{x^2+1}}{x^2}+\frac{1}{2}\ln\frac{1+\sqrt{x^2+1}}{x}\\
+        \int\frac{1}{x^{5}\sqrt{x^{2}+1}}\mathrm{d}x=&-\frac{1}{4}\frac{\sqrt{x^2+1}}{x^4}+\frac{1}{4}\frac{3}{2}\frac{\sqrt{x^2+1}}{x^2}-\frac{1}{4}\frac{3}{2}\ln\frac{1+\sqrt{x^2+1}}{x}\\
+        \int\frac{1}{x^7\sqrt{x^2+1}}\mathrm{d}x=&-\frac{1}{6}\frac{\sqrt{x^2+1}}{x^6}+\frac{1}{6}\frac{5}{4}\frac{\sqrt{x^2+1}}{x^4}-\frac{1}{6}\frac{5}{4}\frac{3}{2}\frac{\sqrt{x^2+1}}{x^2}+\frac{1}{6}\frac{5}{4}\frac{3}{2}\ln\frac{1+\sqrt{x^2+1}}{x}\\
         \int\frac{1}{x^{9}\sqrt{x^{2}+1}}\mathrm{d}x=&-\frac{1}{8}\frac{\sqrt{x^{2}+1}}{x^{8}}+\frac{1}{8}\frac{7}{6}\frac{\sqrt{x^{2}+1}}{x^{6}}-\frac{1}{8}\frac{7}{6}\frac{5}{4}\frac{\sqrt{x^{2}+1}}{x^{4}}+\frac{1}{8}\frac{7}{6}\frac{5}{4}\frac{3}{2}\frac{\sqrt{x^{2}+1}}{x^{2}}\\
-        &-\frac{1}{8}\frac{7}{6}\frac{5}{4}\frac{3}{2}1\ln\frac{1+\sqrt{x^{2}+1}}{x}
+        &-\frac{1}{8}\frac{7}{6}\frac{5}{4}\frac{3}{2}\ln\frac{1+\sqrt{x^{2}+1}}{x}
     \end{align*}
 \end{theorem}
 置$y=\sqrt{x^{2}+1}$，则$y^{2}-x^{2}=1$，
@@ -643,7 +643,15 @@ $$ \frac{(2n-1)(2n-3)\cdots 1}{(2n)(2n-2)\cdots 2} = \mathbf{\frac{(2n-1)!!}{(2n
 \end{example}
 \begin{solution}
     由\[\int \frac{\mathrm{d}x}{\sqrt{1 - \sin^4 x}}=\int \frac{\mathrm{d}x}{\sqrt{1 - \sin^2 x}\sqrt{1 + \sin^2 x}}=\int \frac{\mathrm{d}x}{\cos x\sqrt{1+\sin^2 x}}\]
-    而$\sin x$求导后会被$\cos x$消掉，设 $p = \sin x, q = \cos x, r = \sqrt{1 + \sin^2 x}$，则有$\dd x=\frac{\dd \sin x}{\cos x}$：
+    而$\sin x$求导后会被$\cos x$消掉，设 $p = \sin x, q = \cos x, r = \sqrt{1 + \sin^2 x}$，则有$\dd x=\frac{\dd \sin x}{\cos x}$。此时
+    \[
+    r^2=1+p^2,\qquad q^2=1-p^2=r^2-2p^2,\qquad r\dd r=p\dd p,
+    \]
+    因而
+    \[
+    \dd\left(\frac{p}{r}\right)=\frac{r\dd p-p\dd r}{r^2}=\frac{r^2-p^2}{r^3}\dd p=\frac{\dd p}{r^3}.
+    \]
+    原积分便可顺着这个微分关系转化为
     \begin{align*}
 \int \frac{\mathrm{d}x}{\sqrt{1 - \sin^4 x}} =& \int \frac{\mathrm{d}x}{rq} = \int \frac{\mathrm{d}p}{rq^2}=\int\frac{\dd p}{r(r^2-2p^2)}=\int\frac{r^2}{r^2-2p^2}\frac{\dd p}{r^3}\\
 =&\int\frac{r^2}{r^2-2p^2}\dd\frac{p}{r}=\int\frac{1}{1-2\left(\frac{p}{r}\right)^2}\dd\left(\frac{p}{r}\right)\\
@@ -672,11 +680,17 @@ $$ \frac{(2n-1)(2n-3)\cdots 1}{(2n)(2n-2)\cdots 2} = \mathbf{\frac{(2n-1)!!}{(2n
 =&-x+\ln|x+1|+\int\frac{1}{\sqrt{x+1}}\cdot\sqrt{x+\frac{1}{x+1}}\dd x\\
 =&-x+\ln|x+1|+\int \dd(2\sqrt{x+1})\cdot\sqrt{x+\frac{1}{x+1}}
 \end{align*}
-记$r=\sqrt{x+\frac{1}{x+1}},p=\sqrt{x+1}+\frac{1}{\sqrt{x+1}},q=\sqrt{x+1}-\frac{1}{\sqrt{x+1}}$，则有：
+取
+\[
+r=\sqrt{x+\frac{1}{x+1}},\qquad
+p=\sqrt{x+1}+\frac{1}{\sqrt{x+1}},\qquad
+q=\sqrt{x+1}-\frac{1}{\sqrt{x+1}},
+\]
+则根式被拆成两个标准底座。逐项验证可得
 \[q^2=r^2-1,p^2=r^2+3,q\dd q=r\dd r,p\dd p=r\dd r\]
-那么
+并且 \(p+q=2\sqrt{x+1}\)，所以剩余积分为
 \begin{align*}
-&\int \dd(2\sqrt{x^2+1})\sqrt{x+\frac{1}{x+1}}\\
+&\int \dd(2\sqrt{x+1})\sqrt{x+\frac{1}{x+1}}\\
 =&\int r\dd(p+q)=r(p+q)-\int(p+q)\dd r\\
 =&r(p+q)-\int p\dd r-\int q\dd r\\
 =&r(p+q)-\frac{1}{2}pr-\frac12(p^2-r^2)\int\frac{\dd r}{p}-\frac12qr-\frac12(q^2-r^2)\int\frac{\dd r}{q}\\
@@ -711,3 +725,5 @@ $$ \frac{(2n-1)(2n-3)\cdots 1}{(2n)(2n-2)\cdots 2} = \mathbf{\frac{(2n-1)!!}{(2n
 =&\int\frac{\dd x}{1-x^2}+\frac12\int x\dd\left(\frac1{y^2}\right)=\int\frac{\dd x}{1-x^2}+\frac12\left(\frac{x}{y^2}-\int\frac{\dd x}{y^2}\right)
 \end{align*}
 \end{solution}
+
+
