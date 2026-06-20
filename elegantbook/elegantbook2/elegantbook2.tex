@@ -26377,6 +26377,99 @@ a_n\approx \frac1{n(\ln n)^\beta}.
 \]
 根值读几何主因子，相邻比值读连续乘积，\(1/n\) 边界读 \(p\)-型阶，\(1/(n\ln n)\) 边界读对数修正阶。
 
+\begin{example}[相邻比值趋于 \(1\) 后继续读 \(p\)-型阶]
+判定级数 \(\displaystyle \sum_{n=1}^{\infty}a_n\) 的敛散性，其中
+\[
+a_n=\frac{n!\,e^n}{n^{n+1}}.
+\]
+\end{example}
+
+\begin{solution}
+通项中同时出现 \(n!\)、\(e^n\)、\(n^n\)，直接和 \(1/n^p\) 比较不明显。先算相邻项比值
+\[
+r_n=\frac{a_{n+1}}{a_n}
+=\frac{(n+1)!\,e^{n+1}}{(n+1)^{n+2}}
+\cdot
+\frac{n^{n+1}}{n!\,e^n}.
+\]
+利用阶乘消项 \((n+1)!/n!=n+1\)，以及指数消项 \(e^{n+1}/e^n=e\)，得
+\[
+r_n
+=e\cdot \frac{n+1}{(n+1)^{n+2}}\cdot n^{n+1}
+=e\left(\frac{n}{n+1}\right)^{n+1}
+=e\left(1+\frac1n\right)^{-(n+1)}.
+\]
+因此 \(r_n\to e\cdot e^{-1}=1\)。这时不能停在“比值趋于 \(1\)”，而要继续读它趋于 \(1\) 的精细速度。
+
+对 \(r_n\) 取对数：
+\[
+\ln r_n
+=1-(n+1)\ln\left(1+\frac1n\right).
+\]
+由
+\[
+\ln(1+x)=x-\frac{x^2}{2}+\frac{x^3}{3}+O(x^4)\quad(x\to0),
+\]
+取 \(x=1/n\)，得
+\[
+\ln\left(1+\frac1n\right)
+=\frac1n-\frac1{2n^2}+\frac1{3n^3}
++O\left(\frac1{n^4}\right).
+\]
+于是
+\begin{align*}
+(n+1)\ln\left(1+\frac1n\right)
+&=(n+1)\left[
+\frac1n-\frac1{2n^2}+\frac1{3n^3}
++O\left(\frac1{n^4}\right)\right]\\
+&=\left(1-\frac1{2n}+\frac1{3n^2}\right)
++\left(\frac1n-\frac1{2n^2}+\frac1{3n^3}\right)
++O\left(\frac1{n^3}\right)\\
+&=1+\frac1{2n}-\frac1{6n^2}
++O\left(\frac1{n^3}\right).
+\end{align*}
+所以
+\[
+\ln r_n
+=-\frac1{2n}+\frac1{6n^2}
++O\left(\frac1{n^3}\right).
+\]
+
+接下来把相邻比值的对数累加回 \(\ln a_n\)。因为
+\[
+\ln r_k=\ln a_{k+1}-\ln a_k,
+\]
+故
+\begin{align*}
+\ln a_n-\ln a_1
+&=\sum_{k=1}^{n-1}\ln r_k\\
+&=\sum_{k=1}^{n-1}
+\left[-\frac1{2k}+\frac1{6k^2}
++O\left(\frac1{k^3}\right)\right].
+\end{align*}
+其中
+\[
+\sum_{k=1}^{n-1}\frac1k=\ln n+\gamma+O\left(\frac1n\right),
+\]
+而 \(\sum 1/k^2\)、\(\sum 1/k^3\) 都收敛，所以除 \(-\frac12\ln n\) 之外，其余部分都可以并入常数和 \(O(1/n)\) 中。于是存在常数 \(C\)，使
+\[
+\ln a_n=-\frac12\ln n+C+O\left(\frac1n\right).
+\]
+两边取指数：
+\[
+a_n=e^C n^{-1/2}e^{O(1/n)}.
+\]
+由于 \(e^{O(1/n)}\to1\)，令 \(K=e^C>0\)，便得到
+\[
+a_n\sim \frac{K}{\sqrt n}.
+\]
+因此原级数与 \(\displaystyle \sum 1/\sqrt n\) 同敛散。由于这是 \(p=\frac12\le1\) 的 \(p\)-级数，发散，所以
+\[
+\sum_{n=1}^{\infty}\frac{n!\,e^n}{n^{n+1}}
+\]
+发散。
+\end{solution}
+
 
 
 
