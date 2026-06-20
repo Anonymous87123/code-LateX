@@ -71,6 +71,40 @@ x \in \{0\} \cup [1,4].
 \end{solution}
 
 \section{幂指对恒成立问题}
+
+\begin{example}[群题]
+    对于任意正整数n，证明\[\sqrt[n]{n!} + \sqrt[n+2]{(n+2)!} < 2\sqrt[n+1]{(n+1)!}\]
+\end{example}
+\begin{proof}
+注意到$\sqrt[n]{n!}$是$f(x) = \left[\Gamma(x+1)\right]^{\frac1x}$（其中 $\Gamma(x)$ 为伽马函数）当 $x = n$（正整数）时的特殊形式，所以考虑证明对于任意正数$x$有\[f(x) + f(x+2) < 2f(x+1)\]也就是证明 $f(x)$ 在 $x > 0$ 上满足 $f''(x) < 0$即可，考虑到$f(x)$不好处理，于是引入$g(x)=\ln f(x)=\dfrac{\ln \Gamma(x+1)}{x}$，则
+\[f(x) = e^{g(x)}~~~f'(x) = g'(x) e^{g(x)}~~~f''(x) = \left[g''(x) + (g'(x))^2\right] e^{g(x)}\]
+因为 $e^{g(x)} > 0$，所以 $f''(x) < 0$ 等价于证明：$$g''(x) + (g'(x))^2 < 0 \iff (g'(x))^2 < -g''(x)$$
+而$g(x)$好处理正是因为可以展开：
+\[g(x)=\ln \Gamma(x+1) = -\gamma x + \lim_{n \to \infty} \sum_{k=1}^n \left[ \frac{x}{k} - \ln\left(1 + \frac{x}{k}\right) \right]\]
+\begin{note}
+由$\Gamma(x)$函数的反常积分定义
+\begin{align*}
+\Gamma(x) =& \int_0^\infty t^{x-1} e^{-t} \mathrm dt= \lim_{n \to \infty} \int_0^n t^{x-1} \left(1 - \frac{t}{n}\right)^n \mathrm dt=\int_0^n t^{x-1} \left(1 - \frac{t}{n}\right)^n \mathrm dt \\=& \int_0^1 (nu)^{x-1} (1-u)^n \cdot n \mathrm du= n^x \int_0^1 u^{x-1} (1-u)^n \mathrm du\end{align*}
+分部积分
+$$I_n = \left[ \frac{u^x}{x} (1-u)^n \right]_0^1 - \int_0^1 \frac{u^x}{x} \cdot \left( -n(1-u)^{n-1} \right) \mathrm du= \frac{n}{x} \int_0^1 u^x (1-u)^{n-1} \mathrm du = \frac{n}{x} I_{n-1}$$
+递推：$$I_n = \frac{n}{x} \cdot \frac{n-1}{x+1} \cdot \frac{n-2}{x+2} \cdots \frac{1}{x+n-1} \int_0^1 u^{x+n-1} \mathrm du=\frac{n!}{x(x+1)(x+2)\cdots(x+n)}$$
+那么$$\Gamma(x) = \lim_{n \to \infty} n^x I_n = \lim_{n \to \infty} \frac{n! \cdot n^x}{x(x+1)(x+2)\cdots(x+n)}$$
+利用 $\Gamma(x+1) = x\Gamma(x)$：
+$$\Gamma(x+1) = \lim_{n \to \infty} \frac{n! \cdot n^x}{(x+1)(x+2)\cdots(x+n)}= \lim_{n \to \infty} \frac{n^x}{\frac{x+1}{1} \cdot \frac{x+2}{2} \cdots \frac{x+n}{n}} = \lim_{n \to \infty} \frac{n^x}{\prod_{k=1}^n \left(1 + \frac{x}{k}\right)}$$
+所以$\displaystyle\ln \Gamma(x+1) = \lim_{n \to \infty} \left[ x \ln n - \sum_{k=1}^n \ln\left(1 + \frac{x}{k}\right) \right]$，利用$\displaystyle x \ln n = x \sum_{k=1}^n \frac{1}{k} - \gamma x + x \epsilon_n$得
+\[\ln \Gamma(x+1) = \lim_{n \to \infty} \left[ \left( x \sum_{k=1}^n \frac{1}{k} - \gamma x + x \epsilon_n \right) - \sum_{k=1}^n \ln\left(1 + \frac{x}{k}\right) \right]= -\gamma x + \lim_{n \to \infty} \sum_{k=1}^n \left[ \frac{x}{k} - \ln\left(1 + \frac{x}{k}\right) \right]\]
+当 $k \to \infty$ 时，泰勒展开 $\ln(1+t) = t - \frac{t^2}{2} + O(t^3)$，令 $t = \frac{x}{k}$：
+$\frac{x}{k} - \ln\left(1 + \frac{x}{k}\right) = \frac{x}{k} - \left( \frac{x}{k} - \frac{x^2}{2k^2} + O\left(\frac{x^3}{k^3}\right) \right) = \frac{x^2}{2k^2} + O\left(\frac{x^3}{k^3}\right)$由于级数 $\sum_{k=1}^\infty \frac{1}{k^2}$ 是严格收敛的（$p$-级数，$p=2$），根据比较审敛法，该通项在 $x > -1$ 时绝对收敛且一致收敛。因此求和极限交换：\[\ln \Gamma(x+1) = -\gamma x + \sum_{k=1}^\infty \left[ \frac{x}{k} - \ln\left(1 + \frac{x}{k}\right) \right]\]
+\end{note}
+所以$$g'(x) = \sum_{k=1}^\infty \frac{1}{x^2} \left[ \ln\left(1 + \frac{x}{k}\right) - \frac{x}{x+k} \right],~g''(x) = \sum_{k=1}^\infty \left\{ -\frac{2}{x^3}\left[ \ln\left(1 + \frac{x}{k}\right) - \frac{x}{x+k} \right] + \frac{1}{x(x+k)^2} \right\}$$
+不难发现 $g''(x)$ 与 $g'(x)$ 满足：$$g''(x) = -\frac{2}{x}g'(x) + \frac{1}{x}\sum_{k=1}^\infty \frac{1}{(x+k)^2}$$
+借助这个式子消去二阶导：$$(g'(x))^2 < \frac{2}{x}g'(x) - \frac{1}{x}\sum_{k=1}^\infty \frac{1}{(x+k)^2} \iff \sum_{k=1}^\infty \frac{1}{(x+k)^2} < 2g'(x) - x(g'(x))^2$$
+为避免算错，换元 $u(t) = \ln(1+t) - \frac{t}{1+t}$（其中 $t > 0$），则有：
+$$g'(x) = \sum_{k=1}^\infty \frac{1}{x^2} u\left(\frac{x}{k}\right)$$考虑逐项比较（加强证明），即证对于所有 $t > 0$，均有：$$\frac{t^2}{(1+t)^2} \le 2u(t) - \frac{1}{t}u(t)^2\implies \ln(1+t) \ge \frac{t(2+t) - t\sqrt{1+t+t^2}}{1+t}= \frac{3t}{2+t+\sqrt{1+t+t^2}}$$注意到对 $t > 0$ 有 $\displaystyle\sqrt{1+t+t^2} > \sqrt{1+t+\frac{1}{4}t^2} = 1+\frac{1}{2}t$。将其代入分母放缩：$$\frac{3t}{2+t+\sqrt{1+t+t^2}} < \frac{3t}{2+t+1+\frac{1}{2}t} = \frac{2t}{2+t}$$而 $\ln(1+t) > \frac{2t}{2+t}$是显然的。得证。
+\end{proof}
+
+
+
 \begin{example}[函数列单调性证明题]
 设函数列$\{f_n\}$满足$f_1(x)=x-\ln x$，$f_{n+1}(x)=f_1(f_n(x))$，函数列$\{g_n\}$满足$g_n(x)=\dfrac{e^{1-f_n(x)}}{x}$，函数列$\{h_n\}$满足$h_n(x)=g_n(g_n(x))-x$。证明：对于任意正整数$n\geq 2$，$h_n(x)$在$(1,+\infty)$上单调递增。
 \end{example}

@@ -19,6 +19,39 @@ OUT_DIR = ROOT / "cet 6" / "_listening_analysis_output"
 TEXT_DIR = OUT_DIR / "texts"
 OCR_PAGE_DIR = OUT_DIR / "ocr_pages"
 
+QUESTION_OPTION_FIXUPS: dict[tuple[str, int], str] = {
+    ("2024.06.set1", 10): (
+        "10. A) By the labor cost for the final products. "
+        "B) By the degree of industrial processing. "
+        "C) By the extent of chemical alteration. "
+        "D) By the convention of classification."
+    ),
+    ("2024.06.set2", 3): (
+        "3. A) Cooking every meal creatively in the kitchen. "
+        "B) Paying due attention to his personal hygiene. "
+        "C) Eating breakfast punctually every morning. "
+        "D) Making his own fresh fruit juice regularly."
+    ),
+    ("2024.06.set2", 8): (
+        "8. A) They have helped boost the local economy. "
+        "B) They have made the residents unusually proud. "
+        "C) They have contributed considerably to its popularity. "
+        "D) They have brought happiness to everyone in the village."
+    ),
+    ("2024.06.set2", 18): (
+        "18. A) They apparently have little to do with moderate beliefs. "
+        "B) They don't reflect the changes of view on physical punishment. "
+        "C) They may not apply to changes to extreme or deeply held beliefs. "
+        "D) They are unlikely to alter people's position without more evidence."
+    ),
+    ("2024.06.set2", 25): (
+        "25. A) The root cause for misinterpretations of scientific findings. "
+        "B) The difficulty in understanding what's actually happening. "
+        "C) The steps to be taken in arriving at any conclusion with certainty. "
+        "D) The necessity of continually re-examining and challenging findings."
+    ),
+}
+
 
 CHINESE_SET_NUMBERS = {
     "一": 1,
@@ -326,7 +359,8 @@ def transcript_segments(block: str) -> list[tuple[str, str, str]]:
     # Older explanation PDFs often omit Conversation/Passage labels and start
     # each transcript with the English question-range header.
     header_pattern = re.compile(
-        r"Questions?\s+(\d{1,2})\s+to\s+(\d{1,2})\s+are based on the "
+        r"Questions?\s+(\d{1,2})\s*['’.．。]?\s*to\s+"
+        r"(\d{1,2})\s*[.．。]?\s+are based on the "
         r"(conversation|passage|recording)\s+you have just heard[.]?",
         re.IGNORECASE,
     )
@@ -350,15 +384,81 @@ def transcript_segments(block: str) -> list[tuple[str, str, str]]:
 
 
 def answer_marker_matches(text: str) -> list[re.Match[str]]:
-    marker_pattern = re.compile(r"\[(\d{1,2})\]|[（(]\s*(\d{1,2})\s*[)）]")
+    marker_pattern = re.compile(
+        r"\[\s*(\d{1,2})(?:\s*[-–]\s*\d+)?\s*\]"
+        r"|[（(]\s*(\d{1,2})(?:\s*[-–]\s*\d+)?\s*[)）]"
+    )
     return list(marker_pattern.finditer(text))
+
+
+def normalize_marker_number(token: str) -> int | None:
+    normalized = (
+        re.sub(r"\s+", "", token)
+        .replace("I", "1")
+        .replace("i", "1")
+        .replace("l", "1")
+        .replace("O", "0")
+        .replace("o", "0")
+    )
+    if not normalized.isdigit():
+        return None
+    number = int(normalized)
+    return number if 1 <= number <= 25 else None
 
 
 def marker_records(key: str, parse_name: str, block: str) -> list[dict[str, str | int]]:
     records: list[dict[str, str | int]] = []
     for section, unit, segment in transcript_segments(block):
+        seen_questions: set[int] = set()
+        existing_spans = {match.span() for match in answer_marker_matches(segment)}
         for match in answer_marker_matches(segment):
-            number = int(next(group for group in match.groups() if group))
+            number = normalize_marker_number(next(group for group in match.groups() if group))
+            if number is None:
+                continue
+            seen_questions.add(number)
+            start = max(0, match.start() - 220)
+            end = min(len(segment), match.end() + 420)
+            snippet = re.sub(r"\s+", " ", segment[start:end]).strip()
+            records.append(
+                {
+                    "key": key,
+                    "parse_file": parse_name,
+                    "question": number,
+                    "section": section,
+                    "unit": unit,
+                    "snippet": snippet,
+                }
+            )
+        heading_pattern = re.compile(r"(?m)^\s*(\d{1,2})[.．。]\s+")
+        for match in heading_pattern.finditer(segment):
+            number = normalize_marker_number(match.group(1))
+            if number is None or number in seen_questions or match.span() in existing_spans:
+                continue
+            seen_questions.add(number)
+            start = max(0, match.start() - 220)
+            end = min(len(segment), match.end() + 420)
+            snippet = re.sub(r"\s+", " ", segment[start:end]).strip()
+            records.append(
+                {
+                    "key": key,
+                    "parse_file": parse_name,
+                    "question": number,
+                    "section": section,
+                    "unit": unit,
+                    "snippet": snippet,
+                }
+            )
+        flexible_marker_pattern = re.compile(
+            r"[\[【(（]\s*([0-9IlOoi](?:\s*[0-9IlOoi])?)"
+            r"(?:\s*[-–—]\s*[0-9IlOoi]+)?\s*[\]】)）]"
+        )
+        for match in flexible_marker_pattern.finditer(segment):
+            if match.span() in existing_spans:
+                continue
+            number = normalize_marker_number(match.group(1))
+            if number is None or number in seen_questions:
+                continue
+            seen_questions.add(number)
             start = max(0, match.start() - 220)
             end = min(len(segment), match.end() + 420)
             snippet = re.sub(r"\s+", " ", segment[start:end]).strip()
@@ -379,7 +479,7 @@ def question_option_records(key: str, original_name: str, text: str) -> list[dic
     block = listening_block(text)
     if not block:
         return []
-    matches = list(re.finditer(r"(?m)^\s*(\d{1,2})\.\s+", block))
+    matches = list(re.finditer(r"(?m)^\s*(\d{1,2})\s*[.\uff0e]\s*(?=[ABCD]\s*[)\uff09])", block))
     records: list[dict[str, str | int]] = []
     for i, match in enumerate(matches):
         question = int(match.group(1))
@@ -393,7 +493,9 @@ def question_option_records(key: str, original_name: str, text: str) -> list[dic
                 "original_file": original_name,
                 "question": question,
                 "section": "A" if question <= 8 else "B" if question <= 15 else "C",
-                "raw_options": re.sub(r"\s+", " ", raw),
+                "raw_options": QUESTION_OPTION_FIXUPS.get(
+                    (key, question), re.sub(r"\s+", " ", raw)
+                ),
             }
         )
     return records
