@@ -42,254 +42,74 @@
 
 \maketitle
 \frontmatter
+\pagenumbering{arabic}
 
 \tableofcontents
 \makeenvindex
-
 \mainmatter
-
-\bridge{本书默认你已经会用导数、积分、偏导和基础微分方程做运算。真正要反复追问的，不是怎么算，而是这些数学对象在当前物理图景里到底描述了什么。阅读时，优先抓每章开头的“这章解决什么问题”和章末的“1分钟回顾/自测问题”；力学先理顺研究对象与受力，波光学先判现象再选公式，热学先分清状态量与过程量。}
-
-\part{力学}
 
 \chapter{质点运动学}
 
-\begin{skill}[第1章冲刺总手册]\label{sk:phys-ch01-overview}
-\textbf{【这章先解决什么题】} 这章处理的都是“物体怎样运动”的题：已知位置求速度和加速度，已知加速度求位移和速度，平面运动怎样拆分，圆周运动里速率和方向各由什么控制。
-
-\textbf{【拿题先认什么信号】} 若题面直接给 \(x(t)\)、\(y(t)\) 或 \(\vb*{r}(t)\)，就走“求导链”；若题面给“加速度恒定、从静止出发、经过若干秒”这类字样，就走匀变速三式；若题面同时出现“水平/竖直”两个方向，就先分解成两个一维方程；若题面出现半径 \(R\)、周期 \(T\)、角速度 \(\omega\)，就说明要把线量和角量接起来。
-
-\textbf{【第一条方程先写什么】}
-\[
-\begin{aligned}
-\vb*{v}&=\dv{\vb*{r}}{t},\qquad
-\vb*{a}=\dv{\vb*{v}}{t}=\dv[2]{\vb*{r}}{t},\\
-\text{若为恒加速度直线运动：}\quad
-v&=v_0+at.
-\end{aligned}
-\]
-其中 \(\vb*{r}\) 是位置矢量，\(\vb*{v}\) 是速度，\(\vb*{a}\) 是加速度。
-
-\textbf{【必背公式块】}
-\[
-\begin{aligned}
-\overline{\vb*{v}}&=\frac{\Delta \vb*{r}}{\Delta t},\qquad
-\overline{\vb*{a}}=\frac{\Delta \vb*{v}}{\Delta t},\\
-x-x_0&=v_0t+\frac12 at^2,\qquad
-v^2-v_0^2=2a(x-x_0),\\
-\vb*{r}&=x\vb*{i}+y\vb*{j},\qquad
-\vb*{v}=\dot x\,\vb*{i}+\dot y\,\vb*{j},\\
-a_\tau&=\dv{v}{t},\qquad
-a_n=\frac{v^2}{R}=\omega^2R,\\
-s&=R\theta,\qquad
-v=R\omega,\qquad
-a_\tau=R\alpha.
-\end{aligned}
-\]
-位移是 \(\Delta \vb*{r}\)，路程是 \(\Delta s\)；两者一般不相等，只有沿直线或局部微段时才有 \(\dd s=\abs{\dd \vb*{r}}\)。
-
-\textbf{【做题流程】} 先选参考系、原点和正方向；再看题目给的是 \(\vb*{r}(t)\)、\(v(t)\) 还是 \(a\)；若时间 \(t\) 已给出就优先保留时间列式，若题目故意不提时间就优先用 \(v^2-v_0^2=2a(x-x_0)\) 消去时间；平面运动永远先拆 \(x,y\) 两个方向；圆周运动永远先问“是速率在变，还是方向在变”，前者看 \(a_\tau\)，后者看 \(a_n\)。
-
-\textbf{【最容易误判】} 把平均速度写成路程除时间；把路程和位移大小混成一个量；把“速度为零”误当成“加速度也为零”；把“速率不变”误当成“没有加速度”，匀速圆周运动就是反例。
-
-\textbf{【最后怎样验证】} 看量纲是否分别为 \(\si{m}\)、\(\si{m/s}\)、\(\si{m/s^2}\)；看符号是否和所选正方向一致；若自己写出了 \(x(t)\)，再反求一遍 \(\dv{x}{t}\)、\(\dv[2]{x}{t}\) 检查；圆周题最后确认法向加速度是否指向曲率中心。
-\end{skill}
-
-\chapterroadmap
-{建立描述质点运动的基本语言，统一用位置、位移、速度和加速度来描述“怎么运动”。}
-{已经接触过直线运动、平抛运动和圆周运动，也知道位移、速度、加速度这些基本量。}
-{新增矢量化写法、轨迹方程、自然坐标和角量表达，把基础运动学里的分散图景连成一条线。}
-
-\section{为什么大学物理先讲运动学}
-
-在基础力学里，我们已经熟悉匀变速直线运动、平抛运动、圆周运动等典型问题。大学物理的第一步不是立刻讨论力，而是先回答一个更基础的问题：\emph{如果只看运动本身，我们怎样把它描述得更准确、更一般？}
-
-运动学研究的是“怎样运动”，而不是“为什么这样运动”。也就是说，在这一章里，我们暂时不追问力从哪里来，而是把注意力集中在位置怎样变化、速度怎样变化、加速度怎样变化上。这一步很重要，因为后面的动力学、守恒定律、振动和波动，全部都建立在这些基本语言之上。
-
-\subsection{质点模型}
-
-这一小节主要服务一个判断结论：后面若只需要写整体的 \(\vb*{r}(t)\)、\(\vb*{v}(t)\)、\(\vb*{a}(t)\)，而不需要区分物体上不同点的位置差、受力差或转动差，就可以先把物体压成质点模型。也就是说，质点模型的判据不是“物体够不够小”，而是\textbf{大小和内部结构会不会进入最后的公式与结论}。
-
-\begin{definition}[质点]\label{def:particle}
-当物体的形状、大小以及内部结构对所研究的问题影响很小，可以忽略不计时，就把整个物体看成一个只有质量而没有几何尺寸的点，这个理想化模型叫做\textbf{质点}。
-\end{definition}
-
-\begin{note}
-质点不是“很小的真实小球”，而是一种\textbf{建模方式}。例如研究地球绕太阳公转时，地球和太阳都可以先近似看成质点；但研究地球自转时，就必须考虑刚体模型，不能再把地球简单看成一个点。
-\par
-\textbf{先看什么信号：} 若题目只问整体平动、轨迹、速度、加速度，且不关心物体朝向、大小和受力分布，往往就能先用质点模型；\textbf{这条定义在控制什么：} 它控制的是“哪些内部几何细节可以先折叠掉”；\textbf{怎样最快记住：} 先问“题目要不要区分物体上的不同点”，不要就先压成一个点；\textbf{最容易错：} 只因为物体“看起来很小”就无条件当质点，而忽略了题目也许正在问转动或稳定性。
-\end{note}
-
-\section{位置、运动方程与轨迹}
-
-\bridge{这一节真正要先解决的问题是：如果不先规定“每个时刻它在空间中的哪个位置”，后面的速度、加速度和受力分析都无从谈起。所以第一步不是急着求导，而是先把两件事分开：一是\textbf{带时间标签的位置记账}，二是\textbf{把时间抹掉后留下的几何路线}。前者回答“某时刻它相对参考原点在哪”，后者才回答“它总共经过了哪些点”。有了这层分工，位置矢量和轨迹都会显得很自然。}
+\section{位置矢量}
 
 \begin{definition}[位置矢量]\label{def:position-vector}
 在选定参考系和坐标系之后，从坐标原点指向质点所在位置的有向线段称为\textbf{位置矢量}，记作
 \[
 \vb*{r}(t)=x(t)\vb*{i}+y(t)\vb*{j}+z(t)\vb*{k}.
-\]
-\end{definition}
-
-\begin{remark}
-本书中 \(\vb*{i},\vb*{j},\vb*{k}\) 表示沿 \(x,y,z\) 轴正方向的单位向量（有些教材写作 \(\hat{i},\hat{j},\hat{k}\) 或 \(\hat{e}_x,\hat{e}_y,\hat{e}_z\)）。它们的模为 1，方向固定，仅用来标记坐标方向。
-\end{remark}
-
-从原点连向物体，并不是因为原点本身有特殊物理意义，而是因为只有把所有时刻的位置都相对于\textbf{同一个参考点}来记，后面的位移、速度和加速度才有可比性。于是 \(\vb*{r}(t)\) 本质上就是“时刻 \(t\) 时物体相对原点的位置账目”。这条式子叫做运动函数或者运动方程。它告诉我们：随着时间 \(t\) 的变化，质点的位置如何变化。若我们只研究平面运动，就可以写成
-\[
-\vb*{r}(t)=x(t)\vb*{i}+y(t)\vb*{j}.
-\]
-
-有了“某时刻它在哪”的描述后，还可以再做一次压缩：把全过程里经过的所有点单独抽出来，不再保留时间先后，只保留几何形状。这个压缩后的几何结果，才叫轨迹。
-
-\begin{definition}[轨迹]\label{def:trajectory}
-质点在空间中连续经过的所有点连成的曲线，叫做质点的\textbf{轨迹}。
-\end{definition}
-
-如果已经知道坐标方程
-\[
-x=x(t),\qquad y=y(t),\qquad z=z(t),
-\]
-那么通过消去参数 \(t\)，就可以得到轨迹方程 \(f(x,y,z)=0\)。
-
-\begin{note}
-\textbf{先看什么信号：} 题目若在问“某时刻它在哪”“怎样写运动方程”，先盯位置矢量；若在问“它在空间里画出什么形状”，再切到轨迹；\textbf{这条定义在控制什么：} \(\vb*{r}(t)\) 控制的是带时间标签的运动过程，轨迹控制的是把全过程压成一条几何曲线后的结果；\textbf{怎样最快记住：} 位置矢量回答“什么时候到哪”，轨迹只回答“都经过了哪”；\textbf{最容易错：} 还没选参考系和坐标原点，就把位置写成一个仿佛与选择无关的“绝对量”。
-\end{note}
-
-\bridge{这一节最关键的一点是：\textbf{轨迹是由运动方程消去时间后得到的几何结果}。先有位置随时间变化，再有轨迹，因此“轨迹”始终是对运动过程的后处理。}
-
-\section{位移与路程}
-
-\bridge{上一节回答的是“某一时刻它在哪”，这一节要比较的是“两时刻之间到底变了多少”。一旦比较两个时刻，就会自然分成两种完全不同的记账方式：一种只看起点和终点之间的整体变化，另一种沿着真实路径把走过的长度一点点累计起来。前者就是位移，后者就是路程。}
-
-\begin{definition}[位移]\label{def:displacement}
-在时间间隔 \(\Delta t\) 内，质点位置的变化量
-\[
-\Delta \vb*{r}=\vb*{r}(t+\Delta t)-\vb*{r}(t)
-\]
-称为这段时间内的\textbf{位移}。
-\end{definition}
-
-位移是矢量，既有大小也有方向。它的方向由初位置指向末位置，而不是沿着实际轨迹逐点弯曲前进。
-
-\begin{definition}[路程]\label{def:path-length}
-质点在一段时间内实际运动轨迹的长度，称为\textbf{路程}，通常记作 \(\Delta s\)。
-\end{definition}
-
-位移和路程的区别，是大学物理里非常容易混淆的第一件事：
+\]题目更多写成$\vec{r}(t)$，如果没有向量符号就是代表位矢大小。下面区分几个量：
+\begin{enumerate}
+\item $\mathrm{d}r=\mathrm{d}|r|=\mathrm{d}|\vec{r}|$:先求出质点到原点的距离（模长），再看这个距离改变了多少。由于$r$本身为非负值，所以$\mathrm{d}r=\mathrm{d}|r|=\mathrm{d}|\vec{r}|$。
+\item $|\mathrm{d}r|$:位矢大小变化量的绝对值。因为 $\mathrm{d}r$ 可正可负（变远为正，变近为负），加了绝对值后，它就恒大于或等于 0。
+\item $\mathrm{d}\vec{r}$:先做矢量减法（位置变动），得到一个新矢量。即 $\mathrm{d}\vec{r} = \vec{r}(t+\mathrm{d}t) - \vec{r}(t)$，也就是三角形法则得到的向量相减的结果。
+\item $|\mathrm{d}\vec{r}|$:先求出位移矢量 $\mathrm{d}\vec{r}$，再算这个矢量的长度。它是一个标量。在无限短的时间 $\mathrm{d}t$ 内，质点走过的微小弧长（曲线运动的轨迹长度），也就是路程微元 $\mathrm{d}s$。也就是说无论质点靠近还是远离原点，$|\mathrm{d}\vec{r}|$始终为正，可以理解为向量三角形的边长，没有方向。
+\end{enumerate}
+以下是除以 $\mathrm{d}t$后各个量的物理意义及严格区分：
+\begin{enumerate}
+\item $\frac{\mathrm{d}r}{\mathrm{d}t} = \frac{\mathrm{d}|r|}{\mathrm{d}t} = \frac{\mathrm{d}|\vec{r}|}{\mathrm{d}t}$ ：向径变化率（径向速率）。质点远离或靠近原点的速率（或者说位矢模长随时间的变化率）。特点：这是一个标量，可正可负。
 \begin{itemize}
-  \item 路程是标量，只反映“走了多长”；
-  \item 位移是矢量，反映“位置变了多少以及朝哪边变”。
+\item $\dfrac{\mathrm{d}r}{\mathrm{d}t} > 0$ 表示质点正在远离原点；
+\item $\dfrac{\mathrm{d}r}{\mathrm{d}t} < 0$ 表示质点正在靠近原点；
+\item $\dfrac{\mathrm{d}r}{\mathrm{d}t} = 0$ 表示质点到原点的距离在这一瞬间没有改变（例如匀速圆周运动，因 $r=R$ 恒定，故该项恒为 $0$）。
 \end{itemize}
-
-当质点沿曲线运动时，一般有
-\[
-\Delta s\neq \abs{\Delta \vb*{r}},\qquad
-\dd s=\abs{\dd \vb*{r}}
-\quad \text{(局部轨迹可近似看作直线时)}.
-\]
-
-\begin{note}
-这里的 \(\Delta\) 和 \(\dd\) 不要混：\(\Delta \vb*{r}\) 连的是整段运动的起点和终点，\(\dd \vb*{r}\) 则是极短时间内的位置微变。把一小段弧线无限放大，它局部就近似成直线，所以 \(\dd s=\abs{\dd \vb*{r}}\)；但把许多这样的小段重新拼回整条曲线后，总路程 \(\Delta s\) 一般就不再等于位移大小 \(\abs{\Delta \vb*{r}}\)。
-\end{note}
-
-\begin{example}
-一个质点从圆周上的某点出发，沿半圆运动到对径点。若圆半径为 \(R\)，则它的路程是 \(\pi R\)，而位移的大小是 \(2R\)。
-\end{example}
-
-\begin{solution}
-这是沿半圆运动，所以路程就是半圆弧长；位移只看起点和终点，两点正好位于直径两端，因此
-\[
-\Delta s=\pi R,\qquad \abs{\Delta \vb*{r}}=2R.
-\]
-所以这里最该分清的是：\textbf{路程回答“沿路走了多少”，位移回答“起点到终点隔多远”}。
-\end{solution}
-
-\section{平均速度与瞬时速度}
-
-\bridge{这里最该先分开的，是两类完全不同的问题：若你只关心“一整段时间总体朝哪边走、平均有多快”，用平均速度就够了；若你关心“某一瞬间它此刻到底往哪边、快慢如何”，就必须把时间间隔压到无限短。也正因为这两类问题不同，速度才会自然分成平均量和瞬时量。}
-
-\begin{definition}[平均速度]\label{def:average-velocity}
-在时间间隔 \(\Delta t\) 内，位移与时间之比
-\[
-\overline{\vb*{v}}=\frac{\Delta \vb*{r}}{\Delta t}
-\]
-称为\textbf{平均速度}。
+\item $\left|\dfrac{\mathrm{d}r}{\mathrm{d}t}\right|$ ：向径变化率的绝对值，纯粹的径向速度大小，是一个非负的标量。它去掉了远离或靠近的方向性，只保留了距离变化得快慢的绝对数值。
+\item $\dfrac{\mathrm{d}\vec{r}}{\mathrm{d}t}$ ：瞬时速度 $\vec{v}$。在直角坐标系下，$\vec{v} = \dfrac{\mathrm{d}x}{\mathrm{d}t}\vec{i} + \dfrac{\mathrm{d}y}{\mathrm{d}t}\vec{j} + \dfrac{\mathrm{d}z}{\mathrm{d}t}\vec{k}$。
+\item $\dfrac{|\mathrm{d}\vec{r}|}{\mathrm{d}t}$ ：瞬时速率（$v$）物理意义：速度矢量的大小，即瞬时速率（通常直接记作 $v$）。数学等价：因为前面提到 $|\mathrm{d}\vec{r}| = \mathrm{d}s$（路程微元），所以 $\dfrac{|\mathrm{d}\vec{r}|}{\mathrm{d}t} = \frac{\mathrm{d}s}{\mathrm{d}t}$，即路程随时间的变化率。它是一个恒大于或等于 0 的标量。日常生活中汽车仪表盘上的盘显时速，就是这个量。
+\end{enumerate}
 \end{definition}
 
-它的方向与位移方向一致，表示在这段时间内位置变化的总体快慢和方向。
+\section{切向加速度/法向加速度}
 
-\begin{definition}[瞬时速度]\label{def:instantaneous-velocity}
-当 \(\Delta t\to 0\) 时，平均速度的极限称为\textbf{瞬时速度}，简称速度：
-\[
-\begin{aligned}
-\vb*{v}&=\lim_{\Delta t\to 0}\frac{\Delta \vb*{r}}{\Delta t}=\dv{\vb*{r}}{t},\\
-\text{在直角坐标系中}\quad
-\vb*{v}&=\dv{x}{t}\vb*{i}+\dv{y}{t}\vb*{j}+\dv{z}{t}\vb*{k}.
-\end{aligned}
-\]
+在自然坐标系中，速度 $\vec{v}$ 的方向永远沿着轨道切线方向。因此，速度矢量可以写为大小（速率 $v$）与方向（切向单位矢量 $\vec{\tau}$）的乘积：$\vec{v} = v\vec{\tau}$，其中 $\vec{\tau}$ 是关于时间 $t$ 的函数（由于质点曲线运动时，切向单位矢量 $\vec{\tau}$ 的方向一直在改变）。乘积求导法则：$$\vec{a} = \frac{\mathrm{d}\vec{v}}{\mathrm{d}t} = \frac{\mathrm{d}(v\vec{\tau})}{\mathrm{d}t} = \frac{\mathrm{d}v}{\mathrm{d}t}\vec{\tau} + v\frac{\mathrm{d}\vec{\tau}}{\mathrm{d}t}$$
+这一步非常直观地把加速度分成了两部分：
+\begin{itemize}
+\item 第一项 $\frac{\mathrm{d}v}{\mathrm{d}t}\vec{\tau}$：速度大小随时间的变化率，方向沿切向。
+\item 第二项 $v\frac{\mathrm{d}\vec{\tau}}{\mathrm{d}t}$：速度方向随时间的变化率，接下来我们需要求出 $\frac{\mathrm{d}\vec{\tau}}{\mathrm{d}t}$ 具体等于什么。
+\end{itemize}
+为了看清 $\mathrm{d}\vec{\tau}$ 的几何本质，我们引入路程微元 $\mathrm{d}s$ 进行链式展开，提取出速率 $v$：
+$$\frac{\mathrm{d}\vec{\tau}}{\mathrm{d}t} = \frac{\mathrm{d}\vec{\tau}}{\mathrm{d}s} \cdot \frac{\mathrm{d}s}{\mathrm{d}t} = \frac{\mathrm{d}\vec{\tau}}{\mathrm{d}s} v$$
+设质点在 $\mathrm{d}t$ 时间内走过了弧长 $\mathrm{d}s$。对应的切向单位矢量从 $\vec{\tau}$ 变到了 $\vec{\tau}'$。由于它们都是单位矢量，模长保持不变：$|\vec{\tau}| = |\vec{\tau}'| = 1$，将 $\vec{\tau}$ 和 $\vec{\tau}'$ 移到同一起点，它们之间的夹角为 $\mathrm{d}\theta$（即轨道切线转过的角度）。
+\begin{itemize}
+\item 方向：当 $\mathrm{d}\theta \to 0$ 时，矢量差 $\mathrm{d}\vec{\tau} = \vec{\tau}' - \vec{\tau}$ 将垂直于 $\vec{\tau}$，严格指向曲线内凹的一侧，也就是法向单位矢量 $\vec{n}$ 的方向。
+\item 大小：由大圆弧或三角形小角近似关系，当 $\mathrm{d}\theta$ 极小时，两单位矢量终点连线的长度（即 $|\mathrm{d}\vec{\tau}|$）等于弧长：$$|\mathrm{d}\vec{\tau}| = |\vec{\tau}| \cdot \mathrm{d}\theta = 1 \cdot \mathrm{d}\theta = \mathrm{d}\theta$$
+\end{itemize}
+根据数学上对轨道曲率半径 $\rho$ 的定义，弧长 $\mathrm{d}s$、转角 $\mathrm{d}\theta$ 与半径 $\rho$ 满足：
+$$\mathrm{d}s = \rho \mathrm{d}\theta \implies \mathrm{d}\theta = \frac{\mathrm{d}s}{\rho}$$
+代入前面的大小公式，得到：$$|\mathrm{d}\vec{\tau}| = \frac{\mathrm{d}s}{\rho}$$
+综合上面的方向（$\vec{n}$）和大小（$\frac{\mathrm{d}s}{\rho}$），我们可以写出 $\mathrm{d}\vec{\tau}$ 的严格矢量表达式：$$\mathrm{d}\vec{\tau} = \frac{\mathrm{d}s}{\rho}\vec{n} \implies \frac{\mathrm{d}\vec{\tau}}{\mathrm{d}s} = \frac{1}{\rho}\vec{n}$$
+现在，把 $\frac{\mathrm{d}\vec{\tau}}{\mathrm{d}s} = \frac{1}{\rho}\vec{n}$ 代回第一步的链式法则中：$$\frac{\mathrm{d}\vec{\tau}}{\mathrm{d}t} = \frac{\mathrm{d}\vec{\tau}}{\mathrm{d}s} v = \left(\frac{1}{\rho}\vec{n}\right) v = \frac{v}{\rho}\vec{n}$$最后，将这个结果填入最初的加速度展开式里：
+\begin{definition}[切向加速度/法向加速度]
+$$\vec{a} = \frac{\mathrm{d}\vec{v}}{\mathrm{d}t} = \frac{\mathrm{d}(v\vec{\tau})}{\mathrm{d}t} = \frac{\mathrm{d}v}{\mathrm{d}t}\vec{\tau} + v\frac{\mathrm{d}\vec{\tau}}{\mathrm{d}t} = \frac{\mathrm{d}v}{\mathrm{d}t}\vec{\tau} + v\left(\frac{v}{\rho}\vec{n}\right)= \frac{\mathrm{d}v}{\mathrm{d}t}\vec{\tau} + \frac{v^2}{\rho}\vec{n}$$
+\begin{itemize}
+\item $\vec{a}$: \textbf{加速度矢量（Total Acceleration Vector）}。质点在空间运动时的总瞬时加速度。
+\item $\vec{v}$: \textbf{速度矢量（Velocity Vector）}。其方向永远指向质点运动轨迹的切线方向。
+\item $v$: \textbf{瞬时速率（Speed）}。是一个标量，代表速度矢量 $\vec{v}$ 的模长（即 $v = |\vec{v}| = \frac{\mathrm{d}s}{\mathrm{d}t}$），反映质点运动的快慢。
+\item $\vec{\tau}$: \textbf{切向单位矢量（Unit Tangent Vector）}。是一个沿轨道切线、指向质点前进方向的单位矢量（满足 $|\vec{\tau}| = 1$），负责指示速度的方向。
+\item $\vec{n}$: \textbf{法向单位矢量（Unit Normal Vector）}。是一个垂直于切线、严格指向轨道内凹一侧（曲率中心）的单位矢量（满足 $|\vec{n}| = 1$）。
+\item $\rho$: \textbf{曲率半径（Radius of Curvature）}。轨迹在该点处局部近似圆弧的半径。轨迹越弯曲，$\rho$ 越小；直线运动时 $\rho \to \infty$。
+\item $\frac{\mathrm{d}v}{\mathrm{d}t}\vec{\tau}$: \textbf{切向加速度矢量（Tangential Acceleration）}。通常记作 $\vec{a}_\tau$。其大小 $a_\tau = \frac{\mathrm{d}v}{\mathrm{d}t}$ 反映了速度\textbf{大小（速率）}随时间的变化率。
+\item $\frac{v^2}{\rho}\vec{n}$: \textbf{法向加速度矢量（Normal / Centripetal Acceleration）}。通常记作 $\vec{a}_n$。其大小 $a_n = \frac{v^2}{\rho}$ 反映了速度\textbf{方向}随时间的变化率（即向心加速度）。
+\end{itemize}
 \end{definition}
-
-\begin{note}
-\textbf{先看什么信号：} 题目若在问“一整段时间里总体走向怎样”，先看平均速度；若在问“某一瞬间朝哪边、变得多快”，再切瞬时速度；\textbf{这条定义在控制什么：} \(\overline{\vb*{v}}\) 控制的是整段时间内位移变化的平均效果，\(\vb*{v}\) 控制的是某个时刻位置对时间的瞬时变化率；\textbf{怎样最快记住：} 平均速度像连起两端点的割线，瞬时速度像极限下贴住轨迹的切线；\textbf{最容易错：} 把平均速度误写成“路程除以时间”。那样得到的是\textbf{平均速率}，不是平均速度。
-\par 另外，速度是矢量，速率是标量。速率等于速度大小，即 \(v=\abs{\vb*{v}}=\dv{s}{t}\)；把“速度大小”单独记作速率，就是为了始终把矢量速度和标量速率分开。
-\end{note}
-
-\bridge{\(\dv{\vb*{r}}{t}\) 表示位置矢量对时间的瞬时变化率。后面无论写动力学方程、简谐振动还是波动方程，都会反复调用这套“状态量对时间求导”的语言。}
-
-\section{平均加速度与瞬时加速度}
-
-\bridge{速度已经告诉我们“位置变化得多快”，但运动状态还可能继续变，既可能变快变慢，也可能只改方向不改速率。所以这里真正要找的新量，不再是位置的变化率，而是\textbf{速度这个矢量本身}变化得有多快。只要先把这层图景立起来，加速度写成“速度变化率”就会很自然。}
-
-\begin{definition}[平均加速度]\label{def:average-acceleration}
-在时间间隔 \(\Delta t\) 内，速度变化量与时间之比
-\[
-\overline{\vb*{a}}=\frac{\Delta \vb*{v}}{\Delta t}
-\]
-称为\textbf{平均加速度}。
-\end{definition}
-
-\begin{definition}[瞬时加速度]\label{def:instantaneous-acceleration}
-当 \(\Delta t\to 0\) 时，平均加速度的极限称为\textbf{瞬时加速度}，简称加速度：
-\[
-\begin{aligned}
-\vb*{a}&=\lim_{\Delta t\to 0}\frac{\Delta \vb*{v}}{\Delta t}=\dv{\vb*{v}}{t}=\dv[2]{\vb*{r}}{t},\\
-\text{在直角坐标系中}\quad
-\vb*{a}&=\dv[2]{x}{t}\vb*{i}+\dv[2]{y}{t}\vb*{j}+\dv[2]{z}{t}\vb*{k}.
-\end{aligned}
-\]
-\end{definition}
-
-\begin{note}
-\textbf{先看什么信号：} 题目若在比较两个时刻“速度怎样变了”，就该想到加速度；\textbf{这条定义在控制什么：} 加速度控制的是\textbf{速度矢量}的变化率，而不是位置本身的变化率；\textbf{怎样最快记住：} 先问速度大小变没变，再问方向变没变，只要有一项变了，就有加速度；\textbf{最容易错：} 把“有加速度”直接理解成“越来越快”。匀速圆周运动里速率不变但方向在变，所以仍有加速度；而某些转折点上即使瞬时速度恰好为零，加速度也完全可能不为零。
-\end{note}
-
-\section{直线运动的几类典型模型}
-
-\subsection{匀速直线运动}
-
-若加速度为零，即
-\[
-a=0 \implies v=\text{常量} \implies x=x_0+vt.
-\]
-
-\subsection{匀变速直线运动}
-
-若加速度为常量 \(a\)，则
-\begin{align*}
-\dv{v}{t}=a &\implies v=v_0+at,\\
-\dv{x}{t}=v_0+at &\implies x=x_0+v_0t+\frac{1}{2}at^2,\\
-a=\dv{v}{t}=\dv{v}{x}\dv{x}{t}=v\dv{v}{x}
-\quad &\text{(只在直线运动里把 \(v\) 看成 \(x\) 的函数时这样写)}\\
-&\implies \int_{v_0}^{v} v\,\dd v=\int_{x_0}^{x} a\,\dd x
-\implies v^2-v_0^2=2a(x-x_0).
-\end{align*}
-
-\bridge{这里的重点不是再记一遍三条运动学公式，而是看清它们如何由微分关系推出：先给出 \(\dv{v}{t}=a\)，再通过积分把局部变化率还原成全局运动公式。}
-
-\begin{note}
-\textbf{先看什么信号：} 若题目已知或直接询问某一时刻的时间 \(t\)，通常就优先保留 \(t\) 来写 \(v=v_0+at\) 和 \(x=x_0+v_0t+\frac{1}{2}at^2\)；若题目只关心位移和速度、故意不想让你管时间，就优先想到消去 \(t\) 后的 \(v^2-v_0^2=2a(x-x_0)\)。\textbf{这条公式在控制什么：} 它们控制的是同一条恒加速度直线运动在不同已知量组合下怎样最快落笔。\textbf{怎样最快记住：} 先问“时间在不在题面里”，在就保留，不在就消去。\textbf{最容易错：} 把这些式子当成只适用于“加速度为正”的公式；其实正负号完全由你选定的坐标正方向决定。
-\end{note}
 
 \begin{exercise}[2010模拟题：由运动学方程判断是否匀加速]
 某质点作直线运动，运动学方程为
@@ -298,57 +118,21 @@ x=3t-5t^3+6\quad(\mathrm{SI}).
 \]
 判断该质点是匀加速还是变加速运动，并说明加速度方向。
 \end{exercise}
-
 \begin{solution}
-\textbf{起手判断/模型：} 题目已经给出 \(x(t)\)，所以不要从匀变速公式反猜，而应直接对 \(x\) 求导。速度是一阶导数，加速度是二阶导数。
-
-\textbf{主方程：}
-\[
-v=\dv{x}{t},\qquad a=\dv[2]{x}{t}.
-\]
-
-\textbf{分步代入或化简：}
-\[
-v=3-15t^2,\qquad a=-30t.
-\]
-加速度随时间 \(t\) 改变，因此不是匀加速运动；当 \(t>0\) 时，\(a<0\)，加速度沿 \(x\) 轴负方向。
-
-\textbf{结论：} 对通常从 \(t=0\) 以后讨论的运动，
-\[
-\boxed{\text{质点作变加速直线运动，加速度沿 }x\text{ 轴负方向}.}
-\]
-
-\textbf{物理检查/易错点：} 判断“匀不匀加速”看的是加速度是否为常量，不是看 \(x(t)\) 里有没有某个负号。若只求到速度就停下，很容易把速度方向和加速度方向混在一起。
+对 \(x\) 求导。速度是一阶导数，加速度是二阶导数。$v=3-15t^2,~ a=-30t$，加速度随时间 \(t\) 改变，因此不是匀加速运动；当 \(t>0\) 时，\(a<0\)，加速度沿 \(x\) 轴负方向。
 \end{solution}
 
 \begin{exercise}[2011级期末：收绳拉船靠岸为什么是变加速运动]
 湖中有一小船，有人用绕过岸上定滑轮的绳拉船靠岸。设岸上滑轮高出船头的距离为 \(h\)，人以恒定速率 \(v_0\) 收绳，绳不可伸长且湖水静止。判断小船靠岸过程中的运动性质。
 \end{exercise}
-
 \begin{solution}
-\textbf{起手判断/模型：} 人收绳的速度是绳长变短的速度，不是船沿水平方向的速度。船的水平距离 \(x\) 和绳长 \(l\) 之间有几何约束。
-
-\textbf{主方程：}
-\[
-l^2=x^2+h^2,\qquad -\dv{l}{t}=v_0.
-\]
-对几何约束求导：
-\[
-l\dv{l}{t}=x\dv{x}{t}.
-\]
+勾股定理：$l^2=x^2+h^2,~~-\dv{l}{t}=v_0$，对几何约束求导：$l\dv{l}{t}=x\dv{x}{t}$，
 船向岸的速率为
 \[
 u=-\dv{x}{t}
 =v_0\frac{l}{x}
 =v_0\sqrt{1+\frac{h^2}{x^2}}.
 \]
-
-\textbf{结论：} 随着船靠岸，\(x\) 逐渐减小，\(u\) 逐渐增大，因此小船作
-\[
-\boxed{\text{变加速运动}}.
-\]
-
-\textbf{物理检查/易错点：} 绳端收进来是匀速的，但船头不是沿绳方向运动。只有当 \(h=0\) 时，才会退化成船速等于收绳速率的简单直线运动。
 \end{solution}
 
 \begin{example}
@@ -357,7 +141,6 @@ u=-\dv{x}{t}
 
 \begin{solution}
 已知初速度 \(v_0=0\)、加速度 \(a=\SI{2}{m/s^2}\)、时间 \(t=\SI{5}{s}\)。
-
 由匀变速公式
 \[
 \begin{aligned}
@@ -365,97 +148,8 @@ v&=v_0+at=0+2\times 5=\SI{10}{m/s},\\
 x-x_0&=v_0t+\frac{1}{2}at^2=0+\frac{1}{2}\times 2\times 5^2=\SI{25}{m}.
 \end{aligned}
 \]
-
 所以 \(5\) 秒后，汽车速度为 \(\SI{10}{m/s}\)，位移为 \(\SI{25}{m}\)。
 \end{solution}
-
-\section{平面运动的分解思想}
-
-大学物理处理平面运动时，常把运动分解到两个互相垂直的方向上。若
-\[
-\begin{aligned}
-\vb*{r}&=x(t)\vb*{i}+y(t)\vb*{j},\\
-\vb*{v}&=\dv{x}{t}\vb*{i}+\dv{y}{t}\vb*{j},\qquad
-\vb*{a}=\dv[2]{x}{t}\vb*{i}+\dv[2]{y}{t}\vb*{j}.
-\end{aligned}
-\]
-
-这说明：\textbf{二维运动可以分解成两个一维运动同时进行}。例如平抛运动中，水平方向通常是匀速运动，竖直方向通常是自由落体运动。
-
-\begin{note}
-\textbf{先看什么信号：} 题目若在平面内运动，又天然带有“水平/竖直”“东西/南北”这类互相垂直的方向，就该先分解成两个分运动。\textbf{这条公式在控制什么：} 它控制的是怎样把一个矢量问题拆成两个标量方程来算。\textbf{怎样最快记住：} 两个方向上的方程可以分别写，但它们共用同一个时间 \(t\)，所以最后消去 \(t\) 才能把轨迹真正连起来。\textbf{最容易错：} 只顾着在某一方向列式，却忘了另一方向也要用同一个时刻对应的量，结果把两个分运动错当成彼此无关的两道题。
-\end{note}
-
-\begin{example}
-平抛运动中，若初速度水平向右，大小为 \(v_0\)，忽略空气阻力，则
-\[
-\begin{aligned}
-x&=v_0t,\qquad y=\frac{1}{2}gt^2,\\
-t&=\frac{x}{v_0}\implies y=\frac{g}{2v_0^2}x^2.
-\end{aligned}
-\]
-这是一条抛物线。
-\end{example}
-
-\section{圆周运动与自然坐标系}
-
-\bridge{为什么要换坐标系？直角坐标系里，曲线运动的加速度 \(a_x,a_y\) 同时包含"速率变化"和"方向变化"两种信息，混在一起不好分辨。自然坐标系把加速度拆成切向（改变速率）和法向（改变方向）两个分量，物理意义一目了然，特别适合分析圆周运动和一般曲线运动。}
-
-当质点沿曲线运动时，仅用直角坐标分量有时不够直观。此时常引入沿轨迹切线方向和法线方向的自然坐标系。
-
-\subsection{切向加速度与法向加速度}
-
-速度总沿轨迹切线方向，因此可以写成
-\[
-\begin{aligned}
-\vb*{v}&=v\vb*{e}_\tau,\\
-\vb*{a}&=a_\tau \vb*{e}_\tau + a_n \vb*{e}_n,\\
-a_\tau&=\dv{v}{t},\qquad a_n=\frac{v^2}{R}.
-\end{aligned}
-\]
-
-\begin{note}
-这里的 \(R\) 不是额外凭空冒出来的新长度，而是轨迹在该点的\textbf{曲率半径}。最稳的想法是：在这一点附近用一个“最贴近轨迹的小圆”去逼近曲线，这个小圆的半径就是 \(R\)。轨迹弯得越厉害，\(R\) 越小，所以即使速率不变，只要拐弯更急，法向加速度就会更大。更进一步，\(a_n=v^2/R\) 也不是硬背出来的：极短时间 \(\dd t\) 内速度大小几乎不变，只是方向转过小角 \(\dd\theta\)，因此
-\[
-\abs{\dd \vb*{v}}\approx v\,\dd\theta,\qquad
-\dd s=R\,\dd\theta=v\,\dd t
-\implies a_n=\frac{\abs{\dd \vb*{v}}}{\dd t}=\frac{v^2}{R}.
-\]
-\end{note}
-
-\begin{definition}[切向加速度]\label{def:tangential-acceleration}
-\(a_\tau\) 描述速度大小变化的快慢。
-\end{definition}
-
-\begin{definition}[法向加速度]\label{def:normal-acceleration}
-\(a_n\) 指向曲率中心，描述速度方向变化的快慢。
-\end{definition}
-
-\begin{note}
-匀速圆周运动中，速率不变，所以 \(a_\tau=0\)；但方向不断变化，因此仍有法向加速度
-\[
-a_n=\frac{v^2}{R}=\omega^2R.
-\]
-这正是熟悉的向心加速度，只是现在被写进了自然坐标系的统一表达里。
-\end{note}
-
-\section{角量描述}
-
-对圆周运动，真正被同一圆周上所有点共享的不是弧长 \(s\)，而是转过的角 \(\theta\)。因为不同半径上的点走过的弧长可以不同，但只要它们属于同一个绕圆心的转动过程，就会在同一时刻共同转过同一个角。所以最自然的做法不是先背一套新公式，而是先用角量记“绕了多少”，再用固定半径 \(R\) 把它翻译成线量。
-
-对圆周运动，除了线量 \(s,v,a\)，还常用角量，并与线量满足
-\[
-\begin{aligned}
-\theta,\qquad \omega&=\dv{\theta}{t},\qquad \alpha=\dv{\omega}{t},\\
-s&=R\theta,\qquad v=R\omega,\qquad a_\tau=R\alpha.
-\end{aligned}
-\]
-
-\bridge{这三条关系很重要。它说明“绕圈运动”并不是另一套完全陌生的世界，而是把直线运动中的位移、速度、加速度分别换成弧长、角速度、角加速度之后得到的对应关系。后面刚体转动一章还会继续使用这套思想。}
-
-\begin{note}
-\textbf{先看什么信号：} 题目若给出半径、周期、转速、角速度或角加速度，而真正想问的是线速度、切向加速度一类量，就该先把角量和线量接起来。\textbf{这条公式在控制什么：} 它控制的是同一圆周运动在“绕了多少角”和“沿弧走了多远”之间如何一一对应。\textbf{怎样最快记住：} 同一固定半径 \(R\) 上，角量乘 \(R\) 就变成线量，线量除 \(R\) 就变回角量。\textbf{最容易错：} 忘记 \(\theta\) 必须用弧度计，或者在半径并不固定的问题里机械套 \(v=R\omega\)、\(a_\tau=R\alpha\)。
-\end{note}
 
 \begin{example}[由角位移函数顺着读出角速度、角加速度和线量]
 某飞轮半径为 \(R=\SI{0.20}{m}\)，其转角满足
@@ -464,24 +158,7 @@ s&=R\theta,\qquad v=R\omega,\qquad a_\tau=R\alpha.
 \]
 求 \(t=\SI{1}{s}\) 时的角速度、角加速度、线速度、切向加速度和法向加速度。
 \end{example}
-
 \begin{solution}
-\textbf{起手判断/模型：} 题目直接给的是 \(\theta(t)\)，所以第一条方程一定先写
-\[
-\omega=\dv{\theta}{t},\qquad \alpha=\dv{\omega}{t}.
-\]
-先把角量求出来，再用固定半径 \(R\) 把它们翻译成线量。
-
-\textbf{主方程：}
-\[
-\omega=\dv{\theta}{t},\qquad
-\alpha=\dv{\omega}{t},\qquad
-v=R\omega,\qquad
-a_\tau=R\alpha,\qquad
-a_n=\frac{v^2}{R}=R\omega^2.
-\]
-
-\textbf{分步代入或化简：}
 \[
 \begin{aligned}
 \omega(t)&=\dv{}{t}(-t^2+4t)=-2t+4
@@ -493,17 +170,6 @@ a_\tau&=R\alpha=0.20\times(-2)=\SI{-0.40}{m/s^2},\\
 a_n&=R\omega^2=0.20\times 2^2=\SI{0.80}{m/s^2}.
 \end{aligned}
 \]
-
-\textbf{结论：}
-\[
-\omega=\SI{2}{rad/s},\quad
-\alpha=\SI{-2}{rad/s^2},\quad
-v=\SI{0.40}{m/s},\quad
-a_\tau=\SI{-0.40}{m/s^2},\quad
-a_n=\SI{0.80}{m/s^2}.
-\]
-
-\textbf{物理检查/易错点：} \(\omega>0\) 说明这时仍沿选定正向转动；\(\alpha<0\) 说明它在减速而不是反向加速。最容易错的是把 \(a_n\) 也写成 \(R\alpha\)；其实 \(R\alpha\) 只对应切向加速度。
 \end{solution}
 
 \begin{example}[已知弧长函数时怎样分出切向与法向加速度]
@@ -513,27 +179,10 @@ s=bt-\frac12 ct^2,
 \]
 其中 \(b,c\) 均为正常数。求任意时刻的切向加速度、法向加速度，并求在尚未反向前二者大小相等的时刻。
 \end{example}
-
 \begin{solution}
-\textbf{起手判断/模型：} 题目给的是弧长 \(s(t)\)，所以最自然的第一步不是先写角量，而是先用
-\[
-v=\dv{s}{t},\qquad a_\tau=\dv{v}{t}.
-\]
-一旦速度出来，法向加速度再由圆周运动关系 \(a_n=v^2/R\) 接上。
-
-\textbf{主方程：}
-\[
-v=\dv{s}{t},\qquad
-a_\tau=\dv{v}{t},\qquad
-a_n=\frac{v^2}{R}.
-\]
-
-\textbf{分步代入或化简：}
 \[
 \begin{aligned}
-v&=\dv{}{t}\left(bt-\frac12 ct^2\right)=b-ct,\\
-a_\tau&=\dv{v}{t}=-c,\\
-a_n&=\frac{(b-ct)^2}{R}.
+v&=\dv{}{t}\left(bt-\frac12 ct^2\right)=b-ct,~~a_\tau=\dv{v}{t}=-c,~~a_n=\frac{(b-ct)^2}{R}.
 \end{aligned}
 \]
 若要求尚未反向前二者大小相等，则先用
@@ -548,37 +197,7 @@ b-ct=\sqrt{cR}
 \implies
 t=\frac{b-\sqrt{cR}}{c}.
 \]
-
-\textbf{结论：}
-\[
-a_\tau=-c,\qquad
-a_n=\frac{(b-ct)^2}{R},\qquad
-t=\frac{b-\sqrt{cR}}{c}\quad\left(0<t<\frac{b}{c}\right).
-\]
-
-\textbf{物理检查/易错点：} \(a_\tau=-c\) 是常量，表示速率一直线性减小；\(a_n\) 随速率平方变化，会越来越小。最容易错的是把“大小相等”写成 \(a_\tau=a_n\)，从而漏掉绝对值。
 \end{solution}
-
-\section{本章常见误区}
-
-\begin{remark}
-\begin{enumerate}
-  \item 把路程和位移混为一谈。
-  \item 认为“加速度存在就一定越来越快”。
-  \item 只会写速度大小，不会写速度矢量。
-  \item 在平面运动中忘记先选坐标系，再写分量方程。
-  \item 在圆周运动中只记向心加速度公式，却不理解它对应的是方向变化。
-\end{enumerate}
-\end{remark}
-
-\section{章末小结}
-
-\summaryline{运动学的核心任务，是用位置、速度、加速度这三层量把运动描述清楚。位置告诉我们“在哪”，速度告诉我们“怎么变位置”，加速度告诉我们“怎么变速度”。}
-\chapterselfcheck{什么情况下 \(\Delta s\neq \abs{\Delta \vb*{r}}\)？为什么匀速圆周运动的速率不变，仍然有加速度？}
-
-\begin{note}
-\textbf{章末这两道题的起手顺序很典型：} 已知位置函数时，先按定义对 \(t\) 求导得到 \(v\)，再求导得到 \(a\)；已知圆周半径和周期时，先由“一周路程除以一周时间”得到速率，再回到 \(a_n=v^2/R\)。如果第一次读到这里会卡，通常不是公式不会，而是没先认出题面给的是“函数入口”还是“几何量入口”。
-\end{note}
 
 \begin{exercise}[2004级期末：圆周运动方程中的速度和速率变化率]
 质点的运动方程为
@@ -589,15 +208,7 @@ t=\frac{b-\sqrt{cR}}{c}\quad\left(0<t<\frac{b}{c}\right).
 \end{exercise}
 
 \begin{solution}
-\textbf{起手判断/模型：} 题目给的是位置矢量函数，所以速度矢量直接对时间求导；但第二个量写的是速率 \(v\) 的导数，不是加速度矢量，这一点要先分清。
-
-\textbf{主方程：}
-\[
-\vb*{v}=\dv{\vb*{r}}{t},\qquad
-v=\abs{\vb*{v}}.
-\]
-
-\textbf{分步代入或化简：}
+题目给的是位置矢量函数，所以速度矢量直接对时间求导；但第二个量写的是速率 \(v\) 的导数，不是加速度矢量，这一点要先分清。
 \[
 \vb*{v}
 =-\omega R\sin\omega t\,\vb*{i}
@@ -612,136 +223,17 @@ v=\sqrt{\omega^2R^2\sin^2\omega t+\omega^2R^2\cos^2\omega t}
 \[
 \dv{v}{t}=0.
 \]
-
-\textbf{结论：}
-\[
-\boxed{\vb*{v}=-\omega R\sin\omega t\,\vb*{i}
-+\omega R\cos\omega t\,\vb*{j}},\qquad
-\boxed{\dv{v}{t}=0}.
-\]
-
-\textbf{物理检查/易错点：} 这是匀速圆周运动：速率不变，但速度方向一直在变。因此 \(\dv{v}{t}=0\) 并不表示加速度为零，加速度矢量仍指向圆心。
-\end{solution}
-
-\begin{exercise}[2007级期末：曲线运动中法向加速度何时可以为零]
-判断下列说法中哪一个正确：1. 某时刻瞬时速度为 \(\SI{2}{m/s}\)，说明此后 \(\SI{1}{s}\) 内一定经过 \(\SI{2}{m}\)；2. 斜向上抛的物体在最高点速度最小、加速度最大；3. 物体作曲线运动时，有可能在某时刻的法向加速度为零；4. 物体加速度越大，则速度越大。
-\end{exercise}
-
-\begin{solution}
-\textbf{起手判断/模型：} 概念题不要只看关键词，要把速度、加速度、法向加速度分别对应到“位移变化率”“速度变化率”“速度方向变化率”。
-
-\textbf{逐项判断：} 瞬时速度只描述某一时刻附近的极限变化率，不能推出随后一整秒的路程，所以第 1 句错。斜抛最高点速度只有水平分量，不为零；加速度仍为重力加速度 \(g\)，并不会比别处更大，所以第 2 句错。若曲线运动在某时刻曲率半径趋于无穷，或速度方向在该瞬间不改变，则
-\[
-a_n=\frac{v^2}{\rho}=0
-\]
-是可能的，因此第 3 句对。加速度大只表示速度变化快，不表示速度本身一定大，第 4 句错。
-
-\textbf{结论：}
-\[
-\boxed{\text{正确说法是第 3 句}.}
-\]
-
-\textbf{物理检查/易错点：} “曲线运动”只保证总体轨迹不是直线，不保证每一个瞬间都有非零曲率。法向加速度管方向变化，切向加速度才管速率变化。
-\end{solution}
-
-\begin{exercise}[2008级期末：沿曲线运动时哪些加速度说法可靠]
-对于沿曲线运动的物体，判断下列说法中哪一种正确：切向加速度必不为零；法向加速度必不为零（拐点处除外）；由于速度沿切线方向，法向分速度必为零，因此法向加速度必为零；若物体作匀速率运动，其总加速度必为零；若物体加速度为恒矢量，它一定作匀变速率运动。
-\end{exercise}
-
-\begin{solution}
-\textbf{起手判断/模型：} 曲线运动要把加速度分成切向和法向两部分：切向分量改变速率，法向分量改变速度方向。
-
-\textbf{逐项判断：} 匀速率圆周运动有切向加速度为零，所以“切向加速度必不为零”错。沿曲线运动时，除拐点或曲率瞬时为零等特殊位置外，速度方向在变，通常有
-\[
-a_n=\frac{v^2}{\rho}\ne0,
-\]
-所以第二句对。法向分速度为零，只表示速度没有法向分量，不代表速度方向不变；法向加速度正是用来改变速度方向的，所以第三句错。匀速率运动仍可能有法向加速度，第四句错。恒定加速度会让速度矢量线性变化，但速率大小不一定匀变，第五句错。
-
-\textbf{结论：}
-\[
-\boxed{\text{正确说法是：法向加速度必不为零（拐点处除外）}.}
-\]
-
-\textbf{物理检查/易错点：} “法向速度为零”与“法向加速度为零”不是一回事。圆周运动中速度永远沿切线，但向心加速度恰恰沿法向。
 \end{solution}
 
 \begin{exercise}[2010级期末：变速圆周运动的加速度大小]
 一质点沿半径为 \(R\) 的圆周作变速运动，某时刻速率为 \(v\)，且速率变化率为 \(\dv{v}{t}\)。求该时刻质点加速度的大小。
 \end{exercise}
-
 \begin{solution}
-\textbf{起手判断/模型：} 圆周运动的加速度要拆成切向和法向两部分。切向分量负责改变速率，法向分量负责改变速度方向。
-
-\textbf{主方程：}
-\[
-a_\tau=\dv{v}{t},\qquad a_n=\frac{v^2}{R}.
-\]
-二者互相垂直，因此总加速度大小为
+总加速度大小为
 \[
 a=\sqrt{a_\tau^2+a_n^2}
 =\sqrt{\left(\dv{v}{t}\right)^2+\left(\frac{v^2}{R}\right)^2}.
 \]
-
-\textbf{结论：}
-\[
-\boxed{a=\left[\left(\dv{v}{t}\right)^2+\frac{v^4}{R^2}\right]^{1/2}}.
-\]
-
-\textbf{物理检查/易错点：} 变速圆周运动不是只写 \(v^2/R\)。若速率不变，切向分量才消失；若路径仍在弯曲，法向分量仍然存在。
-\end{solution}
-
-\begin{exercise}[2007级期末：由角位置方程求切向加速度]
-一质点作半径为 \(R=\SI{0.1}{m}\) 的圆周运动，其角位置满足
-\[
-\theta=\frac{\pi}{4}+\frac12 t^2\quad(\mathrm{SI}).
-\]
-求质点的切向加速度。
-\end{exercise}
-
-\begin{solution}
-\textbf{起手判断/模型：} 给的是角位置 \(\theta(t)\)，先对时间求角速度，再求角加速度。切向加速度不是 \(R\omega^2\)，而是 \(R\alpha\)。
-
-\textbf{主方程：}
-\[
-\omega=\dv{\theta}{t},\qquad
-\alpha=\dv{\omega}{t},\qquad
-a_\tau=R\alpha.
-\]
-
-\textbf{分步代入或化简：}
-\[
-\omega=t,\qquad
-\alpha=1\,\si{rad/s^2}.
-\]
-于是
-\[
-a_\tau=0.1\times 1=\SI{0.1}{m/s^2}.
-\]
-
-\textbf{结论：}
-\[
-\boxed{a_\tau=\SI{0.1}{m/s^2}}.
-\]
-
-\textbf{物理检查/易错点：} 这题只问切向加速度，不问总加速度。法向加速度 \(a_n=R\omega^2=0.1t^2\) 会随时间变，但切向加速度是常量。
-\end{solution}
-
-\begin{exercise}[]
-已知质点作直线运动，其位置方程为 \(x=2+3t-t^2\)。
-求 \(t=\SI{1}{s}\) 时的速度和加速度。
-\end{exercise}
-
-\begin{solution}
-\textbf{起手判断/模型：} 题目直接给出的是位置方程 \(x(t)\)，所以第一步不是回忆某张公式表，而是按定义对时间求导，先把速度和加速度写出来。
-
-\textbf{主方程与代入：}
-\[
-v=\dv{x}{t}=3-2t,\qquad
-a=\dv{v}{t}=-2
-\implies
-v(1)=\SI{1}{m/s},\ a(1)=\SI{-2}{m/s^2}.
-\]
-\textbf{结论与检查：} 当 \(t=\SI{1}{s}\) 时，质点速度为 \(\SI{1}{m/s}\)，加速度为 \(\SI{-2}{m/s^2}\)。这里速度为正，说明它此刻仍沿 \(x\) 轴正方向运动；加速度为负，说明它虽然还在向前，但速度正在减小。
 \end{solution}
 
 \begin{exercise}[]
@@ -749,16 +241,14 @@ v(1)=\SI{1}{m/s},\ a(1)=\SI{-2}{m/s^2}.
 \end{exercise}
 
 \begin{solution}
-\textbf{起手判断/模型：} 已知半径和周期，这是匀速圆周运动里最标准的“先由一周路程求速率，再由速率求法向加速度”的入口。
-
-\textbf{主方程与化简：} 一周路程为 \(2\pi R\)，周期为 \(T\)，于是
+一周路程为 \(2\pi R\)，周期为 \(T\)，于是
 \[
 v=\frac{2\pi R}{T},\qquad
 a_n=\frac{v^2}{R}
 =\frac{1}{R}\left(\frac{2\pi R}{T}\right)^2
 =\frac{4\pi^2R}{T^2}.
 \]
-\textbf{结论与检查：} 速度大小为 \(v=\frac{2\pi R}{T}\)，法向加速度大小为 \(a_n=\frac{4\pi^2R}{T^2}\)。量纲也对：\(\frac{R}{T}\) 是速度量纲，\(\frac{R}{T^2}\) 是加速度量纲。
+速度大小为 \(v=\frac{2\pi R}{T}\)，法向加速度大小为 \(a_n=\frac{4\pi^2R}{T^2}\)。量纲也对：\(\frac{R}{T}\) 是速度量纲，\(\frac{R}{T^2}\) 是加速度量纲。
 \end{solution}
 
 \begin{exercise}[2005级期末：在一条船上看另一条船的速度]
@@ -766,81 +256,25 @@ a_n=\frac{v^2}{R}
 \end{exercise}
 
 \begin{solution}
-\textbf{起手判断/模型：} 这是相对速度题，不需要重新建立运动方程。\(A\) 船坐标系相对地面以 \(\vb*{v}_A\) 平动，所以在 \(A\) 系中看 \(B\)，就是用 \(B\) 的地面速度减去 \(A\) 的地面速度。
-
-\textbf{主方程：}
-\[
-\vb*{v}_{B/A}=\vb*{v}_B-\vb*{v}_A.
-\]
-
-\textbf{分步代入：}
+这是相对速度题，不需要重新建立运动方程。\(A\) 船坐标系相对地面以 \(\vb*{v}_A\) 平动，所以在 \(A\) 系中看 \(B\)，就是用 \(B\) 的地面速度减去 \(A\) 的地面速度。
 \[
 \vb*{v}_A=2\vb*{i},\qquad
 \vb*{v}_B=2\vb*{j}
 \implies
 \vb*{v}_{B/A}=-2\vb*{i}+2\vb*{j}.
 \]
-
-\textbf{结论：}
-\[
-\boxed{\vb*{v}_{B/A}=(-2\vb*{i}+2\vb*{j})\,\si{m/s}}.
-\]
-
-\textbf{物理检查/易错点：} 在 \(A\) 船上看，\(A\) 自己的向 \(+x\) 运动要被扣掉，所以 \(B\) 会带有一个 \(-x\) 分量。最容易错的是只保留 \(B\) 的 \(+y\) 速度，忘了参考系本身在移动。
 \end{solution}
 
-\begin{exercise}[2006级期末：骑车人感到风从哪里吹来]
-某人骑自行车以速率 \(v\) 向西行驶。今有风以相同速率从北偏东 \(30^\circ\) 方向吹来，问骑车人感到风从哪个方向吹来。
-\end{exercise}
-
-\begin{solution}
-\textbf{起手判断/模型：} “感到风从哪里来”是相对速度题。真正打到人身上的风速，是空气相对骑车人的速度；而题目中的“从北偏东 \(30^\circ\) 吹来”描述的是风的来向，空气实际运动方向要取相反方向。
-
-\textbf{主方程：} 取东为 \(+x\)，北为 \(+y\)。骑车人速度为
-\[
-\vb*{v}_{\text{人}}=-v\vb*{i}.
-\]
-风从北偏东 \(30^\circ\) 吹来，说明空气速度指向南偏西 \(30^\circ\)，故
-\[
-\vb*{v}_{\text{风}}=-\frac{v}{2}\vb*{i}-\frac{\sqrt3v}{2}\vb*{j}.
-\]
-人感到的风速为
-\[
-\vb*{v}_{\text{风/人}}
-=\vb*{v}_{\text{风}}-\vb*{v}_{\text{人}}
-=\frac{v}{2}\vb*{i}-\frac{\sqrt3v}{2}\vb*{j}.
-\]
-
-\textbf{方向判断：} 上式表示空气相对人向东南方向运动。风的“来向”与这个速度方向相反，即指向西北方向，且
-\[
-\tan\alpha=\frac{v/2}{\sqrt3v/2}=\frac{1}{\sqrt3}
-\implies \alpha=30^\circ.
-\]
-
-\textbf{结论：}
-\[
-\boxed{\text{骑车人感到风从北偏西 }30^\circ\text{ 吹来}.}
-\]
-
-\textbf{物理检查/易错点：} 风向题最容易把“风吹向哪里”和“风从哪里吹来”混掉。先算相对速度方向，再反过来报来向，符号就不会乱。
-\end{solution}
 
 \begin{exercise}[2005级期末：旋转探照灯在岸边扫过的速度]
 距直线河岸 \(\SI{500}{m}\) 处有一艘静止的船，船上的探照灯以转速 \(n=\SI{1}{r/min}\) 转动。当光束与岸边成 \(60^\circ\) 角时，求光束在岸边光点沿岸移动的速度。
 \end{exercise}
 
 \begin{solution}
-\textbf{起手判断/模型：} 光点沿岸移动不是物体匀速圆周运动，而是角度变化被几何关系放大后的“投影速度”。先把光点到船正对岸点的沿岸距离写成角度函数，再对时间求导。
-
-\textbf{主方程：} 设船到岸的垂直距离为 \(d=\SI{500}{m}\)，光束与岸边夹角为 \(\theta\)，则沿岸距离
-\[
-x=d\cot\theta.
-\]
-探照灯角速度为
+设船到岸的垂直距离为 \(d=\SI{500}{m}\)，光束与岸边夹角为 \(\theta\)，则沿岸距离$x=d\cot\theta$，探照灯角速度为
 \[
 \omega=2\pi n=\frac{2\pi}{60}\,\si{rad/s}=\frac{\pi}{30}\,\si{rad/s}.
 \]
-
 \textbf{分步代入或化简：}
 \[
 \abs{v}=\abs{\dv{x}{t}}
@@ -851,116 +285,32 @@ x=d\cot\theta.
 v=500\times \frac{4}{3}\times\frac{\pi}{30}\ \si{m/s}
 \approx \SI{69.8}{m/s}.
 \]
-
 \textbf{结论：}
 \[
 \boxed{v\approx \SI{69.8}{m/s}}.
 \]
-
 \textbf{物理检查/易错点：} 光点速度可以远大于船上灯头边缘的线速度，因为它是远处交点的几何扫掠速度。这里不能把 \(\omega r\) 里的 \(r\) 直接取为 \(\SI{500}{m}\)，而要先写清光线与岸的交点位置。
 \end{solution}
 
 \chapter{质点动力学基础}
-
-\begin{skill}[第2章冲刺总手册]\label{sk:phys-ch02-overview}
-\textbf{【这章先解决什么题】} 这章处理“为什么这样运动”的题：受力分析、由力求加速度、由运动反推力、斜面/绳/接触约束里的张力与支持力，以及静止或匀速时到底该写什么方程。
-
-\textbf{【拿题先认什么信号】} 只要题面出现“受力”“加速度”“拉力”“支持力”“摩擦力”“斜面”“悬挂”“电梯”这些词，第一工具就是牛顿定律；若题目说“静止”“匀速直线运动”“平衡”，就直接把主方程降成 \(\sum \vb*{F}=0\)。
-
-\textbf{【第一条方程先写什么】}
-\[
-\sum \vb*{F}=m\vb*{a}.
-\]
-在直角坐标系里真正落笔时，通常写成
-\[
-\sum F_x=ma_x,\qquad \sum F_y=ma_y.
-\]
-只有在惯性系中，牛顿第二定律才能直接这样用。
-
-\textbf{【必背公式块】}
-\[
-\begin{aligned}
-\sum \vb*{F}&=m\vb*{a},\qquad
-\text{平衡或匀速时 } \sum \vb*{F}=0,\\
-\vb*{F}_g&=m\vb*{g},\qquad
-F_{\text{弹}}=kx\ \text{(大小)},\\
-f_s&\le \mu_s N,\qquad
-f_k=\mu_k N.
-\end{aligned}
-\]
-其中 \(N\) 是正压力；静摩擦力是“为满足约束所需的值”，只有临界滑动时才等于 \(\mu_sN\)。
-
-\textbf{【做题流程】} 先选研究对象，只画这个对象受的外力；再选坐标轴，优先沿运动方向或沿接触面取轴；随后把每个力投影到坐标轴上，按正方向写分量方程；若有绳长不变、接触不滑动等约束，再把约束关系补进来联立求解。
-
-\textbf{【最容易误判】} 把作用力和反作用力画在同一个受力图里；把静摩擦力默认写成 \(\mu N\)；没先判断摩擦方向就盲目带正号；在非惯性系里直接套 \(\sum \vb*{F}=m\vb*{a}\) 却不说明参考系。
-
-\textbf{【最后怎样验证】} 看每个力的方向是否合理；若算出 \(a=0\)，应能回到平衡方程；若算出摩擦力大于 \(\mu_sN\)，说明静摩擦假设失效，必须改成滑动摩擦；若结果符号为负，通常不是错，而是说明实际方向与起初假定相反。
-\end{skill}
-
-\chapterroadmap
-{回答“为什么会这样运动”，把加速度和受力联系起来。}
-{已经会用运动学描述位置、速度和加速度，也认识了重力、弹力、摩擦力这些常见力。}
-{新增惯性系、牛顿三定律和受力分析，把“看图找力、列方程求运动”变成统一套路。}
-
-\section{动力学研究什么}
-
-如果说运动学讨论的是“怎样运动”，那么动力学讨论的就是“为什么这样运动”。在大学物理里，动力学最核心的出发点是：\textbf{物体运动状态的改变，与它所受的力有关。}
-
-这一观点并不是一开始就很显然。古人曾长期认为，力是维持运动的原因；但伽利略通过斜面实验逐步指出：若阻碍越来越小，物体会保持原有运动状态越来越久。也就是说，力不是维持运动的原因，而是改变运动状态的原因。
-
 \section{惯性与惯性系}
 
 \bridge{动力学真正要先纠正的直觉是：物体并不是“没有力就会停下来”，而是“没有外力时会尽量保持原有运动状态”。一旦这点立起来，就会自然引出两个前置问题：第一，物体抗拒状态改变的这种性质叫什么；第二，在哪些参考系里，这个判断可以原样成立。前者对应惯性，后者对应惯性系。}
-
-\begin{definition}[惯性]\label{def:inertia}
-物体保持原有静止状态或匀速直线运动状态的性质，称为\textbf{惯性}。
-\end{definition}
-
-\begin{definition}[惯性参考系]\label{def:inertial-frame}
-在其中牛顿第一定律成立的参考系，称为\textbf{惯性系}。
-\end{definition}
-
-\begin{note}
-这里最容易误会成“静止的参考系才叫惯性系”。真正的判据不是它看起来动不动，而是：\textbf{若物体不受外力，它会不会在这个系里保持静止或匀速直线运动。} 匀速行驶的车厢近似还是惯性系；正在加速、转弯的车厢就已经不是了。
-\end{note}
-
-地面参考系在许多普通力学问题中可以近似看作惯性系，但如果研究精确的地球自转效应、台风偏转、傅科摆等问题，就需要考虑非惯性效应。
-
-\section{牛顿第一定律}
-
-\bridge{牛顿第一定律最先承担的任务不是“给你一条算式”，而是把上一节的物理判断压成正式判据：若没有外力，运动状态本身不会无缘无故改写。也正因为它在替整个动力学挑选适用的参考系，所以它必须先于牛顿第二定律出现。}
 
 \begin{theorem}[牛顿第一定律]\label{thm:newton-first}
 若质点不受外力作用，或者所受合外力为零，则它将保持静止状态或匀速直线运动状态。
 \end{theorem}
 
-这一定律有两层作用：
-\begin{enumerate}
-  \item 给出惯性概念；
-  \item 给出惯性系的判据。
-\end{enumerate}
-
-\begin{note}
-牛顿第一定律并不是第二定律在 \(F=0\) 时的简单特例。它在逻辑上先定义了适用第二定律的参考系，因此是整个牛顿力学的基础。
-\end{note}
-
-\section{牛顿第二定律}
-
-\bridge{一旦参考系已经选成惯性系，下一步就该问：外力到底怎样改写运动状态？最稳的回答不是一上来就说“力等于质量乘加速度”，而是先抓住\textbf{被改写的状态量}本身。这个状态量就是动量，所以牛顿第二定律最根本的写法是“外力等于动量变化率”；只有在质量不变时，它才进一步压成大家更熟悉的 \(F=ma\)。}
+\begin{definition}[惯性参考系]\label{def:inertial-frame}
+在其中牛顿第一定律成立的参考系，称为\textbf{惯性系}。
+\end{definition}
 
 \begin{theorem}[牛顿第二定律]\label{thm:newton-second}
 在惯性系中，质点所受合外力等于质点动量对时间的变化率，即
 \[
 \vb*{F}=\dv{\vb*{p}}{t},\qquad m=\text{常量时 } \vb*{F}=m\vb*{a}.
 \]
-其中动量 \(\vb*{p}=m\vb*{v}\)。
-\end{theorem}
-
-\bridge{\(F=ma\) 的关键不在于代数形式，而在于它是一个\textbf{矢量方程}。所以真正解题时，通常不是直接把数代进去，而是先把它投影到各个坐标方向上。}
-
-\subsection{分量形式}
-
-在直角坐标系中，
+其中动量 \(\vb*{p}=m\vb*{v}\)。在直角坐标系中，
 \[
 \begin{aligned}
 \vb*{F}&=F_x\vb*{i}+F_y\vb*{j}+F_z\vb*{k},\qquad
@@ -968,116 +318,24 @@ f_k=\mu_k N.
 &\implies F_x=ma_x,\qquad F_y=ma_y,\qquad F_z=ma_z.
 \end{aligned}
 \]
-
-这就是大学物理求解平面问题时最常见的起点。
-
-\section{牛顿第三定律}
-
-\begin{theorem}[牛顿第三定律]\label{thm:newton-third}
-两个物体之间的相互作用力总是大小相等、方向相反，并且分别作用在彼此身上。
 \end{theorem}
 
-若物体 \(A\) 对物体 \(B\) 的作用力为 \(\vb*{F}_{AB}\)，则 \(\vb*{F}_{AB}=-\vb*{F}_{BA}\)。
+\begin{definition}[流体阻力]
+  流体（液体或气体的总称）对在其中运动的物体产生的摩擦阻力，称为\textbf{流体阻力}。\\
+  方向：总是在减速方向，即\textbf{阻碍物体与流体间的相对运动}。若物体相对流体的速度为 $\vec{v}$，则流体阻力 $\vec{f}$ 的方向与 $\vec{v}$ 相反。\\
+  影响因素：流体阻力的大小是一个复杂的多元函数，它高度依赖于：
+  \begin{itemize}
+  \item 物体自身的几何特征（大小、形状）。
+  \item 物体的运动状态（相对速率 $v$）。
+  \item 流体自身的物理性质（密度 $\rho$、粘滞性 $\eta$）。
+  \end{itemize}
+\end{definition}
 
-\begin{note}
-作用力和反作用力\textbf{永远不会互相抵消}，因为它们作用在不同物体上。受力分析最常见的错误，就是把不同物体上的力画到同一个受力图里。
-\end{note}
 
-\section{常见力}
 
-\subsection{万有引力与重力}
 
-两个质点之间存在万有引力：
-\[
-F=G\frac{m_1m_2}{r^2},\qquad
-\vb*{G}=m\vb*{g}.
-\]
-其中 \(g\) 是重力加速度，其方向近似竖直向下。
 
-\subsection{弹力}
 
-弹力是由于物体发生弹性形变而产生的相互作用力。对轻弹簧，在弹性限度内满足胡克定律 \(\vb*{F}=-k\vb*{x}\)，其中 \(k\) 是劲度系数，负号表示弹力方向总是与形变量方向相反。
-
-\subsection{摩擦力}
-
-摩擦力分为静摩擦力和滑动摩擦力。
-
-\begin{itemize}
-  \item 静摩擦力满足 \(0\le f_s\le f_{s,\max}\)，它会根据平衡或相对静止条件自动调节大小。
-  \item 滑动摩擦力大小常写成 \(f_k=\mu_k N\)，方向总与相对滑动方向相反。
-\end{itemize}
-
-\begin{remark}
-很多同学误以为“摩擦力一定等于 \(\mu N\)”。其实只有滑动摩擦力，或者达到临界状态的最大静摩擦力，才写成这种形式。普通静摩擦力的大小要靠动力学或平衡条件求。
-\end{remark}
-
-\section{受力分析}
-
-受力分析是动力学的第一技能。一个标准流程通常是：
-\begin{enumerate}
-  \item 明确研究对象；
-  \item 只画外力，不画该物体“对外施加的力”；
-  \item 选取方便的坐标方向；
-  \item 沿坐标轴写出牛顿第二定律分量方程。
-\end{enumerate}
-
-\begin{note}
-\textbf{先看什么信号：} 题目若给的是斜面、绳子、轨道这类明显约束，就别急着分解到水平和竖直；\textbf{这条方法在控制什么：} 它控制的是把真正参与该物体运动的力单独拎出来，并沿最省事的方向写分量方程；\textbf{怎样最快记住：} 受力图只画研究对象\textbf{受到的外力}，坐标轴优先沿约束方向和可能运动方向选；\textbf{最容易错：} 把作用力和反作用力画在同一张受力图里，或者明明沿斜面写方程却还坚持用水平竖直坐标。
-\end{note}
-
-\begin{example}
-质量为 \(m\) 的小物块放在倾角为 \(\theta\) 的光滑斜面上，求其加速度。
-\end{example}
-
-\begin{solution}
-先做受力分析。小物块只受两个力：重力 \(mg\) 和斜面的支持力 \(N\)。
-
-取沿斜面向下为正方向、垂直斜面向外为正方向。这样分解重力后，
-\[
-\begin{aligned}
-mg\sin\theta&\text{ 沿斜面向下},\qquad
-mg\cos\theta\text{ 垂直斜面向内},\\
-N-mg\cos\theta&=0,\qquad
-mg\sin\theta=ma
-\implies a=g\sin\theta.
-\end{aligned}
-\]
-所以小物块沿斜面向下的加速度大小为 \(g\sin\theta\)。这也说明，在光滑斜面上加速度只由倾角决定，与质量无关。
-\end{solution}
-
-\section{动力学问题的两类基本模型}
-
-\subsection{已知力，求运动}
-
-这是最常见的动力学问题：先根据受力分析写出 \(\vb*{F}=m\vb*{a}\)，再结合运动学关系求出速度、位移、轨迹等。
-
-\subsection{已知运动，反求力}
-
-有时题目已经给出运动形式，例如圆周运动、抛体运动或某条轨迹方程，此时可以先求出加速度，再反推所需合外力。这类问题在后面的圆周运动和万有引力模型里很常见。
-
-\section{惯性力的直观认识}
-
-严格来说，牛顿定律只适用于惯性系。但在加速参考系中，人们有时会引入惯性力，帮助把问题形式上写成“平衡”或“类似平衡”的样子。
-
-这一章只需建立一个初步认识：\textbf{惯性力不是物体之间真实的相互作用力，而是由于参考系本身不再是惯性系而引入的等效力。}
-
-\section{章末小结}
-
-\summaryline{动力学的主线是：先判断参考系，再做受力分析，最后用牛顿第二定律写分量方程。所有复杂问题，拆开来看都离不开这三步。}
-\chapterselfcheck{普通静摩擦力一定等于 \(\mu N\) 吗？作用力和反作用力为什么不能互相抵消？}
-
-\begin{exercise}[]
-质量为 \(m\) 的物体在水平面上受水平恒力 \(F\) 作用，若水平面光滑，求其加速度。
-\end{exercise}
-
-\begin{solution}
-水平面光滑，说明物体在水平方向上只受恒力 \(F\) 作用。直接用牛顿第二定律
-\[
-F=ma \implies
-a=\frac{F}{m}.
-\]
-所以加速度方向与外力方向相同。
-\end{solution}
 
 \begin{exercise}[2003级期末：由变力反推运动方程]
 质量为 \(\SI{0.25}{kg}\) 的质点受力
