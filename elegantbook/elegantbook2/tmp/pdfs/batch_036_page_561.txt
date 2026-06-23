@@ -1,0 +1,78 @@
+                                                                                                 6.2 习题
+
+       定理 6.39 (欧拉公式)
+                  einx + e−inx                einx − e−inx
+       cos nx =                ,   sin nx =                。
+                        2                          2i                                                  ♥
+
+       定理 6.40 (傅里叶级数的复数形式)
+                           X  ∞
+                     a0                                                      P+∞
+       若 f (x) ∼        +      (an cos nx + bn sin nx)，则可写成 f (x) ∼             n=−∞ cn e
+                                                                                          inx ，其中 c
+                                                                                                    0 =
+                     2
+                           n=1
+       a0              an − ibn                an + ibn
+          ,     cn =            ,     c−n =             (n ≥ 1)。反过来 an = cn + c−n , bn = i(cn −
+        2                 2                        2                        ˆ π
+                                                                          1
+       c−n ) (n ≥ 1)。若 f 为实值函数，         还满足 c−n = cn 。进一步有 cn =                  f (x)e−inx dx,  n ∈ Z。
+                                                                         2π −π
+                                     X
+                                     +∞                         ˆ
+                                                             1 l
+       若周期改为 2l，则 f (x) ∼                 cn einπx/l ,  cn =        f (x)e−inπx/l dx。
+                                    n=−∞
+                                                             2l  −l
+                                                                                                        ♥
+
+
+    6.1.8.2 典型展开：复傅里叶级数
+
+    例题 6.76 矩形波的复傅里叶展开 设矩形波在一个周期 [−l, l] 内满足 f (x) = E (−τ < x < τ )，其余部
+    分 f (x) = 0，其中 l > τ > 0。由复系数公式
+                                                         ˆ l
+                                                    1
+                                             cn =              f (x)e−inπx/l dx
+                                                    2l    −l
+    可知积分只需在 (−τ, τ ) 上计算。先看 n = 0：
+                                ˆ
+                              1 τ         E         Eτ
+                         c0 =       E dx = [x]τ−τ =    .
+                              2l −τ       2l         l
+    当 n 6= 0 时，
+                            ˆ τ          "           #τ
+                       1              E    e −inπx/l       E     l  −inπτ /l             
+                     Ee−inπx/l dx =
+                  cn =                                   =   ·        e        − einπτ /l
+                  −τ   2l             2l −inπ/l            2l −inπ
+                                                      −τ
+             E       l           nπτ        E      nπτ
+           =    ·         −2i sin        =       sin     .
+             2l −inπ               l         nπ        l
+    这个公式对正负整数 n 6= 0 都成立。因此
+                       Eτ      X
+                               +∞
+                                     E       nπτ inπx/l
+              f (x) =      +            sin        e     ,    −l ≤ x ≤ l, x 6= ±τ.
+                        l    n=−∞
+                                    nπ         l
+                                      n̸=0
+
+    在间断点 x = ±τ 处，级数收敛到 E2 。
+
+
+    6.2 习题
+
+    6.2.1 第一节习题：数项级数的收敛与发散
+
+    A组
+
+   练习 6.1 基本概念 回答下列问题：
+
+
+
+
+                                                               511
+

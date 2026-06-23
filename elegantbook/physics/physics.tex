@@ -135,9 +135,9 @@ u=-\dv{x}{t}
 \]
 \end{solution}
 
-\begin{example}
+\begin{exercise}
 一辆汽车从静止出发，以加速度 \(a=\SI{2}{m/s^2}\) 做匀加速直线运动，求 \(5\) 秒后的速度和位移。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 已知初速度 \(v_0=0\)、加速度 \(a=\SI{2}{m/s^2}\)、时间 \(t=\SI{5}{s}\)。
@@ -151,13 +151,13 @@ x-x_0&=v_0t+\frac{1}{2}at^2=0+\frac{1}{2}\times 2\times 5^2=\SI{25}{m}.
 所以 \(5\) 秒后，汽车速度为 \(\SI{10}{m/s}\)，位移为 \(\SI{25}{m}\)。
 \end{solution}
 
-\begin{example}[由角位移函数顺着读出角速度、角加速度和线量]
+\begin{exercise}[由角位移函数顺着读出角速度、角加速度和线量]
 某飞轮半径为 \(R=\SI{0.20}{m}\)，其转角满足
 \[
 \theta(t)=-t^2+4t.
 \]
 求 \(t=\SI{1}{s}\) 时的角速度、角加速度、线速度、切向加速度和法向加速度。
-\end{example}
+\end{exercise}
 \begin{solution}
 \[
 \begin{aligned}
@@ -172,13 +172,13 @@ a_n&=R\omega^2=0.20\times 2^2=\SI{0.80}{m/s^2}.
 \]
 \end{solution}
 
-\begin{example}[已知弧长函数时怎样分出切向与法向加速度]
+\begin{exercise}[已知弧长函数时怎样分出切向与法向加速度]
 一质点沿半径为 \(R\) 的圆周运动，其弧长满足
 \[
 s=bt-\frac12 ct^2,
 \]
 其中 \(b,c\) 均为正常数。求任意时刻的切向加速度、法向加速度，并求在尚未反向前二者大小相等的时刻。
-\end{example}
+\end{exercise}
 \begin{solution}
 \[
 \begin{aligned}
@@ -295,8 +295,6 @@ v=500\times \frac{4}{3}\times\frac{\pi}{30}\ \si{m/s}
 \chapter{质点动力学基础}
 \section{惯性与惯性系}
 
-\bridge{动力学真正要先纠正的直觉是：物体并不是“没有力就会停下来”，而是“没有外力时会尽量保持原有运动状态”。一旦这点立起来，就会自然引出两个前置问题：第一，物体抗拒状态改变的这种性质叫什么；第二，在哪些参考系里，这个判断可以原样成立。前者对应惯性，后者对应惯性系。}
-
 \begin{theorem}[牛顿第一定律]\label{thm:newton-first}
 若质点不受外力作用，或者所受合外力为零，则它将保持静止状态或匀速直线运动状态。
 \end{theorem}
@@ -331,116 +329,119 @@ v=500\times \frac{4}{3}\times\frac{\pi}{30}\ \si{m/s}
   \end{itemize}
 \end{definition}
 
+当物体在流体中相对速率 $v$ \textbf{较小}时，流体内部的层流起主导作用，流体阻力大小与相对速率成\textbf{正比}：$$\vec{f}_v = -\gamma \vec{v}$$其中 $\gamma$ 称为\textbf{阻力系数}。如对于一个在黏性流体中运动、半径为 $r$ 的完美小球，其阻力系数 $\gamma$ 可严格表示为
+：$$\gamma = 6\pi r \eta \implies f_v = 6\pi \eta r v$$
+式中 $\eta$ 为流体的\textbf{粘度 (Viscosity)}。
 
-
-
-
-
-
-\begin{exercise}[2003级期末：由变力反推运动方程]
-质量为 \(\SI{0.25}{kg}\) 的质点受力
+当物体在流体中相对速率 $v$ \textbf{较大}时，物体后方会形成涡流，流体阻力大小转而与相对速率的\textbf{平方}成\textbf{正比}：
 \[
-\vb*{F}=t\,\vb*{i}\quad(\mathrm{SI})
+f_d = \frac{1}{2} \rho S C_d v^2
 \]
-作用，其中 \(t\) 为时间。若 \(t=0\) 时质点以
-\(\vb*{v}_0=2\vb*{j}\) 通过坐标原点，求任意时刻的位置矢量。
+\begin{itemize}
+    \item $\rho$：流体的质量密度。
+    \item $S$：物体在运动方向上的横截面积（迎风面积）。
+    \item $C_d$：\textbf{曳力系数 (Drag Coefficient)}，主要依赖于物体的形状以及流体的黏性。
+\end{itemize}
+若半径为 $r$、密度为 $\rho_{\text{物}}$ 的小球在密度为 $\rho_{\text{流}}$ 的黏性流体中从静止下落（假设速率较小，适用低速模型）：考虑重力、浮力与斯托克斯阻力的平衡：
+\[
+F_g - F_{\text{浮}} = f_v
+\]
+\[
+\rho_{\text{物}} \left(\frac{4}{3}\pi r^3\right)g - \rho_{\text{流}} \left(\frac{4}{3}\pi r^3\right)g = 6\pi \eta r v_t
+\]
+由此可以解得该小球的\textbf{终极速率 $v_t$} 为：
+\[
+v_t = \frac{2r^2(\rho_{\text{物}} - \rho_{\text{流}})g}{9\eta}
+\]
+
+\begin{exercise}
+长为 $l$ 的轻绳，一端系质量为 $m$ 的小球，另一端系于定点 $O$。$t = 0$ 时小球位于最低位置，并具有水平初速度 $\vec{v}_0$。求小球在任意位置（由张角 $\theta$ 描述）的速率 $v$ 及绳的张力 $F_{\text{T}}$。
 \end{exercise}
-
 \begin{solution}
-\textbf{起手判断/模型：} 题目给的是随时间变化的力，所以先由牛顿第二定律求加速度，再逐次积分得到速度和位置。这里 \(x\) 方向由变力控制，\(y\) 方向保持初速度匀速运动。
-
-\textbf{主方程：}
-\[
-\vb*{a}=\frac{\vb*{F}}{m}
-=\frac{t}{0.25}\vb*{i}
-=4t\,\vb*{i}.
-\]
-
-\textbf{分步积分：}
-\[
-\vb*{v}=\int 4t\,\dd t\,\vb*{i}+2\vb*{j}
-=2t^2\vb*{i}+2\vb*{j},
-\]
-再由 \(\vb*{r}(0)=\vb*{0}\) 得
-\[
-\vb*{r}(t)=\int \vb*{v}\,\dd t
-=\frac{2}{3}t^3\vb*{i}+2t\,\vb*{j}.
-\]
-
-\textbf{结论：}
-\[
-\boxed{\vb*{r}(t)=\frac{2}{3}t^3\vb*{i}+2t\,\vb*{j}\quad(\mathrm{SI})}.
-\]
-
-\textbf{物理检查/易错点：} \(x\) 方向加速度随时间线性增大，所以 \(x(t)\) 出现三次项；\(y\) 方向没有受力，仍是 \(y=2t\)。最容易错的是漏掉质量 \(0.25\)，把 \(a_x\) 误写成 \(t\)。
+小球主要受到两个力的作用：绳子的张力 $\vec{F}_{\text{T}}$（沿法向反方向，即 $-\vec{e}_{\text{n}}$）以及重力 $m\vec{g}$。将重力沿切向和法向进行正交分解，根据牛顿第二定律 $\vec{F} = m\vec{a}$，结合自然坐标系下的加速度公式 $\vec{a} = \dfrac{\mathrm{d}v}{\mathrm{d}t}\vec{e}_{\text{t}} + \dfrac{v^2}{l}\vec{e}_{\text{n}}$，可得动力学方程组：
+$$\begin{cases}
+\text{法向：} & F_{\text{T}} - mg\cos\theta = ma_{\text{n}} = m \dfrac{v^2}{l} \\
+\text{切向：} & -mg\sin\theta = ma_{\text{t}} = m \dfrac{\mathrm{d}v}{\mathrm{d}t}\implies\dfrac{\mathrm{d}v}{\mathrm{d}t} = -g\sin\theta
+\end{cases}$$
+由于方程左边是对时间 $t$ 求导，右边是关于角度 $\theta$ 的函数，无法直接积分。由于小球沿圆周运动，其角速度 $\omega = \dfrac{\mathrm{d}\theta}{\mathrm{d}t} = \dfrac{v}{l}$，我们可以利用导数的链式法则将时间元 $\mathrm{d}t$ 转换为角度元 $\mathrm{d}\theta$：$$\frac{\mathrm{d}v}{\mathrm{d}t} = \frac{\mathrm{d}v}{\mathrm{d}\theta} \frac{\mathrm{d}\theta}{\mathrm{d}t} = \frac{\mathrm{d}v}{\mathrm{d}\theta} \cdot \frac{v}{l} = \frac{v}{l}\frac{\mathrm{d}v}{\mathrm{d}\theta}$$
+将此换元结果代回切向方程，进行分离变量：
+$$\frac{v}{l}\frac{\mathrm{d}v}{\mathrm{d}\theta} = -g\sin\theta \implies v\mathrm{d}v = -gl\sin\theta\mathrm{d}\theta$$结合初始条件（$t=0$ 时，$\theta = 0, v = v_0$），两边同时积分：$$\int_{v_0}^{v} v\mathrm{d}v = -gl\int_{0}^{\theta} \sin\theta\mathrm{d}\theta\Rightarrow\frac{1}{2}v^2 - \frac{1}{2}v_0^2 = -gl \left( -\cos\theta \Big|_0^\theta \right) = gl(\cos\theta - 1)\Rightarrow v = \sqrt{v_0^2 + 2gl(\cos\theta - 1)}$$
+将求得的速率 $v^2 = v_0^2 + 2gl(\cos\theta - 1)$ 代回：$$F_{\text{T}} = mg\cos\theta + \frac{m}{l}\left[ v_0^2 + 2gl(\cos\theta - 1) \right]= m\left( \frac{v_0^2}{l} - 2g + 3g\cos\theta \right)$$
 \end{solution}
 
-\begin{exercise}[2004级期末：由非线性阻力方程求速度]
-某物体的运动规律为
-\[
-\dv{v}{t}=-kv^2t,
-\]
-其中 \(k>0\) 为常量。若 \(t=0\) 时初速为 \(v_0\)，求速度 \(v\) 与时间 \(t\) 的函数关系。
+\begin{exercise}
+设空气对抛体的阻力与抛体的速度成正比，即 $\vec{F}_{\text{r}} = -k\vec{v}$，其中 $k$ 为阻力系数。抛体的质量为 $m$、初速度为 $\vec{v}_0$、抛射角为 $\alpha$。求抛体运动的轨迹方程。
 \end{exercise}
-
 \begin{solution}
-\textbf{起手判断/模型：} 这是可分离变量的一阶微分方程。因为右端含 \(v^2\)，不能把它当成匀加速或普通线性阻力题处理。
+以抛出点为原点 $O$，建立直角坐标系 $Oxy$。物体在任意位置 $A$ 时，受到重力（向下）和空气阻力 $\vec{F}_{\text{r}} = -k\vec{v}$ 的作用。将牛顿第二定律 $\vec{F} = m\vec{a}$ 在 $x, y$ 轴上正交分解，得到微分方程组：
+\[\begin{cases}
+\text{$x$ 轴：} & -kv_x = m \dfrac{\mathrm{d}v_x}{\mathrm{d}t} \implies\dfrac{\mathrm{d}v_x}{v_x} = -\dfrac{k}{m}\mathrm{d}t\\
+\text{$y$ 轴：} & -mg - kv_y = m \dfrac{\mathrm{d}v_y}{\mathrm{d}t}\implies \dfrac{k\mathrm{d}v_y}{mg + kv_y} = -\dfrac{k}{m}\mathrm{d}t
+\end{cases}\]
+初始条件（$t=0$ 时）：$v_{0x} = v_0\cos\alpha,v_{0y} = v_0\sin\alpha$，对 $x$ 方向方程两边积分：
+\[\int_{v_0\cos\alpha}^{v_x} \frac{\mathrm{d}v_x}{v_x} = -\frac{k}{m}\int_{0}^{t}\mathrm{d}t \implies \ln\left(\frac{v_x}{v_0\cos\alpha}\right) = -\frac{k}{m}t\implies v_x(t) = v_0\cos\alpha \mathrm{e}^{-\frac{k}{m}t}\]
+对 $y$ 方向方程两边积分（注意左边运用凑微分法 $\mathrm{d}(mg+kv_y) = k\mathrm{d}v_y$）：
+$$\int_{v_0\sin\alpha}^{v_y} \frac{k\mathrm{d}v_y}{mg + kv_y} = -\frac{k}{m}\int_{0}^{t}\mathrm{d}t \implies \ln\left(\frac{mg + kv_y}{mg + kv_0\sin\alpha}\right) = -\frac{k}{m}t$$解得：$$v_y(t) = \left(v_0\sin\alpha + \frac{mg}{k}\right)\mathrm{e}^{-\frac{k}{m}t} - \frac{mg}{k}$$
+利用 $v_x = \dfrac{\mathrm{d}x}{\mathrm{d}t}, v_y = \dfrac{\mathrm{d}y}{\mathrm{d}t}$ 再次分离变量，并带入初始条件（$t=0$ 时，$x_0=0, y_0=0$）进行积分：
+$$x(t) = \int_{0}^{t} v_0\cos\alpha \mathrm{e}^{-\frac{k}{m}t} \mathrm{d}t = v_0\cos\alpha \left[ -\frac{m}{k}\mathrm{e}^{-\frac{k}{m}t} \right]_0^t = \frac{m}{k}v_0\cos\alpha\left(1 - \mathrm{e}^{-\frac{k}{m}t}\right)$$
+$$y(t) = \int_{0}^{t} \left[\left(v_0\sin\alpha + \frac{mg}{k}\right)\mathrm{e}^{-\frac{k}{m}t} - \frac{mg}{k}\right] \mathrm{d}t = \frac{m}{k}\left(v_0\sin\alpha + \frac{mg}{k}\right)\left(1 - \mathrm{e}^{-\frac{k}{m}t}\right) - \frac{mg}{k}t$$
+消去时间 $t$ 求解轨迹方程，由
+$$1 - \mathrm{e}^{-\frac{k}{m}t} = \frac{kx}{mv_0\cos\alpha} \implies \mathrm{e}^{-\frac{k}{m}t} = 1 - \frac{kx}{mv_0\cos\alpha}$$对两边取对数可反解出时间 $t$：$$t = -\frac{m}{k}\ln\left(1 - \frac{kx}{mv_0\cos\alpha}\right)$$将上述两项直接代入 $y(t)$ 的方程中：$$y = \frac{m}{k}\left(v_0\sin\alpha + \frac{mg}{k}\right)\left(\frac{kx}{mv_0\cos\alpha}\right) - \frac{mg}{k}\left[-\frac{m}{k}\ln\left(1 - \frac{kx}{mv_0\cos\alpha}\right)\right]$$化简后即可得到最终的轨迹方程：$$y = \left(\tan\alpha + \frac{mg}{kv_0\cos\alpha}\right)x + \frac{m^2g}{k^2}\ln\left(1 - \frac{k}{mv_0\cos\alpha}x\right)$$
+\end{solution}
 
-\textbf{主方程：}
-\[
-\frac{\dd v}{v^2}=-kt\,\dd t.
-\]
+\begin{example}
+一个由轻质定滑轮、轻绳和两个质量分别为 $m_1$ 和 $m_2$ 的物体组成的连接体装置被固定在电梯顶部。当电梯以加速度 $\vec{a}$ 相对地面匀加速向上运动时，求两物体相对电梯的加速度 $\vec{a}_{\text{r}}$ 的大小和绳子的张力 $F_{\text{T}}$。（设 $m_1 > m_2$）
+\end{example}
+\begin{solution}
+以地面为惯性参考系。当系统运动时，$m_1$ 相对电梯向下加速，$m_2$ 相对电梯向上加速，设该相对加速度的大小为 $a_{\text{r}}$。根据伽利略加速度合成定理 $\vec{a}_{\text{物地}} = \vec{a}_{\text{物梯}} + \vec{a}_{\text{梯地}}$，我们将各物体的矢量加速度投影到各自的运动轴上，求出它们对地的绝对加速度：
+\begin{itemize}
+\item 对于 $m_1$（取向下为正方向）：由于电梯向上加速 $a$，物体相对电梯向下加速 $a_{\text{r}}$，故对地绝对加速度为：$a_1 = a_{\text{r}} - a$
+\item 对于 $m_2$（取向上为正方向）：由于电梯向上加速 $a$，物体相对电梯也向上加速 $a_{\text{r}}$，故对地绝对加速度为：$a_2 = a_{\text{r}} + a$
+\end{itemize}
+分别对 $m_1$（以向下为正）和 $m_2$（以向上为正）应用牛顿第二定律 $\vec{F} = m\vec{a}$：$$\begin{cases}
+m_1g - F_{\text{T}} = m_1a_1 = m_1(a_{\text{r}} - a) \\
+F_{\text{T}} - m_2g = m_2a_2 = m_2(a_{\text{r}} + a)
+\end{cases}$$
+解得相对加速度 $a_{\text{r}}$：$$a_{\text{r}} = \frac{m_1 - m_2}{m_1 + m_2}(g + a)$$将 $a_{\text{r}}$ 代回：$$F_{\text{T}} = m_1(g + a) - m_1 \cdot \frac{m_1 - m_2}{m_1 + m_2}(g + a) = m_1(g + a) \left( 1 - \frac{m_1 - m_2}{m_1 + m_2} \right)$$化简通分后得到绳子张力 $F_{\text{T}}$：$$F_{\text{T}} = \frac{2m_1m_2}{m_1 + m_2}(g + a)$$
+\end{solution}
 
-\textbf{分步积分：} 从 \(t=0,\ v=v_0\) 积到 \(t,\ v\)，
+
+\begin{example}
+一个质量为 $m$、半径为 $r$ 的球体在水中由静止释放并下沉。已知水对球体的流体阻力满足斯托克斯黏滞公式 $\vec{F}_{\text{r}} = -6\pi r \eta \vec{v}$（其中 $\eta$ 为粘滞系数），水的浮力为 $F_{\text{B}}$。
+\begin{enumerate}
+\item 求球体下沉速度随时间的变化关系 $v(t)$；
+\item 若球体在水面上具有竖直向下的初速率 $v_0$，且球体的密度恰好与水相同（即 $F_{\text{B}} = P$），求此时球体的速度 $v(t)$。
+\end{enumerate}
+\end{example}
+\begin{solution}
+情况一：由静止释放下沉（$v_0 = 0$）：以向下为 $y$ 轴正方向，球体在下沉过程中受到三个力的作用：重力 $\vec{P}$（向下）、浮力 $\vec{F}_{\text{B}}$（向上）以及流体阻力 $\vec{F}_{\text{r}}$（向上）。根据牛顿第二定律 $\vec{F} = m\vec{a}$，在 $y$ 轴上列出动力学方程：
+$$mg - F_{\text{B}} - 6\pi \eta r v = m\frac{\mathrm{d}v}{\mathrm{d}t}$$
+为了使方程形式更简洁，我们令$F_0 = mg - F_{\text{B}}$，阻力常数 $b = 6\pi \eta r$，则方程化为：
+$$F_0 - bv = m\frac{\mathrm{d}v}{\mathrm{d}t}\implies\frac{\mathrm{d}v}{\mathrm{d}t} = -\frac{b}{m}\left(v - \frac{F_0}{b}\right) \implies \frac{\mathrm{d}v}{v - \dfrac{F_0}{b}} = -\frac{b}{m}\mathrm{d}t$$
+结合初始条件（$t=0$ 时，$v=0$），对两边进行定积分：
+$$\int_{0}^{v} \frac{\mathrm{d}v}{v - \dfrac{F_0}{b}} = -\frac{b}{m}\int_{0}^{t}\mathrm{d}t\implies\ln\left( \frac{v - \dfrac{F_0}{b}}{-\dfrac{F_0}{b}} \right) = -\frac{b}{m}t \implies 1 - \frac{bv}{F_0} = \mathrm{e}^{-\frac{b}{m}t}$$
+解得速度随时间的变化关系：$v(t) = \frac{F_0}{b}\left(1 - \mathrm{e}^{-\frac{b}{m}t}\right)$，当时间 $t \to \infty$ 时，指数项 $\mathrm{e}^{-\frac{b}{m}t} \to 0$，球体的速度趋于一个恒定值$v_{\text{L}} = \dfrac{F_0}{b} = \frac{mg - F_{\text{B}}}{6\pi \eta r}$.
+
+情况二：若球体进入水里时已经具有竖直向下的初速率 $v_0$，且球体的质量密度与水完全一样，此时重力与浮力完美抵消（$F_0 = mg - F_{\text{B}} = 0$）。球体在水中仅受到向上的流体阻力作用：$$m\frac{\mathrm{d}v}{\mathrm{d}t} = -bv \implies \frac{\mathrm{d}v}{v} = -\frac{b}{m}\mathrm{d}t\implies\int_{v_0}^{v} \frac{\mathrm{d}v}{v} = -\frac{b}{m}\int_{0}^{t}\mathrm{d}t \implies \ln\left(\frac{v}{v_0}\right) = -\frac{b}{m}t$$解得速度随时间的变化关系：$$v(t) = v_0\mathrm{e}^{-\frac{b}{m}t}$$
+\end{solution}
+
+
+\begin{exercise}[2004级期末：由非线性阻力方程求速度]
+某物体的运动规律为$\dv{v}{t}=-kv^2t$，其中 \(k>0\) 为常量。若 \(t=0\) 时初速为 \(v_0\)，求速度 \(v\) 与时间 \(t\) 的函数关系。
+\end{exercise}
+\begin{solution}
 \[
+\frac{\dd v}{v^2}=-kt\,\dd t.\implies
 \int_{v_0}^{v}\frac{\dd v}{v^2}
 =-k\int_0^t t\,\dd t.
-\]
-于是
-\[
+\implies
 -\frac{1}{v}+\frac{1}{v_0}
 =-\frac12kt^2.
 \]
 整理得
 \[
-\frac{1}{v}=\frac{1}{v_0}+\frac12kt^2.
+v(t)=\frac{1}{v_0^{-1}+\frac12kt^2}
 \]
-
-\textbf{结论：}
-\[
-\boxed{\frac{1}{v}=\frac12kt^2+\frac{1}{v_0}},
-\qquad
-\boxed{v(t)=\frac{1}{v_0^{-1}+\frac12kt^2}}.
-\]
-
-\textbf{物理检查/易错点：} \(k>0,t>0\) 时分母变大，速度逐渐减小，和 \(\dv{v}{t}<0\) 一致。最容易错的是直接对 \(v^2\) 误积分成 \(v\)，从而把倒数关系写丢。
-\end{solution}
-
-\begin{exercise}[2005级期末：二次阻力下落的收尾速度]
-质量为 \(m\) 的物体自空中下落，除重力外，还受到一个与速率平方成正比的阻力，阻力大小为 \(kv^2\)，其中 \(k>0\)。求该下落物体的收尾速度。
-\end{exercise}
-
-\begin{solution}
-\textbf{起手判断/模型：} 收尾速度指速度不再增加时的极限速度，此时加速度为零。阻力方向与下落速度相反，大小随 \(v^2\) 增大；达到收尾速度时，重力和阻力正好平衡。
-
-\textbf{主方程：}
-\[
-mg-kv_t^2=0.
-\]
-
-\textbf{分步代入或化简：}
-\[
-kv_t^2=mg
-\implies
-v_t=\sqrt{\frac{mg}{k}}.
-\]
-
-\textbf{结论：}
-\[
-\boxed{v_t=\sqrt{\frac{mg}{k}}}.
-\]
-
-\textbf{物理检查/易错点：} \(kv^2\) 是力，所以 \(k\) 的量纲为 \(\si{kg/m}\)，\(\frac{mg}{k}\) 的量纲是 \(\si{m^2/s^2}\)，开方后正是速度。若阻力写成 \(kv\)，收尾速度才会是 \(mg/k\)，这里不能混用。
 \end{solution}
 
 \begin{exercise}[2008级期末：由随时间变化的合外力求速度]
@@ -450,18 +451,11 @@ v_t=\sqrt{\frac{mg}{k}}.
 \]
 作用下从静止开始运动。求 \(t=\SI{1}{s}\) 时物体速度。
 \end{exercise}
-
 \begin{solution}
-\textbf{起手判断/模型：} 力随时间变化，先由牛顿第二定律得到加速度，再对时间积分。初速度为零，所以积分常数直接确定。
-
-\textbf{主方程：}
+力随时间变化，先由牛顿第二定律得到加速度，再对时间积分。初速度为零，所以积分常数直接确定。
 \[
 \vb*{a}(t)=\frac{\vb*{F}}{M}
-=\frac{3+2t}{2}\vb*{i}.
-\]
-
-\textbf{分步代入或化简：}
-\[
+=\frac{3+2t}{2}\vb*{i}\implies
 \vb*{v}(t)=\int_0^t \frac{3+2\tau}{2}\,\dd\tau\,\vb*{i}
 =\left(\frac32t+\frac12t^2\right)\vb*{i}.
 \]
@@ -469,68 +463,14 @@ v_t=\sqrt{\frac{mg}{k}}.
 \[
 \vb*{v}_1=2\vb*{i}\,\si{m/s}.
 \]
-
-\textbf{结论：}
-\[
-\boxed{\vb*{v}_1=2\vb*{i}\,\si{m/s}},\qquad
-\boxed{v_1=\SI{2}{m/s}}.
-\]
-
-\textbf{物理检查/易错点：} 不能把 \(t=1\) 时的瞬时力 \(5\,\si{N}\) 当作整个过程的恒力。速度来自加速度对时间的累计。
 \end{solution}
 
-\begin{exercise}[2012级期末：旋转半球碗中相对静止小球的角速度]
-一光滑半球形碗的内表面半径为 \(R=\SI{10}{cm}\)，碗以角速度 \(\omega\) 绕竖直对称轴 \(OC\) 转动。已知碗内表面上一小球 \(P\) 相对于碗静止，其位置在最低点 \(C\) 上方 \(\SI{4}{cm}\) 处。求碗转动角速度的近似值，取 \(g=\SI{10}{m/s^2}\)。
-\end{exercise}
-
-\begin{solution}
-\textbf{起手判断/模型：} 小球相对碗静止，但在惯性系中绕竖直轴作匀速圆周运动。受力只有重力和碗的支持力；支持力沿球面法线，指向球心 \(O\)。
-
-\textbf{几何关系：} 取球心 \(O\) 为坐标原点，竖直向上为正。最低点 \(C\) 在 \(z=-R\)，小球在 \(C\) 上方 \(h=\SI{4}{cm}\)，故
-\[
-z_P=-R+h=-\SI{6}{cm}.
-\]
-设小球到转轴的水平距离为 \(\rho\)，则
-\[
-\rho^2+z_P^2=R^2.
-\]
-
-\textbf{受力方程：} 支持力 \(N\) 指向球心，其竖直分量平衡重力，水平分量提供向心力：
-\[
-N\frac{-z_P}{R}=mg,\qquad
-N\frac{\rho}{R}=m\omega^2\rho.
-\]
-两式相除并约去 \(\rho\)，得
-\[
-\omega^2=\frac{g}{-z_P}.
-\]
-
-\textbf{分步代入或化简：}
-\[
-\omega=\sqrt{\frac{10}{0.06}}
-\approx \SI{12.9}{rad/s}.
-\]
-
-\textbf{结论：}
-\[
-\boxed{\omega\approx \SI{13}{rad/s}}.
-\]
-
-\textbf{物理检查/易错点：} 这里用的是小球相对碗静止时的圆周运动条件，不是简单的平衡。若把支持力方向画错，或者把 \(\SI{4}{cm}\) 误当成相对球心的高度，就会得到错误半径和角速度。
-\end{solution}
 
 \begin{exercise}[2006级期末：斜拉力使粗糙水平面上物体加速度最大]
 水平地面上放一物体 \(A\)，它与地面间的滑动摩擦系数为 \(\mu\)。现加一恒力 \(\vb*{F}\)，方向与水平方向夹角为 \(\theta\)，如图所示。若要使物体 \(A\) 的加速度最大，求 \(\theta\) 应满足的条件。
-
-\begin{center}
-\includegraphics[width=0.22\linewidth]{pdf-exercises/pdf2006-q03-friction-angle.png}
-\end{center}
 \end{exercise}
-
 \begin{solution}
-\textbf{起手判断/模型：} 拉力越向上，水平分量 \(F\cos\theta\) 会变小，但支持力也会减小，从而摩擦力 \(\mu N\) 变小。最大加速度来自这两种效果的折中，所以要把水平合力写成 \(\theta\) 的函数再求极值。
-
-\textbf{主方程：} 竖直方向无加速度，
+拉力越向上，水平分量 \(F\cos\theta\) 会变小，但支持力也会减小，从而摩擦力 \(\mu N\) 变小。最大加速度来自这两种效果的折中，所以要把水平合力写成 \(\theta\) 的函数再求极值。竖直方向无加速度，
 \[
 N+F\sin\theta-mg=0
 \implies
@@ -545,8 +485,7 @@ F_{\text{合},x}=F\cos\theta-\mu N
 \[
 a(\theta)=\frac{F(\cos\theta+\mu\sin\theta)-\mu mg}{m}.
 \]
-
-\textbf{分步代入或化简：} 令 \(a(\theta)\) 对 \(\theta\) 取极值：
+令 \(a(\theta)\) 对 \(\theta\) 取极值：
 \[
 \dv{}{\theta}(\cos\theta+\mu\sin\theta)
 =-\sin\theta+\mu\cos\theta=0.
@@ -555,40 +494,18 @@ a(\theta)=\frac{F(\cos\theta+\mu\sin\theta)-\mu mg}{m}.
 \[
 \tan\theta=\mu.
 \]
-
-\textbf{结论：}
-\[
-\boxed{\tan\theta=\mu}.
-\]
-
-\textbf{物理检查/易错点：} 若忽略 \(F\sin\theta\) 对支持力的影响，会误以为 \(\theta=0\) 最好。实际上适当上拉能减小摩擦，但角度太大又会损失水平分量，二者平衡时才是最大加速度。
 \end{solution}
 
 \begin{exercise}[2007级期末：用恒力代替阿特伍德机一侧重物]
 如图，轻绳跨过无摩擦定滑轮，两端系有质量 \(m_1,m_2\) 的重物，且 \(m_1>m_2\)。滑轮质量和轴上摩擦忽略时，重物加速度大小为 \(a\)。若用竖直向下的恒力 \(F=m_1g\) 代替质量为 \(m_1\) 的物体，质量 \(m_2\) 的重物加速度大小为 \(a'\)。比较 \(a'\) 与 \(a\)。
-
-\begin{center}
-\includegraphics[width=0.18\linewidth]{pdf-exercises/pdf2007-q02-light-pulley-force.png}
-\end{center}
 \end{exercise}
-
 \begin{solution}
-\textbf{起手判断/模型：} 原来的 \(m_1\) 不是单纯给绳子一个 \(m_1g\) 的拉力，它自己也要被加速，所以绳中张力小于 \(m_1g\)。改成外加恒力后，绳端拉力直接等于 \(m_1g\)，效果会更强。
-
-\textbf{原系统：} 轻滑轮两侧张力相等，设 \(m_1\) 向下、\(m_2\) 向上为正，
+ 原来的 \(m_1\) 不是单纯给绳子一个 \(m_1g\) 的拉力，它自己也要被加速，所以绳中张力小于 \(m_1g\)。改成外加恒力后，绳端拉力直接等于 \(m_1g\)，效果会更强。轻滑轮两侧张力相等，设 \(m_1\) 向下、\(m_2\) 向上为正，
 \[
-m_1g-T=m_1a,\qquad T-m_2g=m_2a.
-\]
-因此
-\[
+m_1g-T=m_1a, T-m_2g=m_2a\implies
 a=\frac{m_1-m_2}{m_1+m_2}g.
 \]
-
-\textbf{改用恒力后：} 绳端受恒力 \(F=m_1g\)，轻绳中张力为
-\[
-T'=F=m_1g.
-\]
-对 \(m_2\)：
+绳端受恒力 \(F=m_1g\)，轻绳中张力为$T'=F=m_1g$，对 \(m_2\)：
 \[
 T'-m_2g=m_2a'
 \implies
@@ -600,142 +517,19 @@ a'=\frac{m_1-m_2}{m_2}g.
 =\frac{(m_1-m_2)g/m_2}{(m_1-m_2)g/(m_1+m_2)}
 =\frac{m_1+m_2}{m_2}>1.
 \]
-
-\textbf{结论：}
-\[
-\boxed{a'>a}.
-\]
-
-\textbf{物理检查/易错点：} 质量 \(m_1\) 挂在绳上时，重力的一部分用来加速 \(m_1\) 自己；恒力源不需要被加速，所以可以把完整的 \(m_1g\) 传给绳端。
 \end{solution}
 
-\begin{exercise}[2007级期末：电梯中不同质量阿特伍德机为何能平衡]
-站在电梯内的人看到：用细线连接、质量不同的两个物体跨过电梯内无摩擦定滑轮后处于“平衡”状态。由此判断电梯的加速度大小和方向。
-\end{exercise}
-
-\begin{solution}
-\textbf{起手判断/模型：} 两个质量不同的物体通过轻绳相连，在普通重力场中不可能平衡。要让它们“无差别”，电梯参考系中的有效重力必须为零。
-
-\textbf{主方程：} 在随电梯运动的非惯性系中，若电梯加速度为 \(\vb*{a}_0\)，每个物体还受到惯性力 \(-m\vb*{a}_0\)。等效重力场为
-\[
-\vb*{g}_{\mathrm{eff}}=\vb*{g}-\vb*{a}_0
-\]
-其中向下取为正时可写成 \(g_{\mathrm{eff}}=g-a_0\)。质量不同的阿特伍德机要能平衡，必须
-\[
-g_{\mathrm{eff}}=0
-\implies a_0=g.
-\]
-方向为向下。
-
-\textbf{结论：}
-\[
-\boxed{\text{电梯以大小 }g\text{ 的加速度向下运动}.}
-\]
-
-\textbf{物理检查/易错点：} 这不是普通的静力平衡，而是自由落体参考系中的“失重”。若电梯只以小于 \(g\) 的加速度下落，有效重力仍不为零，质量不同的两物体仍会相对运动。
-\end{solution}
-
-\begin{exercise}[2010模拟题：升降机内同质量连接体的绳张力]
-升降机以 \(a_0=\frac12 g\) 的加速度向上运动。升降机内有一光滑水平桌面，物体 \(A\) 放在桌面上，物体 \(B\) 悬挂在桌边，两者用绕过轻滑轮的轻绳相连，且质量均为 \(m\)。忽略滑轮轴、桌面摩擦和空气阻力，求绳中张力 \(T\)。
-\end{exercise}
-
-\begin{solution}
-\textbf{起手判断/模型：} 装置随升降机一起加速，直接在升降机参考系中看最清楚。由于升降机向上加速，物体还受到向下的惯性力，等效重力加速度变为
-\[
-g_{\mathrm{eff}}=g+a_0=\frac32 g.
-\]
-
-\textbf{主方程：} 设 \(A\) 沿桌面向右、\(B\) 向下的相对加速度大小为 \(a\)。对 \(A\)，水平方向只有绳张力：
-\[
-T=ma.
-\]
-对 \(B\)，沿绳方向有等效重力和张力：
-\[
-mg_{\mathrm{eff}}-T=ma.
-\]
-
-\textbf{分步代入或化简：} 两式相加得
-\[
-mg_{\mathrm{eff}}=2ma
-\implies
-a=\frac{g_{\mathrm{eff}}}{2}=\frac34 g.
-\]
-于是
-\[
-T=ma=\frac34 mg.
-\]
-
-\textbf{结论：}
-\[
-\boxed{T=\frac34 mg}.
-\]
-
-\textbf{物理检查/易错点：} 若升降机不加速，结果会退化为 \(T=mg/2\)；现在有效重力更大，所以张力也增大到 \(3mg/4\)。容易错的是只把 \(B\) 的重力改成有效重力，却忘了 \(A\) 仍要由同一根绳张力来加速。
-\end{solution}
 
 \begin{exercise}[2009级期末：圆锥摆半周内重力的冲量]
-如图所示，圆锥摆的摆球质量为 \(m\)，速率为 \(v\)，圆周轨道半径为 \(R\)。当摆球在轨道上运动半周时，求摆球所受重力冲量的大小。
-
-\begin{center}
-\includegraphics[width=0.20\linewidth]{pdf-exercises/pdf2009-q02-conical-pendulum.png}
-\end{center}
+圆锥摆的摆球质量为 \(m\)，速率为 \(v\)，圆周轨道半径为 \(R\)。当摆球在轨道上运动半周时，求摆球所受重力和合力冲量的大小。
 \end{exercise}
-
 \begin{solution}
-\textbf{起手判断/模型：} 题目问的是\textbf{重力}的冲量，不是合力冲量。重力大小和方向都恒定，所以只需要把运动半周所用的时间乘进去。
-
-\textbf{主方程：}
+题目问的是\textbf{重力}的冲量，不是合力冲量。重力大小和方向都恒定，所以只需要把运动半周所用的时间乘进去。
 \[
-I_g=\int_0^{\Delta t} mg\,\dd t=mg\,\Delta t.
-\]
-
-\textbf{分步代入或化简：} 摆球运动半周的路程为 \(\pi R\)，速率为 \(v\)，所以
-\[
-\Delta t=\frac{\pi R}{v}.
-\]
-因此
-\[
-I_g=mg\frac{\pi R}{v}.
-\]
-
-\textbf{结论：}
-\[
-\boxed{I_g=\frac{\pi Rmg}{v}}.
-\]
-
-\textbf{物理检查/易错点：} 若题目问合力冲量，就要看动量方向改变；但这里只问重力冲量，重力始终竖直向下，大小由作用时间决定。
+I_g=\int_0^{\Delta t} mg\,\dd t=mg\,\Delta t=mg\frac{\pi R}{v}
+\]根据动量定理，合力的冲量等于摆球动量的改变量：$$\vec{I}_{\text{合}} = \Delta \vec{p} = m\vec{v}_2 - m\vec{v}_1$$运动半周后，摆球到达圆周的对称点，其速度方向刚好反向，变为沿 $x$ 轴负方向，即 $\vec{v}_2 = -v\vec{i}$。代入动量定理可得合力冲量矢量为：$\vec{I}_{\text{合}} = m(-v\vec{i}) - mv\vec{i} = -2mv\vec{i}$因此，摆球运动半周内所受合力冲量的大小为：$I_{\text{合}} = 2mv$
 \end{solution}
 
-\begin{exercise}[2009级期末：撤去支承瞬间弹簧下端物体的加速度]
-质量相等的两物体 \(A\) 和 \(B\) 分别固定在轻弹簧的两端，竖直放在光滑水平支承面 \(C\) 上，如图所示。若迅速撤去支承面 \(C\)，求撤去瞬间物体 \(B\) 的加速度大小。
-
-\begin{center}
-\includegraphics[width=0.16\linewidth]{pdf-exercises/pdf2009-q11-spring-stack.png}
-\end{center}
-\end{exercise}
-
-\begin{solution}
-\textbf{起手判断/模型：} 撤去支承的瞬间，弹簧来不及改变长度，因此弹簧弹力仍保持撤去前的大小。真正突然消失的是支承面对 \(B\) 的支持力。
-
-\textbf{撤去前的弹簧力：} 对上端物体 \(A\)，静止时有
-\[
-F_s=mg.
-\]
-这个弹簧力作用在 \(A\) 上向上；作用在 \(B\) 上则向下，大小同为 \(mg\)。
-
-\textbf{撤去瞬间对 \(B\) 列方程：} 撤去支承后，\(B\) 受到向下的重力 \(mg\) 和向下的弹簧力 \(F_s=mg\)，所以
-\[
-ma_B=mg+mg=2mg.
-\]
-
-\textbf{结论：}
-\[
-\boxed{a_B=2g}
-\]
-方向竖直向下。
-
-\textbf{物理检查/易错点：} 不要在撤去支承的瞬间把弹簧力也改掉。弹簧长度连续变化，支承力却可以瞬间消失。
-\end{solution}
 
 \begin{exercise}[2010级期末：受余弦外力的质点位移函数]
 质量为 \(m\) 的质点沿 \(x\) 轴作直线运动，受到外力
@@ -744,176 +538,41 @@ ma_B=mg+mg=2mg.
 \]
 已知 \(t=0\) 时质点位置为 \(x_0\)，初速度为 \(v_0=0\)。求质点位置 \(x\) 与时间 \(t\) 的关系。
 \end{exercise}
-
 \begin{solution}
-\textbf{起手判断/模型：} 题目直接给力随时间变化，先由牛顿第二定律得到加速度，再对时间积分得到速度和位移。
-
-\textbf{主方程：}
-\[
-m\dv[2]{x}{t}=F_0\cos\omega t.
-\]
-因此
-\[
-\dv{v}{t}=\frac{F_0}{m}\cos\omega t.
-\]
-
-\textbf{第一次积分：} 用 \(v(0)=0\)，得
-\[
-v(t)=\frac{F_0}{m\omega}\sin\omega t.
-\]
-
-\textbf{第二次积分：} 再用 \(x(0)=x_0\)，
-\[
-x(t)=x_0+\int_0^t \frac{F_0}{m\omega}\sin\omega t'\,\dd t'
-=x_0+\frac{F_0}{m\omega^2}\left(1-\cos\omega t\right).
-\]
-
-\textbf{结论：}
-\[
-\boxed{x=x_0+\frac{F_0}{m\omega^2}\left(1-\cos\omega t\right)}.
-\]
-
-\textbf{物理检查/易错点：} 代入 \(t=0\) 应返回 \(x=x_0\)、\(v=0\)。这里位移里出现 \(1-\cos\omega t\)，不是单纯的 \(\cos\omega t\)，这个常数项正是初始条件带来的。
+根据牛顿第二定律，质点的运动微分方程为 $m \dfrac{\mathrm{d}v}{\mathrm{d}t} = F_0\cos\omega t$，变形得到分离变量形式 $\mathrm{d}v = \frac{F_0}{m}\cos\omega t\,\mathrm{d}t$。结合初始条件 $t=0$ 时 $v_0=0$，对两边进行定积分：
+$\int_{0}^{v} \mathrm{d}v = \int_{0}^{t} \frac{F_0}{m}\cos\omega t'\,\mathrm{d}t'$，解得瞬时速度为 $v(t) = \frac{F_0}{m\omega}\sin\omega t$。再次分离变量得到 $\mathrm{d}x = \frac{F_0}{m\omega}\sin\omega t\,\mathrm{d}t$。结合初始条件 $t=0$ 时 $x=x_0$，对两边进行定积分：$\int_{x_0}^{x} \mathrm{d}x = \int_{0}^{t} \frac{F_0}{m\omega}\sin\omega t'\,\mathrm{d}t'$，算得 $x - x_0 = -\frac{F_0}{m\omega^2}\cos\omega t' \Big|_0^t = \frac{F_0}{m\omega^2}(1 - \cos\omega t)$。质点位置 $x$ 与时间 $t$ 的关系为 $x = x_0 + \frac{F_0}{m\omega^2}(1 - \cos\omega t)$。
 \end{solution}
 
-\begin{exercise}[2005级期末：竖直圆环旋转时小珠离开底部的条件]
-一小珠可以在半径为 \(R\) 的竖直圆环上无摩擦滑动。今使圆环以角速度 \(\omega\) 绕其竖直直径转动。要使小珠离开圆环底部而停在环上某一点，求角速度 \(\omega\) 至少应满足什么条件。
 
-\begin{center}
-\includegraphics[width=0.22\linewidth]{pdf-exercises/pdf2005-q12-rotating-hoop.png}
-\end{center}
-\end{exercise}
-
-\begin{solution}
-\textbf{起手判断/模型：} 在随圆环一起转动的参考系中，小珠若能静止在环上非底部位置，沿圆环切向的合力必须为零。除重力外，还要加入离心惯性力；支持力沿法线方向，不参与切向平衡。
-
-\textbf{主方程：} 设小珠相对底部对应的圆心角为 \(\theta\)。小珠到转轴的距离为
-\[
-\rho=R\sin\theta.
-\]
-离心力大小为 \(m\omega^2\rho=m\omega^2R\sin\theta\)，其沿圆环切向分量为 \(m\omega^2R\sin\theta\cos\theta\)；重力沿切向分量为 \(mg\sin\theta\)。平衡条件为
-\[
-m\omega^2R\sin\theta\cos\theta=mg\sin\theta.
-\]
-
-\textbf{分步代入或化简：} 若小珠不在底部，\(\sin\theta\neq0\)，于是
-\[
-\omega^2R\cos\theta=g
-\implies
-\cos\theta=\frac{g}{\omega^2R}.
-\]
-要存在这样的点，必须有 \(\frac{g}{\omega^2R}\le1\)，即
-\[
-\omega\ge \sqrt{\frac{g}{R}}.
-\]
-
-\textbf{结论：}
-\[
-\boxed{\omega_{\min}=\sqrt{\frac{g}{R}},\qquad \omega>\sqrt{\frac{g}{R}}\ \text{时可停在离底部的点上}.}
-\]
-
-\textbf{物理检查/易错点：} 临界值处对应 \(\theta=0\)，也就是刚刚要离开底部；真正停在非底部位置需要略大于临界角速度。最容易错的是只写 \(g/R\)，那是 \(\omega^2\) 的量纲，不是角速度。
-\end{solution}
-
-\begin{exercise}[]
-一个质量为 \(m\) 的物体静止在粗糙水平面上，受到大小为 \(f\) 的水平推力但仍静止。问静摩擦力大小是多少？
-\end{exercise}
-
-\begin{solution}
-物体保持静止，说明水平方向合力为零。既然外界给了一个大小为 \(f\) 的推力，静摩擦力就必须自动调节到同样大小来平衡它，因此 \(f_s=f\)，方向与推力相反。
-
-这里要特别注意：静摩擦力不是一开始就固定等于 \(\mu N\)，而是在 \(0\le f_s\le f_{s,\max}\) 的范围内自动调节。只有当推力继续增大并超过最大静摩擦力时，物体才会开始滑动。
-\end{solution}
-
-\begin{note}
-\textbf{把这两道短题连起来看最稳：} 静摩擦力是否等于 \(\mu N\)，关键看物体是否已经逼到“将要滑动”的边缘；而作用力和反作用力之所以不能互相抵消，是因为它们本来就作用在两个不同物体上，根本不属于同一张受力图。一个管“力会不会自动调节”，一个管“哪些力能写进同一物体的平衡方程”，别把这两层混在一起。
-\end{note}
 
 \chapter{三大守恒定律}
 
-\begin{skill}[第3章冲刺总手册]\label{sk:phys-ch03-overview}
-\textbf{【这章先解决什么题】} 这章专门处理“过程细节很烦，但初末态更重要”的题：碰撞、爆炸、回转、只问初态末态速度高度、以及那些用牛顿第二定律逐时算会很长的题。
-
-\textbf{【拿题先认什么信号】} 若题面写“碰撞瞬间、爆炸、短时间相互作用”，先想动量守恒；若题面写“绕某点/某轴转、合外力矩为零”，先想角动量守恒；若题面主要关心高度、速度、弹簧压缩量、位置变化，且只有重力弹力等保守力做功，先想机械能守恒。
-
-\textbf{【第一条方程先写什么】}
-\[
-\text{先写守恒成立条件，再写守恒式：}\quad
-\sum \vb*{F}_{\text{ext}}=0,\ 
-\sum \vb*{M}_{\text{ext}}=0,\ 
-W_{\text{nc}}=0.
-\]
-条件一旦成立，才分别落到动量、角动量或机械能的方程上。
-
-\textbf{【必背公式块】}
-\[
-\begin{aligned}
-\vb*{p}&=m\vb*{v},\qquad
-\sum \vb*{F}_{\text{ext}}=0 \implies \sum \vb*{p}=\text{常量},\\
-\vb*{L}&=\vb*{r}\times \vb*{p},\qquad
-L=J\omega\ \text{(定轴)},\\
-\sum \vb*{M}_{\text{ext}}&=0 \implies \sum \vb*{L}=\text{常量},\\
-E&=K+U,\qquad
-W_{\text{nc}}=\Delta E,\qquad
-W_{\text{nc}}=0 \implies K_1+U_1=K_2+U_2.
-\end{aligned}
-\]
-这里 \(W_{\text{nc}}\) 指非保守力做功；它不为零时，机械能一般不守恒。
-
-\textbf{【做题流程】} 先选系统，再问哪一类外作用可忽略；若题目分阶段，比如“碰撞瞬间 + 碰后上升”，就分阶段列式，别把全过程硬塞进一条守恒式；若既能守恒又有几何约束，守恒负责连初末态，约束负责补未知量之间的关系。
-
-\textbf{【最容易误判】} 只看“碰撞”就默认机械能守恒；系统没选对却匆忙写动量守恒；角动量守恒时没先说明相对哪个点或哪个轴；把向量守恒写成无方向的标量式。
-
-\textbf{【最后怎样验证】} 动量和角动量都要检查方向分量；机械能题要确认势能零点改变不会影响 \(\Delta U\)；若碰撞后机械能反而增大，通常说明守恒类型选错了；若题目只问初末态而你算了一长串中间时刻，通常方法没有选到最短。
-\end{skill}
-
-\chapterroadmap
-{当过程太复杂、直接列牛顿方程不方便时，学会先找守恒量。}
-{已经会用牛顿第二定律和能量的基本概念，也知道位移、速度、加速度这些运动语言。}
-{新增动量、角动量、功、动能和机械能守恒，把“系统”作为解题单位。}
-
-\section{为什么守恒定律特别重要}
-
-牛顿定律告诉我们“受力如何决定运动”，但有些问题若逐时刻写方程会很繁琐。守恒定律提供了另一种更高效的思路：\textbf{抓住整个系统中不会改变的量，绕开复杂的过程细节，直接联系初态与末态。}
-
-大学物理中最常见的三条守恒规律是：动量守恒、角动量守恒和机械能守恒。它们虽然形式不同，但核心思想一致：选对系统、选对条件、再选对守恒量。
-
-\begin{note}
-\textbf{这一章最重要的观念升级，不是多背三条公式，而是学会把“逐时刻受力”换成“全过程总账”。} 牛顿定律仍然是底层出发点，只是当题目真正关心的是“碰前碰后怎么接上”“初态末态怎样相连”时，直接追每个中间时刻往往太笨。这时守恒定律就像把整段过程压成一笔总账：哪类外作用没能改掉这本账，哪本账就能直接把初末态连起来。
-\par
-\textbf{所以每道守恒题开头都先问三句：} 系统选谁；哪一类外作用为零或可忽略；因此是哪一本总账最稳。后面三节虽然分别讲动量、角动量和机械能，起手动作其实始终是这三句。
-\end{note}
-
 \section{动量与动量守恒}
 
-这里最该先问的是：为什么已经有了速度和牛顿第二定律，还要额外定义一个 \(m\vb*{v}\)？因为一到碰撞、爆炸、短时相互作用这类题里，真正稳定的往往不是某个物体单独的速度，而是\textbf{整个系统的运动状态怎样在物体之间传递}。速度只告诉你“跑得多快”，却没有把“带着多少质量一起动”记进去；而外力在一段时间内积累起来的冲量，又恰好直接改写 \(m\vb*{v}\)。所以动量不是凭空多出的一本账，而是专门为相互作用与守恒问题准备的主账。
-
-\begin{definition}[动量]\label{def:momentum}
-质量为 \(m\) 的质点的动量定义为 \(\vb*{p}=m\vb*{v}\)。
-\end{definition}
-
-动量是矢量，方向与速度方向相同。它刻画的是“运动状态”的一种更适合研究相互作用的量。若研究对象不是单个质点，而是由多个物体组成的系统，那么系统总动量就是各物体动量的矢量和：
+\begin{definition}[动量和冲量]\label{def:momentum}
+质量为 \(m\) 的质点的动量定义为 \(\vb*{p}=m\vb*{v}\)。若研究对象不是单个质点，而是由多个物体组成的系统，那么系统总动量就是各物体动量的矢量和：
 \[
 \vb*{P}=\sum_i \vb*{p}_i.
-\]
-
-\begin{note}
-\textbf{这里先把两个字母分清：} \(\vb*{p}\) 通常留给单个物体的动量；\(\vb*{P}\) 留给整个系统的总动量。碰撞题里真正守恒的往往是后者，所以一旦把几个物体并成系统，脑子里就要从“这个球多快”切到“整套系统的 \(\vb*{P}\) 有没有被外力冲量改掉”。
-\end{note}
+\]下面定义冲量并引出质点的动量定理：
+\begin{itemize}
+\item $\dd\vec{I}$: 在 $\dd t$ 时间内质点所受到合外力的冲量，定义为 $\dd\vec{I}=\vec{F}\dd t$。
+\item $\vec{I}$: \textbf{总冲量}。力 $\vec{F}(t)$ 在 $t_1$ 到 $t_2$ 时间内的冲量，定义为 $\vec{I}=\int_{t_1}^{t_2}\vec{F}\dd t$。对恒力而言，总冲量简化为 $\vec{I}=\vec{F}(t_2-t_1)$。
+\end{itemize}
+\end{definition}
 
 \begin{theorem}[动量定理]\label{thm:impulse-momentum}
-这条式子最稳的读法，仍是从牛顿第二定律顺着长出来。对质量不变的质点，
+对质量不变的质点，
 \[
 \vb*{F}=m\dv{\vb*{v}}{t}=\dv{(m\vb*{v})}{t}=\dv{\vb*{p}}{t}.
 \]
-两边同乘 \(\dd t\) 并沿全过程积分，才得到“冲量改动量”这条总账：
+两边同乘 \(\dd t\) 并沿全过程积分，才得到
 \[
 \vb*{I}=\int_{t_1}^{t_2}\vb*{F}\,\dd t=\Delta \vb*{p}.
 \]
 \end{theorem}
 
 \begin{theorem}[动量守恒定律]\label{thm:momentum-conservation}
-再把目光从单个质点切到整个系统。对系统内每个物体分别写动量定理后再求和，内部相互作用虽然可能很大，但它们只是在系统内部彼此传递动量；成对出现的内力冲量在总和里互相抵消，真正能改写系统总动量 \(\vb*{P}\) 的只剩外力冲量。因此，若一个系统所受外力的矢量和为零，或者某一短过程里外力冲量可以忽略，则系统总动量保持不变：
+若一个系统所受外力的矢量和为零，或者某一短过程里外力冲量可以忽略，则系统总动量保持不变：
 \[
 \vb*{P}_{\text{初}}=\vb*{P}_{\text{末}}
 \qquad\text{或}\qquad
@@ -921,11 +580,31 @@ W_{\text{nc}}=0 \implies K_1+U_1=K_2+U_2.
 \]
 \end{theorem}
 
-\begin{note}
-\textbf{先分清这两条关系：} 动量定理回答的是“外力冲量怎样让动量改变”，所以即使动量不守恒也照样能用；动量守恒回答的是“在什么条件下总动量根本不变”，所以它一定要先检查系统和外力冲量条件。第一次做题若把这两条混成一条，就会在“该积分外力”还是“该直接列初末动量相等”之间来回打架。
-\end{note}
+\begin{example}
+一垒球质量 $m = 0.3\,\mathrm{kg}$，以水平初速度 $v_1 = 20\,\mathrm{m/s}$ 飞来，被棒打击后速度大小变为 $v_2 = 30\,\mathrm{m/s}$，方向与 $x$ 轴正方向（即初速度反方向的夹角）成 $\theta = 30^\circ$ 仰角朝左上方飞出。设球与棒接触时间 $\Delta t = 0.01\,\mathrm{s}$，忽略重力，求垒球受到的平均打击力 $\vec{F}$。
+\end{example}
+\begin{solution}
+\textbf{方法一：直角坐标分量式求解（推荐，最具普适性）}：建立直角坐标系 $Oxy$，设垒球飞来的方向为 $x$ 轴正方向。
+由题意可写出初速度与末速度的成分矢量式：$\vec{v}_1 = v_1\vec{i} = 20\vec{i}$。末速度斜向左上方，与 $x$ 轴负方向成 $30^\circ$ 夹角，故其 $x$ 分量为负，$y$ 分量为正：$\vec{v}_2 = -v_2\cos 30^\circ\vec{i} + v_2\sin 30^\circ\vec{j} \approx -26\vec{i} + 15\vec{j}$。根据分量形式的动量定理 $\vec{F} = \frac{\Delta\vec{p}}{\Delta t}$，分别计算两个轴向上的平均作用力：
+$x$ 轴方向：$F_x = \frac{m(v_{2x} - v_{1x})}{\Delta t} = \frac{0.3 \times (-26 - 20)}{0.01} = -1380\,\mathrm{N}$。
+$y$ 轴方向：$F_y = \frac{m(v_{2y} - v_{1y})}{\Delta t} = \frac{0.3 \times (15 - 0)}{0.01} = 450\,\mathrm{N}$。
+利用勾股定理求得平均打击力的大小：
+$F = \sqrt{F_x^2 + F_y^2} = \sqrt{(-1380)^2 + 450^2} \approx 1451\,\mathrm{N}$。
+设力 $\vec{F}$ 与 $x$ 轴正方向的夹角为 $\alpha$，则 $\tan\alpha = \frac{F_y}{F_x} = \frac{450}{-1380} \approx -0.328$。由于 $F_x < 0, F_y > 0$，力位于第二象限，解得 $\alpha = 162^\circ$。
 
-\bridge{守恒看的是\textbf{整个系统}而不是某一个物体。系统内部相互作用再大，也只是把动量在系统内部彼此传递；真正能改变系统总动量的，是外力在一段时间内积累下来的冲量。所以“外力为零”是精确条件，“外力冲量可忽略”是碰撞类题里常用的近似条件。}
+\textbf{方法二：矢量三角形余弦定理求解}：根据动量定理的矢量式 $\vec{F}\Delta t = m\vec{v}_2 - m\vec{v}_1$，可以将三个矢量构成一个首尾相接的三角形：从共起点的初动量 $m\vec{v}_1$ 箭头指向末动量 $m\vec{v}_2$ 箭头的矢量即为冲量 $\vec{F}\Delta t$。
+在动量三角形中，$m\vec{v}_1$ 沿 $x$ 轴正向，$m\vec{v}_2$ 沿左上方。两矢量的夹角为其方向的补角 $\pi - \theta = 180^\circ - 30^\circ = 150^\circ$。
+根据余弦定理，冲量大小的平方为：
+\[(F\Delta t)^2 = (mv_1)^2 + (mv_2)^2 - 2(mv_1)(mv_2)\cos(180^\circ - \theta)\]
+两边开方并提取常数 $m$，代入已知数据可直接求出力的大小：
+\[F = \frac{m}{\Delta t}\sqrt{v_1^2 + v_2^2 - 2v_1v_2\cos 150^\circ} = \frac{0.3}{0.01}\sqrt{20^2 + 30^2 - 2 \times 20 \times 30 \times \left(-\frac{\sqrt{3}}{2}\right)} \approx 1451\,\mathrm{N}\]
+随后，在动量三角形中应用正弦定理求取方向：设冲量矢量与初动量矢量之间的夹角为 $\varphi$，有 $\frac{mv_2}{\sin\varphi} = \frac{F\Delta t}{\sin(180^\circ - \theta)}$，代入数据解得 $\varphi \approx 18^\circ$。因为冲量是从初速度方向逆时针偏转，故力与 $x$ 轴正方向的夹角为 $180^\circ - 18^\circ = 162^\circ$。
+\end{solution}
+
+\begin{example}
+一装沙车以恒定速率 $v = 3\,\mathrm{m/s}$ 从沙斗下通过，每秒钟落入车厢的沙子质量为 $\Delta m = 500\,\mathrm{kg}$。如果使车厢的速率保持不变，在忽略车轮与轨道间摩擦的情况下，应施加多大的水平牵引力 $\vec{F}$？
+\end{example}
+
 
 \subsection{碰撞问题}
 
@@ -935,9 +614,9 @@ W_{\text{nc}}=0 \implies K_1+U_1=K_2+U_2.
 \textbf{先看什么信号：} 题目一旦出现“碰撞”“相撞后粘在一起”“瞬间相互作用”，第一反应先别看能量，先看系统总动量；\textbf{这条公式在控制什么：} 它控制的是碰撞前后整体运动状态怎样跳变；\textbf{怎样最快记住：} 先把所有碰撞体并成一个系统，再问碰撞时间是否短到外力冲量可忽略；\textbf{最容易错：} 看到“没有摩擦”就顺手也守恒机械能，忘了完全非弹性碰撞虽然保动量，却通常要把一部分机械能耗散成内能、形变或声。
 \end{note}
 
-\begin{example}
+\begin{exercise}
 质量为 \(m_1\) 的小球以速度 \(v_1\) 撞上原来静止的质量为 \(m_2\) 的小球，若碰后它们粘在一起运动，求共同速度。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 \textbf{起手判断/模型：} 题目写的是“碰后粘在一起”，这说明它是\textbf{完全非弹性碰撞}；又因为碰撞时间极短，最稳的入口是把两球并成一个系统，先用\textbf{动量守恒}，而不是先问机械能。
@@ -1051,9 +730,9 @@ z_C=\frac{\sum_i m_i z_i}{M}.
 
 \bridge{这样定义以后，“整团系统整体往哪边走”这件事就有了统一代表。后面刚体章里说“质心平动 + 绕质心转动”，正是把这里的思想继续往下推进。}
 
-\begin{example}[任意三角形三个等质量点的质心]
+\begin{exercise}[任意三角形三个等质量点的质心]
 任意三角形的三个顶点分别放有质量都为 \(m\) 的质点，三点坐标依次为 \((x_1,y_1)\)、\((x_2,y_2)\)、\((x_3,y_3)\)。求系统质心坐标。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 \textbf{起手判断/模型：} 题目问的是\textbf{由几个离散质点组成的系统的整体位置}，所以第一条方程就该写质心定义，而不是去猜几何图形的特殊性质。又因为三个质点质量相同，质量加权平均会自然退化成普通坐标平均。
@@ -1076,9 +755,9 @@ y_C&=\frac{my_1+my_2+my_3}{3m}
 \textbf{物理检查/易错点：} 三个质量完全相同，所以每个顶点的“权重”一样，结果退化成三个顶点坐标的平均值，这和直觉一致。最容易错的是看到“三角形”就去想中线交点的几何结论，却没意识到那个结论正是\textbf{等质量加权平均}在这个特殊图形上的体现。
 \end{solution}
 
-\begin{example}[人在小车上行走时为什么先想质心或动量守恒]
+\begin{exercise}[人在小车上行走时为什么先想质心或动量守恒]
 一辆质量为 \(M\)、长度为 \(l\) 的小车静止在光滑水平轨道上，车上一人质量为 \(m\)。人从车的一端走到另一端。求人在地面上的位移和小车在地面上的位移。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 \textbf{起手判断/模型：} 题面最关键的信号是“光滑水平轨道”。这说明系统在水平方向\textbf{无外力}，因此无论你从动量守恒还是质心不动切入，本质都在说同一件事：系统质心在水平方向位置保持不变。题目问的是两段位移，所以最稳的是直接用质心约束。
@@ -1242,9 +921,9 @@ v=\sqrt{gR}.
 \textbf{物理检查/易错点：} 若误把木槽看成固定不动，会得到 \(v=\sqrt{2gR}\)。本题木槽同样有质量且可水平滑动，滑块下落释放的势能会分给滑块和木槽两份动能，所以滑块速度较小。
 \end{solution}
 
-\begin{example}[均匀半圆形铁丝的质心]
+\begin{exercise}[均匀半圆形铁丝的质心]
 一段均匀细铁丝弯成半圆形，半径为 \(R\)，总质量为 \(m\)。求其质心位置。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 \textbf{起手判断/模型：} 题目对象不是几个离散质点，而是\textbf{连续分布的线质量}，所以应把质心定义从求和改成沿铁丝积分。又因为图形关于 \(y\) 轴对称，第一步先别算两个坐标，而应先用对称性判断 \(x_C=0\)。
@@ -1294,9 +973,9 @@ y_C=\frac{2R}{\pi}
 \textbf{先看什么信号：} 题目若出现“火箭喷气”“质量随时间减少”“反冲推进”，先认这是\textbf{变质量系统}；\textbf{这条方程在控制什么：} 它控制的是喷出物带走多少动量，剩余火箭就得补回多少；\textbf{怎样最快记住：} 火箭不是“被空气推着走”，而是“靠把质量往后扔，自己向前走”；\textbf{最容易错：} 把喷气速度和火箭对地速度混成一个量，或直接把变质量系统硬套成 \(F=ma\)。
 \end{note}
 
-\begin{example}[火箭反冲为什么会得到对数速度公式]
+\begin{exercise}[火箭反冲为什么会得到对数速度公式]
 设火箭初速度为 \(v_0\)，初始质量为 \(M_0\)。喷气速度 \(u\) 相对火箭保持不变，忽略外力。求当火箭质量减小到 \(M\) 时的速度。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 \textbf{起手判断/模型：} 这是典型的\textbf{变质量反冲题}。题目已经明确忽略外力，所以第一条主线必须是“极短时间内火箭 + 刚喷出的那一小团燃气”这套系统的动量守恒。
@@ -1332,9 +1011,9 @@ v=v_0+u\ln\frac{M_0}{M}.
 \textbf{物理检查/易错点：} 当 \(M<M_0\) 时，\(\ln(M_0/M)>0\)，所以火箭速度确实比初速度更大；喷得越多，也就是 \(M\) 越小，速度增量越大，方向判断正确。最容易错的是把喷气速度 \(u\) 误当成燃气对地速度，或忘了 \(\dd M=-\dd m\) 这一层符号关系。
 \end{solution}
 
-\begin{example}[斜抛弹丸在最高点爆炸后第二块碎片为什么会落到 \(2x_C\)]
+\begin{exercise}[斜抛弹丸在最高点爆炸后第二块碎片为什么会落到 \(2x_C\)]
 有质量为 \(2m\) 的弹丸做斜抛运动，若不爆炸，其落地点距抛出点的水平距离为 \(x_C\)。它在最高点突然爆炸成两个质量相等的碎片，其中一块竖直下落到地面。求另一块碎片的落地点。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 \textbf{起手判断/模型：} 爆炸是典型的\textbf{内力短时作用}过程，最稳的入口应先看系统质心，而不是去追每一块的受力细节。因为爆炸前后系统只受重力，质心轨迹不会因内部爆炸改变，所以两碎片整体的质心仍会落在原来的落点 \(x_C\)。
@@ -1493,9 +1172,9 @@ L=mR\sqrt{\frac{GM}{R}}
 \textbf{物理检查/易错点：} 这里的 \(L\) 是相对太阳中心的轨道角动量，不是地球自转角动量。量纲上 \(m\sqrt{GMR}\) 为 \(\si{kg.m^2/s}\)，与角动量一致。
 \end{solution}
 
-\begin{example}[慢慢拉绳时小球为什么会越转越快]
+\begin{exercise}[慢慢拉绳时小球为什么会越转越快]
 一小球质量为 \(m\)，用细绳穿过光滑小孔，在水平面上绕孔作圆周运动。若缓慢拉绳，使轨道半径由 \(r_1\) 缩小到 \(r_2\)，求小球速率如何变化。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 \textbf{起手判断/模型：} 题目最关键的信号不是“圆周运动”，而是“相对小孔作圆周运动，且外力都沿半径方向”。这说明相对小孔的外力矩为零，所以第一条方程应先写\textbf{角动量守恒}，而不是机械能守恒。
@@ -1653,13 +1332,13 @@ E_k+E_p=\text{常量}.
 “机械能守恒”和“动量守恒”是两条不同的判断条件，不能混用。碰撞常优先看动量守恒；位能和动能相互转化的过程常优先看机械能守恒。
 \end{remark}
 
-\begin{example}[力随时间变化时怎样借动能定理算做功]
+\begin{exercise}[力随时间变化时怎样借动能定理算做功]
 质量为 \(m=\SI{2}{kg}\) 的质点在直线上由静止出发，所受合力为
 \[
 F=6t.
 \]
 求前 \(\SI{2}{s}\) 内该力所做的功。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 \textbf{起手判断/模型：} 题目虽然直接问“做功”，但给出的已知量是力随时间变化，而不是力随位移变化。此时最稳的入口不是硬找 \(x(t)\) 再算 \(\int F\,\dd x\)，而是先由牛顿第二定律求末速度，再用\textbf{动能定理}。
@@ -1694,9 +1373,9 @@ W=\SI{36}{J}.
 \textbf{物理检查/易错点：} 力始终为正，所以做功应为正，结果与此一致。最容易错的是把 \(F(t)\) 直接对时间积分当成做功；那样得到的是冲量，不是功。
 \end{solution}
 
-\begin{example}[四分之一圆弧下滑时摩擦力做功怎样从总账里扣出]
+\begin{exercise}[四分之一圆弧下滑时摩擦力做功怎样从总账里扣出]
 质量为 \(m\) 的物体从静止开始，在竖直平面内沿半径为 \(R\) 的四分之一圆弧由 \(A\) 滑到 \(B\)。已知到达 \(B\) 时速率为 \(v\)。求摩擦力在这一过程中所做的功。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 \textbf{起手判断/模型：} 题目只问摩擦力做功，而末速度 \(v\) 已给出，所以最稳的是把全过程看成\textbf{合外力做功 = 动能变化}，再把重力、支持力和摩擦力分账。支持力始终垂直位移，不做功。
@@ -1785,13 +1464,13 @@ W_f=\frac12R(N-3mg).
 \textbf{物理检查/易错点：} 若无摩擦，从边缘滑到底部应有 \(v^2=2gR\)，此时最低点 \(N=mg+m v^2/R=3mg\)，公式给出 \(W_f=0\)，极限正确。若有摩擦耗能，则 \(N<3mg\)，摩擦做功为负。
 \end{solution}
 
-\begin{example}[变力 \(F=4+2t^2\) 作用时为什么仍可先求末速度]
+\begin{exercise}[变力 \(F=4+2t^2\) 作用时为什么仍可先求末速度]
 质量为 \(m=\SI{10}{kg}\) 的质点沿 \(x\) 轴无摩擦运动，\(t=0\) 时静止。若所受合力
 \[
 F=4+2t^2,
 \]
 求该力在前 \(\SI{3}{s}\) 内所做的功。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 \textbf{起手判断/模型：} 这类题和上一题一样，真正稳定的入口仍是“先由 \(F(t)\) 求末速度，再由动能定理求功”。因为力给成时间函数时，\(\int F\,\dd x\) 并不是最直接的路。
@@ -1826,13 +1505,13 @@ W=\SI{45}{J}.
 \textbf{物理检查/易错点：} 力在全过程中恒正，且物体由静止加速到 \(\SI{3}{m/s}\)，做功为正且量级几十焦耳，合理。易错点同样是把对时间积分的结果误认成做功。
 \end{solution}
 
-\begin{example}[阻力与深度成正比时子弹能打进多深]
+\begin{exercise}[阻力与深度成正比时子弹能打进多深]
 一颗质量为 \(m\) 的子弹以初速度 \(v_0\) 射入固定木板。设木板对子弹的阻力满足
 \[
 f=-\beta x,
 \]
 其中 \(x\) 为射入深度，\(\beta\) 为正常数。求子弹射入木板的最大深度。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 \textbf{起手判断/模型：} 题目给的是阻力随位移 \(x\) 的关系，而且最终求的是“打进多深”，所以最稳的入口是\textbf{动能定理}：阻力做的功恰好吃掉子弹初动能。
@@ -1868,9 +1547,9 @@ l=v_0\sqrt{\frac{m}{\beta}}.
 \textbf{物理检查/易错点：} \(\beta\) 越大，木板“变硬”，射入深度应越小；\(v_0\) 越大，深度应越大，结果都符合直觉。最容易错的是把阻力写成正功，或在积分后漏掉平方根。
 \end{solution}
 
-\begin{example}[单摆从 \(30^\circ\) 摆到 \(10^\circ\) 时速度怎样自然长出来]
+\begin{exercise}[单摆从 \(30^\circ\) 摆到 \(10^\circ\) 时速度怎样自然长出来]
 一质量为 \(m\) 的小球系在长为 \(\ell\) 的细绳下端，先由静止释放，初始时绳与竖直方向成 \(\theta_0=30^\circ\)。求当绳与竖直方向成 \(\theta=10^\circ\) 时小球的速率。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 \textbf{起手判断/模型：} 这道题只问某一位置的速率，而且绳张力始终垂直位移不做功，所以最稳的入口是\textbf{机械能守恒}。真正改变动能的只有重力。
@@ -2657,9 +2336,9 @@ L_i=r_i m_i(r_i\omega)=m_i r_i^2\omega.
 同质量、同半径的实心圆盘和薄圆环，圆环的质量分布离轴更远，所以转动惯量更大；同一根细杆绕中点转和绕端点转，转动惯量也会不同。做题时只要看到“换轴”，就要立刻警惕 \(J\) 是否改变。
 \end{note}
 
-\begin{example}
+\begin{exercise}
 质量为 \(m\)、半径为 \(R\) 的质点绕圆心转动，其转动惯量为 \(J=mR^2\)。
-\end{example}
+\end{exercise}
 
 \section{转动惯量的计算}
 
@@ -2680,9 +2359,9 @@ L_i=r_i m_i(r_i\omega)=m_i r_i^2\omega.
 \textbf{这三步里最关键的其实是前两步。} 真正把题做对的，往往不是后面的积分技巧，而是有没有先选到“同一小块上 \(r\) 最简单”的切法。细杆常切长度元，圆盘常切同心薄环，球体常切薄球壳；本质上都在做同一件事：让 \(\dd m\) 和 \(r\) 尽量同时写得干净。
 \end{note}
 
-\begin{example}[均匀细杆绕中心的转动惯量]
+\begin{exercise}[均匀细杆绕中心的转动惯量]
 求质量为 \(m\)、长度为 \(\ell\) 的均匀细杆，绕通过中点且垂直于杆的轴的转动惯量。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 \textbf{起手判断/模型：} 题目问的是连续质量分布刚体绕已知轴的转动惯量，最先要回到定义
@@ -2727,9 +2406,9 @@ J_C&=\int_{-\ell/2}^{\ell/2}x^2\lambda\,\dd x
 \textbf{把它当成题面信号最实用：} 只要同一刚体同时出现“绕质心轴”和“绕端点轴/边缘轴/偏移轴”，先别急着重积分，先问这两条轴平不平行。若平行，就直接把平移轴这件事翻成 \(J=J_C+md^2\)；也正因为多出来的是 \(md^2>0\)，所以在一组平行轴里，\textbf{过质心的那条轴总是最“省”转动惯量的入口。}
 \end{note}
 
-\begin{example}[细杆绕端点的转动惯量]
+\begin{exercise}[细杆绕端点的转动惯量]
 质量为 \(m\)、长度为 \(\ell\) 的均匀细杆，求它绕通过中点且垂直于杆的轴，以及绕一端且垂直于杆的轴的转动惯量。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 细杆绕中点的结果已经求出：
@@ -2754,9 +2433,9 @@ J_O&=J_C+md^2
 \textbf{先看什么信号：} 题目若不是让你直接套表，而是让你“推一个刚体的 \(J\)”，起手永远回到 \(J=\int r^2\,\dd m\)；\textbf{这条公式在控制什么：} 它控制的是每一小块质量离转轴有多远，离轴越远，贡献越大；\textbf{怎样最快记住：} 先找哪种切片能让同一小块上的 \(r\) 最简单，再决定切成薄环、薄壳还是薄片；\textbf{最容易错：} 还没看清 \(r\) 是到\textbf{所选转轴的垂直距离}，就把总质量直接乘某个半径平方。
 \end{note}
 
-\begin{example}[细圆环与均匀圆盘]
+\begin{exercise}[细圆环与均匀圆盘]
 求质量为 \(m\)、半径为 \(R\) 的均匀细圆环，以及质量为 \(m\)、半径为 \(R\) 的均匀圆盘，绕通过中心且垂直盘面的轴的转动惯量。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 \textbf{细圆环：} 环上各点到转轴的距离都等于 \(R\)，因此
@@ -2781,9 +2460,9 @@ J&=\int_0^R 2\pi\sigma r^3\,\dd r
 这两个结果最值得比较的地方在于：两者质量和半径都相同，但圆环的质量更集中在外圈，所以它的转动惯量更大。
 \end{solution}
 
-\begin{example}[薄球壳与均匀实心球]
+\begin{exercise}[薄球壳与均匀实心球]
 求质量为 \(m\)、半径为 \(R\) 的薄球壳，以及质量为 \(m\)、半径为 \(R\) 的均匀实心球，绕直径的转动惯量。
-\end{example}
+\end{exercise}
 
 \bridge{下面的推导用到了球坐标中的面积元和体积元。如果你还没学过多元微积分，可以先接受以下两个几何事实：(1) 球面上纬度角为 \(\theta\)、宽度为 \(\dd\theta\) 的一条纬线带，面积为 \(\dd S=2\pi R\sin\theta\cdot R\,\dd\theta=2\pi R^2\sin\theta\,\dd\theta\)（想象把纬线带展开成一条长 \(2\pi R\sin\theta\)、宽 \(R\,\dd\theta\) 的窄矩形）；(2) 半径为 \(r\)、厚度为 \(\dd r\) 的薄球壳体积为 \(4\pi r^2\,\dd r\)（球面面积乘以厚度）。有了这两条，下面的积分就只是一元定积分。}
 
@@ -2884,9 +2563,9 @@ M=J\alpha.
 
 \bridge{这张对照表非常值得记住。很多刚体问题本质上就是把直线动力学的语言，整体平移到“绕轴运动”的世界里。}
 
-\begin{example}[轻绳绕轮：怎样列出平动与转动方程]
+\begin{exercise}[轻绳绕轮：怎样列出平动与转动方程]
 质量为 \(m\) 的重物由轻绳悬挂在半径为 \(R\)、转动惯量为 \(J\) 的轮边缘，绳不打滑，轮轴无摩擦。系统由静止释放，求重物加速度 \(a\)。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 先约定重物向下为正方向，轮子按绳放开的转向为正方向。对重物写平动方程、对轮子写转动方程，再补上绳不打滑的关联方程：
@@ -3042,9 +2721,9 @@ z_C=\frac{\sum_i m_i z_i}{m}\implies E_p=mgz_C.
 \textbf{把平动版和转动版串成一条路最不容易乱：} 问瞬时变化，平动先写 \(F=ma\)，转动先写 \(M=J\alpha\)；问一段过程后的快慢，平动先看 \(A=\Delta(\frac12 mv^2)\)，转动先看 \(A=\Delta(\frac12 J\omega^2)\)；若做功那部分还能完全记成势能变化，再进一步压成机械能守恒。这样读，整条主线始终只有一套，只是变量换了。
 \end{note}
 
-\begin{example}[均匀细杆绕端点由水平下摆]
+\begin{exercise}[均匀细杆绕端点由水平下摆]
 质量为 \(m\)、长度为 \(\ell\) 的均匀细杆，可绕一端转动。细杆从水平位置由静止释放。设转过的角度为 \(\theta\)（即细杆相对初始水平线下摆了 \(\theta\)），求该位置的角速度 \(\omega\) 和角加速度 \(\alpha\)。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 \textbf{起手判断/模型：} 这道题同时问“这一刻转得多快地变”和“转到某位置时已经转多快”，所以要先把\textbf{瞬时量}和\textbf{过程量}拆开。前者优先写力矩和转动定律求 \(\alpha\)，后者优先写功或能量求 \(\omega\)。
@@ -3088,9 +2767,9 @@ mg\frac{\ell}{2}\sin\theta=\frac12 J\omega^2.
 复合系统题最怕一上来就乱套公式。先问三件事：第一，研究对象到底是谁；第二，碰撞过程和碰后过程是否要分阶段；第三，外力、外力矩、非保守力分别影响哪一条守恒关系。
 \end{note}
 
-\begin{example}[重物带动圆盘转动]
+\begin{exercise}[重物带动圆盘转动]
 质量为 \(m_0\)、半径为 \(R\) 的均匀圆盘可绕中心自由转动，一条轻绳绕在圆盘边缘，一端悬挂质量为 \(m\) 的重物。若系统由静止开始运动，当重物下降高度 \(h\) 时，速度为多大？
-\end{example}
+\end{exercise}
 
 \begin{solution}
 \textbf{起手判断/模型：} 题目同时出现下降的重物和平面内转动的圆盘，所以它不是纯质点题，也不是纯刚体题，而是典型的\textbf{平动 + 转动复合系统}。又因为题目只问下降高度 \(h\) 后的速度，而不问中间瞬时张力，所以最稳的是先把“重物 + 圆盘”并成整体，用能量法，再用绳不打滑把 \(v\) 和 \(\omega\) 接起来。
@@ -3171,9 +2850,9 @@ t=\frac{v_0}{a}=\frac{5}{5}=\SI{1}{s}.
 \textbf{这类复合系统题还有一条隐含入口：} 只要绳子轻且不打滑，平动量和转动量之间通常就会多出一条几何约束，例如这里的 \(v=R\omega\)。它不是额外背下来的孤立公式，而是在说“绳边缘放出去多少，重物就下去多少”。所以复合系统里真正常见的结构其实是：一条守恒或动力学主方程，加上一条把平动和转动接起来的约束关系。
 \end{note}
 
-\begin{example}[留声机转盘带动唱片转起来时怎样顺着力矩一路写到做功]
+\begin{exercise}[留声机转盘带动唱片转起来时怎样顺着力矩一路写到做功]
 留声机转盘绕通过盘心且垂直盘面的轴以角速度 \(\omega\) 匀速转动。现把一张半径为 \(R\)、质量为 \(m\) 的均匀唱片轻放在转盘上，唱片与转盘间的动摩擦因数为 \(\mu\)。求：1. 唱片所受摩擦力矩；2. 唱片从静止加速到角速度 \(\omega\) 所需时间；3. 在这段时间内转盘驱动力矩所做的功。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 \textbf{起手判断/模型：} 题目表面上问三件事，但真正主线只有一条：先由面分布的摩擦力求\textbf{合摩擦力矩}，再由 \(M=J\alpha\) 求角加速度和时间，最后用“转盘转速恒为 \(\omega\)”把驱动力矩做功写成 \(W=M\theta\)。所以第一步不是先套转动定律，而是先把摩擦如何分布在唱片上说清楚。
@@ -3238,9 +2917,9 @@ W=\frac12 mR^2\omega^2.
 \textbf{物理检查/易错点：} \(\mu\) 越大，摩擦力矩越大，所以唱片越快跟上转盘，符合 \(t\propto 1/\mu\)。第三问最容易错成唱片最后的转动动能 \(\frac14 mR^2\omega^2\)；那只是唱片最终存下来的能量，不是转盘整个驱动力矩做的总功。
 \end{solution}
 
-\begin{example}[小球撞杆：为什么一定要分两阶段]
+\begin{exercise}[小球撞杆：为什么一定要分两阶段]
 质量为 \(m\) 的小球以速度 \(v\) 垂直击中一根质量为 \(m_r\)、长度为 \(\ell\) 的细杆末端。细杆可绕另一端转动，碰后小球粘在杆上。写出碰撞后瞬间角速度 \(\omega_0\) 与随后最大摆角 \(\theta_{\max}\) 满足的方程。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 \textbf{第一阶段：碰撞瞬间。} 时间极短，支点外力虽然存在，但它对支点本身的力矩为零，因此应优先用\textbf{关于支点的角动量守恒}；\textbf{第二阶段：碰后整体上摆。} 这时小球和细杆已经作为一个整体转动，若忽略阻力，可用\textbf{机械能守恒}，于是两阶段方程可并成
@@ -3336,9 +3015,9 @@ L=J\omega=\text{常量}.
 
 \bridge{这条式子很适合做直觉检查：自转越快，\(\omega\) 越大，进动越慢；外力矩越大，陀螺越容易”被拧转方向”，进动越快。这里一定要分清 \(\omega\) 是自转角速度，\(\Omega\) 是进动角速度，两者描述的不是同一个转动。}
 
-\begin{example}
+\begin{exercise}
 一个质量 \(m=\SI{0.5}{kg}\) 的陀螺，转动惯量 \(J=\num{2.0e-3}\unit{kg.m^2}\)，质心到支点距离 \(r=\SI{4}{cm}\)，自转角速度 \(\omega=\SI{100}{rad/s}\)。求进动角速度和进动周期。
-\end{example}
+\end{exercise}
 \begin{solution}
 \textbf{起手判断/模型：} 题目已直接给出陀螺质量、支点到质心距离、转动惯量和自转角速度，所以它不是让你重新建模，而是让你把慢进动近似公式直接代入，并再由角速度求周期。
 
@@ -4294,9 +3973,9 @@ x=A\cos(\omega t+\varphi_0).
 把位移方程求两次导数，就会得到 \(a=\dv[2]{x}{t}=-\omega^2x\)。
 这条式子特别重要，因为它把“受力观点”和“位移观点”接上了：一旦你能证明加速度总指向平衡位置，且大小与位移成正比，简谐振动的整套结构就立起来了。
 
-\begin{example}[用平衡位置证明竖直弹簧振子作简谐振动]
+\begin{exercise}[用平衡位置证明竖直弹簧振子作简谐振动]
 一轻弹簧上端固定，下端挂一重物。静止时弹簧伸长 \(l=9.8\ \text{cm}\)。现给物体一个向下的瞬时冲击，使它在 \(t=0\) 时通过平衡位置并具有向下速度 \(v_0=1\ \text{m/s}\)。证明物体作简谐振动，并写出振动方程。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 \textbf{起手判断/模型：} 这题真正的第一步不是急着定初相，而是先把位移从\textbf{平衡位置}起量。因为只要原点选在平衡位置，重力和静伸长对应的那一部分弹力就会先互相抵消，方程才会直接落回简谐振动标准型。
@@ -4411,9 +4090,9 @@ x&=A\cos(\omega t+\varphi_0) \\
   \item 最后再检查该初相是否与题目给出的初始运动方向一致。
 \end{enumerate}
 
-\begin{example}[由位置和速度确定初相]
+\begin{exercise}[由位置和速度确定初相]
 某简谐振动的振幅为 \(A\)，角频率为 \(\omega\)。已知 \(t=0\) 时 \(x_0=A/2\)，且质点正沿负方向运动。求初相 \(\varphi_0\)。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 \[
@@ -4460,9 +4139,9 @@ T=2\pi\sqrt{\frac{m}{k}}.
 对竖直弹簧振子，只要把位移从\textbf{平衡位置}开始量，最后得到的方程仍然是同一形式。所以水平弹簧振子和竖直弹簧振子，看起来受力不同，真正的振动核心却是一样的。
 \end{remark}
 
-\begin{example}[水平弹簧振子为什么一写出来就是余弦]
+\begin{exercise}[水平弹簧振子为什么一写出来就是余弦]
 质量为 \(m=\SI{20}{g}\) 的小球连在劲度系数 \(k=\SI{0.72}{N/m}\) 的轻弹簧上，在光滑水平面上运动。若初始时刻小球位于 \(x_0=\SI{5.0}{cm}\) 处并由静止释放，求振动方程。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 \textbf{起手判断/模型：} 题目已经给出 \(m,k\) 和初始位置、初始速度，所以先认这是标准\textbf{水平弹簧振子}。第一条方程不是直接猜余弦，而是先从
@@ -4629,9 +4308,9 @@ x=0,\ v=\omega A\implies E=\frac12 m\omega^2A^2,\\
 
 这也解释了为什么总能量和振幅平方成正比：振幅越大，端点处弹簧被拉得越长、压得越深，系统能储存的最大势能就越大，因此整次振动携带的总能量也越大。
 
-\begin{example}[由位移判断能量分配]
+\begin{exercise}[由位移判断能量分配]
 某弹簧振子振幅为 \(A\)。当质点位于 \(x=A/2\) 处时，求动能和势能各占总机械能的多少。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 总机械能与当前位置势能可并成
@@ -4649,9 +4328,9 @@ E_k=E-E_p=\frac{3}{4}E.
 如果把振幅变成原来的 2 倍，总机械能会变成原来的 4 倍。这就是“振幅平方决定能量量级”的最直接体现，也是后面理解拍频强弱变化和波动能量的共同基础。
 \end{remark}
 
-\begin{example}[已知 \(m,A,a_{\max}\) 时怎样反求周期和能量]
+\begin{exercise}[已知 \(m,A,a_{\max}\) 时怎样反求周期和能量]
 一简谐振子质量 \(m=\SI{0.10}{kg}\)，振幅 \(A=\SI{1.0e-2}{m}\)，最大加速度 \(a_{\max}=\SI{4.0}{m/s^2}\)。求其周期、经过平衡位置时的动能、总机械能，并求在什么位置有 \(E_k=E_p\)。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 \textbf{起手判断/模型：} 题目给的是 \(A\) 和 \(a_{\max}\)，所以第一步先别找速度，而应先用简谐振动里
@@ -4711,13 +4390,13 @@ x=\pm \frac{A}{\sqrt2}.
 \textbf{物理检查/易错点：} 最大加速度出现在端点而不是平衡位置，这正是“回复作用在端点最强”的体现。最容易错的是把 \(E_k=E_p\) 误写成 \(x=\pm A/2\)；能量与位移平方成正比，所以应是 \(\pm A/\sqrt2\)。
 \end{solution}
 
-\begin{example}[斜面弹簧缓慢移动时外力做功怎样算]
+\begin{exercise}[斜面弹簧缓慢移动时外力做功怎样算]
 轻弹簧一端固定在倾角为 \(\alpha\) 的光滑斜面底端，另一端与质量为 \(m\) 的物体相连。\(O\) 点为弹簧原长处，\(A\) 点为物体平衡位置，\(x_0\) 为弹簧在 \(A\) 点被压缩的长度。若外力将物体由 \(A\) 点沿斜面向上缓慢移动 \(2x_0\) 到 \(B\) 点，求外力所做的功。
 
 \begin{center}
 \includegraphics[width=0.22\linewidth]{pdf-exercises/pdf2003-q12-spring-incline.png}
 \end{center}
-\end{example}
+\end{exercise}
 
 \begin{solution}
 \textbf{起手判断/模型：} “缓慢移动”说明始末动能可忽略，外力做功等于系统势能的增加。物体从 \(A\) 到 \(B\) 的位移为 \(2x_0\)，弹簧从压缩 \(x_0\) 变为伸长 \(x_0\)，弹性势能前后相同。
@@ -4779,9 +4458,9 @@ E_p=\frac12kx_m^2
 \textbf{物理检查/易错点：} 最大弹性势能不是把力平衡位置 \(x=(F-\mu mg)/k\) 代进去；那只是加速度为零的位置，不是最远点。物体还会凭此前积累的动能继续前进，直到位移达到两倍的平衡位移。
 \end{solution}
 
-\begin{example}[木板简谐振动时物体不滑的最大振幅]
+\begin{exercise}[木板简谐振动时物体不滑的最大振幅]
 一物体放在水平木板上，木板以频率 \(\nu=\SI{2}{Hz}\) 沿水平直线作简谐振动。物体与木板间静摩擦系数为 \(\mu_s=0.50\)。求物体不在木板上滑动时木板振动的最大振幅 \(A_{\max}\)。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 \textbf{起手判断/模型：} 物体能跟着木板一起做简谐振动，靠的是静摩擦力提供所需水平加速度。因此最大不滑条件就是“所需最大摩擦力不超过最大静摩擦力”。
@@ -4815,13 +4494,13 @@ A_{\max}
 \textbf{物理检查/易错点：} 频率越高，同样振幅下所需加速度越大，所以允许振幅应随 \(\nu^{-2}\) 变小。最容易错的是把静摩擦力固定写成 \(\mu_s mg\)，其实它只在临界不滑时达到最大值。
 \end{solution}
 
-\begin{example}[由振动曲线判断最大速率比]
+\begin{exercise}[由振动曲线判断最大速率比]
 两简谐振动的位移-时间曲线如图所示，求它们的最大速率之比。
 
 \begin{center}
 \includegraphics[width=0.28\linewidth]{pdf-exercises/pdf2003-q17-vibration.png}
 \end{center}
-\end{example}
+\end{exercise}
 
 \begin{solution}
 \textbf{起手判断/模型：} 简谐振动最大速率由 \(v_{\max}=A\omega\) 决定，所以读图时要同时读振幅和周期，而不能只看曲线高低。
@@ -5375,9 +5054,9 @@ A^2&=A_1^2+A_2^2+2A_1A_2\cos(\varphi_2-\varphi_1),\\
 这里真正决定能不能“合成后仍是简谐振动”的，是\textbf{同方向、同频率}这两个条件。方向不同会让轨迹进入平面；频率不同会让相位差不断变化，于是合成结果一般不再是一条单纯余弦。
 \end{note}
 
-\begin{example}[如何快速判断合振幅]
+\begin{exercise}[如何快速判断合振幅]
 若两振动振幅相同，均为 \(A\)，且相位差为 \(\Delta\varphi\)，求合振幅。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 由合振幅公式与恒等式
@@ -5523,9 +5202,9 @@ T_{\text{拍}}=\frac{1}{\abs{\nu_2-\nu_1}}.
 前者决定“振得多快”，后者决定“强弱变化多快”。
 \end{note}
 
-\begin{example}[拍频听起来在说什么]
+\begin{exercise}[拍频听起来在说什么]
 若两音叉频率分别为 \(256\ \text{Hz}\) 和 \(258\ \text{Hz}\)，那么你每秒会听到多少次明显的强弱变化？
-\end{example}
+\end{exercise}
 
 \begin{solution}
 拍频讨论的是“强弱起伏有多快”，它等于两个频率之差：
@@ -5647,9 +5326,9 @@ T_d&=\frac{2\pi}{\omega_d}
 这一节最重要的图景是：不是”回复力失效了”，而是系统每振一次都漏掉一点能量，所以摆幅越来越小。阻尼首先改掉的是能量守恒的理想条件，然后才表现为振幅衰减。
 \end{remark}
 
-\begin{example}
+\begin{exercise}
 一个弹簧振子，\(m=\SI{0.2}{kg}\)，\(k=\SI{50}{N/m}\)，阻尼系数 \(\gamma=\SI{0.4}{kg/s}\)。求：(1) 固有角频率；(2) 阻尼振动角频率；(3) 振幅衰减到初始值 \(1/\mathrm{e}\) 所需时间。
-\end{example}
+\end{exercise}
 \begin{solution}
 \[
 \omega_0=\sqrt{\frac{k}{m}}=\sqrt{\frac{50}{0.2}}=\SI{15.8}{rad/s},\qquad
@@ -5726,17 +5405,17 @@ B=\frac{F_0/m}{\sqrt{(\omega_0^2-\Omega^2)^2+4\beta^2\Omega^2}},\qquad
 
 \bridge{共振的物理本质不是“外力很大”，而是“每次推都推在最容易补能量的节奏上”。一旦节奏对上，哪怕单次推力不夸张，很多次连续叠加后振幅也会显著放大。}
 
-\begin{example}[共振为什么既有利又有风险]
+\begin{exercise}[共振为什么既有利又有风险]
 秋千越荡越高，是因为人在合适节奏下持续给系统输入能量，属于共振的利用；桥梁、机器若在固有频率附近被长期驱动，振幅可能过大，则属于共振风险。
-\end{example}
+\end{exercise}
 
 \begin{note}
 若完全没有阻尼，理论模型会给出无限增大的振幅；但真实系统总有阻尼、材料强度和能量供给的限制，所以现实中的共振虽很强，却不会真的”无限大”。
 \end{note}
 
-\begin{example}
+\begin{exercise}
 一根弹簧振子，固有频率 \(f_0=\SI{5}{Hz}\)，阻尼系数 \(\beta=\SI{2}{s^{-1}}\)，驱动力振幅 \(F_0=\SI{0.1}{N}\)，质量 \(m=\SI{0.05}{kg}\)。求共振时稳态振幅。
-\end{example}
+\end{exercise}
 \begin{solution}
 共振时 \(\Omega\approx\omega_0=2\pi f_0=\SI{31.4}{rad/s}\)，代入振幅公式，分母中 \((\omega_0^2-\Omega^2)^2\approx0\)，得
 \[
@@ -6479,9 +6158,9 @@ I\propto u.
 这里的 \(u\) 是波速，不是某个质点自己的振动速度。能流密度在乎的是“每秒有多厚的一层已带能量的介质扫过截面”，所以它跟波形传播速度有关，而不是跟单个质点一上一下振得多快直接等同。
 \end{remark}
 
-\begin{example}[振幅加倍时能流密度怎样变]
+\begin{exercise}[振幅加倍时能流密度怎样变]
 若同一介质中两列简谐波的波速和频率都相同，但第二列波的振幅是第一列的 2 倍，求两列波平均能流密度之比。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 \textbf{起手判断/模型：} 这道题不是要求绝对数值，而是在同一介质、同一频率下比较两列波的能流密度之比，所以最稳的做法是先找出\textbf{哪些量相同、哪些量在变}，再用比例关系。
@@ -6603,9 +6282,9 @@ y_2=A\cos(\omega t-kr_2),\\
 这就是后面光学双缝干涉的母版。第 6 章先抓住本质：\textbf{先找两列相干波，再算波程差，再判相长还是相消。} 这样后面换成光波时，只是在同一框架里换对象。
 \end{note}
 
-\begin{example}[两相干波源在点 \(P\) 处为什么会完全相消]
+\begin{exercise}[两相干波源在点 \(P\) 处为什么会完全相消]
 同一介质中有两相干波源 \(A,B\)，振幅都为 \(\SI{5}{cm}\)，频率都为 \(\SI{100}{Hz}\)，波速为 \(\SI{10}{m/s}\)。已知 \(AP=\SI{15}{m}\)、\(BP=\SI{25}{m}\)，且当 \(A\) 为波峰时 \(B\) 恰为波谷。求点 \(P\) 的干涉结果。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 \textbf{起手判断/模型：} 题目一边给了“同相还是反相”的初始信息，一边给了两条传播路程，所以第一条方程应先落在“初相差 + 传播相位差”的总账上，而不是先猜结果。
@@ -6641,9 +6320,9 @@ A_P=\abs{A_1-A_2}=0.
 \textbf{物理检查/易错点：} 这题最容易错在把“路程差很大”误以为“结果很复杂”。其实只要路程差恰好是整数个波长，它对“相长还是相消”只留下模 \(2\pi\) 的效果；真正决定本题的是“初相反”这一条。
 \end{solution}
 
-\begin{example}[两相干波源连线上哪些位置始终加强]
+\begin{exercise}[两相干波源连线上哪些位置始终加强]
 两相干波源 \(s_1,s_2\) 相距 \(l=\SI{10}{m}\)，振幅都为 \(\SI{0.02}{m}\)，频率为 \(\SI{5}{Hz}\)，波速为 \(\SI{10}{m/s}\)，初相相同。求两源连线上振动加强的位置及其合振幅，并判断右侧延长线上合振动怎样。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 \textbf{起手判断/模型：} 两源初相相同，所以这题第一步先写波长，再把“振动加强”直接翻成“波程差为整数个波长”。
@@ -6688,9 +6367,9 @@ r_1-r_2=l=\SI{10}{m}=5\lambda,
 \textbf{物理检查/易错点：} 延长线题最容易错在把波程差写成“随点变化”。其实在右侧延长线上，两源到该点的路程之差始终就是源间距 \(l\)，先认出这件事，题就会非常短。
 \end{solution}
 
-\begin{example}[两相干波源有初相差时为什么左右延长线不一样]
+\begin{exercise}[两相干波源有初相差时为什么左右延长线不一样]
 两相干波源 \(s_1,s_2\) 振幅相同，且 \(s_2\) 比 \(s_1\) 的初相超前 \(\pi/2\)。已知两源间距 \(l=\lambda/4\)。讨论两源连线左侧延长线与右侧延长线上的干涉情况。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 \textbf{起手判断/模型：} 这题和“同相两源”的关键区别，不在几何上，而在一开始就自带初相差 \(\pi/2\)。所以第一步应先把\textbf{初相差}和\textbf{波程差导致的相位差}记到同一本总账里：
@@ -6849,9 +6528,9 @@ y_r&=A\cos(\omega t+kx)
 这部分特别值得提前记牢，因为后面光学里的薄膜干涉也会反复出现“半波损失”这个思想。机械波和光波的对象不同，但“相位是否翻转、是否等效多了半个波长”这条判断线是同一条。
 \end{remark}
 
-\begin{example}[反射后再与另一列波相遇时怎样先记半波损失]
+\begin{exercise}[反射后再与另一列波相遇时怎样先记半波损失]
 两列相干波 \(A,B\) 的波长都为 \(\lambda\)。波 \(A\) 经过 \(O_1\) 后在点 \(m\) 处反射，再传播到点 \(P\)；波 \(B\) 从 \(O_2\) 直接传播到 \(P\)。已知 \(O_1m+mp=8\lambda\)、\(O_2P=3\lambda\)，反射处有半波损失，两源在 \(O_1,O_2\) 处的振动都为 \(y=A\cos \pi t\)。求两列波在 \(P\) 点的振动方程以及 \(P\) 点合振动。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 \textbf{起手判断/模型：} 题目关键不在路程长短本身，而在波 \(A\) 多经过了一次反射，所以总相位里必须先把半波损失补进去。最稳的写法是把每一路到 \(P\) 的总相位直接写出来。
@@ -6889,13 +6568,13 @@ y_P=y_A+y_B=-A\cos\pi t+A\cos\pi t=0.
 \textbf{物理检查/易错点：} 若漏掉半波损失，本题会被误判为同相加强。反射题最重要的不是把每一段路机械相加，而是先问“这次反射到底翻没翻相”。
 \end{solution}
 
-\begin{example}[已知一列行波时怎样补出形成驻波的反向波]
+\begin{exercise}[已知一列行波时怎样补出形成驻波的反向波]
 弦线上有一简谐波
 \[
 y_1=2.0\times10^{-2}\cos\!\left[2\pi\left(\frac{t}{0.02}-\frac{x}{20}\right)+\frac{\pi}{3}\right]\ (\si{SI}).
 \]
 若要在这条弦上形成驻波，并要求 \(x=0\) 处为波节，求还应叠加哪一列简谐波。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 \textbf{起手判断/模型：} 要形成驻波，补上的那列波必须与已知波\textbf{同频、同振幅、反向传播}。而“\(x=0\) 处为波节”不是后置检查，而是用来定反向波初相的关键条件。
@@ -6931,13 +6610,13 @@ y_2=2.0\times10^{-2}\cos\!\left[2\pi\left(\frac{t}{0.02}+\frac{x}{20}\right)+\fr
 \textbf{物理检查/易错点：} 本题最容易错在只顾“反向传播”，却忘了驻波还要满足指定边界条件。驻波题里，方向负责搭架子，边界条件负责定相位。
 \end{solution}
 
-\begin{example}[波阻更大时反射波为什么要先带一个 \(\pi\)]
+\begin{exercise}[波阻更大时反射波为什么要先带一个 \(\pi\)]
 一列沿 \(x\) 轴正向传播的简谐波为
 \[
 y_1=10^{-3}\cos\!\left[200\pi\left(t-\frac{x}{200}\right)\right]\ (\si{m}).
 \]
 设介质 \(1\) 与介质 \(2\) 的分界点为 \(A\)，且 \(OA=L=\SI{2.25}{m}\)。已知介质 \(2\) 的波阻大于介质 \(1\)，反射波与入射波振幅相等。求：1. 反射波方程；2. 驻波方程；3. \(OA\) 之间波节与波腹的位置坐标。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 \textbf{起手判断/模型：} “波阻更大”这四个字不是背景信息，而是在告诉你：反射端等效为\textbf{波节边界}，所以反射波在边界处相对入射波要多出一个 \(\pi\) 的相位突变。也就是说，这题第一步不是直接猜常数，而是先把“固定端式反相反射”认出来。
@@ -7094,9 +6773,9 @@ f_n=\frac{(2n-1)u}{4l}.
 这一类可以看成两端固定模型的边界条件变体，本轮以两端固定弦为主线掌握即可。
 \end{note}
 
-\begin{example}[二胡弦的基频和谐频为什么先从边界条件起手]
+\begin{exercise}[二胡弦的基频和谐频为什么先从边界条件起手]
 一根二胡弦长 \(l=\SI{0.30}{m}\)，张力 \(T=\SI{9.4}{N}\)，线密度 \(\rho=3.8\times10^{-4}\,\si{kg/m}\)。求这根弦发声的基频与谐频。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 \textbf{起手判断/模型：} 二胡弦两端都被固定，所以第一条方程不该先写频率，而应先写“两端固定弦的允许模式”
@@ -7173,13 +6852,13 @@ f_n=\frac{n}{2l}\sqrt{\frac{T}{\rho}}
   \item 最后再决定分子分母该用增大还是减小。
 \end{enumerate}
 
-\begin{example}[多普勒题先别急着套总公式]
+\begin{exercise}[多普勒题先别急着套总公式]
 救护车警报声的多普勒题，最稳的做法不是一上来记正负号，而是先回答两句：是谁在运动？是在靠近还是远离？只要这两步不乱，分子分母的符号通常就不会错。
-\end{example}
+\end{exercise}
 
-\begin{example}[两个汽笛同时发声时怎样一步步判出拍频]
+\begin{exercise}[两个汽笛同时发声时怎样一步步判出拍频]
 两个汽笛 \(A,B\) 的频率都为 \(\SI{500}{Hz}\)。\(A\) 静止，\(B\) 以 \(\SI{60}{m/s}\) 向右运动。在两汽笛之间有一观察者 \(O\)，以 \(\SI{30}{m/s}\) 向右运动。已知空气中声速为 \(\SI{330}{m/s}\)。求观察者听到来自 \(A\) 的频率、来自 \(B\) 的频率以及拍频。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 \textbf{起手判断/模型：} 这题最容易乱在“两个声源方向不同”。真正稳的做法是\textbf{分开算两次多普勒}：先单独看 \(A\to O\)，再单独看 \(B\to O\)，最后再用频率差求拍频。
@@ -8314,9 +7993,9 @@ x_{k+\frac12}=\frac{\left(k+\frac12\right)\lambda D}{d},\\
 白光照射时，中央处不同颜色都满足零级明纹条件，所以中央通常是白亮纹；越往高阶走，不同波长的条纹位置越分开，最终还会互相重叠而变得模糊。
 \end{remark}
 
-\begin{example}[双缝条纹间距]
+\begin{exercise}[双缝条纹间距]
 波长为 \(\SI{600}{nm}\) 的单色光照射双缝，双缝间距为 \(\SI{0.20}{mm}\)，双缝到屏的距离为 \(\SI{2.0}{m}\)。求相邻明纹间距。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 \textbf{起手判断/模型：} 题目问的是\textbf{相邻明纹间距}，而且已给出双缝间距 \(d\)、屏距 \(D\) 和波长 \(\lambda\)，所以第一条方程应直接写杨氏双缝的小角近似结果
@@ -8337,9 +8016,9 @@ x_{k+\frac12}=\frac{\left(k+\frac12\right)\lambda D}{d},\\
 \textbf{物理检查/易错点：} 可见光波长量级是 \(10^{-7}\,\si{m}\)，双缝间距量级是 \(10^{-4}\,\si{m}\)，所以条纹间距落在毫米量级很合理。最常见错误是把 \(\si{nm}\) 和 \(\si{mm}\) 不换单位就直接代入，或者把 \(d\) 与 \(D\) 混反。
 \end{solution}
 
-\begin{example}[双缝各覆一片介质时原中央明纹处光程差]
+\begin{exercise}[双缝各覆一片介质时原中央明纹处光程差]
 双缝装置的两个缝分别被折射率为 \(n_1,n_2\) 的透明介质片遮盖，两介质片厚度均为 \(e\)。求双缝到屏上原中央极大所在处的两束光的光程差。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 \textbf{起手判断/模型：} 原中央极大处的几何路程原本相等，所以新的光程差只来自两块介质片把空气段替换成折射率不同的介质段。
@@ -8460,9 +8139,9 @@ x_0=\frac{D(n-1)e}{d}.
 \textbf{先看什么信号：} 题目一说“某一路插入介质片”且又问条纹往哪边移，先想到新增的是光程差，不是条纹间距；\textbf{这条公式在控制什么：} \((n-1)e\) 控制的是整幅图样的整体平移量；\textbf{怎样最快记住：} 哪一路被加片，哪一路就等效“落后”，亮纹就整体朝那一路偏；\textbf{最容易错：} 只记移动方向，却忘了 \(\Delta x=\lambda D/d\) 仍由双缝几何决定，插片不会改条纹疏密。
 \end{note}
 
-\begin{example}[原中央明纹处为什么还能落在某一级明纹上]
+\begin{exercise}[原中央明纹处为什么还能落在某一级明纹上]
 双缝干涉中，入射光波长为 \(\lambda\)，双缝至屏距离为 \(D\)。在一个缝后放入厚度为 \(b\)、折射率为 \(n\) 的透明薄片后，原中央明纹处仍为一明纹。求该处对应的干涉级次。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 \textbf{起手判断/模型：} 题目问的是“原中央位置现在属于第几级”，所以第一步不该先去求新中央位置，而应直接在原中央位置记总光程差。
@@ -8491,9 +8170,9 @@ k=\frac{(n-1)b}{\lambda}.
 \textbf{物理检查/易错点：} 这里的 \(k\) 只是在回答“原中央位置补偿了多少级光程差”，并不等于新的中央明纹编号。最容易错的是把“原中央处仍亮”误解成“图样根本没动”。
 \end{solution}
 
-\begin{example}[中央明纹上移 3 条时怎样反推介质片厚度]
+\begin{exercise}[中央明纹上移 3 条时怎样反推介质片厚度]
 杨氏双缝实验中，用透明片遮住上缝后，观察到中央明纹向上移动了 3 个条纹。已知透明片折射率 \(n=1.4\)，入射光波长 \(\lambda=0.55\times10^{-6}\,\si{m}\)。求透明片厚度。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 \textbf{起手判断/模型：} “中央明纹移动了 3 个条纹”这句话，应该先翻译成“新增光程差恰好对应 3 个波长”，而不是先去重画整幅条纹图。
@@ -8687,13 +8366,13 @@ n=\frac43\approx 1.33.
 \delta\approx 2nd+\delta_2.
 \]
 
-\begin{example}[上下表面反射光相遇时的相位差]
+\begin{exercise}[上下表面反射光相遇时的相位差]
 平行单色光垂直照射到薄膜上，经上下两表面反射的两束光发生干涉。薄膜厚度为 \(e\)，折射率满足 \(n_1<n_2>n_3\)，入射光在折射率为 \(n_1\) 的介质中的波长为 \(\lambda_1\)。求两束反射光在相遇点的相位差。
 
 \begin{center}
 \includegraphics[width=0.26\linewidth]{pdf-exercises/pdf2003-q08-film.png}
 \end{center}
-\end{example}
+\end{exercise}
 
 \begin{solution}
 \textbf{起手判断/模型：} 垂直入射薄膜题先算膜内往返造成的相位差，再判断两束反射光是否有额外 \(\pi\) 相位差。这里上表面反射是从 \(n_1\) 到 \(n_2\)，有半波损失；下表面反射是从 \(n_2\) 到 \(n_3\)，由于 \(n_2>n_3\)，没有半波损失。因此两束反射光额外相差 \(\pi\)。
@@ -8811,9 +8490,9 @@ d_{\min}=\frac{\lambda}{4n}.
 
 薄膜干涉不只是“看条纹”，还是光学镀膜的理论基础。若希望某一目标波长的反射尽量弱，就让反射光相消；若希望反射尽量强，就让反射光相长。
 
-\begin{example}[四分之一波长增透膜的最小厚度]
+\begin{exercise}[四分之一波长增透膜的最小厚度]
 若某一薄膜用于目标波长 \(\lambda\) 的增透设计，并满足常见的一次半波损失条件，求其最小厚度。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 \textbf{起手判断/模型：} “增透膜”四个字已经把模型说死了：目标是让\textbf{反射光尽量相消}，从而把更多光送进透射方向。题目又强调求最小厚度，所以应优先找满足相消条件的最小非零膜厚。
@@ -8863,9 +8542,9 @@ d_{\min}=\frac{500\,\si{nm}}{4\times1.38}
 增透膜与增反膜并不是“新现象”，而只是把同一套薄膜干涉规律用在工程设计里。看到镀膜题时，先问自己：这道题希望反射光相消，还是相长？
 \end{note}
 
-\begin{example}[油膜上下观察时为什么会看到不同颜色]
+\begin{exercise}[油膜上下观察时为什么会看到不同颜色]
 一层折射率 \(n_1=1.20\) 的油膜浮在海水表面，海水折射率 \(n_2=1.30\)。若太阳在头顶正上方，某处油膜厚度 \(d=\SI{460}{nm}\)。问从空中向下看时呈什么颜色；若潜水员从水下向上看，又会看到什么主颜色。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 \textbf{起手判断/模型：} 这题最重要的是先分清“从空中看”对应反射观察，“从水下看”对应透射观察。两者不能套同一组明暗条件。
@@ -9071,9 +8750,9 @@ x_4'=\frac{7\lambda}{4\theta'}.
 \textbf{物理检查/易错点：} 第四条明纹离棱边不是 \(4\) 个条纹间距，而是 \(3.5\) 个条纹间距，因为反射光在棱边处为暗纹。若 \(\theta'\) 变小，条纹间距变大，第四明纹应向远离棱边方向移动，公式也给出正位移。
 \end{solution}
 
-\begin{example}[第五条暗纹对应的膜厚为什么先从棱边明暗判起]
+\begin{exercise}[第五条暗纹对应的膜厚为什么先从棱边明暗判起]
 波长为 \(\lambda\) 的单色光垂直照射到折射率为 \(n_2\) 的劈尖薄膜上，设上下介质折射率满足 \(n_1<n_2<n_3\)。从交棱 \(O\) 开始向右数，表面出现第 \(5\) 条暗纹。求该处膜厚。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 \textbf{起手判断/模型：} 先别急着数“第五条暗纹”对应哪个 \(k\)。最稳的第一步是先判断棱边 \(d=0\) 处到底是明还是暗。由于这里是典型的一次半波损失模型，棱边处会先出现\textbf{明纹}，因此沿右侧数过去时，第 \(1\) 条暗纹对应的是 \(k=0\)。
@@ -9102,9 +8781,9 @@ d=\frac{9\lambda}{4n_2}.
 \textbf{物理检查/易错点：} 这题最容易错在把“第 \(5\) 条暗纹”机械写成 \(k=5\)。等厚干涉里一定先把\textbf{棱边从哪一种条纹起数}说清楚，再编号。
 \end{solution}
 
-\begin{example}[用劈尖条纹间距测金属细丝直径时为什么先写几何斜率]
+\begin{exercise}[用劈尖条纹间距测金属细丝直径时为什么先写几何斜率]
 把金属细丝夹在两块平玻璃之间形成空气劈尖。用波长 \(\lambda=\SI{589.3}{nm}\) 的单色光垂直照射，已知金属丝到劈尖顶点的距离 \(L=\SI{28.880}{mm}\)，测得 \(30\) 条明纹跨越的总长度为 \(\SI{4.295}{mm}\)。求金属细丝直径 \(D\)。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 \textbf{起手判断/模型：} 这类题看上去在测长度，其实真正先写的是“厚度沿长度方向怎样线性增长”。也就是说，第一步要把劈尖的几何斜率写成
@@ -9182,9 +8861,9 @@ R^2&=(R-d)^2+r^2\\
   \item 观察油膜或薄层厚度变化引起的条纹变化。
 \end{itemize}
 
-\begin{example}[牛顿环测曲率半径]
+\begin{exercise}[牛顿环测曲率半径]
 在牛顿环实验中，已知单色光波长为 \(\lambda\)，测得第 \(k\) 个暗环半径为 \(r_k\)，第 \(k+m\) 个暗环半径为 \(r_{k+m}\)。求平凸透镜的曲率半径 \(R\)。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 \textbf{起手判断/模型：} 题目给的是两个\textbf{暗环半径}，目标是求曲率半径 \(R\)。因此第一条方程不该从几何厚度 \(d\) 重新推起，而应直接调用反射暗环关系；两式相减的目的，是把未知级次 \(k\) 消掉，于是
@@ -9202,9 +8881,9 @@ R=\frac{r_{k+m}^2-r_k^2}{m\lambda}.
 \textbf{物理检查/易错点：} \(r^2/\lambda\) 的量纲是长度，和 \(R\) 一致。用平方差而不用半径直接相减的好处，就是不必纠缠中心究竟记作第零级还是第一级；只要两条都是暗环，同一条公式就成立。
 \end{solution}
 
-\begin{example}[空气换成液体后牛顿环半径怎样反推折射率]
+\begin{exercise}[空气换成液体后牛顿环半径怎样反推折射率]
 平凸透镜顶点和平板玻璃接触，用单色光垂直照射，观察反射光形成的牛顿环。测得中央暗斑外第 \(k\) 个暗环在空气中半径为 \(r_1\)。若将透镜和玻璃板之间的空气换成某种液体，且液体折射率小于玻璃折射率，第 \(k\) 个暗环半径变为 \(r_2\)。求该液体折射率。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 \textbf{起手判断/模型：} 同一个第 \(k\) 个暗环，对应的是同一级干涉条件；换液体后改变的是薄膜折射率，几何关系 \(d\approx r^2/(2R)\) 不变。
@@ -9288,9 +8967,9 @@ d_{\min}=\frac{\lambda}{4n}
 \textbf{物理检查/易错点：} 如果中心两面相接 \(d=0\)，因为两次反射都没有相对半波损失，中心应为亮而不是暗。要让中心变暗，最小厚度正是液体中四分之一波长对应的几何厚度 \(\lambda/(4n)\)。本题最容易错的是只凭“牛顿环中心常暗”直接选 \(0\)，却忽略了三种介质的折射率顺序。
 \end{solution}
 
-\begin{example}[圆形油膜条纹为什么会一圈圈向中心数]
+\begin{exercise}[圆形油膜条纹为什么会一圈圈向中心数]
 在平面玻璃片上放一油滴并展开成圆形油膜。已知单色光波长 \(\lambda=\SI{600}{nm}\)，玻璃折射率 \(n_1=1.50\)，油膜折射率 \(n_2=1.20\)，油膜中心最高点厚度 \(h=8.0\times10^2\,\si{nm}\)。问：反射观察时条纹如何分布，可见明纹有几条，各明纹处膜厚各是多少；若油膜继续展开，条纹怎样变化？
-\end{example}
+\end{exercise}
 
 \begin{solution}
 \textbf{起手判断/模型：} 这题虽然外形像“圆膜”，但本质仍是等厚干涉。第一步要先认出：油膜厚度从中心向边缘单调减小，所以\textbf{相同厚度对应同心圆}，条纹自然是一圈圈的圆环。又因为这里讨论反射观察，最稳的做法是直接写反射明纹条件。
@@ -9331,13 +9010,13 @@ k=0,1,2,3
 \textbf{物理检查/易错点：} 这题最容易错在把中心最大厚度 \(\SI{800}{nm}\) 也硬凑成一条明纹。真正该做的是先列允许的明纹厚度，再看哪些厚度还塞得进当前油膜。
 \end{solution}
 
-\begin{example}[空气劈尖条纹弯向薄端时怎样判断凸凹缺陷]
+\begin{exercise}[空气劈尖条纹弯向薄端时怎样判断凸凹缺陷]
 光学平板玻璃 \(A\) 与待测工件 \(B\) 间形成空气劈尖，用波长 \(\lambda=\SI{500}{nm}\) 的单色光垂直照射。反射光干涉条纹如图所示，弯曲部分顶点恰好与其右边相邻直条纹的连线相切。判断工件上表面缺陷是凸起还是凹槽，并求最大高度或深度。
 
 \begin{center}
 \includegraphics[width=0.28\linewidth]{pdf-exercises/pdf2004-q09-wedge-defect.png}
 \end{center}
-\end{example}
+\end{exercise}
 
 \begin{solution}
 \textbf{起手判断/模型：} 空气劈尖反射条纹是等厚线。条纹向哪边弯，表示相同厚度的位置被缺陷推到了哪里。图中弯曲顶点向劈尖薄端一侧偏移，说明该处空气膜厚度比周围同位置更大，因此工件表面在该处为凸起。
@@ -9391,9 +9070,9 @@ h=\frac{\lambda}{2}.
 \textbf{物理检查/易错点：} 判断凸凹时不能只背“向左就是凸、向右就是凹”，必须先看劈尖薄端和厚端在哪一侧。数值上则要记住条纹移动一条，对应空气膜厚度变化 \(\lambda/2\)。
 \end{solution}
 
-\begin{example}[两种波长第五个牛顿环明环对应膜厚差]
+\begin{exercise}[两种波长第五个牛顿环明环对应膜厚差]
 平凸透镜凸面朝下放在平玻璃板上，透镜刚好与玻璃板接触。波长分别为 \(\lambda_1=\SI{600}{nm}\)、\(\lambda_2=\SI{500}{nm}\) 的两种单色光垂直入射，观察反射光形成的牛顿环。求从中心向外数的两种光的第五个明环所对应的空气膜厚度之差。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 \textbf{起手判断/模型：} 反射牛顿环中心为暗，明环条件要带半级差。题目问的是膜厚差，不需要再把膜厚换成半径。
@@ -9965,9 +9644,9 @@ I(\theta)=I_0\left[\frac{2J_1(x)}{x}\right]^2,\quad x=\frac{\pi D\sin\theta}{\la
 所以别把“线分辨”和“角分辨”看成两套题，它们只是同一件事的两种说法。
 \end{remark}
 
-\begin{example}[人眼分辨两盏车灯的最远距离]
+\begin{exercise}[人眼分辨两盏车灯的最远距离]
 设两盏车灯相距 \(\delta y=\SI{1.5}{m}\)，人眼瞳孔直径约为 \(D=\SI{4}{mm}\)，取最敏感黄绿光波长 \(\lambda=\SI{555}{nm}\)。问人眼最远在多大距离 \(L\) 处还能恰好分辨这两盏灯？
-\end{example}
+\end{exercise}
 
 \begin{solution}
 把人眼看成一个有限孔径的成像系统。恰好能分辨时，角分辨极限满足瑞利判据：
@@ -10111,9 +9790,9 @@ d\sin\theta=k\lambda,\qquad a\sin\theta=k'\lambda
 \textbf{先看什么信号：} 题面一问“哪些级次看不见”或给出 \(d\) 和 \(a\) 的整数倍关系，就要把主极大条件和单缝暗纹条件联立；\textbf{这条公式在控制什么：} 它控制的是“本来该亮的方向”是否恰好落进了单缝包络的禁区；\textbf{怎样最快记住：} 光栅主极大想让这一方向亮起来，单缝暗纹却同时禁止它出现，于是就缺级；\textbf{最容易错：} 只用光栅方程判断级次，不去检查单缝暗纹是否把它压掉。
 \end{note}
 
-\begin{example}[缺级判断]
+\begin{exercise}[缺级判断]
 若光栅常数 \(d=2a\)，问哪些级次的主极大会缺级？
-\end{example}
+\end{exercise}
 
 \begin{solution}
 缺级要求同一方向同时满足
@@ -10129,9 +9808,9 @@ k=2k'.
 也就是说，偶数级主极大都会缺级，如 \(k=\pm2,\pm4,\pm6,\dots\)。
 \end{solution}
 
-\begin{example}[500 条每毫米的光栅为什么最后只看见 5 条明纹]
+\begin{exercise}[500 条每毫米的光栅为什么最后只看见 5 条明纹]
 用波长 \(\lambda=\SI{500}{nm}\) 的单色光垂直照射到每毫米有 500 条刻痕的光栅上。求：1. 第一级和第三级明纹的衍射角；2. 若缝宽与缝间距相等，用此光栅最多能看到几条明纹。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 \textbf{起手判断/模型：} 题目先问“第几级明纹在哪里”，所以第一步先用光栅方程求角度；第二问再补上“缝宽与缝间距相等”这一条件，去检查缺级而不是只看最高级次。
@@ -10278,9 +9957,9 @@ k=0,\ \pm1,\ \pm2.
 \textbf{物理检查/易错点：} 单缝中央明纹边界本身是暗纹，不能把刚好落在边界的级次算进去。这里 \(\abs{k}<2.5\)，所以只到 \(\pm2\)。
 \end{solution}
 
-\begin{example}[第二级出现在 \(\sin\theta=0.20\) 且第四级缺级时怎样反推光栅参数]
+\begin{exercise}[第二级出现在 \(\sin\theta=0.20\) 且第四级缺级时怎样反推光栅参数]
 用波长 \(\lambda=\SI{500}{nm}\) 的单色光垂直照射某光栅，观察到第二级主极大出现在 \(\sin\theta=0.20\) 处，且第四级缺级。求：1. 光栅常数；2. 狭缝最小宽度；3. 可见条纹级次。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 \textbf{起手判断/模型：} 已知某一级的角位置，第一条方程先写光栅主极大条件求 \(d\)；而“第四级缺级”则是第二步才用来联立单缝暗纹条件求 \(a\)。
@@ -10410,13 +10089,13 @@ d\sin\theta=k\lambda
 高级次为什么更容易分开不同颜色？因为同样的波长差，在更高级次下通常会拉开更明显的角差。可与此同时，不同级次本身也更可能互相交叠，所以“更分散”和“更易重叠”会同时出现。
 \end{note}
 
-\begin{example}[两种波长第二次重合时怎样反推光栅常数]
+\begin{exercise}[两种波长第二次重合时怎样反推光栅常数]
 一束平行光垂直入射到某光栅上，其中含有两种波长
 \[
 \lambda_1=\SI{440}{nm},\qquad \lambda_2=\SI{660}{nm}.
 \]
 实验发现，两种波长的谱线（不计中央明纹）第二次重合于衍射角 \(\varphi=60^\circ\) 的方向上。求该光栅的光栅常数 \(d\)。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 \textbf{起手判断/模型：} “两种波长谱线重合”这句话，真正控制答案的第一条方程不是单缝暗纹，而是\textbf{光栅主极大条件}
@@ -10576,9 +10255,9 @@ d=1.0\times10^{-3}\,\si{cm}=1.0\times10^{-5}\,\si{m},
 \textbf{物理检查/易错点：} 光栅常数比单缝宽度小 \(10\) 倍，因此同一级角分离放大 \(10\) 倍，这正解释了光栅比单缝更适合分光。不要把光栅常数 \(d\) 和单缝宽度 \(a\) 混用。
 \end{solution}
 
-\begin{example}[单缝分成 5 个半波带时的衍射角]
+\begin{exercise}[单缝分成 5 个半波带时的衍射角]
 在单缝夫琅禾费衍射实验中，波长为 \(\lambda\) 的单色光垂直入射到宽度 \(a=5\lambda\) 的单缝上。某衍射角 \(\varphi\) 方向上，单缝处波面恰好可分成 \(5\) 个半波带。求 \(\varphi\)。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 \textbf{起手判断/模型：} 半波带数由单缝上下边缘到观察方向的最大光程差决定。每个半波带对应 \(\lambda/2\) 的光程差。
@@ -10602,13 +10281,13 @@ a\sin\varphi=N\frac{\lambda}{2}.
 \textbf{物理检查/易错点：} \(5\) 个半波带对应的是 \(5\lambda/2\)，不是 \(5\lambda\)。若漏掉半波带的“半”，角度会被算大一倍。
 \end{solution}
 
-\begin{example}[单缝边缘光线相位差为 \(\pi\) 时焦平面位置]
+\begin{exercise}[单缝边缘光线相位差为 \(\pi\) 时焦平面位置]
 波长 \(\lambda=\SI{480.0}{nm}\) 的平行光垂直照射宽度 \(a=\SI{0.40}{mm}\) 的单缝，单缝后透镜焦距为 \(f=\SI{60}{cm}\)。当单缝两边缘点 \(A,B\) 射向 \(P\) 点的两条光线在 \(P\) 点相位差为 \(\pi\) 时，求 \(P\) 点离透镜焦点 \(O\) 的距离。
 
 \begin{center}
 \includegraphics[width=0.28\linewidth]{pdf-exercises/pdf2004-q19-single-slit.png}
 \end{center}
-\end{example}
+\end{exercise}
 
 \begin{solution}
 \textbf{起手判断/模型：} 两边缘光线相位差 \(\pi\) 表示光程差为 \(\lambda/2\)。夫琅禾费衍射中透镜焦平面上的位置可由小角近似 \(x\approx f\sin\theta\) 得到。
@@ -10645,9 +10324,9 @@ x\approx f\sin\theta
 \textbf{物理检查/易错点：} 焦平面上的距离量级为毫米以下，和窄缝衍射的小角图样一致。最容易错的是把相位差 \(\pi\) 误当成光程差 \(\lambda\)，正确应为 \(\lambda/2\)。
 \end{solution}
 
-\begin{example}[钠光与另一光源在同一光栅上怎样比较波长]
+\begin{exercise}[钠光与另一光源在同一光栅上怎样比较波长]
 用钠光 \(\lambda_1=\SI{589.3}{nm}\) 垂直照射某光栅，测得第三级光谱衍射角为 \(60^\circ\)。若换用另一光源，测得其第二级光谱衍射角为 \(30^\circ\)，求后一光源的波长；再求白光 \(400\sim760\,\si{nm}\) 的第二级光谱张角。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 \textbf{起手判断/模型：} 题目给的是“同一光栅、不同波长、不同级次”的两组数据，所以第一步必须先用同一个光栅方程把它们联起来。
@@ -10928,9 +10607,9 @@ E_y=E_0\cos\theta,\qquad E_x=E_0\sin\theta.
 \textbf{先看什么信号：} 题目只要给了“线偏振光 + 检偏器 + 夹角”，就直接落到马吕斯定律；\textbf{这条公式在控制什么：} 它控制的是透振方向筛掉多少振动分量；\textbf{怎样最快记住：} 先投影得 \(\cos\theta\)，再平方成 \(\cos^2\theta\)，所以它是“投影 + 平方”；\textbf{最容易错：} 把 \(I_0\) 错认成最初自然光光强，而不是进入检偏器前那束偏振光的光强。
 \end{note}
 
-\begin{example}[两片偏振片]
+\begin{exercise}[两片偏振片]
 自然光依次通过两片偏振片后，若最后的透射光强为入射光强的 \(1/8\)，求两片偏振片偏振化方向的夹角。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 设入射自然光强为 \(I\)。自然光经过第一片偏振片后，光强变为
@@ -11050,9 +10729,9 @@ n_1\sin i_B=n_2\sin r=n_2\cos i_B
 为什么 \(p\) 分量在布儒斯特角时反射为零？直观图像：当反射光与折射光恰好垂直时，折射光中的振荡偶极子（沿 \(p\) 方向振动）恰好沿反射方向排列——而偶极子不会沿自身振动方向辐射。因此 \(p\) 分量无法被反射出去，只剩 \(s\) 分量。这就是为什么 \(\tan i_B=n_2/n_1\) 等价于"反射光与折射光互相垂直"。
 \end{remark}
 
-\begin{example}[在布儒斯特角入射到平板玻璃时第二界面的反射光是什么光]
+\begin{exercise}[在布儒斯特角入射到平板玻璃时第二界面的反射光是什么光]
 一束自然光自空气射向一块平板玻璃，入射角恰为布儒斯特角 \(i_B\)。问在玻璃第二界面（玻璃射向空气）产生的反射光是什么光。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 \textbf{起手判断/模型：} 题目关键不在第一界面反射光，而在“第一界面透射光再打到第二界面会怎样”。在布儒斯特角入射时，第一界面反射光为完全线偏振光；但透射进玻璃的光并不会只剩某一个偏振分量，它通常仍是部分偏振光，只是两种分量强度已经不相等。
@@ -11083,9 +10762,9 @@ i_B'=90^\circ-i_B=r_B=i_2.
 \textbf{物理检查/易错点：} 最容易错的是把“第一界面反射光为完全偏振”误搬到“进入玻璃的透射光只含 \(p\) 分量”。实际透射光仍含 \(s\) 分量，所以第二界面在布儒斯特角处仍能反射出垂直入射面的线偏振光。
 \end{solution}
 
-\begin{example}[由全反射临界角反推布儒斯特角]
+\begin{exercise}[由全反射临界角反推布儒斯特角]
 某透明介质相对于空气的全反射临界角为 \(45^\circ\)。光从空气射向该介质时，求布儒斯特角。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 \textbf{起手判断/模型：} 临界角给的是介质射向空气时的关系，布儒斯特角问的是空气射向介质时的关系。两者都由折射率控制，所以先由临界角求介质折射率。
@@ -11232,13 +10911,13 @@ n=\tan60^\circ=\sqrt3.
 \textbf{先看什么信号：} 题面出现方解石、光轴、o 光、e 光时，先想到双折射；\textbf{这条概念在控制什么：} 它控制的是一束自然光进入各向异性晶体后会被分成两束偏振光；\textbf{怎样最快记住：} o 光和 e 光的振动方向互相垂直，而传播方向通常不同；\textbf{最容易错：} 把 o/e 光误当成同一路光的两个强度分量，忽略双折射会分成两束。
 \end{note}
 
-\begin{example}[方解石中 o 光和 e 光的方向关系]
+\begin{exercise}[方解石中 o 光和 e 光的方向关系]
 \(ABCD\) 为方解石的一个截面，\(AB\) 为垂直于纸面的晶体平面与纸面的交线。光轴方向在纸面内且与 \(AB\) 成锐角 \(\theta\)。一束平行单色自然光垂直于 \(AB\) 端面入射，在方解石内分解为 o 光和 e 光。判断 o 光和 e 光的传播方向以及电场振动方向关系。
 
 \begin{center}
 \includegraphics[width=0.25\linewidth]{pdf-exercises/pdf2003-q10-calcite.png}
 \end{center}
-\end{example}
+\end{exercise}
 
 \begin{solution}
 \textbf{起手判断/模型：} 方解石是单轴晶体，题面又给出光轴方向，这就是双折射题。自然光进入晶体后分解为 o 光和 e 光，两束光对应的电矢量振动方向互相垂直。
@@ -11341,9 +11020,9 @@ n&=\frac{m_0}{M}=\frac{N}{N_A},\qquad k=\frac{R}{N_A}.
 
 状态方程告诉我们：在一定质量下，只要知道 \(p\)、\(V\)、\(T\) 中任意两个量，第三个量就被唯一确定。它是宏观层面的“状态说明书”。
 
-\begin{example}[已知 \(p,V,T\) 时怎样先数出分子总数]
+\begin{exercise}[已知 \(p,V,T\) 时怎样先数出分子总数]
 某理想气体体积为 \(V\)，压强为 \(p\)，温度为 \(T\)。已知玻尔兹曼常量为 \(k\)。求该气体的分子总数 \(N\)。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 \textbf{起手判断/模型：} 题目问的是“总共有多少个分子”，所以最直接的入口不是摩尔数语言，而是分子数语言的状态方程 \(pV=NkT\)。只要先把“压强、体积、温度”翻译成这一本账，\(N\) 会直接长出来。
@@ -11412,11 +11091,11 @@ p=\frac{1}{3}\frac{N}{V}m\overline{v^2},
 这里出现的是 \(\overline{v^2}\)，不是 \(\bar v^{\,2}\)。先平方再平均，和先平均再平方，通常不是一回事。后面“方均根速率”之所以重要，正是因为压强和平均动能都直接连着 \(\overline{v^2}\)。
 \end{remark}
 
-\begin{example}[怎样从公式读出压强大小规律]
+\begin{exercise}[怎样从公式读出压强大小规律]
 若分子数密度 \(N/V\) 不变，而分子的方均速率变大，则 \(\overline{v^2}\) 变大，压强也随之增大；若温度不变而把同样多的分子压缩进更小体积，则 \(N/V\) 变大，压强同样增大。
 
 这说明压强的微观来源有两条：一是“每个分子撞得更狠”，二是“单位体积里分子更多、撞得更勤”。
-\end{example}
+\end{exercise}
 
 \section{温度的微观意义}
 
@@ -11500,15 +11179,15 @@ v_{\mathrm{rms}}&=\sqrt{\frac{3kT}{m}}=\sqrt{\frac{3RT}{M}},\\
 \textbf{第一次做题最稳的分工是：} 读分布图峰值先想 \(v_p\)；题目若说“平均起来跑多快”先想 \(\bar v\)；只要压强、平均动能或 \(\overline{v^2}\) 出现，就优先切到 \(v_{\mathrm{rms}}\)。这样三条公式就不会只剩下机械背诵。
 \end{note}
 
-\begin{example}[怎样快速判断三种统计速率的变化]
+\begin{exercise}[怎样快速判断三种统计速率的变化]
 若同一种气体的热力学温度由 \(T\) 升高到 \(4T\)，则 \(v_p,\bar v,v_{\mathrm{rms}}\) 都会变为原来的 \(2\) 倍，因为它们都和 \(\sqrt{T}\) 成正比。
 
 若两种气体温度相同，则摩尔质量 \(M\) 越小，三种统计速率都越大。这就是为什么轻分子通常“跑得更快”。
-\end{example}
+\end{exercise}
 
-\begin{example}[只看分布曲线时怎样先判温度和分子种类]
+\begin{exercise}[只看分布曲线时怎样先判温度和分子种类]
 两条麦克斯韦速率分布曲线分别对应同一种气体在不同温度下的平衡态。若其中一条曲线峰值更低、更向右展开，判断哪条曲线对应更高温度。进一步，若两条曲线改为同一温度下氧气和氢气的分布曲线，应怎样判断哪条对应氧气、哪条对应氢气？
-\end{example}
+\end{exercise}
 
 \begin{solution}
 \textbf{起手判断/模型：} 这题不是数值代入题，而是读图题。所以先别急着写整条分布函数，而应先抓住最稳的两个钩子：温度升高时曲线\textbf{右移、变矮、变宽}；同温下分子越轻，特征速率越大，所以曲线也更靠右。
@@ -11535,9 +11214,9 @@ v_p\propto \frac{1}{\sqrt{M}}.
 \textbf{物理检查/易错点：} 分布曲线总面积必须保持为 \(1\)，所以曲线右移变宽时峰值通常会降低。最容易错的是只盯峰高，不先看横坐标上的峰值位置。
 \end{solution}
 
-\begin{example}[从同温氢气和氧气的分布图怎样反推最概然速率]
+\begin{exercise}[从同温氢气和氧气的分布图怎样反推最概然速率]
 同一温度下，氢气与氧气的麦克斯韦速率分布曲线如图示。若从图上读出右侧那条曲线的峰值位置约为 \(\SI{2000}{m/s}\)，求氢气与氧气的最概然速率。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 \textbf{起手判断/模型：} 先认出右侧峰值对应的是轻分子氢气，因为同温下轻分子跑得更快。接着不用重推分布函数，只需抓住
@@ -11616,9 +11295,9 @@ v_p=\sqrt{\frac{2\times(0.2\times10^5)\times(3.0\times10^{-2})}{3.0\times10^{-2}
 \textbf{物理检查/易错点：} \(\frac{pV}{M}\) 的量纲是 \(\si{m^2/s^2}\)，开方后正好是速率。不要把总质量 \(M\) 和摩尔质量 \(M_{\mathrm{mol}}\) 混用；本题正是用状态方程把摩尔质量消掉。
 \end{solution}
 
-\begin{example}[已知分布函数时怎样从区间数到总能量]
+\begin{exercise}[已知分布函数时怎样从区间数到总能量]
 已知某理想气体共有 \(N\) 个分子，单个分子质量为 \(m\)，速率分布函数为 \(f(v)\)。求：1. 速率落在 \(v_1\sim v_2\) 区间内的分子数；2. 速率大于 \(v_0\) 的所有分子的总平动动能。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 \textbf{起手判断/模型：} 题目已经直接给出速率分布函数 \(f(v)\)，所以第一步不该去猜某个代表速率，而是回到分布函数的定义：\(\dd N=Nf(v)\,\dd v\)。也就是说，所有问题都先翻译成“对适当速率区间积分”。
@@ -11650,7 +11329,7 @@ E_{v>v_0}=\frac12 mN\int_{v_0}^{\infty}v^2f(v)\,\dd v.
 \textbf{物理检查/易错点：} 分子数要用 \(\dd N\) 积出来，能量则要再多乘一层 \(\frac12 mv^2\)。最容易错的是把“区间里的分子数”与“区间里所有分子的总能量”混成同一个积分，或者忘了分布函数本身只给比例，不直接给总数。
 \end{solution}
 
-\begin{example}[分段常数分布函数怎样先归一化再求平均速率]
+\begin{exercise}[分段常数分布函数怎样先归一化再求平均速率]
 有 \(N\) 个粒子，其速率分布函数为
 \[
 f(v)=
@@ -11660,7 +11339,7 @@ C,&0<v<v_0,\\
 \end{cases}
 \]
 求归一化常数 \(C\) 及平均速率 \(\bar v\)。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 \textbf{起手判断/模型：} 一旦题目直接把 \(f(v)\) 分段给出来，第一步一定先用
@@ -11699,9 +11378,9 @@ C=\frac{1}{v_0},\qquad
 \textbf{物理检查/易错点：} 由于 \(0\) 到 \(v_0\) 区间内各速率出现得同样频繁，平均速率落在中点 \(v_0/2\) 很自然。最容易错的是把 \(f(v)\) 当成“分子数密度”而漏掉归一化条件。
 \end{solution}
 
-\begin{example}[同温下氦气和氮气为什么压强不同]
+\begin{exercise}[同温下氦气和氮气为什么压强不同]
 一瓶氦气和一瓶氮气的质量密度相同，分子平均平动动能也相同，而且两者都处于平衡态。比较它们的温度和压强。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 \textbf{起手判断/模型：} 题目同时给了“平均平动动能相同”和“质量密度相同”两个信号，所以要先分清它们分别控制哪一件事：前者控制温度，后者配合摩尔质量决定分子数密度，再进一步控制压强。
@@ -11835,9 +11514,9 @@ p_{\mathrm{He}}>p_{\mathrm{N_2}}.
 \textbf{物理检查/易错点：} 同温时轻分子平均速率更大。若 \(M_1<M_2\)，上式给出 \(\bar v_1/\bar v_2>1\)，方向正确。
 \end{solution}
 
-\begin{example}[容器骤停后温升为什么先看整体平动动能去哪了]
+\begin{exercise}[容器骤停后温升为什么先看整体平动动能去哪了]
 储有氧气的容器以速度 \(v=\SI{100}{m/s}\) 运动。若容器突然停止，问容器内氧气的温度上升多少。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 \textbf{起手判断/模型：} 题目核心不是碰撞细节，而是“容器整体平动动能在骤停后转去了哪”。若忽略向外散热，这部分有规则平动能最终会转成气体分子的无规则热运动，也就是内能增加。因此第一条方程应先写
@@ -12039,9 +11718,9 @@ pV=nRT\implies p\propto T.
 \textbf{物理检查/易错点：} 平均速率不是与温度成正比，而是与 \(\sqrt{T}\) 成正比；所以速率加倍对应温度变为 \(4\) 倍。定容定量时压强才跟着温度同倍数改变。
 \end{solution}
 
-\begin{example}[温度升到 \(4T_0\) 时平均速率、碰撞频率和自由程怎样变]
+\begin{exercise}[温度升到 \(4T_0\) 时平均速率、碰撞频率和自由程怎样变]
 在一个体积不变的容器中储有一定量理想气体。温度为 \(T_0\) 时，分子的平均速率为 \(\bar v_0\)，平均碰撞频率为 \(\bar Z_0\)，平均自由程为 \(\bar\lambda_0\)。若温度升高到 \(4T_0\)，求 \(\bar v,\bar Z,\bar\lambda\) 分别变为多少。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 \textbf{起手判断/模型：} 这题同时考三条温度依赖关系。体积和气体量不变，所以分子数密度不变；温度只直接把特征速率按 \(\sqrt{T}\) 放大。
@@ -12075,9 +11754,9 @@ pV=nRT\implies p\propto T.
 \textbf{物理检查/易错点：} 平均自由程主要由“分子有多密”和“有效碰撞截面多大”决定，在定容定量模型下不因温度升高而变。最容易错的是以为温度升高后“走得更远才撞一次”，其实它只是同样平均路程走得更快，所以单位时间碰撞次数增大。
 \end{solution}
 
-\begin{example}[由骤停温升反推刚性双原子气体摩尔质量]
+\begin{exercise}[由骤停温升反推刚性双原子气体摩尔质量]
 储有某种刚性双原子分子理想气体的容器以 \(v=\SI{100}{m/s}\) 运动。容器突然停止后，气体全部定向平动动能转化为分子热运动动能，测得温度上升 \(\Delta T=\SI{6.74}{K}\)。求该气体的摩尔质量。取 \(R=\SI{8.31}{J/(mol.K)}\)。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 \textbf{起手判断/模型：} 这和前一道“容器骤停后求温升”是同一本能量账，只是未知量换成了摩尔质量。刚性双原子气体取 \(i=5\)，所以定容内能变化为 \(\Delta U=\frac52 nR\Delta T\)。
@@ -12106,9 +11785,9 @@ M_{\mathrm{mol}}
 \textbf{物理检查/易错点：} \(\SI{28e-3}{kg/mol}\) 正是氮气量级。若误用单原子气体的 \(\frac32 nR\Delta T\)，会得到明显不同的摩尔质量。
 \end{solution}
 
-\begin{example}[水蒸气分解为同温氢气和氧气时内能增加多少]
+\begin{exercise}[水蒸气分解为同温氢气和氧气时内能增加多少]
 水蒸气分解为同温度的氢气和氧气，不计振动自由度和化学能，求内能增加的百分比。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 \textbf{起手判断/模型：} 不计化学能时，理想气体内能只由自由度、物质的量和温度决定。水蒸气、氢气和氧气都按刚性非线性/双原子模型数自由度：水蒸气分子取 \(i=6\)，氢气和氧气取 \(i=5\)。
@@ -12145,9 +11824,9 @@ U_2=\frac{5}{2}(1+0.5)RT=\frac{15}{4}RT=3.75RT.
 \textbf{物理检查/易错点：} 题目明确忽略化学能，所以不能把化学反应吸放热混进来；这里只比较同温度下分子自由度和物质的量改变导致的理想气体内能变化。
 \end{solution}
 
-\begin{example}[最概然速率相等时三种统计速率是否相等]
+\begin{exercise}[最概然速率相等时三种统计速率是否相等]
 两种不同的理想气体，若它们的最概然速率相等，判断平均速率和方均根速率是否相等。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 \textbf{起手判断/模型：} 对同一种理想气体，在同一温度下三种统计速率都正比于 \(\sqrt{T/M}\)，只差一个数值系数。关键是“最概然速率相等”已经固定了这个共同因子。
@@ -12208,13 +11887,13 @@ v_{\mathrm{rms}}=\sqrt{\frac{3}{2}}\,v_p.
 \textbf{物理检查/易错点：} \(3kT/m\) 对应的是总速度平方平均值 \(\overline{v^2}\)，不是某一个方向的分量。题目问 \(x\) 分量时要再除以 \(3\)。
 \end{solution}
 
-\begin{example}[用麦克斯韦分布函数表示速率区间和条件平均速率]
+\begin{exercise}[用麦克斯韦分布函数表示速率区间和条件平均速率]
 已知 \(f(v)\) 为麦克斯韦速率分布函数，\(v_p\) 为分子的最概然速率。说明
 \[
 \int_0^{v_p}f(v)\,\dd v
 \]
 表示什么，并写出速率 \(v>v_p\) 的分子的平均速率表达式。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 \textbf{起手判断/模型：} 速率分布函数 \(f(v)\) 的面积表示速率落在相应区间内的分子数占总分子数的比例；条件平均速率则要用“该区间内的加权平均”。
@@ -12387,14 +12066,14 @@ U&=N\bar\varepsilon=\frac{i}{2}NkT=\frac{i}{2}nRT,\\
 
 \bridge{从微观看宏观的翻译其实只有两步：先算出\textbf{每个分子平均有多少能量}，再乘上分子总数 \(N\)。也正因为这一步里没有单独留下体积或压强，理想气体在温度不变时即使体积改变，内能也不会因此单独改变。}
 
-\begin{example}[单原子和双原子理想气体的内能为什么不同]
+\begin{exercise}[单原子和双原子理想气体的内能为什么不同]
 若都是 \(1\) mol 理想气体、温度同为 \(T\)，则
 \[
 U_{\text{单原子}}=\frac{3}{2}RT,\qquad
 U_{\text{刚性双原子}}=\frac{5}{2}RT.
 \]
 两者温度相同，却有不同内能，不是因为“分子运动强弱不同”，而是因为可参与分配能量的自由度数目不同。
-\end{example}
+\end{exercise}
 
 \begin{remark}
 这也是后面热学里经常写 \(\Delta U=\frac{i}{2}nR\Delta T\) 和 \(C_{V,m}=\frac{i}{2}R\) 的根本来源。真正的主线是：\textbf{自由度 \(\rightarrow\) 平均总能量 \(\rightarrow\) 内能 \(\rightarrow\) 热容}。
@@ -12659,9 +12338,9 @@ TV^{\gamma-1}=\text{const}.
 
 这条区分很重要。热学里并不是只有“吸热”才能让内能增大，外界对系统做功同样也能让内能增大。
 
-\begin{example}[电热丝加热开口水桶时怎样给 \(Q\) 判号]
+\begin{exercise}[电热丝加热开口水桶时怎样给 \(Q\) 判号]
 水的定压比热为 \(c=\SI{4.2}{J/(g.K)}\)。有 \(\SI{1}{kg}\) 水放在带电热丝的开口桶内，通电使水从 \(\SI{30}{\celsius}\) 升高到 \(\SI{80}{\celsius}\)，电流做功为 \(W_{\text{电}}=\SI{4.2e5}{J}\)。求过程中系统从外界吸收的热量 \(Q\)。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 \textbf{起手判断/模型：} 开口桶中水升温可近似看成等压升温；若单靠传热完成同样温升，需要的能量是 \(mc\Delta T\)。现在电流已经对系统做功，所以从外界以热传递方式吸收的热量不一定为正。
@@ -12730,13 +12409,13 @@ A&=\int_{V_1}^{V_2}p\,\dd V.
 本书沿用全书约定：系统吸热取 \(Q>0\)，系统对外做功取 \(A>0\)，系统内能增加取 \(\Delta U>0\)。因此膨胀时常有 \(A>0\)，压缩时常有 \(A<0\)。
 \end{remark}
 
-\begin{example}[多方关系下的准静态体积功]
+\begin{exercise}[多方关系下的准静态体积功]
 设理想气体由状态 \((p_1,V_1)\) 准静态变化到状态 \((p_2,V_2)\)，并满足
 \[
 pV^n=C.
 \]
 求系统对外所做的功。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 \[
@@ -12783,9 +12462,9 @@ Q&=\Delta U+A=\Delta U+\int_{V_1}^{V_2}p\,\dd V,\\
 \textbf{先看什么信号：} 题目一旦同时给过程类型和初末态，热学的第一条总方程通常就是 \(Q=\Delta U+A\)；\textbf{这条公式在控制什么：} 它控制的是系统整段过程的能量收支账；\textbf{怎样最快记住：} 账户里真正存下来的只有状态量 \(U\)，而热量和功只是能量进出系统的两条“通道”；\textbf{最容易错：} 把 \(\delta Q\)、\(\delta A\) 误写成全微分，或者忘了本书约定里 \(A>0\) 表示系统对外做功。
 \end{note}
 
-\begin{example}[同一初末态下怎样分清谁与路径有关]
+\begin{exercise}[同一初末态下怎样分清谁与路径有关]
 课件型问题：系统沿过程曲线 \(abc\) 由状态 \(a\) 变到状态 \(c\) 时，共吸收热量 \(\SI{500}{J}\)；沿过程曲线 \(cda\) 回到状态 \(a\) 时，系统向外放热 \(\SI{300}{J}\)，且外界对系统做功 \(\SI{200}{J}\)。求系统在 \(abc\) 过程中内能的增加量以及系统对外所做的功。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 先看回程 \(cda\)：
@@ -12888,9 +12567,9 @@ Q_{acbda}=Q_{acb}+Q_{bda}
 \textbf{物理检查/易错点：} 本题不需要知道 \(a\to c\to b\) 曲线下方面积，因为题目已经给了这一路的吸热。真正要补的是返回路径 \(b\to d\to a\) 的功和内能变化。
 \end{solution}
 
-\begin{example}[\(p\)-\(V\) 图上一条直线过程为什么能先看面积和温度]
+\begin{exercise}[\(p\)-\(V\) 图上一条直线过程为什么能先看面积和温度]
 一定量理想气体由状态 \(a\) 经 \(b\) 到状态 \(c\)，且 \(abc\) 在 \(p\)-\(V\) 图上是一条直线。已知图上可读出：\(a\) 点约为 \((V=\SI{1}{L},p=\SI{3}{atm})\)，\(c\) 点约为 \((V=\SI{3}{L},p=\SI{1}{atm})\)。求这一过程中：1. 气体对外做功；2. 气体内能增量；3. 气体吸收的热量。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 \textbf{起手判断/模型：} 这题最自然的第一步不是先套某一类特殊过程公式，因为它既不是等温、也不是等压、等体，而是一条一般直线过程。所以应先从 \(p\)-\(V\) 图直接读\textbf{面积求功}，再用状态方程判断初末温度，从而判 \(\Delta U\)。
@@ -12989,9 +12668,9 @@ A_V=0.
 \textbf{物理检查/易错点：} 同样升温 \(\SI{100}{K}\)，等压过程还要膨胀对外做功，所以需要的热量比等体过程多，差值正好是 \(nR\Delta T\)。
 \end{solution}
 
-\begin{example}[多段过程综合：先逐段认过程，再汇总 \(Q,A,\Delta U\)]
+\begin{exercise}[多段过程综合：先逐段认过程，再汇总 \(Q,A,\Delta U\)]
 质量为 \(2.8\times10^{-3}\,\si{kg}\) 的氮气，初态压强为 \(1\,\si{atm}\)，温度为 \(\SI{27}{\celsius}\)。它先经历等体过程使压强升到 \(3\,\si{atm}\)，再经历等温膨胀使压强降回 \(1\,\si{atm}\)，最后在等压过程中把体积压缩到前一状态的一半。求全部过程的内能变化、系统对外所做的总功以及总吸热量。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 \textbf{起手判断/模型：} 这道题最怕一上来就想把整个过程塞进一条公式里。真正稳的入口是先按题面信号把三段过程拆开：第一段等体、第二段等温、第三段等压；然后逐段判断 \(\Delta U\)、\(A\)、\(Q\)，最后再汇总。
@@ -13398,9 +13077,9 @@ pV^\gamma=\text{const}
 \textbf{先看什么信号：} 题目若在 \(p\)-\(V\) 图上比较两条曲线谁更陡、谁在上方，先比斜率绝对值；\textbf{这条公式在控制什么：} 它控制的是同一点附近压强随体积变化得有多快；\textbf{怎样最快记住：} 绝热过程中气体来不及放热，压缩时温度更容易升高，所以压强掉得更慢、曲线更“立”；\textbf{最容易错：} 只背 \(\gamma>1\) 这个结论，却说不出它对应的物理原因是绝热过程中温度也在跟着变。
 \end{note}
 
-\begin{example}[等温压缩与绝热压缩的比较]
+\begin{exercise}[等温压缩与绝热压缩的比较]
 把同一份理想气体从体积 \(V_1\) 压缩到 \(V_2\)（其中 \(V_2<V_1\)），比较等温压缩与绝热压缩时外界所做功的大小。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 \textbf{起手判断/模型：} 这道题不是算某个具体数值，而是比较两条压缩路径的外功大小。最稳的入口是先比较\textbf{同一体积下两条路径的压强高低}，再回到 \(p\)-\(V\) 图上的面积。
@@ -13456,9 +13135,9 @@ Q_2=A_2-A_{\text{adi}}>0,
 \textbf{物理检查/易错点：} 不要只看到初末态在同一绝热线就说“所有路径都绝热”。绝热只属于那条特定路径；换路径后 \(Q\) 是否为零，要由第一定律和路径面积共同判断。
 \end{solution}
 
-\begin{example}[氢气绝热压缩到 \(0.02\) L 时功为什么先从 \(Q=0\) 起手]
+\begin{exercise}[氢气绝热压缩到 \(0.02\) L 时功为什么先从 \(Q=0\) 起手]
 一份氢气初态压强为 \(p_1=\SI{1.013e5}{Pa}\)，体积为 \(V_1=\SI{0.10}{L}\)，现将其\textbf{准静态绝热压缩}到 \(V_2=\SI{0.02}{L}\)。求气体对外所做的功。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 \textbf{起手判断/模型：} 题面最关键的信号是“准静态绝热压缩”。这意味着第一步先写
@@ -13511,9 +13190,9 @@ A\approx \SI{-22.8}{J}.
 \textbf{物理检查/易错点：} 绝热压缩时是\textbf{外界对系统做功}，因此按本书符号，系统对外做功应为负，结果符号正确。最容易错的是把“绝热”只看成 \(Q=0\)，却忘了这里还必须是\textbf{准静态}，才能继续用绝热方程。
 \end{solution}
 
-\begin{example}[把 \(5\) mol 氢气压到原体积的 \(1/10\) 时等温和绝热为何功差这么大]
+\begin{exercise}[把 \(5\) mol 氢气压到原体积的 \(1/10\) 时等温和绝热为何功差这么大]
 设有 \(5\) mol 的氢气，初态压强为 \(p_1=\SI{1.013e5}{Pa}\)，温度为 \(\SI{20}{\celsius}\)。求把它压缩到原体积的 \(1/10\) 时，在下列过程中外界需做的功：1. 等温过程；2. 准静态绝热过程。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 \textbf{起手判断/模型：} 这道题不是单纯代两个公式，而是要先认出两条路径的起手式不同：等温过程先写 \(\Delta U=0\)，所以外界做功等于气体放出的热量对应的体积功；绝热过程先写 \(Q=0\)，所以外界做功全部推高内能。也正因为第二条路没有散热，所需外功会更大。
@@ -14479,9 +14158,9 @@ A=\eta Q_1
 \textbf{物理检查/易错点：} 温度必须换成 K；\(\SI{290}{g}\) 空气正好是 \(10\) mol。若把 \(27\) 和 \(-73\) 直接代入卡诺公式，会得到没有物理意义的效率。
 \end{solution}
 
-\begin{example}[电冰箱的输入功怎样由致冷系数反推]
+\begin{exercise}[电冰箱的输入功怎样由致冷系数反推]
 一台电冰箱放在室温为 \(\SI{20}{\celsius}\) 的房间里，冰箱储藏柜温度维持在 \(\SI{5}{\celsius}\)。若每天有 \(2.0\times10^7\) J 的热量自房间传入冰箱内，且该冰箱的制冷系数是同温区间卡诺致冷机制冷系数的 \(55\%\)，求外界每天需对冰箱做多少功。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 \textbf{起手判断/模型：} 题目研究的是\textbf{电冰箱}，所以第一步必须先把它认成逆循环装置，用的是致冷系数 \(\varepsilon\)，不是热机效率 \(\eta\)。而且涉及卡诺极限时，温度必须先换成热力学温度。
@@ -14513,9 +14192,9 @@ A_{\text{in}}=\frac{Q_2}{\varepsilon}
 课件最后还给了奥托机作为应用例题。它不是本章主线，但很适合做方法回顾：若一个循环由两段等体过程和两段绝热过程组成，就继续按“逐段列出 \(Q\)、\(A\)、\(\Delta U\)，最后再求总效率”的统一方法处理。
 \end{note}
 
-\begin{example}[1 mol 氦气矩形循环怎样逐段写出吸放热]
+\begin{exercise}[1 mol 氦气矩形循环怎样逐段写出吸放热]
 1 mol 氦气经历如图所示的矩形循环，其中 \(p_2=2p_1,\ V_4=2V_1\)。求各过程 \(1\to2,\ 2\to3,\ 3\to4,\ 4\to1\) 中气体吸收的热量，并求该热机效率。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 \textbf{起手判断/模型：} 这是一个循环题，但题目不是只问总效率，而是先问四段各自的吸放热，所以第一步不能只写 \(\Delta U=0\)，而应先认出每一段各是什么过程，再逐段写 \(Q\)。
@@ -14581,9 +14260,9 @@ Q_{41}=-\frac{5}{2}RT_1,\quad
 \textbf{物理检查/易错点：} 四段里两段吸热、两段放热，这和 \(p\)-\(V\) 图上“先升温后降温”的图景一致。最容易错的是把等压段的热量还写成 \(C_V\Delta T\)，或者把效率分母误写成净热量。
 \end{solution}
 
-\begin{example}[两条 \(p\)-\(V\) 过程线怎样只靠第一定律判断吸热还是放热]
+\begin{exercise}[两条 \(p\)-\(V\) 过程线怎样只靠第一定律判断吸热还是放热]
 一定量理想气体分别经历两条过程线 \(abc\) 与 \(def\)。其中 \(abc\) 为等温膨胀后再继续膨胀的一类过程，\(def\) 为压缩过程。怎样只靠 \(Q=\Delta U+A\) 判断它们分别是吸热还是放热？
-\end{example}
+\end{exercise}
 
 \begin{solution}
 \textbf{起手判断/模型：} 这题的关键不是算数字，而是先判三件事的符号：\(\Delta U\) 正负如何、系统对外做功 \(A\) 正负如何、于是 \(Q\) 的总符号怎样。也就是说，第一条方程就该写第一定律，而不是急着找具体状态量数值。
@@ -14622,9 +14301,9 @@ Q=\Delta U+A<0,
 \textbf{物理检查/易错点：} 这类题真正考的是“先判符号，再谈数值”。只要 \(\Delta U\) 和 \(A\) 的符号都判清，很多图像题根本不必算出每一个状态量。
 \end{solution}
 
-\begin{example}[氧气作 \(ABCD\) 循环时效率为什么先看哪两段吸热]
+\begin{exercise}[氧气作 \(ABCD\) 循环时效率为什么先看哪两段吸热]
 质量为 \(32\times10^{-3}\,\si{kg}\) 的氧气作 \(ABCD\) 循环，其中 \(A\to B\) 与 \(C\to D\) 为等温过程，\(T_1=\SI{300}{K}\)、\(T_2=\SI{200}{K}\)、\(V_2=2V_1\)。求该循环效率。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 \textbf{起手判断/模型：} 题目问效率，最重要的不是先求总功，而是先判\textbf{哪些过程在吸热}，因为效率分母是总吸热 \(Q_1\)。这一步若先搞反，后面全部会错。
@@ -14672,13 +14351,13 @@ A&=Q_{AB}+Q_{CD}\\
 \textbf{物理检查/易错点：} 本题最容易错在把两段等温都当成吸热。其实高温等温膨胀吸热，低温等温压缩放热；只有先把热流方向判清，效率分母才不会错。
 \end{solution}
 
-\begin{example}[水蒸气 \(abcda\) 循环怎样逐段做能量账]
+\begin{exercise}[水蒸气 \(abcda\) 循环怎样逐段做能量账]
 气缸内有 \(\SI{36}{g}\) 水蒸气，视为刚性分子理想气体，经历如图所示 \(abcda\) 循环。其中 \(a\to b\)、\(c\to d\) 为等体过程，\(b\to c\) 为等温过程，\(d\to a\) 为等压过程。已知 \(p_a=p_d=2\,\mathrm{atm}\)、\(p_b=6\,\mathrm{atm}\)、\(V_a=V_b=\SI{25}{L}\)、\(V_c=V_d=\SI{50}{L}\)。求：1. \(d\to a\) 过程水蒸气做功；2. \(a\to b\) 内能增量；3. 循环净功；4. 循环效率。
 
 \begin{center}
 \includegraphics[width=0.34\linewidth]{pdf-exercises/pdf2003-q22-pv-cycle.png}
 \end{center}
-\end{example}
+\end{exercise}
 
 \begin{solution}
 \textbf{起手判断/模型：} 循环题不要一眼看图就套单一公式，而要逐段认过程。这里 \(a\to b\) 等体，\(b\to c\) 等温，\(c\to d\) 等体，\(d\to a\) 等压；循环一周后 \(\Delta U_{\text{cycle}}=0\)，净功就是图中围成的面积对应的代数和。
@@ -14738,13 +14417,13 @@ W\approx\SI{5.47e3}{J},\quad
 \textbf{物理检查/易错点：} \(d\to a\) 是压缩，系统对外做功为负；\(b\to c\) 是等温膨胀，功为正。效率必须用循环净功除以总吸热，不能用净功除以某一段热量。
 \end{solution}
 
-\begin{example}[同压从状态 \(A\) 到状态 \(B\) 时哪个量必然改变]
+\begin{exercise}[同压从状态 \(A\) 到状态 \(B\) 时哪个量必然改变]
 一定量理想气体由平衡态 \(A\) 变到平衡态 \(B\)，且 \(p_A=p_B\)，图中 \(B\) 的体积大于 \(A\)。无论经历什么过程，判断系统哪一项一定成立：对外作正功、内能增加、从外界吸热、向外界放热。
 
 \begin{center}
 \includegraphics[width=0.24\linewidth]{pdf-exercises/pdf2004-q06-pv-ab.png}
 \end{center}
-\end{example}
+\end{exercise}
 
 \begin{solution}
 \textbf{起手判断/模型：} 题目强调“无论经过什么过程”，说明只能用状态量判断，不能用依赖路径的功和热量判断。理想气体内能只与温度有关，而温度由状态方程决定。
@@ -14774,9 +14453,9 @@ U=\frac{i}{2}nRT,
 \textbf{物理检查/易错点：} 功和热量都是过程量，同一初末态可以走不同路径，所以不能说“必然对外作正功”或“必然吸热”。只有温度和内能这类状态量能由初末态直接判断。
 \end{solution}
 
-\begin{example}[标准状态理想气体两条路径到同一终态的吸热]
+\begin{exercise}[标准状态理想气体两条路径到同一终态的吸热]
 一定量理想气体在标准状态下体积为 \(V_1=1.0\times10^{-2}\,\si{m^3}\)。求下列过程中气体吸收的热量：1. 等温膨胀到 \(V_2=2.0\times10^{-2}\,\si{m^3}\)；2. 先等体冷却，再等压膨胀到第 1 问的终态。已知 \(1\,\mathrm{atm}=1.013\times10^5\,\si{Pa}\)，并设气体 \(C_V=5R/2\)。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 \textbf{起手判断/模型：} 两个过程初末态相同，但路径不同，所以吸热量不一定相同。第一问等温，理想气体 \(\Delta U=0\)；第二问先等体再等压，仍因初末温度相同而总 \(\Delta U=0\)，但功不同。
@@ -14816,9 +14495,9 @@ Q_2=\frac12\times1.013\times10^5\times(2.0-1.0)\times10^{-2}
 \textbf{物理检查/易错点：} 两条路径初末温度相同，所以总内能变化相同且为零；但功是路径量，等温曲线下的面积比“低压等压线”下的面积大，因此第一问吸热更多。
 \end{solution}
 
-\begin{example}[奥托循环效率为什么自然写成压缩比的函数]
+\begin{exercise}[奥托循环效率为什么自然写成压缩比的函数]
 奥托机循环由两段等体过程和两段绝热过程组成，其中 \(c\to d\)、\(e\to b\) 为等体过程，\(b\to c\)、\(d\to e\) 为绝热过程。设压缩比为 \(r=V/V_0\)。求循环效率。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 \textbf{起手判断/模型：} 奥托循环的热交换只发生在两段等体过程中，所以第一条方程不该先写总功，而应先写吸热段和放热段的 \(Q\)。随后再用绝热关系把温度比改写成体积比。
@@ -15096,9 +14775,9 @@ dS=nC_{P,m}\frac{dT}{T}-nR\frac{dp}{p}.
 
 \bridge{熵变计算的核心不是“背更多公式”，而是：先确认初末状态，再选择一条最容易积分的可逆路径。}
 
-\begin{example}[等压升温的熵变]
+\begin{exercise}[等压升温的熵变]
 1 mol 单原子理想气体在恒压下从 \(\SI{300}{K}\) 加热到 \(\SI{400}{K}\)。求该气体的熵变。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 \textbf{起手判断/模型：} 题目给出的是理想气体的\textbf{等压升温}，又要求熵变，所以第一步要先认出：熵是状态量，可以沿同样的可逆等压路径直接积分。
@@ -15162,9 +14841,9 @@ dS=nC_{P,m}\frac{dT}{T}-nR\frac{dp}{p}.
 \textbf{先看什么信号：} 题目若给的是孤立系统、绝热自由膨胀、有限温差传热这类关键词，就别急着写等号；\textbf{这条公式在控制什么：} \(\Delta S\ge 0\) 控制的是孤立系统真实过程的方向判据；\textbf{怎样最快记住：} 真正能直接写 \(\Delta S=0\) 的是可逆绝热，不是任意绝热；\textbf{最容易错：} 看到“绝热”就自动把熵变写零，而不先检查过程是否可逆。
 \end{note}
 
-\begin{example}[绝热自由膨胀的熵变]
+\begin{exercise}[绝热自由膨胀的熵变]
 理想气体向真空中绝热自由膨胀，判断其熵变的符号。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 先看这个真实过程本身。绝热自由膨胀满足
@@ -15257,9 +14936,9 @@ S=k\ln\Omega
   \item 只会背第二定律表述，却不会把它和热机效率、自由膨胀、热传导联系起来。
 \end{itemize}
 
-\begin{example}[熵变计算综合：有限温差传热 + 混合]
+\begin{exercise}[熵变计算综合：有限温差传热 + 混合]
 两杯水，质量均为 \(m=\SI{1}{kg}\)，比热容 \(c=\SI{4200}{J/(kg.K)}\)。一杯初温 \(T_1=\SI{360}{K}\)，另一杯 \(T_2=\SI{300}{K}\)。在绝热容器中混合达到热平衡后，求系统总熵变。
-\end{example}
+\end{exercise}
 \begin{solution}
 末态温度 \(T_f=(T_1+T_2)/2=\SI{330}{K}\)。
 
@@ -15668,9 +15347,9 @@ F=\frac{1}{4\pi\varepsilon_0}\frac{\abs{q_1q_2}}{r^2},
 \textbf{先看什么信号：} 一旦题目明确写出“点电荷”“真空”“静止”这几个词，库仑定律就是最先落笔的候选；\textbf{这条公式在控制什么：} 它控制的是两点电荷之间最基本的相互作用尺度；\textbf{怎样最快记住：} 大小看 \(\abs{q_1q_2}/r^2\)，方向沿连线，正负号决定吸引还是排斥；\textbf{最容易错：} 一边在矢量式里保留 \(q_1q_2\) 的符号，一边又额外手工判断一次方向，导致符号处理重复。
 \end{note}
 
-\begin{example}
+\begin{exercise}
 两点电荷 \(q_1=\SI{2}{\micro C}\)、\(q_2=-\SI{3}{\micro C}\)，相距 \(\SI{0.20}{m}\)。求它们相互作用力的大小。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 由库仑定律
@@ -15893,9 +15572,9 @@ E_n\approx -\frac{\Delta\varphi}{\Delta n}.
 
 \section{例题精讲}
 
-\begin{example}[三点电荷合力的矢量叠加]
+\begin{exercise}[三点电荷合力的矢量叠加]
 设 \(q_2=5.0\,\si{\micro C}\) 位于坐标原点，\(q_3=6.5\,\si{\micro C}\) 位于 \((0,0.30\,\si{m})\)，\(q_1=-8.6\,\si{\micro C}\) 位于 \((0.52\,\si{m},0)\)。已知 \(q_1\) 与 \(q_3\) 的距离为 \(0.60\,\si{m}\)。求作用在 \(q_3\) 上的合力大小与方向。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 这类题最稳的起手，不是马上把三个电荷一锅端，而是先拆成“\(q_1\) 单独对 \(q_3\) 的力”和“\(q_2\) 单独对 \(q_3\) 的力”，最后再矢量叠加。
@@ -15947,9 +15626,9 @@ F_3=\sqrt{121^2+255^2}\,\si{N}\approx 2.82\times 10^2\,\si{N},
 所以作用在 \(q_3\) 上的合力大小约为 \(2.82\times 10^2\,\si{N}\)，方向为\textbf{指向第一象限、与 \(x\) 轴正向成约 \(64.8^\circ\) 的方向}。
 \end{solution}
 
-\begin{example}[氢原子中库仑力与万有引力的量级比较]
+\begin{exercise}[氢原子中库仑力与万有引力的量级比较]
 在氢原子中，电子与质子的平均距离约为 \(r=5.3\times 10^{-11}\,\mathrm{m}\)。估算它们之间的库仑引力和万有引力，并比较二者大小。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 把这题看成“同样的两粒子、同样的间距，换两种相互作用去算”就很清楚了。库仑力大小为
@@ -15973,9 +15652,9 @@ F_g=G\frac{m_em_p}{r^2}
 所以在原子尺度上，电相互作用远远强于引力，后者在普通原子结构问题里完全可以忽略。
 \end{solution}
 
-\begin{example}[电偶极子中垂线上的场强]
+\begin{exercise}[电偶极子中垂线上的场强]
 等量异号点电荷 \(-q\) 与 \(+q\) 相距 \(l\)，构成电偶极子。求其中点中垂线上、离中点距离为 \(r\) 处的电场强度。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 这题的关键不是分别算两个场强，而是先认清\textbf{对称抵消关系}。两电荷到该点距离相同，故单个场强大小相等，都等于
@@ -15999,9 +15678,9 @@ E\approx \frac{1}{4\pi\varepsilon_0}\frac{p}{r^3}.
 \]
 \end{solution}
 
-\begin{example}[均匀带电细棒中垂线上的场强]
+\begin{exercise}[均匀带电细棒中垂线上的场强]
 一根长为 \(2l\)、总电荷为 \(q\) 的均匀带电细棒，求其中点中垂线上、离棒距离为 \(r\) 的点 \(P\) 处的场强大小。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 设线电荷密度
@@ -16033,9 +15712,9 @@ E=\frac{1}{4\pi\varepsilon_0}\frac{q}{r\sqrt{r^2+l^2}}
 当 \(l\to\infty\) 时，它退化成无限长带电直线的结果 \(E=\lambda/(2\pi\varepsilon_0 r)\)；当 \(r\gg l\) 时，又退化成点电荷场强 \(E\approx q/(4\pi\varepsilon_0 r^2)\)。
 \end{solution}
 
-\begin{example}[有限长均匀带电直线在旁侧一点的场强]
+\begin{exercise}[有限长均匀带电直线在旁侧一点的场强]
 一段长度为 \(L\)、线电荷密度为 \(\lambda\) 的均匀带电直线，在其旁侧一点 \(P\) 处到直线的垂直距离为 \(a\)。若从 \(P\) 向两端看去，与垂线分别成角 \(\theta_1,\theta_2\)，求 \(P\) 点场强。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 这题的难点不是积分本身，而是角变量替换。把线元写成 \(dq=\lambda\,dx\)，取 \(P\) 点到直线的垂足为原点，并把从垂线向两端张开的角记为 \(\theta\)。则
@@ -16097,9 +15776,9 @@ E=\frac{q}{12\pi\varepsilon_0 L^2}
 若 \(q>0\)，方向沿杆的延长线背离带电杆。量级检查也很直接：结果应正比于总电荷 \(q\)，反比于 \(L^2\)，这和远处点电荷场的量纲一致。
 \end{solution}
 
-\begin{example}[均匀带电圆环轴线上的场强]
+\begin{exercise}[均匀带电圆环轴线上的场强]
 半径为 \(R\)、总电荷为 \(q\) 的均匀带电圆环，求其轴线上距圆心 \(x\) 处的电场强度。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 圆环上各电荷元到轴线上点 \(P\) 的距离都相同，故电场大小虽可逐元相加，但\textbf{真正留下来的只有轴向分量}。单个电荷元 \(dq\) 产生的场强大小为
@@ -16127,9 +15806,9 @@ E\approx \frac{1}{4\pi\varepsilon_0}\frac{q}{x^2},
 圆环在远处看起来就像一个点电荷。
 \end{solution}
 
-\begin{example}[均匀带电圆盘轴线上的场强]
+\begin{exercise}[均匀带电圆盘轴线上的场强]
 半径为 \(R\)、面电荷密度为 \(\sigma\) 的均匀带电薄圆盘，求其轴线上距盘心 \(x\) 处的电场强度。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 最稳的做法是把圆盘拆成同心细圆环。半径为 \(r\)、宽度为 \(dr\) 的圆环带电
@@ -16158,9 +15837,9 @@ E(x)=\frac{\sigma}{2\varepsilon_0}\left(1-\frac{x}{\sqrt{x^2+R^2}}\right)
 （取 \(x>0\) 时沿轴线远离圆盘的方向）。当 \(R\to\infty\) 时，括号里的第二项趋于零，就得到无限大带电平面的著名结果 \(E=\sigma/(2\varepsilon_0)\)。
 \end{solution}
 
-\begin{example}[匀强电场中三棱柱的电通量]
+\begin{exercise}[匀强电场中三棱柱的电通量]
 一个封闭三棱柱体放在匀强电场 \(\vb*{E}=200\,\vb*{i}\,\mathrm{N/C}\) 中。求通过整个三棱柱闭合面的电通量。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 这题最容易被表面上“每个面都要算”吓到，其实它是一道标准的\textbf{闭合曲面 + 匀强场}题。对任意闭合曲面，只要内部不包围净电荷，就有
@@ -16174,9 +15853,9 @@ E(x)=\frac{\sigma}{2\varepsilon_0}\left(1-\frac{x}{\sqrt{x^2+R^2}}\right)
 因此遇到闭合曲面通量题，第一反应应先看内部包不包电荷，而不是急着逐面求和。
 \end{solution}
 
-\begin{example}[均匀带电球壳的场强分布]
+\begin{exercise}[均匀带电球壳的场强分布]
 半径为 \(R\)、总电荷为 \(Q\) 的均匀带电薄球壳，求壳内外任意点的场强。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 球壳问题最适合用高斯定理，因为球对称让场强在同心球面上大小处处相同、方向处处径向。对半径为 \(r\) 的同心高斯面：
@@ -16208,9 +15887,9 @@ E(r)=
 这说明均匀带电薄球壳在壳内完全无场，而在壳外就像一个位于球心的点电荷。
 \end{solution}
 
-\begin{example}[均匀带电实心球的场强分布]
+\begin{exercise}[均匀带电实心球的场强分布]
 半径为 \(R\)、总电荷为 \(q\) 的均匀带电实心球，求球内外场强分布。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 设体电荷密度为
@@ -16307,9 +15986,9 @@ U(r_2)=\frac{q}{4\pi\varepsilon_0 r_2}\quad (r_2>R)
 物理检查：球内 \(E\propto r^2\)，不是均匀实心球的 \(E\propto r\)，原因是这里越靠外电荷密度越大，包围电荷随 \(r^4\) 增长。
 \end{solution}
 
-\begin{example}[无限长均匀带电直线的场强]
+\begin{exercise}[无限长均匀带电直线的场强]
 无限长均匀带电直线的线电荷密度为 \(\lambda\)。求距该直线 \(r\) 处的电场强度。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 这道题是高斯定理最典型的轴对称应用。取与带电直线同轴、半径为 \(r\)、高为 \(h\) 的柱形高斯面。由于场强沿径向，且在侧面上大小恒定，在上下底面上又与面元垂直，因此只有侧面有通量：
@@ -16333,9 +16012,9 @@ E(r)=\frac{\lambda}{2\pi\varepsilon_0 r}
 方向沿径向，\(\lambda>0\) 时背离直线，\(\lambda<0\) 时指向直线。
 \end{solution}
 
-\begin{example}[无限大均匀带电平面的场强]
+\begin{exercise}[无限大均匀带电平面的场强]
 无限大均匀带电平面的面电荷密度为 \(\sigma\)。求其两侧电场强度。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 对称性先告诉我们两件事：电场只能垂直平面；平面两侧距平面同样远的点场强大小相同。于是取一个跨过该平面的薄圆柱形高斯面，上下两个底面的通量相加为
@@ -16359,9 +16038,9 @@ E=\frac{\sigma}{2\varepsilon_0}
 若 \(\sigma>0\)，两侧都背离平面；若 \(\sigma<0\)，两侧都指向平面。这个结果不依赖距离 \(r\)，因此无限大带电平面的场是均匀场。
 \end{solution}
 
-\begin{example}[均匀带电圆环轴线上的电势]
+\begin{exercise}[均匀带电圆环轴线上的电势]
 半径为 \(R\)、总电荷为 \(q\) 的均匀带电圆环，求其轴线上距圆心 \(x\) 处的电势。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 这题比求场强还简单，因为电势是标量，不必分解方向。圆环上任意电荷元到点 \(P\) 的距离都相同：
@@ -16383,9 +16062,9 @@ V(x)=\frac{1}{4\pi\varepsilon_0}\frac{q}{\sqrt{R^2+x^2}}
 注意圆心处虽然场强为零，但电势并不为零，而是 \(V(0)=q/(4\pi\varepsilon_0R)\)。这正好提醒我们“场强为零”和“电势为零”根本不是一回事。
 \end{solution}
 
-\begin{example}[均匀带电圆盘轴线上的电势]
+\begin{exercise}[均匀带电圆盘轴线上的电势]
 半径为 \(R\)、面电荷密度为 \(\sigma\) 的均匀带电圆盘，求其轴线上距盘心 \(x\) 处的电势，取无穷远处电势为零。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 同样把圆盘拆成同心圆环。半径为 \(r\) 的薄圆环带电
@@ -16412,14 +16091,14 @@ V(x)=\frac{\sigma}{2\varepsilon_0}\left(\sqrt{x^2+R^2}-x\right)
 如果你再对它做一次 \(-dV/dx\)，就能回到前面圆盘轴线场强公式，这正是“先势后场”路线的最好练习。
 \end{solution}
 
-\begin{example}[均匀带电球壳的电势与电势差]
+\begin{exercise}[均匀带电球壳的电势与电势差]
 真空中有一半径为 \(R\)、总电荷为 \(Q\) 的均匀带电球壳。求：
 \begin{enumerate}
   \item 球壳外两点 \(A,B\)（半径分别为 \(r_A,r_B>R\)）间的电势差；
   \item 球壳内两点间的电势差；
   \item 壳外任意点与壳内任意点的电势。
 \end{enumerate}
-\end{example}
+\end{exercise}
 
 \begin{solution}
 先写出球壳的场强分布：
@@ -16450,9 +16129,9 @@ V(r)=V(R)=\frac{Q}{4\pi\varepsilon_0 R}\qquad (r<R).
 所以球壳的一个经典特征是：\textbf{壳内无场但不一定无势，而且壳内电势处处相同。}
 \end{solution}
 
-\begin{example}[用叠加法重算带电球壳球心电势]
+\begin{exercise}[用叠加法重算带电球壳球心电势]
 电量为 \(Q\)、半径为 \(R\) 的均匀带电球壳，其球心电势是多少？要求直接用电势叠加法求解。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 球面上任意电荷元 \(dq\) 到球心的距离都等于 \(R\)，所以它在球心产生的电势元为
@@ -16468,13 +16147,13 @@ V=\int dV
 这个结果和上题由电场积分得到的壳内电势完全一致，说明两种入口虽然不同，但物理上是同一件事。
 \end{solution}
 
-\begin{example}[由电势反推圆环轴线上的场强]
+\begin{exercise}[由电势反推圆环轴线上的场强]
 已知均匀带电圆环轴线上电势为
 \[
 V(x)=\frac{1}{4\pi\varepsilon_0}\frac{q}{\sqrt{R^2+x^2}},
 \]
 求轴线上场强。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 这题是专门拿来练
@@ -16853,9 +16532,9 @@ w_e=\frac{1}{2}\varepsilon E^2.
 
 \section{例题精讲}
 
-\begin{example}[相连金属球的表面电荷密度比]
+\begin{exercise}[相连金属球的表面电荷密度比]
 两个相距足够远的金属球半径分别为 \(R_1\) 与 \(R_2\)，周围没有其他带电体。现用细导线把它们相连，达到静电平衡后，求两球表面电荷面密度之比 \(\sigma_1/\sigma_2\)。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 两球一旦用导线连通并达到静电平衡，最先该调出的不是“电荷守恒”，而是\textbf{相连导体等势}：
@@ -16896,9 +16575,9 @@ U_2=\frac{q_2}{4\pi\varepsilon_0R_2}.
 这说明半径较小的球表面电荷密度更大，也因此它表面附近的场更强；这正是“尖端更容易积聚电荷、场更强”的球形版本。
 \end{solution}
 
-\begin{example}[平行板间插入电介质后 \(E,P,\sigma',D\) 的连锁关系]
+\begin{exercise}[平行板间插入电介质后 \(E,P,\sigma',D\) 的连锁关系]
 把一块相对介电常数为 \(\varepsilon_r=3\) 的均匀电介质放入板距 \(d=\SI{1.0}{mm}\) 的平行带电平板之间。放入之前两板间电势差为 \(U=\SI{1000}{V}\)。求介质内的场强 \(E\)、极化强度 \(P\)、极化电荷面密度 \(\sigma'\) 以及电位移 \(D\)。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 这类题的关键不是算得快，而是先分清楚\textbf{哪个量在介质插入前后保持不变}。这里题目直接给的是放入前的电势差与板距，所以最稳的第一步是先求真空时的场强：
@@ -16944,13 +16623,13 @@ D=\varepsilon_0E_0,
 这说明在线性均匀介质里，\(\vb*{D}\) 正好把“自由电荷记账”这件事单独抽了出来。
 \end{solution}
 
-\begin{example}[插入金属板后电容与做功怎样变化]
+\begin{exercise}[插入金属板后电容与做功怎样变化]
 空气平行板电容器极板面积为 \(S\)、板距为 \(d\)。现从中间插入一块不接触极板、厚度为 \(t\) 的金属板。求：
 \begin{enumerate}
   \item 插入后电容的改变量；
   \item 若电容器先被充电到电荷量 \(Q\) 后断开电源，再把金属板抽出，外力需要做多少功。
 \end{enumerate}
-\end{example}
+\end{exercise}
 
 \begin{solution}
 金属板静电平衡后板内场强为零，所以电势降只发生在金属板两侧的空气隙中。也就是说，原本厚度为 \(d\) 的有效电场区，现在只剩
@@ -16993,14 +16672,14 @@ A=W_f-W_i
 这题最值得记住的不是最后结果，而是判断流程：\textbf{先看谁守恒，再决定该用 \(Q^2/2C\) 还是 \(CU^2/2\)。} 一旦把“断开电源 \(\Rightarrow Q\) 守恒”抓住，后面几乎就只剩代数。
 \end{solution}
 
-\begin{example}[同心金属球与金属球壳的电荷分布和电势]
+\begin{exercise}[同心金属球与金属球壳的电荷分布和电势]
 半径为 \(R_1\) 的金属球与内、外半径分别为 \(R_2,R_3\) 的同心金属球壳组成一套同心导体系统。内球和球壳各自带电 \(+q\)。求：
 \begin{enumerate}
   \item 各导体表面的电荷分布；
   \item 球心电势；
   \item 球壳的电势。
 \end{enumerate}
-\end{example}
+\end{exercise}
 
 \begin{solution}
 先用导体静电平衡的基本结论：球壳内部金属层 \(R_2<r<R_3\) 必有 \(E=0\)。因此在半径略大于 \(R_2\) 的高斯面上包围的净电荷必须为零，于是球壳内表面感应出
@@ -17026,9 +16705,9 @@ V_{\text{壳}}=\frac{1}{4\pi\varepsilon_0}\frac{2q}{R_3}.
 这题最关键的不是计算，而是“先用 \(E=0\) 反推感应电荷，再用叠加求电势”的顺序。
 \end{solution}
 
-\begin{example}[接地导体球附近点电荷诱导出的总电荷]
+\begin{exercise}[接地导体球附近点电荷诱导出的总电荷]
 半径为 \(R\) 的导体球接地。球外有一点电荷 \(+q\)，其到球心距离为 \(r\)（\(r>R\)）。求导体球上的感应电荷总量。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 接地意味着整个导体球电势恒为零，尤其球心 \(O\) 处也满足
@@ -17056,13 +16735,13 @@ V_{q'}(O)+V_q(O)=0,
 这个结果非常值得记住：接地导体会从大地“借走”一部分异号电荷，使整个导体电势降到零。
 \end{solution}
 
-\begin{example}[不接地中性导体球附近点电荷的感应电势]
+\begin{exercise}[不接地中性导体球附近点电荷的感应电势]
 半径为 \(R\) 的中性导体球，球外有一点电荷 \(+q\)，它到球心距离为 \(r\)。设球内一点 \(P\) 在连心线上，距球心为 \(l\)。求：
 \begin{enumerate}
   \item 球面感应电荷总量；
   \item 感应电荷在点 \(P\) 处产生的电势。
 \end{enumerate}
-\end{example}
+\end{exercise}
 
 \begin{solution}
 导体球本身初始不带电，又没有与外界交换电荷，因此感应电荷总量必为
@@ -17089,9 +16768,9 @@ V_{q'}(P)=V_P-V_q(P)
 它通常为负值，反映出靠近外点电荷的一侧感应了较多负电荷。
 \end{solution}
 
-\begin{example}[两块已知总电荷的大平板各表面电荷密度]
+\begin{exercise}[两块已知总电荷的大平板各表面电荷密度]
 两块面积均为 \(S\) 的平行导体平板，相距远小于平板线度。它们的总电荷分别为 \(q_1,q_2\)。求四个表面的电荷面密度 \(\sigma_1,\sigma_2,\sigma_3,\sigma_4\)。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 设第一块板的外侧、内侧面电荷密度分别为 \(\sigma_1,\sigma_2\)，第二块板的内侧、外侧分别为 \(\sigma_3,\sigma_4\)。先写总电荷守恒：
@@ -17117,9 +16796,9 @@ V_{q'}(P)=V_P-V_q(P)
 所以两块板面对间隙的那两面总是等量异号，而外侧两面则平均分担总净电荷。
 \end{solution}
 
-\begin{example}[均匀极化介质球的束缚电荷分布]
+\begin{exercise}[均匀极化介质球的束缚电荷分布]
 已知一均匀极化介质球内部极化强度为常矢量 \(\vb*{P}\)。求球面上的束缚电荷分布。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 表面束缚电荷面密度的通式是
@@ -17133,13 +16812,13 @@ V_{q'}(P)=V_P-V_q(P)
 因此朝向 \(\vb*{P}\) 的半球 \((\theta<\pi/2)\) 上 \(\sigma'>0\)，背向 \(\vb*{P}\) 的半球 \((\theta>\pi/2)\) 上 \(\sigma'<0\)，而赤道圈 \((\theta=\pi/2)\) 上 \(\sigma'=0\)。这说明均匀极化球面上的束缚电荷并不是均匀铺开的，而是按 \(\cos\theta\) 规律分布。
 \end{solution}
 
-\begin{example}[浸在均匀电介质中的带电金属球]
+\begin{exercise}[浸在均匀电介质中的带电金属球]
 半径为 \(R\) 的金属球带电 \(q\)，浸在相对介电常数为 \(\varepsilon_r\) 的均匀无限大电介质中。求：
 \begin{enumerate}
   \item 球外任一点的场强；
   \item 紧贴球面的介质束缚电荷面密度与总束缚电荷。
 \end{enumerate}
-\end{example}
+\end{exercise}
 
 \begin{solution}
 在介质中优先对 \(\vb*{D}\) 用高斯定理。对半径为 \(r\) 的同心球面，
@@ -17181,13 +16860,13 @@ q'=\sigma'4\pi R^2
 这说明介质在靠近金属球的内表面聚集了与自由电荷异号的束缚电荷。
 \end{solution}
 
-\begin{example}[同轴导体间充满电介质时的 \(E,D,P,\sigma'\)]
+\begin{exercise}[同轴导体间充满电介质时的 \(E,D,P,\sigma'\)]
 半径为 \(R_1\) 的长直圆柱导体与半径为 \(R_2\) 的同轴薄导体圆筒之间充满相对介电常数为 \(\varepsilon_r\) 的均匀电介质。设内外导体单位长度上的自由电荷分别为 \(+\lambda\) 与 \(-\lambda\)。求：
 \begin{enumerate}
   \item 介质中的 \(\vb*{D},\vb*{E},\vb*{P}\)；
   \item 介质内、外表面的束缚电荷面密度。
 \end{enumerate}
-\end{example}
+\end{exercise}
 
 \begin{solution}
 取半径为 \(r\) 、长度为 \(l\) 的同轴圆柱面作高斯面。由
@@ -17225,9 +16904,9 @@ D\cdot 2\pi rl=\lambda l
 这是一道很典型的“先用 \(\vb*{D}\) 算自由电荷，再用 \(\vb*{P}\) 追束缚电荷”的模板题。
 \end{solution}
 
-\begin{example}[球形孤立导体的电容]
+\begin{exercise}[球形孤立导体的电容]
 半径为 \(R\) 的孤立导体球，求其电容。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 孤立导体电容定义为
@@ -17245,9 +16924,9 @@ U=\frac{1}{4\pi\varepsilon_0}\frac{Q}{R}.
 这个结果只与几何尺寸有关，与球上带多少电无关。把地球近似看成半径 \(6.4\times 10^6\,\mathrm{m}\) 的孤立导体球，可得其电容约为 \(7\times 10^{-4}\,\mathrm{F}\)。
 \end{solution}
 
-\begin{example}[两根平行长直导线的单位长度电容]
+\begin{exercise}[两根平行长直导线的单位长度电容]
 两根半径同为 \(R\)、中心距为 \(d\)（且 \(d\gg R\)）的平行长直导线，单位长度上分别带 \(+\lambda\) 和 \(-\lambda\) 电荷。求该结构的单位长度电容。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 在两导线连线上任一点处，两个线电荷的场强叠加为
@@ -17270,9 +16949,9 @@ C'=\frac{\pi\varepsilon_0}{\ln(d/R)}
 它是双导线传输线和同轴线比较时最基础的一个模型。
 \end{solution}
 
-\begin{example}[沿场方向分层的平行板电容器]
+\begin{exercise}[沿场方向分层的平行板电容器]
 一平行板电容器两板间填有两层厚度分别为 \(d_1,d_2\) 的介质，相对介电常数分别为 \(\varepsilon_{r1},\varepsilon_{r2}\)，极板面积为 \(S\)。求电容。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 因为分层方向沿着场线方向，所以两层介质承受的是\textbf{同一自由电荷、不同电压降}，本质上相当于两个电容串联。也可直接用场强计算：
@@ -17298,9 +16977,9 @@ C=\frac{Q}{U}
 看到“介质沿板距方向分层”，就应该立刻想到串联结构。
 \end{solution}
 
-\begin{example}[并排充入两种介质的平行板电容器]
+\begin{exercise}[并排充入两种介质的平行板电容器]
 一平行板电容器中并排充入两种介质，每种介质各占一半面积，板距均为 \(d\)，相对介电常数分别为 \(\varepsilon_{r1},\varepsilon_{r2}\)，总面积为 \(S\)。求电容。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 这次两块介质是\textbf{并排}铺在极板之间，因此它们承受同一电势差，等效于两个电容并联。每一半面积对应的电容为
@@ -17319,9 +16998,9 @@ C=C_1+C_2
 所以“沿场方向分层看串联，垂直场方向并排看并联”是复合介质电容题最重要的识别口诀。
 \end{solution}
 
-\begin{example}[均匀带电实心球的静电场能]
+\begin{exercise}[均匀带电实心球的静电场能]
 真空中一半径为 \(R\)、总电荷为 \(Q\) 的均匀带电实心球，求其静电场能。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 场能密度法最直接：
@@ -17349,9 +17028,9 @@ W_e=\frac{3Q^2}{20\pi\varepsilon_0R}
 这个结果比把同样电荷压缩到球面上的情形更小，反映出电荷分布得越分散，场能通常越低。
 \end{solution}
 
-\begin{example}[球形电容器的场能]
+\begin{exercise}[球形电容器的场能]
 球形电容器内、外半径分别为 \(R_1,R_2\)，两极板带 \(\pm Q\) 电荷，间隙中充满介电常数为 \(\varepsilon\) 的均匀介质。求其储存的电场能量。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 在两球壳之间
@@ -17379,9 +17058,9 @@ W_e=\frac{Q^2}{8\pi\varepsilon}\left(\frac{1}{R_1}-\frac{1}{R_2}\right)
 这里最后一步再次提醒我们：场能积分和电容公式两条路，本质上是在描述同一储能过程。
 \end{solution}
 
-\begin{example}[电容器接着电源时拉大板距的外力做功]
+\begin{exercise}[电容器接着电源时拉大板距的外力做功]
 一空气平行板电容器电容为 \(C\)，与电压为 \(U\) 的电源保持连接。若把极板间距增大到原来的 \(n\) 倍，求外力所做的功。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 与电源相连意味着\textbf{电压 \(U\) 守恒}。极板间距变为 \(nd\) 后，电容变成
@@ -17672,9 +17351,9 @@ B(r)=\frac{\mu_0 NI}{2\pi r}=\mu_0 nI.
 
 \section{例题精讲}
 
-\begin{example}[径向导电圆筒的总电流]
+\begin{exercise}[径向导电圆筒的总电流]
 一金属圆筒内、外半径分别为 \(R_1\) 与 \(R_2\)，长度为 \(l\)，电阻率为 \(\rho\)。若筒内缘电势高于筒外缘，二者电势差为 \(U\)，求圆筒中沿半径方向的稳恒电流 \(I\)。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 这题最容易误判成“电流沿长度方向流动”，其实题目说的是\textbf{内外缘有电势差}，所以电流是从内壁径向流向外壁。此时各半径处的电流通道截面积不是常数，而是
@@ -17704,9 +17383,9 @@ dR=\rho\frac{dl}{S}.
 它才是更底层、更稳的起点。
 \end{solution}
 
-\begin{example}[无限长均匀载流圆柱体的磁场分布]
+\begin{exercise}[无限长均匀载流圆柱体的磁场分布]
 半径为 \(R\) 的无限长圆柱导体中均匀通有总电流 \(I\)。求距轴线 \(r\) 处的磁感应强度 \(B(r)\)。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 这题的第一步不是积分，而是先看对称性：磁感线应围绕轴线成同心圆，故 \(\vb*{B}\) 在半径为 \(r\) 的圆形安培回路上大小恒定、方向沿切向。于是
@@ -17747,9 +17426,9 @@ B(r)=
 内区随 \(r\) 线性增大，外区按 \(1/r\) 衰减。看到这种“先增后降”的分段结构时，要立刻意识到：\textbf{里面包围电流在变，外面包围电流已固定。}
 \end{solution}
 
-\begin{example}[电流元在不同方位点产生的磁场方向与大小]
+\begin{exercise}[电流元在不同方位点产生的磁场方向与大小]
 把一个电流元 \(I\,d\vb*{l}\) 看成位于圆心，考察同一圆周上不同方位点的磁场微元 \(d\vb*{B}\)。哪些点 \(dB=0\)？哪些点最大？
-\end{example}
+\end{exercise}
 
 \begin{solution}
 毕奥-萨伐尔定律告诉我们
@@ -17777,9 +17456,9 @@ dB=\frac{\mu_0}{4\pi}\frac{I\,dl\sin\theta}{R^2},
 方向一律由右手定则给出：磁场垂直于“\(d\vb*{l}\) 与 \(\vb*{r}\)”张成的平面。也就是说，很多“判断方向”题本质上只是在考 \(\sin\theta\) 和右手定则。
 \end{solution}
 
-\begin{example}[有限长直导线的磁场]
+\begin{exercise}[有限长直导线的磁场]
 一段有限长直导线中通电流 \(I\)。设场点 \(P\) 到导线的垂直距离为 \(d\)，导线两端相对垂线张角分别为 \(\beta_1,\beta_2\)。求 \(P\) 点磁感应强度。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 这是毕奥-萨伐尔定律最常用的一条母公式。直接积分后得到
@@ -17828,9 +17507,9 @@ B=\int_b^{a+b}dB
 按题图中电流自下而上流动时，右手定则给出 \(P\) 点磁场方向垂直纸面向里。这个结果也有合理极限：若 \(a\to 0\)，可用 \(\ln(1+a/b)\approx a/b\)，退化为一根电流 \(I=\delta a\) 的细导线在距离 \(b\) 处的磁场。
 \end{solution}
 
-\begin{example}[圆形电流环轴线上的磁场]
+\begin{exercise}[圆形电流环轴线上的磁场]
 半径为 \(R\)、电流为 \(I\) 的圆形电流环，求其轴线上距圆心 \(x\) 处的磁感应强度。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 圆环上各电流元到轴线上点 \(P\) 的距离相同，但磁场方向不同。由对称性，圆周上各微元产生的横向分量全部抵消，只剩轴向分量。于是
@@ -17858,9 +17537,9 @@ B_x=\frac{\mu_0IR^2}{2(R^2+x^2)^{3/2}}
 若有 \(N\) 匝，结果只需再乘 \(N\)。当 \(x=0\) 时退化为圆心磁场 \(B=\mu_0I/(2R)\)。
 \end{solution}
 
-\begin{example}[有限长螺线管轴线上的磁场]
+\begin{exercise}[有限长螺线管轴线上的磁场]
 一长为 \(l\)、半径为 \(R\)、总匝数为 \(N\) 的密绕螺线管通电流 \(I\)。求其轴线上任一点磁感应强度。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 把螺线管看成许多圆电流的叠加。设单位长度匝数 \(n=N/l\)，并记从场点望向螺线管两端所张的角为 \(\beta_1,\beta_2\)。积分后可得标准结果
@@ -17880,9 +17559,9 @@ B_{\text{半无限长端点}}=\frac12\mu_0 nI.
 因此对长直螺线管来说，内部几乎是均匀磁场，外部则很弱，这也是后面自感、磁介质和电磁感应反复依赖的基本模型。
 \end{solution}
 
-\begin{example}[旋转带电圆盘中心的磁场]
+\begin{exercise}[旋转带电圆盘中心的磁场]
 半径为 \(R\)、面电荷密度为 \(\sigma\) 的带电薄圆盘，以角速度 \(\omega\) 绕盘轴匀速转动。求圆盘中心的磁感应强度。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 把圆盘分解成同心窄环。半径为 \(r\)、宽度为 \(dr\) 的环带电
@@ -17912,9 +17591,9 @@ B=\frac12\mu_0\sigma\omega R
 方向由右手定则决定：若 \(\sigma>0\) 且转动方向逆时针（从上方看），则磁场指向观察者。
 \end{solution}
 
-\begin{example}[长直导线穿过矩形面积的磁通量]
+\begin{exercise}[长直导线穿过矩形面积的磁通量]
 一根无限长直导线中通有电流 \(I\)。在其旁边放置一长为 \(l\) 的矩形面，矩形的近边和远边距导线分别为 \(d_1,d_2\)。求通过该矩形面的磁通量。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 长直导线在距轴线 \(x\) 处的磁场大小为
@@ -17943,9 +17622,9 @@ d\Phi=B\,dS=\frac{\mu_0Il}{2\pi x}\,dx.
 很多互感和感应电动势题，底层其实都要先走这一步。
 \end{solution}
 
-\begin{example}[无限长载流圆柱面的磁场]
+\begin{exercise}[无限长载流圆柱面的磁场]
 半径为 \(R\) 的无限长薄圆柱面上均匀分布总电流 \(I\)。求内外磁场分布。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 由于圆柱面对称性与实心圆柱相同，磁场仍沿同心圆分布，可用圆形安培回路。
@@ -17975,9 +17654,9 @@ B(r)=
 与实心圆柱相比，薄圆柱面的区别只在于“内部包围电流始终为零”，所以内区场直接塌成零。
 \end{solution}
 
-\begin{example}[长直密绕螺线管的磁场]
+\begin{exercise}[长直密绕螺线管的磁场]
 单位长度匝数为 \(n\) 的长直密绕螺线管通有电流 \(I\)。求其内外磁场。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 取一条一部分在管内、一部分在管外的矩形安培回路。对足够长的螺线管，外部磁场近似很小，内部磁场近似平行于轴线且大小近似恒定，于是
@@ -17993,9 +17672,9 @@ B(r)=
 这就是长直螺线管“内部近似均匀、外部近似无场”的核心结论，也是很多理想模型能成立的前提。
 \end{solution}
 
-\begin{example}[环形螺线管中的磁场]
+\begin{exercise}[环形螺线管中的磁场]
 环形螺线管共有 \(N\) 匝，通电流 \(I\)。求距环心轴距离为 \(r\) 处的磁感应强度。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 环形螺线管最适合用圆形安培回路。对位于铁心或绕组内部、半径为 \(r\) 的同心圆回路，
@@ -18011,9 +17690,9 @@ B(r)=\frac{\mu_0NI}{2\pi r}
 若把局部匝密度写作 \(n=N/(2\pi r)\)，也可写成 \(B=\mu_0nI\)。回路若取在环外，则包围净电流为零，外部磁场近似可以看成零。
 \end{solution}
 
-\begin{example}[无限大均匀平面电流的磁场]
+\begin{exercise}[无限大均匀平面电流的磁场]
 无限大平面上均匀分布面电流，其面电流密度大小为 \(i\)。求平面两侧磁场。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 磁场方向应平行于平面、且与电流方向和法向都垂直。取跨过平面的矩形安培回路，由对称性上下两边磁场大小相同、方向相反，所以环量大小为
@@ -18317,9 +17996,9 @@ dA=I\,d\Phi_B.
 
 \section{例题精讲}
 
-\begin{example}[任意平面载流导线在匀强磁场中的总受力]
+\begin{exercise}[任意平面载流导线在匀强磁场中的总受力]
 在 \(xy\) 平面内，一段任意形状的平滑导线从 \(O(0,0)\) 延伸到 \(P(L,0)\)，导线中通有电流 \(I\)。空间存在垂直纸面向里的匀强磁场 \(\vb*{B}=-B\vb*{k}\)。求整段导线所受总磁场力。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 这题最值得学的不是某个特殊曲线怎么积，而是一个更强的结论：\textbf{在匀强磁场中，平面载流导线的总受力只由始点、终点决定。}
@@ -18358,13 +18037,13 @@ F_y=BI\int_O^P dx=BIL,
 也就是说，它恰好等于那根\textbf{从 \(O\) 直连到 \(P\) 的直导线}在同一匀强磁场中所受的力。这是很多安培力积分题里最省力的捷径之一。
 \end{solution}
 
-\begin{example}[圆形线圈在匀强磁场中的力矩与做功]
+\begin{exercise}[圆形线圈在匀强磁场中的力矩与做功]
 半径为 \(R\) 的单匝圆形线圈中通有电流 \(I\)。将它放入匀强磁场中，且初始时磁场方向与线圈平面平行。求：
 \begin{enumerate}
   \item 初始时线圈所受磁力矩的大小；
   \item 若线圈在磁力矩作用下转到法向与 \(\vb*{B}\) 同向，磁场力共做多少功。
 \end{enumerate}
-\end{example}
+\end{exercise}
 
 \begin{solution}
 对闭合平面线圈，最稳的入口不是逐段算力，而是直接用磁矩
@@ -18399,9 +18078,9 @@ A=I(\Phi_f-\Phi_i)=IB\pi R^2.
 这题里力矩大小和总做功恰好写成了同一个系数 \(IB\pi R^2\)，但它们的物理意义完全不同：前者是某一姿态下的“转动趋势”，后者是整个转动过程中“累计转移的能量”。
 \end{solution}
 
-\begin{example}[长直载流导线在匀强磁场中的受力]
+\begin{exercise}[长直载流导线在匀强磁场中的受力]
 一段长为 \(L\) 的直导线中通有电流 \(I\)，置于匀强磁场 \(\vb*{B}\) 中。若导线方向与磁场夹角为 \(\theta\)，求导线所受安培力。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 对直导线，安培力微元
@@ -18420,9 +18099,9 @@ F=\int I B\sin\theta\,dl
 方向由 \(I\vb*{L}\times \vb*{B}\) 决定。这个式子其实就是安培力最常见的整段导线版，后面很多复杂导线题都只是把它拆回微元再积分。
 \end{solution}
 
-\begin{example}[有限长直导线受无限长直导线的磁场力]
+\begin{exercise}[有限长直导线受无限长直导线的磁场力]
 一根无限长直导线中通有电流 \(I_1\)。与它共面地放置一根长为 \(L\) 的直导线，电流为 \(I_2\)。设该导线近端到长直导线的距离为 \(r\)，并与过近端的垂线夹角为 \(\alpha\)。求这根有限导线所受磁场力大小。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 长直导线在距其 \(x\) 处产生的磁场大小为
@@ -18454,9 +18133,9 @@ F=\frac{\mu_0I_1I_2}{2\pi\cos\alpha}\ln\frac{r+L\cos\alpha}{r}
 这题的难点纯粹是几何变量替换，本质仍是“先找外磁场，再对安培力积分”。
 \end{solution}
 
-\begin{example}[半圆形载流导线在匀强磁场中的受力]
+\begin{exercise}[半圆形载流导线在匀强磁场中的受力]
 半径为 \(R\) 的半圆形导线位于纸面内，电流沿圆弧从左端流向右端，空间有垂直纸面向里的匀强磁场 \(B\)。求该半圆弧所受总安培力。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 逐元积分固然可做，但更快的识别是：在匀强磁场中，一段平面载流导线的总受力只由起点和终点决定。因此该半圆弧受到的总力，等于连接两端的直径导线在同一磁场中的受力。
@@ -18472,9 +18151,9 @@ F=IB(2R).
 方向由电流方向与磁场方向的叉乘决定；按题设取向，它与直径垂直并指向半圆开口一侧。这个结果很好地说明了“匀强磁场里算整段导线受力，别总想着沿曲线死积分”。
 \end{solution}
 
-\begin{example}[圆形线圈在指定坐标系中的磁力矩方向]
+\begin{exercise}[圆形线圈在指定坐标系中的磁力矩方向]
 一半径为 \(R\) 的可转动圆形线圈中通有电流 \(I\)，线圈法向沿 \(+z\) 方向，匀强磁场 \(\vb*{B}=B\vb*{i}\)。求线圈所受磁力矩。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 线圈磁矩为
@@ -18494,13 +18173,13 @@ F=IB(2R).
 这题提醒我们：很多线圈受力矩题真正的关键不是大小，而是先把磁矩方向判对，再用叉乘一把得到方向。
 \end{solution}
 
-\begin{example}[圆电流与共面长直导线间的安培力]
+\begin{exercise}[圆电流与共面长直导线间的安培力]
 一根无限长直导线与半径为 \(R\)、电流为 \(I\) 的圆电流共面放置，并沿圆的一条直径方向通过。长直导线电流为 \(I_0\)。求：
 \begin{enumerate}
   \item 圆上半弧所受总安培力；
   \item 整个圆电流所受总安培力。
 \end{enumerate}
-\end{example}
+\end{exercise}
 
 \begin{solution}
 对位于半圆弧上的电流元，长直导线在其处产生的磁场大小为
@@ -18680,9 +18359,9 @@ F_{\text{全圆}}=\mu_0 I_0 I.
 
 \section{例题精讲}
 
-\begin{example}[\(H\) 与 \(B\) 的分段分工]
+\begin{exercise}[\(H\) 与 \(B\) 的分段分工]
 一半径为 \(R_1\) 的无限长圆柱导线外包一层外半径为 \(R_2\)、相对磁导率为 \(\mu_r\) 的均匀磁介质圆筒。导线中通有电流 \(I\)，且电流在导线截面上均匀分布。求各区域中的磁场强度 \(H(r)\) 与磁感应强度 \(B(r)\)。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 这题最关键的观念不是一上来就算 \(B\)，而是先记住：\textbf{\(\vb*{H}\) 主要由自由电流决定，\(\vb*{B}\) 再由介质响应放大或缩小。}
@@ -18740,9 +18419,9 @@ B(r)=
 这正体现了 \(\vb*{H}\) 与 \(\vb*{B}\) 的分工：\(\vb*{H}\) 先把自由电流的“源账”做好，\(\vb*{B}\) 再通过不同区域的本构关系体现介质影响。
 \end{solution}
 
-\begin{example}[充满磁介质的长直螺线管]
+\begin{exercise}[充满磁介质的长直螺线管]
 一长直密绕螺线管内充满相对磁导率为 \(\mu_r\) 的均匀磁介质，单位长度匝数为 \(n\)，通有电流 \(I\)。求管内磁感应强度。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 先对 \(\vb*{H}\) 用安培环路定理。取一条跨越螺线管内外的矩形回路，由于长螺线管外部磁场近似很小，内部 \(\vb*{H}\) 近似均匀，故
@@ -18764,9 +18443,9 @@ B=\mu_0\mu_r nI
 这题最能说明“先算 \(H\)，再转成 \(B\)”的好处：自由电流决定 \(H\)，介质参数只在最后一步进入。
 \end{solution}
 
-\begin{example}[两同轴反向电流圆筒间的磁场]
+\begin{exercise}[两同轴反向电流圆筒间的磁场]
 有两个半径分别为 \(R_1,R_2\) 的无限长同轴圆筒形导体，之间充满相对磁导率为 \(\mu_r\) 的均匀磁介质。两圆筒中通有大小相等、方向相反的电流 \(I\)。求各区域磁感应强度。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 对三段区域分别用安培环路定理求 \(\vb*{H}\)：
@@ -18932,7 +18611,7 @@ W_m&=\frac12 LI^2.
 \oint \vb*{E}_{\mathrm{ind}}\cdot d\vb*{l}=-\dv{\Phi_B}{t}.
 \]
 
-\begin{example}
+\begin{exercise}
 设半径为 \(R\) 的长螺线管内部磁场 \(B(t)\) 近似均匀，管外磁场近似忽略。若取与轴同心、半径为 \(r\) 的圆形回路，则感生电场沿环向分布，并满足
 \[
 2\pi r E_\varphi=-\pi r^2\dv{B}{t},
@@ -18949,7 +18628,7 @@ E_\varphi(r)=-\frac{r}{2}\dv{B}{t}.
 E_\varphi(r)=-\frac{R^2}{2r}\dv{B}{t}.
 \]
 这说明感生电场并不只存在于“有磁场的地方”，而是以闭合场线的形式分布在更广的空间区域中。换句话说，它的电场线不是从正电荷出发、到负电荷终止，而是绕着变化磁通围成一圈圈与螺线管同轴的闭合同心圆。
-\end{example}
+\end{exercise}
 
 \begin{remark}
 动生电动势的“非静电力来源”可以直接追到洛伦兹力；感生电动势则更深一步，说明即使没有导体整体运动，变化磁场本身也能在空间中建立有旋电场。
@@ -19003,9 +18682,9 @@ w_m=\frac{1}{2}\vb*{B}\cdot \vb*{H}.
 
 \section{例题精讲}
 
-\begin{example}[滑动导杆的感应电动势]
+\begin{exercise}[滑动导杆的感应电动势]
 矩形闭合导体回路的一边 \(ab\) 长为 \(l\)，可在导轨上无摩擦滑动。整个回路处在垂直于回路平面、大小为 \(B\) 的匀强磁场中。若导杆 \(ab\) 以恒定速度 \(v\) 向右滑动，求回路中的感应电动势。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 这类题最稳的入口不是背 \(Blv\)，而是先把它翻译成“\textbf{磁通为什么在变}”。这里 \(B\) 不变，夹角不变，真正变化的是回路面积。
@@ -19028,13 +18707,13 @@ w_m=\frac{1}{2}\vb*{B}\cdot \vb*{H}.
 负号表示：若我们把顺时针取作正方向，那么真实感应电流方向与之相反，即为\textbf{逆时针方向}。这和楞次定律完全一致，因为导杆右移使回路面积增大，原磁通增强，于是感应电流必须建立一个反抗这种增强的磁场。
 \end{solution}
 
-\begin{example}[时变长直电流在线圈中激发的感应电动势]
+\begin{exercise}[时变长直电流在线圈中激发的感应电动势]
 一根无限长直导线中通有电流
 \[
 i(t)=I_0\sin\omega t.
 \]
 导线旁有一个与之共面的矩形线圈，线圈靠近导线的一边距导线为 \(r\)，沿径向宽度为 \(l_1\)，沿导线方向长度为 \(l_2\)。求线圈中的感应电动势。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 长直导线在距其 \(x\) 处产生的磁场大小为
@@ -19099,9 +18778,9 @@ B=\frac{\mu_0 I}{2R}.
 这里的近似条件 \(r\ll R\) 很关键；若小环不够小，就不能把大环磁场在整个小环面积上看作常量。
 \end{solution}
 
-\begin{example}[运动矩形线框在长直电流磁场中的感应电动势]
+\begin{exercise}[运动矩形线框在长直电流磁场中的感应电动势]
 一矩形导体线框与一根无限长直导线共面。线框沿垂直于长直导线的方向平移，靠近导线一边到导线的距离为 \(l\)，线框宽为 \(a\)、高为 \(b\)，平移速度为 \(v\)。长直导线中电流恒为 \(I\)。求线框中的感应电动势。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 长直导线在距其 \(x\) 处的磁场为
@@ -19128,9 +18807,9 @@ B(x)=\frac{\mu_0I}{2\pi x}.
 方向由楞次定律判断：若线框远离导线，原磁通减小，则感应电流要设法维持原磁通方向。
 \end{solution}
 
-\begin{example}[转动导体棒两端的动生电动势]
+\begin{exercise}[转动导体棒两端的动生电动势]
 一根长为 \(L\) 的导体棒在垂直于磁场 \(B\) 的平面内绕一端以角速度 \(\omega\) 匀速转动。求棒两端之间的动生电动势大小。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 把导体棒分成距转轴为 \(l\) 的小段。该处线速度
@@ -19155,9 +18834,9 @@ d\mathcal{E}=Bv\,dl=B\omega l\,dl.
 方向由右手定则判断：若磁场垂直纸面向里、棒逆时针转动，则正电荷被推向外端。
 \end{solution}
 
-\begin{example}[长直导线旁移动金属棒的动生电动势]
+\begin{exercise}[长直导线旁移动金属棒的动生电动势]
 一根长直导线中通恒定电流 \(I\)。一根长度为 \(l\) 的金属棒与导线垂直、并与导线共面，近端到导线距离为 \(a\)。若金属棒以速度 \(v\) 平行于长直导线匀速运动，求棒两端的动生电动势。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 长直导线在距其 \(x\) 处的磁场为
@@ -19232,9 +18911,9 @@ U_M-U_N=
 这个正号说明 \(M\) 端电势高于 \(N\) 端，和正电荷被推向 \(M\) 端的图像一致。
 \end{solution}
 
-\begin{example}[磁场中的导体棒为何会指数减速]
+\begin{exercise}[磁场中的导体棒为何会指数减速]
 一根长为 \(l\)、质量为 \(m\) 的导体棒在匀强磁场 \(B\) 中沿导轨运动，并与总电阻为 \(R\) 的回路相连。若初速度为 \(v_0\)，求它的速度随时间的变化规律。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 棒运动时产生感应电动势
@@ -19266,9 +18945,9 @@ v(t)=v_0e^{-B^2l^2t/(mR)}
 这题非常值得拿来理解楞次定律的动力学含义：感应电流总会以反抗原运动的方式“吃掉”机械能。
 \end{solution}
 
-\begin{example}[折线导线的动生电动势为何等于两端弦线]
+\begin{exercise}[折线导线的动生电动势为何等于两端弦线]
 一根形状任意的刚性导线 \(abc\) 在匀强磁场中整体平移。说明其动生电动势为什么只取决于端点，等于连接两端的直导线 \(ac\) 的动生电动势。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 把导线 \(abc\) 与一根假想直导线 \(ca\) 拼成闭合刚性回路 \(abca\)。由于整个刚性回路都以同一速度平移、回路面积不变、磁通不变，因此
@@ -19290,9 +18969,9 @@ v(t)=v_0e^{-B^2l^2t/(mR)}
 这说明在匀强磁场中的整体平移问题里，动生电动势具有明显的“端点决定”特征。
 \end{solution}
 
-\begin{example}[长直螺线管的自感系数]
+\begin{exercise}[长直螺线管的自感系数]
 一长为 \(l\)、截面积为 \(S\)、总匝数为 \(N\) 的长直密绕螺线管，内部充满磁导率为 \(\mu\) 的均匀介质。求其自感系数。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 设线圈中通电流 \(I\)，单位长度匝数 \(n=N/l\)。长螺线管内磁场近似为
@@ -19320,9 +18999,9 @@ L=\mu\frac{N^2S}{l}
 这题把“先算场，再算磁通，再算磁链”这一整套自感求解流程完整演示了一遍。
 \end{solution}
 
-\begin{example}[同轴圆筒导体回路的自感系数]
+\begin{exercise}[同轴圆筒导体回路的自感系数]
 两根无限长同轴圆筒导体半径分别为 \(R_1,R_2\)，中间充满磁导率为 \(\mu\) 的均匀介质，电流大小相等、方向相反。求长度为 \(l\) 的这一段结构的自感系数。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 在两圆筒之间
@@ -19347,9 +19026,9 @@ L=\frac{\mu l}{2\pi}\ln\frac{R_2}{R_1}
 这也是同轴线结构常见的自感表达式。
 \end{solution}
 
-\begin{example}[长直导线与矩形线圈的互感]
+\begin{exercise}[长直导线与矩形线圈的互感]
 在磁导率为 \(\mu\) 的均匀介质中，一根无限长直导线与一个宽为 \(b\)、长为 \(l\) 的矩形线圈共面，线圈近边距直导线为 \(d\)。求二者互感系数。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 设长直导线中通电流 \(I\)。它在距导线 \(x\) 处产生的磁场为
@@ -19371,9 +19050,9 @@ M=\frac{\Phi}{I}
 只要把一边当“源回路”、另一边当“受链路”，互感计算本质上和磁通题没有任何新花样。
 \end{solution}
 
-\begin{example}[共轴长直螺线管的互感]
+\begin{exercise}[共轴长直螺线管的互感]
 两个共轴长直螺线管长度同为 \(l\)，半径满足 \(R_1>R_2\)，总匝数分别为 \(N_1,N_2\)。求二者互感系数。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 设外层螺线管通电流 \(I_1\)。它在内部产生近似均匀磁场
@@ -19406,9 +19085,9 @@ M=\frac{R_2}{R_1}\sqrt{L_1L_2}.
 \textbf{互感系数 \(M\) 不是“哪根线圈电流更大就更大”的量，而是一个几何耦合量。} 在介质不变时，它主要由两回路的\textbf{相对位置、相对取向和尺寸}决定。于是平行平移但不改变相对几何时，\(M\) 可以不变；一旦改变距离、夹角或有效链通面积，\(M\) 一般就会改变。
 \end{remark}
 
-\begin{example}[同轴电缆中的磁场能量]
+\begin{exercise}[同轴电缆中的磁场能量]
 一根长为 \(l\) 的同轴电缆由半径 \(R_1,R_2\) 的两同心圆筒导体组成，电流 \(I\) 由内层流出、外层流回，形成闭合回路。求该段电缆中的磁场能量。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 电缆磁场只存在于 \(R_1<r<R_2\) 区域内，且
@@ -19771,7 +19450,7 @@ p_{\mathrm{rad}}=
 
 \section{例题精讲}
 
-\begin{example}[充电平行板电容器中的位移电流与环向磁场]
+\begin{exercise}[充电平行板电容器中的位移电流与环向磁场]
 一圆形平行板电容器极板半径为 \(R\)。充电过程中极板所带电量满足
 \[
 Q(t)=Q_0\sin\omega t.
@@ -19781,7 +19460,7 @@ Q(t)=Q_0\sin\omega t.
   \item 位移电流密度 \(j_d\) 与总位移电流 \(I_d\)；
   \item 极板间与轴同心、半径为 \(r\) 的圆周上磁感应强度 \(B(r,t)\)。
 \end{enumerate}
-\end{example}
+\end{exercise}
 
 \begin{solution}
 极板面积为
@@ -19840,7 +19519,7 @@ B(r,t)=
 这题最值得带走的不是某个特定三角函数，而是完整逻辑：\textbf{先由 \(Q(t)\) 找到 \(D(t)\)，再由 \(j_d=\partial D/\partial t\) 找到等效电流，最后用修正后的安培环路定理求磁场。}
 \end{solution}
 
-\begin{example}[已知 \(\partial E/\partial t\) 时电容器中的位移电流与磁场]
+\begin{exercise}[已知 \(\partial E/\partial t\) 时电容器中的位移电流与磁场]
 一平行板电容器的圆形极板半径为 \(R=0.10\,\mathrm{m}\)，充电过程中板间电场变化率恒为
 \[
 \dv{E}{t}=10^{13}\,\mathrm{V\,m^{-1}\,s^{-1}}.
@@ -19851,7 +19530,7 @@ B(r,t)=
   \item 极板间距轴线 \(r\) 处的磁感应强度 \(B(r)\)；
   \item \(r=R\) 处的磁感应强度数值。
 \end{enumerate}
-\end{example}
+\end{exercise}
 
 \begin{solution}
 位移电流先由电位移通量求：
@@ -19898,14 +19577,14 @@ B_R=\frac{\mu_0\varepsilon_0R}{2}\dv{E}{t}
 这题特别适合拿来练“位移电流不是凭空写一个 \(I_d\)，而是先由 \(\partial D/\partial t\) 进来”的思路。
 \end{solution}
 
-\begin{example}[电流随时间变化的螺线管内的感生电场与坡印廷矢量]
+\begin{exercise}[电流随时间变化的螺线管内的感生电场与坡印廷矢量]
 一长直螺线管单位长度匝数为 \(n\)，半径为 \(R\)，内部介质磁导率为 \(\mu\)。导线中通电流 \(i(t)\)，且 \(\dv*{i}{t}>0\)。求螺线管内距轴线 \(r\) 处：
 \begin{enumerate}
   \item 磁场强度 \(H\)；
   \item 感生电场强度 \(E_{\mathrm{ind}}\)；
   \item 坡印廷矢量 \(\vb*{S}\)。
 \end{enumerate}
-\end{example}
+\end{exercise}
 
 \begin{solution}
 对长直螺线管，先有
@@ -20209,9 +19888,9 @@ K=(\gamma-1)m_0c^2\approx \frac12 m_0v^2.
 
 \section{例题精讲}
 
-\begin{example}[质子在 \(0.80c\) 时的静能、总能量、动能与动量]
+\begin{exercise}[质子在 \(0.80c\) 时的静能、总能量、动能与动量]
 已知质子的静质量为 \(m_0=1.673\times 10^{-27}\,\mathrm{kg}\)，若它以 \(v=0.80c\) 运动，求其静能 \(E_0\)、总能量 \(E\)、动能 \(K\) 与动量 \(p\)。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 这类题的真正起点不是直接求四个量，而是先统一算出
@@ -20257,7 +19936,7 @@ p=\gamma m_0v
 这一题很适合作为相对论动力学的总入口，因为一旦 \(\gamma\) 被统一算出来，能量、动量和动能几乎都只是顺着定义依次落笔。
 \end{solution}
 
-\begin{example}[另一参考系中两事件为何会同时发生]
+\begin{exercise}[另一参考系中两事件为何会同时发生]
 在参考系 \(S\) 中，两个事件的坐标分别为
 \[
 (x_1,t_1)=(6\times 10^4\,\mathrm{m},\,2\times 10^{-4}\,\mathrm{s}),
@@ -20265,7 +19944,7 @@ p=\gamma m_0v
 (x_2,t_2)=(12\times 10^4\,\mathrm{m},\,1\times 10^{-4}\,\mathrm{s}).
 \]
 求是否存在惯性系 \(S'\) 使这两个事件同时发生；若存在，求 \(S'\) 相对 \(S\) 的速度以及在 \(S'\) 中测得的空间间隔。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 要求在 \(S'\) 中同时发生，就是要求
@@ -20304,9 +19983,9 @@ v=\frac{c^2\Delta t}{\Delta x}
 这题最重要的是：是否“同时”，本来就是依赖参考系的。
 \end{solution}
 
-\begin{example}[相向 \(0.9c\) 飞船的相对速度]
+\begin{exercise}[相向 \(0.9c\) 飞船的相对速度]
 在地面看来，两艘飞船分别以 \(0.9c\) 的速度沿相反方向飞行。求其中一艘飞船观察到另一艘飞船的速度。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 不能直接把 \(0.9c+0.9c\) 相加，那样会超过光速。应使用相对论速度叠加公式：
@@ -20330,9 +20009,9 @@ u=\frac{0.9c+0.9c}{1+0.9\times 0.9}
 这道题正是相对论速度变换“自动堵死超光速”的最直观演示。
 \end{solution}
 
-\begin{example}[停电事件的先后顺序在飞船上怎样变化]
+\begin{exercise}[停电事件的先后顺序在飞船上怎样变化]
 甲、乙两地相距 \(1.2\times 10^9\,\mathrm{m}\)。地面参考系中，甲地在 9:00:00 停电，乙地在 9:00:03 停电。若一艘飞船以 \(0.8c\) 从甲飞向乙，求飞船上测得的时间间隔，并判断哪一地先停电。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 用洛伦兹时间变换的差分形式：
@@ -20364,9 +20043,9 @@ v=0.8c,
 且先后顺序发生了颠倒。之所以允许颠倒，是因为这两个停电事件并无因果联系。
 \end{solution}
 
-\begin{example}[列车枪战中的先后顺序]
+\begin{exercise}[列车枪战中的先后顺序]
 一列高速列车以 \(v=0.6c\) 行驶。车上 A、B 两人相距 \(10\,\mathrm{m}\)，B 在前，A 在后。站台观察者看到 A 先向 B 开枪，经过 \(12.5\,\mathrm{ns}\) 后，B 才向 A 开枪。若你在列车上，看到的先后顺序是什么？
-\end{example}
+\end{exercise}
 
 \begin{solution}
 这题的关键是：车上两人间距 \(10\,\mathrm{m}\) 是列车参考系中的本征长度，所以应把列车系作为 \(S'\) 系，站台作为 \(S\) 系。
@@ -20395,9 +20074,9 @@ v=0.6c,
 负号表示在列车上看，\textbf{B 先开枪，A 后开枪}。这和上一题一样，体现的仍是同时性与先后性的参考系依赖。
 \end{solution}
 
-\begin{example}[为何 \(\mu\) 子能穿透大气层]
+\begin{exercise}[为何 \(\mu\) 子能穿透大气层]
 静止系中 \(\mu\) 子平均寿命为 \(\tau_0=2.2\times 10^{-6}\,\mathrm{s}\)，其速度为 \(0.9966c\)。说明它为什么有可能穿过约 \(6000\,\mathrm{m}\) 厚的大气层到达地面。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 若按经典想法，\(\mu\) 子最多飞行
@@ -20430,9 +20109,9 @@ L=v\tau\approx 0.9966\times 3.0\times 10^8\times 2.69\times 10^{-5}
 ，这就解释了为什么高速 \(\mu\) 子能到达地面。
 \end{solution}
 
-\begin{example}[火箭在地面参考系中的长度]
+\begin{exercise}[火箭在地面参考系中的长度]
 某光子火箭相对地球以 \(0.95c\) 飞行。若火箭自身参考系测得其长度为 \(15\,\mathrm{m}\)，求地面参考系测得的长度。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 火箭自身参考系中的长度是本征长度：
@@ -20456,9 +20135,9 @@ L\approx 15\times 0.312
 这题最容易错的地方是把 \(15\,\mathrm{m}\) 误当作地面测得长度；题目一旦说“以火箭为参考系测得”，那就是本征长度。
 \end{solution}
 
-\begin{example}[\(\mu\) 子自己眼中的大气层有多厚]
+\begin{exercise}[\(\mu\) 子自己眼中的大气层有多厚]
 仍以上题 \(\mu\) 子为例。若站在 \(\mu\) 子自己的参考系中，大气层厚度是多少？并说明为什么它看来也能到达地面。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 对 \(\mu\) 子来说，自己的寿命仍是本征寿命 \(\tau_0=2.2\times 10^{-6}\,\mathrm{s}\)，能飞过的距离只有
@@ -20478,9 +20157,9 @@ L=L_0\sqrt{1-\frac{v^2}{c^2}}
 所以无论在哪个参考系里看，结论都自洽：\(\mu\) 子都有足够“机会”到达地面。
 \end{solution}
 
-\begin{example}[斜伸天线在地面上看起来会变多长、变多斜]
+\begin{exercise}[斜伸天线在地面上看起来会变多长、变多斜]
 飞船上一根本征长度 \(l_0=1\,\mathrm{m}\) 的天线与飞船前进方向成 \(45^\circ\) 伸出。飞船相对地面速度为 \(\frac{\sqrt3}{2}c\)。求地面观察者测得的天线长度与倾角。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 先在飞船系分解本征长度：
@@ -20522,13 +20201,13 @@ l=\sqrt{l_x^2+l_y^2}
 这题很好地说明：长度收缩只压缩平行于运动的那一部分，方向也会因此改变。
 \end{solution}
 
-\begin{example}[低速修正量级与静能量级]
+\begin{exercise}[低速修正量级与静能量级]
 估计以下两个量级：
 \begin{enumerate}
   \item 当 \(v=10^4\,\mathrm{m/s}\) 时，相对论修正有多小；
   \item \(1\,\mathrm{kg}\) 物体的静能有多大。
 \end{enumerate}
-\end{example}
+\end{exercise}
 
 \begin{solution}
 对低速 \(v\ll c\)，
@@ -20554,9 +20233,9 @@ E_0=m_0c^2=1\times (3.0\times 10^8)^2
 第一部分告诉我们经典力学为何在日常生活里好用，第二部分则告诉我们静质量背后蕴含的能量是何等惊人。
 \end{solution}
 
-\begin{example}[两个相向粒子粘在一起后的静质量]
+\begin{exercise}[两个相向粒子粘在一起后的静质量]
 在参考系 \(S\) 中，两个静质量均为 \(m_0\) 的粒子分别以 \(+v\) 和 \(-v\) 迎面运动，碰后粘在一起成为一个粒子。求该新粒子的静质量 \(M_0\)。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 由于碰前总动量为零，碰后新粒子在 \(S\) 系中也必静止，因此它的总质量就是静质量 \(M_0\)。
@@ -20579,7 +20258,7 @@ M_0=2m
 这个结果大于 \(2m_0\)，说明动能的一部分已经转化成了合成粒子的静质量。
 \end{solution}
 
-\begin{example}[氘氚聚变释放的能量]
+\begin{exercise}[氘氚聚变释放的能量]
 在聚变反应
 \[
 {}^2_1\mathrm{H}+{}^3_1\mathrm{H}\to {}^4_2\mathrm{He}+{}^1_0\mathrm{n}
@@ -20594,7 +20273,7 @@ m_{\mathrm{He}}=6.6825\times 10^{-27}\,\mathrm{kg},\quad
 m_n=1.6750\times 10^{-27}\,\mathrm{kg}.
 \]
 求该反应释放的能量。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 先算质量亏损：
@@ -20856,14 +20535,14 @@ E_n=-\frac{13.6Z^2}{n^2}\,\mathrm{eV}.
 
 \section{例题精讲}
 
-\begin{example}[450\,nm 单色光照射纯钠时会发生什么]
+\begin{exercise}[450\,nm 单色光照射纯钠时会发生什么]
 已知纯钠的逸出功为 \(A=2.28\,\mathrm{eV}\)。现用波长为 \(450\,\mathrm{nm}\) 的单色光照射它，求：
 \begin{enumerate}
   \item 光子的能量与动量；
   \item 光电子的最大初动能；
   \item 若某光子能量为 \(2.40\,\mathrm{eV}\)，其波长是多少。
 \end{enumerate}
-\end{example}
+\end{exercise}
 
 \begin{solution}
 先算波长为 \(450\,\mathrm{nm}\) 的光子的能量。用常用换算
@@ -20941,9 +20620,9 @@ E_\gamma=\frac{hc}{\lambda_0}
 这里不能把 \(eBR/m\) 直接当能量；它是速度，必须再代回 \(\frac12mv^2\)。
 \end{solution}
 
-\begin{example}[12.6\,eV 电子轰击基态氢原子时会出现哪些谱线]
+\begin{exercise}[12.6\,eV 电子轰击基态氢原子时会出现哪些谱线]
 一电子具有 \(12.6\,\mathrm{eV}\) 的动能，与处于基态的氢原子碰撞。问氢原子最多可被激发到哪些能级？随后可能发射出哪些谱线？
-\end{example}
+\end{exercise}
 
 \begin{solution}
 基态氢原子的能量为
@@ -21039,9 +20718,9 @@ N=\frac{n(n-1)}{2}=\frac{4\cdot 3}{2}=6
 这些跃迁包括 \(4\to3,4\to2,4\to1,3\to2,3\to1,2\to1\)。谱线数不是只数“从 4 直接往下跳”的三条，因为原子还可能经中间能级级联跃迁。
 \end{solution}
 
-\begin{example}[黑体温度升高时峰值波长向哪边移动]
+\begin{exercise}[黑体温度升高时峰值波长向哪边移动]
 随着温度升高，黑体辐射曲线的峰值波长会向长波方向移动还是向短波方向移动？
-\end{example}
+\end{exercise}
 
 \begin{solution}
 直接调出维恩位移定律：
@@ -21051,9 +20730,9 @@ N=\frac{n(n-1)}{2}=\frac{4\cdot 3}{2}=6
 其中 \(b\) 为常数，所以当 \(T\) 升高时，\(\lambda_m\) 必减小。故峰值波长会\textbf{向短波方向移动}。这类题不必画图，抓住“乘积恒定”就够了。
 \end{solution}
 
-\begin{example}[由太阳峰值波长估算表面温度]
+\begin{exercise}[由太阳峰值波长估算表面温度]
 已知太阳单色辐出度峰值波长约为 \(510\,\mathrm{nm}\)。把太阳近似看成黑体，估算其表面温度。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 仍用维恩位移定律：
@@ -21069,9 +20748,9 @@ T=\frac{b}{\lambda_m}
 这也是天体物理里最常见的一类“用颜色或峰值波长反推温度”的估算题。
 \end{solution}
 
-\begin{example}[宏观弹簧振子的量子数为何巨大]
+\begin{exercise}[宏观弹簧振子的量子数为何巨大]
 质量 \(m=0.30\,\mathrm{kg}\) 的弹簧振子，振幅 \(A=0.10\,\mathrm{m}\)，劲度系数 \(k=3.0\,\mathrm{N/m}\)。若按普朗克量子化假设处理，求该振子的量子数 \(n\)，以及当量子数变化 1 时，能量相对变化百分比。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 先求振动频率：
@@ -21111,9 +20790,9 @@ n=\frac{E}{h\nu}
 这说明宏观振子虽然也可形式上量子化，但能级间隔小到几乎不可觉察。
 \end{solution}
 
-\begin{example}[发生光电效应时波长必须满足什么条件]
+\begin{exercise}[发生光电效应时波长必须满足什么条件]
 某金属的逸出电势为 \(U_0\)，即逸出功 \(A=eU_0\)。若单色光照射该金属能发生光电效应，入射光波长应满足什么条件？
-\end{example}
+\end{exercise}
 
 \begin{solution}
 发生光电效应至少要满足
@@ -21129,14 +20808,14 @@ h\nu\ge A=eU_0.
 也就是说，波长不能超过红限波长。凡是“逸出功已知、问能否发生光电效应”的题，第一步永远是先比 \(h\nu\) 和 \(A\)。
 \end{solution}
 
-\begin{example}[由红限求逸出功、遏止电压与电子初速度]
+\begin{exercise}[由红限求逸出功、遏止电压与电子初速度]
 钾的光电效应红限为 \(\lambda_0=6.2\times 10^{-7}\,\mathrm{m}\)。求：
 \begin{enumerate}
   \item 逸出功；
   \item 若用波长 \(3.0\times 10^{-7}\,\mathrm{m}\) 的紫外线照射，遏止电压多大；
   \item 光电子最大初速度多大。
 \end{enumerate}
-\end{example}
+\end{exercise}
 
 \begin{solution}
 红限对应阈频，所以逸出功为
@@ -21177,9 +20856,9 @@ v_{\max}\approx 8.67\times 10^5\,\mathrm{m/s}.
 \]
 \end{solution}
 
-\begin{example}[光电效应与康普顿效应的本质区别]
+\begin{exercise}[光电效应与康普顿效应的本质区别]
 为什么说光电效应和康普顿效应都涉及光子与电子相互作用，但它们的物理本质并不相同？
-\end{example}
+\end{exercise}
 
 \begin{solution}
 光电效应里，电子原本束缚在金属内，整个过程中电子还与晶格相互作用，因此\textbf{单独的“光子 + 电子”二体系统并不是孤立系统}；它体现的是\textbf{电子吸收一个光子}，满足的是能量量子化与逸出功门槛。
@@ -21189,14 +20868,14 @@ v_{\max}\approx 8.67\times 10^5\,\mathrm{m/s}.
 所以正确理解应是：\textbf{光电效应是吸收过程，康普顿效应是散射碰撞过程。}
 \end{solution}
 
-\begin{example}[康普顿散射到 \(90^\circ\) 时的波长与反冲电子]
+\begin{exercise}[康普顿散射到 \(90^\circ\) 时的波长与反冲电子]
 波长为 \(\lambda_0=0.020\,\mathrm{nm}\) 的 X 射线与自由电子碰撞。若在与入射方向成 \(90^\circ\) 的方向观察散射线，求：
 \begin{enumerate}
   \item 散射光波长；
   \item 反冲电子动能；
   \item 反冲电子动量大小。
 \end{enumerate}
-\end{example}
+\end{exercise}
 
 \begin{solution}
 康普顿波长改变量公式为
@@ -21234,9 +20913,9 @@ p_e\approx 4.5\times 10^{-23}\,\mathrm{kg\cdot m/s}.
 \]
 \end{solution}
 
-\begin{example}[已知反冲电子速度时反推康普顿散射]
+\begin{exercise}[已知反冲电子速度时反推康普顿散射]
 在康普顿效应中，入射光波长为 \(3.0\times 10^{-3}\,\mathrm{nm}\)，反冲电子速度为 \(0.60c\)。求散射光波长与散射角。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 先由反冲电子速度算其总能量。若 \(v=0.60c\)，则
@@ -21269,9 +20948,9 @@ p_e\approx 4.5\times 10^{-23}\,\mathrm{kg\cdot m/s}.
 这类题常见的结构是“先用能量守恒把 \(\lambda\) 算出来，再用康普顿位移公式求角度”。
 \end{solution}
 
-\begin{example}[玻尔模型中 \(n=4\) 与基态的动能比]
+\begin{exercise}[玻尔模型中 \(n=4\) 与基态的动能比]
 根据玻尔模型，氢原子中电子在 \(n=4\) 轨道上的动能与基态轨道上的动能之比是多少？
-\end{example}
+\end{exercise}
 
 \begin{solution}
 在玻尔模型里，轨道半径满足
@@ -21701,9 +21380,9 @@ g_s\approx 2.
 
 \section{例题精讲}
 
-\begin{example}[电子经电压加速后的德布罗意波长]
+\begin{exercise}[电子经电压加速后的德布罗意波长]
 一电子由静止出发，经电压 \(U=\SI{150}{V}\) 加速。若可采用非相对论近似，求其德布罗意波长。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 电子由静止加速后，所获动能近似满足
@@ -21735,9 +21414,9 @@ p=m_ev=\sqrt{2m_eeU}.
 这正和晶体原子间距同量级，因此电子衍射实验才会真正显著地出现干涉与衍射结构。
 \end{solution}
 
-\begin{example}[一维无限深势阱中 \(0\) 到 \(a/4\) 区间的概率]
+\begin{exercise}[一维无限深势阱中 \(0\) 到 \(a/4\) 区间的概率]
 粒子被限制在 \(0<x<a\) 的一维无限深势阱中。若它处于基态 \(n=1\)，求它在区间 \(0\le x\le a/4\) 内被发现的概率。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 对无限深势阱，
@@ -21779,9 +21458,9 @@ P\approx 0.091.
 这题最重要的训练点是：\textbf{量子题里求“出现概率”，真正该积的是 \(|\psi|^2\) 而不是 \(\psi\) 本身。}
 \end{solution}
 
-\begin{example}[子弹的德布罗意波长有多短]
+\begin{exercise}[子弹的德布罗意波长有多短]
 一颗子弹质量 \(m=0.050\,\mathrm{kg}\)，速度 \(v=500\,\mathrm{m/s}\)。求它的德布罗意波长。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 德布罗意关系直接给出
@@ -21797,9 +21476,9 @@ P\approx 0.091.
 这说明宏观物体虽然原则上也有波粒二象性，但其波长短得无法观测，因此经典轨道描述在宏观世界完全够用。
 \end{solution}
 
-\begin{example}[子弹动量很精确时位置仍会有多大不确定]
+\begin{exercise}[子弹动量很精确时位置仍会有多大不确定]
 一颗质量 \(10\,\mathrm{g}\) 的子弹以 \(200\,\mathrm{m/s}\) 飞行。若其动量不确定度只有动量的 \(0.01\%\)，求位置不确定度下限。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 先算动量：
@@ -21827,9 +21506,9 @@ p=mv=0.010\times 200=2.0\,\mathrm{kg\cdot m/s}.
 这个数值极端小，说明宏观物体的位置和动量在实验上完全可以同时认为几乎精确。
 \end{solution}
 
-\begin{example}[电子在同样相对精度下的位置不确定度]
+\begin{exercise}[电子在同样相对精度下的位置不确定度]
 一电子以 \(200\,\mathrm{m/s}\) 运动。若其动量不确定度同样只有动量的 \(0.01\%\)，求位置不确定度下限。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 电子动量为
@@ -21854,9 +21533,9 @@ p=m_ev=9.11\times 10^{-31}\times 200
 与上一题一比，就能直观看出：同样的相对动量精度，在微观粒子上会对应完全不可忽略的位置模糊。
 \end{solution}
 
-\begin{example}[由谱线宽度估算光子波列长度]
+\begin{exercise}[由谱线宽度估算光子波列长度]
 氦氖激光波长为 \(\lambda=6328\,\text{\AA}\)，谱线宽度 \(\Delta\lambda=10^{-8}\,\text{\AA}\)。估算这种光子沿传播方向的位置不确定度，也就是波列长度数量级。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 光子动量满足
@@ -21889,7 +21568,7 @@ p=\frac{h}{\lambda}.
 这说明谱线越窄、单色性越好，对应的波列就越长。
 \end{solution}
 
-\begin{example}[无限深势阱基态的归一化与半阱概率]
+\begin{exercise}[无限深势阱基态的归一化与半阱概率]
 粒子被限制在 \(0\le x\le a\) 的一维无限深势阱中。已知波函数
 \[
 \psi(x)=A\sin\frac{\pi x}{a}.
@@ -21899,7 +21578,7 @@ p=\frac{h}{\lambda}.
   \item 归一化常数 \(A\)；
   \item 粒子出现在 \(0\le x\le a/2\) 区域的概率。
 \end{enumerate}
-\end{example}
+\end{exercise}
 
 \begin{solution}
 归一化条件是
@@ -21932,9 +21611,9 @@ P=\int_0^{a/2}\frac{2}{a}\sin^2\frac{\pi x}{a}\,dx.
 这题最值得记的是：只要势阱和基态波函数关于中心对称，半阱概率往往可以先凭对称性秒判。
 \end{solution}
 
-\begin{example}[无限深势阱基态概率密度最大在哪]
+\begin{exercise}[无限深势阱基态概率密度最大在哪]
 在一维无限深势阱 \(0<x<a\) 中，粒子处于基态 \(n=1\)。求概率密度最大的点。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 基态波函数为
@@ -21958,14 +21637,14 @@ P=\int_0^{a/2}\frac{2}{a}\sin^2\frac{\pi x}{a}\,dx.
 也就是说，基态粒子最可能出现在势阱中心。
 \end{solution}
 
-\begin{example}[氢原子 \(l=3\) 态的角动量、投影与夹角]
+\begin{exercise}[氢原子 \(l=3\) 态的角动量、投影与夹角]
 设氢原子处于轨道量子数 \(l=3\) 的状态。求：
 \begin{enumerate}
   \item 轨道角动量大小 \(L\)；
   \item 所有可能的 \(L_z\)；
   \item \(L\) 与 \(z\) 轴可能夹角。
 \end{enumerate}
-\end{example}
+\end{exercise}
 
 \begin{solution}
 轨道角动量大小由
@@ -22004,9 +21683,9 @@ L_z=m_l\hbar.
 这正是角动量空间量子化最直观的例子。
 \end{solution}
 
-\begin{example}[为什么先填 \(4s\) 再填 \(3d\)]
+\begin{exercise}[为什么先填 \(4s\) 再填 \(3d\)]
 说明多电子原子中电子为什么通常先占据 \(4s\) 态，再占据 \(3d\) 态。
-\end{example}
+\end{exercise}
 
 \begin{solution}
 在近似经验判据里，电子优先占据能量更低的态，而能量高低可用
