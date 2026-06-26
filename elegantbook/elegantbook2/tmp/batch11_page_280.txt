@@ -1,0 +1,89 @@
+                                                                                                                   3.1 知识讲解
+
+    由                                       !                        !
+                                   1 0                        1 0
+                   H(x,y) (z) =                 H(u,v) (F )              + Fu H(x,y) (u) + Fv H(x,y) (v)
+                                   0 1                        0 1
+
+    可得                                                                                
+                                                     2xy                    y 2 − x2
+                                                 (x2 + y 2 )2            (x2 + y 2 )2 
+                                                                                      
+                                  H(x,y) (f ) =  2                                    .
+                                                 y − x2                        2xy    
+                                                                         − 2
+                                                  (x2 + y 2 )2             (x + y 2 )2
+    因此
+                                2xy                                y 2 − x2                         2xy
+                    fxx =               ,       fxy = fyx =                    ,   fyy = −                   .
+                              2
+                            (x + y 2 )2                           (x2 + y 2 )2                (x2 + y 2 )2
+                                                    
+                                            x                                ∂2z   ∂2z   ∂2z
+   练习 3.49 抽象函数的二阶偏导数 设 z = f xy,              ，f 具有二阶连续偏导数。求                   ，     ，     。
+                                            y                                ∂x2 ∂x∂y ∂y 2
+                                          x
+    解 自然定义域要求 y 6= 0。令 u = xy, v = , z = f (u, v)。以下所有关于 f 的偏导数均在 (u, v) =
+                                        y
+          x
+      xy,     处取值。先列矩阵：
+          y
+                                                                       
+                            !         1                    !     y     x
+                    ux v x      y    y           ux uy                 
+                              =       x ,                  = 1       x ,
+                    uy v y       x − 2             vx vy             − 2
+                                      y                          y     y
+                                                                       
+                                      !                              1
+                                                            0     − 2
+                                  0 1                                y 
+                    H(x,y) (u) =        ,     H(x,y) (v) = 
+                                                                       .
+                                  1 0                          1    2x
+                                                             − 2
+                                                              y     y3
+    由公式
+                                                                                                                
+                            1            ! y                                              !                        1
+                          y                                        x                                0           − 2
+                           y   fuu fuv                                          0 1                            y 
+           H(x,y) (z) =     x           1                        x  + fu                  + fv 
+                                                                                                    1                 .
+                         x − 2   fvu fvv                          − 2               1 0                           2x 
+                            y               y                      y                                − 2
+                                                                                                     y            y3
+    矩阵相乘后得到
+                                                        1                           x              1             
+                                 y 2 fuu + 2fuv +           fvv           xyfuu −        fvv + fu − 2 fv
+                                                        y2                          y 3           y              
+              H(x,y) (z) = 
+                           
+                                                                                                                  .
+                                                                                                                  
+                                         x              1                          2x2
+                                                                                     2x        x2
+                               xyfuu −     3
+                                             fvv + fu − 2 fv x2 fuu − 2 fuv + 4 fvv + 3 fv
+                                         y             y              y      y       y
+    因此
+                                                                     1
+                                    zxx = y 2 fuu + 2fuv +              fvv ,
+                                                                     y2
+                                                   x             1
+                                    zxy = xyfuu −   3
+                                                      fvv + fu − 2 fv ,
+                                                  y              y
+                                                  2x  2      x 2      2x
+                                    zyy = x2 fuu − 2 fuv + 4 fvv + 3 fv .
+                                                   y         y        y
+
+                                                                                                                 ∂z    ∂2z
+   练习 3.50 另一个抽象复合函数 设 z = f (2x − y, y sin x)，f 具有二阶连续偏导数。求                                                       和      。
+                                                                                                                 ∂x   ∂x∂y
+
+
+
+
+                                                              230
+

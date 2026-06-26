@@ -1,0 +1,75 @@
+                                                                                               3.1 知识讲解
+
+3.1.11.2 变量替换（坐标变换）
+
+  命题 3.6 (极坐标下的梯度模长与 Laplace 算子)
+ 设 u = f (x, y) 具有二阶连续偏导数。在极坐标变换 x = r cos θ, y = r sin θ 下（此时 u =
+ f (r cos θ, r sin θ) =: F (r, θ)），以下两个重要表达式成立：
+ (1) 梯度的模长平方（保持不变）：
+                2  2  2      
+                ∂u    ∂u   ∂u   1 ∂u 2
+                    +    =    + 2      .
+                ∂x    ∂y   ∂r  r   ∂θ
+ (2) Laplace 算子的极坐标形式：
+                                                               
+               ∂2u ∂2u   ∂ 2 u 1 ∂u    1 ∂2u 1   ∂      ∂u    ∂2u
+                   + 2 =      +      + 2 2 = 2 r      r      + 2 .
+               ∂x2  ∂y   ∂r2    r ∂r  r ∂θ   r   ∂r     ∂r    ∂θ
+                                                                                                     ♠
+
+证明
+ 1. 预备工作：链式法则建立 ux , uy 与 ur , uθ 的关系。
+                  ∂r ∂r ∂θ ∂θ
+    首先需要计算           , ,  ,    。
+                  ∂x ∂y ∂x ∂y
+                                                     x               y
+    由 r2 = x2 + y 2 两边对 x 求偏导：2r rx = 2x =⇒ rx = = cos θ。同理 ry = = sin θ。
+                                                     r               r
+              y                                             y
+    由 tan θ = （在 x > 0 区域）     ，两边对 x 求导：sec2 θ · θx = − 2 ，故
+              x                                             x
+                                 −y/x2       y x2    y       sin θ
+                            θx =    2
+                                        =− 2 · 2 =− 2 =−           .
+                                 sec θ      x r      r         r
+    类似地，
+                                         1/x    x   cos θ
+                                   θy =    2
+                                              = 2 =       .
+                                        sec θ   r     r
+     总结四个变换系数：
+                                                              sin θ                  cos θ
+                   rx = cos θ,       ry = sin θ,     θx = −         ,         θy =         .
+                                                                r                      r
+     现在计算 ux 和 uy （注意 u 通过 r, θ 依赖于 x, y）：
+                                                                        sin θ
+                             ux = ur rx + uθ θx = ur cos θ − uθ               ,                      (A)
+                                                                          r
+                                                                        cos θ
+                             uy = ur ry + uθ θy = ur sin θ + uθ               .                      (B)
+                                                                          r
+ 2. 证明 (1)：梯度模长平方的不变性。
+                                                                 
+                                       sin θ 2                 cos θ 2
+               ux + uy = ur cos θ − uθ
+                2    2
+                                               + ur sin θ + uθ
+                                         r                       r
+
+                                                       u2θ
+                            = u2r (cos2 θ + sin2 θ) +      (sin2 θ + cos2 θ)
+                                                       r2
+                                   2ur uθ cos θ sin θ 2ur uθ sin θ cos θ
+                                 −                   +
+                                           r                    r
+                      u2θ
+                          . = u2r +
+                      r2
+     交叉项恰好抵消——这正是 “正交变换保长度” 的体现。极坐标变换在每一点处都是局部正交的
+  （r 线与 θ 线垂直）。
+ 3. 证明 (2)：Laplace 算子的推导。
+
+
+
+                                               258
+

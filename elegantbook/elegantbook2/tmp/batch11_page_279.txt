@@ -1,0 +1,68 @@
+                                                                                                                          3.1 知识讲解
+
+        5. 计算原点处的混合偏导数 fyx (0, 0)：先对 y 求偏导，再对 x 差商：
+                                      fy (h, 0) − fy (0, 0)       h−0
+                     fyx (0, 0) = lim                       = lim     = 1.
+                                  h→0           h             h→0  h
+        6. 比对结论：发现结果不相等： fxy (0, 0) = −1 6= 1 = fyx (0, 0) 。这说明 fxy 和 fyx 在原点处必有
+          一方或双方不连续。
+              “偏导数存在”和“偏导数连续”之间存在本质差距。在实际应用中，当我们
+    注这个经典反例揭示了：
+    需要交换混合偏导数的顺序时，务必先验证连续性条件，否则可能得出错误的结论。
+   练习 3.47 二阶偏导数的完整计算 设 f (x, y) = y cos x + 3x2 ey ，求所有二阶偏导数。
+    解 把它看成复合的平凡情形：
+                        z = F (u, v),            u = x,          v = y,              F (u, v) = v cos u + 3u2 ev .
+    此时公式中需要的矩阵为
+                  !                                !                 !
+           ux v x                        ux uy               1 0
+                    =                                  =                 ,     H(x,y) (u) = 0,          H(x,y) (v) = 0.
+           uy v y                        vx   vy             0 1
+    外层函数的 Hesse 矩阵为
+                                                             !                                                !
+                                              Fuu Fuv                    −v cos u + 6ev − sin u + 6uev
+                        H(u,v) (F ) =                            =                                                .
+                                              Fvu      Fvv               − sin u + 6uev           3u2 ev
+    代入                                           !                             !
+                                           1 0                       1 0
+                    H(x,y) (z) =                     H(u,v) (F )                   + Fu H(x,y) (u) + Fv H(x,y) (v),
+                                           0 1                       0 1
+
+    得                                                                                               !
+                                                           −y cos x + 6ey − sin x + 6xey
+                                       H(x,y) (f ) =                                                    .
+                                                           − sin x + 6xey                3x2 ey
+
+    因此
+                    fxx = −y cos x + 6ey ,                 fxy = fyx = − sin x + 6xey ,             fyy = 3x2 ey .
+                                            y
+   练习 3.48arctan 的二阶偏导数 设 f (x, y) = arctan ，求所有二阶偏导数。
+                                            x
+    解 自然定义域要求 x 6= 0。设
+                                                                                                         v
+                           z = F (u, v),               u = x,            v = y,         F (u, v) = arctan .
+                                                                                                         u
+    同样有                        !                   !                 !
+                   ux v x                ux uy               1 0
+                                   =                   =                 ,     H(x,y) (u) = 0,          H(x,y) (v) = 0.
+                   uy     vy             vx   vy             0 1
+
+    先列外层的一阶偏导与 Hesse 矩阵：
+                                                         v                     u
+                                            Fu = − 2         2
+                                                               ,     Fv = 2         .
+                                                      u +v                 u + v2
+                                                                                     
+                                                             2uv          v 2 − u2
+                                                        (u2 + v 2 )2   (u2 + v 2 )2 
+                                                                                     
+                                         H(u,v) (F ) =  2                            .
+                                                        v − u2               2uv     
+                                                           2     2  2
+                                                                       − 2        2 2
+                                                         (u + v )        (u + v )
+
+
+
+
+                                                                         229
+

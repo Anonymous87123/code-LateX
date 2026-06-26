@@ -1,0 +1,69 @@
+                                                                                                                                        3.1 知识讲解
+
+
+矩阵                                                                                                 
+                                                                          fxx (x0 ) fxy (x0 )
+                                                     Hf (x0 ) =                                    
+                                                                          fyx (x0 ) fyy (x0 )
+
+称为 f 在 x0 处的 Hesse 矩阵（Hessian Matrix）。
+                                                                                                                                                        ♣
+
+定理 3.17 (复合函数的二阶偏导数)
+设
+                                 z = f (u1 , . . . , um ),            ui = ui (x1 , . . . , xk ),       i = 1, . . . , m,
+
+且 f, u1 , . . . , um 均具有连续二阶偏导数。下面所有关于 f 的偏导数都在点 (u1 (x), . . . , um (x)) 处
+取值。
+记                                   
+                               ∂ui                                                                                  
+                    J=                         ,       Hu (f ) = fui uj m×m ,                   Hx (ui ) = (ui )xp xq k×k .
+                               ∂xj       m×k
+
+则复合函数 z = f (u1 (x), . . . , um (x)) 关于 x = (x1 , . . . , xk )T 的 Hesse 矩阵为
+                                    Hx (z) = J T Hu (f )J + fu1 Hx (u1 ) + · · · + fum Hx (um ).
+把这个矩阵公式写开，就是
+                                           
+     zx 1 x 1   zx 1 x 2   · · · zx 1 x k
+                                         
+                                         
+  zx 2 x 1     zx 2 x 2   · · · zx 2 x k 
+                                         
+  ..              ..      ..       .. 
+  .                .          .     . 
+                                         
+   zx k x 1     zx k x 2   · · · zx k x k
+                                                                                                                                               
+          (u1 )x1      (u2 )x1       · · · (um )x1         f u1 u1      f u1 u2   ···    f u1 um          (u1 )x1    (u1 )x2     ···    (u1 )xk
+                                                                                                                                          
+                                                                                                                                          
+  (u1 )x2             (u2 )x2       · · · (um )x2                              ···   f u2 um                                ···   (u2 )xk 
+ =                                                  f u2 u1          f u2 u2                   (u2 )x1          (u2 )x2                   
+   ..                    ..         ..       ..     ..                  ..     ..       ..     ..                  ..       ..       .. 
+   .                      .             .     .                                   .      .                                     .      . 
+                                                   .                     .                    .                     .                     
+    (u1 )xk            (u2 )xk       · · · (um )xk         f um u1     f um u2    · · · f um um    (um )x1          (um )x2      · · · (um )xk
+                                                                                                                                             
+                    (u1 )x1 x1     (u1 )x1 x2      · · · (u1 )x1 xk                          (um )x1 x1     (um )x1 x2      · · · (um )x1 xk
+                                                                                                                                          
+            (u1 )x x              (u1 )x2 x2      · · · (u1 )x2 xk                  (um )x x             (um )x2 x2      · · · (um )x2 xk 
+                    2 1                                                                    2 1                                            
+     + f u1      .                     ..         ..         ..     + · · · + f u m     .                    ..          ..        ..     .
+                 ..                     .             .       .                         ..                    .              .      .     
+                                                                                                                                          
+             (u1 )xk x1            (u1 )xk x2      · · · (u1 )xk xk                        (um )xk x1       (um )xk x2      · · · (um )xk xk
+
+特别地，当 z = f (u, v)，u = u(x, y)，v = v(x, y) 时，上式化为
+                       !         !         !              !                                                                             !
+                ux v x   fuu fuv    ux uy         uxx uxy                                                                   vxx vxy
+   H(x,y) (z) =                              + fu           + fv                                                                            .
+                uy v y   fvu fvv    vx vy         uyx uyy                                                                   vyx vyy
+若 f 的二阶混合偏导连续，则 fuv = fvu ，于是可读出
+                            zxx = fuu u2x + 2fuv ux vx + fvv vx2 + fu uxx + fv vxx ,
+                            zxy = fuu ux uy + fuv (ux vy + uy vx ) + fvv vx vy + fu uxy + fv vxy ,
+                            zyy = fuu u2y + 2fuv uy vy + fvv vy2 + fu uyy + fv vyy .
+                                                                                                                                                        ♥
+
+
+                                                                           227
+

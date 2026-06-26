@@ -1,0 +1,63 @@
+                                                                                                                             3.1 知识讲解
+
+    解 令 u = 2x − y, v = y sin x, z = f (u, v)。一阶导数先用矩阵公式：
+                                                    !                         !
+                                         u u                 2     −1
+                                               x  y
+                       zx zy = f u f v                = fu fv                   .
+                                              vx vy             y cos x sin x
+    因此
+                                                     zx = 2fu + y cos x fv .
+
+    为了核对矩阵公式，直接对这个分量式关于 y 求导：
+                                                                        
+            zxy = 2 fuu uy + fuv vy + cos x fv + y cos x fvu uy + fvv vy
+                            = −2fuu + (2 sin x − y cos x)fuv + y sin x cos x fvv + cos x fv .
+    再列二阶矩阵：
+                                   !                        !                          !                             !
+                       ux v x              2     y cos x                    ux uy                      2        −1
+                                       =                        ,                          =                             ,
+                       uy     vy           −1       sin x                   vx    vy               y cos x sin x
+                                                                                  !
+                                                                           0 0
+                                                     H(x,y) (u) =                      ,
+                                                                           0 0
+                                                                                           !
+                                                                    −y sin x cos x
+                                            H(x,y) (v) =                                       .
+                                                                        cos x          0
+
+    代入                                                              !                  !                        !
+                                                2     y cos x            fuu fuv                   2       −1
+                            H(x,y) (z) =
+                                                −1     sin x             fvu     fvv y cos x sin x
+                                                           !                               !
+                                                      0 0                   −y sin x cos x
+                                            + fu                    + fv                     .
+                                                      0 0                    cos x      0
+
+    取其中 (1, 2) 位置，得
+                      zxy = −2fuu + (2 sin x − y cos x)fuv + y sin x cos x fvv + cos x fv .
+    其中所有关于 f 的偏导数均在 (2x − y, y sin x) 处取值。
+
+
+    3.1.5.4 二阶全微分
+
+        定义 3.29 (二阶全微分)
+        设 z = f (x, y) 具有二阶连续偏导数。对一阶全微分 dz = fx dx + fy dy 再求一次微分（视自变量
+        微元 dx, dy 为独立常数），得到二阶全微分：d2 z = d(dz) = fxx dx2 + 2fxy dx dy + fyy dy 2 。其
+        中 dx2 = (dx)2 ，dy 2 = (dy)2 。
+                                                                                                                                   ♣
+
+   练习 3.51 二阶全微分的计算 设 z = x sin y，求 dz 和 d2 z。
+    解
+                         ∂z          ∂z
+        1. 计算一阶偏导数及一阶全微分：   = sin y，    = x cos y。由此得 dz = sin y dx + x cos y dy。
+                         ∂x          ∂y
+        2. 计算二阶偏导数：继续求二阶导数：fxx = 0， fxy = cos y， fyy = −x sin y。
+        3. 代入二阶全微分公式：二阶全微分公式为
+                                            d2 z = zxx dx2 + 2zxy dx dy + zyy dy 2 .
+
+
+                                                                    231
+

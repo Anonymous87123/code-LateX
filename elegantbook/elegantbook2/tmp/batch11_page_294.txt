@@ -1,0 +1,59 @@
+                                                                                           3.1 知识讲解
+
+
+  这里
+                            pθ = (x0 + θ∆x, y0 + θ∆y),         0 < θ < 1.
+                                                                                                 ♥
+
+注 (微分算子与前面展开式的对应关系) 前面 Taylor 公式已经把一阶、二阶、三阶项写开了。这里的“微
+分算子”不是新的公式，只是把这些展开项收拢成一个短记号。
+    记
+                                                ∂       ∂
+                                      D := ∆x      + ∆y    .
+                                                ∂x      ∂y
+这里要特别注意：∆x, ∆y 是从展开中心出发的固定增量。用 D 去作用时，真正被求偏导的是 f 以及
+f 的各阶偏导数；∆x, ∆y 只当作常数系数保留下来。
+    先作用一次：
+                                       Df = fx ∆x + fy ∆y,
+
+这正是 Taylor 公式的一次项。
+    再算二次项。所谓 D2 f ，就是把 D 作用到 Df 上：
+                     D2 f = D(Df )
+                                           
+                                 ∂        ∂                  
+                          = ∆x      + ∆y       fx ∆x + fy ∆y
+                                ∂x       ∂y
+                               ∂                      ∂                 
+                          = ∆x     fx ∆x + fy ∆y + ∆y      fx ∆x + fy ∆y
+                               ∂x                      ∂y
+                                                                     
+                          = ∆x fxx ∆x + fyx ∆y + ∆y fxy ∆x + fyy ∆y
+                            = fxx (∆x)2 + (fxy + fyx )∆x∆y + fyy (∆y)2
+                            = fxx (∆x)2 + 2fxy ∆x∆y + fyy (∆y)2 .
+最后一步用了混合偏导相等 fxy = fyx 。这就解释了二次项中间为什么有系数 2。
+    三次项同理，不要跳步地写就是
+                D3 f = D(D2 f )
+                                                                
+                     = D fxx (∆x)2 + 2fxy ∆x∆y + fyy (∆y)2
+                          ∂                                     
+                     = ∆x     fxx (∆x)2 + 2fxy ∆x∆y + fyy (∆y)2
+                          ∂x
+                            ∂                                     
+                       + ∆y     fxx (∆x)2 + 2fxy ∆x∆y + fyy (∆y)2
+                            ∂y
+                                                               
+                     = ∆x fxxx (∆x)2 + 2fxxy ∆x∆y + fxyy (∆y)2
+                                                                  
+                       + ∆y fxxy (∆x)2 + 2fxyy ∆x∆y + fyyy (∆y)2
+                     = fxxx (∆x)3 + 3fxxy (∆x)2 ∆y + 3fxyy ∆x(∆y)2 + fyyy (∆y)3 .
+这里同样用了三阶混合偏导可以交换次序，例如 fxxy = fxyx = fyxx ，fxyy = fyxy = fyyx 。这就解释了
+三次项中的系数 1, 3, 3, 1。
+    所以 Taylor 公式可以简写成
+                                                           1 2     1
+              f (x0 + ∆x, y0 + ∆y) = f (x0 , y0 ) + Df +      D f + D 3 f + · · · + Rn ,
+                                                           2!      3!
+其中这些 Df, D 2 f, D 3 f, . . . 都是在 (x0 , y0 ) 处取值。
+
+
+                                                244
+

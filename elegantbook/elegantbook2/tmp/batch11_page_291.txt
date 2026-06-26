@@ -1,0 +1,74 @@
+                                                                                       3.1 知识讲解
+
+        对两方程分别求全微分，并将含 du, dv 的项留在左边：
+                                                
+              
+              x du + u dx − y dv − v dy = 0,    
+                                                 x du − y dv = −u dx + v dy,
+                                              =⇒
+              
+              y du + u dy + x dv + v dx = 0.    
+                                                 y du + x dv = −v dx − u dy.
+                                         !
+                                   x −y
+        系数矩阵（Jacobi 矩阵）为 A =               ，其行列式 J = det A = x2 + y 2（当 (x, y) 6= (0, 0) 时
+                                   y x
+        非零）。
+        由 Cramer 法则解得：
+                                              !
+                    1    −u dx + v dy −y              x(−u dx + v dy) − (−y)(−v dx − u dy)
+                du = det                          =
+                    J    −v dx − u dy x                             x2 + y 2
+                    −(xu + yv) dx + (xv − yu) dy
+                   =                             .
+                              x2 + y 2
+                                          !
+                    1     x −u dx + v dy       x(−v dx − u dy) − y(−u dx + v dy)
+                dv = det                    =
+                    J     y −v dx − u dy                    x2 + y 2
+               (yu − xv) dx − (xu + yv) dy
+                   =                       .
+                         x2 + y 2
+     分别读取 dx 和 dy 的系数即可得到各偏导数：
+                            ∂u      xu + yv             ∂u  xv − yu
+                                 =− 2        ,             = 2      ,
+                            ∂x      x + y2              ∂y  x + y2
+                            ∂v    yu − xv               ∂v   xu + yv
+                                 = 2       ,               =− 2       .
+                            ∂x     x + y2               ∂y    x + y2
+方法二： 逐项偏导验证
+        对原方程组关于 x 求偏导：
+                                                          
+                    u + xux − yvx = 0,                    xux − yvx = −u,
+                                                      =⇒
+                    yu + v + xv = 0,                      yu + xv = −v,
+                               x          x                   x    x
+
+                                        xu + yv       yu − xv
+        利用常规二元一次方程组的解法可得 ux = −                  ，vx = 2       。若关于 y 求偏导，则必须
+                                        x2 + y 2       x + y2
+        重新把“与 y 有关的显式项”一并求出，而不是简单口头略过。对原方程组关于 y 求偏导得
+                                              
+                    xuy − v − yvy = 0,        xuy − yvy = v,
+                                          =⇒
+                    u + yu + xv = 0,          yu + xv = −u.
+                                   y      y                   y     y
+
+                                       xv − yu         xu + yv
+        再解这个线性方程组，得到 uy =                       ，vy = − 2      。这与方法一完全一致。
+                                       x2 + y 2        x + y2
+   练习 3.60 非线性方程组的隐函数 设
+                                       
+                                       x = −u2 + v + z,
+                                       y = u + vz.
+
+      ∂u ∂v ∂u
+    求   ， ， 。
+      ∂x ∂x ∂z
+    解 识别变量：此处 (x, y, z) 为自变量，(u, v) 为隐函数。
+
+
+
+
+                                               241
+
