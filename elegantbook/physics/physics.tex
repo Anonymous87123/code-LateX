@@ -2127,60 +2127,41 @@ r_1=x,\qquad r_2=l-x=10-x,\qquad
 所以左侧延长线上始终加强，右侧延长线上始终减弱到完全相消。
 \end{solution}
 
-\section{驻波的产生}
+\section{驻波}
 
-
-
-
-
-
-
-
-这一节要解决的问题是：为什么两列明明都在传播的行波，叠加后会出现一种“看起来站住了”的波？
-
-两列\textbf{同频、同振幅、沿相反方向传播的相干波}叠加，可以形成驻波。驻波之所以特殊，不是因为质点不动，而是因为波峰波谷的整体图样不再向前平移。
-
-从形成条件看，驻波本质上是一种特殊的干涉现象；从实际产生方式看，最常见的来源就是\textbf{入射波在边界上反射后，与反射波叠加}。
-
-\begin{remark}
-纯自学时最容易误会成“驻波就是不会动的波”。其实驻波里的每个非波节点都在动，只是整个图样不再向前跑，所以你看不到行波那种波峰波谷一路前进的效果。
-\end{remark}
-
-\section{驻波方程}
-
-既然驻波来自两列等振幅、反向传播的行波，那么最自然的想法就是：先把两列行波并排写出，再问相加后能不能把“只跟位置有关的部分”和“只跟时间有关的部分”拆开。和差化积之所以在这里突然变得关键，正是因为它能把两个反向传播的相位组合，压成一个空间振幅因子乘一个时间振动因子。这样一来，“哪些地方永远振幅大、哪些地方永远振幅零”就会自动从公式里露出来。
-
-设两列等振幅行波分别为
-\[
-\begin{aligned}
-y_1&=A\cos(\omega t-kx),\qquad
-y_2=A\cos(\omega t+kx),\\
-y&=y_1+y_2=2A\cos kx\cos\omega t.
-\end{aligned}
-\]
-这就是一个典型的驻波方程。
-
-它有两个非常重要的特征：振幅不再是常量，而是随位置变化；各质点仍然都作同频简谐振动，但不同位置的振幅不同。由上式可压成
-\[
-\begin{aligned}
-A_{\text{驻}}(x)&=2A\abs{\cos kx},\\
-kx=n\pi
-&\Longrightarrow
-x=n\frac{\lambda}{2}\qquad \text{(波腹)},\\
-kx=\left(n+\frac12\right)\pi
-&\Longrightarrow
-x=\left(n+\frac12\right)\frac{\lambda}{2}
-=\frac{(2n+1)\lambda}{4}\qquad \text{(波节)}.
-\end{aligned}
-\]
-
-因此，相邻两波腹间距和相邻两波节间距都等于 \(\lambda/2\)，相邻波节与波腹间距等于 \(\lambda/4\)。
-
-在相位关系上，驻波也很特殊：相邻两波节之间的所有质点同相振动，而跨过一个波节后，两侧振动会相反，相当于在波节处出现 \(\pi\) 的相位突变。
+\begin{definition}[驻波]
+振幅相同、频率相同、传播速度也相同的两列相干波，在同一直线上沿相反方向传播时，彼此发生叠加而形成的一种特殊干涉现象。
+\begin{itemize}
+\item 行波（Travelling Wave）：机械波或电磁波的连续振动状态、运动相位以及能量沿着波线不断向前输运和传播。
+\item 驻波（Standing Wave）：在空间宏观上看不到波形的向前传播，只能观察到整个弹性介质（如弦线、管内空气柱）呈现分段振动的特征。在驻波状态下，没有运动相位的传播，也没有能量的定向输运。
+\end{itemize}
+\end{definition}
 
 \begin{note}
-驻波虽然由两列行波叠加而成，但它\textbf{没有净能量向某一个方向持续传播}。行波传的是“振动状态和能量一起前进”，驻波只留下了“空间中的固定振动图样”。
+我们很难直接设置两个相向对喷的独立相干波源。通常的做法是：让一列行波垂直入射到两种不同介质的终止分界界面上。行波在边界上遭遇阻抗不匹配，从而发生剧烈反射。此时，向右传播的入射波与向左传播的反射波在空间中交织。因为它们来源于同一个波源，所以频率和振幅自然严格相等，方向刚好相反。它们在空间中发生相干干涉，最终在线路上撑开形成稳定的驻波。
 \end{note}
+
+\begin{theorem}[驻波方程]
+我们建立一维 $x$ 轴。设有一列沿 $x$ 轴正方向（正向）传播的行波 $y_1$，与另一列沿 $x$ 轴负方向（负向）传播的行波 $y_2$。假设两者的振幅均为 $A$，初相均为零，其分波动方程分别写作：$$y_1 = A \cos \left( \omega t - 2\pi \frac{x}{\lambda} \right),~~y_2 = A \cos \left( \omega t + 2\pi \frac{x}{\lambda} \right)$$
+$$y = y_1 + y_2 = A \cos \left( \omega t - 2\pi \frac{x}{\lambda} \right) + A \cos \left( \omega t + 2\pi \frac{x}{\lambda} \right) = \left( 2A \cos 2\pi \frac{x}{\lambda} \right) \cos \omega t$$
+驻波方程中，空间自变量 $x$ 与时间自变量 $t$ 实现了完完全全的代数分离（乘积形式）。这正是“看不到波形传播”的数学总根源。$A \cos 2\pi \frac{x}{\lambda}$说明驻波的振幅与位置有关，$\cos\omega t$说明各质点都在作同频率的简谐运动。
+\end{theorem}
+
+\begin{definition}[波节，波腹]
+定义该空间点质元的视在合振幅 $A'(x)$：$A'(x) = \left| 2A \cos 2\pi \frac{x}{\lambda} \right|$
+振幅随位置 $x$ 的不同而不同，但对于某一个确定的位置，其最大振幅与时间无关。
+\begin{enumerate}
+\item 波节（Node）：若空间位置 $x$ 恰好让其余弦值为零：$$\left| \cos 2\pi \frac{x}{\lambda} \right| = 0 \implies 2\pi \frac{x}{\lambda} = \pm (2k + 1)\frac{\pi}{2} \qquad (k = 0,1,2,\cdots)$$解得波节的空间坐标位置满足：$$\boxed{x = \pm \left( k + \frac{1}{2} \right) \frac{\lambda}{2} \qquad (k = 0,1,2,\cdots)}$$这些特殊位置的质元受到的两列相向分波的回复力在任何瞬时时刻都抵消，波节处的质元振幅恒等于零（$A_{\text{min}} = 0$），保持静止。
+\item 波腹（Antinode）：若空间位置 $x$ 恰好能让其余弦模长项达到极限最大值：$$\left| \cos 2\pi \frac{x}{\lambda} \right| = 1 \implies 2\pi \frac{x}{\lambda} = \pm k\pi \qquad (k = 0,1,2,\cdots)$$解得波腹的空间坐标位置满足：$$\boxed{x = \pm k \frac{\lambda}{2} \qquad (k = 0,1,2,\cdots)}$$这些位置的质元具有整个线路上最剧烈的往复振动形变规模，其最大振幅达到两倍的分振幅：$A_{\text{max}} = 2A$。
+\end{enumerate}
+\end{definition}
+
+\begin{theorem}[同一区域内质元振动的同步性]
+\begin{itemize}
+\item 段内质元同相：在任意时刻 $t$，身处相邻的两个波节之间的所有质元具有完完全全相同的振动步调。它们在同一时刻共同向上掠过平衡位置，在同一时刻共同攀登到各自的最高峰值点（虽然由于振幅调制，各个质元爬升的高度不同）。
+\item 跨节质元反相：由于空间余弦项 $\cos 2\pi \frac{x}{\lambda}$ 跨过零点，导致任一波节两侧的质元，其振动方向总是严格相反（一个向上运动时，另一个必然向下运动）。用余弦式统一规范表达，意味着跨越波节时，相角内部发生了 $\pi$ 弧度的突变：$$\cos 2\pi \frac{x}{\lambda} < 0 \implies y = \left| 2A \cos 2\pi \frac{x}{\lambda} \right| \cos(\omega t + \pi)$$
+\end{itemize}
+\end{theorem}
 
 \begin{exercise}[2010级期末：由驻波方程判断两点振动相位差]
 一驻波表达式为
@@ -2190,49 +2171,18 @@ x=\left(n+\frac12\right)\frac{\lambda}{2}
 
 \begin{solution}
 驻波中每个固定位置的质元都作简谐振动，但空间因子 \(\cos 2\pi x\) 的正负会决定该点与公共时间因子是同相还是反相。
-
 把空间因子代入可得
  \(\cos(2\pi x_1)=\cos\frac{\pi}{4}>0,\qquad \cos(2\pi x_2)=\cos\frac{3\pi}{4}<0.\) 
 两点的空间因子一正一负，时间振动相差一个负号，所以 \(\Delta\varphi=\pi\)。驻波题看的是空间因子符号，不能把两点间距直接当成行波的波程差。
 \end{solution}
 
-\section{反射点为波节还是波腹}
-
-这一节要解决的问题是：边界反射以后，原点到底该当成波节还是波腹？
-
-关键不在“有没有反射”，而在\textbf{反射后是否反相}。
-
-若把入射波写成
-\[
-\begin{aligned}
-y_i&=A\cos(\omega t-kx),\\
-\text{波节边界:}\quad
-y_r&=A\cos(\omega t+kx-\pi)
-\implies y=2A\sin kx\,\sin\omega t,\\
-\text{波腹边界:}\quad
-y_r&=A\cos(\omega t+kx)
-\implies y=2A\cos kx\,\cos\omega t.
-\end{aligned}
-\]
-于是 \(x=0\) 处始终有 \(y=0\) 时边界是波节，\(x=0\) 处振幅最大时边界是波腹。
-
-\begin{note}
-固定端反射通常对应波节，自由端反射通常对应波腹。很多题做错，不是驻波公式不会，而是一开始就把“边界是节点还是腹点”判反了。
-\end{note}
-
 \section{相位突变与半波损失}
-
-这一节要解决的问题是：为什么有些反射会突然多出一个 \(\pi\) 的相位反转？
-
-当波从\textbf{波疏介质}垂直入射到\textbf{波密介质}，再反射回波疏介质时，反射点形成波节。此时入射波与反射波在边界处总是反相，所以反射波相当于多了一个
-\(\pi \iff \frac{\lambda}{2}\)。
-也就是说，相位突变 \(\pi\) 等效于附加了 \(\lambda/2\) 的波程差，这就叫\textbf{半波损失}。
-
-反过来，当波从\textbf{波密介质}垂直入射到\textbf{波疏介质}并被反射回去时，反射点形成波腹，入射波和反射波在边界处同相，因此\textbf{不发生相位突变}，也就没有半波损失。
-
-\begin{remark}
-这部分特别值得提前记牢，因为后面光学里的薄膜干涉也会反复出现“半波损失”这个思想。机械波和光波的对象不同，但“相位是否翻转、是否等效多了半个波长”这条判断线是同一条。
-\end{remark}
+\begin{note}
+固定端反射通常对应波节，自由端反射通常对应波腹。
+\end{note}
+\begin{definition}[反射点为波节还是波腹？半波损失]
+当波从\textbf{波疏介质}垂直入射到\textbf{波密介质}，再反射回波疏介质时，反射点形成波节。此时入射波与反射波在边界处总是反相，所以反射波相当于多了一个\(\pi \iff \frac{\lambda}{2}\)。也就是说，相位突变 \(\pi\) 等效于附加了 \(\lambda/2\) 的波程差，这就叫\textbf{半波损失}。反过来，当波从\textbf{波密介质}垂直入射到\textbf{波疏介质}并被反射回去时，反射点形成波腹，入射波和反射波在边界处同相，因此\textbf{不发生相位突变}，也就没有半波损失。
+\end{definition}
 
 \begin{exercise}[反射后再与另一列波相遇时怎样先记半波损失]
 两列相干波 \(A,B\) 的波长都为 \(\lambda\)。波 \(A\) 经过 \(O_1\) 后在点 \(m\) 处反射，再传播到点 \(P\)；波 \(B\) 从 \(O_2\) 直接传播到 \(P\)。已知 \(O_1m+mP=8\lambda\)、\(O_2P=3\lambda\)，反射处有半波损失，两源在 \(O_1,O_2\) 处的振动都为 \(y=A\cos \pi t\)。求两列波在 \(P\) 点的振动方程以及 \(P\) 点合振动。
