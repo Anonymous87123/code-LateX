@@ -1462,73 +1462,32 @@ J_O&=J_C+md^2
 
 \chapter{机械振动}
 
-如果一个物体在平衡位置附近作往复运动，并且这种运动具有周期性，就称为机械振动。弹簧振子、单摆、音叉、钟摆都属于这一类问题。
-
-但这里要先分清两句话：
-\begin{itemize}
- \item \textbf{机械振动}强调的是“在平衡位置附近来回运动”；
- \item \textbf{简谐振动}强调的是“这种往复运动还满足一条特别整齐的数学规律”。
-\end{itemize}
-
-所以，周期振动不一定是简谐振动；简谐振动只是周期振动里最规则、最容易完整求解的一种。
-
-\section{什么才叫简谐振动}
-
-这一节要解决的问题是：什么样的往复运动，才能放心地套用整套简谐公式？
-
-真正该先认出来的，不是“它长得像不像余弦曲线”，而是偏离平衡位置后，系统有没有一种特别整齐的回复规律。若回复力总能写成“大小正比于位移、方向永远指回平衡位置”，那么运动方程就会变成线性的二阶常系数方程；而线性方程之所以重要，正是因为它的解会自然长成正弦或余弦形式。也就是说，\textbf{简谐振动不是先有三角函数，再去找物理解释；而是先有线性回复，再从方程里长出三角函数。}
-
-\begin{definition}[简谐振动]\label{def:simple-harmonic-motion}
-若振动物体的位移可以表示为 \(x=A\cos(\omega t+\varphi_0)\)，则称该振动为\textbf{简谐振动}。
-\end{definition}
-
-其中 \(A\) 是振幅，\(\omega\) 是角频率，\(\varphi=\omega t+\varphi_0\) 是相位，\(\varphi_0\) 是初相。
-
-课件里常把“证明一个运动是简谐振动”整理成四条判据。它们看起来像四句话，其实说的是同一件事：
+\begin{definition}[机械振动/简谐振动]
+如果一个物体在平衡位置附近作往复运动，并且这种运动具有周期性，就称为机械振动。弹簧振子、单摆、音叉、钟摆都属于这一类问题。\textbf{有周期}并不自动推出\textbf{是简谐振动}。例如大摆角单摆仍然会周期性摆动，但因为回复力不再严格正比于位移，所以不能直接算作简谐振动。\\若振动物体的位移可以表示为 \(x=A\cos(\omega t+\varphi_0)\)，则称该振动为\textbf{简谐振动}。其中 \(A\) 是振幅，\(\omega\) 是角频率，\(\varphi=\omega t+\varphi_0\) 是相位，\(\varphi_0\) 是初相。
 \begin{enumerate}
  \item 合外力满足 \(F=-kx\)，也就是回复力与位移成正比、方向相反；
  \item 势能可写成二次型 \(U=\frac{1}{2}kx^2\)，并且系统机械能守恒；
  \item 动力学方程可写成 \(\dv[2]{x}{t}+\omega^2x=0\)；
  \item 运动学方程可写成 \(x=A\cos(\omega t+\varphi_0)\)。
 \end{enumerate}
-
-\begin{note}
-最容易混淆的点是：\textbf{有周期}并不自动推出\textbf{是简谐振动}。例如大摆角单摆仍然会周期性摆动，但因为回复力不再严格正比于位移，所以不能直接算作简谐振动。
-\end{note}
-
-\section{动力学方程与运动学方程}
-
-这一节要解决的问题是：简谐振动的方程到底有几种，它们之间是什么关系？
-
-简谐振动最稳的主线就是下面这条链：
 \begin{align*}
-F=-kx &\implies m\dv[2]{x}{t}=-kx\\
- &\implies \dv[2]{x}{t}+\omega^2x=0\\
- &\implies x=A\cos(\omega t+\varphi_0).
+F=-kx &\implies m\dv[2]{x}{t}=-kx\implies \dv[2]{x}{t}+\omega^2x=0\implies x=A\cos(\omega t+\varphi_0).
 \end{align*}
-其中 \(\omega^2=\frac{k}{m}\)。
-
+其中 \(\omega^2=\frac{k}{m}\)。从位移方程
+\[
+\begin{aligned}
+x&=A\cos(\omega t+\varphi_0),\\
+v&=\dv{x}{t}=-A\omega\sin(\omega t+\varphi_0),\\
+a&=\dv{v}{t}=-A\omega^2\cos(\omega t+\varphi_0)
+\implies a=-\omega^2x.
+\end{aligned}
+\]
+这说明简谐振动中的速度、加速度也都是周期变化的，而且加速度总是指向平衡位置。进一步可得 \(v_{\max}=\omega A,\ a_{\max}=\omega^2A\)。同一简谐振动里，位移、速度、加速度都由同一个相位 \(\varphi=\omega t+\varphi_0\) 控制。相位相同，说明“振动状态”相同；相位不同，说明它们虽然可能位移一样，但运动方向、受力状态未必相同。例如，当 \(x=0\) 时，质点可能正向右穿过平衡位置，也可能正向左穿过平衡位置。单看位移分不出来，但结合相位或者速度符号就能区分。
+\end{definition}
 \begin{note}
-从 \(\dv[2]{x}{t}+\omega^2x=0\) 走到 \(x=A\cos(\omega t+\varphi_0)\)，中间其实只隔着一层你已经会的常系数二阶微分方程：它的通解先写成
- \(x=C_1\cos\omega t+C_2\sin\omega t,\) 
-再把两个常数改写成振幅 \(A\) 和初相 \(\varphi_0\)，就压成了最常用的
- \(x=A\cos(\omega t+\varphi_0).\) 
-把它代回去检查，就能直接验证它确实满足 \(x''=-\omega^2x\)。
-
-为什么这就是\textbf{全部}的解？二阶ODE的通解恰好包含两个独立常数（对应两个初始条件：初始位置和初始速度）。\(\cos\omega t\) 和 \(\sin\omega t\) 是两个线性无关的解，它们的任意线性组合 \(C_1\cos\omega t+C_2\sin\omega t\) 就穷尽了所有可能的解。所以一旦给定 \(x(0)\) 和 \(\dot{x}(0)\)，\(A\) 和 \(\varphi_0\) 就被唯一确定，不存在其他形式的解。
+已知系统总能量为常数：$$E = \frac{1}{2}m v^2 + \frac{1}{2}k x^2 = \text{常量}$$两边同时关于时间 $t$ 求一阶导数，常数项导数必然归零：$$\frac{\mathrm{d}}{\mathrm{d}t} \left( \frac{1}{2}m v^2 + \frac{1}{2}k x^2 \right) =\frac{1}{2}m \cdot \left( 2v \frac{\mathrm{d}v}{\mathrm{d}t} \right) + \frac{1}{2}k \cdot \left( 2x \frac{\mathrm{d}x}{\mathrm{d}t} \right) = 0 \implies m v \frac{\mathrm{d}v}{\mathrm{d}t} + k x \frac{\mathrm{d}x}{\mathrm{d}t} = 0$$
+由于 $\frac{\mathrm{d}x}{\mathrm{d}t} = v$，且 $\frac{\mathrm{d}v}{\mathrm{d}t} = \frac{\mathrm{d}^2x}{\mathrm{d}t^2}$，代回上式：$$m v \frac{\mathrm{d}^2x}{\mathrm{d}t^2} + k x v = 0 \implies v \cdot \left( m \frac{\mathrm{d}^2x}{\mathrm{d}t^2} + k x \right) = 0$$由于质点在往复运动过程中其瞬时速度 $v$ 显然不可能恒等于 0：$$m \frac{\mathrm{d}^2x}{\mathrm{d}t^2} + k x = 0 \implies \boxed{\frac{\mathrm{d}^2x}{\mathrm{d}t^2} + \frac{k}{m}x = 0}$$
 \end{note}
-
-这里面有两个不同层次的方程：
-\begin{itemize}
- \item \textbf{动力学方程}讨论“力怎样决定运动”，典型形式是
- \(m\dv[2]{x}{t}+kx=0 \quad \text{或} \quad \dv[2]{x}{t}+\omega^2x=0;\) 
- \item \textbf{运动学方程}讨论“位置怎样随时间变化”，典型形式是 \(x=A\cos(\omega t+\varphi_0)\)。
-\end{itemize}
-
-\bridge{这一章更强调先写动力学方程，再回到位移公式。因为振动模型真正的物理根子，不是三角函数本身，而是“回复作用和位移成正比”这件事。}
-
-把位移方程求两次导数，就会得到 \(a=\dv[2]{x}{t}=-\omega^2x\)。
-这条式子特别重要，因为它把“受力观点”和“位移观点”接上了：一旦你能证明加速度总指向平衡位置，且大小与位移成正比，简谐振动的整套结构就立起来了。
 
 \begin{exercise}[用平衡位置证明竖直弹簧振子作简谐振动]
 一轻弹簧上端固定，下端挂一重物。静止时弹簧伸长 \(l=9.8\ \text{cm}\)。现给物体一个向下的瞬时冲击，使它在 \(t=0\) 时通过平衡位置并具有向下速度 \(v_0=1\ \text{m/s}\)。证明物体作简谐振动，并写出振动方程。
@@ -1549,78 +1508,31 @@ mg-k(l+x)=m\dv[2]{x}{t},\qquad kl=mg
 x&=A\sin 10t,\qquad v(0)=10A=1
 \implies A=0.10\ \si{m}.
 \end{aligned}
-\]
-由于 \(t=0\) 时物体从平衡位置向下通过，可直接写成正弦形式；所以振动方程为 \(x=0.10\sin(10t)\)，其中 \(x\) 以米计，正方向向下。
+\]由于 \(t=0\) 时物体从平衡位置向下通过，可直接写成正弦形式；所以振动方程为 \(x=0.10\sin(10t)\)，其中 \(x\) 以米计，正方向向下。
 \end{solution}
 
-\section{速度与加速度}
+\begin{theorem}[简谐振动的相位关系]
+设有两组角频率严格相等的同方向简谐振动方程：$$x_1 = A_1 \cos(\omega t + \phi_1),~x_2 = A_2 \cos(\omega t + \phi_2)$$
+定义它们的相位差$\Delta \phi$ ：$$\Delta \phi = (\omega t + \phi_2) - (\omega t + \phi_1) = \phi_2 - \phi_1$$然后为了方便比较超前和落后，将$\Delta \phi$通过加$2k\pi$或者减$2k\pi$使得$\| \Delta \phi \| \le \pi$，当 $\Delta \phi = \phi_2 - \phi_1 > 0$ 时称振动 2 比振动 1 超前 $\Delta \phi$（或称振动 1 比振动 2 落后），当 $\Delta \phi = \phi_2 - \phi_1 < 0$ 时称振动 2 比振动 1 落后 $|\Delta \phi|$。
+\end{theorem}
 
-从位移方程
-\[
-\begin{aligned}
-x&=A\cos(\omega t+\varphi_0),\\
-v&=\dv{x}{t}=-A\omega\sin(\omega t+\varphi_0),\\
-a&=\dv{v}{t}=-A\omega^2\cos(\omega t+\varphi_0)
-\implies a=-\omega^2x.
-\end{aligned}
-\]
-
-这说明简谐振动中的速度、加速度也都是周期变化的，而且加速度总是指向平衡位置。进一步可得 \(v_{\max}=\omega A,\ a_{\max}=\omega^2A\)。
-
-\begin{note}
-只要把平衡位置、端点和平常中间位置分清，很多量就不会混：
-\begin{itemize}
- \item 在平衡位置 \(x=0\) 处，回复力和加速度为零，但速度最大；
- \item 在端点 \(x=\pm A\) 处，速度为零，但加速度大小最大；
- \item 在中间位置，位移、速度、加速度一般都不为零。
-\end{itemize}
-\end{note}
-
-\section{怎样读懂相位}
-
-这一节要解决的问题是：相位到底在描述什么，为什么它比“位置”更能代表振动状态？
-
-同一简谐振动里，位移、速度、加速度都由同一个相位 \(\varphi=\omega t+\varphi_0\) 控制。相位相同，说明“振动状态”相同；相位不同，说明它们虽然可能位移一样，但运动方向、受力状态未必相同。
-
-例如，当 \(x=0\) 时，质点可能正向右穿过平衡位置，也可能正向左穿过平衡位置。单看位移分不出来，但结合相位或者速度符号就能区分。也就是说，位移只告诉你“现在在哪里”，相位则告诉你“现在振到了哪一步”。
-
-\begin{remark}
-相位很容易被误当成“又一个角度定义”。更直观的理解是：相位就是振动进程条。它不只是记录位置，还同时编码了“接下来往哪边动”。
-\end{remark}
-
-\section{旋转矢量法：把相位画出来}
+\begin{theorem}[由初始条件确定简谐振动的振幅与初相]
+    设在 $t = 0$ 时刻，质点的初始位移为 $x_0$，初始速度为 $v_0$。简谐振动的通用运动学方程及其速度方程分别为：$$x = A \cos(\omega t + \phi),~~v = \frac{\mathrm{d}x}{\mathrm{d}t} = -\omega A \sin(\omega t + \phi)$$将初始条件 $t = 0, x = x_0, v = v_0$ 代入得：$$x_0 = A \cos\phi ,~~v_0 = -\omega A \sin\phi \implies x_0^2 = A^2 \cos^2\phi,~~\left(\frac{v_0}{\omega}\right)^2 = A^2 \sin^2\phi\implies x_0^2 + \left(\frac{v_0}{\omega}\right)^2 = A^2$$所以$A = \sqrt{x_0^2 + \left(\dfrac{v_0}{\omega}\right)^2} $，由 $- \frac{v_0}{\omega} = A \sin\phi$，然后与$x_0 = A \cos\phi$相除：$$\frac{A \sin\phi}{A \cos\phi} = \frac{-\frac{v_0}{\omega}}{x_0} \implies \tan\phi = -\frac{v_0}{\omega x_0}\implies\boxed{\phi = \arctan\left(-\frac{v_0}{\omega x_0}\right)} $$我们可以构建一个名义上的直角三角形来强行记忆上述两个公式：以初始位移 $x_0$ 为邻边，以 $-\frac{v_0}{\omega}$ 为对边。根据勾股定理，其斜边长恰好就是振幅 $A$。该直角三角形中邻边与斜边的夹角，正好对应初相 $\phi$ 。
+    
+    由反正切方程 $\tan\phi = -\frac{v_0}{\omega x_0}$ 确定的初相 $\phi$，在它的标准周期范围（$[0, 2\pi)$ 或 $[-\pi, \pi]$）内必然同时存在两个满足条件的代数解（它们彼此相差 $\pi$），必须将求得的两个候选值反代回原始的方程$x_0 = A \cos\phi$ 与方程$v_0 = -\omega A \sin\phi$ 中进行符号一致性检验。由于 $A > 0, \omega > 0$ 恒成立，初相 $\phi$ 的象限完全由 $x_0$ 和 $v_0$ 的正负号唯一锁定：
+    \begin{itemize}
+    \item 若 $x_0 > 0, v_0 < 0 \implies \cos\phi > 0, \sin\phi > 0 \implies \phi$ 落在第一象限。
+    \item 若 $x_0 < 0, v_0 < 0 \implies \cos\phi < 0, \sin\phi > 0 \implies \phi$ 落在第二象限。
+    \item 若 $x_0 < 0, v_0 > 0 \implies \cos\phi < 0, \sin\phi < 0 \implies \phi$ 落在第三象限。
+    \item 若 $x_0 > 0, v_0 > 0 \implies \cos\phi > 0, \sin\phi < 0 \implies \phi$ 落在第四象限。
+    \end{itemize}
+\end{theorem}
 
 \begin{definition}[旋转矢量法]
-把长度为 \(A\) 的矢量放在平面内，让它以角速度 \(\omega\) 匀速逆时针转动。若 \(t=0\) 时它与 \(x\) 轴夹角为 \(\varphi_0\)，则时刻 \(t\) 的夹角为
+首先实战确定振动方程时要用$\cos(\omega t+\phi)$的形式，不要用正弦，然后根据\[A = \sqrt{x_0^2 + \left(\dfrac{v_0}{\omega}\right)^2},~\tan\phi = -\frac{v_0}{\omega x_0}\]就能通过旋转矢量法得到相位:把长度为 \(A\) 的矢量放在平面内，让它以角速度 \(\omega\) 匀速逆时针转动。若 \(t=0\) 时它与 \(x\) 轴夹角为 \(\varphi_0\)，则时刻 \(t\) 的夹角为
  \(\theta=\omega t+\varphi_0 \implies x=A\cos\theta=A\cos(\omega t+\varphi_0),\) 
-这正是简谐振动方程。
+这正是简谐振动方程。只知道初始位置 \(x_0\)，通常只能确定旋转矢量在 \(x\) 轴上的投影，因此会有两个关于 \(x\) 轴对称的可能位置；再结合初始速度方向，才能判断它在上半平面还是下半平面，从而唯一确定初相。
 \end{definition}
-
-\bridge{旋转矢量法最有用的地方，不是“多了一张图”，而是把抽象的相位变成了真正可以在平面上看见的角位置。后面讲振动合成和拍频时，这个方法会再次出现。}
-
-\begin{note}
-只知道初始位置 \(x_0\)，通常只能确定旋转矢量在 \(x\) 轴上的投影，因此会有两个关于 \(x\) 轴对称的可能位置；再结合初始速度方向，才能判断它在上半平面还是下半平面，从而唯一确定初相。
-\end{note}
-
-\section{由初始位置和初始速度确定初相}
-
-\begin{note}
- 题目若同时给 \(x_0\) 和“向哪边运动”，八成是在让你判初相所在象限； \(x_0\) 决定 \(\cos\varphi_0\)，\(v_0\) 决定 \(-\sin\varphi_0\) 的符号； 位置先定“横坐标”，速度再定“上半平面还是下半平面”； 由 \(\cos\varphi_0=x_0/A\) 只取一个角，忘了余弦通常对应两个关于 \(x\) 轴对称的候选象限。
-\end{note}
-
-若振动方程写成
-\[
-\begin{aligned}
-x&=A\cos(\omega t+\varphi_0) \\
-\implies\quad x_0&=A\cos\varphi_0,\qquad v_0=-A\omega\sin\varphi_0.
-\end{aligned}
-\]
-因此定初相时，可以这样处理：
-\begin{enumerate}
- \item 先由 \(\cos\varphi_0=x_0/A\) 找到两个可能角；
- \item 再用 \(v_0\) 的正负判断 \(\sin\varphi_0\) 的符号，选出正确象限；
- \item 最后再检查该初相是否与题目给出的初始运动方向一致。
-\end{enumerate}
 
 \begin{exercise}[由位置和速度确定初相]
 某简谐振动的振幅为 \(A\)，角频率为 \(\omega\)。已知 \(t=0\) 时 \(x_0=A/2\)，且质点正沿负方向运动。求初相 \(\varphi_0\)。
@@ -1630,258 +1542,87 @@ x&=A\cos(\omega t+\varphi_0) \\
 由初始位置 \(x_0=A\cos\varphi_0=A/2\) 可知 \(\cos\varphi_0=1/2\)，候选角为 \(\pi/3\) 或 \(5\pi/3\)。又因 \(v_0=-A\omega\sin\varphi_0<0\)，可知 \(\sin\varphi_0>0\)，只能取上半平面的候选角，故 \(\varphi_0=\frac{\pi}{3}\)。这类题不能只看位置，还要用速度方向把象限定住。
 \end{solution}
 
-\section{周期和频率}
-
-这一节真正要先读进去的，不是三个符号之间的代换，而是“同一个系统按固定节奏重复自己”这件事该怎样定量描述。若你盯住某个质点看，它每隔一段固定时间就回到完全相同的振动状态，这个时间尺度就是周期；若你改成问“每秒重复多少次”，那就是频率；而角频率 \(\omega\) 只是把“重复得多快”改写成圆周运动里更顺手的角量语言。
-
-简谐振动的周期、频率与角频率的关系为
-\[
-T=\frac{2\pi}{\omega},\qquad f=\frac{1}{T},\qquad \omega=2\pi f.
-\]
-
-\begin{note}
-理想简谐振动里，周期是由系统本身决定的“固有节奏”。对于理想弹簧振子、小角度单摆和扭摆，周期都不直接依赖于初始相位；在理想模型下，周期也不随振幅改变。
-\end{note}
-
-\section{弹簧振子}
-
-弹簧振子是最基本的简谐振动模型。设质量为 \(m\) 的小球连在劲度系数为 \(k\) 的轻弹簧上，在光滑水平面上运动。由胡克定律和牛顿第二定律，
-\[
-\begin{aligned}
--kx&=m\dv[2]{x}{t}
-\implies m\dv[2]{x}{t}+kx=0 \\
-\implies\quad
-\omega=\sqrt{\frac{k}{m}},\qquad
-T=2\pi\sqrt{\frac{m}{k}}.
-\end{aligned}
-\]
-
-\begin{remark}
-对竖直弹簧振子，只要把位移从\textbf{平衡位置}开始量，最后得到的方程仍然是同一形式。所以水平弹簧振子和竖直弹簧振子，看起来受力不同，真正的振动核心却是一样的。
-\end{remark}
-
-\begin{exercise}[水平弹簧振子为什么一写出来就是余弦]
-质量为 \(m=\SI{20}{g}\) 的小球连在劲度系数 \(k=\SI{0.72}{N/m}\) 的轻弹簧上，在光滑水平面上运动。若初始时刻小球位于 \(x_0=\SI{5.0}{cm}\) 处并由静止释放，求振动方程。
-\end{exercise}
-
+\begin{example}
+一水平简谐弹簧振子，取平衡位置为坐标原点 $O$。在 $t = 0$ 瞬间，小球恰好经过平衡位置 $x = 0$，且其瞬时速度偏向 $x$ 轴负方向（即 $v_0 < 0$）。求该振子的初相 $\phi$ 并写出其位置振动方程。
+\end{example}
 \begin{solution}
-水平弹簧振子的位移从平衡位置量起，弹簧力就是回复力。动力学方程和角频率可直接连在一起：
- \(m\ddot x+kx=0,\qquad \omega=\sqrt{\frac{k}{m}}=\sqrt{\frac{0.72}{0.020}}=\sqrt{36}=\SI{6}{rad/s}, \qquad x=A\cos(6t+\varphi_0).\) 
-初始条件给出
-\(x(0)=A\cos\varphi_0=\SI{0.050}{m}\)，且 \(v(0)=-A\omega\sin\varphi_0=0\)，于是 \(\varphi_0=0,\ A=\SI{0.050}{m}\)。
-
-故振动方程为 \(x=0.050\cos(6t)\ \si{m}\)。物体从正端点静止释放，\(t=0\) 正好在最大正位移处；只由 \(v_0=0\) 会有两个端点候选，还要用 \(x_0>0\) 定符号。
+我们将初始条件 $t = 0, x_0 = 0, v_0 < 0$ 代入方程中：
+$$0 = A \cos\phi \implies \cos\phi = 0\implies\phi = \frac{\pi}{2} \text{或} \phi = -\frac{\pi}{2},~v_0 = -\omega A \sin\phi <0 \implies\sin\phi > 0$$
+比对两个候选角：$\sin\left(\frac{\pi}{2}\right) = 1 > 0$（符合条件）；而 $\sin\left(-\frac{\pi}{2}\right) = -1 < 0$（舍去）。因此初相解为：$\phi = \frac{\pi}{2}$，振动方程：$x = A \cos\left(\omega t + \frac{\pi}{2}\right)$
 \end{solution}
 
-\section{小角度单摆}
+\begin{exercise}
+一轻弹簧的右端连着一物体，弹簧的劲度系数 $k = 0.72\,\text{N}\cdot\text{m}^{-1}$，物体的质量 $m = 20\,\text{g}$。\\
+（1）把物体从平衡位置向右拉到 $x = 0.05\,\text{m}$ 处停下后再释放，求其简谐运动方程；\\
+（2) 在（1）的条件下，求物体从初始位置运动到第一次经过 $x = \frac{A}{2}$ 处时的瞬时速度；\\
+（3）若在 $t = 0$ 时物体同样在 $x = 0.05\,\text{m}$ 处，但具有向右的初速度 $v_0 = 0.30\,\text{m}\cdot\text{s}^{-1}$，求此时系统的运动方程。
+\end{exercise}
+\begin{solution}
+（1）$$\omega = \sqrt{\frac{k}{m}} = \sqrt{\frac{0.72}{0.02}}= 6.0\,\text{s}^{-1},~A = \sqrt{x_0^2 + \left(\frac{v_0}{\omega}\right)^2} = 0.05\,\text{m},~\tan\phi = -\frac{v_0}{\omega x_0} = 0 $$所以$\phi = 0 \text{或}\phi = \pi$，在 $t=0$ 时，由于初始位移处于正向最大值（$x_0 = A = 0.05\,\text{m}$），旋转矢量 $\vec{A}$ 必须严格指向 $x$ 轴的正对方向。此时，矢量与 $x$ 轴正方向的夹角显然为 $0$。由此初相$\phi = 0$，将参数代回标准的余弦表达式，得到简谐运动方程：\[x = (0.05\,\text{m})\cos\left[\left(6.0\,\text{s}^{-1}\right)t\right]\]\\
+（2）系统当前的位置方程为 $x = A\cos(\omega t)$。现求物体第一次运动到 $x = \frac{A}{2}$ 处的动力学状态。列出位置代数方程：$\cos(\omega t) = \frac{x}{A} = \frac{\frac{A}{2}}{A} = \frac{1}{2}$，在基本周期域内，余弦值为 $\frac{1}{2}$ 的角度有两个：$\omega t = \frac{\pi}{3} \text{或}\omega t = \frac{5\pi}{3}$，旋转矢量 $\vec{A}$ 从 $t=0$ 处的 $x$ 轴正方向出发，以角速度 $\omega$ 逆时针旋转。当它第一次过投影点 $x = \frac{A}{2}$ 时，其在第一象限对应的转角 $\omega t$ 必然为最小正角，所以$\omega t = \frac{\pi}{3}$
+\[v = -A\omega\sin(\omega t)= -0.05 \times 6.0 \times \sin\left(\frac{\pi}{3}\right) = -0.30 \times \frac{\sqrt{3}}{2} \approx -0.26\,\text{m}\cdot\text{s}^{-1}\]
+（3）初始条件变更为：$t = 0, x_0 = 0.05\,\text{m}, v_0 = 0.30\,\text{m}\cdot\text{s}^{-1}$（向右为正向）。$$A' = \sqrt{x_0^2 + \left(\frac{v_0}{\omega}\right)^2} = \sqrt{0.05^2 + \left(\frac{0.30}{6.0}\right)^2} = \sqrt{0.05^2 + 0.05^2} = 0.05\sqrt{2} \approx 0.0707\,\text{m}$$
+\end{solution}
 
-这一节要解决的问题是：为什么单摆只在小角度时才近似成为简谐振动？
+\begin{definition}[复摆]
+在重力作用下，能够绕通过自身某一固定水平光滑轴作微小摆动的任意形状的刚体。设刚体的总质量为 $m$，其绕固定转轴 $O$ 的转动惯量为 $J$。刚体的质心记为 $C$ 点，质心 $C$ 到转轴 $O$ 的几何垂直距离为 $l$。设某一瞬间，连线 $OC$ 偏离竖直方向的角位移为 $\theta$。整个刚体在竖直平面内受到的合外力矩仅由重力 $\vec{P} = m\vec{g}$ 贡献（轴支持力矩为零）。重力作用在质心 $C$ 上，其对转轴 $O$ 的力臂为 $l\sin\theta$。规定逆时针为角位移的正方向，则重力矩企图使刚体回到平衡位置：$$M = -mgl\sin\theta= J\alpha= J\frac{\mathrm{d}^2\theta}{\mathrm{d}t^2}\implies-mgl\theta = J\frac{\mathrm{d}^2\theta}{\mathrm{d}t^2} \implies \frac{\mathrm{d}^2\theta}{\mathrm{d}t^2} + \frac{mgl}{J}\theta = 0\implies\omega=\sqrt{ \frac{mgl}{J}}$$如果当刚体退化为绳连接小球，则$J=ml^2$，此时$\omega=\sqrt{ \frac{mgl}{ml^2}}=\sqrt{ \frac{g}{l}}$
+\end{definition}
 
-设摆长为 \(\ell\)，摆球质量为 \(m\)，摆角 \(\theta\) 从平衡位置开始计。摆球受到的切向回复力为
-\[
-\begin{aligned}
-F_{\tau}&=-mg\sin\theta,\qquad
-a_{\tau}=\dv[2]{s}{t}=\ell\dv[2]{\theta}{t} \\
-\implies\quad
-m\ell\dv[2]{\theta}{t}&=-mg\sin\theta
-\implies
-\dv[2]{\theta}{t}+\frac{g}{\ell}\sin\theta=0.
-\end{aligned}
-\]
-
-这一步还不是简谐振动，因为方程里出现的是 \(\sin\theta\)，而不是直接正比于 \(\theta\)。只有在摆角较小时，才能采用近似并压成
- \(\sin\theta\approx \theta \implies \dv[2]{\theta}{t}+\frac{g}{\ell}\theta=0 \implies \omega=\sqrt{\frac{g}{\ell}},\qquad T=2\pi\sqrt{\frac{\ell}{g}}.\) 
-这时单摆才近似作简谐振动。
-
-\bridge{单摆成为简谐振动的关键，不是“它会来回摆”，而是“小角度时 \(\sin\theta\) 可以用 \(\theta\) 代替”。也就是说，真正把它拉回到简谐模型里的，是这个近似。}
-
-\begin{note}
-这条周期公式最容易误用。它只适用于小摆角近似；摆角一大，周期会比这个公式给出的结果更长，不能再直接套用。
-\end{note}
-
-\section{复摆}
-
-这一节要解决的问题是：如果摆动的不再是质点，而是整个刚体，简谐模型还怎样保留？
-
-\textbf{先别急着背周期公式。} 单摆之所以能来回摆，是因为一旦偏离平衡位置，重力就会对悬点产生一个想把它拉回去的回复力矩。复摆里转动的虽然不再是质点，而是整个刚体，但这条主线完全没变：重力仍然负责提供回复力矩，只是“有多难被转起来”已经不能只看质量 \(m\)，而必须看绕支点轴的转动惯量 \(J_O\)。
-
-\textbf{复摆}是指在重力作用下，能绕某固定水平轴作微小摆动的刚体。设刚体质量为 \(m\)，支点到质心的距离为 \(d\)，绕支点轴的转动惯量为 \(J_O\)，偏角记为 \(\theta\)。当刚体偏离平衡位置后，重力 \(mg\) 仍作用在质心上；相对支点看，它的力臂是 \(d\sin\theta\)。若约定使 \(\theta\) 增大的方向为正，则重力矩总是企图把偏角压回去，因此关于支点的回复力矩自然写成
-\[
-\begin{aligned}
-M_O&=-mgd\sin\theta \\
-\sin\theta\approx \theta\ &\implies\ M_O\approx -mgd\,\theta \\
-J_O\dv[2]{\theta}{t}&=M_O
-\implies J_O\dv[2]{\theta}{t}+mgd\,\theta=0 \\
-\implies\quad
-\omega=\sqrt{\frac{mgd}{J_O}},\qquad
-T=2\pi\sqrt{\frac{J_O}{mgd}}.
-\end{aligned}
-\]
-
-\begin{note}
- 复摆真正的骨架是“回复力矩 = 转动惯性项”，也就是 \(M_O=J_O\ddot{\theta}\)；只有把 \(\sin\theta\) 在线性近似下换成 \(\theta\)，它才会退化成熟悉的简谐振动方程。最容易写错的不是周期，而是忘了 \(M_O=-mgd\sin\theta\) 里的负号正是在表达“力矩总要把偏角往回扳”。
-\end{note}
-
-\begin{remark}
-若把复摆的等效摆长定义为 \(\ell_{\text{eq}}=\frac{J_O}{md}\)，则复摆周期也可写成
- \(T=2\pi\sqrt{\frac{\ell_{\text{eq}}}{g}}.\) 
-这说明复摆并不是“完全陌生的新摆”，而是单摆思路在刚体上的推广。
-\end{remark}
-
-\section{扭摆}
-
-这一节要解决的问题是：如果物体不是左右平移，也不是前后摆动，而是绕轴轻微扭转，它还能不能作简谐振动？
-
-\textbf{这里的回复作用不再来自重力，而来自金属丝本身的弹性。} 若把圆盘顺时针拧开一点，细丝内部就会出现一个反向的恢复力矩，想把圆盘扳回原来的取向。因此扭摆最先该写的不是周期，而是“角位移版胡克定律”：偏得越多，扭回去的力矩越大，而且方向总与扭转角相反。
-
-\textbf{扭摆}的典型模型是圆盘悬挂在金属丝下端，绕竖直轴作微小扭转。设扭转角为 \(\varphi\)，金属丝的扭转系数为 \(D\)，圆盘绕转轴的转动惯量为 \(J\)。当扭转角不大时，回复力矩满足
- \(M=-D\varphi,\qquad J\dv[2]{\varphi}{t}=M \implies J\dv[2]{\varphi}{t}+D\varphi=0 \implies \omega=\sqrt{\frac{D}{J}},\qquad T=2\pi\sqrt{\frac{J}{D}}.\) 
-
-\bridge{扭摆本质上就是“角位移版弹簧振子”：平移里是 \(F=-kx\)，扭转里是 \(M=-D\varphi\)；平移里是质量 \(m\)，扭转里是转动惯量 \(J\)。只要把这组对应关系抓住，扭摆就不会显得陌生。}
-
-\begin{note}
-\textbf{最快的记忆钩子就是三组平行对应：} \(x\leftrightarrow\varphi\)，\(k\leftrightarrow D\)，\(m\leftrightarrow J\)。所以一看到扭摆，就别先找重力，而要先找“角位移版弹簧振子”的回复规律。这里的周期也不由重力决定，而由“刚体有多难扭动”和“金属丝有多想把它扭回去”共同决定。
-\end{note}
+\begin{definition}[扭摆]
+扭摆：通过一根垂直悬挂的金属丝悬挂一刚体（如圆盘），当刚体在水平面内转过一个角度时，利用金属丝扭转产生的弹性回复力矩驱动系统作往复旋转振动的装置。我们以水平面内质量均匀分布、绕几何中心对称轴转动的圆盘为研究对象。设圆盘对其中心竖直轴的转动惯量为 $J_z$。当圆盘在水平面内被转过一个微小的扭转角 $\theta$ 时，上方的金属丝发生扭转形变。根据材料力学定律，在扭转角不太大（即处于线弹性形变区间）时，金属丝对圆盘产生的瞬时弹性回复力矩 $M_z$ 与扭转角 $\theta$ 成严格的正比，且方向总是相反：$$M_z = -D\theta$$式中的比例系数 $D$ （金属丝的扭转系数）由金属丝的材料、长度和截面粗细决定：$$J_z \frac{\mathrm{d}^2\theta}{\mathrm{d}t^2} = -D\theta \implies \frac{\mathrm{d}^2\theta}{\mathrm{d}t^2} + \frac{D}{J_z}\theta = 0\implies\boxed{\omega = \sqrt{\frac{D}{J_z}}, \qquad T = 2\pi\sqrt{\frac{J_z}{D}}}$$
+\end{definition}
 
 \section{振动能量}
 
-这一节要解决的问题是：为什么一个看起来只是“来回摆动”的振子，也能像抛体或斜面问题那样谈能量守恒？
-
-以弹簧振子为例，先别急着把 \(E_k=\frac12 mv^2\)、\(E_p=\frac12 kx^2\) 当成现成结论背下来。真正该先想的是：同一个振子经过平衡位置时，明明 \(x=0\) 却跑得最快；到达端点时，明明 \(v=0\) 却又能自己掉头回来。这说明系统里至少有两种不同的“储能方式”：一部分跟\textbf{质点此刻动得多快}有关，另一部分跟\textbf{弹簧此刻被拉伸或压缩得多厉害}有关。
-
-前者就是平动里已经认识过的动能：
- \(E_k=\frac12 mv^2.\) 
-后者则要从“把弹簧从平衡位置缓慢拉到 \(x\) 时，外界一共做了多少功”自然长出来。关键先别急着看结果，而要先看力学图景：弹簧的回复力不是常量，而是随位移线性增大，越拉越费力，所以储存起来的势能不可能是“力乘位移”那样的一次量，而必须是对这股\textbf{逐步增大的阻力}做功的累计。这样一来，势能就只能从积分里长出来。因为回复力满足 \(F_x=-kx\)，取平衡位置为零势能点，就有
- \(E_p=-\int_0^x F_x\,\dd x' =\int_0^x kx'\,\dd x' =\frac12 kx^2.\) 
-
-接下来再看任一时刻的能量分配。这里也最好先有图景再读公式：位移控制的是“弹簧此刻被拉了多少”，所以势能会跟 \(x^2\) 走；速度控制的是“质点此刻冲得多快”，所以动能会跟 \(v^2\) 走。对简谐振动来说，\(x\) 与 \(v\) 本来就相差四分之一个周期，于是能量分配自然会拆成一边随 \(\cos^2\) 变、一边随 \(\sin^2\) 变。把这层图景先放在脑子里，再看下面这组式子就不会停顿：
-\[
-\begin{aligned}
-x&=A\cos(\omega t+\varphi_0),\qquad
-v=-A\omega\sin(\omega t+\varphi_0),\\
-E_k&=\frac12 mA^2\omega^2\sin^2(\omega t+\varphi_0),\qquad
-E_p=\frac12 kA^2\cos^2(\omega t+\varphi_0),\\
-x=\pm A,\ v=0
-&\implies E=\frac12 kA^2,\qquad
-x=0,\ v=\omega A\implies E=\frac12 m\omega^2A^2,\\
-&\therefore E=E_k+E_p=\frac12 kA^2=\frac12 m\omega^2A^2.
-\end{aligned}
-\]
-这里最自然的总能量求法，其实不是每次都把三角函数硬代到底，而是先抓最容易的两个位置：\textbf{端点处全是势能，平衡位置处全是动能。} 同时别忘了这两种写法之所以真是同一个总能量，还偷偷用了简谐振动的核心关系 \(\omega^2=k/m\)。正因为 \(m\omega^2=k\)，\(\frac12 m\omega^2A^2\) 和 \(\frac12 kA^2\) 才是同一个量。
-
-\bridge{这个结果很值得慢慢体会。简谐振动虽然速度、位移、受力都在变，但系统总能量不变，只是在动能和势能之间来回交换。换句话说，振子不是“忽然快、忽然慢”而已，它一直在做能量形式的交换。}
-
-于是可以顺着位置来理解能量分配：
-\begin{itemize}
- \item 当质点经过平衡位置时，\(x=0\)，势能最小；此时速度最大，因此动能最大；
- \item 当质点到达端点时，\(v=0\)，动能为零；但弹簧形变量最大，因此势能最大；
- \item 在中间位置时，动能和势能都不为零，它们的和始终等于同一个总能量。
-\end{itemize}
-
-这也解释了为什么总能量和振幅平方成正比：振幅越大，端点处弹簧被拉得越长、压得越深，系统能储存的最大势能就越大，因此整次振动携带的总能量也越大。
+\begin{definition}[动能与势能]
+系统的瞬时动能 $E_{\text{k}}$：由质点的平动线速度决定$$E_{\text{k}} = \frac{1}{2}m v^2 = \frac{1}{2}m\omega^2 A^2 \sin^2(\omega t + \phi)$$系统的瞬时弹性势能 $E_{\text{p}}$：由线性回复力的空间空间积累决定$$E_{\text{p}} = \frac{1}{2}k x^2 = \frac{1}{2}k A^2 \cos^2(\omega t + \phi)$$由于系统固有属性满足 $\omega^2 = \frac{k}{m} \implies m\omega^2 = k$，动能项的前置系数可完美无损地代换为弹性系数：$$E = E_{\text{k}} + E_{\text{p}} = \frac{1}{2}k A^2 \sin^2(\omega t + \phi) + \frac{1}{2}k A^2 \cos^2(\omega t + \phi) =\frac{1}{2}k A^2 \propto A^2$$
+\end{definition}
 
 \begin{exercise}[由位移判断能量分配]
 某弹簧振子振幅为 \(A\)。当质点位于 \(x=A/2\) 处时，求动能和势能各占总机械能的多少。
 \end{exercise}
-
 \begin{solution}
-总机械能与当前位置势能可并成
- \(E=\frac{1}{2}kA^2,\qquad E_p=\frac{1}{2}k\left(\frac{A}{2}\right)^2=\frac{1}{8}kA^2=\frac{1}{4}E \implies E_k=E-E_p=\frac{3}{4}E.\) 
-所以在 \(x=A/2\) 这个位置，势能占总能量的 \(1/4\)，动能占总能量的 \(3/4\)。这种题不必先求速度，直接由能量表达式分配更省力。
+ \[E_p=\frac{1}{2}k\left(\frac{A}{2}\right)^2=\frac{1}{8}kA^2=\frac{1}{4}E \implies E_k=E-E_p=\frac{3}{4}E.\]
 \end{solution}
 
-\begin{remark}
-如果把振幅变成原来的 2 倍，总机械能会变成原来的 4 倍。这就是“振幅平方决定能量量级”的最直接体现，也是后面理解拍频强弱变化和波动能量的共同基础。
-\end{remark}
-
-\begin{exercise}[已知 \(m,A,a_{\max}\) 时怎样反求周期和能量]
-一简谐振子质量 \(m=\SI{0.10}{kg}\)，振幅 \(A=\SI{1.0e-2}{m}\)，最大加速度 \(a_{\max}=\SI{4.0}{m/s^2}\)。求其周期、经过平衡位置时的动能、总机械能，并求在什么位置有 \(E_k=E_p\)。
-\end{exercise}
-
+\begin{example}
+一质量为 $m = 0.10\,\text{kg}$ 的物体，以振幅 $A = 1.0 \times 10^{-2}\,\text{m}$ 作简谐运动。已知该物体的最大加速度大小为 $a_{\text{max}} = 4.0\,\text{m}\cdot\text{s}^{-2}$。试求：\\（1）振动的周期 $T$；（2）物体通过平衡位置时的动能 $E_{\text{k,max}}$；（3）系统的总机械能 $E_{\text{总}}$；\\（4）物体在何处其瞬时动能与弹性势能恰好严格相等？
+\end{example}
 \begin{solution}
-简谐振动中 \(a=-\omega^2x\)，最大加速度出现在端点 \(x=\pm A\)，于是
- \(\omega^2=\frac{a_{\max}}{A} =\frac{4.0}{1.0\times10^{-2}}=400 \implies \omega=\SI{20}{rad/s},\qquad T=\frac{2\pi}{\omega}=\frac{\pi}{10}\ \si{s}\approx\SI{0.314}{s}.\) 
-经过平衡位置时势能为零、动能最大，且等于总机械能：
-\[
-E_k(\text{平衡})=E=\frac12 m\omega^2A^2
-=\frac12\times 0.10\times 20^2\times (1.0\times10^{-2})^2
-=\SI{2.0e-3}{J}.
-\]
-若 \(E_k=E_p\)，二者各占总能量的一半。由
-\[
-E_p=\frac12 kx^2,\qquad E=\frac12 kA^2
-\implies
-\frac12 kx^2=\frac12 E=\frac14 kA^2
-\implies
-x^2=\frac{A^2}{2}
-\implies
-x=\pm \frac{A}{\sqrt2}.
-\]
-所以 \(T\approx \SI{0.314}{s}\)，平衡位置处动能和总机械能均为 \(\SI{2.0e-3}{J}\)，且 \(E_k=E_p\) 的位置为 \(x=\pm A/\sqrt2\)。最大加速度在端点；能量随位移平方变化，等能量位置不是 \(x=\pm A/2\)。
-\end{solution}
-
-\begin{exercise}[斜面弹簧缓慢移动时外力做功怎样算]
-轻弹簧一端固定在倾角为 \(\alpha\) 的光滑斜面底端，另一端与质量为 \(m\) 的物体相连。\(O\) 点为弹簧原长处，\(A\) 点为物体平衡位置，\(x_0\) 为弹簧在 \(A\) 点被压缩的长度。若外力将物体由 \(A\) 点沿斜面向上缓慢移动 \(2x_0\) 到 \(B\) 点，求外力所做的功。
-
-\begin{center}
-\includegraphics[width=0.22\linewidth]{pdf-exercises/pdf2003-q12-spring-incline.png}
-\end{center}
-\end{exercise}
-
-\begin{solution}
-缓慢移动时始末动能可忽略，外力做功等于系统势能的增加。物体从 \(A\) 到 \(B\) 沿斜面上升 \(2x_0\)，高度增加 \(2x_0\sin\alpha\)；弹簧由压缩 \(x_0\) 变为伸长 \(x_0\)，弹性势能前后相同。于是
- \(\Delta U_g=2mgx_0\sin\alpha,\qquad \Delta U_s=0,\qquad W_{\text{外}}=\Delta U_g+\Delta U_s=2mgx_0\sin\alpha.\) 
-又平衡位置 \(A\) 处有 \(kx_0=mg\sin\alpha\)，所以也可写成 \(W_{\text{外}}=2kx_0^2\)。这里弹性势能只看形变量大小，压缩 \(x_0\) 和伸长 \(x_0\) 对应同一个 \(\frac12kx_0^2\)。
+（1）由简谐运动方程求两次导数得到$a_{\text{max}} = A\omega^2$，则$$\omega = \sqrt{\frac{a_{\text{max}}}{A}} = \sqrt{\frac{4.0}{1.0 \times 10^{-2}}} = \sqrt{400} = 20\,\text{s}^{-1},~~T = \frac{2\pi}{\omega} = \frac{2 \times 3.14159}{20} \approx \boxed{0.314\,\text{s}}$$
+（2）质点通过平衡位置（$x=0$）时，弹性势能完全释放，全部转化为最大瞬时速度动能。已知最大线速度为 $v_{\text{max}} = A\omega$。代入动能方程：$$E_{\text{k,max}} = \frac{1}{2}m v_{\text{max}}^2 = \frac{1}{2}m\omega^2 A^2= \frac{1}{2} \times 0.10 \times 20^2 \times (1.0 \times 10^{-2})^2 = \boxed{2.0 \times 10^{-3}\,\text{J}}$$
+（3）$$E_{\text{总}} = E_{\text{k,max}} = \boxed{2.0 \times 10^{-3}\,\text{J}}$$
+（4）$$E_{\text{p}} = \frac{1}{2}E_{\text{总}} \implies \frac{1}{2}k x^2 = \frac{1}{2} \cdot \left( \frac{1}{2}k A^2 \right)\implies x^2 = \frac{1}{2}A^2 \implies x = \pm \frac{A}{\sqrt{2}}= \pm \frac{1.0\,\text{cm}}{\sqrt{2}} = \boxed{\pm 0.707\,\text{cm}}$$
 \end{solution}
 
 \begin{exercise}[2012级期末：恒力推粗糙桌面弹簧物块的最大弹性势能]
 劲度系数为 \(k\) 的轻弹簧水平放置，一端固定在墙壁上，另一端连接质量为 \(m\) 的物体。物体在坐标原点 \(O\) 时弹簧为原长，物体与桌面间的滑动摩擦系数为 \(\mu\)。若物体在水平向右的不变外力 \(F\) 作用下向右移动，求物体到达最远位置时弹簧系统的弹性势能。设 \(F>\mu mg\)。
 \end{exercise}
-
 \begin{solution}
-“最远位置”说明那一瞬间速度为零。初态在 \(O\) 点、弹簧无形变且物体静止；末态速度仍为零，所以外力做功与摩擦耗散后，剩下的能量全部进入弹簧势能。
-
-设最远位移为 \(x_m\)。由功和能量关系可得非零解
+由能量守恒
 \[
 \begin{aligned}
 Fx_m-\mu mg\,x_m&=\frac12kx_m^2
-\implies x_m=\frac{2(F-\mu mg)}{k},\\
-E_p&=\frac12kx_m^2
-=\frac12k\left[\frac{2(F-\mu mg)}{k}\right]^2
-=\frac{2(F-\mu mg)^2}{k}.
+\implies x_m=\frac{2(F-\mu mg)}{k},E_p=\frac12kx_m^2=\frac{2(F-\mu mg)^2}{k}.
 \end{aligned}
 \]
-最大弹性势能不是把力平衡位置 \(x=(F-\mu mg)/k\) 代进去；那里只是加速度为零，物体还会凭此前积累的动能继续前进，到最远点时位移正好是它的两倍。
 \end{solution}
 
 \begin{exercise}[木板简谐振动时物体不滑的最大振幅]
 一物体放在水平木板上，木板以频率 \(\nu=\SI{2}{Hz}\) 沿水平直线作简谐振动。物体与木板间静摩擦系数为 \(\mu_s=0.50\)。求物体不在木板上滑动时木板振动的最大振幅 \(A_{\max}\)。
 \end{exercise}
-
 \begin{solution}
-物体能跟着木板一起做简谐振动，靠的是静摩擦力提供所需水平加速度。因此最大不滑条件就是“所需最大摩擦力不超过最大静摩擦力”。
-
- \(\omega=2\pi\nu,\qquad a_{\max}=\omega^2A,\qquad f_{\max}=ma_{\max}\le \mu_smg \implies A_{\max}=\frac{\mu_s g}{\omega^2} =\frac{\mu_s g}{4\pi^2\nu^2}.\) 
-代入 \(\mu_s=0.50,\ \nu=\SI{2}{Hz}\)，
-得 \(A_{\max}=\dfrac{0.50\times9.8}{4\pi^2\times2^2}\approx \SI{3.1e-2}{m}\)，即 \(A_{\max}\approx\SI{0.031}{m}\)。频率越高，同样振幅下所需加速度越大，允许振幅应随 \(\nu^{-2}\) 变小；静摩擦力只在临界不滑时才达到 \(\mu_smg\)。
+物体能跟着板一起做简谐振动，靠的是静摩擦力提供所需水平加速度。因此最大不滑条件就是“所需最大摩擦力不超过最大静摩擦力”。
+ \(a_{\max}=\omega^2A\le \mu_sg \implies A_{\max}=\frac{\mu_s g}{\omega^2} =\frac{\mu_s g}{4\pi^2\nu^2}=\dfrac{0.50\times9.8}{4\pi^2\times2^2}\approx \SI{3.1e-2}{m}\)，即 \(A_{\max}\approx\SI{0.031}{m}\)。频率越高，同样振幅下所需加速度越大，允许振幅应随 \(\nu^{-2}\) 变小；静摩擦力只在临界不滑时才达到 \(\mu_smg\)。
 \end{solution}
 
 \begin{exercise}[由振动曲线判断最大速率比]
-两简谐振动的位移-时间曲线如图所示。由图可读出：第一条曲线的振幅约为 \(\SI{1}{cm}\)、周期约为 \(\SI{2}{s}\)；第二条曲线的振幅约为 \(\SI{2}{cm}\)、周期约为 \(\SI{4}{s}\)。求它们的最大速率之比。
-
-\begin{center}
-\includegraphics[width=0.28\linewidth]{pdf-exercises/pdf2003-q17-vibration.png}
-\end{center}
+第一条曲线的振幅约为 \(\SI{1}{cm}\)、周期约为 \(\SI{2}{s}\)；第二条曲线的振幅约为 \(\SI{2}{cm}\)、周期约为 \(\SI{4}{s}\)。求它们的最大速率之比。
 \end{exercise}
-
 \begin{solution}
-简谐振动最大速率由 \(v_{\max}=A\omega\) 决定，所以读图时要同时读振幅和周期，而不能只看曲线高低。
-
-图中 \(x_1\) 的振幅约为 \(\SI{1}{cm}\)，周期约为 \(\SI{2}{s}\)；\(x_2\) 的振幅约为 \(\SI{2}{cm}\)，周期约为 \(\SI{4}{s}\)。由 \(v_{\max}=A\omega=2\pi A/T\) 得
-\(\dfrac{v_{\max,1}}{v_{\max,2}}
+\[v_{\max}=A\omega=2\pi A/T\implies\dfrac{v_{\max,1}}{v_{\max,2}}
 =\dfrac{A_1/T_1}{A_2/T_2}
-=\dfrac{1/2}{2/4}=1\)。
-所以 \(v_{\max,1}:v_{\max,2}=1:1\)。第二个振动振幅更大，但周期也更长，两者正好抵消；只看振幅会误判 \(x_2\) 更快。
+=\dfrac{1/2}{2/4}=1\]
 \end{solution}
 
 \begin{exercise}[2004级期末：由初位移和初速度求振幅与初相]
@@ -1889,53 +1630,16 @@ E_p&=\frac12kx_m^2
  \(x=A\cos(3t+\phi).\) 
 已知 \(t=0\) 时初位移为 \(\SI{0.04}{m}\)，初速度为 \(\SI{0.09}{m/s}\)。求振幅 \(A\) 和初相 \(\phi\)。
 \end{exercise}
-
 \begin{solution}
-初位移给出余弦分量，初速度给出正弦分量。先对位移方程求导，再把 \(t=0\) 代入。
-
- \(A\cos\phi=0.04,\qquad v(t)=-3A\sin(3t+\phi),\qquad -3A\sin\phi=0.09 \implies A\sin\phi=-0.03.\) 
+ \[A\cos\phi=0.04,\qquad v(t)=-3A\sin(3t+\phi),\qquad -3A\sin\phi=0.09 \implies A\sin\phi=-0.03.\] 
 于是
 \[
 \begin{aligned}
-A&=\sqrt{(A\cos\phi)^2+(A\sin\phi)^2}
-=\sqrt{0.04^2+(-0.03)^2}
-=\SI{0.05}{m},\\
-\cos\phi&=\frac{0.04}{0.05}=0.8,\qquad
-\sin\phi=\frac{-0.03}{0.05}=-0.6.
+A&=\sqrt{(A\cos\phi)^2+(A\sin\phi)^2}=\SI{0.05}{m},~\cos\phi=\frac{0.04}{0.05}=0.8,\sin\phi=\frac{-0.03}{0.05}=-0.6.
 \end{aligned}
 \]
 故 \(\phi\) 位于第四象限，
 \(\phi\approx -36.9^\circ\approx -0.205\pi\)。只由 \(\tan\phi=-0.75\) 还不能直接定象限，必须同时看 \(\cos\phi>0,\sin\phi<0\)，速度公式中的负号也不能漏。
-\end{solution}
-
-\begin{exercise}[2005级期末：弹簧振子振幅加倍时总能量怎样变]
-一弹簧振子作简谐振动，总能量为 \(E_1\)。若振幅增加为原来的两倍，重物质量增加为原来的四倍，求新的总能量 \(E_2\)。
-\end{exercise}
-
-\begin{solution}
-弹簧振子的总能量由弹簧劲度系数和振幅决定，\(E=\frac12 kA^2\)。质量会影响角频率 \(\omega=\sqrt{k/m}\)，但在同一弹簧的能量表达式里不直接改变总能量与振幅的关系。
-由此 \(\dfrac{E_2}{E_1}=\dfrac{\frac12 k(2A)^2}{\frac12 kA^2}=4\)，所以 \(E_2=4E_1\)。题面把质量也改成四倍，容易诱导人去套 \(E=\frac12m\omega^2A^2\)；但对同一弹簧，\(m\omega^2=k\)，质量变化会被新角频率抵消，最后仍由 \(kA^2/2\) 控制。
-\end{solution}
-
-\begin{exercise}[2007级期末：位移为振幅四分之一时动能占比]
-一弹簧振子作简谐振动。当其偏离平衡位置的位移大小为振幅的 \(1/4\) 时，求其动能为振动总能量的多少。
-\end{exercise}
-
-\begin{solution}
-简谐振动能量在动能和势能之间交换。弹簧势能与位移平方成正比，总能量等于端点处势能。
-
-\[
-\begin{aligned}
-E&=\frac12kA^2,\qquad
-E_p=\frac12kx^2,\qquad
-E_k=E-E_p,\\
-\abs{x}&=\frac{A}{4}
-\implies
-\frac{E_p}{E}=\frac{x^2}{A^2}=\frac{1}{16},\qquad
-\frac{E_k}{E}=1-\frac{1}{16}=\frac{15}{16}.
-\end{aligned}
-\]
-所以 \(E_k=\frac{15}{16}E\)。位移只有振幅的 \(1/4\)，势能占比不是 \(1/4\)，而是平方后的 \(1/16\)。
 \end{solution}
 
 \begin{exercise}[2008级期末：给定简谐方程求首次到达指定状态的时间]
@@ -1943,336 +1647,56 @@ E_k=E-E_p,\\
  \(x=4\times10^{-2}\cos\left(2\pi t+\frac{\pi}{3}\right)\quad(\mathrm{SI}).\) 
 从 \(t=0\) 时刻起，到质点位置在 \(x=-\SI{2}{cm}\) 处且向 \(x\) 轴正方向运动的最短时间间隔是多少？
 \end{exercise}
-
 \begin{solution}
-由题意可知，位置和运动方向都被指定；位移条件先给出候选相位，速度符号再把不合适的候选排除。
-
+设相位为$\phi=2\pi t+\frac{\pi}{3}$，则
 \[
 \begin{aligned}
-x&=A\cos\phi,\qquad
-\phi=2\pi t+\frac{\pi}{3},\qquad
-v=-A(2\pi)\sin\phi,\\
 x&=-\frac{A}{2}\implies
 \cos\phi=-\frac12
 \implies
 \phi=\frac{2\pi}{3}\ \text{或}\ \frac{4\pi}{3}\pmod{2\pi}.
 \end{aligned}
 \]
-又要求 \(v>0\)，即 \(\sin\phi<0\)，所以取 \(\phi=\frac{4\pi}{3}\pmod{2\pi}\)。
-
-从初相 \(\pi/3\) 到第一次满足条件的相位 \(4\pi/3\)，相位增加 \(\pi\)。角频率 \(\omega=2\pi\,\si{rad/s}\)，故 \(\Delta t=\dfrac{\pi}{2\pi}=\SI{0.5}{s}\)。
-这里 \(x=-A/2\) 对应两个相位，一个速度为负，一个速度为正；只看位置会误选较早但方向不对的状态。
+又要求 \(v>0\)，即 \(\sin\phi<0\)，所以取 \(\phi=\frac{4\pi}{3}\pmod{2\pi}\)。从初相 \(\pi/3\) 到第一次满足条件的相位 \(4\pi/3\)，相位增加 \(\pi\)。角频率 \(\omega=2\pi\,\si{rad/s}\)，故 \(\Delta t=\dfrac{\pi}{2\pi}=\SI{0.5}{s}\)。
 \end{solution}
-
-\begin{exercise}[2009级期末：从平衡位置到半振幅所需时间]
-一质点作简谐振动，周期为 \(T\)。质点由平衡位置沿 \(x\) 轴正方向运动时，从平衡位置到达最大位移一半处所需的时间是多少？
-\end{exercise}
-
-\begin{solution}
-从平衡位置沿正方向出发，最方便写成正弦形式 \(x=A\sin\omega t\)，其中 \(t=0\) 时 \(x=0\) 且速度为正。
-
- \(x=\frac{A}{2}\implies \sin\omega t=\frac12 \implies \omega t=\frac{\pi}{6},\qquad \omega=\frac{2\pi}{T} \implies t=\frac{\pi/6}{2\pi/T}=\frac{T}{12}.\) 
-从平衡位置到端点是四分之一个周期，但到 \(A/2\) 不是这段时间的一半，因为简谐振动不是匀速运动；靠近平衡位置时速度最大，所以用时小于 \(T/8\) 是合理的。
-\end{solution}
-
-\begin{exercise}[2011级期末：从半振幅到最大位移的最短时间]
-一质点作简谐振动，周期为 \(T\)。当它由平衡位置沿 \(x\) 轴正方向运动时，从二分之一最大位移处到最大位移处这段路程所需的最短时间是多少？
-\end{exercise}
-
-\begin{solution}
-仍从平衡位置沿正方向出发，写成 \(x=A\sin\omega t\)。第一次到达 \(x=A/2\) 和 \(x=A\) 分别对应
- \(\sin\omega t_1=\frac12 \implies \omega t_1=\frac{\pi}{6},\qquad \omega t_2=\frac{\pi}{2} \implies \Delta t=t_2-t_1 =\frac{\pi/2-\pi/6}{\omega} =\frac{\pi/3}{2\pi/T} =\frac{T}{6}.\) 
-从 \(A/2\) 到 \(A\) 的位移长度只有半个振幅，但靠近端点时速度越来越小，所以用时大于从 \(0\) 到 \(A/2\) 的 \(T/12\)。
-\end{solution}
-
-\begin{exercise}[2010级期末：由位移时间图写简谐振动方程]
-一质点作简谐振动，其 \(x-t\) 图像给出：振幅为 \(\SI{4}{cm}\)，\(t=0\) 时 \(x=-\SI{2}{cm}\) 且质点沿 \(+x\) 方向运动；由图读得角频率为 \(\omega=\frac{7\pi}{12}\,\si{rad/s}\)。用余弦函数写出振动方程。
-\end{exercise}
-
-\begin{solution}
-由图可读出振幅和角频率，再由 \(t=0\) 的位置与速度方向确定初相。设
- \(x=A\cos(\omega t+\varphi_0),\qquad A=\SI{4}{cm},\qquad \omega=\frac{7\pi}{12}\,\si{rad/s}.\) 
-初始位置和速度方向给出
-\[
-x_0=-\SI{2}{cm}=-\frac{A}{2}\implies \cos\varphi_0=-\frac12,\qquad
-v_0=-A\omega\sin\varphi_0>0\implies \sin\varphi_0<0.
-\]
-因此初相要在第三象限，取 \(\varphi_0=\frac{4\pi}{3}\)，也可等价写成 \(-\frac{2\pi}{3}\)。于是 \(x=4\cos\left(\dfrac{7\pi}{12}t-\dfrac{2\pi}{3}\right)\ \si{cm}\)，等价于 \(x=4\cos\left(\dfrac{7\pi}{12}t+\dfrac{4\pi}{3}\right)\,\si{cm}\)。
-
-只由 \(x_0=-A/2\) 不能唯一确定初相，必须再用速度方向选上下半平面；若选成 \(2\pi/3\)，初速度方向会与图像相反。
-\end{solution}
-
-\begin{exercise}[2013级期末：由振动曲线选择简谐振动方程]
-某简谐振动的 \(x-t\) 图像显示：振幅为 \(\SI{2}{cm}\)，\(t=0\) 时 \(x=-\SI{1}{cm}\) 且曲线斜率为负；由图读得周期为 \(T=\SI{1.5}{s}\)。用余弦函数写出该振动方程。
-\end{exercise}
-
-\begin{solution}
-由图可读得 \(A,T\)，再由初位移和初速度方向定初相。
-\[
-\begin{aligned}
-A&=\SI{2}{cm},\qquad
-\omega=\frac{2\pi}{T}=\frac{4\pi}{3}\,\si{rad/s},\\
-x_0&=-\frac{A}{2}\implies \cos\varphi_0=-\frac12,\qquad
-v_0=-A\omega\sin\varphi_0<0\implies \sin\varphi_0>0.
-\end{aligned}
-\]
-所以初相取第二象限的 \(\varphi_0=\frac{2\pi}{3}\)。
-
-因此振动方程为 \(x=2\cos\left(\frac{4\pi}{3}t+\frac{2\pi}{3}\right)\ \si{cm}\)。
-
-选项中常同时混入 \(\omega=2\pi/3\) 和 \(4\pi/3\)。周期先定角频率，初相只负责图像在 \(t=0\) 的位置和斜率。
-\end{solution}
-
-\begin{exercise}[2008级期末：三个相同振幅同频振动的合成]
-一质点同时参与三个同方向、同频率简谐振动：
- \(x_1=A\cos\left(\omega t+\frac{\pi}{3}\right),\quad x_2=A\cos\left(\omega t+\frac{5\pi}{3}\right),\quad x_3=A\cos(\omega t+\pi).\) 
-求合成运动方程。
-\end{exercise}
-
-\begin{solution}
-同方向同频率振动合成可看成相量相加。这里三个相量相隔 \(120^\circ\)，正好闭合为零。
-
-\[
-\begin{aligned}
-x&=x_1+x_2+x_3,\\
-\cos\left(\theta+\frac{\pi}{3}\right)
-+\cos\left(\theta+\frac{5\pi}{3}\right)
-&=-\cos(\theta+\pi),\qquad \theta=\omega t,\\
-x&=A[-\cos(\omega t+\pi)+\cos(\omega t+\pi)]=0.
-\end{aligned}
-\]
-所以合振动为 \(x=0\)。不能把振幅直接相加成 \(3A\)，因为相位不同；三个等长相量首尾相接正好围成闭合三角形。
-\end{solution}
-
-\begin{exercise}[2010级期末：两个反相同频振动的合成]
-一物体同时参与同一直线上的两个简谐振动：
- \(x_1=0.05\cos\left(4\pi t+\frac{\pi}{3}\right)\quad(\mathrm{SI}),\) 
- \(x_2=0.03\cos\left(4\pi t-\frac{2\pi}{3}\right)\quad(\mathrm{SI}).\) 
-求合振动方程。
-\end{exercise}
-
-\begin{solution}
-两振动同方向、同频率，可以用相量相加。两初相差 \(\Delta\varphi=\frac{\pi}{3}-\left(-\frac{2\pi}{3}\right)=\pi\)，说明二者反相。反相时合振幅等于两振幅之差，\(A=0.05-0.03=0.02\ \si{m}\)。合相量方向与较大的 \(x_1\) 相同，因此初相为 \(\pi/3\)。
-
-所以合振动方程为 \(x=0.02\cos\left(4\pi t+\frac{\pi}{3}\right)\quad(\mathrm{SI})\)。这题不能把振幅加成 \(0.08\,\si{m}\)，因为两振动相位相差 \(\pi\)，始终一正一反地抵消。
-\end{solution}
-
-\begin{exercise}[2006级期末：由速度图像读简谐振动初相]
-用余弦函数
- \(x=A\cos(\omega t+\varphi_0)\) 
-描述一简谐振子的振动。其速度--时间关系曲线显示：\(t=0\) 时 \(v=-v_m/2\)，且此后速度先向更负的方向变化。求振动的初相位。
-
-\begin{center}
-\includegraphics[width=0.28\linewidth]{pdf-exercises/pdf2006-q07-vt-phase.png}
-\end{center}
-\end{exercise}
-
-\begin{solution}
-由速度图像给出的信息，要和余弦形式的位移方程接起来，因此先把位移方程求导，再用 \(t=0\) 时速度的大小和变化趋势确定初相。
-
-\[
-\begin{aligned}
-x&=A\cos(\omega t+\varphi_0),\qquad
-v=-A\omega\sin(\omega t+\varphi_0),\qquad
-v_m=A\omega,\\
-v(0)&=-\frac12v_m\implies \sin\varphi_0=\frac12,\qquad
-\dot v=-A\omega^2\cos(\omega t+\varphi_0),\\
-\dot v(0)&<0\implies \cos\varphi_0>0
-\implies \varphi_0=\frac{\pi}{6}.
-\end{aligned}
-\]
-只由 \(\sin\varphi_0=1/2\) 会有 \(\pi/6\) 和 \(5\pi/6\) 两个候选；再看速度曲线在 \(t=0\) 后是下降还是上升，才能定象限。
-\end{solution}
-
-\begin{exercise}[2006级期末：由两振动曲线判断相位超前量]
-已知两个同频简谐振动曲线如图所示。由图可读出，\(x_1\) 先达到同一相位状态，\(x_2\) 相对 \(x_1\) 滞后约 \(3T/8\)。求 \(x_1\) 的相位比 \(x_2\) 的相位超前多少。
-
-\begin{center}
-\includegraphics[width=0.30\linewidth]{pdf-exercises/pdf2006-q16-phase-lead.png}
-\end{center}
-\end{exercise}
-
-\begin{solution}
-同频简谐振动的相位差可以从同一特征状态的时间差读出，也可以从 \(t=0\) 时的旋转矢量位置读出。图中两曲线周期相同，因此相位差等于“时间差占周期的比例”乘 \(2\pi\)。
-
-从图中读出，\(x_1\) 先达到同一相位状态，\(x_2\) 滞后约 \(\frac38T\)。于是
- \(\Delta\varphi=2\pi\frac{\Delta t}{T} =2\pi\cdot\frac38 =\frac{3\pi}{4}.\) 
-所以 \(x_1\) 的相位比 \(x_2\) 超前 \(\frac{3\pi}{4}\)。“谁的峰先出现”对应“谁相位超前”；横向时间差必须先除以周期，再乘 \(2\pi\)，才是相位差。
-\end{solution}
-
-\begin{exercise}[2005级期末：由旋转矢量图读初相和振动方程]
-一简谐振动的旋转矢量图如图所示，振幅矢量长 \(\SI{2}{cm}\)，角速度为 \(\omega=\pi\,\si{rad/s}\)，且 \(t=0\) 时振幅矢量与 \(+x\) 轴夹角为 \(\pi/4\)。求该简谐振动的初相和振动方程。
-
-\begin{center}
-\includegraphics[width=0.24\linewidth]{pdf-exercises/pdf2005-q15-rotating-vector.png}
-\end{center}
-\end{exercise}
-
-\begin{solution}
-旋转矢量法中，振动位移就是振幅矢量在 \(x\) 轴上的投影。图中 \(t=0\) 时振幅矢量与 \(+x\) 轴夹角为 \(\pi/4\)，所以这就是余弦表达式的初相。
-
-由图可读出
-\[
-A=\SI{2}{cm}=\SI{2.0e-2}{m},\qquad
-\omega=\pi\,\si{rad/s},\qquad
-\varphi_0=\frac{\pi}{4}
-\implies
-x=2.0\times10^{-2}\cos\left(\pi t+\frac{\pi}{4}\right)\ \si{m}.
-\]
-
-初相读的是 \(t=0\) 的矢量位置，不是图中以后某时刻的转过角；振幅要从厘米换成 SI 单位的米。
-\end{solution}
-
-\section{从能量守恒再推回动力学方程}
-
-这一节要解决的问题是：能量守恒能不能反过来推出简谐振动的动力学方程？
-
-这里最值得看的不是代数技巧，而是反向逻辑：如果你已经知道理想弹簧振子的总能量只会在“质点的运动”与“弹簧的形变”之间互相转换，那么把这本总账对时间求导，就应该能重新长回回复力方程。
-
-对理想弹簧振子，机械能守恒写成
-\[
-\begin{aligned}
-E&=\frac{1}{2}m\left(\dv{x}{t}\right)^2+\frac{1}{2}kx^2=\text{常量}\\
-\implies\quad
-\dv{t}\left[\frac{1}{2}m\left(\dv{x}{t}\right)^2+\frac{1}{2}kx^2\right]&=0\\
-\implies\quad
-m\dv{x}{t}\dv[2]{x}{t}+kx\dv{x}{t}&=0\\
-\implies\quad
-\dv{x}{t}\left(m\dv[2]{x}{t}+kx\right)&=0\\
-\dv{x}{t}\neq 0\ &\implies\ m\dv[2]{x}{t}+kx=0\\
-&\implies\ \dv[2]{x}{t}+\frac{k}{m}x=0.
-\end{aligned}
-\]
-在端点瞬间虽然 \(\dv{x}{t}=0\)，但由于运动是连续的，动力学方程仍可延续成立。所以我们就从能量守恒重新推回了简谐振动的动力学方程。
-
-\begin{note}
-这条推导特别适合用来建立理解：简谐振动不是“位移公式碰巧长得像余弦”，而是由回复力、能量守恒和运动连续性共同支撑起来的一个完整模型。也就是说，\(\dv[2]{x}{t}+\frac{k}{m}x=0\) 和 \(E=\frac12 mv^2+\frac12 kx^2\) 不是两条互不相干的结论，而是同一个物理模型从“力学语言”和“能量语言”写出的两张脸。
-\end{note}
 
 \section{同方向同频率简谐振动的合成}
 
-这一节要解决的问题是：两个简谐振动叠在一起以后，什么时候结果仍然是一个简谐振动？
-
-\bridge{什么时候会遇到"两个振动叠加"？最典型的场景：一根弦上同时存在入射波和反射波，弦上某点的位移就是两个振动之和；又如声学中两个音叉同时发声，空气中某点的压强变化是两个振动的叠加。所以振动合成不是纯数学游戏，而是分析波的干涉和驻波的前置工具。}
-
-这里最该先抓住的物理条件，是\textbf{同频率}。只要频率相同，两振动的相位差就会保持不变；而相位差一旦固定，它们对应的旋转矢量之间的夹角也就固定，于是两矢量的和仍会以同样的角速度匀速转动。既然“投影来自一个匀速转动的合矢量”这件事还在，那么合成后的结果就仍然会是一个同频率的简谐振动。换句话说，下面这些公式不是凭空记忆的结果，而只是“固定夹角的两个旋转矢量相加”翻译成代数后的样子。
-
-若同一个质点同时参与两个同方向、同频率的简谐振动
-\[
-\begin{aligned}
-x_1&=A_1\cos(\omega t+\varphi_1),\qquad
-x_2=A_2\cos(\omega t+\varphi_2),\\
-x&=x_1+x_2=A\cos(\omega t+\varphi),\\
-\text{且}\quad
-A^2&=A_1^2+A_2^2+2A_1A_2\cos(\varphi_2-\varphi_1),\\
-\tan\varphi&=\frac{A_1\sin\varphi_1+A_2\sin\varphi_2}{A_1\cos\varphi_1+A_2\cos\varphi_2}.
-\end{aligned}
-\]
-则合振动仍然是同频率的简谐振动。
-
-\begin{note}
-这里真正决定能不能“合成后仍是简谐振动”的，是\textbf{同方向、同频率}这两个条件。方向不同会让轨迹进入平面；频率不同会让相位差不断变化，于是合成结果一般不再是一条单纯余弦。
-\end{note}
-
-\begin{exercise}[如何快速判断合振幅]
-若两振动振幅相同，均为 \(A\)，且相位差为 \(\Delta\varphi\)，求合振幅。
-\end{exercise}
-
-\begin{solution}
-由合振幅公式与半角恒等式可得
- \(A_{\text{合}}^2=A^2+A^2+2A^2\cos\Delta\varphi =2A^2(1+\cos\Delta\varphi) =4A^2\cos^2\frac{\Delta\varphi}{2} \implies A_{\text{合}}=2A\cos\frac{\Delta\varphi}{2}.\) 
-
+\begin{theorem}
+\begin{align*}
+x &= x_1 + x_2 = A_1 \cos(\omega t + \phi_1) + A_2 \cos(\omega t + \phi_2)\\
+&=A_1 \cos(\omega t)\cos\phi_1 - A_1 \sin(\omega t)\sin\phi_1+A_2 \cos(\omega t)\cos\phi_2 - A_2 \sin(\omega t)\sin\phi_2\\
+&=\Big( A_1 \cos\phi_1 + A_2 \cos\phi_2 \Big) \cos(\omega t) - \Big( A_1 \sin\phi_1 + A_2 \sin\phi_2 \Big) \sin(\omega t)\\
+&=\sqrt{A_1^2+ A_2^2 + 2A_1A_2(\cos\phi_1\cos\phi_2+\sin\phi_1\sin\phi_2)} \cos\left[ \omega t + \arctan\left( \frac{A_1 \sin\phi_1 + A_2 \sin\phi_2}{A_1 \cos\phi_1 + A_2 \cos\phi_2} \right) \right]\\
+&= \sqrt{A_1^2 + A_2^2 + 2A_1A_2\cos(\phi_2 - \phi_1)} \cos(\omega t + \phi),~\tan\phi=\frac{A_1 \sin\phi_1 + A_2 \sin\phi_2}{A_1 \cos\phi_1 + A_2 \cos\phi_2}
+\end{align*}
+若两振动振幅相同，均为 \(A\)，且相位差为 \(\Delta\varphi\)，由合振幅公式与半角恒等式可得
+ \[A_{\text{合}}^2=A^2+A^2+2A^2\cos\Delta\varphi =2A^2(1+\cos\Delta\varphi) =4A^2\cos^2\frac{\Delta\varphi}{2} \implies A_{\text{合}}=2A\cos\frac{\Delta\varphi}{2}.\]
 所以同相时 \(\Delta\varphi=0\)，合振幅最大为 \(2A\)；反相时 \(\Delta\varphi=\pi\)，合振幅变成零。这正对应“完全相长”和“完全相消”。
-\end{solution}
+\end{theorem}
+本质上也是矢量的合成。比如一质点同时参与三个同方向、同频率简谐振动：
+ \(x_1=A\cos\left(\omega t+\frac{\pi}{3}\right),\quad x_2=A\cos\left(\omega t+\frac{5\pi}{3}\right),\quad x_3=A\cos(\omega t+\pi).\) 同方向同频率振动合成可看成矢量相加。这里三个矢量相隔 \(120^\circ\)，正好合振动为 \(x=0\)。三个等长相量首尾相接正好围成闭合三角形。
+\begin{center}
+\includegraphics[width=0.8\linewidth]{pdf-exercises/1.png}
+\end{center}
 
-\begin{exercise}[2005级期末：答案页疑误时怎样按题面合成简谐振动]
-两个同方向同频率的简谐振动为
- \(x_1=6\times10^{-2}\cos\left(5t+\frac{\pi}{2}\right)\quad(\mathrm{SI}),\) 
- \(x_2=2\times10^{-2}\cos(\pi-5t)\quad(\mathrm{SI}).\) 
-求合振动的振幅和初相。
-\end{exercise}
-
-\begin{solution}
-两个振动同方向、同频率，可以合成为 \(x=A\cos(5t+\varphi)\)。先把两个式子都化成同一个 \(5t\) 的标准形式。第二式中
-\[
-\begin{aligned}
-\cos(\pi-5t)&=\cos(5t-\pi)=-\cos 5t,\\
-x_1&=6\times10^{-2}\cos\left(5t+\frac{\pi}{2}\right)
-=-6\times10^{-2}\sin 5t,\\
-x_2&=-2\times10^{-2}\cos 5t,\\
-x&=-2\times10^{-2}\cos 5t-6\times10^{-2}\sin 5t.
-\end{aligned}
-\]
-再与 \(A\cos(5t+\varphi)=A\cos5t\cos\varphi-A\sin5t\sin\varphi\) 比较，得到
-\[
-\begin{aligned}
-A\cos\varphi&=-2\times10^{-2},\qquad
-A\sin\varphi=6\times10^{-2},\\
-A&=\sqrt{(2\times10^{-2})^2+(6\times10^{-2})^2}
-=2\sqrt{10}\times10^{-2}\,\mathrm{m}
-\approx 6.32\times10^{-2}\,\mathrm{m}.
-\end{aligned}
-\]
-初相的象限由两个投影一起决定。由 \(\cos\varphi=-\dfrac{1}{\sqrt{10}},\ \sin\varphi=\dfrac{3}{\sqrt{10}}\)，得 \(\varphi=\pi-\arctan 3\approx 1.89\,\mathrm{rad}\)。
-按题面计算，合振幅为 \(A=2\sqrt{10}\times10^{-2}\,\mathrm{m}\)，初相为 \(\varphi=\pi-\arctan 3\)。
-
-原答案页给出的 \(4\times10^{-2}\,\mathrm{m}\) 和 \(\pi/2\) 与当前 PDF 题面不一致；该答案更像是把第二个振动误作与第一个振动反向同相位的情形，这里以题面公式为准。
-\end{solution}
-
-\begin{remark}
-做这类题时，不必先展开一大串三角函数，而要看相位差是否固定。只要相位差固定、频率又相同，合成后就还是一个同频简谐振动。
-\end{remark}
-
-\section{同方向不同频率简谐振动的合成}
-
-这一节要解决的问题是：如果两个同方向振动的频率不同，为什么合成结果一般不再是简谐振动？
-
-设
- \(x_1=A_1\cos(\omega_1 t+\varphi_1),\qquad x_2=A_2\cos(\omega_2 t+\varphi_2), \qquad \Delta\varphi=(\omega_2-\omega_1)t+(\varphi_2-\varphi_1).\) 
-若 \(\omega_1\neq\omega_2\)，则相位差会随时间不断变化。这意味着“合振幅”和“合初相”都不再是常量，因此合成结果一般不能再写成单一的 \(x=A\cos(\omega t+\varphi)\) 形式。
-
-也就是说，这类合成的结果通常仍然是往复运动，但不再是一个标准的简谐振动。只有在特殊情况下，例如两频率非常接近、振幅相等时，才会出现特别典型的现象，那就是拍。
-
-\begin{note}
-“不同频率合成后一般不是简谐振动”和“它仍然可能是周期性的”不是矛盾的话。简谐振动是比“周期振动”更严格的一类；不同频率的叠加即使最后还能重复，也往往已经不是单一余弦模型了。
-\end{note}
 
 \section{拍与拍频}
 
-这一节要解决的问题是：为什么两个频率很接近的振动叠加后，我们听到或看到的不是单纯“更快的振动”，而是强弱一阵一阵地变化？
-
-若两个振动振幅相同、频率很接近，并且初相相同：
-\[
-\begin{aligned}
-x_1&=A\cos(2\pi\nu_1 t),\qquad
-x_2=A\cos(2\pi\nu_2 t),\\
-x&=2A\cos\left[\pi(\nu_2-\nu_1)t\right]
-\cos\left[2\pi\frac{\nu_1+\nu_2}{2}t\right]\\
-\implies A_{\text{env}}&=2A\abs{\cos\left[\pi(\nu_2-\nu_1)t\right]}, \\
-\nu&\approx \frac{\nu_1+\nu_2}{2},\qquad
-\nu_{\text{拍}}=\abs{\nu_2-\nu_1},\qquad
-T_{\text{拍}}=\frac{1}{\abs{\nu_2-\nu_1}}.
-\end{aligned}
-\]
-
-\begin{remark}
-从第一行到第二行用到了三角恒等式（和差化积）：
- \(\cos\alpha+\cos\beta=2\cos\frac{\alpha-\beta}{2}\cos\frac{\alpha+\beta}{2}.\) 
-令 \(\alpha=2\pi\nu_1 t\)，\(\beta=2\pi\nu_2 t\)，代入即得。这条恒等式在高中三角函数中出现过，如果忘了可以从 \(\cos(A\pm B)\) 的展开式相加推出。
-\end{remark}
-这个式子告诉我们：合振动像一个“快振动”外面套着一个“慢变化的振幅外壳”，就能直接看到“忽强忽弱”的来源。
-
-\bridge{“拍”并不是振动真的停了又重新开始，而是两个近频振动有时同相、有时反相，于是合振幅周期性变大变小。这个现象的主角不是位移本身，而是“合振幅在慢慢呼吸”。}
-
-用旋转矢量法看更直观：两个几乎等长的旋转矢量转得几乎一样快，所以它们的夹角会缓慢变化。两矢量同向时，合矢量最长，振幅最强；两矢量反向时，合矢量最短，振幅最弱。这种“缓慢转开的相对夹角”，正是拍频的来源。
+\begin{definition}[拍与拍频]
+当两个简谐运动的方向相同，但频率存在微小差异时，合成后的运动将不再是单纯的简谐运动，而是会呈现出一种振幅随时间作周期性缓变的有节奏的强弱交替现象——这就是波动学中著名的拍（Beats）现象。
+\[x_1=A\cos(2\pi\nu_1 t),x_2=A\cos(2\pi\nu_2 t)\implies x=2A\cos\left[\pi(\nu_2-\nu_1)t\right]\cos\left[2\pi\frac{\nu_1+\nu_2}{2}t\right]\]
+方程尾部 $\cos 2\pi \frac{\nu_2 + \nu_1}{2} t$ 代表了高频的快速振动。它决定了质点往复运动的实际快慢。故合振动主频率$$\nu = \frac{\nu_1 + \nu_2}{2}$$
+由于 $|\nu_2 - \nu_1| \ll \nu_1 + \nu_2$，方程前部的括号项 $\cos 2\pi \frac{\nu_2 - \nu_1}{2} t$ 随时间变化得极其缓慢。我们可以将这部分视作整体，定义为合运动的瞬时视在振幅 $A(t)$：$$A(t) = \left| 2A_1 \cos 2\pi \frac{\nu_2 - \nu_1}{2} t \right|$$，这个变化的振幅完成了一次“从强到弱、再从弱到强”就是一个周期（拍的周期） ，所以$T_{\text{拍}}$ 严格等于该项余弦函数周期的二分之一：$$T_{\text{拍}} = \frac{1}{2} \cdot \left( \frac{1}{\frac{\nu_2 - \nu_1}{2}} \right) = \boxed{\frac{1}{\nu_2 - \nu_1}}$$根据频率与周期互为倒数的定义，合振动强弱交替的瞬时频率（即拍频）为：$$\nu_{\text{拍}} = \frac{1}{T_{\text{拍}}} = \boxed{|\nu_2 - \nu_1|}$$
+\end{definition}
 
 \begin{note}
-这里最容易混淆的是两个“频率”：
+在平面直角坐标系内，引入两个分简谐运动对应的旋转矢量 $\vec{A}_1$ 和 $\vec{A}_2$：由于两者的角速度不相等（$\omega_2 > \omega_1$）。如果我们站在矢量 $\vec{A}_1$ 的视角上看（以 $\vec{A}_1$ 为参考系），矢量 $\vec{A}_2$ 就会以极慢的相对角速度 $\Delta \omega = \omega_2 - \omega_1$ 顺时针或逆时针悄悄转圈。
 \begin{itemize}
- \item 你真正看到的快振动频率，大约是 \(\dfrac{\nu_1+\nu_2}{2}\)；
- \item 你感受到的“忽强忽弱”的变化频率，才是拍频 \(\abs{\nu_2-\nu_1}\)。
+\item 同向重合时（相位差 $\Delta \phi = 2k\pi$）：两矢量首尾相连、并向延伸，此时合振动振幅 $\vec{A}$ 叠加达到极大值 $2A_1$（相长干涉，声音最响）。
+\item 反向重合时（相位差 $\Delta \phi = (2k+1)\pi$）：两矢量背道而驰、彼此拉跨，此时合振动振幅 $\vec{A}$ 抵消达到极小值 $0$（相消干涉，声音最弱）。
 \end{itemize}
-前者决定“振得多快”，后者决定“强弱变化多快”。
+由于 $\vec{A}_2$ 相对于 $\vec{A}_1$ 旋转一周（转过 $2\pi$ 弧度）就对应完成一次“强-弱-强”的拍流转，其对应的拍的周期自然为：$$T_{\text{拍}} = \frac{2\pi}{\omega_2 - \omega_1} = \frac{2\pi}{2\pi \nu_2 - 2\pi \nu_1} = \frac{1}{\nu_2 - \nu_1}$$对应的拍频自然收拢为：$$\nu_{\text{拍}} = \nu_2 - \nu_1$$
 \end{note}
 
 \begin{exercise}[拍频听起来在说什么]
@@ -2287,107 +1711,64 @@ T_{\text{拍}}=\frac{1}{\abs{\nu_2-\nu_1}}.
 
 \section{相互垂直的合成}
 
-这一节要解决的问题是：如果两个简谐振动不是沿同一直线，而是沿互相垂直的两个方向同时发生，质点会走出什么轨迹？
+\subsection{同频率相互垂直简谐运动的合成}
 
-这时最该先换掉的一点，是“位移还能直接当标量相加”的想法。沿同一直线时，我们只需比较一个坐标；沿互相垂直的两个方向振动时，同一个质点同时拥有 \(x(t)\) 和 \(y(t)\) 两个分量，真正要看的不再是“总位移是不是还是一条余弦”，而是\textbf{这个点在平面里走出的轨迹是什么形状}。因此最自然的动作不是继续硬凑一个一维公式，而是把 \(x(t)\)、\(y(t)\) 看成一对参数方程，再把时间消去。
+设两个方向的振动方程分别为：\[x = A_1 \cos(\omega t + \phi_1) \implies \cos(\omega t + \phi_1) = \frac{x}{A_1},~y = A_2 \cos\big[ (\omega t + \phi_1) + (\phi_2 - \phi_1) \big]\]
+令核心中间变量 $\theta = \omega t + \phi_1$，相位差 $\Delta \phi = \phi_2 - \phi_1$:
+$$\frac{y}{A_2} = \cos(\theta + \Delta \phi)= \cos\theta \cos\Delta \phi - \sin\theta \sin\Delta \phi $$
+已知 $\cos\theta = \frac{x}{A_1}$。将其直接代入，并平方消去正弦：
+$$\frac{y}{A_2} = \frac{x}{A_1} \cos\Delta \phi - \sin\theta \sin\Delta \phi\implies\sin^2\theta \sin^2\Delta \phi = \left( \frac{x}{A_1} \cos\Delta \phi - \frac{y}{A_2} \right)^2$$
+将左侧的 $\sin^2\theta$ 替换为 $1 - \cos^2\theta$：
+$$(1 - \cos^2\theta) \sin^2\Delta \phi = \frac{x^2}{A_1^2} \cos^2\Delta \phi + \frac{y^2}{A_2^2} - \frac{2xy}{A_1 A_2} \cos\Delta \phi$$再次将已知的 $\cos^2\theta = \frac{x^2}{A_1^2}$ 代入左侧：$$\left( 1 - \frac{x^2}{A_1^2} \right) \sin^2\Delta \phi = \frac{x^2}{A_1^2} \cos^2\Delta \phi + \frac{y^2}{A_2^2} - \frac{2xy}{A_1 A_2} \cos\Delta \phi$$整理：$$\sin^2\Delta \phi = \frac{x^2}{A_1^2} \underbrace{\left( \cos^2\Delta \phi + \sin^2\Delta \phi \right)}_{=1} + \frac{y^2}{A_2^2} - \frac{2xy}{A_1 A_2} \cos\Delta \phi$$也就是$$\boxed{\frac{x^2}{A_1^2} + \frac{y^2}{A_2^2} - \frac{2xy}{A_1 A_2} \cos(\phi_2 - \phi_1) = \sin^2(\phi_2 - \phi_1)}$$
+该方程的几何图形取决于两分振动的初始相位差 $\Delta \phi = \phi_2 - \phi_1$。以下为三种典型边界情况的代数讨论：
+\begin{enumerate}
+    \item 相位差 $\Delta \phi = 0$ 或 $2k\pi$：将 $\cos(0) = 1, \sin(0) = 0$ 代入：$$\frac{x^2}{A_1^2} + \frac{y^2}{A_2^2} - \frac{2xy}{A_1 A_2} = 0 \implies \left( \frac{x}{A_1} - \frac{y}{A_2} \right)^2 = 0\implies y = \frac{A_2}{A_1} x$$此时合运动的位移大小为 $S = \sqrt{x^2 + y^2} = \sqrt{A_1^2 + A_2^2} \cos(\omega t + \phi_1)$，合运动仍为同频率简谐运动。
+    \item 相位差 $\Delta \phi = \pi$ 或 $(2k+1)\pi$：将 $\cos(\pi) = -1, \sin(\pi) = 0$ 代入方程：$$\frac{x^2}{A_1^2} + \frac{y^2}{A_2^2} + \frac{2xy}{A_1 A_2} = 0 \implies \left( \frac{x}{A_1} + \frac{y}{A_2} \right)^2 = 0$$化简得到另一条斜率为负的直线方程：$$y = -\frac{A_2}{A_1} x$$
+    \item 相位差 $\Delta \phi = \pm \frac{\pi}{2}$：将 $\cos\left(\pm\frac{\pi}{2}\right) = 0, \sin\left(\pm\frac{\pi}{2}\right) = 1$ 代入方程（5），交叉项消除，退化为标准椭圆方程：$$\frac{x^2}{A_1^2} + \frac{y^2}{A_2^2} = 1$$若分振幅相等（$A_1 = A_2 = A$），该轨迹退化为圆方程：$x^2 + y^2 = A^2$。质点在椭圆面上的旋转方向（顺时针或逆时针）由相位差的正负号唯一决定。
+\end{enumerate}
 
-先看最重要的一类：两个互相垂直、但频率相同的简谐振动满足
-\[
-\begin{aligned}
-x&=A_1\cos(\omega t+\varphi_1),\qquad
-y=A_2\cos(\omega t+\varphi_2),\\
-\text{消去时间}\quad
-\implies\quad
-\left(\frac{x}{A_1}\right)^2+\left(\frac{y}{A_2}\right)^2
--2\frac{xy}{A_1A_2}\cos\Delta\varphi
-&=\sin^2\Delta\varphi,
-\end{aligned}
-\]
-其中 \(\Delta\varphi=\varphi_2-\varphi_1\)。
+\subsection{不同频率相互垂直简谐运动的合成：李萨如图形}
 
-这个方程说明：同频垂直合成时，轨迹一般是一条椭圆；而特殊相位差会让它退化成更熟悉的图形：
-\begin{itemize}
- \item 当 \(\Delta\varphi=0\) 或 \(\pi\) 时，轨迹是一条直线；
- \item 当 \(\Delta\varphi=\frac{\pi}{2}\) 且 \(A_1=A_2\) 时，轨迹是圆；
- \item 当 \(\Delta\varphi=\frac{\pi}{2}\) 但 \(A_1\neq A_2\) 时，轨迹是椭圆。
-\end{itemize}
-
-\begin{note}
-这里最该建立的直觉是：\textbf{频率决定图形会不会稳定重复，相位差决定图形朝哪边倾斜，振幅比决定图形拉得多扁多长。}所以看到圆、椭圆、斜直线时，不要只背结论，要立刻反推这三类信息。
-\end{note}
-
-\section{李萨如图形：用轨迹读频率比和相位差}
-
-这一节要解决的问题是：当两个互相垂直的简谐振动频率不同，为什么还能从图形反推出频率比？
-
-设
- \(x=A_1\cos(\omega_1 t+\varphi_1),\qquad y=A_2\cos(\omega_2 t+\varphi_2),\qquad \frac{\omega_1}{\omega_2}=\frac{m}{n}\) 
-为整数比时，合成轨迹会闭合成一条稳定曲线，称为\textbf{李萨如图形}。它常用来判断两个振动的频率关系和相位差：频率比决定“有几瓣、几圈”，相位差决定图形是倾斜、对称还是扭转。
-
-\begin{note}
-若频率比不是整数比，轨迹一般不会闭合，而是不断在某个区域里填充。也正因此，“图形是否闭合”本身就是判断频率关系的一条强信号。
-\end{note}
-
-先抓住几种最典型的情形：
-\begin{itemize}
- \item 若 \(\omega_1=\omega_2\) 且相位差为 \(0\) 或 \(\pi\)，轨迹退化成一条直线；
- \item 若 \(\omega_1=\omega_2\) 且相位差为 \(\pi/2\)，并且两振幅相等，轨迹是圆；振幅不等时则是椭圆；
- \item 若频率比为 \(2:1\)、\(3:2\) 等整数比，图形会出现双瓣、三瓣等更复杂的封闭花样。
-\end{itemize}
-
-\begin{remark}
-看李萨如图形时，不要急着写消参方程，而要问：它想帮我判断的是频率比，还是相位差？若只想判断“同频还是不同频”，图形是否闭合、是否是一条直线或椭圆，往往就已经给了很强的信号。
-\end{remark}
+当两个相互垂直的简谐运动角频率不相等（$\omega_1 \neq \omega_2$）时，运动方程改写为：$$x = A_1 \cos(\omega_1 t + \phi_1),~~y = A_2 \cos(\omega_2 t + \phi_2)$$
+只有当两个分振动的角频率（或频率、周期）之比严格满足整数比（有理数比）时，质点的总运动轨迹才会随时间演入重合，从而形成一条闭合且固定的几何曲线：$$\frac{\omega_1}{\omega_2} = \frac{\nu_1}{\nu_2} = \frac{m}{n} \quad (m, n \in \mathbb{Z}^+)$$在这种同频率成整数比的约束下，质点在平面内所描绘出的封闭稳定的运动轨迹曲线称为李萨如图形。
 
 \section{阻尼振动}
+\begin{definition}[阻尼振动]
+    阻尼振动（Damped Oscillations）是指振幅（或能量）随时间逐渐减小的振动。原因：
+    \begin{itemize}
+    \item 摩擦阻尼（摩擦或介质阻力）的存在：系统在介质中运动时，由于摩擦和碰撞将机械能转化为内能。
+    \item 辐射阻尼：振动质点引起邻近质点振动，以波的形式向周围空间传播和辐射能量。
+    \end{itemize}
+    以受到线性阻力的水平弹簧振子模型为例，当物体运动速度不太大时，所受的阻力 $\vec{f}_\gamma$ 与瞬时速度 $\vec{v}$ 成正比，方向相反：
+    $$\vec{f}_\gamma = -\gamma \vec{v} \qquad (\gamma \text{ 为常数})$$
+    根据牛顿第二定律，系统同时受弹性回复力 $\vec{F} = -k\vec{x}$ 与阻力 $\vec{f}_\gamma$ 的作用：$$m \frac{\mathrm{d}^2x}{\mathrm{d}t^2} = -kx - \gamma v = -kx - \gamma \frac{\mathrm{d}x}{\mathrm{d}t}$$移项整理得到阻尼振动的标准运动微分方程：$$\frac{\mathrm{d}^2x}{\mathrm{d}t^2} + \frac{\gamma}{m} \frac{\mathrm{d}x}{\mathrm{d}t} + \frac{k}{m} x = 0$$引入两个独立的物理特征常数：
+    \begin{itemize}
+    \item 阻尼常数（表征阻尼的强弱）：$\beta = \frac{\gamma}{2m} \implies 2\beta = \frac{\gamma}{m}$
+    \item 无阻尼固有角频率：$\omega_0^2 = \frac{k}{m}$
+    \end{itemize}
+    微分方程统一写作：\[\boxed{\frac{\mathrm{d}^2x}{\mathrm{d}t^2} + 2\beta \frac{\mathrm{d}x}{\mathrm{d}t} + \omega_0^2 x = 0}\]根据阻尼因子 $\beta$ 与系统固有角频率 $\omega_0$ 的量值相对大小，微分方程的特征根呈现三种完全不同的运动形态：
+    \begin{enumerate}
+    \item 过阻尼（$\beta^2 > \omega_0^2$）
+    \item 临界阻尼（$\beta^2 = \omega_0^2$）
+    \item 弱阻尼（$\beta^2 < \omega_0^2$）
+    \end{enumerate}
+\end{definition}
 
-这一节要解决的问题是：为什么真实世界里的振动不会永远等振幅地持续下去？
+\begin{definition}[弱阻尼]
+阻尼系数较小时，系统作减幅振动。此时方程的通解为：$$\boxed{x = A e^{-\beta t} \cos(\omega t + \phi)}$$
+    \begin{itemize}
+    \item 缓变包络振幅：系统的振幅项 $A(t) = A e^{-\beta t}$ 随时间按指数规律迅速减小。阻尼越大，减幅越迅速。
+    \item 角频率：弱阻尼状态下的减幅振动角频率 $\omega$ 小于自由振动的固有角频率 $\omega_0$：$$\omega = \sqrt{\omega_0^2 - \beta^2}$$
+    \item 阻尼振动的周期 $T$：$$T = \frac{2\pi}{\omega} = \frac{2\pi}{\sqrt{\omega_0^2 - \beta^2}} > \frac{2\pi}{\omega_0}$$阻尼越大，振动周期 $T$ 越明显地大于自由振动周期。
+    \end{itemize}
+\end{definition}
+\begin{definition}[强阻尼]
+过阻尼（$\beta^2 > \omega_0^2$）当介质阻力极大时，根号内部变为虚数。质点失去往复振荡的动力学条件，运动表现为非周期性的缓变松弛过程，即从最大位移处极为缓慢地回到平衡位置，不再作往复运动。
+\end{definition}
+\begin{definition}[临界阻尼]
+当 $\beta^2 = \omega_0^2$ 时，系统处于“临界阻尼”情况。这是质点不作往复运动的一个极限边界条件。在所有非周期的松弛运动中，临界阻尼能让质点以最快的速度返回平衡位置而不发生发生越位振荡。
+\end{definition}
 
-真实振动几乎都会损失能量。摩擦、介质阻力和向周围辐射机械波，都会让系统把机械能慢慢送给外界，于是振幅逐渐减小。这类振动称为\textbf{阻尼振动}。
-
-若振动速度不太大，最常见、也最容易处理的近似就是：阻力大小与速度成正比、方向与速度相反。这个模型之所以自然，是因为它正好把“动得越快，漏能越快”压成最简单的一条线性关系。于是回复力、阻力和惯性三者一并进入方程后，新增的那一项只能长成 \(-\gamma \dot x\) 的样子。先把这层物理图景装进去，再看下面的方程，\(\gamma\dot x\) 就不会像一块突然冒出来的补丁。
-
-\bridge{下面的方程是一个二阶常系数线性齐次ODE。如果你学过微积分但还没系统学ODE，只需知道：对这类方程，试探解 \(x=\mathrm{e}^{rt}\) 代入后会得到一个关于 \(r\) 的二次方程（特征方程）。\(r\) 的两个根是实数还是复数，决定了解是振荡衰减还是单调衰减。下面直接给出弱阻尼情况的结果。}
-
-\begin{remark}
-从复数根到实数解的关键一步是\textbf{欧拉公式}：\(\mathrm{e}^{i\theta}=\cos\theta+i\sin\theta\)。当特征方程的根为 \(r=-\beta\pm i\omega_d\) 时，通解形式上是 \(x=C_1\mathrm{e}^{(-\beta+i\omega_d)t}+C_2\mathrm{e}^{(-\beta-i\omega_d)t}\)。利用欧拉公式展开并取实部，就得到 \(x=A_0\mathrm{e}^{-\beta t}\cos(\omega_d t+\varphi_0)\)。这里 \(A_0\) 和 \(\varphi_0\) 是由初始条件决定的两个自由常数——恰好对应二阶ODE通解应有的两个待定常数。
-\end{remark}
-
-当阻力与速度近似成正比时，方程、记号替换与弱阻尼结果可压成
-
-\bridge{符号提醒：本书用 \(\beta=\gamma/(2m)\) 表示阻尼系数（有些教材直接用 \(\gamma\) 或 \(\delta\)）。后面受迫振动和共振公式里出现的 \(\beta\) 都是同一个量。}
-\[
-\begin{aligned}
-m\dv[2]{x}{t}+\gamma\dv{x}{t}+kx&=0,\qquad
-2\beta=\frac{\gamma}{m},\qquad
-\omega_0=\sqrt{\frac{k}{m}},\\
-\implies\quad
-\dv[2]{x}{t}+2\beta\dv{x}{t}+\omega_0^2x&=0,\\
-\beta<\omega_0
-\implies
-x&=A_0\mathrm{e}^{-\beta t}\cos(\omega_d t+\varphi_0),\qquad
-\omega_d=\sqrt{\omega_0^2-\beta^2},\\
-T_d&=\frac{2\pi}{\omega_d}
-=\frac{2\pi}{\sqrt{\omega_0^2-\beta^2}}
->\frac{2\pi}{\omega_0}.
-\end{aligned}
-\]
-也就是说，有阻尼时振得会略慢一些。
-
-进一步看阻尼强弱，还可分成三种典型情况：
-\begin{itemize}
- \item \textbf{弱阻尼}：\(\beta<\omega_0\)，仍能往复振动，但振幅逐渐减小；
- \item \textbf{临界阻尼}：\(\beta=\omega_0\)，不再振荡，但能最快回到平衡位置；
- \item \textbf{过阻尼}：\(\beta>\omega_0\)，也不再振荡，而且回到平衡位置更慢。
-\end{itemize}
-
-\begin{note}
-理想简谐振动的振幅不变；阻尼振动的振幅按 \(\mathrm{e}^{-\beta t}\) 衰减，而机械能大致按 \(\mathrm{e}^{-2\beta t}\) 衰减。也就是说，能量掉得比振幅更快。
-\end{note}
-
-\begin{remark}
-这一节最重要的图景是：不是”回复力失效了”，而是系统每振一次都漏掉一点能量，所以摆幅越来越小。阻尼首先改掉的是能量守恒的理想条件，然后才表现为振幅衰减。
-\end{remark}
 
 \begin{exercise}
 一个弹簧振子，\(m=\SI{0.2}{kg}\)，\(k=\SI{50}{N/m}\)，阻尼系数 \(\gamma=\SI{0.4}{kg/s}\)。求：(1) 固有角频率；(2) 阻尼振动角频率；(3) 振幅衰减到初始值 \(1/\mathrm{e}\) 所需时间。
@@ -2407,73 +1788,37 @@ T_d&=\frac{2\pi}{\omega_d}
 
 \section{受迫振动}
 
-这一节要解决的问题是：如果系统一边漏能量，一边又被外界周期性地持续推动，它最后会怎样振？
-
-若系统除了回复力和阻力外，还持续受到外界周期驱动力
-\[
-\begin{aligned}
-F&=F_0\cos\Omega t\\
-\implies m\dv[2]{x}{t}+\gamma\dv{x}{t}+kx&=F_0\cos\Omega t.
-\end{aligned}
-\]
-这类振动称为\textbf{受迫振动}。
-
-这里最值得先在脑中站稳的一句话是：\textbf{外界不停按某个节奏推，系统长期留下来的也只能是那个节奏。} 因为系统自己的自由振动部分会被阻尼慢慢磨掉，真正能一直活着的，只剩“驱动力每推一次就补回来一次”的那部分响应。也正因此，长时间以后去猜稳态解时，最自然的试探式就不该再用 \(\omega_0\)，而应直接用驱动力自己的频率 \(\Omega\)。
-
-受迫振动的总运动可以看成两部分叠加：
+\begin{definition}[受迫振动]
+受迫振动（Forced Oscillations）是指系统在周期性的驱动力持续作用下所发生的振动。
+设想一个振幅为 $F_0$、角频率为 $\omega$ 的余弦式驱动力 $F_{\text{驱}} = F_0 \cos \omega t$ 持续作用于有阻尼的弹簧振子上。此时系统同时承受回复力、介质阻力和外加驱动力，由牛顿第二定律列出动力学方程：$$m \frac{\mathrm{d}^2x}{\mathrm{d}t^2} = -kx - \gamma v + F_0 \cos \omega t\Longleftrightarrow m \frac{\mathrm{d}^2x}{\mathrm{d}t^2} + \gamma \frac{\mathrm{d}x}{\mathrm{d}t} + kx = F_0 \cos \omega t$$
+两边同除以质量 $m$，并代入阻尼常数 $2\beta = \frac{\gamma}{m}$、固有角频率 $\omega_0^2 = \frac{k}{m}$ 以及特征驱动力项 $f = \frac{F_0}{m}$：$$\boxed{\frac{\mathrm{d}^2x}{\mathrm{d}t^2} + 2\beta \frac{\mathrm{d}x}{\mathrm{d}t} + \omega_0^2 x = f \cos \omega t}$$该非齐次二阶微分方程的通解由齐次方程的通解（自由项）与非齐次方程的特解（强迫项）直接相加而成：$$x = \underbrace{A_1 e^{-\beta t} \cos\left( \sqrt{\omega_0^2 - \beta^2} t + \phi_0 \right)}_{\text{暂态响应}} + \underbrace{A_2 \cos(\omega t + \delta)}_{\text{稳态响应}}$$
 \begin{itemize}
- \item 一部分是类似阻尼振动的\textbf{暂态响应}，会随时间衰减；
- \item 另一部分是由外界持续驱动维持的\textbf{稳态响应}，长期保留下来。
+\item 暂态响应：随时间按指数衰减。在开机一段时间后，这一部分振动即因阻尼耗散而衰减消失。
+\item 稳态响应：不随时间衰减，是长周期稳定运行后的唯一存留项。
 \end{itemize}
-
-足够长时间后，暂态部分消失，只剩与驱动力同频的稳态振动：
- \(x=B\cos(\Omega t-\delta).\) 
-这里最重要的两点是：
-\begin{itemize}
- \item \textbf{稳态振动的频率由外界驱动力决定，是 \(\Omega\)，不是系统自己的 \(\omega_0\)}；
- \item 稳态振动的振幅 \(B\) 和相位滞后 \(\delta\) 会随驱动频率改变。
-\end{itemize}
-
-由方程可得稳态振幅与相位滞后
-\[
-B=\frac{F_0/m}{\sqrt{(\omega_0^2-\Omega^2)^2+4\beta^2\Omega^2}},\qquad
-\tan\delta=\frac{2\beta\Omega}{\omega_0^2-\Omega^2},\qquad 0<\delta<\pi.
-\]
-
-\begin{remark}
-上面的公式是怎么来的？将试探稳态解 \(x=B\cos(\Omega t-\delta)\) 代入方程 \(\ddot{x}+2\beta\dot{x}+\omega_0^2 x=\frac{F_0}{m}\cos\Omega t\)，利用三角函数的加法公式展开后，令 \(\cos\Omega t\) 和 \(\sin\Omega t\) 的系数分别相等，就得到关于 \(B\) 和 \(\delta\) 的两个代数方程。求解这两个方程即得上式。推导过程虽然代数量较大，但不需要超出微积分的工具——只需要耐心展开和整理。如果你暂时不想推导，可以先接受结果，重点理解 \(B\) 如何随 \(\Omega\) 变化。
-\end{remark}
-
-\begin{note}
-这条相位关系很值得直观记忆：驱动很慢时，系统来得及跟上，\(\delta\) 较小；驱动很快时，系统总是“追着外界跑”，\(\delta\) 会接近 \(\pi\)。所以受迫振动不只是“振幅变了”，连节奏也会相对外界出现滞后。
-\end{note}
-
+系统稳定进入受迫振动后的解为一等幅同频运动：$$x = A_2 \cos(\omega t + \delta)$$其振幅 $A_2$ 与初相 $\delta$ 分别严格满足以下解析方程：$$\boxed{A_2 = \frac{f}{\sqrt{(\omega_0^2 - \omega^2)^2 + 4\beta^2 \omega^2}}},~\boxed{\delta = \arctan \frac{-2\beta \omega}{\omega_0^2 - \omega^2}}$$受迫振动稳定后的实际运动角频率完全等于外加驱动力的角频率 $\omega$，而其振幅 $A_2$ 与初相 $\delta$ 则直接取决于驱动力频率 $\omega$ 与系统固有频率 $\omega_0$ 的接近程度。
+\end{definition}
 \begin{remark}
 做题时最容易错的一步，是把“固有频率”和“稳态振动频率”混为一谈。真正长期留下来的，是外界逼出来的频率 \(\Omega\)；系统自己的 \(\omega_0\) 则藏在振幅和相位如何随 \(\Omega\) 变化这件事里。
 \end{remark}
 
 \section{共振}
 
-这一节要解决的问题是：为什么外界驱动频率接近系统固有频率时，振幅会突然变得特别大？
+\begin{definition}[共振]
+当外加驱动力的角频率 $\omega$ 改变时，系统的稳态振幅 $A_2$ 也会随之剧烈改变。为了寻找振幅的极大值位置，对振幅关于驱动力角频率 $\omega$ 求一阶微分并令其归零：$$\frac{\mathrm{d}A_2}{\mathrm{d}\omega} = 0$$由此直接解得，当 $A_2$ 取得极大值时，外加驱动力的角频率必须满足特定的解析值。这一特征状态称为共振（Resonance），对应的特定频率称为共振频率 $\omega_{\text{共}}$：$$\boxed{\omega = \sqrt{\omega_0^2 - 2\beta^2}}$$将共振频率代回振幅方程中，求得相应的最大共振振幅 $A_r$ 为：$$\boxed{A_r = \frac{f}{2\beta \sqrt{\omega_0^2 - \beta^2}}}$$对于弱阻尼（$\beta \ll \omega_0$）的特殊情况，阻尼因子小到可以忽略不计（$\beta \to 0$）。此时共振频率和最大振幅的公式发生向心退化：$$\omega = \omega_0$$也就是说，当驱动力频率等于振动系统的固有频率时，振幅达到最大值。
+\end{definition}
+\begin{remark}
+把阻尼振动、受迫振动和共振连起来看，逻辑就完整了：真实系统会因阻尼漏能；外界周期力可以持续补能；当补能的节奏和系统固有节奏最匹配时，补能效率最高，于是出现共振。
+\end{remark}
+\begin{center}
+\includegraphics[width=0.5\linewidth]{pdf-exercises/2.png}
+\end{center}
+如上图所示，当我们将受迫振动的振幅响应按驱动频率比例（$f/f_0$ 或 $\omega/\omega_0$）绘制出来时，可得
+\begin{itemize}
+\item 阻尼对峰值的控制：当系统处于极低阻尼系数（如 $\text{Damping Ratio} = 0.05$）时，共振曲线极其陡峭尖锐，其峰值振幅 $A/A_0$ 呈爆发式飙升。随着阻尼系数（从 $0.05 \to 0.10 \to 0.25 \to 0.75$）不断增大，共振峰明显向下塌陷、变矮变宽，且共振点逐渐偏向左侧低频区。
+\item 频率区间的边界特征：当驱动力频率趋近于 0（$\omega \to 0$）时，振幅收拢为一个恒定的静力学初始形变量（$A/A_0 \to 1$）；而当驱动力频率极高（$\omega \to \infty$）时，系统由于质量自身的惯性阻碍，振幅各曲线统一单调衰减、逼近于 0。
+\end{itemize}
 
-\bridge{从能量角度看共振最清楚：外力对系统做功的功率取决于力和速度的相位关系。当驱动频率恰好让外力总是在系统速度最大时"顺着推"，每个周期输入的能量最多，振幅就会持续增大直到输入功率等于阻尼耗散功率为止。所以共振本质上是\textbf{能量输入效率最高}的状态。}
-
-在受迫振动中，稳态振幅会随着驱动频率 \(\Omega\) 变化。当 \(B\) 取得最大值时，就出现了\textbf{共振}，而对有阻尼系统，
-\[
-B=\frac{F_0/m}{\sqrt{(\omega_0^2-\Omega^2)^2+4\beta^2\Omega^2}},\qquad
-\Omega_r=\sqrt{\omega_0^2-2\beta^2}\approx \omega_0 \qquad (\beta\ll\omega_0).
-\]
-所以大家常说“共振发生在驱动频率接近固有频率时”，这句话在弱阻尼条件下是对的；但更严格地说，最大振幅出现在 \(\Omega_r\)，而不一定与 \(\omega_0\) 完全相等。
-
-\bridge{共振的物理本质不是“外力很大”，而是“每次推都推在最容易补能量的节奏上”。一旦节奏对上，哪怕单次推力不夸张，很多次连续叠加后振幅也会显著放大。}
-
-\begin{exercise}[共振为什么既有利又有风险]
-秋千越荡越高，是因为人在合适节奏下持续给系统输入能量，属于共振的利用；桥梁、机器若在固有频率附近被长期驱动，振幅可能过大，则属于共振风险。
-\end{exercise}
-
-\begin{note}
-若完全没有阻尼，理论模型会给出无限增大的振幅；但真实系统总有阻尼、材料强度和能量供给的限制，所以现实中的共振虽很强，却不会真的”无限大”。
-\end{note}
 
 \begin{exercise}
 一根弹簧振子，固有频率 \(f_0=\SI{5}{Hz}\)，阻尼系数 \(\beta=\SI{2}{s^{-1}}\)，驱动力振幅 \(F_0=\SI{0.1}{N}\)，质量 \(m=\SI{0.05}{kg}\)。求共振时稳态振幅。
@@ -2486,158 +1831,38 @@ B_{\max}\approx\frac{F_0/m}{2\beta\omega_0}=\frac{0.1/0.05}{2\times2\times31.4}=
 若阻尼减半（\(\beta=\SI{1}{s^{-1}}\)），共振振幅翻倍至 \(\SI{3.2}{cm}\)——阻尼越小，共振越剧烈。
 \end{solution}
 
-\begin{remark}
-把阻尼振动、受迫振动和共振连起来看，逻辑就完整了：真实系统会因阻尼漏能；外界周期力可以持续补能；当补能的节奏和系统固有节奏最匹配时，补能效率最高，于是出现共振。
-\end{remark}
-
-\section{常见误区}
-
-\begin{itemize}
- \item 把任何往复运动都当成简谐振动，忘记还要满足回复力或加速度与位移成正比且方向相反。
- \item 认为“有周期”就等于“是简谐振动”。事实上简谐振动是周期振动里的特殊情形。
- \item 认为质点经过平衡位置时“什么都最小”。事实上这时位移和回复力为零，但速度和动能通常最大。
- \item 忘记单摆周期公式 \(T=2\pi\sqrt{\ell/g}\) 只适用于小角度近似，复摆和扭摆也各自有不同的周期公式。
- \item 把拍频误当成振动本身的频率，或者把受迫振动的稳态频率误当成固有频率。
- \item 认为只要驱动力存在就一定共振。真正决定共振的是驱动节奏是否接近系统最容易吸能的频率。
-\end{itemize}
-
-\section{章末小结}
-
-\summaryline{机械振动最核心的想法，是把“回复作用”写成与位移成正比的形式。一旦得到 \(a=-\omega^2x\) 或对应的角位移方程，简谐振动的位移、速度、能量、合成以及后续的阻尼和受迫分析就会接到同一条主线上。}
-\chapterselfcheck{为什么周期振动不一定是简谐振动？单摆、复摆和扭摆分别是靠什么回复作用回到平衡位置的？拍频和振动本身的频率为什么不是一回事？}
-
-\begin{exercise}[]
-一简谐振动满足 \(x=A\cos(\omega t)\)。求其最大速度和最大加速度。
-\end{exercise}
-
-\begin{solution}
-速度和加速度都由位移方程直接求导得到，最大值再取正弦、余弦因子的最大绝对值：
-\[
-v=-A\omega\sin(\omega t)\implies v_{\max}=A\omega,\qquad
-a=-A\omega^2\cos(\omega t)\implies a_{\max}=A\omega^2.
-\]
-平衡位置速度最大，端点加速度大小最大，这两处不要反过来记。
-\end{solution}
-
-\begin{exercise}[]
-若某振动满足 \(\dv[2]{x}{t}+25x=0\)，
-说明它为什么是简谐振动，并求其角频率和周期。
-\end{exercise}
-
-\begin{solution}
-这个方程已经是简谐振动的标准动力学形式，和 \(\ddot x+\omega^2x=0\) 对比即可：
- \(\dv[2]{x}{t}+25x=0,\qquad \dv[2]{x}{t}+\omega^2x=0 \implies \omega^2=25,\qquad \omega=5\ \text{s}^{-1},\qquad T=\frac{2\pi}{\omega}=\frac{2\pi}{5}\ \text{s}.\) 
-判断简谐振动时真正要看的，是加速度是否与位移成正比且方向相反；这里的 \(25x\) 正好给出了这个线性回复结构。
-\end{solution}
-
-\begin{exercise}[]
-两个同方向、同频率的简谐振动振幅都为 \(A\)，相位差为 \(\pi/3\)。求合振幅。
-\end{exercise}
-
-\begin{solution}
-两振动同方向、同频率，相位差固定，合振幅可直接由相量三角形给出：
-由此 \(A_{\text{合}}=2A\cos\dfrac{\Delta\varphi}{2}=2A\cos\dfrac{\pi}{6}=2A\cdot\dfrac{\sqrt{3}}{2}=\sqrt{3}A\)。
-相位差为 \(0\) 时合振幅才是 \(2A\)；这里相差 \(\pi/3\)，所以合成后仍比单个振幅大，但没有达到完全同相的最大值。
-\end{solution}
 
 \chapter{机械波}
 
-\begin{skill}[第6章冲刺总手册]\label{sk:phys-ch06-overview}
- 这章处理“振动如何传出去”的题：波速、波函数、相位差、反射、驻波、能流、双缝干涉和多普勒。一个点在振，整列介质怎样跟着变化，是这里最先要回答的。
+根据底层物理机制与相互作用的不同，宏观与微观世界中的波动现象主要分为以下三类：
 
- 若题面给“原点处振动方程、波沿某方向传播”，由传播所需时间写出延迟关系；若题面给波长、频率、周期、波速中的任意两个，就由 \(u=\lambda f\) 等关系补齐 \(u,\lambda,f,T,\omega,k\)；若题面出现“固定端、自由端、波节、波腹”，通常要联系反射或驻波边界。
+\begin{definition}[机械波，电磁波，物质波]
+机械波：机械振动的状态以一定的速度在弹性介质中由近及远地传播出去过程。
+\begin{itemize}
+    \item 产生条件一（波源）：机械振动的产生者，负责提供系统最初的扰动能量。
+    \item 产生条件二（弹性介质） ：传播振动的承担者（如水、空气、绳索等）。由于机械波依赖质点间的弹性力传递扰动，故真空中无法传播机械波（例如真空中无法传声）。
+\end{itemize}
+电磁波：变化的电场和变化的磁场在空间中相互激发、交替产生并由近及远传播的过程。电磁波的传播在本质上不需要任何依赖实体介质，其可以在真空中高速自由传播（如光波、无线电波、X射线等）。
 
-
- \(y(x,t)=y\!\left(0,t-\frac{x}{u}\right) \quad \text{(沿 \(+x\) 传播)}.\) 
-若已知标准参数，也可直接写
- \(y=A\cos(\omega t-kx+\varphi_0).\) 
-
-
-\[
-\begin{aligned}
-u&=\lambda f=\frac{\omega}{k},\qquad
-T=\frac{1}{f},\qquad
-k=\frac{2\pi}{\lambda},\\
-\Delta\varphi&=k\Delta x=\frac{2\pi}{\lambda}\Delta x,\\
-\pdv[2]{y}{x}&=\frac{1}{u^2}\pdv[2]{y}{t},\\
-y_{\text{驻}}&=2A\cos kx\cos\omega t\ \text{(一种常见驻波形式)}.
-\end{aligned}
-\]
-固定端反射常对应半波损失，自由端反射则不反相；平均能流和平均能流密度都与振幅平方 \(A^2\) 成正比。
-
- 先分清图像是在“同一时刻看空间”还是“同一位置看时间”；再判传播方向和某点此刻运动方向；接着用 \(u=\lambda f\) 补全缺量；写波方程时优先时间延迟法，写相位差时优先 \(\Delta\varphi=\frac{2\pi}{\lambda}\Delta x\)；遇到驻波就直接找节点/腹点条件，不要再把它当行波算能量传输。
-
- 只看位移相同就说两点振动状态相同；把 \(t-x/u\) 和 \(t+x/u\) 写反；把驻波误当成有净能量向前传播的行波；固定端反射忘记相位突变。
-
- 看波速、波长、频率是否满足 \(u=\lambda f\)；看传播方向改成反向时相位号是否随之改变；驻波题最后检查节点处是否始终为零、腹点处振幅是否最大；多普勒题最后检查靠近时频率应增大、远离时应减小。
-\end{skill}
-
-\chapterroadmap
-{把“一个点怎么振”推进到“这种振动怎样在介质中传播、传能，并在边界上反射、叠加和形成驻波”。}
-{已经会看简谐振动，也知道相位、周期、频率这些概念。}
-{新增横波与纵波、模量决定波速、波函数、相位差与波程差、波动微分方程、机械波能量、驻波、半波损失、简正模式和多普勒效应。}
-
-\bridge{这一章最重要的，不是多背几条新公式，而是把两件事彻底分开：\textbf{点在振动，形在传播}。任何一道波动题，先问三件事：介质里什么量在振动；这种振动按什么速度传开；我现在是在比较同一时刻的不同位置，还是同一位置的不同时刻。}
-
-\section{从一个振子到一列振子}
-
- 单个质点会振动并不难理解，真正要补上的桥是：为什么把许多相互作用的质点连起来后，就会出现“同一振动状态向前传”的机械波？
-
- 可以把介质想成许多彼此耦合的振子。前一个质点一旦偏离平衡位置，就会通过张力、弹性力或压强把后一个质点带动起来；后一个再去带动更后一个。于是前进的不是某个质点本身，而是“这一振动状态”在空间中的接力传递。
-
- 若原点处的振动已经写成 \(y(0,t)\)，而这种状态以波速 \(u\) 向前传播到位置 \(x\)，则最先落笔的关系可压成
-\[
-\begin{aligned}
-y(x,t)&=y\!\left(0,t-\frac{x}{u}\right),\qquad
-y(0,t)=A\cos(\omega t+\varphi_0),\\
-\implies\quad
-y(x,t)&=A\cos\left[\omega\left(t-\frac{x}{u}\right)+\varphi_0\right]
-=A\cos(\omega t-kx+\varphi_0).
-\end{aligned}
-\]
-
- 这里不是“把原点公式里的 \(0\) 换成 \(x\)”，而是要把传播时间补进去。同一振动状态要跑到更远处，必然晚 \(x/u\) 到达，所以波动方程本质上是一个\textbf{时间延迟关系}。先别背正负号，只抓一句话：向正方向传播时，更远处总是\textbf{更晚}进入同一状态，因此要把 \(t\) 换成延迟后的 \(t-x/u\)；若向负方向传播，则对应超前关系。
-
- 最容易错的有两件事：一是把波速 \(u\) 误当成质点自身的振动速度；二是把“介质质点在振动”和“振动状态在传播”混成一回事。这里默认介质均匀、传播方向已知；若介质不均匀或边界很多，传播关系还要再结合反射、折射或叠加来写。
-
-\section{机械波的形成}
-
-\bridge{这一节最想落稳的结论是：后面写波函数 \(y(x,t)=y(0,t-x/u)\) 时，被向前搬运的不是某个质点本身，而是\textbf{同一种振动状态}。因此“机械波”的定义真正强调的是传播对象：传播的是振动图样和它携带的能量，而不是介质整体沿传播方向搬家。}
-
-当介质中的某一点开始振动时，它会通过相互作用把振动状态传给邻近各点，于是振动逐步向外传播，形成机械波。
-
-\begin{definition}[机械波]\label{def:mechanical-wave}
-机械振动在介质中的传播过程，称为\textbf{机械波}。
+物质波（也称概率波）是微观粒子（如电子、质子、中子等）本身所具有的一种固有属性。 物质波具有与宏观机械波完完全全不同的物理性质。它在宏观上并不代表实体的连续波动，而是描述粒子在空间某处出现的概率分布，其运动规律严格遵从量子力学理论。
 \end{definition}
 
-\begin{note}
-机械波传播的是\textbf{振动状态和能量}，不是把整团介质整体搬走。比如绳波传播时，绳上的点主要做上下振动，而不是沿着波前方向整体跑走。
-\end{note}
-
-\section{横波、纵波与介质形变}
-
-这一节要解决的问题是：为什么有的波让质点上下摆，有的波让质点前后挤，它们到底差在哪里？
-
-\textbf{横波}指介质质点的振动方向与波的传播方向垂直；\textbf{纵波}指介质质点的振动方向与传播方向平行。
-
-波型不同，介质承受的形变也不同。机械波里最常见的三类形变是：
+\begin{definition}[波阵面、波前和波线、波长、周期、频率和波速]
 \begin{itemize}
- \item \textbf{伸缩形变}：长度发生改变；
- \item \textbf{剪切形变}：层与层之间发生错动；
- \item \textbf{容积形变}：体积发生压缩或膨胀。
+\item 波阵面（波面）：在波动传播过程中，空间中具有相同振动相位的各质点所连成的连续曲面。
+\item 波前：在任何特定时刻，传播在最前方（最外边缘）的那一个波阵面。
+\item 波线：沿波的传播方向所作的一系列带箭头的几何线，其指向表示波在该处的能量传播方向。在各向同性的均匀介质中，波线与波阵面在几何上总是保持相互垂直。
 \end{itemize}
-
-横波需要介质提供剪切回复作用，所以它只可能在能承受剪切形变的介质里传播，例如绳、固体。液体和气体几乎不能稳定承受剪切形变，因此通常不能传播横向机械波。
-
-纵波对应的是压缩和稀疏交替出现的传播，它依赖伸缩或容积形变，所以固体、液体和气体都能传播纵波。声音就是最常见的纵向机械波。
-
-\begin{note}
-纯自学时最容易把“横波/纵波”和“传播方向朝哪边”混在一起。横、纵说的不是波往哪里走，而是\textbf{介质质点相对传播方向怎样振动}。
-\end{note}
-
-\section{各种波速为什么不一样：模量与密度}
-
-\bridge{这一节最该先抓住的不是一串材料力学名词，而是波速背后的两股对抗：一边是介质偏离平衡后“想恢复”的本领，另一边是介质本身“有多难被带动”的惯性。恢复越有力，扰动传得越快；惯性越大，扰动传得越慢。应力、应变和各种模量的引入，只是为了把前面这股“恢复本领”定量记下来。}
+为了定量描述波动在时间和空间双重维度的交织特征，我们定义以下四个核心特征物理量：
+\begin{itemize}
+\item 波长 $\lambda$：沿波的传播方向，两个相邻的、振动状态（相位）完全相同的振动质点之间的空间距离。它在物理上代表一个完整波形的几何长度。
+\item 周期 $T$：波前进一个波长的距离所需要的时间。它在数值上等于介质中任一质点完成一次完全往复振动所需的时间。
+\item 频率 $\nu$：单位时间内波动所传播的完整波的数目。它等于周期的倒数（$\nu = 1/T$）。
+\item 波速 $u$：在波动过程中，某一振动状态（或相位）单位时间内所传播的距离。
+\end{itemize}
+波的周期 $T$ 或频率 $\nu$ 只决定于波源的振动。当一列波从一种介质跨越边界进入另一种介质时，其频率 $\nu$ 保持绝对不变。
+$$T = \frac{\lambda}{u}, \qquad \nu = \frac{1}{T} = \frac{u}{\lambda},~~\boxed{u = \frac{\lambda}{T} = \lambda \nu}$$
+\end{definition}
 
 \begin{definition}[应力、应变与弹性模量]\label{def:elastic-modulus}
 材料力学中描述"形变有多大"和"恢复力有多强"的基本量：
@@ -2653,20 +1878,12 @@ y(x,t)&=A\cos\left[\omega\left(t-\frac{x}{u}\right)+\varphi_0\right]
 \end{itemize}
 模量越大，材料越"硬"——同样的力只能产生更小的形变。后面推导波的能量时会再次用到 \(\sigma=Y\varepsilon\)。
 \end{definition}
-
-这一节要解决的问题是：为什么同样是机械波，在绳子、钢棒、空气里传播得快慢差这么多？
-
 决定波速的核心有两方面：
 \begin{itemize}
  \item 介质的\textbf{弹性}有多强，也就是它偏离平衡后有多想恢复；
  \item 介质的\textbf{惯性}有多大，也就是它有多不容易被带动。
 \end{itemize}
-
-弹性越强，回复越快，波就更容易传得快；密度越大，单位体积介质越“沉”，越不容易被带动，波速就会变慢。
-
-\bridge{所以波速公式最值得先记住的，不是哪一种介质配哪一个字母，而是它们都长成了同一类结构：\textbf{恢复本领 \(/\) 惯性负担，再开平方。} 分子在回答“偏了以后谁把它拉回来”，分母在回答“这一段介质有多难被带动起来”。}
-
-对几类最常见的机械波，课件给出的结论是：
+弹性越强，回复越快，波就更容易传得快；密度越大，单位体积介质越“沉”，越不容易被带动，波速就会变慢。先看分子对应什么模量、分母对应什么密度。模量越大，恢复越快；密度越大，惯性越大，波速就越慢。
 \begin{itemize}
  \item 固体中纵波：\(u=\sqrt{\frac{Y}{\rho}}\)，其中 \(Y\) 是杨氏模量，对应伸缩形变，\(\rho\) 是体密度。
  \item 固体中横波：\(u=\sqrt{\frac{G}{\rho}}\)，其中 \(G\) 是切变模量，对应剪切形变。
@@ -2674,350 +1891,121 @@ y(x,t)&=A\cos\left[\omega\left(t-\frac{x}{u}\right)+\varphi_0\right]
  \item 绳中横波：\(u=\sqrt{\frac{T}{\mu}}\)，其中 \(T\) 是张力，\(\mu\) 是质量线密度。这里不用体弹性模量，是因为弦被横向拨开后真正负责“拉回去”的不是体形变，而是原先绷紧的张力。
 \end{itemize}
 
-\begin{remark}
-这四条公式表面上长得不一样，本质上都在说同一件事：\textbf{分子里的“想恢复的本领”越强，分母里的“带不动的惯性”越小，波就传得越快。}
-\end{remark}
-
-\bridge{所以这些波速公式真正值得读进去的，不是“记住四条平方根”，而是先看分子对应什么模量、分母对应什么密度。模量越大，恢复越快；密度越大，惯性越大，波速就越慢。}
-
-\section{波的基本量}
-
-这一节看起来像在列名词，但真正该先抓住的是：\textbf{波动题里总有两套节奏同时在出现。} 一套是某个固定位置随时间怎样重复，这会引出周期 \(T\) 和频率 \(f\)；另一套是同一时刻沿空间怎样重复，这会引出波长 \(\lambda\)。而波速 \(u\) 则负责把“时间上的重复”搬运成“空间里的重复”。只要先把这三层角色分清，后面的字母就不容易串线。
-
-\begin{itemize}
- \item 周期 \(T\)：介质中某点完成一次振动所需时间。
- \item 频率 \(f=1/T\)。
- \item 波长 \(\lambda\)：空间中相邻两个同相点之间的距离。
- \item 波速 \(u\)：波形传播速度。
-\end{itemize}
-
-\bridge{注意本章用 \(u\) 表示波速（相速度），而不是用 \(v\)。这是为了和质点振动速度 \(v=\partial y/\partial t\) 区分开。后面公式里凡是出现 \(u\) 的地方，都是在说"波形图样传播的快慢"，而不是某个质点自己运动的快慢。}
-
-它们满足关系 \(u=\lambda f=\frac{\lambda}{T}\)。
-
-\begin{note}
-这里最常见的混淆是把波速 \(u\) 当成某个质点自己的振动速度。前者描述的是波峰波谷这个图样传得多快，后者描述的是某个质点上下或前后运动得多快，它们不是同一个量。
-\end{note}
-
-\section{波面、波前与波线}
-
-\bridge{这里真正要服务的，是后面“同相位条件”和“传播方向”这两类结论。若某一时刻满足同一相位条件，得到的就是波面；若要把传播方向单独画出来，就再取与波面处处垂直的波线。波面负责记“哪些点此刻同相”，波线负责记“这种同相位图样往哪边推进”。}
-
-\begin{definition}[波面与波前]
-在同一时刻，相位相同的各点连成的面叫做\textbf{波面}；若强调波正在向前推进的“最前沿”，也常把对应的等相位面叫做\textbf{波前}或波阵面。
-\end{definition}
-
-\begin{definition}[波线]
-与波面处处垂直、表示波传播方向的曲线，叫做\textbf{波线}。
-\end{definition}
-
-\begin{note}
-平面波的波面是一组互相平行的平面，球面波的波面是一组同心球面。读图时只要先辨认波面形状，传播方向通常就清楚了。
-\end{note}
-
-\begin{note}
-\textbf{最容易混的两件事要先拆开：} 波面说的是“哪些点此刻相位相同”，所以它是同相位的几何面；波线说的是“这种同相位状态往哪边传播”，所以它给的是传播方向。它既不是某个质点真实走过的轨迹，也不要求波面上各点位移数值必须完全一样；真正被统一起来的，是相位而不是单独的位移大小。
-\end{note}
-
 \section{平面简谐波的波函数}
-
-这一节要解决的问题是：怎样用一个式子同时写出“空间中不同位置”和“每个位置随时间怎样振动”？
-
-设一列平面简谐波沿 \(x\) 轴正方向传播，介质质点的位移沿 \(y\) 方向变化。则\textbf{波函数}写成 \(y=y(x,t)\)。
-它的意思是：位置为 \(x\) 的质元在时刻 \(t\) 相对平衡位置的位移是多少。
-
-由传播延迟来看，位置 \(x\) 处的同一振动状态比原点晚 \(x/u\) 到达。若原点已经在做简谐振动 \(y(0,t)=A\cos(\omega t+\varphi_0)\)，那么位置 \(x\) 处在时刻 \(t\) 的位移，就等于原点在更早时刻 \(t-x/u\) 的位移。把这个时间延迟关系展开以后，标准波函数才会自然长出来。
-
-对平面简谐波，常用表达式为
-\[
-\begin{aligned}
-y(x,t)&=A\cos(\omega t-kx+\varphi_0),\qquad k=\frac{2\pi}{\lambda},\\
-\text{若波沿负方向传播：}\quad
-y(x,t)&=A\cos(\omega t+kx+\varphi_0).
-\end{aligned}
-\]
-
-\bridge{波函数不是某一条“轨迹方程”，而是一张“时空坐标表”。给它一个位置 \(x\) 和一个时刻 \(t\)，它就告诉你那个质点当时偏离平衡位置多少。}
-
-\section{波函数的物理意义}
-
-这一节要解决的问题是：波函数里的两个变量 \(x\) 和 \(t\) 分别在管什么？
-
-对
- \(y(x,t)=A\cos(\omega t-kx+\varphi_0),\) 
-可以分三种角度看：
+在波动学中，如果一列波在传播过程中，介质中的各个质元均作同频率、同振幅的简谐运动，且其波阵面（波面）是彼此平行的平面，则称这列波为平面简谐波。为了描述连续介质中各个不同质元在不同时刻的整体运动图像，我们必须构建一个二元函数 $y = y(x,t)$，这被称为波函数（Wave Function），或称为波动方程。
 \begin{itemize}
- \item 固定 \(x=x_0\) 不动，得到的是 \(x_0\) 处质点的\textbf{振动方程}；
- \item 固定 \(t=t_0\) 不动，得到的是 \(t_0\) 时刻整列波的\textbf{波形图}；
- \item 让 \(x\) 和 \(t\) 都变化，看到的是“同一振动状态怎样向前平移”。
+\item $y$ (因变量)：表示波线上任意质点在任一时刻 $t$ 相对其自身平衡位置的瞬时位移。
+\item $x$ (空间自变量)：表示波线上各个质点平衡位置的坐标（空间定位）。
+\item $t$ (时间自变量)：表示运动演入的瞬时时刻。
 \end{itemize}
 
-如果某个相位值保持不变，即
- \(\omega t-kx+\varphi_0=\text{常量} \implies \omega\Delta t-k\Delta x=0 \implies \Delta x=u\Delta t.\) 
-这说明 \textbf{波速是等相位点传播的速度}，也叫相速度。
+\begin{theorem}[相位差与波程差转换公式]
+波程差 $\Delta x$ 占整个波长 $\lambda$ 的比例有多大，其对应的相位差 $\Delta \phi$ 就占整个全圆周周角 $2\pi$ 弧度的多大比例。$$\frac{\Delta \phi}{2\pi}=\frac{\Delta x}{\lambda}\implies\boxed{\Delta \phi = 2\pi \frac{\Delta x}{\lambda}}$$值得记忆的还有$$\frac{\omega}{u} = \frac{2\pi \nu}{\lambda \nu} = \frac{2\pi}{\lambda}$$
+\end{theorem}
 
-\begin{note}
-波动里最容易混淆的，是时间关系和空间关系：
+\begin{theorem}[平面简谐波函数推导]
+已知参考点 $x_0$ 处的振动方程为：$y_0 = A \cos(\omega t + \phi)$。现求其右侧任意点 $P$ ($x > x_0$) 的振动方程。
+因为波向右传，右侧的点 $P$ 属于“下游”，这里有两种滞后方式
 \begin{itemize}
- \item 同一位置隔一段时间再看，用周期、频率和相位随时间的变化；
- \item 同一时刻比较不同位置，用波长和相位随空间的变化。
+\item 滞后的相位大小 $\Delta \phi = \frac{2\pi}{\lambda}(x - x_0)$，所以\[y_P = A \cos \left[ \omega t - \frac{2\pi}{\lambda}(x - x_0) + \phi \right]\]
+\item 滞后的时间大小 $\Delta t = \frac{x - x_0}{u}$，所以\[y_P = A \cos \left[ \omega \left( t - \frac{x - x_0}{u} \right) + \phi \right]\]
+\item 滞后的周期倍数（或波长比例）为 $\frac{x - x_0}{\lambda}$，因为每隔一个波长 $\lambda$，相位就滞后一个完整的 $2\pi$。所以：$$\boxed{y_P = A \cos \left[ 2\pi \left( \frac{t}{T} - \frac{x-x_0}{\lambda} \right) + \phi \right]}$$
 \end{itemize}
-只要把这两件事混在一起，相位差、传播时间和波程差就很容易一起算乱。
-\end{note}
-
-\begin{remark}
-如果题目只给某一时刻的波形图，也能判断某点此刻向上动还是向下动。记住一条最稳的规则：\textbf{波形沿传播方向整体平移}。例如波沿正方向传播时，上升段的点会向下动，下降段的点会向上动；若沿负方向传播，这个判断正好反过来。
-\end{remark}
+如果参考点是原点有$$y_P = A \cos \left[ \omega t - \frac{2\pi}{\lambda}x + \phi \right]= A \cos \left[ \omega \left( t - \frac{x}{u} \right) + \phi_0 \right]=A \cos \left[ 2\pi \left( \frac{t}{T} - \frac{x}{\lambda} \right) + \phi_0 \right]$$
+\end{theorem}
+波函数 $y(x,t)$ 是一个典型的二元函数，其包含了空间与时间的双重解耦特征。我们可以通过控制变量法将其赋予以下三种明确的物理图像：
+\begin{enumerate}
+    \item 固定空间位置 $x = x_0$（质元的振动方程）$$y(x_0, t) = A \cos \left( \omega t - \frac{2\pi}{\lambda}x_0 + \phi_0 \right) = A \cos (\omega t + \Phi)$$
+    \item 固定瞬时时刻 $t = t_0$（特定时刻的波形图）$$y(x, t_0) = A \cos \left( \omega t_0 - \frac{2\pi}{\lambda}x + \phi_0 \right) = A \cos \left( -\frac{2\pi}{\lambda}x + \Phi' \right)$$这在几何上描绘了一条空间余弦曲线。它表明，在某一特定的瞬时时刻，介质中所有质点在空间轴上的位移分布轮廓，即通常所说的“波形图（Wave Profile）”。
+    \item 如果时间 $t$ 与空间 $x$ 同时变化，由于余弦函数的周期性，我们去追踪某一个特定的振动相位（例如波峰状态）。为了让该物理状态保持恒定，必须要求其余弦括号内部的整体相位保持恒定：$$\omega t - \frac{2\pi}{\lambda}x + \phi_0 = \text{常数}$$对上式两边关于时间 $t$ 求一阶微分导数：$$\omega - \frac{2\pi}{\lambda} \frac{\mathrm{d}x}{\mathrm{d}t} = 0 \implies \frac{\mathrm{d}x}{\mathrm{d}t} = \frac{\omega \lambda}{2\pi} = \nu \lambda = u$$因为 $\frac{\mathrm{d}x}{\mathrm{d}t}$ 代表了特定相位（等相面）在空间中推进的运动速度，因此波速 $u$ 在本质上也被称作相速度（Phase Velocity）。
+\end{enumerate}
 
 \begin{exercise}[2010模拟题：由波形图选择质点速度图]
-一简谐波沿 \(Ox\) 轴正方向传播，周期为 \(T=\SI{2}{s}\)。在 \(t=0\) 的波形图中，\(P\) 点位于平衡位置附近，且该处波形随 \(x\) 增大而下降，即 \(\left.\partial y/\partial x\right|_P<0\)。判断 \(P\) 点处质点的振动速度 \(v_y\) 与时间 \(t\) 的关系曲线；若选项 A 表示 \(v_y\) 从最大正值开始、周期为 \(\SI{2}{s}\) 的余弦型曲线，则说明应选哪一项。
-
+一简谐波沿 \(Ox\) 轴正方向传播，周期为 \(T=\SI{2}{s}\)。在 \(t=0\) 的波形图中，\(P\) 点位于平衡位置附近，且该处波形随 \(x\) 增大而下降，即 \(\left.\partial y/\partial x\right|_P<0\)。判断 \(P\) 点处质点的振动速度 \(v_y\) 与时间 \(t\) 的关系曲线；
 \begin{center}
 \includegraphics[width=0.98\linewidth]{pdf-exercises/pdf2010-mock-q07-wave-velocity.png}
 \end{center}
 \end{exercise}
-
 \begin{solution}
-题图给的是某一时刻的空间波形，不能把波速 \(u\) 当成质点速度。沿 \(+x\) 传播的行波满足
- \(v_y=\frac{\partial y}{\partial t}=-u\frac{\partial y}{\partial x}.\) 
-因此只要看 \(P\) 点在 \(t=0\) 波形图上的空间斜率，就能判断它此刻的振动速度方向和大小。
-
-题中已说明 \(P\) 点位于平衡位置附近，且处在下降段，所以
- \(\left.\frac{\partial y}{\partial x}\right|_P<0 \quad\Longrightarrow\quad v_y(0)>0,\qquad v_y(0)=+\omega A.\) 
-
-题给 \(T=\SI{2}{s}\)。从 \(+\omega A\) 出发，经过 \(T/4=\SI{0.5}{s}\) 速度降为零，经过 \(T/2=\SI{1}{s}\) 达到 \(-\omega A\)，经过 \(T=\SI{2}{s}\) 回到 \(+\omega A\)。
-
-因此应选 A。横波中质点做上下振动，传播的是波形；不能只凭“波向右传”就猜 \(P\) 点也向右动。
+选$A$，做本题只需注意要选的不是振动方程，而是速度关于时间的图像
 \end{solution}
-
-\section{由振动方程写波动方程}
-
-这一节要解决的问题是：已知某个参考位置怎样振，怎样写出整列波的波函数？
-
-若已知原点处振动方程为
-\[
-\begin{aligned}
-y(0,t)&=A\cos(\omega t+\varphi_0),\\
-y(x,t)&=A\cos\left[\omega\left(t-\frac{x}{u}\right)+\varphi_0\right]
-=A\cos(\omega t-kx+\varphi_0),\\
-\text{若波沿负方向传播：}\quad
-y(x,t)&=A\cos(\omega t+kx+\varphi_0).
-\end{aligned}
-\]
-
-\begin{remark}
-这一步最适合这样理解：\textbf{谁离波源更远，谁就更晚进入同一振动状态。}这叫时间延迟法。它比死背正负号更稳，因为它直接对应物理图景。
-\end{remark}
 
 \begin{exercise}[2009级期末：由原点振动方程写沿正向传播的波函数]
 一平面简谐波的周期为 \(T=\SI{2}{s}\)，振幅为 \(A=\SI{0.06}{m}\)。已知 \(t=0\) 时原点处质点位于负的最大位移处。写出原点处质点的振动方程。若该波沿 \(x\) 轴正方向传播，波速为 \(u=\SI{2}{m/s}\)，再写出波函数并求波长。
 \end{exercise}
-
 \begin{solution}
-原点处质点的初态已经给全。角频率为 \(\omega=2\pi/T=\pi\,\si{rad/s}\)。取 \(y_0=A\cos(\omega t+\varphi_0)\)，而 \(t=0\) 时原点在负的最大位移处，所以 \(\cos\varphi_0=-1\)，可取 \(\varphi_0=\pi\)，原点振动方程为 \(y_0=0.06\cos(\pi t+\pi)\)。
-
-波沿 \(+x\) 方向传播，位置 \(x\) 处比原点滞后 \(x/u\)，也就是把原点振动中的 \(t\) 换成 \(t-x/u\)。于是
+旋转矢量，原点振动方程为 \(y_0=0.06\cos(\pi t+\pi)\)。波沿 \(+x\) 方向传播，位置 \(x\) 处比原点滞后 \(x/u\)，也就是把原点振动中的 \(t\) 换成 \(t-x/u\)。于是
  \(y(x,t)=0.06\cos\left[\pi\left(t-\frac{x}{2}\right)+\pi\right], \qquad \lambda=uT=2\times2=\SI{4}{m}.\) 
-代入 \(x=0\) 后，波函数退回原点振动方程；这个检查也说明这里应使用 \(t-x/u\)。
+验算：代入 \(x=0\) 后，波函数退回原点振动方程；这个检查也说明这里应使用 \(t-x/u\)。
 \end{solution}
 
-\begin{exercise}[2011级期末：由 \(t=0\) 波形图写 \(P\) 点振动和波函数]
-如图为一平面简谐波在 \(t=0\) 时刻的波形图，此时 \(O\) 点恰好处在平衡位置，且由波形沿 \(+x\) 方向传播可判断 \(O\) 点随后向负方向运动。已知波速 \(u=\SI{20}{m/s}\)，波沿 \(+x\) 方向传播；由图读出振幅 \(A=\SI{0.20}{m}\)，波长 \(\lambda=\SI{40}{m}\)，点 \(P\) 位于 \(x=\SI{20}{m}\) 处。求：1. \(P\) 处质点的振动方程；2. 该波的波函数。
-
-\begin{center}
-\begin{tikzpicture}[scale=0.08]
- \draw[->] (-5,0) -- (55,0) node[right] {\(x(\si{m})\)};
- \draw[->] (0,-18) -- (0,24) node[above] {\(y(\si{m})\)};
- \draw[thick,domain=0:48,samples=120] plot(\x,{16*sin(9*\x)});
- \draw[->,thick] (22,8) -- (34,8) node[midway,above] {\(u\)};
- \draw[dashed] (20,0) -- (20,-16);
- \fill (20,0) circle (1.3) node[above right] {\(P\)};
- \node[left] at (0,16) {\(0.20\)};
- \node[below] at (20,0) {\(20\)};
- \node[below] at (40,0) {\(40\)};
-\end{tikzpicture}
-\end{center}
-\end{exercise}
-
-\begin{solution}
-图像给的是 \(t=0\) 的空间波形，不是某一点的位移时间图。由 \(\lambda=\SI{40}{m}\)、\(u=\SI{20}{m/s}\) 得
- \(T=\frac{\lambda}{u}=\SI{2}{s},\qquad \omega=\frac{2\pi}{T}=\pi\,\si{rad/s},\qquad k=\frac{2\pi}{\lambda}=\frac{\pi}{20}\,\si{rad/m}.\) 
-
-沿 \(+x\) 传播时取 \(y=A\cos(\omega t-kx+\varphi_0)\)。图中 \(t=0,x=0\) 时 \(O\) 点在平衡位置；把波形向右平移一点看，原点此刻将向负方向运动，所以可取
- \(y(x,t)=0.20\cos\left(\pi t-\frac{\pi x}{20}+\frac{\pi}{2}\right).\) 
-
-由 \(x_P=\SI{20}{m}\) 代入波函数，得 \(y_P(t)=0.20\cos\left(\pi t-\pi+\dfrac{\pi}{2}\right)=0.20\cos\left(\pi t-\dfrac{\pi}{2}\right)\)。
-\(P\) 比 \(O\) 在传播方向上靠前 \(\SI{20}{m}=\lambda/2\)，它的相位正应比 \(O\) 滞后 \(\pi\)。
-\end{solution}
-
-\begin{exercise}[2010模拟题：由两时刻波形写原点振动方程和波函数]
-图示为一平面余弦波在 \(t=0\) 与 \(t=\SI{2}{s}\) 时刻的波形。由图读出 \(\lambda=\SI{160}{m}\)，两时刻波形相对向 \(+x\) 方向平移 \(\SI{20}{m}\)，且 \(t=0\) 时原点位移为 \(A/\sqrt2\)，\(t=\SI{2}{s}\) 时原点回到平衡位置并正从正位移向平衡位置运动。求：1. 坐标原点处介质质点的振动方程；2. 该波的波动表达式。
-
-\begin{center}
-\includegraphics[width=0.55\linewidth]{pdf-exercises/pdf2010-mock-q23-two-waveforms.png}
-\end{center}
-\end{exercise}
-
-\begin{solution}
-两个时刻的波形图本质上是在告诉我们“同一相位点怎样平移”。图中 \(t=\SI{2}{s}\) 的波形比 \(t=0\) 的波形向右平移 \(\SI{20}{m}\)，所以波沿 \(+x\) 方向传播。
-
-由图中平移量和波速关系可得
- \(u=\frac{\Delta x}{\Delta t}=\frac{20}{2}=\SI{10}{m/s},\qquad k=\frac{2\pi}{\lambda}=\frac{\pi}{80}\,\si{rad/m}, \omega=ku=\frac{\pi}{80}\times 10=\frac{\pi}{8}\,\si{rad/s}.\) 
-
-取原点振动为 \(y_O(t)=A\cos(\omega t+\varphi_0)\)。题图给出 \(y_O(0)=A/\sqrt2\)，故 \(\cos\varphi_0=1/\sqrt2\)；再看 \(t=\SI{2}{s}\) 时原点回到平衡位置，且位移正从正值向零变化，可取 \(\varphi_0=\pi/4\)。于是
- \(y_O(t)=A\cos\left(\frac{\pi}{8}t+\frac{\pi}{4}\right).\) 
-
-波沿 \(+x\) 方向传播，空间相位项取 \(-kx\)，所以
- \(y(x,t)=A\cos\left(\frac{\pi}{8}t-\frac{\pi}{80}x+\frac{\pi}{4}\right)\quad(\si{SI}).\) 
-把 \(x=0\) 代回可退回原点振动方程；把 \(t=0\) 代入，波峰出现在 \(x=\SI{20}{m}\) 处，也与题图相符。
-\end{solution}
-
-\section{由参考点用相位差法写波动方程}
-
-这一节要解决的问题是：如果题目不给原点处的振动，而是给某个中途参考点的振动方程，该怎么办？
-
-若已知某参考点 \(x=x_0\) 处的振动方程
-\[
-\begin{aligned}
-y(x_0,t)&=A\cos(\omega t+\varphi_B),\\
-\Delta\varphi&=k(x-x_0),\\
-y(x,t)&=A\cos\left[\omega t-k(x-x_0)+\varphi_B\right].
-\end{aligned}
-\]
-
-使用参考点写波函数时，关键是把传播方向和相位滞后关系放在一起看。沿传播方向更靠前的点较晚进入同一振动状态，相位相应滞后；待求点与参考点相距 \(x-x_0\) 时，再由 \(k(x-x_0)\) 或等价的 \(\dfrac{2\pi}{\lambda}(x-x_0)\) 补进相位。
-
-\begin{note}
-口头判断时，可以这样记：若波沿正方向传播，前方的点通常相位滞后，后方的点通常相位超前。先把“谁先经历同一状态”想清楚，正负号就不会只剩硬背。
-\end{note}
-
-\section{相位差与波程差}
-
-这一节要解决的问题是：为什么波动题总爱把“相位差”和“波程差”放在一起讲，它们到底怎么换算？
-
-波动问题中，某一点在某时刻的相位与“同相/反相”判据可压成
-\[
-\begin{aligned}
-\varphi&=\omega t-kx+\varphi_0=\omega t-\frac{2\pi}{\lambda}x+\varphi_0,\\
-\delta&=x_2-x_1,\qquad
-\Delta\varphi=\frac{2\pi}{\lambda}\delta,\\
-\delta&=m\lambda
-\iff \Delta\varphi=2m\pi
-\iff \text{两点同相},\\
-\delta&=\left(m+\frac12\right)\lambda
-\iff \Delta\varphi=(2m+1)\pi
-\iff \text{两点反相}.
-\end{aligned}
-\]
-若只关心“同相还是反相”，也常取它们的绝对值来比较。在同一均匀介质中，波程差就是几何路程差，所以可以直接把两点间的空间距离差换成相位差。
-
-\begin{remark}
-把波长 \(\lambda\) 看成“空间里的一个完整周期”，这部分就不难了：整波长差对应整周期差，所以同相；半波长差对应半周期差，所以反相。
-\end{remark}
-
-\section{一维波动微分方程与三维简谐波动力学方程}
-
-这一节要解决的问题是：除了写出一个具体的波函数，我们能不能写出一条直接约束”整个波场怎样传播”的方程？
-
-\bridge{最自然的起点不是再去盯某个质点单独怎样受力，而是先抓住“行波只是把原有图样整体搬运”的事实。若波形只是在以速度 \(u\) 平移，那么时间上快一点、空间上挪一点，本质上是在追同一个图样；正因为如此，时间变化和空间变化才会被同一速度锁在一起，最后必然同时冒出 \(\partial^2/\partial t^2\) 与 \(\partial^2/\partial x^2\) 这两类量。}
-
-\begin{definition}[偏导数]\label{def:partial-derivative}
-当一个函数同时依赖多个变量（如 \(y(x,t)\) 同时依赖位置 \(x\) 和时间 \(t\)）时，\textbf{偏导数}就是”固定其他变量不动，只对其中一个变量求导”。记号 \(\dfrac{\partial y}{\partial t}\) 表示把 \(x\) 当常数、只对 \(t\) 求导；\(\dfrac{\partial y}{\partial x}\) 表示把 \(t\) 当常数、只对 \(x\) 求导。计算规则和普通导数完全一样——只是把”不动的那些变量”视为常数即可。例如 \(y=3x^2t\)，则 \(\dfrac{\partial y}{\partial t}=3x^2\)，\(\dfrac{\partial y}{\partial x}=6xt\)。
-\end{definition}
-
-\begin{remark}
-偏导数的物理含义：\(\dfrac{\partial y}{\partial t}\) 是”盯住空间某一点，看它随时间怎样变”；\(\dfrac{\partial y}{\partial x}\) 是”在某一时刻冻结画面，看波形沿空间怎样弯”。二阶偏导 \(\dfrac{\partial^2 y}{\partial t^2}\) 就是加速度，\(\dfrac{\partial^2 y}{\partial x^2}\) 就是曲率（弯曲程度）。
-\end{remark}
-
-先提醒一点：这里不是在重新研究某个质点”自己怎么振”，而是在从已知波函数里读出它必须满足的传播约束。
-
+\begin{definition}[一维波动微分方程与三维简谐波动力学方程]
 对一维简谐波
  \(y=A\cos\omega\left(t-\frac{x}{u}\right),\) 
 分别对 \(t\) 和 \(x\) 求两次偏导，可得
-\begin{note}
-这里用偏导，是因为波场同时依赖空间和时间。对 \(t\) 求偏导时，把 \(x\) 固定住，表示“盯住某一点看它随时间怎样振”；对 \(x\) 求偏导时，把 \(t\) 固定住，表示“在某一时刻看波形沿空间怎样弯”。推广到三维后，\(\nabla^2\) 就是在把三个方向的空间弯曲程度加总起来。
-\end{note}
 \begin{align*}
 \frac{\partial^2 y}{\partial t^2}
-&=-\omega^2 A\cos\omega\left(t-\frac{x}{u}\right),\\
-\frac{\partial^2 y}{\partial x^2}
-&=-\frac{\omega^2}{u^2}A\cos\omega\left(t-\frac{x}{u}\right)
+=-\omega^2 A\cos\omega\left(t-\frac{x}{u}\right),~\frac{\partial^2 y}{\partial x^2}
+=-\frac{\omega^2}{u^2}A\cos\omega\left(t-\frac{x}{u}\right)
 =\frac{1}{u^2}\frac{\partial^2 y}{\partial t^2}.
 \end{align*}
-
-把它读成“空间中的弯曲程度”和“时间上的变化快慢”彼此绑定，就不难了：波不是某个点单独在动，而是整列波形在传播，所以空间曲率和时间加速度必须同步出现。
-
-这条方程说明：波形在空间中的弯曲程度，与它在时间上的加速变化直接相关。它约束的不是某一个点怎样振，而是\textbf{整列波在时空中怎样传播}，所以它常被称为波动的动力学方程。
-
-若把一维推广到三维，设介质扰动量为 \(\xi=\xi(x,y,z,t)\)，则
+波形在空间中的弯曲程度，与它在时间上的加速变化直接相关，所以它常被称为波动的动力学方程。若把一维推广到三维，设介质扰动量为 \(\xi=\xi(x,y,z,t)\)，则
 \begin{align*}
-\nabla^2\xi&=\frac{1}{u^2}\frac{\partial^2 \xi}{\partial t^2},\\
-\nabla^2&=\frac{\partial^2}{\partial x^2}
+\nabla^2\xi&=\frac{1}{u^2}\frac{\partial^2 \xi}{\partial t^2},~\nabla^2=\frac{\partial^2}{\partial x^2}
 +\frac{\partial^2}{\partial y^2}
 +\frac{\partial^2}{\partial z^2},
 \end{align*}
 其中 \(\nabla^2\) 叫做拉普拉斯算符。
-
-\bridge{如果你还没学过多元微积分中的梯度和散度：\(\nabla^2\) 可以先理解为"对三个方向各求一次二阶偏导再加起来"，它衡量的是函数值在某点相对于周围邻域平均值的偏离程度。一维时 \(\nabla^2=\partial^2/\partial x^2\) 就是曲线的"弯曲程度"；三维时把三个方向的弯曲加总。}
-
-\begin{note}
-这里的 \(y(x,t)\) 是一维情形下的位移函数，而 \(\xi(x,y,z,t)\) 是三维波场里的一个标量扰动量。对不同物理问题，\(\xi\) 具体可以代表位移、压强扰动等，但它们都满足同一类波动方程。
-\end{note}
-
-\section{球面简谐波}
-
-点波源向各个方向均匀发出波时，形成球面波。若介质没有吸收，波通过任意球面的平均能流相同，而球面面积随 \(r^2\) 增大，因此振幅会随距离减小：
-\[
-\begin{aligned}
-A(r)&\propto \frac{1}{r},\qquad
-A(r)=A_0\frac{r_0}{r},\\
-y(r,t)&=A_0\frac{r_0}{r}\cos\omega\left(t-\frac{r}{u}\right),\qquad r>r_0.
-\end{aligned}
-\]
-
-\bridge{球面波振幅越传越小，并不是某个质点“自己变弱了”，而是因为同样多的能量被摊到了越来越大的球面上。}
+\end{definition}
 
 \section{机械波的能量}
 
-这一节要解决的问题是：机械波明明只是“振动状态在传播”，为什么还能把能量从一处送到另一处？
-
-\textbf{先把单个振子的能量图景平移过来。} 对波里的某一个微小体积元，仍然应该先问两件事：它自己此刻振得多快？它和相邻部分之间被拉伸、压缩得多厉害？前者决定动能，后者决定弹性势能。
-
-\textbf{第一项为什么看 \(\partial y/\partial t\)。} 若位移场写成 \(y(x,t)\)，那么盯住空间中某个固定位置 \(x\)，这个体积元的振动速度就是
- \(v=\frac{\partial y}{\partial t}.\) 
-而这个体积元自己的质量就是 \(dm=\rho\,\dd V\)，因此它的动能自然写成
- \(\dd E_k=\frac12 \rho\left(\frac{\partial y}{\partial t}\right)^2\dd V.\) 
-
-\textbf{第二项为什么看 \(\partial y/\partial x\)，而不是直接看 \(y\)。} 因为弹性势能并不取决于“整段介质整体挪了多远”，而取决于“相邻两点有没有被拉开或挤近”。若整根棒每一点都平移同样的位移 \(y\)，虽然 \(y\) 本身可能很大，但相邻两点间距没变，介质根本没有形变，也就没有额外弹性势能。真正记录形变程度的，是相邻位移之差除以原长度，也就是应变：
- \(\varepsilon=\frac{\Delta l}{\dd x}=\frac{\partial y}{\partial x}.\) 
-再结合杨氏模量关系 \(\sigma=Y\varepsilon\)，并记住线性弹性范围内单位体积储存的弹性势能密度本来就来自
- \(\int_0^\varepsilon \sigma\,\dd\varepsilon =\int_0^\varepsilon Y\varepsilon\,\dd\varepsilon =\frac12 \sigma\varepsilon,\) 
-于是体积元中的弹性势能自然写成
- \(\dd E_p=\frac12 \sigma\varepsilon\,\dd V =\frac12 Y\left(\frac{\partial y}{\partial x}\right)^2\dd V.\) 
-于是体积元的总机械能就是
- \(\dd E=\dd E_k+\dd E_p.\) 
-也就是说，在真正读公式之前，脑中最好已经先分清：\textbf{时间导数记录局部运动，空间导数记录局部形变。} 这样看到 \(\partial y/\partial t\) 和 \(\partial y/\partial x\) 时，就不会像在看两块凭空冒出来的符号。
-
-\textbf{把它代到简谐行波里之前，还可以先预判结果的大致结构。} 因为对简谐行波来说，无论对时间求导还是对空间求导，都会把位移振幅 \(A\) 变成与 \(A\omega\) 同量级的量；而能量本来又是二次量，所以最后的动能、势能和总能量里一定会出现 \(A^2\omega^2\)。先有这个预判，再读结果就顺了。以固体棒中传播的平面简谐纵波为例，若这是沿棒传播的平面简谐纵波
-\begin{align*}
-y&=A\cos\omega\left(t-\frac{x}{u}\right),\qquad u=\sqrt{\frac{Y}{\rho}},\\
-\frac{\partial y}{\partial t}&=-A\omega\sin\omega\left(t-\frac{x}{u}\right),&
-\frac{\partial y}{\partial x}&=\frac{A\omega}{u}\sin\omega\left(t-\frac{x}{u}\right),\\
-\dd E_k&=\frac12 \rho A^2\omega^2\sin^2\omega\left(t-\frac{x}{u}\right)\dd V,&
-\dd E_p&=\frac12 \rho A^2\omega^2\sin^2\omega\left(t-\frac{x}{u}\right)\dd V,\\
-\dd E&=\dd E_k+\dd E_p=\rho A^2\omega^2\sin^2\omega\left(t-\frac{x}{u}\right)\dd V.
-\end{align*}
-
-\textbf{最后再看局部机械能为什么不守恒。} 上式表明，同一个体积元的机械能会随时间起伏变化。它有时从前面的介质接收能量，有时又把能量交给后面的介质，所以
+当机械波在介质中向前推进时，它不仅带动各个质元在其平衡位置附近振动，同时也在强行拉伸或挤压介质：
 \begin{itemize}
- \item 任一体积元都在不断地接收和放出能量；
- \item 任一体积元的机械能不守恒；
- \item 波动是能量传递的一种方式。
+\item 振动动能：由于介质中的各质元都在围绕其平衡位置往复振动，因而每个质元都具有瞬时动能。
+\item 弹性势能：由于相邻质元之间存在弹性相互作用，波的传播使介质内部发生弹性形变（如伸缩形变、剪切形变或容积形变），因而形变的介质具有瞬时弹性势能。
 \end{itemize}
 
-\begin{note}
-这正是波的能量部分最该抓住的一句话：\textbf{对整列行波来说，能量在向前传播；对局部体积元来说，它自己的机械能却不守恒。} 这和单个简谐振子的“总能量守恒”正好形成鲜明对照。
-\end{note}
+\begin{definition}[体积元的振动动能]
+在直棒中建立一维空间坐标轴 $x$。设棒的横截面积为 $S$，介质的质量密度为 $\rho$。在未起振前，我们在棒中截取一段处于 $[x, x+\mathrm{d}x]$ 区间、长为 $\mathrm{d}x$ 的未形变质量微元。该微元的体积元为 $\mathrm{d}V = S\mathrm{d}x$，其对应的质量微元为：$$\mathrm{d}m = \rho \mathrm{d}V = \rho S \mathrm{d}x$$当一列沿 $x$ 轴正方向传播的平面简谐纵波通过该区域时，其波函数（位移方程）为：$$y = A \cos \omega \left( t - \frac{x}{u} \right)$$体积元内各质点沿 $x$ 方向运动的瞬时振动速度 $v$ 通过对时间 $t$ 求偏导数获得：$$v = \frac{\partial y}{\partial t} = -\omega A \sin \omega \left( t - \frac{x}{u} \right)$$根据经典动能公式，该体积元的瞬时振动动能 $\mathrm{d}E_{\text{k}}$ 为：$$\mathrm{d}E_{\text{k}} = \frac{1}{2}(\mathrm{d}m)v^2 = \frac{1}{2}(\rho \mathrm{d}V) \left[ -\omega A \sin \omega \left( t - \frac{x}{u} \right) \right]^2 = \frac{1}{2}\rho \mathrm{d}V A^2 \omega^2 \sin^2 \omega \left( t - \frac{x}{u} \right) $$
+\end{definition}
+
+\begin{definition}[体积元的弹性势能推导]
+固体介质根据受力方向不同，主要存在三种基本形变形态：杨氏模量对应的伸缩形变、切变模量对应的剪切形变以及容变模量对应的容积形变。由于纵波在固体棒中传播引发的是交替的疏密形变（拉伸与压缩），因此遵循胡克定律的固体线应变规律：
+\begin{itemize}
+\item 正应力 $\sigma$：单位横截面积上承受的内力 $\sigma = \frac{F}{S}$。
+\item 线应变 $\varepsilon$：单位原始长度对应的绝对伸长量 $\varepsilon = \frac{\Delta l}{l}$。
+\end{itemize}
+实验表明，在线弹性限度内，物体的线应变与正应力成正比，即 $\frac{F}{S} = Y \frac{\Delta l}{l}$（其中比例系数 $Y$ 称为材料的杨氏模量）。在机械弹簧模型中，当弹簧伸长 $\Delta l$ 时，弹性回复力为 $F = k\Delta l$，对应的累积弹性势能为 $E_{\text{p}} = \frac{1}{2}k(\Delta l)^2$。我们现将此分立模型推广至连续介质微元。在有波通过时，原 $[x, x+\mathrm{d}x]$ 处的体积元左端点发生了位移 $y(x,t)$，右端点发生了位移 $y(x+\mathrm{d}x, t) = y + \mathrm{d}y$。因此，该体积元在空间上的绝对形变量（净伸长量）为：$$\Delta l = (y + \mathrm{d}y) - y = \mathrm{d}y = \frac{\partial y}{\partial x}\mathrm{d}x$$根据胡克定律，弹性体内产生的应力满足 $\frac{F}{S} = Y \frac{\mathrm{d}y}{\mathrm{d}x}$。由此解得该体积元承受的瞬时内力 $F$ 为：$$F = Y S \frac{\partial y}{\partial x} = \underbrace{\left( \frac{YS}{\mathrm{d}x} \right)}_{k_{\text{等效}}} \mathrm{d}y = k \mathrm{d}y \implies k_{\text{等效}} = \frac{YS}{\mathrm{d}x}$$将等效劲度系数 $k$ 和形变量 $\mathrm{d}y$ 代入微元势能方程：$$\mathrm{d}E_{\text{p}} = \frac{1}{2} k_{\text{等效}} (\mathrm{d}y)^2 = \frac{1}{2} \left( \frac{YS}{\mathrm{d}x} \right) \left( \frac{\partial y}{\partial x} \mathrm{d}x \right)^2 = \frac{1}{2} Y S \mathrm{d}x \left( \frac{\partial y}{\partial x} \right)^2$$由于 $S\mathrm{d}x = \mathrm{d}V$，且固体棒中纵波的波速满足 $u = \sqrt{\frac{Y}{\rho}} \implies Y = \rho u^2$，上式可代换为：$$\mathrm{d}E_{\text{p}} = \frac{1}{2} \rho u^2 \mathrm{d}V \left( \frac{\partial y}{\partial x} \right)^2 $$我们对波函数 $y = A \cos \omega \left( t - \frac{x}{u} \right)$ 关于空间坐标 $x$ 求偏导数（即获取波形图上的瞬时切线斜率）：$$\frac{\partial y}{\partial x} = -A \left( -\frac{\omega}{u} \right) \sin \omega \left( t - \frac{x}{u} \right) = \frac{\omega}{u} A \sin \omega \left( t - \frac{x}{u} \right)$$将该空间应变斜率严格代回势能方程（2）中：$$\mathrm{d}E_{\text{p}} = \frac{1}{2} \rho u^2 \mathrm{d}V \left[ \frac{\omega}{u} A \sin \omega \left( t - \frac{x}{u} \right) \right]^2= \frac{1}{2} \rho \mathrm{d}V A^2 \omega^2 \sin^2 \omega \left( t - \frac{x}{u} \right)$$
+\end{definition}
+该体积元的总机械能 $\mathrm{d}E$：
+$$\mathrm{d}E = \mathrm{d}E_{\text{k}} + \mathrm{d}E_{\text{p}} = \frac{1}{2} \rho \mathrm{d}V A^2 \omega^2 \sin^2 \omega \left( t - \frac{x}{u} \right) + \frac{1}{2} \rho \mathrm{d}V A^2 \omega^2 \sin^2 \omega \left( t - \frac{x}{u} \right)= \rho \mathrm{d}V A^2 \omega^2 \sin^2 \omega \left( t - \frac{x}{u} \right)$$
+由于体积元的总机械能 $\mathrm{d}E$ 随着时间不断在 $0 \sim \rho \mathrm{d}V \omega^2 A^2$ 之间剧烈起伏，这揭示：在波动传播的介质中，任一体积元的机械能不再守恒。对比 $\mathrm{d}E_{\text{k}}$、\textbf{$\mathrm{d}E_{\text{p}}$} 与 $\mathrm{d}E$ 的函数结构，我们可以直接提炼出机械波能量最核心的两项决定性动力学特征：
+\begin{enumerate}
+\item 在波动传播的弹性介质中，任一体积元的动能、势能以及总机械能均随着空间坐标 $x$ 和时间时刻 $t$ 作同频率的周期性变化，且它们的物理变化是严格同相位的。比如当体积元运动到平衡位置时：
+\begin{itemize}
+\item 动能视角：质元的位移为零，但振动速度 $v = \frac{\partial y}{\partial t}$ 达到最大值，故动能达到最大值。
+\item 势能视角：虽然位移为零，但该处波形图的切线斜率 $\frac{\partial y}{\partial x}$ 绝对值达到最大值。这意味着相邻层面的质元之间发生了最剧烈的拉伸或压缩挤压，空间形变最严重，故弹性势能也同时达到最大值。
+\item 结论：体积元在平衡位置时，动能、势能和总机械能均达到最大值。
+\end{itemize}
+当体积元运动到最大位移处时：
+\begin{itemize}
+\item 动能视角：质元瞬时静止，振动速度为零，故动能为零。
+\item 势能视角：处于波峰或波谷处的波形图切线斜率 $\frac{\partial y}{\partial x} = 0$。这意味着相邻质元之间没有相对形变趋势，介质处于无形变松弛状态，故弹性势能也同时为零。
+\item 结论：体积元在最大位移处时，动能、势能和总机械能三者均为零。
+\end{itemize}
+\end{enumerate}
+
+\begin{definition}[能量密度与平均能量密度]
+能量密度 $w$：单位体积介质之中的波动机械能总量。$$w = \frac{\mathrm{d}E}{\mathrm{d}V} = \rho A^2 \omega^2 \sin^2 \omega \left( t - \frac{x}{u} \right)$$
+平均能量密度 $\bar{w}$：由于瞬时能量密度随时间快速起伏，工程上更关心其在一个完整时间周期 $T$ 内的平均表现（即时间积分平均值）：$$\bar{w} = \frac{1}{T} \int_{0}^{T} w \mathrm{d}t = \frac{1}{T} \int_{0}^{T} \rho A^2 \omega^2 \sin^2 \omega \left( t - \frac{x}{u} \right) \mathrm{d}t$$利用正弦平方项在一个周期内的积分平均值恒等于 $\frac{1}{2}$（即 $\overline{\sin^2\alpha} = \frac{1}{2}$），直接导出平均能量密度公式：$$\boxed{\bar{w} = \frac{1}{2} \rho \omega^2 A^2}$$
+\end{definition}
+
+\begin{definition}[能流和能流密度]
+能流的定义：单位时间内垂直通过介质中某一给定截面积 $S$ 的波动能量总量。在物理量纲上，它等价于通过该截面的瞬时能流量（功率 $P$）。\\
+我们考察一个横截面积为 $S$ 的管道空间。在时间 $t$ 内，波动在空间中沿垂直截面方向向前推进的几何距离为 $l = u t$（其中 $u$ 为相速度）。在这段时间内，穿过该面积的总能量，在量值上正好等于该体积柱体 $V = S \cdot l = S u t$ 内部积攒的全部波动能量：$$P = \frac{E}{t} = \frac{w \cdot V}{t} = \frac{w \cdot (S u t)}{t} = w u S$$定义一个周期内的平均通过功率为平均能流 $\bar{P}$：$$\boxed{\bar{P} = \bar{w} u S = \frac{1}{2} \rho \omega^2 A^2 u S}$$
+由于能流 $\bar{P}$ 的大小依然与截面积 $S$ 的大小绑定在一起，为了彻底剥离出空间任意格点处能量流动的特征强度，需要将其对面积进行归一化：能流密度（物理上称为波的强度 $I$）的定义：单位时间内垂直通过单位面积的平均能流（即单位面积上的平均波动功率）。$$I = \frac{\bar{P}}{S} = \bar{w} u$$我们将平均能量密度公式代入上式，锁定平均能流密度（波的强度）的终极解析式：$$\boxed{I = \frac{1}{2} \rho \omega^2 A^2 u}$$从上式可以清晰地看出，空间中某处的波的强度（能流密度）严格正比于介质质量密度 $\rho$、角频率平方 $\omega^2$、振幅平方 $A^2$ 以及波速 $u$。
+\end{definition}
 
 \begin{exercise}[2008级期末：行波中质元总能量与动能的关系]
 一平面简谐机械波在媒质中传播时，若某一媒质质元在 \(t\) 时刻的总机械能为 \(\SI{10}{J}\)，求在 \(t+T\) 时刻该质元的振动动能，其中 \(T\) 为波的周期。
@@ -3027,44 +2015,6 @@ y&=A\cos\omega\left(t-\frac{x}{u}\right),\qquad u=\sqrt{\frac{Y}{\rho}},\\
 对行波中的一个质元，动能和弹性势能会随时间同步变化。平面简谐行波在同一瞬间满足 \(E=E_k+E_p,\ E_k=E_p\)，而经过一个周期后，质元位移、速度和形变状态都回到同一相位。题目给 \(t\) 时刻总机械能为 \(\SI{10}{J}\)，所以 \(t+T\) 时刻总机械能仍为 \(\SI{10}{J}\)，从而 \(E_k(t+T)=10/2=\SI{5}{J}\)。
 这里不能把波中质元误当成孤立弹簧振子。孤立简谐振子的总能量守恒且动能、势能交替；行波中局部质元的能量随相位起伏，但同一瞬时动能和弹性势能相等。
 \end{solution}
-
-\section{能流和能流密度}
-
-上一节已经得到体积元的总机械能 \(\dd E\)。接下来最自然的两个问题是：某处\textbf{平均每单位体积装了多少能量}？这些能量又\textbf{每秒穿过某截面多少}？
-
-先回答第一个问题。这里横线 \(\bar{\phantom{w}}\) 统一表示\textbf{对一个周期做时间平均}。上一节已经知道瞬时能量密度随 \(\sin^2\) 起伏，所以一做周期平均，唯一会发生的事情就是把 \(\sin^2\) 的平均值换成 \(1/2\)。先有这句预判，再看平均能量密度公式就不会突兀。由定义立刻有能量密度
-\[
-\begin{aligned}
-w&=\frac{\dd E}{\dd V}
-=\rho A^2\omega^2\sin^2\omega\left(t-\frac{x}{u}\right),\\
-\bar w&=\frac12 \rho\omega^2A^2.
-\end{aligned}
-\]
-\bridge{这个公式不必死背成一串字母。它说的其实很朴素：介质越重、振得越快、摆得越大，单位体积里储存和交换的波动能量就越多。}
-
-\begin{note}
- 由“单位面积每秒通过多少能量”可知，应比较 \(\bar P\) 或 \(I\)，而不是某个质点的瞬时速度。\(\bar w\) 表示单位体积平均储存的波动能量，\(\bar P\) 表示整列波每秒送过的能量，\(I\) 表示单位面积上的输运强弱。平面波每秒扫过厚度 \(u\Delta t\) 的一薄层，所以乘波速 \(u\) 就得到每秒输运的能量，再除面积得到 \(I=\bar wu\)。这里的 \(u\) 是波速，不是质点振动速度；振幅变为 2 倍时，能流密度按平方变为 4 倍。
-\end{note}
-
-再回答第二个问题。仅仅知道“某处存了多少能量”还不够，我们还想知道“能量穿过某个截面的速度有多快”。于是引入\textbf{能流} \(P\)：单位时间内垂直通过某一面积的能量。这里最该先在脑中立起来的图景是：既然单位体积平均装了 \(\bar w\)，那么每秒真正能穿过截面的，不过就是“厚度为 \(u\Delta t\) 的那一层波”。所以能流必然等于“每单位体积的平均能量”乘“每秒扫过的体积”，能流密度再把面积除掉就行。带着这个图景，再看下面的式子：
-\[
-\begin{aligned}
-\Delta E&=\bar w Su\Delta t
-\implies
-\bar P=\frac{\Delta E}{\Delta t}
-=\bar w uS=\frac12 \rho\omega^2A^2uS,\\
-I&=\frac{\bar P}{S}=\bar w u=\frac12 \rho\omega^2A^2u
-\implies
-I\propto \rho,\qquad
-I\propto \omega^2,\qquad
-I\propto A^2,\qquad
-I\propto u.
-\end{aligned}
-\]
-
-\begin{remark}
-这里的 \(u\) 是波速，不是某个质点自己的振动速度。能流密度在乎的是“每秒有多厚的一层已带能量的介质扫过截面”，所以它跟波形传播速度有关，而不是跟单个质点一上一下振得多快直接等同。
-\end{remark}
 
 \begin{exercise}[振幅加倍时能流密度怎样变]
 若同一介质中两列简谐波的波速和频率都相同，但第二列波的振幅是第一列的 2 倍，求两列波平均能流密度之比。
@@ -3076,105 +2026,56 @@ I\propto u.
 第二列波的平均能流密度是第一列的 \(4\) 倍。这里比较的是能流密度，不是质点瞬时速度；同一介质、同一频率时，真正起作用的是振幅平方。
 \end{solution}
 
-\section{惠更斯原理}
+\section{惠更斯原理与波的衍射，波的反射和折射}
 
- 当我们只知道“已有一个波前”，为什么还能继续预言下一时刻的新波前会在哪里？
-
- 若把整个波前当成一块刚性板，就很难解释波为何会绕过障碍物、在边缘重新铺开。更自然的想法是：波前上每一点都像一个微小的新波源，都会继续把振动向外传。于是下一时刻真正决定新波前位置的，就不再是旧波前整体的“平移”，而是这些子波共同包出的新外沿。
+ 当我们只知道“已有一个波前”，为什么还能继续预言下一时刻的新波前会在哪里？若把整个波前当成一块刚性板，就很难解释波为何会绕过障碍物、在边缘重新铺开。更自然的想法是：波前上每一点都像一个微小的新波源，都会继续把振动向外传。于是下一时刻真正决定新波前位置的，就不再是旧波前整体的“平移”，而是这些子波共同包出的新外沿。
 
 \begin{theorem}[惠更斯原理]
 波阵面上的每一点都可以看成发出子波的新波源；经过一段时间后，这些子波的包络面就是新的波前。
 \end{theorem}
 
-这一原理的意义有两层：一层是帮助我们直观理解“为什么波会继续向前传播”；另一层是帮助我们解释反射、折射和衍射等现象中的新波前如何形成。
-
-\begin{note}
-看到“包络面”不要害怕，它只是说：把每个子波都画出来后，外面那层刚好与它们相切的轮廓，就是下一时刻的新波前。
-\end{note}
-
-\section{波的衍射}
-
- 波为什么不会像小球那样被障碍物整齐截断，而会拐进“本来该是阴影”的区域？
-
  当波前来到孔缝或障碍物边缘时，真正被继续推进的不是一条刚性的几何边界，而是边缘附近那一段还活着的波前。按惠更斯观点，这段波前上的各点仍会发出子波，因此阴影区里并不是“完全没有后续波源”，而是会收到这些边缘子波的叠加。
 
- 先不用急着背具体条纹条件，最先要记的是一条定性判据：\textbf{波长与障碍物特征尺寸可比时，衍射才会明显。} 常用经验判断可压成
- \(\lambda\sim a \text{ 或 } \lambda>a \implies \text{衍射显著},\qquad \lambda\ll a \implies \text{几何直进近似更好},\) 
-其中 \(a\) 可以代表孔径、缝宽或障碍物尺度。
-
- 若 \(\lambda\) 相对 \(a\) 很小，边缘附近能“抹开”到阴影区的角范围就很窄，于是看起来几乎还是直线前进；若 \(\lambda\) 与 \(a\) 同量级，边缘子波的贡献就不再只是小修正，而会主导后方图样。
-
- “看见明显拐弯”才叫衍射，这种理解太窄。只要孔缝限制了波前、图样不再能用纯几何直进解释，就已经进入衍射问题。后面光学里的单缝、圆孔和分辨率，本质上都在重复这里的判断线。
-
-\section{波的反射和折射}
-
-这一节最该先放进脑中的，不是角度公式本身，而是\textbf{为什么方向会改。} 当波前的一部分先碰到边界、先进入另一种介质时，这一部分若传播得更快或更慢，整条波前就会被“转一下方向”；这个几何后果翻译到光线语言里，才表现成反射角、折射角这些关系。所以反射、折射角公式本质上都在记“波前不同部分推进快慢不一样”这一件事。
-
-当机械波遇到两种介质的分界面时，会发生反射；若一部分波进入另一种介质，还会发生折射。
-
-\bridge{把一条波前想成一排同步前进的小点最容易理解。若只是反射，这些点仍回到原介质里传播，速度大小没变，只是法向分量翻了方向，于是图样关于法线镜面对称，这就是反射角等于入射角。若有一部分进入另一介质，先进入的一边改用新速度前进，整条波前就会转向，于是才有折射角关系。}
-
-这里的入射角、反射角和折射角都统一约定为\textbf{相对界面法线}来量，而不是相对界面本身来量。
-
+\begin{theorem}[波的反射和折射]
 反射与折射的基本规律可并排记成
 \[
 \begin{aligned}
 \text{反射：}\quad &\text{入射线、反射线和界面法线共面},\qquad \text{反射角}=\text{入射角},\\
 \text{折射：}\quad &\text{入射线、折射线和界面法线共面},\qquad \frac{\sin i}{\sin r}=\frac{u_1}{u_2}.
 \end{aligned}
-\]
+\]这条折射关系很值得直观理解：如果第二种介质中波速更小，即 \(u_2<u_1\)，那么折射线会向法线偏折；若 \(u_2>u_1\)，则会偏离法线。
+\end{theorem}
 
-这条折射关系很值得直观理解：如果第二种介质中波速更小，即 \(u_2<u_1\)，那么折射线会向法线偏折；若 \(u_2>u_1\)，则会偏离法线。
 
-\begin{note}
-这里是波的一般规律，后面光学里讲反射和折射时，只是把机械波换成了光波，把波速差换成了折射率差。
-\end{note}
-
-\section{波的叠加原理}
-
- 两列波在同一位置相遇时，究竟是“打架后改头换面”，还是只是暂时把位移加在一起？
-
- 对线性介质来说，一列波单独能造成怎样的位移，另一列波也照样能单独造成自己的位移；两者同时到来时，介质只是在那一瞬间同时响应这两份作用，于是位移应当直接相加。这种相加只发生在“此时此地”的响应上，并不意味着两列波会永久融合成一列新波。
+\section{波的叠加，干涉}
 
 \begin{definition}[波的叠加原理]
 在几列波相遇的区域内，任一点的振动位移，等于各列波单独存在时在该点所引起位移的矢量和。
-\end{definition}
-
-\bridge{这一定律最该这样读：相遇时先\textbf{加位移}，相遇后再\textbf{各走各的}。对线性波动，叠加只是同一时刻同一点上的暂时合成，不是把两列波永久揉成一列新波。}
-
-这一定律包含两层重要意思：
 \begin{itemize}
  \item 相遇时，位移可以直接相加；
  \item 相遇之后，各列波仍保持原来的频率、波长、振幅和传播方向继续前进，好像没有彼此永久“缠住”一样。
 \end{itemize}
+\end{definition}
 
-\begin{remark}
-很多人会误以为“两列波撞上以后会混成一列新波”。对线性波动而言，真正发生的是\textbf{暂时叠加}，不是永久改写。
-\end{remark}
-
-\section{波的双缝干涉}
-
-这一节要解决的问题是：为什么两列相干波相遇后，会在有些地方总是加强、在有些地方总是减弱？
-
-这类题不宜只盯“亮还是暗”，而要看观察点 \(P\) 处两列波到达时相差多少路程、于是相差多少相位。相位差确定以后，“相长还是相消”就只是判据的直接翻译。因此双缝干涉的主线可以一直压成一句话：由波程差换相位差，再由相位差判断加强还是减弱。
-
-若两条狭缝 \(S_1,S_2\) 发出两列\textbf{频率相同且相位差恒定}的相干波，则在空间某点 \(P\) 处可写成
-\[
-\begin{aligned}
-y_1&=A\cos(\omega t-kr_1),\qquad
-y_2=A\cos(\omega t-kr_2),\\
-\delta&=r_2-r_1,\qquad
-\Delta\varphi=\frac{2\pi}{\lambda}\delta,\\
-\delta&=m\lambda
-\implies \Delta\varphi=2m\pi \qquad \text{两列波相长},\\
-\delta&=\left(m+\frac12\right)\lambda
-\implies \Delta\varphi=(2m+1)\pi \qquad \text{两列波相消}.
-\end{aligned}
-\]
-
-\begin{note}
-这就是后面光学双缝干涉的母版。第 6 章要抓住的本质是：两列相干波到达同一点时，波程差决定相位差，相位差再决定相长还是相消。这样后面换成光波时，只是在同一框架里换对象。
-\end{note}
+\begin{definition}[波的干涉]
+频率相同、振动方向平行、相位相同或相位差恒定的两列波相遇时，使某些地方振动始终加强，而使另一些地方振动始终减弱的现象。并不是任意相遇的两列波都能产生稳定的干涉图像。要使空间中的振动呈现稳定的强弱不均匀分布，两个波源必须严格满足以下三项相干条件：
+\begin{enumerate}
+\item 波的频率严格相等 ($\omega_1 = \omega_2$)；
+\item 波的振动方向严格相同（具有相同的偏振各向同性）；
+\item 具有恒定不变的初始相位差 ($\phi_2 - \phi_1 = \text{常数}$)。
+\end{enumerate}
+两列波单独传到点 $P$ 时引起的分振动方程分别改写为：$$y_{1P} = A_1 \cos\left(\omega t + \phi_1 - 2\pi \frac{r_1}{\lambda}\right),~y_{2P} = A_2 \cos\left(\omega t + \phi_2 - 2\pi \frac{r_2}{\lambda}\right)$$
+决定点 $P$ 运动剧烈程度的合振幅公式为：$$\boxed{A = \sqrt{A_1^2 + A_2^2 + 2A_1 A_2 \cos\Delta\phi}}$$ $\Delta\phi$，代表了两列波传到点 $P$ 时的瞬时相位差$$\Delta\phi = (\phi_2 - \phi_1) - \frac{2\pi}{\lambda}(r_2 - r_1)= \frac{2\pi}{\lambda}(r_2 - r_1) + (\phi_1 - \phi_2)$$
+\begin{enumerate}
+    \item 若传到点 $P$ 的相位差满足全圆周的整数倍，即两波的步调完全一致，波峰与波峰、波谷与波谷在空间完美重叠：$$\Delta\phi = \pm 2k\pi \qquad (k = 0,1,2,\cdots)$$此时 $\cos\Delta\phi = 1$，合振幅达到理论最大极限值：$$\boxed{A = A_1 + A_2}$$
+    \item 若传到点 $P$ 的相位差满足半圆周的奇数倍，即两波的步调完全相反，一列波的波峰恰好撞上另一列波的波谷：$$\Delta\phi = \pm (2k + 1)\pi \qquad (k = 0,1,2,\cdots)$$此时 $\cos\Delta\phi = -1$，合振幅被削减到理论最小极限值：$$\boxed{A = |A_1 - A_2|}$$
+\end{enumerate}
+初相位完全相同 ($\phi_1 = \phi_2$)时，定义 $\delta = r_2 - r_1$ 为两列波传到点 $P$ 的波程差（Path Difference）：$$\Delta\phi = -2\pi \frac{\delta}{\lambda}$$
+\begin{enumerate}
+    \item 若波程差严格等于波长的整数倍（或者是半波长的偶数倍）：$$\boxed{\delta = \pm k\lambda = \pm 2k \frac{\lambda}{2} \qquad (k = 0,1,2,\cdots)}$$则点 $P$ 处的振动始终加强，合振幅为 $A = A_1 + A_2$。在光学中表现为明亮的相长干涉条纹。
+    \item 若波程差严格等于半波长的奇数倍：$$\boxed{\delta = \pm (2k + 1)\frac{\lambda}{2} \qquad (k = 0,1,2,\cdots)}$$则点 $P$ 处的振动始终减弱，合振幅被极限淡化为 $A = |A_1 - A_2|$。若此时两个波源强度刚好相等 ($A_1 = A_2$)，则点 $P$ 处的质元将完全静止不动，在光学中表现为绝对黑暗的相消干涉条纹。
+\end{enumerate}
+\end{definition}
 
 \begin{exercise}[两相干波源在点 \(P\) 处为什么会完全相消]
 同一介质中有两相干波源 \(A,B\)，振幅都为 \(\SI{5}{cm}\)，频率都为 \(\SI{100}{Hz}\)，波速为 \(\SI{10}{m/s}\)。已知 \(AP=\SI{15}{m}\)、\(BP=\SI{25}{m}\)，且当 \(A\) 为波峰时 \(B\) 恰为波谷。求点 \(P\) 的干涉结果。
@@ -3214,25 +2115,26 @@ r_1=x,\qquad r_2=l-x=10-x,\qquad
 再结合 \(0\le x\le 10\)，得
  \(k=0,1,2,3,4,5 \implies x=0,1,2,3,4,5,6,7,8,9,10\ \si{m}.\) 
 由于两列波振幅相等且同相加强，这些位置的合振幅都为 \(A=2A_1=\SI{0.04}{m}\)。
-对右侧延长线上的任一点，两源到该点的路程差不随点的位置改变，而是恒为源间距 \(r_1-r_2=l=\SI{10}{m}=5\lambda\)，所以始终满足加强条件。
-
-两源连线上从 \(x=0\) 到 \(x=\SI{10}{m}\) 的整数米位置都振动加强，合振幅为 \(\SI{0.04}{m}\)；右侧延长线上也始终加强。
+对右侧延长线上的任一点，两源到该点的路程差不随点的位置改变，而是恒为源间距 \(r_1-r_2=l=\SI{10}{m}=5\lambda\)，所以始终满足加强条件。两源连线上从 \(x=0\) 到 \(x=\SI{10}{m}\) 的整数米位置都振动加强，合振幅为 \(\SI{0.04}{m}\)；右侧延长线上也始终加强。
 \end{solution}
 
 \begin{exercise}[两相干波源有初相差时为什么左右延长线不一样]
 两相干波源 \(s_1,s_2\) 振幅相同，\(s_1\) 在左、\(s_2\) 在右，且 \(s_2\) 比 \(s_1\) 的初相超前 \(\pi/2\)。已知两源间距 \(l=\lambda/4\)。讨论两源连线左侧延长线与右侧延长线上的干涉情况。
 \end{exercise}
-
 \begin{solution}
-这题和“同相两源”的关键区别，不在几何上，而在一开始就自带初相差 \(\pi/2\)。因此初相差和波程差导致的相位差要记到同一本总账里：
  \(\Delta\varphi=(\varphi_2-\varphi_1)-\frac{2\pi}{\lambda}(r_2-r_1).\) 
-左右延长线之所以结论不同，就是因为 \(r_2-r_1\) 的符号会反过来。
-
 在左侧延长线上，点 \(P\) 到右侧波源更远，\(r_2-r_1=l=\dfrac{\lambda}{4}\)，于是 \(\Delta\varphi=\dfrac{\pi}{2}-\dfrac{2\pi}{\lambda}\cdot\dfrac{\lambda}{4}=0\)，对应相长干涉，合振幅为 \(A=2A_1\)。在右侧延长线上，路程差符号反过来，\(r_2-r_1=-l=-\dfrac{\lambda}{4}\)，因此 \(\Delta\varphi=\dfrac{\pi}{2}-\dfrac{2\pi}{\lambda}\cdot\left(-\dfrac{\lambda}{4}\right)=\pi\)，对应相消干涉，合振幅为 \(A=0\)。
-所以左侧延长线上始终加强，右侧延长线上始终减弱到完全相消。这里左右不对称，并不是因为两边距离大小不同，而是初相差固定时，几何路程差在两侧符号相反。
+所以左侧延长线上始终加强，右侧延长线上始终减弱到完全相消。
 \end{solution}
 
 \section{驻波的产生}
+
+
+
+
+
+
+
 
 这一节要解决的问题是：为什么两列明明都在传播的行波，叠加后会出现一种“看起来站住了”的波？
 
