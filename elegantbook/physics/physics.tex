@@ -1675,7 +1675,12 @@ x &= x_1 + x_2 = A_1 \cos(\omega t + \phi_1) + A_2 \cos(\omega t + \phi_2)\\
 所以同相时 \(\Delta\varphi=0\)，合振幅最大为 \(2A\)；反相时 \(\Delta\varphi=\pi\)，合振幅变成零。这正对应“完全相长”和“完全相消”。
 \end{theorem}
 本质上也是矢量的合成。比如一质点同时参与三个同方向、同频率简谐振动：
- \(x_1=A\cos\left(\omega t+\frac{\pi}{3}\right),\quad x_2=A\cos\left(\omega t+\frac{5\pi}{3}\right),\quad x_3=A\cos(\omega t+\pi).\) 同方向同频率振动合成可看成矢量相加。这里三个矢量相隔 \(120^\circ\)，正好合振动为 \(x=0\)。三个等长相量首尾相接正好围成闭合三角形。
+\[
+x_1=A\cos\left(\omega t+\frac{\pi}{3}\right),\quad
+x_2=A\cos\left(\omega t+\frac{5\pi}{3}\right),\quad
+x_3=A\cos(\omega t+\pi).
+\]
+三者相隔 \(120^\circ\)，矢量相加后正好为 \(x=0\)。三个等长相量首尾相接，围成闭合三角形。
 \begin{center}
 \includegraphics[width=0.8\linewidth]{pdf-exercises/1.png}
 \end{center}
@@ -1903,6 +1908,14 @@ $$T = \frac{\lambda}{u}, \qquad \nu = \frac{1}{T} = \frac{u}{\lambda},~~\boxed{u
 波程差 $\Delta x$ 占整个波长 $\lambda$ 的比例有多大，其对应的相位差 $\Delta \phi$ 就占整个全圆周周角 $2\pi$ 弧度的多大比例。$$\frac{\Delta \phi}{2\pi}=\frac{\Delta x}{\lambda}\implies\boxed{\Delta \phi = 2\pi \frac{\Delta x}{\lambda}}$$值得记忆的还有$$\frac{\omega}{u} = \frac{2\pi \nu}{\lambda \nu} = \frac{2\pi}{\lambda}$$
 \end{theorem}
 
+\begin{exercise}[2007级期末：由相位落后量反推两点距离]
+\(A,B\) 是同一简谐波波线上相距小于波长的两点。已知 \(B\) 点振动相位比 \(A\) 点落后 \(\pi/3\)，波长 \(\lambda=\SI{3}{m}\)。求 \(A,B\) 两点间距离。
+\end{exercise}
+
+\begin{solution}
+相位差 \(\pi/3\) 是一个波长相位 \(2\pi\) 的 \(1/6\)，距离也就是 \(\lambda/6=\SI{0.5}{m}\)。若题目没有“小于波长”，还要考虑相差整数个波长的可能。
+\end{solution}
+
 \begin{theorem}[平面简谐波函数推导]
 已知参考点 $x_0$ 处的振动方程为：$y_0 = A \cos(\omega t + \phi)$。现求其右侧任意点 $P$ ($x > x_0$) 的振动方程。
 因为波向右传，右侧的点 $P$ 属于“下游”，这里有两种滞后方式
@@ -1920,14 +1933,34 @@ $$T = \frac{\lambda}{u}, \qquad \nu = \frac{1}{T} = \frac{u}{\lambda},~~\boxed{u
     \item 如果时间 $t$ 与空间 $x$ 同时变化，由于余弦函数的周期性，我们去追踪某一个特定的振动相位（例如波峰状态）。为了让该物理状态保持恒定，必须要求其余弦括号内部的整体相位保持恒定：$$\omega t - \frac{2\pi}{\lambda}x + \phi_0 = \text{常数}$$对上式两边关于时间 $t$ 求一阶微分导数：$$\omega - \frac{2\pi}{\lambda} \frac{\mathrm{d}x}{\mathrm{d}t} = 0 \implies \frac{\mathrm{d}x}{\mathrm{d}t} = \frac{\omega \lambda}{2\pi} = \nu \lambda = u$$因为 $\frac{\mathrm{d}x}{\mathrm{d}t}$ 代表了特定相位（等相面）在空间中推进的运动速度，因此波速 $u$ 在本质上也被称作相速度（Phase Velocity）。
 \end{enumerate}
 
-\begin{exercise}[2010模拟题：由波形图选择质点速度图]
-一简谐波沿 \(Ox\) 轴正方向传播，周期为 \(T=\SI{2}{s}\)。在 \(t=0\) 的波形图中，\(P\) 点位于平衡位置附近，且该处波形随 \(x\) 增大而下降，即 \(\left.\partial y/\partial x\right|_P<0\)。判断 \(P\) 点处质点的振动速度 \(v_y\) 与时间 \(t\) 的关系曲线；
-\begin{center}
-\includegraphics[width=0.98\linewidth]{pdf-exercises/pdf2010-mock-q07-wave-velocity.png}
-\end{center}
+\begin{exercise}[2003级期末：由 \(P\) 点振动写负向传播波]
+一平面简谐波沿 \(Ox\) 轴负方向传播，波速大小为 \(u\)。点 \(P\) 位于 \(O\) 左侧，且 \(PO=L\)。若
+ \(y_P=A\cos(\omega t+\phi),\) 
+求：1. \(O\) 处质点的振动方程；2. 波动表达式；3. 与 \(P\) 处质点振动状态相同的点的位置。
 \end{exercise}
+
 \begin{solution}
-选$A$，做本题只需注意要选的不是振动方程，而是速度关于时间的图像
+波沿 \(-x\) 方向传播，\(O\) 在 \(P\) 的右侧，所以同一振动状态先到达 \(O\)，再经过时间 \(L/u\) 到达 \(P\)。因此 \(O\) 点振动应比 \(P\) 点超前。由时间超前关系，\(O\) 点振动方程为 \(y_O=A\cos\left[\omega\left(t+\dfrac{L}{u}\right)+\phi\right]\)。
+取 \(O\) 为坐标原点，沿 \(-x\) 传播的波可写成
+\[
+y(x,t)=A\cos\left[\omega\left(t+\frac{x}{u}+\frac{L}{u}\right)+\phi\right]
+=A\cos\left[\omega\left(t+\frac{x+L}{u}\right)+\phi\right].
+\]
+代入 \(x=-L\) 即回到 \(y_P=A\cos(\omega t+\phi)\)。与 \(P\) 点同相需满足 \(\dfrac{\omega}{u}(x+L)=2k\pi\)。由于 \(\lambda=2\pi u/\omega\)，得到 \(x=-L+k\lambda=-L+k\dfrac{2\pi u}{\omega}\)，其中 \(k=0,\pm1,\pm2,\dots\)。
+沿 \(-x\) 传播的标准相位应含 \(+x/u\)，这和沿 \(+x\) 传播时的 \(-x/u\) 正好相反；只要抓住谁更早进入同一振动状态，\(L/u\) 的号就不容易写反。
+\end{solution}
+
+\begin{exercise}[2007级期末：声波进入另一介质时频率不变]
+一声波在空气中的波长为 \(\SI{0.25}{m}\)，传播速度为 \(\SI{340}{m/s}\)。当它进入另一介质时，波长变为 \(\SI{0.37}{m}\)。求它在该介质中的传播速度。
+\end{exercise}
+
+\begin{solution}
+波从一种介质进入另一种介质时，频率由波源决定，保持不变；改变的是波速和波长。因此由空气中的 \(v,\lambda\) 求出频率，再乘新波长。
+\[
+f=\frac{v}{\lambda}=\frac{340}{0.25}=\SI{1360}{Hz},\qquad
+v'=1360\times0.37=\SI{503.2}{m/s}\approx\SI{503}{m/s}.
+\]
+介质改变不会让波源振动频率改变。若直接把新介质波长代回空气波速，就等于把“波源节拍”和“传播介质”混在一起了。
 \end{solution}
 
 \begin{exercise}[2009级期末：由原点振动方程写沿正向传播的波函数]
@@ -1937,6 +1970,25 @@ $$T = \frac{\lambda}{u}, \qquad \nu = \frac{1}{T} = \frac{u}{\lambda},~~\boxed{u
 旋转矢量，原点振动方程为 \(y_0=0.06\cos(\pi t+\pi)\)。波沿 \(+x\) 方向传播，位置 \(x\) 处比原点滞后 \(x/u\)，也就是把原点振动中的 \(t\) 换成 \(t-x/u\)。于是
  \(y(x,t)=0.06\cos\left[\pi\left(t-\frac{x}{2}\right)+\pi\right], \qquad \lambda=uT=2\times2=\SI{4}{m}.\) 
 验算：代入 \(x=0\) 后，波函数退回原点振动方程；这个检查也说明这里应使用 \(t-x/u\)。
+\end{solution}
+
+\begin{exercise}[2005级期末：由 \(t=0\) 波形图写波函数和 \(P\) 点振动]
+图示为一平面简谐波在 \(t=0\) 时刻的波形图，波沿 \(+x\) 方向传播，波速 \(u=\SI{0.08}{m/s}\)。由图读出振幅 \(A=\SI{0.04}{m}\)、波长 \(\lambda=\SI{0.40}{m}\)，原点 \(O\) 此刻位于平衡位置且随后向 \(+y\) 方向运动，点 \(P\) 位于 \(x_P=\SI{0.20}{m}\) 处。求：1. 该波的波动表达式；2. \(P\) 处质点的振动方程。
+\begin{center}
+\includegraphics[width=0.34\linewidth]{pdf-exercises/pdf2005-q23-wave.png}
+\end{center}
+\end{exercise}
+
+\begin{solution}
+\(A=\SI{0.04}{m},\ \lambda=\SI{0.40}{m},\ T=\dfrac{\lambda}{u}=\dfrac{0.40}{0.08}=\SI{5}{s}\)。
+波沿 \(+x\) 方向传播，因此可待定
+ \[y=A\cos\left[2\pi\left(\frac{t}{T}-\frac{x}{\lambda}\right)+\varphi_0\right].\]
+\(t=0,x=0\) 时，图中 \(O\) 点位移为零，且因波形向右传播，\(O\) 点此刻速度向 \(+y\) 方向，所以
+ \[\cos\varphi_0=0,\qquad -A\frac{2\pi}{T}\sin\varphi_0>0 \implies \varphi_0=-\frac{\pi}{2}.\]
+于是波函数为
+ \(y=0.04\cos\left[2\pi\left(\frac{t}{5}-\frac{x}{0.40}\right)-\frac{\pi}{2}\right]\ (\si{SI}).\) 
+\(P\) 点坐标为 \(x_P=\SI{0.20}{m}\)，代入得 \(y_P=0.04\cos\left[2\pi\left(\dfrac{t}{5}-\dfrac{0.20}{0.40}\right)-\dfrac{\pi}{2}\right]=0.04\cos\left(0.4\pi t-\dfrac{3\pi}{2}\right)\ (\si{SI})\)。
+沿 \(+x\) 传播时相位中应是 \(-x/\lambda\)。初相不能只由 \(O\) 点位移为零决定，还要结合传播方向判断 \(O\) 点此刻速度方向。
 \end{solution}
 
 \begin{definition}[一维波动微分方程与三维简谐波动力学方程]
@@ -2071,7 +2123,7 @@ $$\mathrm{d}E = \mathrm{d}E_{\text{k}} + \mathrm{d}E_{\text{p}} = \frac{1}{2} \r
     \item 若传到点 $P$ 的相位差满足半圆周的奇数倍，即两波的步调完全相反，一列波的波峰恰好撞上另一列波的波谷：$$\Delta\phi = \pm (2k + 1)\pi \qquad (k = 0,1,2,\cdots)$$此时 $\cos\Delta\phi = -1$，合振幅被削减到理论最小极限值：$$\boxed{A = |A_1 - A_2|}$$
 \end{enumerate}
 初相位完全相同 ($\phi_1 = \phi_2$)时，定义 $\delta = r_2 - r_1$ 为两列波传到点 $P$ 的波程差（Path Difference）：$$\Delta\phi = -2\pi \frac{\delta}{\lambda}$$
-\begin{enumerate}
+ \begin{enumerate}
     \item 若波程差严格等于波长的整数倍（或者是半波长的偶数倍）：$$\boxed{\delta = \pm k\lambda = \pm 2k \frac{\lambda}{2} \qquad (k = 0,1,2,\cdots)}$$则点 $P$ 处的振动始终加强，合振幅为 $A = A_1 + A_2$。在光学中表现为明亮的相长干涉条纹。
     \item 若波程差严格等于半波长的奇数倍：$$\boxed{\delta = \pm (2k + 1)\frac{\lambda}{2} \qquad (k = 0,1,2,\cdots)}$$则点 $P$ 处的振动始终减弱，合振幅被极限淡化为 $A = |A_1 - A_2|$。若此时两个波源强度刚好相等 ($A_1 = A_2$)，则点 $P$ 处的质元将完全静止不动，在光学中表现为绝对黑暗的相消干涉条纹。
 \end{enumerate}
@@ -2144,24 +2196,25 @@ r_1=x,\qquad r_2=l-x=10-x,\qquad
 \begin{theorem}[驻波方程]
 我们建立一维 $x$ 轴。设有一列沿 $x$ 轴正方向（正向）传播的行波 $y_1$，与另一列沿 $x$ 轴负方向（负向）传播的行波 $y_2$。假设两者的振幅均为 $A$，初相均为零，其分波动方程分别写作：$$y_1 = A \cos \left( \omega t - 2\pi \frac{x}{\lambda} \right),~~y_2 = A \cos \left( \omega t + 2\pi \frac{x}{\lambda} \right)$$
 $$y = y_1 + y_2 = A \cos \left( \omega t - 2\pi \frac{x}{\lambda} \right) + A \cos \left( \omega t + 2\pi \frac{x}{\lambda} \right) = \left( 2A \cos 2\pi \frac{x}{\lambda} \right) \cos \omega t$$
+其中 \(k=\dfrac{2\pi}{\lambda}\) 为波数，\(\omega=2\pi\nu\) 为角频率，所以也可写成 \(y=(2A\cos kx)\cos\omega t\)，并有 \(u=\dfrac{\omega}{k}=\lambda\nu\)。
 驻波方程中，空间自变量 $x$ 与时间自变量 $t$ 实现了完完全全的代数分离（乘积形式）。这正是“看不到波形传播”的数学总根源。$A \cos 2\pi \frac{x}{\lambda}$说明驻波的振幅与位置有关，$\cos\omega t$说明各质点都在作同频率的简谐运动。
 \end{theorem}
 
-\begin{definition}[波节，波腹]
-定义该空间点质元的视在合振幅 $A'(x)$：$A'(x) = \left| 2A \cos 2\pi \frac{x}{\lambda} \right|$
-振幅随位置 $x$ 的不同而不同，但对于某一个确定的位置，其最大振幅与时间无关。
-\begin{enumerate}
-\item 波节（Node）：若空间位置 $x$ 恰好让其余弦值为零：$$\left| \cos 2\pi \frac{x}{\lambda} \right| = 0 \implies 2\pi \frac{x}{\lambda} = \pm (2k + 1)\frac{\pi}{2} \qquad (k = 0,1,2,\cdots)$$解得波节的空间坐标位置满足：$$\boxed{x = \pm \left( k + \frac{1}{2} \right) \frac{\lambda}{2} \qquad (k = 0,1,2,\cdots)}$$这些特殊位置的质元受到的两列相向分波的回复力在任何瞬时时刻都抵消，波节处的质元振幅恒等于零（$A_{\text{min}} = 0$），保持静止。
-\item 波腹（Antinode）：若空间位置 $x$ 恰好能让其余弦模长项达到极限最大值：$$\left| \cos 2\pi \frac{x}{\lambda} \right| = 1 \implies 2\pi \frac{x}{\lambda} = \pm k\pi \qquad (k = 0,1,2,\cdots)$$解得波腹的空间坐标位置满足：$$\boxed{x = \pm k \frac{\lambda}{2} \qquad (k = 0,1,2,\cdots)}$$这些位置的质元具有整个线路上最剧烈的往复振动形变规模，其最大振幅达到两倍的分振幅：$A_{\text{max}} = 2A$。
-\end{enumerate}
-\end{definition}
+\begin{exercise}[2006级期末：由驻波表达式求两行波波速]
+一弦上的驻波表达式为
+\[
+y=2.0\times10^{-2}\cos 15x\cos1500t\quad(\si{SI}).
+\]
+求形成该驻波的两个反向传播行波的波速。
+\end{exercise}
 
-\begin{theorem}[同一区域内质元振动的同步性]
-\begin{itemize}
-\item 段内质元同相：在任意时刻 $t$，身处相邻的两个波节之间的所有质元具有完完全全相同的振动步调。它们在同一时刻共同向上掠过平衡位置，在同一时刻共同攀登到各自的最高峰值点（虽然由于振幅调制，各个质元爬升的高度不同）。
-\item 跨节质元反相：由于空间余弦项 $\cos 2\pi \frac{x}{\lambda}$ 跨过零点，导致任一波节两侧的质元，其振动方向总是严格相反（一个向上运动时，另一个必然向下运动）。用余弦式统一规范表达，意味着跨越波节时，相角内部发生了 $\pi$ 弧度的突变：$$\cos 2\pi \frac{x}{\lambda} < 0 \implies y = \left| 2A \cos 2\pi \frac{x}{\lambda} \right| \cos(\omega t + \pi)$$
-\end{itemize}
-\end{theorem}
+\begin{solution}
+由驻波方程直接读出 \(k=15\,\si{rad/m}\)、\(\omega=1500\,\si{rad/s}\)，所以
+\[
+u=\frac{\omega}{k}=\frac{1500}{15}=\SI{100}{m/s}.
+\]
+振幅不影响波速。
+\end{solution}
 
 \begin{exercise}[2010级期末：由驻波方程判断两点振动相位差]
 一驻波表达式为
@@ -2176,454 +2229,14 @@ $$y = y_1 + y_2 = A \cos \left( \omega t - 2\pi \frac{x}{\lambda} \right) + A \c
 两点的空间因子一正一负，时间振动相差一个负号，所以 \(\Delta\varphi=\pi\)。驻波题看的是空间因子符号，不能把两点间距直接当成行波的波程差。
 \end{solution}
 
-\section{相位突变与半波损失}
-\begin{note}
-固定端反射通常对应波节，自由端反射通常对应波腹。
-\end{note}
-\begin{definition}[反射点为波节还是波腹？半波损失]
-当波从\textbf{波疏介质}垂直入射到\textbf{波密介质}，再反射回波疏介质时，反射点形成波节。此时入射波与反射波在边界处总是反相，所以反射波相当于多了一个\(\pi \iff \frac{\lambda}{2}\)。也就是说，相位突变 \(\pi\) 等效于附加了 \(\lambda/2\) 的波程差，这就叫\textbf{半波损失}。反过来，当波从\textbf{波密介质}垂直入射到\textbf{波疏介质}并被反射回去时，反射点形成波腹，入射波和反射波在边界处同相，因此\textbf{不发生相位突变}，也就没有半波损失。
+\begin{definition}[波节，波腹]
+定义该空间点质元的视在合振幅 $A'(x)$：$A'(x) = \left| 2A \cos 2\pi \frac{x}{\lambda} \right|$
+振幅随位置 $x$ 的不同而不同，但对于某一个确定的位置，其最大振幅与时间无关。
+\begin{enumerate}
+\item 波节（Node）：若空间位置 $x$ 恰好让其余弦值为零：$$\left| \cos 2\pi \frac{x}{\lambda} \right| = 0 \implies 2\pi \frac{x}{\lambda} = \pm (2k + 1)\frac{\pi}{2} \qquad (k = 0,1,2,\cdots)$$解得波节的空间坐标位置满足：$$\boxed{x = \pm \left( k + \frac{1}{2} \right) \frac{\lambda}{2} \qquad (k = 0,1,2,\cdots)}$$这些特殊位置的质元受到的两列相向分波的回复力在任何瞬时时刻都抵消，波节处的质元振幅恒等于零（$A_{\text{min}} = 0$），保持静止。
+\item 波腹（Antinode）：若空间位置 $x$ 恰好能让其余弦模长项达到极限最大值：$$\left| \cos 2\pi \frac{x}{\lambda} \right| = 1 \implies 2\pi \frac{x}{\lambda} = \pm k\pi \qquad (k = 0,1,2,\cdots)$$解得波腹的空间坐标位置满足：$$\boxed{x = \pm k \frac{\lambda}{2} \qquad (k = 0,1,2,\cdots)}$$这些位置的质元具有整个线路上最剧烈的往复振动形变规模，其最大振幅达到两倍的分振幅：$A_{\text{max}} = 2A$。
+\end{enumerate}
 \end{definition}
-
-\begin{exercise}[反射后再与另一列波相遇时怎样先记半波损失]
-两列相干波 \(A,B\) 的波长都为 \(\lambda\)。波 \(A\) 经过 \(O_1\) 后在点 \(m\) 处反射，再传播到点 \(P\)；波 \(B\) 从 \(O_2\) 直接传播到 \(P\)。已知 \(O_1m+mP=8\lambda\)、\(O_2P=3\lambda\)，反射处有半波损失，两源在 \(O_1,O_2\) 处的振动都为 \(y=A\cos \pi t\)。求两列波在 \(P\) 点的振动方程以及 \(P\) 点合振动。
-\end{exercise}
-
-\begin{solution}
-这题真正要记的是波 \(A\) 多经过了一次反射；因此总相位里除了传播路程，还必须补上半波损失。把每一路到 \(P\) 的总相位直接写出来即可。
-
-\[
-y_P=A\cos\!\left(\pi t-\frac{2\pi}{\lambda}r+\varphi_{\text{反}}\right),
-\qquad
-\varphi_{\text{反}}=
-\begin{cases}
-\pi,&\text{有半波损失},\\
-0,&\text{无半波损失}.
-\end{cases}
-\]
-
-对波 \(A\)，总传播路程为 \(8\lambda\)，且反射时多出一项 \(\pi\)；对波 \(B\)，传播路程为 \(3\lambda\)，无额外相位突变。于是
-\[
-\begin{aligned}
-y_A(P,t)&=A\cos(\pi t-16\pi+\pi)=-A\cos\pi t,\\
-y_B(P,t)&=A\cos(\pi t-6\pi)=A\cos\pi t,\\
-y_P&=y_A+y_B=-A\cos\pi t+A\cos\pi t=0.
-\end{aligned}
-\]
-两列波在 \(P\) 点分别为 \(y_A=-A\cos\pi t\)、\(y_B=A\cos\pi t\)，合振动恒为 \(0\)。若漏掉半波损失，本题会被误判为同相加强；反射题要先判断这次反射是否翻相，再合并传播路程。
-\end{solution}
-
-\begin{exercise}[已知一列行波时怎样补出形成驻波的反向波]
-弦线上有一简谐波
-\[
-y_1=2.0\times10^{-2}\cos\!\left[2\pi\left(\frac{t}{0.02}-\frac{x}{20}\right)+\frac{\pi}{3}\right]\ (\si{SI}).
-\]
-若要在这条弦上形成驻波，并要求 \(x=0\) 处为波节，求还应叠加哪一列简谐波。
-\end{exercise}
-
-\begin{solution}
-要形成驻波，补上的那列波必须与已知波\textbf{同频、同振幅、反向传播}。而“\(x=0\) 处为波节”不是后置检查，而是用来定反向波初相的关键条件。
-
-设所求反向波为
-\[
-y_2=2.0\times10^{-2}\cos\!\left[2\pi\left(\frac{t}{0.02}+\frac{x}{20}\right)+\varphi\right].
-\]
-在 \(x=0\) 处，已知波的相位为 \(2\pi t/0.02+\pi/3\)，补充波的相位为 \(2\pi t/0.02+\varphi\)。端点为波节要求两者任意时刻相互抵消，因此两相位相差 \(\pi\)：
- \(\varphi-\frac{\pi}{3}=\pi \implies \varphi=\frac{4\pi}{3}\pmod{2\pi}.\) 
-
-所求简谐波可写为
-\[
-y_2=2.0\times10^{-2}\cos\!\left[2\pi\left(\frac{t}{0.02}+\frac{x}{20}\right)+\frac{4\pi}{3}\right].
-\]
-这里把相位常数写成 \(-2\pi/3\) 也等价；反向传播只决定 \(+x/20\) 这一项，边界条件才决定最后的相位常数。
-\end{solution}
-
-\begin{exercise}[波阻更大时反射波为什么要先带一个 \(\pi\)]
-一列沿 \(x\) 轴正向传播的简谐波为
-\[
-y_1=10^{-3}\cos\!\left[200\pi\left(t-\frac{x}{200}\right)\right]\ (\si{m}).
-\]
-设介质 \(1\) 与介质 \(2\) 的分界点为 \(A\)，且 \(OA=L=\SI{2.25}{m}\)。已知介质 \(2\) 的波阻大于介质 \(1\)，反射波与入射波振幅相等。求：1. 反射波方程；2. 驻波方程；3. \(OA\) 之间波节与波腹的位置坐标。
-\end{exercise}
-
-\begin{solution}
-“波阻更大”这四个字不是背景信息，而是在告诉你：反射端等效为\textbf{波节边界}，所以反射波在边界处相对入射波要多出一个 \(\pi\) 的相位突变。由这个反相反射关系确定相位常数，才不会把边界条件放错。
-
-设反射波为
- \(y_2=10^{-3}\cos\!\left[200\pi\left(t+\frac{x}{200}\right)+\varphi_0\right].\) 
-在 \(x=L\) 的边界点 \(A\) 上形成波节，故任意时刻都有 \(y_1(L,t)+y_2(L,t)=0\)。也就是
- \(y_2(L,t)=10^{-3}\cos\!\left[200\pi\left(t-\frac{L}{200}\right)+\pi\right].\) 
-与反射波在 \(x=L\) 处的相位 \(200\pi(t+L/200)+\varphi_0\) 比较，得
-\[
-\varphi_0=\pi-2kL=\pi-2\pi\times 2.25=-3.5\pi\equiv \frac{\pi}{2}\pmod{2\pi},
-\qquad k=\pi\,\si{rad/m}.
-\]
-所以
-\[
-y_2=10^{-3}\cos\!\left[200\pi\left(t+\frac{x}{200}\right)+\frac{\pi}{2}\right]\ (\si{m}).
-\]
-把入射波与反射波相加，得驻波方程
-\[
-\begin{aligned}
-y&=y_1+y_2\\
-&=10^{-3}\cos(\omega t-kx)+10^{-3}\cos\!\left(\omega t+kx+\frac{\pi}{2}\right)\\
-&=2\times10^{-3}\cos\!\left(200\pi t+\frac{\pi}{4}\right)\cos\!\left(\pi x+\frac{\pi}{4}\right),
-\end{aligned}
-\]
-其中 \(\omega=200\pi,\ k=\pi\)。
-
-波节由振幅因子为零决定：
- \(\cos\!\left(\pi x+\frac{\pi}{4}\right)=0 \implies \pi x+\frac{\pi}{4}=\left(n+\frac12\right)\pi \implies x=n+\frac14.\) 
-在 \(0\le x\le 2.25\) 内，波节坐标为 \(x=\SI{0.25}{m},\ \SI{1.25}{m},\ \SI{2.25}{m}\)。
-波腹由振幅因子绝对值取最大决定：
- \(\cos\!\left(\pi x+\frac{\pi}{4}\right)=\pm1 \implies \pi x+\frac{\pi}{4}=n\pi \implies x=n-\frac14.\) 
-在 \(0\le x\le 2.25\) 内，波腹坐标为 \(x=\SI{0.75}{m},\ \SI{1.75}{m}\)。
-
-反射波和驻波方程如上；波节坐标为 \(x=\SI{0.25}{m},\SI{1.25}{m},\SI{2.25}{m}\)，波腹坐标为 \(x=\SI{0.75}{m},\SI{1.75}{m}\)。若没有把“波阻更大”读成反相反射，后面的相位常数会从一开始就偏掉。
-\end{solution}
-
-\begin{exercise}[2008级期末：固定端反射形成驻波表达式]
-在绳上传播的入射波为
- \(y_1=A\cos\left(\omega t+\frac{2\pi x}{\lambda}\right),\) 
-入射波在 \(x=0\) 处反射，反射端为固定端。设反射波不衰减，求驻波表达式。
-\end{exercise}
-
-\begin{solution}
-入射波相位中是 \(+\frac{2\pi x}{\lambda}\)，说明它沿 \(-x\) 方向传播，到 \(x=0\) 固定端后反射为沿 \(+x\) 方向传播的波。固定端始终为波节，所以反射波在端点处必须与入射波反相。
-
-入射波在 \(x=0\) 处引起的振动为 \(y_1(0,t)=A\cos\omega t\)，固定端反射要求反射波在端点处为 \(y_2(0,t)=A\cos(\omega t+\pi)\)。
-反射波沿 \(+x\) 方向传播，因此可写成
- \(y_2=A\cos\left(\omega t-\frac{2\pi x}{\lambda}+\pi\right).\) 
-
-两列波叠加后
-\[
-\begin{aligned}
-y&=y_1+y_2\\
-&=A\cos\left(\omega t+\frac{2\pi x}{\lambda}\right)
-+A\cos\left(\omega t-\frac{2\pi x}{\lambda}+\pi\right)\\
-&=2A\cos\left(\omega t+\frac{\pi}{2}\right)
-\cos\left(\frac{2\pi x}{\lambda}-\frac{\pi}{2}\right).
-\end{aligned}
-\]
-也可把两个余弦因子的相位同时换成相差 \(\pi\) 的等价形式。代入 \(x=0\) 时空间因子 \(\cos(-\pi/2)=0\)，端点永远不动，正好满足固定端波节条件。
-\end{solution}
-
-\section{弦振动的简正模式}
-
-这一节要解决的问题是：为什么一根弦不是任意频率都能稳定驻起来，而只能出现某些特定模式？
-
-\textbf{边界条件才是这里真正的筛子。} 对两端固定的弦来说，两个端点都必须始终不动，也就是永远都是波节。于是随便拿一段波长去拼，往往会发现端点条件对不上；只有那些恰好能让弦长里塞进整数个半波长的图样，反射回来后才不会和原图样互相打架，而能稳定维持。这就是“只有某些模式被允许”的根本原因。
-
-对长度为 \(l\) 的弦，若两端固定，则两端都必须是波节。要形成驻波，允许的波长必须满足
-\[
-\begin{aligned}
-l=n\frac{\lambda_n}{2},\qquad n=1,2,3,\dots
-\implies
-\lambda_n=\frac{2l}{n},\qquad
-f_n=\frac{u}{\lambda_n}=\frac{nu}{2l}.
-\end{aligned}
-\]
-
-这些由不同 \(n\) 决定的稳定振动方式，就叫做弦振动的\textbf{简正模式}。其中：
-\begin{itemize}
- \item \(n=1\) 是基频，也叫基模；
- \item \(n=2,3,\dots\) 是更高次的谐波模式。
-\end{itemize}
-
-\bridge{所谓“简正模式”，不是弦随便选了几种自己喜欢的振法，而是只有那些\textbf{同时满足边界条件}的驻波图样，才能稳定存在。边界条件就是这道题真正的筛子。}
-
-\begin{note}
-这里的整数 \(n\) 最好直接读成“弦长里能放下多少个半波长”。先把图样想出来，再写 \(l=n\lambda_n/2\)，比把公式当死记条目更稳。
-\par
-若一端固定、一端自由，则一端是波节、一端是波腹，允许条件改成
- \(l=(2n-1)\frac{\lambda_n}{4},\qquad f_n=\frac{(2n-1)u}{4l}.\) 
-这一类可以看成两端固定模型的边界条件变体，本轮以两端固定弦为主线掌握即可。
-\end{note}
-
-\begin{exercise}[二胡弦的基频和谐频怎样由边界条件决定]
-一根二胡弦长 \(l=\SI{0.30}{m}\)，张力 \(T=\SI{9.4}{N}\)，线密度 \(\mu=3.8\times10^{-4}\,\si{kg/m}\)。求这根弦发声的基频与谐频。
-\end{exercise}
-
-\begin{solution}
-二胡弦两端都被固定，弦长中必须容纳整数个半波长，即 \(l=n\dfrac{\lambda_n}{2}\)。由边界条件和弦上波速公式可得
- \(u=\sqrt{\frac{T}{\mu}},\qquad \lambda_n=\frac{2l}{n},\qquad f_n=\frac{u}{\lambda_n}=\frac{nu}{2l}.\) 
-
-弦上的波速为 \(u=\sqrt{\dfrac{9.4}{3.8\times10^{-4}}}\approx \SI{157.3}{m/s}\)。于是基频对应 \(n=1\)：
- \(f_1=\frac{1}{2l}\sqrt{\frac{T}{\mu}} =\frac{157.3}{0.60} \approx \SI{262}{Hz}.\) 
-更高次谐频为
- \(f_n=\frac{n}{2l}\sqrt{\frac{T}{\mu}} =n f_1 \approx 262n\ \si{Hz},\qquad n=2,3,\dots\) 
-基频约为 \(\SI{262}{Hz}\)，各次谐频满足 \(f_n\approx 262n\ \si{Hz}\)。谐频是基频的整数倍，是因为弦长里必须塞下整数个半波长。
-\end{solution}
-
-\section{多普勒效应}
-
-\bridge{这一节所有公式都在算同一件事：接收频率 \(\nu'\) 为什么会偏离源频率 \(\nu\)。最稳的理解是直接盯结论本身：若波峰到达观察者的时间间隔被压缩，\(\nu'\) 就升高；若被拉长，\(\nu'\) 就降低。对机械波来说，判这种压缩或拉长前必须先回到介质，因为“观察者动”改的是收波节奏，“波源动”改的是前方波长。}
-
-\begin{definition}[多普勒效应]
-由于波源、观察者或两者相对介质运动，使观察者接收到的频率与波源发出的频率不同的现象，称为\textbf{多普勒效应}。
-\end{definition}
-
-\begin{note}
- 题目若在问“听起来更尖还是更低”“接收到的频率怎么变”，就切到多普勒； 它控制的是波峰到达观察者的时间间隔是否被压缩； 靠近就“挤波峰”，收到频率升高；远离就“拉波峰”，收到频率降低； 不以介质为参照就乱判正负，或把机械波里“源动”和“观察者动”当成完全等效。
-\end{note}
-
-这一节最重要的不是先背公式，而是先记住：\textbf{对机械波来说，必须以介质为参照。} 观察者运动和波源运动一般不能互相等效，因为它们改变频率的方式不同：
-\begin{itemize}
- \item 观察者运动，改变的是“单位时间内接收到多少个波峰波谷”；
- \item 波源运动，改变的是“前方波长被压缩还是被拉长”。
-\end{itemize}
-
-最常见的两种基础情形分别是：
-\[
-\begin{aligned}
-\text{观察者动、波源静:}\quad &\nu'=\nu\frac{u\pm v_o}{u},\\
-\text{波源动、观察者静:}\quad &\nu'=\nu\frac{u}{u\mp v_s},\\
-\text{统一写法:}\quad &\nu'=\nu\frac{u\pm v_o}{u\mp v_s}.
-\end{aligned}
-\]
-观察者朝向波源运动取上号，远离取下号；波源朝向观察者运动取减号，因为它前方的波长被压缩了。
-
-\begin{note}
-\textbf{统一公式最稳的记法不是背正负号表，而是记分工：} 分子永远管\textbf{观察者收波有多快}，所以观察者迎着波走就加；分母永远管\textbf{波源前方波长有没有被压缩}，所以波源朝观察者逼近时要减。先记“分子看收波、分母看造波”，再判靠近远离，符号就不容易翻车。
-\end{note}
-
-使用多普勒公式时，把参照系放回介质最稳：观察者怎样迎着或背着波收听，决定分子；波源怎样压缩或拉长前方波长，决定分母。靠近时频率升高、远离时频率降低，这个物理方向也要和代数结果互相对上。
-
-\begin{exercise}[多普勒题怎样避免套错正负号]
-救护车警报声的多普勒题，稳妥的做法是回到空气参考系看：是谁在运动？是在靠近还是远离？这两件事清楚后，分子分母的符号通常就不会错。
-\end{exercise}
-
-\begin{solution}
-这类题要把参照系放回空气，再分别看观察者和声源的运动。观察者迎着声波运动，就在分子用 \(u+v_o\)；观察者远离声波，就用 \(u-v_o\)。声源向观察者运动，前方波长被压缩，分母用 \(u-v_s\)；声源远离观察者，波长被拉长，分母用 \(u+v_s\)。
-\end{solution}
-
-\begin{exercise}[两个汽笛同时发声时怎样判出拍频]
-两个汽笛 \(A,B\) 的频率都为 \(\SI{500}{Hz}\)。\(A\) 静止，\(B\) 以 \(\SI{60}{m/s}\) 向右运动。在两汽笛之间有一观察者 \(O\)，以 \(\SI{30}{m/s}\) 向右运动。已知空气中声速为 \(\SI{330}{m/s}\)。求观察者听到来自 \(A\) 的频率、来自 \(B\) 的频率以及拍频。
-\end{exercise}
-
-\begin{solution}
-这题最容易乱在“两个声源方向不同”。分别处理 \(A\to O\) 和 \(B\to O\) 两次多普勒，再由接收频率差求拍频，方向关系会清楚得多。
-
-对来自 \(A\) 的声波，\(A\) 静止而观察者向右远离 \(A\)，故
- \(\nu_A'=\nu\frac{u-v_o}{u} =500\times\frac{330-30}{330} \approx \SI{454.5}{Hz}.\) 
-对来自 \(B\) 的声波，\(B\) 在观察者右侧并向右远离观察者，因此它使前方波长被拉长；与此同时观察者向右运动，实际上是在迎着从右向左传播来的声波收听，所以
- \(\nu_B'=\nu\frac{u+v_o}{u+v_s} =500\times\frac{330+30}{330+60} \approx \SI{461.5}{Hz}.\) 
-拍频等于两接收频率之差：
- \(f_{\text{beat}}=\abs{\nu_B'-\nu_A'} \approx \abs{461.5-454.5} \approx \SI{7.0}{Hz}.\) 
-观察者听到来自 \(A\) 的频率约为 \(\SI{454.5}{Hz}\)，来自 \(B\) 的频率约为 \(\SI{461.5}{Hz}\)，拍频约为 \(\SI{7}{Hz}\)。两次多普勒里的“靠近/远离”都要回到介质和波传播方向本身，不能只看两物体彼此几何距离怎样变化。
-\end{solution}
-
-\begin{exercise}[2012级期末：火车汽笛远离静止观察者的多普勒频移]
-一列火车汽笛频率为 \(\SI{750}{Hz}\)，机车以时速 \(90\,\mathrm{km/h}\) 远离静止的观察者。空气中声速为 \(\SI{340}{m/s}\)，求观察者听到的声音频率。
-\end{exercise}
-
-\begin{solution}
-观察者静止，声源远离观察者。对机械波要以空气为参照；声源远离时，传到观察者方向的波长被拉长，所以接收频率降低。
-
-火车速度 \(90\,\mathrm{km/h}=\SI{25}{m/s}\)，于是
- \(\nu'=\nu\frac{u}{u+v_s} =750\times\frac{340}{340+25} \approx \SI{699}{Hz}.\) 
-结果小于 \(\SI{750}{Hz}\)，与声源远离时听到频率降低一致。这里观察者没有运动，所以分子不改；分母中的 \(u+v_s\) 表示波长被拉长。
-\end{solution}
-
-\begin{exercise}[2015-2016期末：两列相向火车中的汽笛频率]
-两列火车均以 \(64.8\,\mathrm{km/h}\) 的速率迎面相向行驶。一列火车的汽笛频率为 \(\SI{600}{Hz}\)，空气中声速为 \(\SI{340}{m/s}\)。求另一列火车上的乘客听到的汽笛频率。
-\end{exercise}
-
-\begin{solution}
-这是声源和观察者都在相向运动的多普勒题。对机械波要以空气为参考系：观察者迎着声波运动，分子取 \(u+v_o\)；声源朝观察者运动，前方波长被压缩，分母取 \(u-v_s\)。
-
-速度 \(64.8\,\mathrm{km/h}=\SI{18}{m/s}\)。两列车速率相同，故 \(v_o=v_s=\SI{18}{m/s}\)，于是
- \(\nu'=\nu\frac{u+v_o}{u-v_s} =600\times\frac{340+18}{340-18} =600\times\frac{358}{322} \approx\SI{667}{Hz}.\) 
-相向运动时接收频率应高于 \(\SI{600}{Hz}\)，结果方向正确。这里不能只用相对速度 \(36\,\mathrm{m/s}\) 代替源动和观察者动；机械波里这两者分别改变接收波峰速率和发出波长。
-\end{solution}
-
-\section{常见误区}
-
-\begin{itemize}
- \item 以为机械波把介质整体搬走。实际上传播出去的是振动状态和能量，不是整团介质。
- \item 把波速 \(u\) 当成介质质点的振动速度。前者描述波形传播多快，后者描述单个质点振得多快。
- \item 比较相位差时，分不清是在“同一时刻比空间”还是“同一位置比时间”。
- \item 以为任一体积元的机械能守恒。实际上局部体积元始终在和相邻部分交换能量。
- \item 看到驻波就以为“完全没有运动”。实际上驻波里非波节处都在振动，只是没有净能量向前传播。
- \item 把固定端/自由端、疏到密/密到疏的反射相位关系写反，从而把波节、波腹和半波损失全部判错。
- \item 把观察者运动和波源运动机械等效，导致多普勒公式符号混乱。
-\end{itemize}
-
-\section{章末小结}
-
-\summaryline{机械波最核心的图景，是“点在振动，形在传播，能量也在传播”。抓住波函数、相位差、波动方程、能量输运和边界条件这五条主线，反射、干涉、驻波和多普勒都会变得清楚。}
-\chapterselfcheck{为什么横波不能在液体和气体中稳定传播？为什么任一体积元的机械能不守恒？固定端反射为什么对应半波损失？简正模式为什么本质上是边界条件筛选出的允许驻波？}
-\bridge{后面的波动光学会继续反复使用“相位差 + 叠加 + 边界相位变化”这条主线，只不过把机械波换成了光波。}
-
-\begin{exercise}[由波长和频率求波速]
-已知一列波的波长为 \(\lambda=\SI{4}{m}\)，频率为 \(f=\SI{5}{Hz}\)，求波速。
-\end{exercise}
-
-\begin{solution}
-由波速关系 \(u=\lambda f=4\times 5=\SI{20}{m/s}\)，可知这列波每秒传播 \(\SI{20}{m}\)。
-\end{solution}
-
-\begin{exercise}[2003级期末：波形图上哪些质元能量最大]
-一列机械横波在某时刻的波形如图所示，波速方向沿 \(+x\)。图中标记点为 \(a\sim g\)，其中 \(a,c,e,g\) 位于平衡位置 \(y=0\)，其余标记点在波峰或波谷附近。判断该时刻哪些标记质元的能量为最大值。
-
-\begin{center}
-\includegraphics[width=0.30\linewidth]{pdf-exercises/pdf2003-q07-wave.png}
-\end{center}
-\end{exercise}
-
-\begin{solution}
-对简谐机械波中的质元，动能和弹性势能都随该质元相对平衡位置的振动状态变化。对同一介质中的简谐波，质元经过平衡位置时速度最大，同时局部形变也最大，因此能量最大。
-
-题干已说明位于平衡位置 \(y=0\) 的点是 \(a,c,e,g\)，这些点此刻速度最大，且局部形变相关的势能也最大，所以 \(a,c,e,g\) 处质元能量最大。波峰、波谷处位移最大但速度为零，不能据此判作能量最大。
-\end{solution}
-
-\begin{exercise}[由半波程差判断相位]
-在同一均匀介质中，两点的波程差为 \(\delta=\lambda/2\)。判断这两点的相位关系。
-\end{exercise}
-
-\begin{solution}
-由波程差和相位差的关系，\(\Delta\varphi=\dfrac{2\pi}{\lambda}\delta=\dfrac{2\pi}{\lambda}\cdot\dfrac{\lambda}{2}=\pi\)。
-相位差为 \(\pi\) 就表示这两点\textbf{反相}。也可以直观地理解成：一个点若处在波峰附近，另一个点就处在波谷附近。
-\end{solution}
-
-\begin{exercise}[2004级期末：相距半个波长两点的振动速度]
-在简谐波传播过程中，沿传播方向相距 \(\lambda/2\) 的两点，其振动速度大小和方向有什么关系？
-\end{exercise}
-
-\begin{solution}
-相距 \(\lambda/2\) 的两点相位差为 \(\pi\)。对简谐振动来说，位移反相时，对时间求导得到的振动速度也反相。
-
-设某点振动为 \(y_1=A\cos(\omega t+\phi)\)，相距 \(\lambda/2\) 的另一点与它反相。于是
-\[
-\begin{aligned}
-y_2&=A\cos(\omega t+\phi+\pi)=-A\cos(\omega t+\phi),\\
-v_1&=-A\omega\sin(\omega t+\phi),\qquad
-v_2=-A\omega\sin(\omega t+\phi+\pi)=-v_1.
-\end{aligned}
-\]
-所以两点的振动速度大小相同、方向相反。这里的“速度”是介质质点的振动速度，不是波形传播速度。
-\end{solution}
-
-\begin{exercise}[两端固定弦的第 \(n\) 阶模式]
-一根长为 \(l\) 的弦两端固定，波速为 \(u\)。求其第 \(n\) 阶简正模式的波长和频率。
-\end{exercise}
-
-\begin{solution}
-两端固定意味着两端都是波节，因此允许条件与结果可并成 \(l=n\dfrac{\lambda_n}{2}\implies \lambda_n=\dfrac{2l}{n},\ f_n=\dfrac{u}{\lambda_n}=\dfrac{nu}{2l}\)。
-\end{solution}
-
-\begin{exercise}[2003级期末：固定端反射形成的驻波表达式]
-入射波为
- \(y_1=A\cos 2\pi\left(\nu t+\frac{x}{\lambda}\right).\) 
-波在 \(x=0\) 处发生反射，反射点为固定端。求形成的驻波表达式。
-\end{exercise}
-
-\begin{solution}
-入射波相位为 \(\nu t+x/\lambda\)，说明它沿 \(-x\) 方向传播。固定端反射会产生相位突变 \(\pi\)，反射波沿 \(+x\) 方向传播。
-
-反射波应写成
- \(y_2=A\cos\left[2\pi\left(\nu t-\frac{x}{\lambda}\right)+\pi\right] =-A\cos 2\pi\left(\nu t-\frac{x}{\lambda}\right).\) 
-
-叠加并化简，
-\[
-\begin{aligned}
-y&=y_1+y_2\\
-&=A\cos 2\pi\left(\nu t+\frac{x}{\lambda}\right)
--A\cos 2\pi\left(\nu t-\frac{x}{\lambda}\right)\\
-&=-2A\sin(2\pi\nu t)\sin\frac{2\pi x}{\lambda}.
-\end{aligned}
-\]
-等价地，也可写成
- \(y=2A\cos\left(\frac{2\pi x}{\lambda}+\frac{\pi}{2}\right) \cos\left(2\pi\nu t-\frac{\pi}{2}\right).\) 
-可取 \(y=-2A\sin(2\pi\nu t)\sin(2\pi x/\lambda)\)。代入 \(x=0\) 得 \(y=0\)，说明固定端波节条件满足。
-\end{solution}
-
-\begin{exercise}[2006级期末：由驻波表达式求两行波波速]
-一弦上的驻波表达式为
-\[
-y=2.0\times10^{-2}\cos 15x\cos1500t\quad(\si{SI}).
-\]
-求形成该驻波的两个反向传播行波的波速。
-\end{exercise}
-
-\begin{solution}
-驻波表达式已经写成“空间因子 \(\cos kx\)”乘“时间因子 \(\cos\omega t\)”的形式。空间因子给波数 \(k\)，时间因子给角频率 \(\omega\)，行波波速由 \(u=\omega/k\) 给出。
-
- \(k=15\,\si{rad/m},\qquad \omega=1500\,\si{rad/s},\qquad u=\frac{\omega}{k}=\frac{1500}{15}=\SI{100}{m/s}.\) 
-前面的振幅 \(2.0\times10^{-2}\) 不影响波速；波速由 \(\omega\) 和 \(k\) 的关系决定。
-\end{solution}
-
-\begin{exercise}[2003级期末：由 \(P\) 点振动写负向传播波]
-一平面简谐波沿 \(Ox\) 轴负方向传播，波速大小为 \(u\)。点 \(P\) 位于 \(O\) 左侧，且 \(PO=L\)。若
- \(y_P=A\cos(\omega t+\phi),\) 
-求：1. \(O\) 处质点的振动方程；2. 波动表达式；3. 与 \(P\) 处质点振动状态相同的点的位置。
-\end{exercise}
-
-\begin{solution}
-波沿 \(-x\) 方向传播，\(O\) 在 \(P\) 的右侧，所以同一振动状态先到达 \(O\)，再经过时间 \(L/u\) 到达 \(P\)。因此 \(O\) 点振动应比 \(P\) 点超前。
-
-由时间超前关系，\(O\) 点振动方程为 \(y_O=A\cos\left[\omega\left(t+\dfrac{L}{u}\right)+\phi\right]\)。
-
-取 \(O\) 为坐标原点，沿 \(-x\) 传播的波可写成
-\[
-y(x,t)=A\cos\left[\omega\left(t+\frac{x}{u}+\frac{L}{u}\right)+\phi\right]
-=A\cos\left[\omega\left(t+\frac{x+L}{u}\right)+\phi\right].
-\]
-代入 \(x=-L\) 即回到 \(y_P=A\cos(\omega t+\phi)\)。
-
-与 \(P\) 点同相需满足 \(\dfrac{\omega}{u}(x+L)=2k\pi\)。由于 \(\lambda=2\pi u/\omega\)，得到 \(x=-L+k\lambda=-L+k\dfrac{2\pi u}{\omega}\)，其中 \(k=0,\pm1,\pm2,\dots\)。
-沿 \(-x\) 传播的标准相位应含 \(+x/u\)，这和沿 \(+x\) 传播时的 \(-x/u\) 正好相反；只要抓住谁更早进入同一振动状态，\(L/u\) 的号就不容易写反。
-\end{solution}
-
-\begin{exercise}[2004级期末：两列相反传播等振幅波的波节位置]
-沿相反方向传播的两列相干波为
- \(y_1=A\cos2\pi\left(\nu t-\frac{x}{\lambda}\right),\qquad y_2=A\cos2\pi\left(\nu t+\frac{x}{\lambda}\right).\) 
-求叠加后形成的驻波中波节的位置。
-\end{exercise}
-
-\begin{solution}
-两列波等振幅、频率相同、传播方向相反，叠加后形成驻波。波节的位置由空间振幅因子为零决定。
-
-把两列波相加后，时间因子和空间因子自然分开：
-\[
-\begin{aligned}
-y&=A\cos2\pi\left(\nu t-\frac{x}{\lambda}\right)
-+A\cos2\pi\left(\nu t+\frac{x}{\lambda}\right)\\
-&=2A\cos(2\pi\nu t)\cos\frac{2\pi x}{\lambda},\\
-A_{\text{st}}(x)&=2A\left|\cos\frac{2\pi x}{\lambda}\right|,\\
-\cos\frac{2\pi x}{\lambda}=0
-&\Longrightarrow
-\frac{2\pi x}{\lambda}=\frac{(2k+1)\pi}{2}
-\Longrightarrow
-x=\frac{2k+1}{4}\lambda,\qquad k=0,\pm1,\pm2,\dots
-\end{aligned}
-\]
-等价地可写作 \(x=\pm(2k+1)\lambda/4,\ k=0,1,2,\dots\)。这里 \(x=0\) 处是波腹而不是波节，因为两列波在原点同相相加。
-\end{solution}
-
-\begin{exercise}[2004级期末：不等振幅反向行波在一点的合振动]
-一平面简谐波沿 \(Ox\) 轴正方向传播，
- \(y_1=A\cos2\pi\left(\nu t-\frac{x}{\lambda}\right),\) 
-另一平面简谐波沿 \(Ox\) 轴负方向传播，
- \(y_2=2A\cos2\pi\left(\nu t+\frac{x}{\lambda}\right).\) 
-求 \(x=\lambda/4\) 处介质质点的合振动方程及速度表达式。
-\end{exercise}
-
-\begin{solution}
-只问固定位置 \(x=\lambda/4\) 处的质点运动，因此把这个 \(x\) 代入两列波后，再做同频振动合成。
-
-代入固定位置后，两分振动相差 \(\pi\)，且第二列振幅更大；相消后留下的就是较大振幅那列多出来的 \(A\)：
-\[
-\begin{aligned}
-y_1&=A\cos\left(2\pi\nu t-\frac{\pi}{2}\right),\\
-y_2&=2A\cos\left(2\pi\nu t+\frac{\pi}{2}\right),\\
-y&=y_1+y_2=A\cos\left(2\pi\nu t+\frac{\pi}{2}\right),\\
-v_y&=\dv{y}{t}
-=-2\pi\nu A\sin\left(2\pi\nu t+\frac{\pi}{2}\right)
-=2\pi\nu A\cos(2\pi\nu t+\pi).
-\end{aligned}
-\]
-两个分振动不是等振幅，因此不能直接说完全相消；相消后剩下的是较大振幅那列多出来的 \(A\)。这里的速度是介质质点的振动速度，不是波速。
-\end{solution}
 
 \begin{exercise}[2006级期末：不等振幅反向波的合振幅最大和最小位置]
 在均匀介质中，有两列余弦波沿 \(Ox\) 轴传播：
@@ -2646,22 +2259,52 @@ v_y&=\dv{y}{t}
 所以 \(x=k\lambda/2\) 处合振幅最大，\(x=(2k+1)\lambda/4\) 处合振幅最小，\(k\in\mathbb{Z}\)。振幅不相等时，“最小”不是零，而是 \(2A-A=A\)，这些点不是波节，只是合振幅的极小位置。
 \end{solution}
 
-\begin{exercise}[2005级期末：两相干波源有初相差时连线外侧的相位差]
-两相干波源 \(S_1,S_2\) 相距 \(\lambda/4\)，\(S_1\) 的相位比 \(S_2\) 超前 \(\pi/2\)。点 \(P\) 位于 \(S_1\) 背离 \(S_2\) 的外侧连线上。求 \(P\) 点处 \(S_1\) 引起的振动相对 \(S_2\) 引起的振动的相位差。
+\begin{definition}[简正模式]
+驻波可以看成被波节分隔成一段一段的固定振动单元。每一段内部的质元在任意时刻都保持同相振动；跨过一个波节，振动方向整体相反。于是驻波的空间结构不是连续推进的波形，而是由若干个稳定的振动区段拼成的模式，这种稳定的分段振动就叫\textbf{简正模式}。
+\end{definition}
 
-\begin{center}
-\includegraphics[width=0.24\linewidth]{pdf-exercises/pdf2005-q08-sources.png}
-\end{center}
+\section{相位突变与半波损失}
+\begin{note}
+固定端反射通常对应波节，自由端反射通常对应波腹。
+\end{note}
+\begin{definition}[反射点为波节还是波腹？半波损失]
+当波从\textbf{波疏介质}垂直入射到\textbf{波密介质}，再反射回波疏介质时，反射点形成波节。此时入射波与反射波在边界处总是反相，所以反射波相当于多了一个\(\pi \iff \frac{\lambda}{2}\)。也就是说，相位突变 \(\pi\) 等效于附加了 \(\lambda/2\) 的波程差，这就叫\textbf{半波损失}。反过来，当波从\textbf{波密介质}垂直入射到\textbf{波疏介质}并被反射回去时，反射点形成波腹，入射波和反射波在边界处同相，因此\textbf{不发生相位突变}，也就没有半波损失。
+\end{definition}
+
+\begin{exercise}[反射后再与另一列波相遇时怎样先记半波损失]
+两列相干波 \(A,B\) 的波长都为 \(\lambda\)。波 \(A\) 经过 \(O_1\) 后在点 \(m\) 处反射，再传播到点 \(P\)；波 \(B\) 从 \(O_2\) 直接传播到 \(P\)。已知 \(O_1m+mP=8\lambda\)、\(O_2P=3\lambda\)，反射处有半波损失，两源在 \(O_1,O_2\) 处的振动都为 \(y=A\cos \pi t\)。求两列波在 \(P\) 点的振动方程以及 \(P\) 点合振动。
+\end{exercise}
+\begin{solution}
+对波 \(A\)，总传播路程为 \(8\lambda\)，且反射时多出一项 \(\pi\)；对波 \(B\)，传播路程为 \(3\lambda\)，无额外相位突变。于是
+\[
+\begin{aligned}
+y_A(P,t)&=A\cos(\pi t-16\pi+\pi)=-A\cos\pi t,\\
+y_B(P,t)&=A\cos(\pi t-6\pi)=A\cos\pi t,\\
+y_P&=y_A+y_B=-A\cos\pi t+A\cos\pi t=0.
+\end{aligned}
+\]
+两列波在 \(P\) 点分别为 \(y_A=-A\cos\pi t\)、\(y_B=A\cos\pi t\)，合振动恒为 \(0\)。若漏掉半波损失，本题会被误判为同相加强；反射题要先判断这次反射是否翻相，再合并传播路程。
+\end{solution}
+
+\begin{exercise}[已知一列行波时怎样补出形成驻波的反向波]
+弦线上有一简谐波
+\[
+y_1=2.0\times10^{-2}\cos\!\left[2\pi\left(\frac{t}{0.02}-\frac{x}{20}\right)+\frac{\pi}{3}\right]\ (\si{SI}).
+\]
+若要在这条弦上形成驻波，并要求 \(x=0\) 处为波节，求还应叠加哪一列简谐波。
 \end{exercise}
 
 \begin{solution}
-两列波到同一点的相位差由两部分组成：一部分是波源初相差，另一部分是传播路程差带来的相位滞后。不要只看源间距，也不要只看初相差。
-
-取 \(S_1\) 引起的振动相对 \(S_2\) 引起的振动的相位差，则
- \(\Delta\varphi=(\varphi_1-\varphi_2)-\frac{2\pi}{\lambda}(r_1-r_2).\) 
-
-对 \(S_1\) 外侧的点 \(P\)，从 \(S_2\) 到 \(P\) 比从 \(S_1\) 到 \(P\) 多走 \(\lambda/4\)，即 \(r_2-r_1=\dfrac{\lambda}{4}\)，所以 \(r_1-r_2=-\dfrac{\lambda}{4}\)。又有 \(\varphi_1-\varphi_2=\dfrac{\pi}{2}\)，故 \(\Delta\varphi=\dfrac{\pi}{2}-\dfrac{2\pi}{\lambda}\left(-\dfrac{\lambda}{4}\right)=\dfrac{\pi}{2}+\dfrac{\pi}{2}=\pi\)。
-本题中 \(S_1\) 初相超前，而 \(S_2\) 到 \(P\) 又多走了 \(\lambda/4\)，这两项在同一个相位差约定下相加。若换成“\(S_2\) 相对 \(S_1\)”的相位差，符号会相反，但物理上仍是反相。
+设所求反向波为
+\[
+y_2=2.0\times10^{-2}\cos\!\left[2\pi\left(\frac{t}{0.02}+\frac{x}{20}\right)+\varphi\right].
+\]
+在 \(x=0\) 处，已知波的相位为 \(2\pi t/0.02+\pi/3\)，补充波的相位为 \(2\pi t/0.02+\varphi\)。端点为波节要求两者任意时刻相互抵消，因此两相位相差 \(\pi\)：
+ \(\varphi-\frac{\pi}{3}=\pi \implies \varphi=\frac{4\pi}{3}\pmod{2\pi}.\) 
+所求简谐波可写为
+\[
+y_2=2.0\times10^{-2}\cos\!\left[2\pi\left(\frac{t}{0.02}+\frac{x}{20}\right)+\frac{4\pi}{3}\right].
+\]
 \end{solution}
 
 \begin{exercise}[2005级期末：补出使 \(x=0\) 为波腹的反向波]
@@ -2673,94 +2316,137 @@ y_1=2.0\times10^{-2}\cos\!\left[100\pi\left(t+\frac{x}{20}\right)-\frac{4\pi}{3}
 \end{exercise}
 
 \begin{solution}
-要形成驻波，补上的波必须与已知波同频、同振幅、反向传播。已知波相位中含 \(+x/20\)，说明它沿 \(-x\) 方向传播，所以补上的波应含 \(-x/20\)。波腹条件要求 \(x=0\) 处两波同相相加。
-
 设补充波为
  \(y_2=2.0\times10^{-2}\cos\!\left[100\pi\left(t-\frac{x}{20}\right)+\varphi\right].\) 
-在 \(x=0\) 处，已知波相位为 \(100\pi t-\dfrac{4\pi}{3}\)。要形成波腹，补充波在 \(x=0\) 处应与它同相，因此 \(\varphi=-\dfrac{4\pi}{3}\)。
-
-所求波可写为
+在 \(x=0\) 处，已知波相位为 \(100\pi t-\dfrac{4\pi}{3}\)。要形成波腹，补充波在 \(x=0\) 处应与它同相，因此 \(\varphi=-\dfrac{4\pi}{3}\)。所求波可写为
 \[
 y_2=2.0\times10^{-2}\cos\!\left[100\pi\left(t-\frac{x}{20}\right)-\frac{4\pi}{3}\right]\ (\si{SI}).
 \]
-\(x=0\) 为波腹意味着同相相加，不是相消；若题目要求波节，才需要让两波在 \(x=0\) 处相位差为 \(\pi\)。
 \end{solution}
 
-\begin{exercise}[2005级期末：由 \(t=0\) 波形图写波函数和 \(P\) 点振动]
-图示为一平面简谐波在 \(t=0\) 时刻的波形图，波沿 \(+x\) 方向传播，波速 \(u=\SI{0.08}{m/s}\)。由图读出振幅 \(A=\SI{0.04}{m}\)、波长 \(\lambda=\SI{0.40}{m}\)，原点 \(O\) 此刻位于平衡位置且随后向 \(+y\) 方向运动，点 \(P\) 位于 \(x_P=\SI{0.20}{m}\) 处。求：1. 该波的波动表达式；2. \(P\) 处质点的振动方程。
-
-\begin{center}
-\includegraphics[width=0.34\linewidth]{pdf-exercises/pdf2005-q23-wave.png}
-\end{center}
+\begin{exercise}[波阻更大时反射波为什么要先带一个 \(\pi\)]
+一列沿 \(x\) 轴正向传播的简谐波为
+\[
+y_1=10^{-3}\cos\!\left[200\pi\left(t-\frac{x}{200}\right)\right]\ (\si{m}).
+\]
+设介质 \(1\) 与介质 \(2\) 的分界点为 \(A\)，且 \(OA=L=\SI{2.25}{m}\)。已知介质 \(2\) 的波阻大于介质 \(1\)，反射波与入射波振幅相等。求：1. 反射波方程；2. 驻波方程；3. \(OA\) 之间波节与波腹的位置坐标。
 \end{exercise}
 
 \begin{solution}
-图像是在 \(t=0\) 时看空间分布。由题干读数和 \(u=\lambda/T\)，有 \(A=\SI{0.04}{m},\ \lambda=\SI{0.40}{m},\ T=\dfrac{\lambda}{u}=\dfrac{0.40}{0.08}=\SI{5}{s}\)。
-波沿 \(+x\) 方向传播，因此可写成
- \(y=A\cos\left[2\pi\left(\frac{t}{T}-\frac{x}{\lambda}\right)+\varphi_0\right].\) 
-
-\(t=0,x=0\) 时，图中 \(O\) 点位移为零，且因波形向右传播，\(O\) 点此刻速度向 \(+y\) 方向，所以
- \(\cos\varphi_0=0,\qquad -A\frac{2\pi}{T}\sin\varphi_0>0 \implies \varphi_0=-\frac{\pi}{2}.\) 
-于是波函数为
- \(y=0.04\cos\left[2\pi\left(\frac{t}{5}-\frac{x}{0.40}\right)-\frac{\pi}{2}\right]\ (\si{SI}).\) 
-\(P\) 点坐标为 \(x_P=\SI{0.20}{m}\)，代入得 \(y_P=0.04\cos\left[2\pi\left(\dfrac{t}{5}-\dfrac{0.20}{0.40}\right)-\dfrac{\pi}{2}\right]=0.04\cos\left(0.4\pi t-\dfrac{3\pi}{2}\right)\ (\si{SI})\)。
-沿 \(+x\) 传播时相位中应是 \(-x/\lambda\)。初相不能只由 \(O\) 点位移为零决定，还要结合传播方向判断 \(O\) 点此刻速度方向。
+波阻更大时，\(A\) 点相当于波节，故反射波在 \(x=L\) 处反相。设
+\[
+y_2=10^{-3}\cos\!\left[200\pi\left(t+\frac{x}{200}\right)+\varphi_0\right].
+\]
+由 \(y_1(L,t)+y_2(L,t)=0\) 得 \(\varphi_0=\pi-2kL=\frac{\pi}{2}\)（\(k=\pi\)），故
+\[
+y_2=10^{-3}\cos\!\left[200\pi\left(t+\frac{x}{200}\right)+\frac{\pi}{2}\right]\ (\si{m}),
+y=2\times10^{-3}\cos\!\left(200\pi t+\frac{\pi}{4}\right)\cos\!\left(\pi x+\frac{\pi}{4}\right).
+\]
+其振幅为
+\[
+A(x)=2\times10^{-3}\left|\cos\!\left(\pi x+\frac{\pi}{4}\right)\right|.
+\]
+令 \(A(x)=0\)，得 \(\cos\!\left(\pi x+\frac{\pi}{4}\right)=0\Rightarrow x=n+\frac14\)，为波节；
+令 \(A(x)\) 取最大值，得 \(\left|\cos\!\left(\pi x+\frac{\pi}{4}\right)\right|=1\Rightarrow x=n-\frac14\)，为波腹。
+故 \(0\le x\le2.25\) 内，波节为 \(x=\SI{0.25}{m},\SI{1.25}{m},\SI{2.25}{m}\)，波腹为 \(x=\SI{0.75}{m},\SI{1.75}{m}\)。
 \end{solution}
 
-\begin{exercise}[2008级期末：由负方向传播波形图写原点振动方程]
-一沿 \(x\) 轴负方向传播的平面简谐波在 \(t=\SI{2}{s}\) 时的波形曲线如图所示。由图读出振幅 \(A=\SI{0.50}{m}\)、波长 \(\lambda=\SI{4}{m}\)，原点 \(O\) 此刻位于平衡位置附近且随后向 \(+y\) 方向运动；已知该波角频率为 \(\omega=\pi/2\,\si{rad/s}\)。求原点 \(O\) 的振动方程。
-
-\begin{center}
-\includegraphics[width=0.32\linewidth]{pdf-exercises/pdf2008-q08-wave-negative.png}
-\end{center}
+\begin{exercise}[2008级期末：固定端反射形成驻波表达式]
+在绳上传播的入射波为
+ \(y_1=A\cos\left(\omega t+\frac{2\pi x}{\lambda}\right),\) 
+入射波在 \(x=0\) 处反射，反射端为固定端。设反射波不衰减，求驻波表达式。
 \end{exercise}
-
 \begin{solution}
-图像给的是某一时刻的空间波形，不是某一点的时间图。题干已经给出振幅、波长和角频率，剩下要用 \(t=\SI{2}{s}\) 时 \(O\) 点的位移与速度方向定相位。
-
-波沿 \(-x\) 方向传播。将波形向左平移一点看，\(O\) 点会进入图中 \(x>0\) 一侧的正位移区域，所以此刻 \(O\) 点速度为正。
-
-因此原点的振动可写作 \(y_O=A\cos(\omega t+\varphi)\)。在 \(t=\SI{2}{s}\) 时，零位移加正速度把相位锁在第四象限的等价位置：
+入射波在 \(x=0\) 处引起的振动为 \(y_1(0,t)=A\cos\omega t\)，固定端反射要求反射波在端点处为 \(y_2(0,t)=A\cos(\omega t+\pi)\)。
+反射波沿 \(+x\) 方向传播，因此可写成
+ \(y_2=A\cos\left(\omega t-\frac{2\pi x}{\lambda}+\pi\right).\) 
+两列波叠加后
 \[
 \begin{aligned}
-t=\SI{2}{s}:\quad y_O=0,\ v_O>0
-&\Longrightarrow
-\cos(\pi+\varphi)=0,\quad -A\omega\sin(\pi+\varphi)>0,\\
-&\Longrightarrow
-\pi+\varphi=\frac{3\pi}{2},\qquad
-\varphi=\frac{\pi}{2},\\
-y_O&=0.50\cos\left(\frac{\pi}{2}t+\frac{\pi}{2}\right)\quad(\mathrm{SI}).
+y=y_1+y_2=A\cos\left(\omega t+\frac{2\pi x}{\lambda}\right)
++A\cos\left(\omega t-\frac{2\pi x}{\lambda}+\pi\right)=2A\cos\left(\omega t+\frac{\pi}{2}\right)
+\cos\left(\frac{2\pi x}{\lambda}-\frac{\pi}{2}\right).
 \end{aligned}
 \]
-沿 \(-x\) 方向传播时，判断某点速度方向要把整幅波形向左平移一点来看；只凭 \(O\) 点此刻位移为零，还不足以唯一确定相位。
 \end{solution}
 
-\begin{exercise}[2007级期末：由相位落后量反推两点距离]
-\(A,B\) 是同一简谐波波线上相距小于波长的两点。已知 \(B\) 点振动相位比 \(A\) 点落后 \(\pi/3\)，波长 \(\lambda=\SI{3}{m}\)。求 \(A,B\) 两点间距离。
+\section{弦振动的简正模式}
+
+\begin{definition}[简正模式]
+对长度为 \(l\) 的两端固定弦，端点都必须是波节，所以弦长应恰好容纳整数个半波长：
+\[
+l=n\frac{\lambda_n}{2},\qquad n=1,2,3,\dots
+\]
+因此
+\[
+\lambda_n=\frac{2l}{n},\qquad f_n=\frac{u}{\lambda_n}=\frac{nu}{2l}.
+\]
+满足上述边界条件的稳定振动方式，称为\textbf{简正模式}。其中 \(n=1\) 为基频（基模），\(n=2,3,\dots\) 为高次谐波模式。
+
+若一端固定、一端自由，则边界条件变为一端波节、一端波腹，允许条件改为
+\[
+l=(2n-1)\frac{\lambda_n}{4},\qquad f_n=\frac{(2n-1)u}{4l}.
+\]
+\end{definition}
+
+
+\begin{exercise}[二胡弦的基频和谐频怎样由边界条件决定]
+一根二胡弦长 \(l=\SI{0.30}{m}\)，张力 \(T=\SI{9.4}{N}\)，线密度 \(\mu=3.8\times10^{-4}\,\si{kg/m}\)。求这根弦发声的基频与谐频。
 \end{exercise}
 
 \begin{solution}
-同一列简谐波中，空间相位差和波程差成正比。题目已说明两点距离小于波长，所以不用再加整数个波长。
+二胡弦两端都被固定，弦长中必须容纳整数个半波长，即 \(l=n\dfrac{\lambda_n}{2}\)。由边界条件和弦上波速公式可得
+ \(u=\sqrt{\frac{T}{\mu}},\qquad \lambda_n=\frac{2l}{n},\qquad f_n=\frac{u}{\lambda_n}=\frac{nu}{2l}.\) 
 
-由 \(\abs{\Delta\varphi}=\dfrac{2\pi}{\lambda}L\)，得 \(L=\dfrac{\abs{\Delta\varphi}}{2\pi}\lambda=\dfrac{\pi/3}{2\pi}\times 3=\SI{0.5}{m}\)。
-相位差 \(\pi/3\) 是一个波长相位 \(2\pi\) 的 \(1/6\)，距离也就是 \(\lambda/6=\SI{0.5}{m}\)。若题目没有“小于波长”，还要考虑相差整数个波长的可能。
+弦上的波速为 \(u=\sqrt{\dfrac{9.4}{3.8\times10^{-4}}}\approx \SI{157.3}{m/s}\)。于是基频对应 \(n=1\)：
+ \(f_1=\frac{1}{2l}\sqrt{\frac{T}{\mu}} =\frac{157.3}{0.60} \approx \SI{262}{Hz}.\) 
+更高次谐频为
+ \(f_n=\frac{n}{2l}\sqrt{\frac{T}{\mu}} =n f_1 \approx 262n\ \si{Hz},\qquad n=2,3,\dots\) 
+基频约为 \(\SI{262}{Hz}\)，各次谐频满足 \(f_n\approx 262n\ \si{Hz}\)。谐频是基频的整数倍，是因为弦长里必须塞下整数个半波长。
 \end{solution}
 
-\begin{exercise}[2007级期末：声波进入另一介质时频率不变]
-一声波在空气中的波长为 \(\SI{0.25}{m}\)，传播速度为 \(\SI{340}{m/s}\)。当它进入另一介质时，波长变为 \(\SI{0.37}{m}\)。求它在该介质中的传播速度。
-\end{exercise}
+\section{多普勒效应}
 
-\begin{solution}
-波从一种介质进入另一种介质时，频率由波源决定，保持不变；改变的是波速和波长。因此由空气中的 \(v,\lambda\) 求出频率，再乘新波长。
+\begin{definition}[多普勒效应]
+当波源、观察者或二者相对介质运动时，观察者接收到的频率 \(\nu'\) 与波源频率 \(\nu\) 不同，这种现象称为\textbf{多普勒效应}。对机械波，频率变化必须以介质为参照。
 
 \[
-f=\frac{v}{\lambda}=\frac{340}{0.25}=\SI{1360}{Hz},\qquad
-v'=1360\times0.37=\SI{503.2}{m/s}\approx\SI{503}{m/s}.
+\nu'=\nu\frac{u\pm v_o}{u\mp v_s}.
 \]
-介质改变不会让波源振动频率改变。若直接把新介质波长代回空气波速，就等于把“波源节拍”和“传播介质”混在一起了。
+式中，观察者朝向波源运动取上号，远离取下号；波源朝向观察者运动时，分母取减号，远离取加号。观察者运动改变接收波峰的节奏，波源运动改变介质中的波长。
+\end{definition}
+
+\begin{exercise}[两个汽笛同时发声时怎样判出拍频]
+两个汽笛 \(A,B\) 的频率都为 \(\SI{500}{Hz}\)。\(A\) 静止，\(B\) 以 \(\SI{60}{m/s}\) 向右运动。在两汽笛之间有一观察者 \(O\)，以 \(\SI{30}{m/s}\) 向右运动。已知空气中声速为 \(\SI{330}{m/s}\)。求观察者听到来自 \(A\) 的频率、来自 \(B\) 的频率以及拍频。
+\end{exercise}
+
+\begin{solution}
+分开算两次多普勒，再取频差。对来自 \(A\) 的声波，\(A\) 静止而观察者远离 \(A\)，故
+ \(\nu_A'=\nu\frac{u-v_o}{u} =500\times\frac{330-30}{330} \approx \SI{454.5}{Hz}.\) 
+对来自 \(B\) 的声波，声源和观察者相向运动，故
+ \(\nu_B'=\nu\frac{u+v_o}{u+v_s} =500\times\frac{330+30}{330+60} \approx \SI{461.5}{Hz}.\) 
+拍频为
+ \(f_{\text{beat}}=\abs{\nu_B'-\nu_A'} \approx \abs{461.5-454.5} \approx \SI{7.0}{Hz}.\) 
+所以观察者听到来自 \(A\) 的频率约为 \(\SI{454.5}{Hz}\)，来自 \(B\) 的频率约为 \(\SI{461.5}{Hz}\)，拍频约为 \(\SI{7}{Hz}\)。
 \end{solution}
 
-\part{波动光学}
+\begin{exercise}[2012级期末：火车汽笛远离静止观察者的多普勒频移]
+一列火车汽笛频率为 \(\SI{750}{Hz}\)，机车以时速 \(90\,\mathrm{km/h}\) 远离静止的观察者。空气中声速为 \(\SI{340}{m/s}\)，求观察者听到的声音频率。
+\end{exercise}
+
+\begin{solution}
+火车速度 \(90\,\mathrm{km/h}=\SI{25}{m/s}\)，于是
+ \(\nu'=\nu\frac{u}{u+v_s} =750\times\frac{340}{340+25} \approx \SI{699}{Hz}.\) 
+\end{solution}
+
+\begin{exercise}[2015-2016期末：两列相向火车中的汽笛频率]
+两列火车均以 \(64.8\,\mathrm{km/h}\) 的速率迎面相向行驶。一列火车的汽笛频率为 \(\SI{600}{Hz}\)，空气中声速为 \(\SI{340}{m/s}\)。求另一列火车上的乘客听到的汽笛频率。
+\end{exercise}
+
+\begin{solution}
+速度 \(64.8\,\mathrm{km/h}=\SI{18}{m/s}\)。两列车速率相同，故 \(v_o=v_s=\SI{18}{m/s}\)，于是
+ \(\nu'=\nu\frac{u+v_o}{u-v_s} =600\times\frac{340+18}{340-18} =600\times\frac{358}{322} \approx\SI{667}{Hz}.\) 
+\end{solution}
 
 \chapter{光的干涉}
 
@@ -2819,7 +2505,7 @@ N=\frac{2\Delta d}{\lambda}.
 本章里我们会不断看到一句话：\textbf{先有相位差，后有明暗分布。} 这正是波动语言的核心。若光只是完全独立的粒子流，就不会自然出现这样稳定而周期性的明暗条纹。
 \end{note}
 
-\section{光的本性：波粒二象性}
+\section{光的波粒二象性}
 
 光的本性经历过一条很长的认识路线。
 
