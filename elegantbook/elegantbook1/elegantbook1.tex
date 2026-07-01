@@ -14,7 +14,7 @@
 \setcounter{tocdepth}{3}
 
 \logo{logo-blue.png}
-\cover{751_01.png}
+\cover{1.jpg}
 
 % 本文档命令
 \usepackage{array}
@@ -132,21 +132,6 @@ P(A - B) = P(A) - P(B) \ (\text{若事件} \ A \supset B)
 }
 \newpage
 
-\begin{introduction}
-  \item 随机试验与样本空间~\ref{def:random-experiment}
-  \item 随机事件及其运算~\ref{def:random-event}
-  \item 完备事件组~\ref{def:complete-event-group}
-  \item 概率的公理化定义~\ref{def:probability-axiom}
-  \item 概率的基本性质~\ref{prop:probability-basic}
-  \item 古典概型~\ref{def:classical-prob}
-  \item 几何概型~\ref{def:geometric-prob}
-  \item 条件概率~\ref{def:conditional-prob}
-  \item 乘法公式~\ref{thm:multiplication}
-  \item 全概率公式与贝叶斯公式~\ref{thm:total-probability}
-  \item 事件的独立性~\ref{def:independence}
-  \item 伯努利概型~\ref{def:bernoulli}
-\end{introduction}
-
 \section{基本概念}
 
 \begin{definition}[随机试验] \label{def:random-experiment}
@@ -159,12 +144,6 @@ P(A - B) = P(A) - P(B) \ (\text{若事件} \ A \supset B)
 则称此试验为\textbf{随机试验}。随机试验简称试验，用字母 \(E\) 或 \(E_1, E_2, \dots\) 表示。
 \end{definition}
 
-我们是通过研究随机试验来研究随机现象的。
-
-\begin{note}
-在不少情况下，不能确切知道某一随机试验的全部可能结果，但可以知道它不超出某个范围。这时，也可以用这个范围来作为该试验的全部可能结果的集合。例如，需要记录某个城市一天的交通事故数量，则试验结果将是非负整数 \(x\)。无法确定 \(x\) 的可能取值的确切范围，但可以把这个范围取为 \([0, +\infty)\)，它总能包含一切可能的试验结果，尽管明知某些结果，如 \(x > 10000\) 是不会出现的。甚至把这个范围取为 \((-\infty, +\infty)\) 也无妨。这里体现了一定的数学抽象，它可以带来很大的方便。
-\end{note}
-
 \begin{definition}[样本空间] \label{def:sample-space}
 随机试验的每一个可能结果称为\textbf{样本点}，通常记为 \(\omega\)。全体样本点构成的集合称为\textbf{样本空间}（或基本事件空间），记为 \(\Omega\)（或 \(S\)），可写作
 \[
@@ -172,21 +151,9 @@ P(A - B) = P(A) - P(B) \ (\text{若事件} \ A \supset B)
 \]
 \end{definition}
 
-由一个样本点构成的事件称为\textbf{基本事件}。
-
-\begin{definition}[随机事件] \label{def:random-event}
-在一次试验中可能出现，也可能不出现的结果称为\textbf{随机事件}，简称事件，用大写字母 \(A, B, C\) 等表示。随机事件是样本空间 \(\Omega\) 的子集。在每次试验中，当且仅当这一子集中的一个样本点出现时，称这一事件发生。
+\begin{definition}[基本事件，随机事件] \label{def:random-event}
+由一个样本点构成的事件称为\textbf{基本事件}。在一次试验中可能出现，也可能不出现的结果称为\textbf{随机事件}，简称事件，用大写字母 \(A, B, C\) 等表示。随机事件是样本空间 \(\Omega\) 的子集。在每次试验中，当且仅当这一子集中的一个样本点出现时，称这一事件发生。
 \end{definition}
-
-\begin{enumerate}
-    \item 对于仅由一个基本结果构成的单点集，称为\textbf{基本事件}；
-    \item 将每次试验中一定发生的事件称为\textbf{必然事件}，记为 \(\Omega\)；
-    \item 每次试验中一定不发生的事件称为\textbf{不可能事件}，记为 \(\varnothing\)。
-\end{enumerate}
-
-\begin{note}
-概念之间的联系：随机试验产生基本结果，基本结果 \(\in\) 随机事件 \(\subset\) 样本空间。随机事件在一次试验中是否发生虽然不能事先确定，但是在大量重复试验的情况下，它的发生呈现出一定的规律性，这门课程正是要研究这种规律性。
-\end{note}
 
 \section{事件的关系与运算}
 
@@ -199,20 +166,12 @@ P(A - B) = P(A) - P(B) \ (\text{若事件} \ A \supset B)
     \item \textbf{相等}——如果 \(A \subset B\) 且 \(B \subset A\)，则称事件 \(A\) 与 \(B\) 相等，记为 \(A = B\)。\(A\) 与 \(B\) 相等，事实上也就是说，\(A\) 与 \(B\) 由一些完全相同的试验结果构成，它不过是同一事件表面上看起来不同的两个说法而已。
     \item \textbf{相容}——若 \(AB \neq \varnothing\)，则称事件 \(A\) 和 \(B\) 相容。
     \item \textbf{互斥（互不相容）}——若 \(AB = \varnothing\)，则称事件 \(A\) 与 \(B\) 互不相容，也叫互斥。如果一些事件中任意两个事件都互斥，则称这些事件是两两互斥的。任意一对基本事件都是互斥的。
-    \item \textbf{对立}——事件 \(A, B\) 不能同时发生，且至少一个发生，称事件 \(A, B\) 互为对立事件，或互为逆事件，即 \(A \cap B = \varnothing\)，\(A \cup B = \Omega\)。
+    \item \textbf{对立}——事件 \(A, B\) 不能同时发生，且至少一个发生，称事件 \(A, B\) 互为对立事件，或互为逆事件，即 \(A \cap B = \varnothing\)，\(A \cup B = \Omega\)。（互斥与对立的区别：互斥只要求 \(AB = \varnothing\)，而对立还要求 \(A \cup B = \Omega\)。因此对立一定是互斥的，但互斥不一定是对立的。）
 \end{enumerate}
 
 \begin{definition}[完备事件组] \label{def:complete-event-group}
 如果 \(\bigcup_{i=1}^{n} A_i = \Omega\)（或 \(\bigcup_{i=1}^{\infty} A_i = \Omega\)），且 \(A_i A_j = \varnothing\)（对一切 \(i \neq j\)；\(i, j = 1, 2, \dots, n(\dots)\)），称有限个（或可列个）事件 \(A_1, A_2, \dots, A_n(\dots)\) 构成一个\textbf{完备事件组}。
 \end{definition}
-
-完备事件组在概率论中具有重要作用，全概率公式和贝叶斯公式都需要完备事件组作为前提条件。
-
-\begin{note}
-互斥与对立的区别：互斥只要求 \(AB = \varnothing\)，而对立还要求 \(A \cup B = \Omega\)。因此对立一定是互斥的，但互斥不一定是对立的。
-\end{note}
-
-\subsection{事件的运算}
 
 \begin{enumerate}
     \item \textbf{积事件（交）}——称"事件 \(A\) 与 \(B\) 同时发生"的事件为事件 \(A\) 与 \(B\) 的\textbf{积事件}（或交事件），记为 \(A \cap B\) 或 \(AB\)。称"有限个（或可列个）事件 \(A_1, A_2, \dots, A_n(\dots)\) 同时发生"的事件为这些事件的积事件，记为 \(\bigcap_{i=1}^{n} A_i\)（或 \(\bigcap_{i=1}^{\infty} A_i\)）。
@@ -242,9 +201,6 @@ A - B = A - AB = A\overline{B}, \quad B = \overline{A} \Leftrightarrow AB = \var
     \]
 \end{enumerate}
 
-\begin{note}
-德摩根律记忆技巧：长线变短线，开口换方向。事件运算顺序约定为先进行逆运算，然后进行交运算，最后进行并或差运算。事件的关系、运算与集合的关系、运算相当，且具有相同的运算法则，所以我们可以对比着理解记忆，并要学会用集合关系去考虑事件关系。
-\end{note}
 
 \begin{exercise}\label{exer:1-1}
 已知 \(A\)、\(B\)、\(C\) 为三个随机事件，则 \(A\)、\(B\)、\(C\) 不都发生的事件为（\quad ）。\\
