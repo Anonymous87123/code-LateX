@@ -5422,7 +5422,7 @@ E(XY) = \begin{cases}
     \[
     \mathrm{Cov}\!\left(\sum_{i=1}^{n} a_i X_i,\ \sum_{j=1}^{m} b_j Y_j\right) = \sum_{i=1}^{n}\sum_{j=1}^{m} a_i b_j\,\mathrm{Cov}(X_i, Y_j).
     \]
-    二元情形：\[D(aX + bY) = a^2 DX + b^2 DY+2ab\mathrm{Cov}(X,Y) \]
+    二元情形：\[\operatorname{Cov}(aX+bY,cU+dV)=ac\operatorname{Cov}(X,U)+ad\operatorname{Cov}(X,V)+bc\operatorname{Cov}(Y,U)+bd\operatorname{Cov}(Y,V).\]
 \end{definition}
 
 
@@ -6301,6 +6301,51 @@ D. \(X_1, 2^2X_2, \dots, n^2X_n, \dots\)
 \end{itemize}
 \end{solution}
 
+\begin{exercise}\label{exer:src-lln-log-n}
+设 \(\{X_n\}\) 是独立的随机变量序列，且假设
+\[
+P(X_n=\sqrt{\ln n})=P(X_n=-\sqrt{\ln n})=0.5,\qquad n=1,2,\dots.
+\]
+问 \(\{X_n\}\) 是否服从大数定律。
+\end{exercise}
+\begin{solution}
+先看均值和方差。由对称性，
+\(
+EX_n=0.
+\)
+又
+\(
+X_n^2=\ln n
+\)
+恒成立，所以
+\(
+DX_n=EX_n^2-(EX_n)^2=\ln n.
+\)
+因此 \(\{X_n\}\) 的方差并不一致有界，不能直接套切比雪夫大数定律的充分条件。
+
+但这不代表它不服从大数定律。记
+\(
+\overline X_n=\frac1n\sum_{k=1}^nX_k.
+\)
+由于 \(X_1,\dots,X_n\) 相互独立，
+\[
+D\overline X_n
+=\frac1{n^2}\sum_{k=1}^nDX_k
+=\frac1{n^2}\sum_{k=1}^n\ln k
+\le \frac{n\ln n}{n^2}
+=\frac{\ln n}{n}\to0.
+\]
+于是对任意 \(\varepsilon>0\)，由切比雪夫不等式，
+\[
+P\{|\overline X_n-0|\ge\varepsilon\}
+\le \frac{D\overline X_n}{\varepsilon^2}
+\le \frac{\ln n}{n\varepsilon^2}\to0.
+\implies
+\frac1n\sum_{k=1}^nX_k\stackrel{P}{\longrightarrow}0.
+\]
+所以 \(\{X_n\}\) 服从大数定律。
+\end{solution}
+
 \begin{theorem}[伯努利大数定律] \label{thm:bernoulli-lln}
 伯努利大数定律是切比雪夫大数定律的特例（取 \(X_i \sim B(1,p)\)），设 \(\mu_n\) 是 \(n\) 重伯努利试验中事件 \(A\) 发生的次数，\(p\) 是事件 \(A\) 在每次试验中发生的概率（\(0 < p < 1\)），由于 \(\{X_i\}\) 相互独立，方差一致有界（\(\leq 1/4\)），由切比雪夫大数定律直接可得
 \(
@@ -6378,7 +6423,7 @@ A. \(\dfrac{1}{8}\)\quad B. \(\dfrac{1}{6}\)\quad C. \(\dfrac{1}{3}\)\quad D. \(
 \begin{theorem}[列维--林德伯格中心极限定理：要求独立、同分布、期望和方差存在] \label{thm:levy-lindberg}
 设 \(X_1, X_2, \dots, X_n, \dots\) 是独立同分布的随机变量序列，且数学期望 \(EX_i = \mu\) 和方差 \(DX_i = \sigma^2 > 0\) 存在 \((i = 1, 2, \dots)\)，则对任意实数 \(x\)，有
 \[
-\lim_{n\to\infty} P\!\left\{\frac{\sum_{i=1}^{n} X_i - n\mu}{\sqrt{n}\,\sigma} \leq x\right\} = \Phi(x).
+\lim_{n\to\infty} P\!\left\{\frac{\sum_{i=1}^{n} X_i - n\mu}{\sqrt{n}\,\sigma} \leq x\right\} = \Phi(x)=\frac{1}{\sqrt{2\pi}}\int_{-\infty}^x e^{-\frac{t^2}{2}}\,\mathrm{d}t.
 \]也就是说，当 \(n\) 足够大时，\(\displaystyle\sum_{i=1}^{n} X_i\) 近似服从正态分布 \(N(n\mu,\, n\sigma^2)\)，因此
 \[
 P\!\left\{a < \sum_{i=1}^{n} X_i < b\right\} \approx \Phi\!\left(\frac{b - n\mu}{\sqrt{n}\,\sigma}\right) - \Phi\!\left(\frac{a - n\mu}{\sqrt{n}\,\sigma}\right).
@@ -6423,199 +6468,19 @@ C. 服从同一指数分布\quad D. 服从同一连续分布
 \end{itemize}
 \end{solution}
 
-\begin{exercise}\label{exer:src-2004-2a-08}
-设随机变量 \(X\sim B(100,0.8)\)，试用棣莫弗--拉普拉斯定理求
-\(
-P\{80\le X\le 100\}
-\)
-的近似值。其中 \(\Phi(x)\) 为标准正态分布函数，当 \(x>4\) 时取 \(\Phi(x)=1\)。
-\end{exercise}
-\begin{solution}
-对二项分布 \(X\sim B(n,p)\)，有
-\(
-EX=np,\qquad DX=np(1-p).
-\)
-本题中
-\(
-n=100,\qquad p=0.8,
-\)
-所以
-\[
-EX=80,\qquad DX=100\times0.8\times0.2=16,\qquad \sigma=4.
-\]
-
-由棣莫弗--拉普拉斯定理，
-\(
-\frac{X-80}{4}\approx N(0,1).
-\)
-作二项分布的正态近似时，区间端点要作连续性修正：
-\[
-P(80\le X\le 100)
-\approx
-\Phi\!\left(\frac{100.5-80}{4}\right)
--\Phi\!\left(\frac{79.5-80}{4}\right)
-=\Phi(5.125)-\Phi(-0.125).
-\]
-题目说明当 \(x>4\) 时取 \(\Phi(x)=1\)，故
-\[
-P(80\le X\le 100)\approx 1-\Phi(-0.125)=\Phi(0.125).
-\]
-
-若不作连续性修正，则只会得到
-\[
-\Phi\!\left(\frac{100-80}{4}\right)
--\Phi\!\left(\frac{80-80}{4}\right)
-=\Phi(5)-\Phi(0)=\frac12,
-\]
-这是较粗的近似；本题按连续性修正取 \(\Phi(0.125)\)。
-\end{solution}
-
-\begin{exercise}\label{exer:5-clt-exp100}
-设随机变量 \(X_1, X_2, \dots, X_{100}\) 相互独立，均服从参数为 \(\dfrac{1}{2}\) 的指数分布，利用中心极限定理计算
-\[
-P\!\left(\sum_{i=1}^{100} X_i < 240\right) =\,\underline{\hspace{2cm}}.
-\]
-\end{exercise}
-
-\begin{solution}
-先识别题型：题目要求的是 100 个独立同分布随机变量之和的概率，而 \(n=100\) 已经较大，适合用中心极限定理。
-
-\(X_i \sim E\!\left(\dfrac{1}{2}\right)\)，因此
-\(
-\mu=EX_i=2,\qquad \sigma^2=DX_i=4.
-\)
-
-设
-\(
-S=\sum_{i=1}^{100} X_i.
-\)
-则
-\(
-ES=100\times 2=200,\qquad DS=100\times 4=400.
-\)
-
-由列维--林德伯格中心极限定理，
-\(
-\frac{S-200}{20}\approx N(0,1),
-\)
-即 \(S\) 近似服从正态分布 \(N(200,400)\)，于是
-\(
-P(S < 240) = P\!\left(\frac{S - 200}{20} < \frac{240 - 200}{20}\right) \approx \Phi(2).
-\)
-
-因此应填 \(\Phi(2)\)。
-\end{solution}
-
-\begin{exercise}\label{exer:src-paper1-app-04}\label{prob:p1-app-04}
-某彩电公司每月生产 \(20\) 万台背投彩电，次品率为 \(0.0005\)。检验时每台次品未被查出的概率为 \(0.01\)。试用中心极限定理求检验后出厂的彩电中次品数超过 \(3\) 台的概率。
-\end{exercise}
-\begin{solution}
-对每台彩电，成为“次品且未被查出”的概率为
-\(
-p=0.0005\times0.01=5\times10^{-6}.
-\)
-设检验后出厂的次品数为 \(Y\)，则
-\(
-Y\sim B(2\times10^5,\ 5\times10^{-6}).
-\)
-于是
-\(
-EY=np=1,\qquad DY=np(1-p)=1-5\times10^{-6}.
-\)
-由中心极限定理，近似有
-\(
-Y\approx N(1,\ 1-5\times10^{-6}).
-\)
-按源卷解法不作连续性修正，
-\[
-P(Y>3)\approx
-1-\Phi\!\left(\frac{3-1}{\sqrt{1-5\times10^{-6}}}\right)
-\approx 1-\Phi(2)
-=0.0228.
-\]
-\end{solution}
-
-\begin{exercise}\label{exer:5-clt-exp36}
-设某种元件的寿命（小时）服从指数分布，其概率密度函数为
-\[
-f(x) = \begin{cases} \dfrac{1}{100}\,e^{-x/100}, & x > 0, \\ 0, & x \leq 0, \end{cases}
-\]
-各元件的寿命相互独立。随机取 36 个元件，求寿命总和大于 4200 小时的概率近似值。
-\end{exercise}
-
-\begin{solution}
-由密度函数知 \(\lambda = \dfrac{1}{100}\)。设第 \(i\) 只元件的寿命为 \(X_i\)，则 \(X_i \sim E\!\left(\dfrac{1}{100}\right)\)。
-
-\(EX_i = 100\)，\(DX_i = 10000\)。令 \(Y = \displaystyle\sum_{i=1}^{36} X_i\)，则
-\(
-EY = 3600,\quad DY = 36 \times 10000 = 360000.
-\)
-
-由列维--林德伯格定理，\(Y\) 近似服从 \(N(3600, 360000)\)，故
-\[
-P(Y > 4200) = 1 - P(Y \leq 4200) \approx 1 - \Phi\!\left(\frac{4200 - 3600}{600}\right) = 1 - \Phi(1) \approx 0.1587.
-\]
-\end{solution}
 
 \begin{exercise}\label{exer:5-clt-box}
 生产线生产的产品成箱包装，每箱质量是随机的。假设平均每箱重 50 千克，标准差为 5 千克。若用载重为 5 吨的汽车承运，试用中心极限定理说明每辆车最多可以装多少箱，才能保证不超载的概率大于 0.977。\ (\(\Phi(2) = 0.977\))
 \end{exercise}
 
 \begin{solution}
-设 \(X_i\ (i=1,2,\dots,n)\) 为第 \(i\) 箱的质量（千克），\(X_i\) 独立同分布，\(EX_i = 50\)，\(\sqrt{DX_i} = 5\)。
-
-\(n\) 箱总质量 \(T_n = \displaystyle\sum_{i=1}^{n} X_i\)，\(ET_n = 50n\)，\(\sqrt{DT_n} = 5\sqrt{n}\)。
-
-由列维--林德伯格定理，\(T_n\) 近似服从 \(N(50n,\, 25n)\)：
+设 \(X_i\ (i=1,2,\dots,n)\) 为第 \(i\) 箱的质量（千克），\(X_i\) 独立同分布，\(EX_i = 50\)，\(DX_i = 5\)。\(n\) 箱总质量 \(T_n = \displaystyle\sum_{i=1}^{n} X_i\)，\(ET_n = 50n\)，\(DT_n = 25n\)，近似服从 \(N(50n,\, 25n)\)：
 \[
 P(T_n \leq 5000) = P\!\left(\frac{T_n - 50n}{5\sqrt{n}} \leq \frac{5000 - 50n}{5\sqrt{n}}\right) \approx \Phi\!\left(\frac{1000 - 10n}{\sqrt{n}}\right) > 0.977 = \Phi(2),
 \]
-即 \(\dfrac{1000 - 10n}{\sqrt{n}} > 2\)。
-
-令 \(t = \sqrt{n}\)，则 \(1000 - 10t^2 > 2t\)，即 \(10t^2 + 2t - 1000 < 0\)。解得 \(t < \dfrac{-2 + \sqrt{4+40000}}{20} = \dfrac{-2+2\sqrt{10001}}{20} \approx 9.950\)，故 \(n < 99.0\)。
-
-验证边界值：\(n=98\) 时 \(\dfrac{1000-980}{\sqrt{98}} = \dfrac{20}{9.90} \approx 2.02 > 2\) ；\(n=99\) 时 \(\dfrac{1000-990}{\sqrt{99}} = \dfrac{10}{9.95} \approx 1.005 < 2\) 。因此最多装 \(\mathbf{98}\) 箱。
+即 \(\dfrac{1000 - 10n}{\sqrt{n}} > 2\)。故 \(n < 99.0\)。因此最多装 \(\mathbf{98}\) 箱。
 \end{solution}
 
-\begin{exercise}\label{exer:5-clt-exp-norm}
-设 \(X_1, X_2, \dots, X_n, \dots\) 为独立同分布随机变量序列，且均服从参数为 \(\lambda\ (\lambda > 1)\) 的指数分布，记 \(\Phi(x)\) 为标准正态分布函数，则（\quad）。\par
-A. \(\displaystyle\lim_{n\to\infty} P\!\left\{\frac{\sum_{i=1}^n X_i - n\lambda}{\lambda\sqrt{n}} \leq x\right\} = \Phi(x)\)~~~~~~
-B. \(\displaystyle\lim_{n\to\infty} P\!\left\{\frac{\sum_{i=1}^n X_i - n\lambda}{\sqrt{\lambda n}} \leq x\right\} = \Phi(x)\)\par
-C. \(\displaystyle\lim_{n\to\infty} P\!\left\{\frac{\lambda\sum_{i=1}^n X_i - n}{\sqrt{n}} \leq x\right\} = \Phi(x)\)~~~~~~
-D. \(\displaystyle\lim_{n\to\infty} P\!\left\{\frac{\sum_{i=1}^n X_i - \lambda}{\sqrt{n\lambda}} \leq x\right\} = \Phi(x)\)
-\end{exercise}
-\begin{solution}
-应选 C。
-
-这里最容易混淆的是：指数分布 \(E(\lambda)\) 中的 \(\lambda\) 是\textbf{速率参数}，不是均值。故
-\[
-EX_i=\frac1\lambda,\qquad DX_i=\frac1{\lambda^2}.
-\]
-
-设
-\(
-S_n=\sum_{i=1}^{n} X_i.
-\)
-则
-\(
-ES_n=\frac{n}{\lambda},\qquad DS_n=\frac{n}{\lambda^2}.
-\)
-
-由列维--林德伯格中心极限定理，正确的标准化应为
-\[
-\frac{S_n - ES_n}{\sqrt{DS_n}} = \frac{S_n - n/\lambda}{\sqrt{n}/\lambda}
-= \frac{\lambda S_n - n}{\sqrt{n}} \to N(0,1),
-\]
-这恰好对应选项 C。
-
-其余选项的问题分别是：
-\begin{itemize}
-    \item A、B 把中心位置错写成了 \(n\lambda\)，而正确的均值应是 \(n/\lambda\)；
-    \item B、D 的标准化分母也与真实方差不符。
-\end{itemize}
-
-所以应选 C。
-\end{solution}
 
 \begin{exercise}\label{exer:5-clt-poisson}
 设 \(X_1, X_2, \dots, X_n\) 相互独立，且均服从泊松分布 \(P(2)\)，则由列维--林德伯格中心极限定理
@@ -6625,11 +6490,6 @@ ES_n=\frac{n}{\lambda},\qquad DS_n=\frac{n}{\lambda^2}.
 A. \(\Phi(\sqrt{2})\)\quad B. \(\Phi(2)\)\quad C. \(\Phi(1)\)\quad D. \(1\)
 \end{exercise}
 \begin{solution}
-应选 A。\(X_i \sim P(2)\)，故 \(EX_i = 2\)，\(DX_i = 2\)。由中心极限定理：
-\[
-\frac{\sum X_i - n \cdot 2}{\sqrt{n \cdot 2}} \to N(0,1).
-\]
-题目中式子变形：
 \[
 P\!\left(\frac{\sum X_i - 2n}{\sqrt{n}} < 2\right)
 = P\!\left(\frac{\sum X_i - 2n}{\sqrt{2n}} < \frac{2}{\sqrt{2}}\right)
@@ -6653,10 +6513,7 @@ E(X_i^2) = \alpha_2,\quad D(X_i^2) = E(X_i^4) - [E(X_i^2)]^2 = \alpha_4 - \alpha
 \]
 由列维--林德伯格中心极限定理，
 \[
-\frac{\sum_{i=1}^{n} X_i^2 - n\alpha_2}{\sqrt{n(\alpha_4 - \alpha_2^2)}} \to N(0,1),
-\]
-等价于
-\[
+\frac{\sum_{i=1}^{n} X_i^2 - n\alpha_2}{\sqrt{n(\alpha_4 - \alpha_2^2)}} \to N(0,1),~~~
 \frac{Z_n - \alpha_2}{\sqrt{(\alpha_4 - \alpha_2^2)/n}} \to N(0,1),
 \]
 因此当 \(n\) 充分大时，\(Z_n\) 近似服从正态分布，参数为
@@ -6667,104 +6524,19 @@ E(X_i^2) = \alpha_2,\quad D(X_i^2) = E(X_i^4) - [E(X_i^2)]^2 = \alpha_4 - \alpha
 
 
 
-
-\begin{exercise}\label{exer:5-dml-identify}
-从废品率为 0.03 的大量产品中随机抽取 1000 个，根据中心极限定理，废品数 \(X\) 近似服从的分布为\,\underline{\hspace{2cm}}（要求写出分布的参数）。
-\end{exercise}
-\begin{solution}
-废品数 \(X\) 本质上是 1000 次独立伯努利试验中“废品”出现的总次数，因此
-\(
-X\sim B(1000,0.03).
-\)
-
-当 \(n\) 很大时，二项分布可以用棣莫弗--拉普拉斯中心极限定理作正态近似，其近似参数取二项分布的均值和方差：
-\[
-EX=np=1000\times 0.03=30,\qquad DX=np(1-p)=1000\times 0.03\times 0.97=29.1.
-\]
-
-因此 \(X\approx N(30,\ 29.1)\)。
-
-所以应填“近似服从 \(N(30,29.1)\)”。
-\end{solution}
-
 \begin{exercise}\label{exer:5-clt-tap}
 某宿舍楼按 400 名学生的规模建造，每人每天有约 10\% 的时间占用一个水龙头（各人独立）。为能以 95\% 的概率保证用水需要，至少应安装多少个水龙头？\ (\(\Phi(1.645) = 0.95\))
 \end{exercise}
 \begin{solution}
-先把题目建模成二项分布。对每个学生来说，在某一时刻“是否正在用水”只有两种结果：
-\begin{itemize}
-    \item 用水，概率为 \(0.1\)；
-    \item 不用水，概率为 \(0.9\)。
-\end{itemize}
-又因为 400 名学生彼此独立，所以同一时刻的用水人数 \(X\) 服从 \(X\sim B(400,0.1)\)。
-因此 \(EX=np=40,\ DX=np(1-p)=400\times 0.1\times 0.9=36\)。
-
-题目要保证“安装的水龙头数至少覆盖同时用水人数”，即要求 \(P(X\le N)\ge 0.95\)。
+先把题目建模成二项分布。对每个学生来说，在某一时刻有 \(10\%\) 的概率使用水龙头，又因为 400 名学生彼此独立，所以同一时刻的用水人数 \(X\) 服从 \(X\sim B(400,0.1)\)。因此 \(EX=np=40,\ DX=np(1-p)=400\times 0.1\times 0.9=36\)。题目要求 \(P(X\le N)\ge 0.95\)。
 当 \(n=400\) 较大时，可用中心极限定理把 \(X\) 近似为正态分布 \(N(40,36)\)。于是
 \[
-P(X \leq N) \approx \Phi\!\left(\frac{N - 40}{6}\right) \geq 0.95 = \Phi(1.645),
-\]
-从而
-\[
+P(X \leq N) \approx \Phi\!\left(\frac{N - 40}{6}\right) \geq 0.95 = \Phi(1.645),~~~~
 \frac{N-40}{6}\ge 1.645 \implies N\ge 40+6\times 1.645=49.87.
 \]
 由于水龙头数量必须取整数，故至少应安装 \(N=50\) 个水龙头。
 \end{solution}
 
-\begin{exercise}\label{exer:src-2010-0630-a-05}
-某学院有 \(1000\) 名学生，每人有 \(80\%\) 的概率去大礼堂听讲座。问礼堂至少要有多少个座位，才能以 \(99\%\) 的概率保证去听讲座的同学有座位？\par
-已知 \(\Phi(2.33)\approx0.99\)。
-\end{exercise}
-\begin{solution}
-设去听讲座的人数为 \(X\)。由于每名学生是否去听讲座可看作独立伯努利试验，故
-\(
-X\sim B(1000,0.8).
-\)
-于是
-\[
-EX=np=1000\times0.8=800,\qquad
-DX=np(1-p)=1000\times0.8\times0.2=160.
-\]
-设礼堂有 \(M\) 个座位，题目要求
-\(
-P(X\le M)\ge0.99.
-\)
-用棣莫弗--拉普拉斯定理作正态近似：
-\(
-P(X\le M)\approx
-\Phi\left(\frac{M-800}{\sqrt{160}}\right).
-\)
-因此只需
-\(
-\frac{M-800}{\sqrt{160}}\ge2.33.
-\)
-即
-\(
-M\ge800+2.33\sqrt{160}\approx829.47.
-\)
-由于座位数必须取整数，故至少需要
-\(
-M=830
-\)
-个座位。
-\end{solution}
-
-\begin{exercise}\label{exer:5-clt-quality}
-某生产线产品合格率为 0.8。要使一批产品的合格率落在 76\% 与 84\% 之间的概率不小于 90\%，问这批产品至少要生产多少件？\ (\(\Phi(1.64) = 0.95\))
-\end{exercise}
-\begin{solution}
-设生产 \(n\) 件，合格数 \(X \sim B(n, 0.8)\)。要求
-\(
-P\!\left(0.76 \leq \frac{X}{n} \leq 0.84\right) \geq 0.90.
-\)
-标准化：\(E(X/n) = 0.8\)，\(\mathrm{Var}(X/n) = 0.16/n\)。
-\[
-P\!\left(\left|\frac{X}{n} - 0.8\right| \leq 0.04\right)
-= P\!\left(|Z| \leq \frac{0.04}{\sqrt{0.16/n}}\right)
-= P(|Z| \leq 0.1\sqrt{n}) = 2\Phi(0.1\sqrt{n}) - 1 \geq 0.90.
-\]
-\(\Phi(0.1\sqrt{n}) \geq 0.95\)，\(0.1\sqrt{n} \geq 1.64\)，\(n \geq 268.96\)，取 \(n = 269\)。
-\end{solution}
 
 \begin{exercise}\label{exer:src-probstat-test1-06}
 某生产线产品合格率为 \(0.8\)。要使一批产品的合格率落在 \(76\%\) 与 \(84\%\) 之间的概率不小于 \(90\%\)，问这批产品至少要生产多少件？分别用以下方法估计：\par
@@ -6773,21 +6545,16 @@ P\!\left(\left|\frac{X}{n} - 0.8\right| \leq 0.04\right)
 已知 \(\Phi(1.645)=0.95\)。
 \end{exercise}
 \begin{solution}
-设生产 \(n\) 件，合格品数为 \(X\)，则
-\(
-X\sim B(n,0.8),\qquad \hat p=\frac Xn.
-\)
-于是
-\(
-E\hat p=0.8,\qquad D\hat p=\frac{0.8(1-0.8)}{n}=\frac{0.16}{n}.
-\)
+(1) 设生产 \(n\) 件，合格品数为 \(X\)，则
+\[
+X\sim B(n,0.8),\hat p=\frac Xn\implies
+E\hat p=0.8,D\hat p=D\frac{X}{n}=\frac{n0.8(1-0.8)}{n^2}=\frac{0.16}{n}.
+\]
 题目要求
 \[
 P(0.76\le \hat p\le0.84)
 =P(|\hat p-0.8|\le0.04)\ge0.90.
-\]
-
-(1) 由切比雪夫不等式，
+\]由切比雪夫不等式，
 \(
 P(|\hat p-0.8|<0.04)
 \ge1-\frac{D\hat p}{0.04^2}
@@ -6801,21 +6568,16 @@ P(|\hat p-0.8|<0.04)
 即
 \(
 n\ge1000.
-\)
-因此按切比雪夫不等式估计，至少需生产 \(1000\) 件。
-
-(2) 由棣莫弗--拉普拉斯定理，
-\(
-\frac{\hat p-0.8}{\sqrt{0.16/n}}\approx N(0,1).
-\)
-因此
-\[
-P(|\hat p-0.8|\le0.04)
-\approx
-P\left(|Z|\le\frac{0.04}{\sqrt{0.16/n}}\right)
-=P(|Z|\le0.1\sqrt n).
-\]
-要使该概率不小于 \(0.90\)，应有
+\)\\
+(2) 设生产 \(n\) 件，合格数 \(X \sim B(n, 0.8)\)。对于单次实验而言，$\mu=0.8$，方差为 \(p(1-p) = 0.16\)。
+\begin{align*}
+P\!\left(0.76 \leq \frac{X}{n} \leq 0.84\right) &=P\!\left(0.76 n\leq X \leq 0.84n\right)=P\!\left(-0.04n\leq X-0.8n \leq 0.04n\right)\\
+&=P\!\left(|X-0.8n|\leq 0.04n\right)=P\!\left(\left|\frac{X-0.8n}{\sqrt{0.16n}}\right|\leq
+\frac{0.04n}{0.4\sqrt n}\right)\\
+&\approx P(|Z|\leq0.1\sqrt n)
+=2\Phi(0.1\sqrt n)-1.
+\end{align*}
+要使该概率不小于 \(0.90\)，只需
 \(
 2\Phi(0.1\sqrt n)-1\ge0.90,
 \)
@@ -6823,77 +6585,26 @@ P\left(|Z|\le\frac{0.04}{\sqrt{0.16/n}}\right)
 \(
 \Phi(0.1\sqrt n)\ge0.95.
 \)
-由 \(\Phi(1.645)=0.95\)，得
+由 \(\Phi(1.64)=0.95\)，得
 \(
-0.1\sqrt n\ge1.645,
+0.1\sqrt n\ge1.64,
 \)
 从而
 \(
-n\ge(16.45)^2=270.6025.
+n\ge(16.4)^2=268.96.
 \)
-由于 \(n\) 为整数，按中心极限定理估计至少需生产
-\(
-n=271
-\)
-件。
+故至少要生产 \(269\) 件。
 \end{solution}
 
-
-\begin{exercise}\label{exer:5-dml-coin}
-设 \(X_n\) 表示将一枚硬币随意投掷 \(n\) 次出现正面的次数，则（\quad）。\par
-A. \(\displaystyle\lim_{n\to\infty} P\!\left\{\frac{X_n - n}{\sqrt{n}} \leq x\right\} = \Phi(x)\)~~~~
-B. \(\displaystyle\lim_{n\to\infty} P\!\left\{\frac{2X_n - n}{\sqrt{n}} \leq x\right\} = \Phi(x)\)\par
-C. \(\displaystyle\lim_{n\to\infty} P\!\left\{\frac{X_n - 2n}{\sqrt{n}} \leq x\right\} = \Phi(x)\)~~~~
-D. \(\displaystyle\lim_{n\to\infty} P\!\left\{\frac{2X_n - 2n}{\sqrt{n}} \leq x\right\} = \Phi(x)\)
-\end{exercise}
-
-\begin{solution}
-应选 B。
-
-题目中的 \(X_n\) 表示“\(n\) 次投掷中出现正面的次数”，因此
-\(
-X_n\sim B\!\left(n,\frac12\right).
-\)
-这时
-\[
-np=\frac n2,\qquad np(1-p)=n\cdot \frac12\cdot \frac12=\frac n4.
-\]
-
-由棣莫弗--拉普拉斯定理，
-\[
-\frac{X_n - n/2}{\sqrt{n/4}} = \frac{X_n - n/2}{\sqrt{n}/2} = \frac{2X_n - n}{\sqrt{n}} \to N(0,1).
-\]
-
-因此
-\(
-\lim_{n\to\infty} P\!\left\{\frac{2X_n-n}{\sqrt n}\le x\right\}=\Phi(x),
-\)
-正好对应选项 B。
-
-A、C、D 都把中心位置或标准化因子写错了，所以不能选。
-\end{solution}
 
 
 \begin{exercise}\label{exer:src-2005-2a-16}
 某工厂生产的零件废品率为 \(5\%\)。某人要采购一批零件，他希望以 \(95\%\) 的概率保证其中有 \(2000\) 个及格品，问他至少应购买多少零件？已知 \(\Phi(1.65)=0.9505\)。
 \end{exercise}
 \begin{solution}
-设购买 \(n\) 个零件，其中及格品数为 \(\zeta\)。由于废品率为 \(5\%\)，及格率为 \(p=0.95\)，故
-\(
-\zeta\sim B(n,0.95).
-\)
-题目要求
-\(
-P(\zeta\ge 2000)\ge 0.95.
-\)
-
-当 \(n\) 较大时，用棣莫弗--拉普拉斯定理近似：
-\(
-\zeta\approx N(np,\ np(1-p))=N(0.95n,\ 0.0475n).
-\)
-于是
+$n$次二项分布，二项分布的期望为$p=0.95$，方差为$0.95\times0.05$，设购买 \(n\) 个零件，其中及格品数为 \(\zeta\)。
 \[
-P(\zeta\ge 2000)
+P(\zeta\ge 2000)=1-P(\zeta\le 2000)=1-P\left(\frac{\zeta-0.95n}{\sqrt{0.0475n}}\le\frac{2000-0.95n}{\sqrt{0.0475n}}\right)
 \approx
 1-\Phi\!\left(\frac{2000-0.95n}{\sqrt{0.0475n}}\right).
 \]
@@ -6912,8 +6623,6 @@ n=2123.
 所以至少应购买 \(2123\) 个零件。
 \end{solution}
 
-\subsection*{历年试题补充：2006 级试卷（2 学分）}
-
 \begin{exercise}\label{exer:src-2006-2a-12}
 在一家保险公司里有 \(25000\) 辆汽车参加保险，每辆汽车每年付保险费 \(240\) 元。一年内一辆汽车出事故的概率为 \(0.001\)，若一辆车出事故，则保险公司赔付 \(20\) 万元。问：\par
 (1) 保险公司亏本的概率为多大；\par
@@ -6921,35 +6630,25 @@ n=2123.
 （参考数据：\(\Phi(1)=0.8413,\ \Phi(2)=0.9772,\ \Phi(3)=0.9987\)。）
 \end{exercise}
 \begin{solution}
-设一年内出事故的汽车数为 \(X\)，则
-\(
-X\sim B(25000,0.001).
-\)
-于是
-\[
-EX=np=25,\qquad DX=np(1-p)=25000\times0.001\times0.999=24.975\approx25.
-\]
-保险公司的保费收入为
+设一年内出事故的汽车数为 \(X\)，则25000次是否出事的伯努利实验，单次实验期望为$p=0.001$，方差为$0.001\times0.999$\\
+(1) 保险公司的保费收入为
 \(
 25000\times240=6000000\quad(\text{元}),
 \)
 赔付金额为 \(200000X\)，故利润为
 \(
 L=6000000-200000X.
-\)
-
-(1) 亏本即 \(L<0\)，也就是
+\)，亏本即 \(L<0\)，也就是
 \[
 6000000-200000X<0 \quad\Longleftrightarrow\quad X>30.
-\]
-用正态近似 \(X\approx N(25,25)\)，得
-\(
-P(L<0)=P(X>30)
-\approx 1-\Phi\left(\frac{30-25}{5}\right)
+\]要有大于30辆车出事故，用正态近似 \(X\approx N(25,25)\)，得
+\begin{align*}
+P(L<0)&=P(X>30)=P\left(\frac{X-0.001\times25000}{\sqrt{25000}\sqrt{0.001\times0.999}}>\frac{30-0.001\times25000}{\sqrt{25000}\sqrt{0.001\times0.999}}\right)\\
+&=1-P\left(\frac{X-0.001\times25000}{\sqrt{25000}\sqrt{0.001\times0.999}}<\frac{30-0.001\times25000}{\sqrt{25000}\sqrt{0.001\times0.999}}\right)\\
+&\approx 1-\Phi\left(\frac{30-25}{5}\right)
 =1-\Phi(1)
 =0.1587.
-\)
-
+\end{align*}
 (2) 利润不小于 \(100\) 万元，即
 \[
 6000000-200000X\ge1000000
@@ -6965,150 +6664,7 @@ P(L\ge1000000)=P(X\le25)
 所以保险公司每年利润不小于 \(100\) 万元的概率近似为 \(0.5\)。
 \end{solution}
 
-\begin{exercise}\label{exer:src-2009-4a-06}
-保险公司对某一类人的保险中，每人每年交 \(50\) 元保险费；在一年内一个人死亡的概率为 \(0.0006\)，死亡后其家属可得到 \(10000\) 元。问至少要多少人参加保险，保险公司才能以 \(95\%\) 的概率赢利 \(10000\) 元？
-\end{exercise}
-\begin{solution}
-设参加保险人数为 \(n\)，一年内死亡人数为 \(X\)，则
-\(
-X\sim B(n,0.0006).
-\)
-保险公司的保费收入为 \(50n\) 元，赔付金额为 \(10000X\) 元，利润为
-\(
-L=50n-10000X.
-\)
-要求以 \(95\%\) 的概率赢利 \(10000\) 元，即
-\(
-P(L\ge10000)\ge0.95.
-\)
-这等价于
-\(
-P\left(X\le \frac{50n-10000}{10000}\right)
-=P(X\le0.005n-1)\ge0.95.
-\)
 
-由中心极限定理，近似有
-\[
-X\approx N\bigl(0.0006n,\ 0.0006(1-0.0006)n\bigr).
-\]
-因此只需令
-\[
-\frac{0.005n-1-0.0006n}
-{\sqrt{0.0006(1-0.0006)n}}
-\ge z_{0.05}.
-\]
-取 \(z_{0.05}=1.645\)，得
-\(
-\frac{0.0044n-1}{\sqrt{0.00059964\,n}}\ge1.645.
-\)
-解得
-\(
-n\gtrsim 413.3.
-\)
-所以按中心极限定理近似计算，至少应有
-\(
-n=414
-\)
-人参加保险。
-
-\begin{note}
-若严格按二项分布的整数取值直接计算，由于 \(n=400\) 时利润至少为 \(10000\) 元等价于 \(X\le1\)，而此时 \(P(X\le1)\) 已超过 \(0.95\)，会得到更小的整数下界。考试题通常配合所给正态分布表，意图是使用中心极限定理近似，因此这里保留正态近似答案。
-\end{note}
-\end{solution}
-
-\begin{exercise}\label{exer:src-2009-4b-06}
-保险公司对某一类人的保险中，每人每年交 \(20\) 元保险费；在一年内一个人死亡的概率为 \(0.0003\)，死亡后其家属可得到 \(10000\) 元。问至少要多少人参加保险，保险公司才能以 \(95\%\) 的概率赢利 \(10000\) 元？
-\end{exercise}
-\begin{solution}
-设参加保险人数为 \(n\)，一年内死亡人数为 \(X\)，则
-\(
-X\sim B(n,0.0003).
-\)
-保险公司的利润为
-\(
-L=20n-10000X.
-\)
-要求
-\(
-P(L\ge10000)\ge0.95,
-\)
-即
-\(
-P\left(X\le \frac{20n-10000}{10000}\right)
-=P(X\le0.002n-1)\ge0.95.
-\)
-
-由中心极限定理，
-\[
-X\approx N\bigl(0.0003n,\ 0.0003(1-0.0003)n\bigr).
-\]
-因此令
-\[
-\frac{0.002n-1-0.0003n}
-{\sqrt{0.0003(1-0.0003)n}}
-\ge z_{0.05}.
-\]
-取 \(z_{0.05}=1.645\)，得
-\(
-\frac{0.0017n-1}{\sqrt{0.00029991\,n}}\ge1.645.
-\)
-解得
-\(
-n\gtrsim1158.7.
-\)
-所以按中心极限定理近似计算，至少应有
-\(
-n=1159
-\)
-人参加保险。
-
-\begin{note}
-本题与上一题一样，是用正态近似反解样本规模。若改用精确二项分布并严格处理整数阈值，会得到不同的最小整数；这里按试卷所给正态分布表的意图取近似答案。
-\end{note}
-\end{solution}
-
-\subsection*{历年试题补充：2011 试卷 A 卷}
-
-\begin{exercise}\label{exer:src-2011-a-03}
-某保险公司对一种电视机进行保险，现有 \(9000\) 个用户，各购得此种电视机一台。在保险期内，这种电视机的损坏率为 \(0.001\)。参加保险的客户每户交付保险费 \(5\) 元，电视机损坏时可向保险公司领取 \(2000\) 元。求保险公司在投保期内：\par
-(1) 亏本的概率；\par
-(2) 获利不少于 \(10000\) 元的概率。
-\end{exercise}
-\begin{solution}
-设损坏的电视机台数为 \(X\)，则
-\(
-X\sim B(9000,0.001).
-\)
-保险公司的收入为 \(9000\times5=45000\) 元，赔付额为 \(2000X\) 元。由二项分布的数字特征，
-\[
-EX=9000\times0.001=9,\qquad
-DX=9000\times0.001\times0.999\approx9.
-\]
-
-(1) 保险公司亏本等价于
-\(
-2000X>45000,\qquad\text{即}\qquad X>22.5.
-\)
-用正态近似，
-\[
-P(X>22.5)\approx
-1-\Phi\!\left(\frac{22.5-9}{3}\right)
-=1-\Phi(4.5)\approx0.
-\]
-因此亏本概率近似为 \(0\)。
-
-(2) 获利不少于 \(10000\) 元等价于
-\[
-45000-2000X\ge10000,\qquad\text{即}\qquad X\le17.5.
-\]
-仍用正态近似，
-\[
-P(X\le17.5)\approx
-\Phi\!\left(\frac{17.5-9}{3}\right)
-=\Phi(2.83)\approx0.995.
-\]
-因此获利不少于 \(10000\) 元的概率约为 \(0.995\)。
-\end{solution}
 
 \begin{exercise}\label{exer:src-2011-ab-a-05}
 商场销售某种商品，每周销售量（件数）服从参数 \(\lambda=9\) 的泊松分布，各周销售量相互独立，一年按 \(50\) 个销售周计。每销售一件该商品商场可获得 \(10\) 元利润。求（精确到元）：\par
@@ -7117,39 +6673,25 @@ P(X\le17.5)\approx
 (3) 以 \(95\%\) 的把握估计商场一年中能获得的最高利润。
 \end{exercise}
 \begin{solution}
-设第 \(i\) 周销量为 \(X_i\)，则 \(X_i\sim P(9)\)，且相互独立。令
-\(
-S=\sum_{i=1}^{50}X_i.
-\)
-则
-\(
-ES=50\cdot9=450,\qquad DS=50\cdot9=450.
-\)
-(1) 由中心极限定理，
+(1) 设第 \(i\) 周销量为 \(X_i\)，则\(S=\sum_{i=1}^{50}X_i.\)，由中心极限定理，
 \[
 \begin{aligned}
 P(400\le S\le500)
-&\approx P\left\{\frac{400-450}{3\sqrt{50}}\le Z\le
-\frac{500-450}{3\sqrt{50}}\right\}\\
+&=P\left\{\frac{400-50\times9}{3\sqrt{50}}\le S\le
+\frac{500-50\times9}{3\sqrt{50}}\right\}\\
 &=2\Phi\left(\frac{\sqrt{50}}3\right)-1
 \approx2\Phi(2.36)-1\approx0.9818.
 \end{aligned}
 \]
-
 (2) 设最低利润为 \(m\)。要求
-\(
-P\{10S\ge m\}\ge0.95.
-\)
-按正态近似，
-\(
-\Phi\left(\frac{450-m/10}{3\sqrt{50}}\right)=0.95,
-\)
+\[
+0.95\leqslant P(10S\ge m)=P(S\ge \frac{m}{10})=P\left(\frac{S-50\times9}{3\sqrt{50}}\ge \frac{400\frac{m}{10}-50\times9}{3\sqrt{50}}\right)=2\Phi\left(\frac{450-m/10}{3\sqrt{50}}\right)-1
+\]
 故
 \(
 m=10\left(450-1.645\cdot3\sqrt{50}\right)\approx4151.
 \)
-所以最低利润约为 \(4151\) 元。
-
+所以最低利润约为 \(4151\) 元。\\
 (3) 设最高利润为 \(M\)。要求
 \(
 P\{10S\le M\}\ge0.95.
@@ -7165,169 +6707,7 @@ M=10\left(450+1.645\cdot3\sqrt{50}\right)\approx4849.
 所以最高利润约为 \(4849\) 元。
 \end{solution}
 
-\begin{exercise}\label{exer:src-2011-alt-a-05}
-商场销售某种商品，每周销售量（件数）服从参数 \(\lambda=9\) 的泊松分布，各周销售量相互独立，一年按 \(50\) 个销售周计。每销售一件该商品商场可获得 \(10\) 元利润。求：\par
-(1) 一年中商场售出该商品件数在 \(400\) 件到 \(500\) 件之间的概率；\par
-(2) 以 \(90\%\) 的把握说商场一年中能获得的最低利润是多少；\par
-(3) 以 \(90\%\) 的把握说商场一年中能获得的最高利润是多少。
-\end{exercise}
-\begin{solution}
-设第 \(i\) 周销量为 \(X_i\)，年销量为
-\(
-S=\sum_{i=1}^{50}X_i.
-\)
-则
-\(
-ES=450,\qquad DS=450.
-\)
-(1) 由中心极限定理，
-\[
-P(400\le S\le500)
-\approx2\Phi\left(\frac{50}{3\sqrt{50}}\right)-1
-=2\Phi\left(\frac{\sqrt{50}}3\right)-1
-\approx0.9818.
-\]
 
-(2) 设最低利润为 \(m\)。要求
-\(
-P\{10S\ge m\}\ge0.90.
-\)
-按正态近似，取单侧 \(90\%\) 分位点 \(z_{0.10}\approx1.28\)，有
-\(
-\Phi\left(\frac{450-m/10}{3\sqrt{50}}\right)=0.90.
-\)
-因此
-\(
-m=10\left(450-1.28\cdot3\sqrt{50}\right)\approx4228.
-\)
-所以最低利润约为 \(4228\) 元。
-
-(3) 设最高利润为 \(M\)。同理
-\(
-P\{10S\le M\}\ge0.90
-\)
-给出
-\(
-M=10\left(450+1.28\cdot3\sqrt{50}\right)\approx4772.
-\)
-所以最高利润约为 \(4772\) 元。
-\end{solution}
-
-\begin{exercise}\label{exer:src-2011-ab-b-05}
-商场销售某种商品，每周销售量（件数）服从参数 \(\lambda=15\) 的泊松分布，各周销售量相互独立，一年按 \(50\) 个销售周计。每销售一件该商品商场可获得 \(9\) 元利润。求：\par
-(1) 一年中商场售出该商品件数在 \(700\) 件到 \(800\) 件之间的概率；\par
-(2) 以 \(95\%\) 的把握估计商场一年中能获得的最低利润；\par
-(3) 以 \(95\%\) 的把握估计商场一年中能获得的最高利润。
-\end{exercise}
-\begin{solution}
-设年销量为
-\(
-S=\sum_{i=1}^{50}X_i,\qquad X_i\sim P(15).
-\)
-则
-\(
-ES=750,\qquad DS=750.
-\)
-(1) 由中心极限定理，
-\[
-P(700\le S\le800)
-\approx2\Phi\left(\frac{50}{\sqrt{750}}\right)-1
-\approx2\Phi(1.83)-1\approx0.932.
-\]
-
-(2) 设最低利润为 \(m\)。由
-\(
-P\{9S\ge m\}\ge0.95
-\)
-并用 \(z_{0.05}=1.645\)，得
-\(
-m=9\left(750-1.645\sqrt{750}\right)\approx6345.
-\)
-所以最低利润约为 \(6345\) 元。
-
-(3) 设最高利润为 \(M\)。同理
-\(
-M=9\left(750+1.645\sqrt{750}\right)\approx7155.
-\)
-所以最高利润约为 \(7155\) 元。
-\end{solution}
-
-\subsection*{历年试题补充：2012 试卷 A 卷}
-
-\begin{exercise}\label{exer:src-2012-a-05}
-设 \(X_1,X_2,\dots,X_{900}\) 相互独立，且均服从区间 \((1,5)\) 上的均匀分布。记
-\(
-S_{900}=\sum_{i=1}^{900}X_i.
-\)
-利用中心极限定理求 \(P\{S_{900}>2632\}\) 的近似值。
-\end{exercise}
-\begin{solution}
-对 \(X_i\sim U(1,5)\)，有
-\(
-EX_i=\frac{1+5}{2}=3,\qquad
-DX_i=\frac{(5-1)^2}{12}=\frac43.
-\)
-因此
-\[
-ES_{900}=900\cdot3=2700,\qquad
-DS_{900}=900\cdot\frac43=1200.
-\]
-由中心极限定理，
-\(
-\frac{S_{900}-2700}{\sqrt{1200}}\approx N(0,1).
-\)
-于是
-\[
-\begin{aligned}
-P\{S_{900}>2632\}
-&\approx
-P\left\{Z>\frac{2632-2700}{\sqrt{1200}}\right\}\\
-&=P\left\{Z>-\frac{68}{20\sqrt3}\right\}
-=P\left\{Z>-\frac{17\sqrt3}{15}\right\}.
-\end{aligned}
-\]
-因为 \(\dfrac{17\sqrt3}{15}\approx1.96\)，故
-\(
-P\{S_{900}>2632\}\approx \Phi(1.96)\approx0.975.
-\)
-\end{solution}
-
-\begin{exercise}\label{exer:src-2012-b-05}
-某制药厂宣称其新研制的一种药的有效率达到 \(80\%\)。药监部门准备对此药进行临床试验，随机抽取 \(100\) 名患者试用此药；若这 \(100\) 人中至少有 \(76\) 人用药有效，药监部门就批准此药生产。若该药的有效率确为 \(80\%\)，试用中心极限定理近似求此药能被批准生产的概率。
-\end{exercise}
-\begin{solution}
-设
-\[
-X_i=
-\begin{cases}
-1, & \text{第 }i\text{ 个患者用药有效},\\
-0, & \text{否则},
-\end{cases}
-\qquad i=1,2,\dots,100,
-\]
-并记
-\(
-S_{100}=\sum_{i=1}^{100}X_i.
-\)
-由题意 \(X_i\) 独立同分布，且 \(X_i\sim B(1,0.8)\)。于是
-\[
-ES_{100}=100\times0.8=80,\qquad
-DS_{100}=100\times0.8\times0.2=16.
-\]
-由中心极限定理，
-\(
-\frac{S_{100}-80}{4}\approx N(0,1).
-\)
-因此
-\[
-\begin{aligned}
-P\{S_{100}\ge76\}
-&\approx P\left\{Z\ge\frac{76-80}{4}\right\}\\
-&=P\{Z\ge -1\}=\Phi(1)=0.8413.
-\end{aligned}
-\]
-所以该药能被批准生产的概率近似为 \(0.8413\)。
-\end{solution}
 
 \begin{exercise}\label{exer:src-2013-a-06}
 某供电站供应某地区 \(1000\) 户居民用电，各户每日用电量相互独立。已知每户每日用电量（单位：度）在区间 \([0,20]\) 上服从均匀分布。若要以 \(0.99\) 的概率满足该地区居民每日用电需求，问供电站每天至少应向该地区供应多少度电？（已知 \(\Phi(2.33)\approx0.99\)）
@@ -7366,165 +6746,6 @@ L\approx10000+2.33\sqrt{\frac{100000}{3}}\approx10425.
 因此供电站每天至少应供应约 \(10425\) 度电。
 \end{solution}
 
-\begin{exercise}\label{exer:src-2014-spring-a-06}
-设某种元件的寿命 \(X\) 的数学期望 \(\mu\) 未知，方差 \(\sigma^2=400\)。现用容量为 \(n\) 的样本均值 \(\overline X\) 估计 \(\mu\)。若要求
-\(
-P\{|\overline X-\mu|<1\}\ge0.95,
-\)
-问样本容量 \(n\) 至少应取多大？
-\end{exercise}
-\begin{solution}
-由中心极限定理，当 \(n\) 较大时
-\(
-\frac{\overline X-\mu}{\sigma/\sqrt n}
-=\frac{\overline X-\mu}{20/\sqrt n}
-\approx N(0,1).
-\)
-因此
-\(
-P\{|\overline X-\mu|<1\}
-\approx
-2\Phi\!\left(\frac{\sqrt n}{20}\right)-1.
-\)
-要使该概率不小于 \(0.95\)，只需
-\(
-\frac{\sqrt n}{20}\ge z_{0.025}=1.96.
-\)
-于是
-\(
-n\ge (20\times1.96)^2=1536.64.
-\)
-故样本容量至少应取
-\(
-n=1537.
-\)
-\end{solution}
-
-\begin{exercise}\label{exer:src-2015-spring-a-06}
-一养鸡场购进 \(1\) 万个良种鸡蛋。已知每个鸡蛋孵化成雏鸡的概率为 \(0.84\)，每只雏鸡发育成种鸡的概率为 \(0.90\)。试用中心极限定理近似计算这批鸡蛋得到种鸡不少于 \(7500\) 只的概率。
-\end{exercise}
-\begin{solution}
-设第 \(k\) 个鸡蛋最终发育成种鸡的事件为 \(B_k\)。由题意
-\(
-P(B_k)=0.84\times0.90=0.756.
-\)
-令
-\[
-X_k=
-\begin{cases}
-1, & B_k\text{ 发生},\\
-0, & B_k\text{ 不发生},
-\end{cases}
-\qquad k=1,2,\dots,10000,
-\]
-并记
-\(
-X=\sum_{k=1}^{10000}X_k.
-\)
-则
-\(
-X\sim B(10000,0.756),
-\)
-且
-\[
-EX=np=7560,\qquad DX=np(1-p)=10000\times0.756\times0.244=1844.64.
-\]
-由棣莫弗--拉普拉斯中心极限定理，
-\(
-\frac{X-7560}{\sqrt{1844.64}}\approx N(0,1).
-\)
-所以
-\[
-\begin{aligned}
-P\{X\ge7500\}
-&\approx
-P\left\{Z\ge\frac{7500-7560}{\sqrt{1844.64}}\right\}\\
-&=1-\Phi(-1.40)
-=\Phi(1.40)
-=0.92.
-\end{aligned}
-\]
-因此这批鸡蛋得到种鸡不少于 \(7500\) 只的概率约为 \(92\%\)。
-\end{solution}
-
-\begin{exercise}\label{exer:src-2017-201207-a-04}
-设考生的外语成绩（百分制）\(X\) 服从正态分布，平均成绩为 \(72\) 分，\(96\) 分以上的人占考生总数的 \(2.3\%\)。今任取 \(100\) 个考生的成绩，以 \(Y\) 表示成绩在 \(60\) 分至 \(84\) 分之间的人数，求：\par
-(1) \(Y\) 的分布列；\par
-(2) \(EY\) 和 \(DY\)。
-\end{exercise}
-\begin{solution}
-设 \(X\sim N(72,\sigma^2)\)。由
-\(
-P(X>96)=0.023
-\)
-可知 \(96\) 分约为均值右侧 \(2\) 个标准差处，即
-\(
-\frac{96-72}{\sigma}\approx2,\qquad \frac{12}{\sigma}\approx1.
-\)
-因此
-\[
-p=P(60<X\le84)
-=\Phi\!\left(\frac{12}{\sigma}\right)-\Phi\!\left(-\frac{12}{\sigma}\right)
-\approx2\Phi(1)-1=2\times0.8413-1=0.6826.
-\]
-于是
-\(
-Y\sim B(100,0.6826),
-\)
-其分布列为
-\[
-P(Y=k)=\binom{100}{k}(0.6826)^k(0.3174)^{100-k},
-\qquad k=0,1,\dots,100.
-\]
-并且
-\[
-EY=100\times0.6826=68.26,\qquad
-DY=100\times0.6826\times0.3174\approx21.6657.
-\]
-\end{solution}
-
-\begin{exercise}\label{exer:src-2017-201207-a-06}
-学校食堂出售盒饭，共有三种价格 \(4\) 元、\(4.5\) 元、\(5\) 元。出售哪一种盒饭是随机的，售出三种价格盒饭的概率分别为 \(0.3,0.2,0.5\)。已知某天共售出 \(200\) 盒，试用中心极限定理求这天收入在 \(910\) 元至 \(930\) 元之间的概率。
-\end{exercise}
-\begin{solution}
-设第 \(i\) 盒盒饭的价格为 \(X_i\)，则
-\(
-P(X_i=4)=0.3,\quad P(X_i=4.5)=0.2,\quad P(X_i=5)=0.5.
-\)
-直接计算得
-\(
-EX_i=4\cdot0.3+4.5\cdot0.2+5\cdot0.5=4.6,
-\)
-\(
-E(X_i^2)=16\cdot0.3+4.5^2\cdot0.2+25\cdot0.5=21.35,
-\)
-故
-\(
-DX_i=21.35-4.6^2=0.19.
-\)
-记总收入
-\(
-S=\sum_{i=1}^{200}X_i.
-\)
-则
-\(
-ES=200\times4.6=920,\qquad DS=200\times0.19=38.
-\)
-由中心极限定理，
-\(
-\frac{S-920}{\sqrt{38}}\approx N(0,1).
-\)
-于是
-\[
-\begin{aligned}
-P(910\le S\le930)
-&\approx P\left(-\frac{10}{\sqrt{38}}\le Z\le \frac{10}{\sqrt{38}}\right)\\
-&=2\Phi(1.622)-1
-=2\times0.9474-1
-=0.8948.
-\end{aligned}
-\]
-\end{solution}
 
 \begin{exercise}\label{exer:src-2017-a-06}
 有一批种子，其中良种占 \(\dfrac16\)。从中任取 \(180\) 粒，问能以 \(0.99\) 的概率保证其中良种的比例与 \(\dfrac16\) 相差多少？已知
@@ -7580,32 +6801,6 @@ P\left\{\left|\hat p-\frac16\right|<C\right\}
 因此能以 \(0.99\) 的概率保证良种比例与 \(\dfrac16\) 的差不超过约 \(0.07\)。
 \end{solution}
 
-\begin{exercise}\label{exer:src-2011-ab-a-06-2credit}
-机械加工设备加工某种工件的长度 \(X\sim N(100,2.34)\)。在正式出厂前需要试生产 \(100\) 个该种工件。试求在试生产的 \(100\) 个工件中，长度误差不小于 \(3\%\) 的工件个数不少于 \(3\) 件的概率。
-\end{exercise}
-\begin{solution}
-长度误差不小于 \(3\%\) 等价于
-\(
-|X-100|\ge3.
-\)
-单个工件不合格概率为
-\[
-p=P\{|X-100|\ge3\}
-=2\left[1-\Phi\left(\frac3{\sqrt{2.34}}\right)\right]
-\approx2(1-\Phi(1.96))=0.05.
-\]
-设 \(Y\) 为 \(100\) 个工件中长度误差不小于 \(3\%\) 的件数，则
-\(
-Y\sim B(100,p).
-\)
-用泊松近似，\(\lambda=np\approx5\)，故
-\(
-P(Y\ge3)
-\approx1-e^{-5}\left(1+5+\frac{5^2}{2!}\right)
-=1-\frac{37}{2}e^{-5}
-\approx0.8753.
-\)
-\end{solution}
 
 \begin{exercise}\label{exer:src-2011-ab-b-06-2credit}
 机械加工设备加工某种工件的长度 \(X\sim N(100,2.25)\)。在正式出厂前需要试生产 \(100\) 个该种工件。试求在试生产的 \(100\) 个工件中，长度误差不小于 \(3\%\) 的工件个数不少于 \(5\) 件的概率。
@@ -7630,67 +6825,6 @@ P(Y\ge5)
 \]
 \end{solution}
 
-\subsection*{历年试题补充：2007 级试卷 A 卷}
-
-\begin{exercise}\label{exer:src-2007-a-12}
-一个复杂的系统由 \(100\) 个相互独立起作用的部件所组成。在运行期间，每个部件损坏的概率为 \(0.1\)，而为了使整个系统正常工作，至少必须有 \(85\) 个部件工作。求整个系统正常工作的概率。
-\end{exercise}
-\begin{solution}
-设正常工作的部件数为 \(X\)。由于每个部件正常工作的概率为 \(0.9\)，且各部件相互独立，故
-\(
-X\sim B(100,0.9).
-\)
-于是
-\[
-EX=100\times0.9=90,\qquad DX=100\times0.9\times0.1=9.
-\]
-系统正常工作等价于 \(X\ge85\)。用棣莫弗--拉普拉斯定理作正态近似，
-\[
-\begin{aligned}
-P(X\ge85)
-&\approx 1-\Phi\!\left(\frac{85-90}{\sqrt9}\right)\\
-&=1-\Phi(-1.67)=\Phi(1.67)\approx0.9525.
-\end{aligned}
-\]
-因此整个系统正常工作的概率约为 \(0.9525\)。
-\end{solution}
-
-\begin{exercise}\label{exer:src-2007-a-13}
-有一类特定人群的出事率为 \(0.0003\)，出事赔偿每人 \(30\) 万元，预计有 \(500\) 万以上这样的人投保。若每人收费 \(M\) 元，且 \(M\) 以整拾元为单位收费，其中需要支付保险公司的成本及税费占收费的 \(40\%\)。问 \(M\) 至少要多少时，才能以不低于 \(99\%\) 的概率保证保险公司在此项保险中获得 \(60\) 万元以上的利润？
-\end{exercise}
-\begin{solution}
-设出事人数为 \(X\)，则
-\(
-X\sim B(5000000,0.0003).
-\)
-于是
-\(
-EX=5000000\times0.0003=1500,
-\)
-\[
-DX=5000000\times0.0003\times0.9997\approx1500.
-\]
-每人收费 \(M\) 元，扣除 \(40\%\) 成本及税费后，保费净收入为 \(5000000M\times0.6\)，赔付金额为 \(300000X\)。要以不低于 \(99\%\) 的概率保证利润超过 \(60\) 万元，应有
-\(
-P\{5000000M\cdot0.6-300000X\ge600000\}\ge0.99.
-\)
-整理得
-\(
-P\{X\le10M-2\}\ge0.99.
-\)
-用正态近似 \(X\approx N(1500,1500)\)，并取 \(\Phi(2.33)\approx0.99\)，需满足
-\(
-\frac{10M-2-1500}{\sqrt{1500}}\ge2.33.
-\)
-解得
-\[
-M\ge \frac{1502+2.33\sqrt{1500}}{10}\approx159.23.
-\]
-由于收费以整拾元为单位，故至少取
-\(
-M=160.
-\)
-\end{solution}
 
 \begin{exercise}\label{exer:src-2007-a-14}
 叙述大数定律，并证明下列随机变量序列服从大数定律：
@@ -7740,41 +6874,6 @@ P\{|\overline{\xi}_n| \ge \varepsilon\}
 即该随机变量序列服从大数定律。
 \end{solution}
 
-\subsection*{历年试题补充：2008 级试卷 A 卷}
-
-\begin{exercise}\label{exer:src-2008-a-16}
-设由 \(2000\) 台同类机床各自独立加工一件产品，每台机床生产的次品率均服从 \((0.005,0.035)\) 上的均匀分布。问这批产品的平均次品率小于 \(0.025\) 的概率是多少？
-\end{exercise}
-\begin{solution}
-设第 \(i\) 台机床生产的次品率为 \(X_i\)，则
-\(
-X_i\sim U(0.005,0.035),\qquad i=1,2,\dots,2000,
-\)
-且相互独立。于是
-\(
-EX_i=\frac{0.005+0.035}{2}=0.02,
-\)
-\(
-DX_i=\frac{(0.035-0.005)^2}{12}=0.000075.
-\)
-记平均次品率为
-\(
-\overline X=\frac1{2000}\sum_{i=1}^{2000}X_i.
-\)
-由中心极限定理，
-\(
-\overline X\approx N\left(0.02,\frac{0.000075}{2000}\right).
-\)
-因此
-\[
-\begin{aligned}
-P(\overline X<0.025)
-&\approx \Phi\!\left(\frac{0.025-0.02}{\sqrt{0.000075/2000}}\right)\\
-&=\Phi(25.82)\approx1.
-\end{aligned}
-\]
-所以这批产品的平均次品率小于 \(0.025\) 的概率几乎为 \(1\)。
-\end{solution}
 
 \begin{exercise}\label{exer:src-2008-probstat-2a-vi-01}\label{exer:src-paper3-iv-04}\label{prob:p3-iv-04}
 某厂生产某产品 \(1000\) 件，其价格为 \(2000\) 元/件。该产品使用寿命 \(X\)（单位：天）的密度函数为
@@ -7857,8 +6956,6 @@ P_0\approx108.9\text{ 元/件},
 若要求按整元收费，则至少取 \(109\) 元/件。
 \end{solution}
 
-\subsection*{历年试题补充：2009 级试卷 A 卷}
-
 \begin{exercise}\label{exer:src-2009-a-06}\label{exer:src-paper4-iv-04}
 某学校北区食堂为提高服务质量，要先对就餐率 \(p\) 进行调查。决定在某天中午随机地对用过午餐的同学进行抽样调查。设调查了 \(n\) 个同学，其中在北区食堂用过餐的学生数为 \(m\)。若要求以大于 \(95\%\) 的概率保证调查所得的就餐频率与 \(p\) 之间的误差上下在 \(10\%\) 以内，问 \(n\) 应取多大？
 \end{exercise}
@@ -7899,61 +6996,6 @@ n\ge (19.6)^2\cdot\frac14=96.04.
 \(
 n=97.
 \)
-\end{solution}
-
-\subsection*{历年试题补充：2010 级试卷 A 卷}
-
-\begin{exercise}\label{exer:src-2010-a-08}
-为了测定某个大机器的重量，必须把它分解成若干部分来测定。假定每个部分的测量误差（单位：kg）服从 \((-1,1)\) 上均匀分布。试问，最多可以把机器分解成多少部分，才能以不低于 \(99\%\) 的概率保证测定的总重量误差的绝对值不超过 \(10\)kg？
-\end{exercise}
-\begin{solution}
-设把机器分解为 \(n\) 个部分，各部分测量误差为
-\(
-\xi_1,\xi_2,\dots,\xi_n,
-\)
-且相互独立同分布于 \(U(-1,1)\)。则
-\(
-E\xi_i=0,\qquad D\xi_i=\frac{(1-(-1))^2}{12}=\frac13.
-\)
-总误差为
-\(
-S_n=\sum_{i=1}^n \xi_i,
-\)
-于是
-\(
-ES_n=0,\qquad DS_n=\frac n3.
-\)
-由中心极限定理，
-\(
-\frac{S_n}{\sqrt{n/3}}\approx N(0,1).
-\)
-题目要求
-\(
-P(|S_n|\le10)\ge0.99.
-\)
-近似为
-\[
-P\left(\left|\frac{S_n}{\sqrt{n/3}}\right|\le \frac{10}{\sqrt{n/3}}\right)
-\approx
-2\Phi\left(\frac{10}{\sqrt{n/3}}\right)-1\ge0.99.
-\]
-即需
-\(
-\Phi\left(\frac{10}{\sqrt{n/3}}\right)\ge0.995.
-\)
-取 \(u_{0.995}\approx2.58\)，得到
-\(
-\frac{10}{\sqrt{n/3}}\ge2.58.
-\)
-因此
-\(
-n\le 3\left(\frac{10}{2.58}\right)^2\approx45.06.
-\)
-所以最多可以分解为
-\(
-n=45
-\)
-部分。
 \end{solution}
 
 \begin{exercise}\label{exer:src-2010-a-09}
@@ -8029,46 +7071,6 @@ P\left(
 \]
 \end{solution}
 
-\subsection*{历年试题补充：2008-01 3学分 A 卷}
-
-\begin{exercise}\label{exer:src-2008-01-3a-iv-03}\label{exer:src-paper2-app-03}\label{prob:p2-app-03}
-某商店出售某种贵重商品。根据经验，该商品每周销售量服从参数为 \(\lambda=1\) 的泊松分布。假定各周的销售量相互独立。用中心极限定理计算该商店一年内（\(52\) 周）售出该商品件数在 \(50\) 件到 \(70\) 件之间的概率。
-\end{exercise}
-\begin{solution}
-设第 \(i\) 周销售量为 \(X_i\)，则
-\(
-X_i\sim P(1),\qquad i=1,2,\dots,52,
-\)
-且相互独立。记一年总销售量
-\(
-S=\sum_{i=1}^{52}X_i.
-\)
-则
-\(
-ES=52,\qquad DS=52.
-\)
-由中心极限定理，
-\(
-\frac{S-52}{\sqrt{52}}\approx N(0,1).
-\)
-因此
-\[
-\begin{aligned}
-P(50\le S\le70)
-&\approx
-\Phi\left(\frac{70-52}{\sqrt{52}}\right)
--
-\Phi\left(\frac{50-52}{\sqrt{52}}\right)\\
-&=
-\Phi(2.50)-\Phi(-0.28)\\
-&=\Phi(2.50)+\Phi(0.28)-1.
-\end{aligned}
-\]
-利用附表数值 \(\Phi(2.50)=0.9938,\ \Phi(0.28)=0.6103\)，得
-\(
-P(50\le S\le70)\approx0.9938+0.6103-1=0.6041.
-\)
-\end{solution}
 
 \begin{exercise}\label{exer:5-dml-burn}
 设某种电气元件不能承受超负荷试验的概率为 0.05。现对 100 个这样的元件进行超负荷试验，以 \(X\) 表示不能承受试验而烧毁的元件数。根据中心极限定理，求 \(P\{5 \leq X \leq 10\}\) 的近似值。\ (\(\Phi(2.29) = 0.989\))
@@ -8085,18 +7087,12 @@ P\{5 \leq X \leq 10\}
 \]
 \end{solution}
 
-\begin{note}
-上式未使用连续性修正。若使用连续性修正 \(P\{5 \leq X \leq 10\} \approx P\{4.5 < X < 10.5\}\)，则结果约为 0.585，与不修正的结果 0.489 有较大差异。考研题目中是否使用连续性修正取决于出题者意图，一般以题目给出的参考数据为准。
-\end{note}
-
 
 \begin{exercise}\label{exer:5-clt-bernoulli-sum}
 设 \(X_1, X_2, \dots, X_{100}\) 为来自总体 \(X\) 的简单随机样本，其中 \(P\{X=0\} = P\{X=1\} = \dfrac{1}{2}\)。利用中心极限定理求 \(P\!\left\{\displaystyle\sum_{i=1}^{100} X_i \leq 55\right\}\) 的近似值（\quad）。\par
 A. \(1 - \Phi(1)\)\quad B. \(\Phi(1)\)\quad C. \(1 - \Phi(0.2)\)\quad D. \(\Phi(0.2)\)
 \end{exercise}
 \begin{solution}
-应选 B。
-
 因为 \(P\{X=0\}=P\{X=1\}=\dfrac12\)，所以每个样本变量都服从伯努利分布
 \(
 X_i\sim B\!\left(1,\frac12\right),
@@ -8115,8 +7111,7 @@ ES=100\times \frac12=50,\qquad DS=100\times \frac14=25.
 由于样本量 \(n=100\) 较大，可用中心极限定理把 \(S\) 近似为正态分布 \(N(50,25)\)。于是
 \(
 P(S \leq 55) = P\!\left(\frac{S - 50}{5} \leq \frac{55 - 50}{5}\right) \approx \Phi(1).
-\)
-
+\)，
 因此应选 B。
 \end{solution}
 
@@ -8136,27 +7131,6 @@ n\ln 0.99 > \ln 0.9 \implies n < \frac{\ln 0.9}{\ln 0.99} \approx 10.48,
 \[
 P(X \leq 2) = P\!\left(\frac{X-1}{\sqrt{0.99}} \leq \frac{1}{\sqrt{0.99}}\right) \approx \Phi\!\left(\frac{1}{\sqrt{0.99}}\right) = \Phi(\sqrt{100/99}).
 \]
-\begin{note}
-本题 \(np = 1 < 5\)，正态近似精度较差。更精确的方法是泊松近似：\(X \approx \text{Poisson}(1)\)，\(P(X \leq 2) = e^{-1}(1+1+1/2) = 5/(2e) \approx 0.920\)。正态近似仅作为方法展示。
-\end{note}
-\end{solution}
-
-
-
-\begin{exercise}\label{exer:5-normal-route}
-从甲地前往乙地有两条路线：第一条穿过市区，用时 \(X_1 \sim N(50, 100)\)（分钟）；第二条走环城公路，用时 \(X_2 \sim N(60, 16)\)（分钟）。若只有 65 分钟可用，应走哪条路线？
-\end{exercise}
-\begin{solution}
-\(
-P(X_1 \leq 65) = \Phi\!\left(\frac{65-50}{10}\right) = \Phi(1.5) = 0.9332,
-\)
-\(
-P(X_2 \leq 65) = \Phi\!\left(\frac{65-60}{4}\right) = \Phi(1.25) = 0.8944.
-\)
-\(0.9332 > 0.8944\)，故走第一条路线较好。
-\begin{note}
-本题本质是比较两个正态分布在同一阈值下的累积概率，不涉及中心极限定理。但作为正态分布在实际决策中的应用，与CLT应用题有很好的互补性。
-\end{note}
 \end{solution}
 
 
@@ -8188,53 +7162,9 @@ E(T_2) = \frac{10000}{4} \times 2.3756 = 5939.
 \)
 \end{solution}
 
-\begin{note}
-\textbf{本章最容易混淆的几个结论，可以按“问题--条件--结论”一起看：}
-\begin{enumerate}
-    \item \textbf{马尔可夫不等式}：问题是“非负随机变量取大值的概率能不能估个上界”；条件是 \(X\ge0\) 且 \(EX\) 存在；结论是 \(P\{X\ge a\}\le EX/a\)。
-    \item \textbf{切比雪夫不等式}：问题是“偏离均值的概率能不能估个界”；条件是 \(EX\)、\(DX\) 存在；结论是给出上界或下界，但通常不精确。
-    \item \textbf{切比雪夫大数定律}：问题是“平均值会不会稳定”；条件是相互独立且方差一致有界；结论是样本平均依概率收敛到平均期望。
-    \item \textbf{伯努利大数定律}：问题是“频率会不会稳定到概率”；条件是重复进行同一伯努利试验；结论是 \(\mu_n/n \stackrel{P}{\longrightarrow} p\)。
-    \item \textbf{辛钦大数定律}：问题仍是“样本均值会不会稳定”；条件是独立同分布且期望存在；结论是 \(\bar X_n \stackrel{P}{\longrightarrow} \mu\)。
-    \item \textbf{列维--林德伯格中心极限定理}：问题是“和或均值的分布能否近似计算”；条件是独立同分布且均值方差存在；结论是标准化后的和或均值近似服从标准正态分布。
-    \item \textbf{棣莫弗--拉普拉斯定理}：问题是“二项分布的成功次数如何近似”；条件是 \(Y_n \sim B(n,p)\) 且 \(n\) 较大；结论是 \(Y_n\) 近似服从 \(N(np,\ np(1-p))\)。
-\end{enumerate}
-
-如果两条结论看起来都能用，优先选那个\textbf{直接回答题目目标}的：问极限先想大数定律，问近似概率先想中心极限定理。
-\end{note}
-
-\begin{note}
-\textbf{自学检查点——大数定律与中心极限定理：}
-\begin{enumerate}
-    \item 马尔可夫不等式的条件是什么？（答：\(X\ge 0\) 且 \(EX\) 存在）
-    \item 切比雪夫不等式和马尔可夫不等式有什么关系？（答：切比雪夫可看成把马尔可夫用于 \((X-EX)^2\)）
-    \item 大数定律和中心极限定理分别回答什么问题？（答：大数定律回答"均值收敛到哪里"；CLT 回答"和/均值的分布近似什么形状"）
-    \item 辛钦大数定律的条件是什么？（答：iid + 期望存在）
-    \item CLT 的标准化公式：$\sum_{i=1}^n X_i$ 近似服从什么分布？（答：$N(n\mu, n\sigma^2)$）
-    \item 二项分布 $B(n,p)$ 用 CLT 近似时，标准化分母是什么？（答：$\sqrt{np(1-p)}$）
-    \item "$n$ 足够大"在实际中一般取多少？（答：通常 $n\geqslant 30$；对二项分布要求 $np\geqslant 5$ 且 $n(1-p)\geqslant 5$）
-\end{enumerate}
-\end{note}
-
 
 \chapter{样本与抽样分布}
 
-\begin{note}
-\textbf{自学导读：从概率论到数理统计的转折点。}
-
-\textbf{思维方式的根本转变：} 前 5 章的逻辑是"已知分布 $\to$ 求概率/期望"（从总体到样本）。从本章开始，逻辑\textbf{反过来}："已知样本数据 $\to$ 推断总体分布的参数"（从样本到总体）。这就是\textbf{统计推断}。
-
-\textbf{为什么需要抽样分布？} 你从总体中抽了 $n$ 个样本 $X_1,\dots,X_n$，算出样本均值 $\bar{X}$。但 $\bar{X}$ 本身也是随机变量——每次抽样得到的 $\bar{X}$ 都不同。要判断 $\bar{X}$ 离真实均值 $\mu$ 有多远，你必须知道 $\bar{X}$ 服从什么分布。这就是"抽样分布"要解决的问题。
-
-\textbf{本章三大分布的直觉：}
-\begin{itemize}
-    \item $\chi^2$ 分布：$n$ 个标准正态变量的平方和——衡量"总偏差有多大"；
-    \item $t$ 分布：标准正态除以 $\chi^2/n$ 的根号——当方差未知时代替正态分布；
-    \item $F$ 分布：两个 $\chi^2$ 的比——比较两组数据的波动大小。
-\end{itemize}
-
-\textbf{前置知识：} 本章需要第 3 章的独立性、第 4 章的期望/方差性质、第 5 章的中心极限定理。如果你对"独立同分布"和"$E(\bar{X})=\mu$, $D(\bar{X})=\sigma^2/n$"还不清楚，请先回顾。
-\end{note}
 
 {\small
 \[
@@ -8297,182 +7227,37 @@ X\sim N(\mu_1,\sigma_1^2),Y\sim N(\mu_2,\sigma_2^2)
 \end{cases}
 \]
 }
-
-\begin{introduction}
-    \item 总体、个体与样本的概念~\ref{def:population}
-    \item 统计量与常用统计量~\ref{def:statistic}
-    \item 三大抽样分布~\ref{def:chi2}, \ref{def:t-dist}, \ref{def:f-dist}
-    \item 正态总体下的抽样分布定理~\ref{thm:normal-single}, \ref{thm:normal-two}
-    \item 分布的分位数~\ref{def:quantile}
-\end{introduction}
-
-\begin{note}
-\textbf{使用提醒：} 本章主线可以概括为“先有样本，再造统计量，再研究统计量自己的分布”。后面区间估计、假设检验里的 \(z\)、\(t\)、\(\chi^2\)、\(F\) 统计量，之所以能放心使用，前提都是在本章先把它们的抽样分布认清。做题若还停留在“原总体服从什么分布”，却没有追问“我手里的统计量服从什么分布”，往往就会在第 6 章之后持续卡住。
-\end{note}
-
-\section{基本概念}
-
-\subsection{总体与样本}
+\section{总体与样本，统计量}
 
 \begin{definition}[总体与个体] \label{def:population}
-研究对象的全体称为\textbf{总体}（population），组成总体的每一个元素称为\textbf{个体}（individual）。在对总体进行统计研究时，通常将总体与某个随机变量 \(X\) 等同起来，称“总体 \(X\)”，总体的分布即指随机变量 \(X\) 的分布。
+研究对象的全体称为\textbf{总体}，组成总体的每一个元素称为\textbf{个体}。在对总体进行统计研究时，通常将总体与某个随机变量 \(X\) 等同起来，称“总体 \(X\)”，总体的分布即指随机变量 \(X\) 的分布。
 \end{definition}
 
-\begin{note}
-直观地说，总体并不是“已经抽到的那几组数据”，而是\textbf{所有可能观测结果的来源}。以后提到“总体均值”“总体方差”时，说的是这个来源本身的参数，而不是样本算出来的数值。最容易混淆的一点是：\textbf{总体参数属于总体，统计量属于样本}，两者角色不同。
-\end{note}
-
-\begin{definition}[简单随机样本] \label{def:sample}
-设 \(X\) 是具有分布函数 \(F\) 的随机变量，若 \(X_1, X_2, \dots, X_n\) 是与 \(X\) 具有同一分布函数 \(F\) 且相互独立的随机变量，则称 \(X_1, X_2, \dots, X_n\) 为从总体 \(X\)（或分布函数 \(F\)）得到的\textbf{容量为 \(n\) 的简单随机样本}，简称\textbf{样本}。它们的观察值 \(x_1, x_2, \dots, x_n\) 称为\textbf{样本值}。
-\end{definition}
-
-\begin{note}
-简单随机样本有两个缺一不可的条件：一是\textbf{同分布}，二是\textbf{相互独立}。少了前者，就不是来自同一个总体；少了后者，后续很多结论（例如样本联合分布可分解、样本均值方差公式、三大抽样分布）都不能直接使用。另一个常见混淆是：“样本”指随机变量 \(X_1,\dots,X_n\)，“样本值”指一次观测得到的具体数字 \(x_1,\dots,x_n\)。
-\end{note}
-
-\begin{property}[样本的分布] \label{prop:sample-dist}
-设总体 \(X\) 的分布函数为 \(F(x)\)，则样本 \(X_1, X_2, \dots, X_n\) 的联合分布函数为
-\(
+\begin{definition}[简单随机样本的分布函数] \label{def:sample}
+设 \(X\) 是具有分布函数 \(F\) 的随机变量，若 \(X_1, X_2, \dots, X_n\) 是与 \(X\) 具有\textbf{同分布}函数 \(F\) 且\textbf{相互独立}的随机变量，则称 \(X_1, X_2, \dots, X_n\) 为从总体 \(X\)（或分布函数 \(F\)）得到的\textbf{容量为 \(n\) 的简单随机样本}，简称\textbf{样本}。它们的观察值 \(x_1, x_2, \dots, x_n\) 称为\textbf{样本值}。设总体 \(X\) 的分布函数为 \(F(x)\)，则样本 \(X_1, X_2, \dots, X_n\) 的联合分布函数为
+\[
 F(x_1, x_2, \dots, x_n) = \prod_{i=1}^{n} F(x_i).
-\)
-对于离散型总体，联合分布为 \(P\{X_1 = x_1, \dots, X_n = x_n\} = \prod_{i=1}^{n} P\{X_i = x_i\}\)；对于连续型总体，联合密度为 \(f(x_1, \dots, x_n) = \prod_{i=1}^{n} f(x_i)\)。
-\end{property}
-
-
-\subsection{统计量}
+\]
+对于离散型总体，联合分布为 \[P\{X_1 = x_1, \dots, X_n = x_n\} = \prod_{i=1}^{n} P\{X_i = x_i\}\]
+对于连续型总体，联合密度为 \[f(x_1, \dots, x_n) = \prod_{i=1}^{n} f(x_i)\]
+\end{definition}
 
 \begin{definition}[统计量] \label{def:statistic}
-设 \(X_1, X_2, \dots, X_n\) 为来自总体 \(X\) 的一个样本，\(g(X_1, X_2, \dots, X_n)\) 是 \(X_1, X_2, \dots, X_n\) 的函数。若 \(g\) 中\textbf{不含任何未知参数}，则称 \(g(X_1, X_2, \dots, X_n)\) 为一个\textbf{统计量}。也就是说，统计量只能由样本和已知常数构成，不能把待估参数偷偷写进去。
+设 \(X_1, X_2, \dots, X_n\) 为来自总体 \(X\) 的一个样本，\(g(X_1, X_2, \dots, X_n)\) 是 \(X_1, X_2, \dots, X_n\) 的函数。若 \(g\) 中\textbf{不含任何未知参数}，则称 \(g(X_1, X_2, \dots, X_n)\) 为一个\textbf{统计量}。 \(\overline{X}\)、\(S^2\)、\(\max X_i\)、\(\min X_i\) 都可以是统计量；关键不在形式，而在是否含未知参数。比如 \(\sum (X_i-\mu)^2\) 在 \(\mu\) 已知时是统计量，但 \(\sum (X_i-\sigma)^2\) 若 \(\sigma\) 未知，就不是统计量。统计量和估计量不是同义词。估计量一定是统计量，因为它必须是不含未知参数的样本函数；但统计量未必专门拿来估参数。
 \end{definition}
-
-\begin{note}
-统计量是样本的函数，也是随机变量。判断一个表达式是否为统计量时，最可靠的判据只有一个：\textbf{看它是否含有未知参数}。已知参数可以出现，未知参数不可以出现；至于表达式长短、是否有求和、是否有最大值最小值，都不是本质标准。
-\end{note}
-
-\begin{note}
-\textbf{使用提醒：} \(\overline{X}\)、\(S^2\)、\(\max X_i\)、\(\min X_i\) 都可以是统计量；关键不在形式，而在是否含未知参数。比如 \(\sum (X_i-\mu)^2\) 在 \(\mu\) 已知时是统计量，但 \(\sum (X_i-\sigma)^2\) 若 \(\sigma\) 未知，就不是统计量。
-\end{note}
-
-\begin{note}
-\textbf{易错点：} 统计量和估计量不是同义词。估计量一定是统计量，因为它必须是不含未知参数的样本函数；但统计量未必专门拿来估参数，很多统计量只是后续构造抽样分布、枢轴量或检验统计量的中间工具。把这两个概念分开，后面学点估计与假设检验时会清楚很多。
-\end{note}
-
-\begin{exercise}[统计量的判定] \label{ex:statistic_01}
-设总体 \(X \sim N(\mu,\sigma^2)\)，其中 \(\mu\) 已知，\(\sigma^2\) 未知，\(X_1,X_2,\dots,X_n\) 是简单随机样本，则下列样本函数中\textbf{不是}统计量的是（\quad）。\par
-A. \(\dfrac{1}{n}\displaystyle\sum_{i=1}^{n}X_i\)\qquad
-B. \(\max\limits_{1\leq i\leq n}\{X_i\}\)\par
-C. \(\displaystyle\sum_{i=1}^{n}\!\left(\dfrac{X_i-\mu}{\sigma}\right)^{\!2}\)\qquad
-D. \(\dfrac{1}{n}\displaystyle\sum_{i=1}^{n}(X_i-\mu)^2\)
-\end{exercise}
-\begin{solution}
-应选 C。
-
-判断这类题时，不必先算值，只要逐项检查“是否仅由样本和已知常数构成”即可。
-
-A 中 \(\dfrac{1}{n}\sum_{i=1}^{n}X_i=\overline{X}\) 只由样本构成，是统计量。
-
-B 中 \(\max\limits_{1\le i\le n}\{X_i\}\) 虽然形式特殊，但本质上仍只是样本的函数，也是统计量。
-
-C 中
-\(
-\sum_{i=1}^{n}\left(\frac{X_i-\mu}{\sigma}\right)^2
-\)
-含有未知参数 \(\sigma\)。题目虽然说明 \(\mu\) 已知，但 \(\sigma^2\) 未知，所以这里的 \(\sigma\) 不能出现在统计量里，因此它\textbf{不是}统计量。
-
-D 中 \(\dfrac{1}{n}\sum_{i=1}^{n}(X_i-\mu)^2\) 只含样本和已知参数 \(\mu\)，仍是统计量。
-
-所以只有 C 不满足统计量定义。
-\end{solution}
-
-
-\begin{exercise}\label{exer:6-statistic-judge}
-设总体 \(X \sim N(\mu, \sigma^2)\)，其中 \(\mu\) 未知，\(\sigma^2\) 已知，\(X_1, X_2, X_3\) 是简单随机样本，则下列表达式中不是统计量的是（\quad）。\par
-A. \(X_1 + X_2 + X_3\)\qquad B. \(\min(X_1, X_2, X_3)\)\qquad C. \(\displaystyle\sum_{i=1}^{3}\frac{X_i^2}{\sigma^2}\)\qquad D. \(\overline{X} + 2\mu\)
-\end{exercise}
-
-\begin{solution}
-应选 D。
-
-这类题的判别标准只有一句：\textbf{统计量必须是不含未知参数的样本函数}。题目中 \(\sigma^2\) 已知、\(\mu\) 未知，所以凡是出现 \(\mu\) 的表达式都不能直接算作统计量，而出现已知的 \(\sigma^2\) 不构成障碍。
-
-\textbf{逐项判断：}
-A 中 \(X_1+X_2+X_3\) 只由样本构成，是统计量。
-
-B 中 \(\min(X_1,X_2,X_3)\) 也是样本的函数，仍是统计量。
-
-C 中 \(\sum\limits_{i=1}^{3}\dfrac{X_i^2}{\sigma^2}\) 虽然出现了参数 \(\sigma^2\)，但它是\textbf{已知参数}，所以不影响统计量判定，仍是统计量。
-
-D 中 \(\overline{X}+2\mu\) 含有未知参数 \(\mu\)，因此不是统计量。
-
-因此只有 D 不满足统计量定义，故应选 D。
-\end{solution}
-
-\begin{exercise}\label{exer:6-statistic-sigma}
-设 \((X_1, X_2, X_3)\) 为取自总体 \(N(0, \sigma^2)\) 的样本，\(\sigma^2\) 为未知参数。\(T_1 = X_1+X_2+X_3\)，\(T_2 = \dfrac{X_3 - X_1}{2}\)，\(T_3 = \dfrac{1}{\sigma}\sum_{i=1}^{3}X_i\)，\(T_4 = \max\{X_1, X_2, X_3\}\)，其中不是统计量的是（\quad）。\par
-A. \(T_1\)\qquad B. \(T_2\)\qquad C. \(T_3\)\qquad D. \(T_4\)
-\end{exercise}
-\begin{solution}
-应选 C。
-
-这道题与上一题完全同型，关键仍是检查\textbf{是否含未知参数}。题目中总体为 \(N(0,\sigma^2)\)，未知的是 \(\sigma\)，因此只要表达式里还显式保留着 \(\sigma\)，就不是统计量。
-
-\textbf{逐项判断：}
-\(
-T_1=X_1+X_2+X_3,\qquad T_2=\frac{X_3-X_1}{2},\qquad T_4=\max\{X_1,X_2,X_3\}
-\)
-都只由样本值构成，所以都是统计量。
-
-\(T_3=\dfrac{1}{\sigma}\sum_{i=1}^{3}X_i\) 中出现了未知参数 \(\sigma\)，故不是统计量。
-
-因此答案选 C。
-\end{solution}
-
-\begin{exercise}\label{exer:6-stat-mu}
-设 \((X_1, X_2, X_3)\) 为取自总体的样本，\(\sigma^2\) 已知，\(\mu\) 未知，\(T_1=X_1+X_2+X_3\)，\(T_2=(X_3-\mu)/2\)，\(T_3=\sum_{i=1}^{3}X_i\)，\(T_4=\max\{X_1,X_2,X_3\}\)，其中不是统计量的是（\quad）。\par
-A. \(T_1\)\quad B. \(T_2\)\quad C. \(T_3\)\quad D. \(T_4\)
-\end{exercise}
-\begin{solution}
-应选 B。
-
-本题里 \(\sigma^2\) 已知、\(\mu\) 未知，所以判别关键就是“有没有出现未知参数 \(\mu\) ”。不要因为出现减法或最大值就误以为不再是统计量，真正决定性的仍然只是参数是否未知。
-
-\textbf{逐项判断：}
-A 中 \(T_1=X_1+X_2+X_3\) 只含样本，是统计量。
-
-B 中 \(T_2=\dfrac{X_3-\mu}{2}\) 含有未知参数 \(\mu\)，所以不是统计量。
-
-C 中 \(T_3=\sum_{i=1}^{3}X_i\) 只含样本，是统计量。
-
-D 中 \(T_4=\max\{X_1,X_2,X_3\}\) 虽然用了最大值符号，但仍只是样本函数，也是统计量。
-
-因此只有 B 不是统计量，应选 B。
-\end{solution}
-
 
 \begin{definition}[常用统计量] \label{def:common-stat}
 设 \(X_1, X_2, \dots, X_n\) 是来自总体 \(X\) 的样本，\(\overline{X}\) 和 \(S^2\) 分别为样本均值与样本方差。
 \begin{enumerate}
     \item \textbf{样本均值}：\(\displaystyle\overline{X} = \frac{1}{n}\sum_{i=1}^{n}X_i\)；
-    \item \textbf{样本方差}：\(\displaystyle S^2 = \frac{1}{n-1}\sum_{i=1}^{n}(X_i - \overline{X})^2 = \frac{1}{n-1}\!\left(\sum_{i=1}^{n}X_i^2 - n\overline{X}^2\right)\)；
+    \item \textbf{样本方差}：\[\displaystyle S^2 = \frac{1}{n-1}\sum_{i=1}^{n}(X_i - \overline{X})^2 = \frac{1}{n-1}\!\left(\sum_{i=1}^{n}X_i^2 - n\overline{X}^2\right)\]$n$ 个数据 $X_1,\dots,X_n$ 本来有 $n$ 个”自由度”（可以独立变化的方向）。但一旦你用 $\bar{X}$ 代替了真实均值 $\mu$，就多加了一个约束 $\sum(X_i-\bar{X})=0$，相当于”用掉了一个自由度”。剩下只有 $n-1$ 个独立的偏差，所以除以 $n-1$ 才是正确的”平均”。这也解释了为什么 $\frac{(n-1)S^2}{\sigma^2}\sim\chi^2(n-1)$ 而不是 $\chi^2(n)$——自由度正好反映了被”用掉”的那一个。
     \item \textbf{样本标准差}：\(S = \sqrt{S^2}\)；
     \item \textbf{样本 \(k\) 阶原点矩}：\(\displaystyle A_k = \frac{1}{n}\sum_{i=1}^{n}X_i^k\ (k=1,2,\dots)\)；
     \item \textbf{样本 \(k\) 阶中心矩}：\(\displaystyle B_k = \frac{1}{n}\sum_{i=1}^{n}(X_i - \overline{X})^k\ (k=2,3,\dots)\)。
 \end{enumerate}
+由大数定律，样本均值和样本方差依概率收敛于总体均值和总体方差：
+\(\overline{X} \stackrel{P}{\longrightarrow} \mu\)，\(S^2 \stackrel{P}{\longrightarrow} \sigma^2\)，\(A_k \stackrel{P}{\longrightarrow} EX^k\)。
 \end{definition}
-
-\begin{note}
-这几个统计量里最容易混淆的是样本方差 \(S^2\) 的分母。这里采用
-\(
-S^2=\frac{1}{n-1}\sum_{i=1}^{n}(X_i-\overline{X})^2,
-\)
-目的是让它成为总体方差的无偏估计。若把分母误写成 \(n\)，虽然形式更像”平均”，但后续很多无偏性和抽样分布结论都要跟着改变，不能混用。
-\end{note}
-
-\begin{note}
-\textbf{直觉理解”为什么除以 $n-1$”：} $n$ 个数据 $X_1,\dots,X_n$ 本来有 $n$ 个”自由度”（可以独立变化的方向）。但一旦你用 $\bar{X}$ 代替了真实均值 $\mu$，就多加了一个约束 $\sum(X_i-\bar{X})=0$，相当于”用掉了一个自由度”。剩下只有 $n-1$ 个独立的偏差，所以除以 $n-1$ 才是正确的”平均”。
-
-这也解释了为什么 $\frac{(n-1)S^2}{\sigma^2}\sim\chi^2(n-1)$ 而不是 $\chi^2(n)$——自由度正好反映了被”用掉”的那一个。
-\end{note}
 
 \begin{property}[统计量的数字特征] \label{prop:stat-moment}
 设总体 \(X\) 的期望为 \(EX = \mu\)，方差为 \(DX = \sigma^2\)，\(X_1, X_2, \dots, X_n\) 为容量为 \(n\) 的样本，则
@@ -8484,9 +7269,7 @@ EX_i = \mu,\quad DX_i = \sigma^2,\quad E\overline{X} = \mu,\quad D\overline{X} =
 \(E\overline{X} = \mu\) 和 \(D\overline{X} = \sigma^2/n\) 由期望和方差的性质直接可得。关键在于证明 \(E(S^2) = \sigma^2\)。令 \(Y_i = X_i - \mu\)，则
 \[
 \sum_{i=1}^{n}(X_i - \overline{X})^2 = \sum_{i=1}^{n}(Y_i - \overline{Y})^2 = \sum_{i=1}^{n} Y_i^2 - n\overline{Y}^2.
-\]
-取期望：
-\[
+\implies
 E\!\left[\sum(Y_i - \overline{Y})^2\right] = n\sigma^2 - n\cdot\frac{\sigma^2}{n} = (n-1)\sigma^2.
 \]
 因此
@@ -8495,123 +7278,6 @@ E(S^2) = E\!\left[\frac{1}{n-1}\sum_{i=1}^{n}(X_i-\overline{X})^2\right] = \frac
 \]
 \end{proof}
 
-\begin{note}
-由大数定律，样本均值和样本方差依概率收敛于总体均值和总体方差：
-\(\overline{X} \stackrel{P}{\longrightarrow} \mu\)，\(S^2 \stackrel{P}{\longrightarrow} \sigma^2\)，\(A_k \stackrel{P}{\longrightarrow} EX^k\)。
-\end{note}
-
-\subsection*{历年试题补充：2005 级概率试卷 A 卷}
-
-\begin{exercise}\label{exer:src-2005-a-01}
-某班有 \(50\) 名学生，其中 \(17\) 岁 \(5\) 人，\(18\) 岁 \(15\) 人，\(19\) 岁 \(22\) 人，\(20\) 岁 \(8\) 人，求该班学生年龄的样本均值。
-\end{exercise}
-\begin{solution}
-把每名学生的年龄看成一个样本观测值，则样本均值为
-\[
-\overline{x}
-=\frac{17\times5+18\times15+19\times22+20\times8}{50}.
-\]
-计算分子：
-\[
-17\times5+18\times15+19\times22+20\times8
-=85+270+418+160=933.
-\]
-因此
-\(
-\overline{x}=\frac{933}{50}=18.66.
-\)
-所以该班学生年龄的样本均值为 \(18.66\) 岁。
-\end{solution}
-
-\begin{exercise}\label{exer:6-yi-var}
-设 \(X_1, X_2, \dots, X_n\ (n > 2)\) 为独立同分布的随机变量，均服从 \(N(0,1)\)，记 \(\overline{X} = \frac{1}{n}\sum_{i=1}^{n}X_i\)，\(Y_i = X_i - \overline{X}\ (i=1,2,\dots,n)\)。则 \(DY_i =\,\underline{\hspace{2cm}}\)。
-\end{exercise}
-
-\begin{solution}
-应填 \(\dfrac{n-1}{n}\)。
-
-先把 \(Y_i\) 写成样本的线性组合：
-\[
-Y_i=X_i-\overline{X}
-=X_i-\frac{1}{n}\sum_{k=1}^{n}X_k
-=\left(1-\frac{1}{n}\right)X_i-\frac{1}{n}\sum_{k\ne i}X_k.
-\]
-
-由于 \(X_1,\dots,X_n\) 相互独立，且都服从 \(N(0,1)\)，所以每个 \(X_k\) 的方差都是 1，不同项之间协方差为 0。于是
-\(
-DY_i
-=\left(1-\frac{1}{n}\right)^2 DX_i
-\frac{1}{n^2}\sum_{k\ne i}DX_k.
-\)
-代入 \(DX_k=1\) 以及“除 \(i\) 外共有 \(n-1\) 项”，得
-\(
-DY_i=\left(1-\frac{1}{n}\right)^2+\frac{n-1}{n^2}
-=1-\frac{2}{n}+\frac{1}{n^2}+\frac{n-1}{n^2}
-=1-\frac{1}{n}
-=\frac{n-1}{n}.
-\)
-
-所以 \(DY_i=\dfrac{n-1}{n}\)。
-\end{solution}
-
-\subsection*{历年试题补充：2011 试卷 A 卷}
-
-\begin{exercise}\label{exer:src-2011-a-08-2credit-normal}
-设 \(X_1,X_2,\cdots,X_n\ (n\ge2)\) 为独立同分布的随机变量，且均服从 \(N(0,1)\)。记
-\[
-\overline X=\frac1n\sum_{i=2}^{n-1}X_i,\qquad
-Y_i=X_i-\overline X\quad (i=1,2,\cdots,n).
-\]
-求 \(P\{Y_1+Y_n\le0\}\)。
-\end{exercise}
-\begin{solution}
-由定义，
-\[
-Y_1+Y_n=X_1-\overline X+X_n-\overline X
-=X_1+X_n-\frac2n\sum_{i=2}^{n-1}X_i.
-\]
-它是相互独立正态随机变量的线性组合，因此仍服从正态分布。又各 \(X_i\) 的数学期望均为 \(0\)，所以
-\(
-E(Y_1+Y_n)=0.
-\)
-均值为 \(0\) 的正态分布关于 \(0\) 对称，且连续型随机变量在单点处概率为 \(0\)，于是
-\(
-P\{Y_1+Y_n\le0\}=\frac12.
-\)
-\end{solution}
-
-\begin{exercise}\label{exer:src-paper1-fill-05}\label{prob:p1-fill-05}
-设 \((X_1,X_2,\dots,X_6)\) 是来自正态分布 \(N(0,1)\) 的样本，
-\(
-Y=\left(\sum_{i=1}^{3}X_i\right)^2+
-\left(\sum_{i=4}^{6}X_i\right)^2.
-\)
-当 \(c=\underline{\hspace{1.5cm}}\) 时，\(cY\) 服从 \(\chi^2\) 分布，且 \(E(\chi^2)=\underline{\hspace{1.5cm}}\)。
-\end{exercise}
-\begin{solution}
-应填 \(c=\dfrac13\)，\(E(\chi^2)=2\)。
-
-记
-\(
-U=\sum_{i=1}^{3}X_i,\qquad V=\sum_{i=4}^{6}X_i.
-\)
-由于样本来自 \(N(0,1)\) 且相互独立，
-\(
-U\sim N(0,3),\qquad V\sim N(0,3),
-\)
-并且 \(U,V\) 相互独立。于是
-\(
-\frac{U}{\sqrt3}\sim N(0,1),\qquad \frac{V}{\sqrt3}\sim N(0,1),
-\)
-从而
-\(
-\frac13Y
-=\left(\frac{U}{\sqrt3}\right)^2+
-\left(\frac{V}{\sqrt3}\right)^2
-\sim\chi^2(2).
-\)
-因此 \(c=\dfrac13\)，该 \(\chi^2\) 分布自由度为 \(2\)，期望为 \(2\)。
-\end{solution}
 
 \begin{exercise}\label{exer:src-2011-a-06-34credit}
 设 \(X_1,X_2,\cdots,X_n\ (n\ge2)\) 为来自总体 \(N(0,\sigma^2)\) 的简单随机样本，其样本均值为 \(\overline X\)。记
@@ -8625,36 +7291,18 @@ Y_i=X_i-\overline X,\qquad i=1,2,\cdots,n.
 (4) 若 \(\hat\theta_1\) 与 \(\hat\theta_2\) 相互独立，均为 \(\sigma^2\) 的无偏估计量，且它们的方差存在，试给出一个比它们更有效的无偏估计量。
 \end{exercise}
 \begin{solution}
-(1) 因为
+(1) 
 \[
 Y_i=X_i-\overline X
-=\left(1-\frac1n\right)X_i-\frac1n\sum_{k\ne i}X_k,
-\]
-且样本相互独立，所以
-\[
+=\left(1-\frac1n\right)X_i-\frac1n\sum_{k\ne i}X_k,~~
 DY_i=\left(1-\frac1n\right)^2\sigma^2+(n-1)\frac1{n^2}\sigma^2
 =\frac{n-1}{n}\sigma^2.
 \]
-
 (2)
-\[
-\operatorname{Cov}(Y_1,Y_n)
-=\operatorname{Cov}(X_1-\overline X,\ X_n-\overline X).
-\]
-利用
-\[
-\operatorname{Cov}(X_1,X_n)=0,\qquad
-\operatorname{Cov}(X_1,\overline X)=\operatorname{Cov}(X_n,\overline X)=\frac{\sigma^2}{n},
-\qquad
-D\overline X=\frac{\sigma^2}{n},
-\]
-可得
-\[
-\operatorname{Cov}(Y_1,Y_n)
-=0-\frac{\sigma^2}{n}-\frac{\sigma^2}{n}+\frac{\sigma^2}{n}
-=-\frac{\sigma^2}{n}.
-\]
-
+\begin{align*}
+\operatorname{Cov}(Y_1,Y_n)&=\operatorname{Cov}(X_1-\overline X,\ X_n-\overline X)=\operatorname{Cov}(X_1,X_n)-\operatorname{Cov}(X_1,\overline X)-\operatorname{Cov}(X_n,\overline X)+\operatorname{Cov}(\overline X,\overline X)\\
+&=0-\frac{\sigma^2}{n}-\frac{\sigma^2}{n}+\frac{\sigma^2}{n}=-\frac{\sigma^2}{n}.
+\end{align*}
 (3) 因为 \(E(Y_1+Y_n)=0\)，
 \(
 E\!\left[c(Y_1+Y_n)^2\right]
@@ -8669,84 +7317,93 @@ D(Y_1+Y_n)
 \]
 因此当 \(n>2\) 时，要使 \(c(Y_1+Y_n)^2\) 为 \(\sigma^2\) 的无偏估计量，应有
 \(
-c\cdot\frac{2(n-2)}{n}=1,
-\qquad\text{即}\qquad
+c\cdot\frac{2(n-2)}{n}=1\implies
 c=\frac{n}{2(n-2)}.
-\)
-
+\)\\
 (4) 设
 \(
 D\hat\theta_1=V_1,\qquad D\hat\theta_2=V_2.
 \)
-取反方差权重
-\[
-\hat\theta_3=\frac{V_2}{V_1+V_2}\hat\theta_1+\frac{V_1}{V_1+V_2}\hat\theta_2.
-\]
-由于权重之和为 \(1\)，且 \(\hat\theta_1,\hat\theta_2\) 都无偏，故 \(\hat\theta_3\) 仍为 \(\sigma^2\) 的无偏估计量。又二者相互独立，
+要把两个无偏估计量合成一个新的无偏估计量，最自然先取线性组合
 \(
+\hat\theta_3=a\hat\theta_1+(1-a)\hat\theta_2.
+\)，因为 \(E\hat\theta_1=E\hat\theta_2=\sigma^2\)，所以
+\(
+E\hat\theta_3=a\sigma^2+(1-a)\sigma^2=\sigma^2,
+\)，无论 \(a\) 取何值，它都是 \(\sigma^2\) 的无偏估计量。接下来只需选 \(a\)，使方差尽量小。由 \(\hat\theta_1,\hat\theta_2\) 相互独立，
+\[
+D\hat\theta_3=a^2V_1+(1-a)^2V_2.\text{求导：}
+2aV_1-2(1-a)V_2=0
+\implies a=\frac{V_2}{V_1+V_2}.
+\]
+于是
+\[
+\hat\theta_3=\frac{V_2}{V_1+V_2}\hat\theta_1+\frac{V_1}{V_1+V_2}\hat\theta_2,~~
 D\hat\theta_3
 =\left(\frac{V_2}{V_1+V_2}\right)^2V_1
 +\left(\frac{V_1}{V_1+V_2}\right)^2V_2
 =\frac{V_1V_2}{V_1+V_2},
-\)
-它小于 \(V_1,V_2\)，所以 \(\hat\theta_3\) 比原来的两个估计量更有效。
+\]
+当 \(V_1,V_2>0\) 时，它小于 \(V_1,V_2\)，所以 \(\hat\theta_3\) 比原来的两个估计量更有效。
 \end{solution}
 
 \begin{exercise}\label{exer:6-sk-sq}
-已知总体 \(X\) 的期望 \(EX = 0\)，方差 \(DX = \sigma^2\)，从总体 \(X\) 中抽取容量为 \(n\) 的简单随机样本，其样本均值和样本方差分别为 \(\overline{X}, S^2\)。记 \(S_k^2 = k\overline{X}^2 + kS^2\ (k=1,2,3,4)\)，则（\quad）。\par
-A. \(E(S_1^2) = \sigma^2\)\quad B. \(E(S_2^2) = \sigma^2\)\quad C. \(E(S_3^2) = \sigma^2\)\quad D. \(E(S_4^2) = \sigma^2\)
+已知总体 \(X\) 的期望 \(EX = 0\)，方差 \(DX = \sigma^2\)，从总体 \(X\) 中抽取容量为 \(n\) 的简单随机样本，其样本均值为 \(\overline{X}\)，样本二阶中心矩为
+\[
+B_2=\frac1n\sum_{i=1}^n(X_i-\overline X)^2.
+\]
+记 \(T_k^2=k\overline{X}^2+kB_2\ (k=1,2,3,4)\)，则（\quad）。\par
+A. \(E(T_1^2) = \sigma^2\)\quad B. \(E(T_2^2) = \sigma^2\)\quad C. \(E(T_3^2) = \sigma^2\)\quad D. \(E(T_4^2) = \sigma^2\)
 \end{exercise}
 
 \begin{solution}
-四个选项均不能精确成立。
-
-\(E(\overline{X}^2) = D\overline{X} + (E\overline{X})^2 = \dfrac{\sigma^2}{n} + 0 = \dfrac{\sigma^2}{n}\)，\(E(S^2) = \sigma^2\)。
+先利用恒等式
 \[
-E(S_k^2) = k\,E(\overline{X}^2) + k\,E(S^2) = k \cdot \frac{\sigma^2}{n} + k\sigma^2 = k\sigma^2\!\left(1+\frac{1}{n}\right) = k\sigma^2 \cdot \frac{n+1}{n}.
+\frac1n\sum_{i=1}^nX_i^2
+=\frac1n\sum_{i=1}^n\bigl[(X_i-\overline X)+\overline X\bigr]^2
+=B_2+\overline X^2.
 \]
-令 \(E(S_k^2) = \sigma^2\)，得 \(k(n+1) = n\)，即 \(k = \dfrac{n}{n+1}\)。对于任意正整数 \(n\)：
-\begin{itemize}
-    \item \(k=1\)：需 \(n\to\infty\)，无有限解；
-    \item \(k=2\)：需 \(n=-2\)，不可能；
-    \item \(k=3\)：需 \(n=-3/2\)，不可能；
-    \item \(k=4\)：需 \(n=-4/3\)，不可能。
-\end{itemize}
-故对任意正整数 \(n\)，四个选项均不精确成立。若本题出自某套考研真题，建议核实原题条件。
-\begin{note}
-此题需注意 \(E(\overline{X}^2) = D\overline{X} = \sigma^2/n\)（因为 \(E\overline{X}=0\)），而非 \((EX)^2=0\)。
-\end{note}
+由于 \(EX=0,\ DX=\sigma^2\)，所以 \(EX^2=DX+(EX)^2=\sigma^2\)。因此
+\[
+E(\overline X^2+B_2)
+=E\left(\frac1n\sum_{i=1}^nX_i^2\right)
+=\frac1n\sum_{i=1}^nEX_i^2
+=\sigma^2.
+\]
+于是
+\[
+E(T_k^2)=kE(\overline X^2+B_2)=k\sigma^2.
+\]
+要使 \(E(T_k^2)=\sigma^2\)，只能取 \(k=1\)。故选 A。
 \end{solution}
 
 
 \section{三大抽样分布}
 
-\begin{note}
-\textbf{自学导读：为什么要"发明"$\chi^2$、$t$、$F$ 这三个分布？}
-
-你可能会问：正态分布不够用吗？答案是：当总体方差 $\sigma^2$ \textbf{已知}时，$\frac{\bar{X}-\mu}{\sigma/\sqrt{n}}\sim N(0,1)$，正态确实够用。但实际中 $\sigma^2$ 几乎总是未知的，你只能用样本方差 $S^2$ 代替。一旦代替，分母变成了随机的 $S/\sqrt{n}$，整个统计量就不再服从正态分布了——它服从 $t$ 分布。
-
-类似地：
-\begin{itemize}
-    \item 想检验方差是否等于某个值？需要 $(n-1)S^2/\sigma^2$ 的分布——这就是 $\chi^2$ 分布；
-    \item 想比较两组数据的方差谁大？需要两个 $\chi^2$ 的比——这就是 $F$ 分布。
-\end{itemize}
-
-所以这三个分布不是凭空造出来的，而是"正态总体 + 方差未知"这个现实约束的必然产物。后面第 7--9 章的所有公式都建立在它们之上。
-\end{note}
-
-\subsection{\texorpdfstring{\(\chi^2\)}{χ²} 分布}
 
 \begin{definition}[\texorpdfstring{\(\chi^2\)}{χ²} 分布] \label{def:chi2}
-设 \(X_1, X_2, \dots, X_n\) 相互独立且都服从标准正态分布 \(N(0,1)\)，令
+如果总体正态：
 \(
+X_1,\dots,X_n\sim N(\mu,\sigma^2),
+\)，那么标准化后
+\(
+\frac{X_i-\mu}{\sigma}\sim N(0,1).
+\)，如果 \(\mu\) 已知，那么
+\(
+\sum_{i=1}^n\left(\frac{X_i-\mu}{\sigma}\right)^2\sim \chi^2(n).
+\)，这就是 \(n\) 个标准正态平方和。但实际中 \(\mu\) 往往未知，要用 \(\overline X\) 代替 \(\mu\)。这会消耗一个自由度，因为偏差满足约束：
+\(
+\sum_{i=1}^n (X_i-\overline X)=0.
+\)，所以真正独立的偏差只有 \(n-1\) 个，于是有经典结论：
+\[
+\sum_{i=1}^n(\frac{X_i-\overline X}{\sigma})^2=\frac{(n-1)S^2}{\sigma^2}\sim \chi^2(n-1).
+\]
+设 \(X_1, X_2, \dots, X_n\) 相互独立且都服从标准正态分布 \(N(0,1)\)，令
+\[
 \chi^2 = X_1^2 + X_2^2 + \cdots + X_n^2,
-\)
+\]
 则称 \(\chi^2\) 服从自由度为 \(n\) 的 \(\chi^2\) 分布，记为 \(\chi^2 \sim \chi^2(n)\)。
 \end{definition}
-
-\begin{note}
-\textbf{自学追问：} 为什么是“平方和”？因为标准正态变量既有正负，又以 0 为中心，平方以后就只保留“偏离 0 的大小”，而把多个独立偏离量加起来，就得到一个专门衡量总体波动大小的分布。这里的自由度 \(n\) 可以先直观理解为“有多少个独立的标准正态平方项参与了相加”。
-\end{note}
 
 \begin{property}\label{prop:chi2-property} 
 \begin{enumerate}
@@ -8755,65 +7412,88 @@ E(S_k^2) = k\,E(\overline{X}^2) + k\,E(S^2) = k \cdot \frac{\sigma^2}{n} + k\sig
 \end{enumerate}
 \end{property}
 
-\begin{exercise}\label{exer:6-chi2-ez}
-设 \((X_1, X_2, \dots, X_{10})\) 与 \((Y_1, Y_2, \dots, Y_{10})\) 分别是来自正态总体 \(N(0,1)\) 的两组独立样本，\(Z = \sum_{i=1}^{10}(X_i-\overline{X})^2 + \sum_{i=1}^{10}(Y_i-\overline{Y})^2\)，则 \(EZ =\,\underline{\hspace{2cm}}\)。
+
+
+\begin{definition}[\texorpdfstring{\(t\)}{t} 分布] \label{def:t-dist}
+如果总体正态\(X_1,\dots,X_n\sim N(\mu,\sigma^2),\)并且 \(\sigma\) 已知，那么样本均值可以标准化为\(Z=\frac{n\overline X-n\mu}{\sigma\sqrt n}=\frac{\overline X-\mu}{\sigma/\sqrt n}\sim N(0,1)\)，但现实里 \(\sigma\) 往往未知。用样本标准差 \(S\) 代替 \(\sigma\)，于是构造
+\(
+T=\frac{\overline X-\mu}{S/\sqrt n}.
+\)，
+由
+\[
+\frac{\overline X-\mu}{\sigma/\sqrt n}\sim N(0,1),~~
+\frac{(n-1)S^2}{\sigma^2}\sim \chi^2(n-1),
+\]
+所以
+\[
+T=\frac{\overline X-\mu}{S/\sqrt n}=\frac{Z}{\sqrt{U/(n-1)}},
+~~~Z\sim N(0,1),U\sim \chi^2(n-1),
+\]且 \(Z\) 与 \(U\) 独立。这个比值分布就被定义为自由度 \(n-1\) 的 \(t\) 分布：
+\[
+T\sim t(n-1).
+\]
+设 \(X \sim N(0,1)\)，\(Y \sim \chi^2(n)\)，且 \(X, Y\) 相互独立，令
+\[
+t = \frac{X}{\sqrt{Y/n}},
+\]
+则称 \(t\) 服从自由度为 \(n\) 的 \(t\) 分布，记为 \(t \sim t(n)\)。
+\end{definition}
+
+\begin{property}\label{prop:t-dist-property}
+\begin{enumerate}
+    \item \(t\) 分布的概率密度关于 \(x = 0\) 对称，\(Et = 0\ (n \geq 2)\)，\(Dt = \dfrac{n}{n-2}\ (n > 2)\)。
+    \item 当 \(n\) 足够大时，\(t\) 分布近似于标准正态分布；\(n\) 越大，曲线越"瘦"越"高"。
+    \item 由对称性：\(t_{1-\alpha}(n) = -t_\alpha(n)\)。
+    \item 若 \(t \sim t(n)\)，则 \(t^2 \sim F(1,n)\)。
+\end{enumerate}
+\end{property}
+
+\begin{definition}[\texorpdfstring{\(F\)}{F} 分布] \label{def:f-dist}
+在正态总体下，有经典结论：
+\[
+\frac{(n_1-1)S_1^2}{\sigma_1^2}\sim \chi^2(n_1-1),~~~
+\frac{(n_2-1)S_2^2}{\sigma_2^2}\sim \chi^2(n_2-1),
+\]并且如果两组样本独立，那么这两个卡方变量也独立。于是当原假设 \(\sigma_1^2=\sigma_2^2\) 成立时
+\[
+\frac{S_1^2}{S_2^2}
+=
+\frac{\chi^2(n_1-1)/(n_1-1)}
+{\chi^2(n_2-1)/(n_2-1)}.
+\]于是人们就把这种形式定义成 F 分布：
+\[
+F=\frac{U/m}{V/n},~~~U\sim \chi^2(m), V\sim \chi^2(n)
+\]
+其中\(U,V\) 相互独立， \(m\) 为第一自由度，\(n\) 为第二自由度。
+\end{definition}
+
+\begin{property}\label{prop:f-dist-property}
+\begin{enumerate}
+    \item 若 \(F \sim F(n_1, n_2)\)，则 \(\dfrac{1}{F} \sim F(n_2, n_1)\)。
+    \item \(F_{1-\alpha}(n_1, n_2) = \dfrac{1}{F_\alpha(n_2, n_1)}\)，常用于求 \(F\) 分布表中未列出的分位数。
+    \item 若 \(t \sim t(n)\)，则 \(t^2 \sim F(1, n)\)。
+\end{enumerate}
+\end{property}
+
+
+\begin{exercise}\label{exer:src-paper1-fill-05}\label{prob:p1-fill-05}
+设 \((X_1,X_2,\dots,X_6)\) 是来自正态分布 \(N(0,\sigma^2)\) 的样本，
+\[
+Y=\left(X_1+X_2+X_3\right)^2+
+\left(X_4+X_5+X_6\right)^2.
+\]
+当 \(c=\underline{\hspace{1.5cm}}\) 时，\(cY\) 服从 \(\chi^2\) 分布，且 \(E(\chi^2)=\underline{\hspace{1.5cm}}\)。
 \end{exercise}
 \begin{solution}
-应填 \(18\)。
-
-先分别看两部分。因为 \(X_1,\dots,X_{10}\) 来自正态总体 \(N(0,1)\)，所以由单正态总体抽样分布，
-\(
-\sum_{i=1}^{10}(X_i-\overline{X})^2=\frac{(10-1)S_X^2}{1}\sim \chi^2(9).
-\)
-同理，
-\(
-\sum_{i=1}^{10}(Y_i-\overline{Y})^2\sim \chi^2(9).
-\)
-
-又由于 \((X_1,\dots,X_{10})\) 与 \((Y_1,\dots,Y_{10})\) 是两组独立样本，所以这两个卡方变量也相互独立。利用 \(\chi^2\) 分布的可加性可得
 \[
-Z=\sum_{i=1}^{10}(X_i-\overline{X})^2+\sum_{i=1}^{10}(Y_i-\overline{Y})^2\sim\chi^2(18).
+\begin{cases}X_1+X_2+X_3\sim N(0,3\sigma^2)\\X_4+X_5+X_6\sim N(0,3\sigma^2)\end{cases}\implies\frac{X_1+X_2+X_3}{\sqrt{3}\sigma}\sim N(0,1),\frac{X_4+X_5+X_6}{\sqrt{3}\sigma}\sim N(0,1)
 \]
-
-这里每组样本都因为减去一个样本均值而损失 1 个自由度，所以单组对应 \(\chi^2(9)\)；两组独立样本的自由度相加，就得到 \(\chi^2(18)\)。
-
-最后利用 \(\chi^2(\nu)\) 的期望等于自由度 \(\nu\)，便有
-\(
-EZ=18.
-\)
-
-所以答案是 \(18\)。
+\[(\frac{X_1+X_2+X_3}{\sqrt{3}\sigma})^2+(\frac{X_4+X_5+X_6}{\sqrt{3}\sigma})^2=\frac{Y}{3\sigma^2}\sim \chi^2(2),\text{期望等于自由度}2\]
 \end{solution}
 
 
-\begin{exercise}\label{exer:6-chi2-basic}
-设 \(X_1, X_2, X_3, X_4\) 是来自正态总体 \(N(0, 2^2)\) 的样本，令 \(Y = (X_1+X_2)^2 + (X_3-X_4)^2\)。当 \(C =\,\underline{\hspace{2cm}}\) 时，\(CY \sim \chi^2(2)\)。
-\end{exercise}
-
-\begin{solution}
-应填 \(\dfrac{1}{8}\)。
-
-\textbf{思路是把 \(Y\) 改写成两个独立标准正态变量的平方和。}
-
-由于 \(X_1,X_2,X_3,X_4\) 相互独立，且每个变量都服从 \(N(0,2^2)\)，所以
-\(
-X_1+X_2 \sim N(0,8),\qquad X_3-X_4 \sim N(0,8).
-\)
-又因为前一个线性组合只含 \(X_1,X_2\)，后一个只含 \(X_3,X_4\)，它们由两组独立样本构成，因此彼此独立。于是标准化后有
-\[
-\frac{X_1+X_2}{\sqrt{8}} \sim N(0,1),\qquad \frac{X_3-X_4}{\sqrt{8}} \sim N(0,1).
-\]
-\[
-\left(\frac{X_1+X_2}{\sqrt{8}}\right)^{\!2} + \left(\frac{X_3-X_4}{\sqrt{8}}\right)^{\!2} \sim \chi^2(2) \implies C = \frac{1}{8}.
-\]
-\(
-\text{即}\quad \frac{Y}{8}\sim \chi^2(2),
-\)
-故 \(C=\dfrac{1}{8}\)。
-\end{solution}
 
 \begin{exercise}\label{exer:6-chi2-ab}
-设 \(X_1, X_2, X_3, X_4\) 是来自正态总体 \(N(0, 2^2)\) 的简单随机样本，记
+设 \(X_1, X_2, X_3, X_4\) 是来自正态总体 \(N(0, 4)\) 的简单随机样本，记
 \(
 X = a(X_1 - 2X_2)^2 + b(3X_3 - 4X_4)^2,
 \)
@@ -8821,35 +7501,28 @@ X = a(X_1 - 2X_2)^2 + b(3X_3 - 4X_4)^2,
 \end{exercise}
 
 \begin{solution}
-应填 \(\dfrac{1}{2000}\)。
-
-\textbf{仍然先把两个平方项各自标准化成标准正态平方。}
-
-\(X_1 - 2X_2\) 与 \(3X_3 - 4X_4\) 都是正态变量的线性组合，且
-\(
-X_1 - 2X_2 \sim N(0,\, 1^2\cdot 4 + (-2)^2\cdot 4) = N(0, 20),
-\)
-\(
-3X_3 - 4X_4 \sim N(0,\, 3^2\cdot 4 + (-4)^2\cdot 4) = N(0, 100).
-\)
-又因为这两个线性组合分别只含 \((X_1,X_2)\) 与 \((X_3,X_4)\)，而两组样本彼此独立，所以它们相互独立。
-
-标准化后得到两个独立的标准正态变量：
 \[
-\frac{X_1-2X_2}{\sqrt{20}}\sim N(0,1),\qquad \frac{3X_3-4X_4}{10}\sim N(0,1).
+\begin{cases}
+X_1-2X_2\sim N(0,4+(-2)^24)=N(0,20),\\
+3X_3-4X_4\sim N(0,3^24+(-4)^24)=N(0,100),
+\end{cases}
+\implies
+\frac{X_1-2X_2}{\sqrt{20}}\sim N(0,1),
+\frac{3X_3-4X_4}{10}\sim N(0,1).
 \]
-因此由 \(\chi^2\) 分布的定义，
+\[
+\left(\frac{X_1-2X_2}{\sqrt{20}}\right)^2+
+\left(\frac{3X_3-4X_4}{10}\right)^2
+=\frac{1}{20}(X_1-2X_2)^2+\frac{1}{100}(3X_3-4X_4)^2
+\sim \chi^2(2).
+\]
+因此 \(a=\dfrac1{20},\ b=\dfrac1{100}\)，故
 \(
-\frac{(X_1-2X_2)^2}{20} + \frac{(3X_3-4X_4)^2}{100} \sim \chi^2(2),
+ab=\dfrac1{2000}.
 \)
-与题设
-\(
-X = a(X_1 - 2X_2)^2 + b(3X_3 - 4X_4)^2
-\)
-对照可知 \(a=\frac{1}{20},\ b=\frac{1}{100}\)，所以 \(ab=\frac{1}{2000}\)。
 \end{solution}
 
-\subsection*{历年试题补充：2007 级试卷 A 卷}
+
 
 \begin{exercise}\label{exer:src-2007-a-15}
 设随机变量 \(\xi_1,\xi_2,\dots,\xi_6\) 独立同分布，且 \(\xi_i\sim N(\mu,\sigma^2)\)。令
@@ -8861,9 +7534,9 @@ A. \(\displaystyle f(z)=
 \begin{cases}
 \dfrac1{16}z^2e^{z/2}, & z>0,\\
 0, & z\le0,
-\end{cases}\)\par
+\end{cases}\)~~~~~~~
 B. \(\displaystyle f(z)=\dfrac1{\sqrt{12\pi}}e^{z^2/12},\quad -\infty<z<+\infty\)\par
-C. \(\displaystyle f(z)=\dfrac1{\sqrt{12\pi}}e^{-z^2/12},\quad -\infty<z<+\infty\)\par
+C. \(\displaystyle f(z)=\dfrac1{\sqrt{12\pi}}e^{-z^2/12},\quad -\infty<z<+\infty\)~~~~~~~~
 D. \(\displaystyle f(z)=
 \begin{cases}
 \dfrac1{16}z^2e^{-z/2}, & z>0,\\
@@ -8871,9 +7544,7 @@ D. \(\displaystyle f(z)=
 \end{cases}\)
 \end{exercise}
 \begin{solution}
-应选 D。
-
-因为
+注意$\mu$不是$\overline{X}$，因为
 \(
 \frac{\xi_i-\mu}{\sigma}\sim N(0,1),
 \)
@@ -8891,38 +7562,9 @@ f_Z(z)=\frac{1}{2^3\Gamma(3)}z^2e^{-z/2}
 =\frac{1}{8\cdot2}z^2e^{-z/2}
 =\frac1{16}z^2e^{-z/2},\qquad z>0.
 \]
-这正是选项 D。
 \end{solution}
 
 
-\subsection{\texorpdfstring{\(t\)}{t} 分布}
-
-\begin{definition}[\texorpdfstring{\(t\)}{t} 分布] \label{def:t-dist}
-设 \(X \sim N(0,1)\)，\(Y \sim \chi^2(n)\)，且 \(X, Y\) 相互独立，令
-\(
-t = \frac{X}{\sqrt{Y/n}},
-\)
-则称 \(t\) 服从自由度为 \(n\) 的 \(t\) 分布，记为 \(t \sim t(n)\)。
-\end{definition}
-
-\begin{note}
-\textbf{使用提醒：} \(t\) 分布本质上是“标准化后的均值”再除以“样本标准差”的结果，因此它总在“总体正态、方差未知”的场景里出现。自由度来自分母里的 \(\chi^2(n)\)：分母若由样本方差构造出来，常常会因为估计了一个均值而损失 1 个自由度。
-\end{note}
-
-\begin{property}\label{prop:t-dist-property}
-\begin{enumerate}
-    \item \(t\) 分布的概率密度关于 \(x = 0\) 对称，\(Et = 0\ (n \geq 2)\)，\(Dt = \dfrac{n}{n-2}\ (n > 2)\)。
-    \item 当 \(n\) 足够大时，\(t\) 分布近似于标准正态分布；\(n\) 越大，曲线越"瘦"越"高"。
-    \item 由对称性：\(t_{1-\alpha}(n) = -t_\alpha(n)\)。
-    \item 若 \(t \sim t(n)\)，则 \(t^2 \sim F(1,n)\)。
-\end{enumerate}
-\end{property}
-
-\begin{note}
-\textbf{直觉理解 $t$ 分布为什么比正态分布"胖"：} 分子 $X\sim N(0,1)$ 是确定的标准正态；分母 $\sqrt{Y/n}$ 本身也是随机的。当分母偶然偏小时，整个比值会被"放大"，产生极端值。所以 $t$ 分布的尾巴比正态分布更厚。
-
-当自由度 $n\to\infty$ 时，大数定律保证 $Y/n\to 1$（因为 $EY=n$），分母趋于常数 1，$t$ 分布就退化为标准正态。实际中 $n\geqslant 30$ 时两者已经非常接近，这就是为什么"大样本时 $t$ 检验和 $Z$ 检验结果几乎一样"。
-\end{note}
 
 \begin{exercise}[\texorpdfstring{\(t\)}{t} 分布的构造] \label{ex:sampling_04}
 设 \(X_1,X_2,X_3,X_4\) 为来自 \(N(0,1/2)\) 的简单随机样本，则统计量
@@ -8934,14 +7576,8 @@ A. \(N(0,1)\)\qquad B. \(\chi^2(2)\)\qquad C. \(t(2)\)\qquad D. \(F(2,2)\)
 \end{exercise}
 \begin{solution}
 应选 C。\textbf{分子}：\(X_1-X_2\sim N(0,1/2+1/2)=N(0,1)\)，故 \(X_1-X_2\sim N(0,1)\)。\\
-\textbf{分母}：\(\sqrt{2}\,X_i\sim N(0,1)\)，从而
-\[
-(\sqrt{2}\,X_3)^2+(\sqrt{2}\,X_4)^2 = 2(X_3^2+X_4^2)\sim\chi^2(2).
-\]
-由 \(t\) 分布的定义，分子（标准正态）除以分母（\(\chi^2(2)/2\) 开方）：
-\[
-Y = \frac{X_1-X_2}{\sqrt{X_3^2+X_4^2}} = \frac{(X_1-X_2)/1}{\sqrt{2(X_3^2+X_4^2)/2}}\sim t(2).
-\]
+\textbf{分母}：
+\[\sqrt{X_3^2+X_4^2}=\sqrt{\frac12}\sqrt{\frac{X_3^2}{\frac12}+\frac{X_4^2}{\frac12}}\sim\sqrt{\frac{\chi^2(2)}{2}}.\]
 \end{solution}
 
 
@@ -8954,8 +7590,6 @@ Y = \frac{X_1-X_2}{\sqrt{X_3^2+X_4^2}} = \frac{(X_1-X_2)/1}{\sqrt{2(X_3^2+X_4^2)
 \end{exercise}
 
 \begin{solution}
-应填 \(t(n-1)\)。
-
 \(\overline{X} \sim N(\mu, \sigma^2/n)\)，\(X_{n+1} \sim N(\mu, \sigma^2)\)，且相互独立，故
 \[
 X_{n+1} - \overline{X} \sim N\!\left(0,\, \left(1+\frac{1}{n}\right)\sigma^2\right),\quad \frac{X_{n+1}-\overline{X}}{\sigma\sqrt{1+1/n}} \sim N(0,1).
@@ -8972,8 +7606,6 @@ X_{n+1} - \overline{X} \sim N\!\left(0,\, \left(1+\frac{1}{n}\right)\sigma^2\rig
 A. \(\alpha\)\quad B. \(1-\alpha\)\quad C. \(2\alpha\)\quad D. \(1-2\alpha\)
 \end{exercise}
 \begin{solution}
-应选 C。
-
 由 \(X \sim t(n)\) 知
 \(
 X^2 \sim F(1,n).
@@ -8993,24 +7625,10 @@ P\{X<-c\}=\alpha.
 \(
 P\{Y > c^2\} = P\{X > c\} + P\{X < -c\} = \alpha + \alpha = 2\alpha.
 \)
-\begin{note}
-此题只能断言 \(Y\) 与 \(X^2\) 同分布（即 \(P(Y>c^2)=P(X^2>c^2)\)），不能说 \(Y=X^2\)——服从相同分布的随机变量不一定相同。
-\end{note}
 \end{solution}
 
-\subsection{\texorpdfstring{\(F\)}{F} 分布}
 
-\begin{definition}[\texorpdfstring{\(F\)}{F} 分布] \label{def:f-dist}
-设 \(X \sim \chi^2(n_1)\)，\(Y \sim \chi^2(n_2)\)，且 \(X, Y\) 相互独立，令
-\(
-F = \frac{X/n_1}{Y/n_2},
-\)
-则称 \(F\) 服从自由度为 \((n_1, n_2)\) 的 \(F\) 分布，记为 \(F \sim F(n_1, n_2)\)，其中 \(n_1\) 为第一自由度，\(n_2\) 为第二自由度。
-\end{definition}
 
-\begin{note}
-\textbf{自学追问：} \(F\) 分布为什么总像“比值”？因为它比较的是两个独立波动量的相对大小：分子是一份标准化后的方差型量，分母也是一份标准化后的方差型量。于是 \(F\) 分布天然适合回答“两个方差是否一样大”“这个统计量相对另一个放大了多少”这一类问题。
-\end{note}
 
 \begin{exercise}\label{exer:src-paper1-choice-04}\label{prob:p1-choice-04}
 设 \((X_1,X_2,\dots,X_n)\) 为总体 \(X\sim N(0,1)\) 的一个样本，\(\overline X\) 为样本均值，\(S^2\) 为样本方差，则有（\quad）。\par
@@ -9035,157 +7653,7 @@ D. \(\dfrac{(n-1)X_1^2}{\sum_{i=2}^{n}X_i^2}\sim F(1,n-1)\)
 A、B 错在 \(\overline X\sim N(0,1/n)\)，而 \(n\overline X\sim N(0,n)\)。C 中若使用样本标准差，应有 \(\sqrt n\,\overline X/S\sim t(n-1)\)。
 \end{solution}
 
-\begin{property}\label{prop:f-dist-property}
-\begin{enumerate}
-    \item 若 \(F \sim F(n_1, n_2)\)，则 \(\dfrac{1}{F} \sim F(n_2, n_1)\)。
-    \item \(F_{1-\alpha}(n_1, n_2) = \dfrac{1}{F_\alpha(n_2, n_1)}\)，常用于求 \(F\) 分布表中未列出的分位数。
-    \item 若 \(t \sim t(n)\)，则 \(t^2 \sim F(1, n)\)。
-\end{enumerate}
-\end{property}
-
-\begin{exercise}\label{exer:src-2013-a-01-02}
-设 \(X_1,X_2,\dots,X_n\ (n\ge2)\) 为来自总体 \(N(0,1)\) 的简单随机样本，则
-\(
-\frac{(n-1)X_1^2}{\displaystyle\sum_{i=2}^{n}X_i^2}
-\)
-服从的分布为\,\underline{\hspace{2cm}}。
-\end{exercise}
-\begin{solution}
-由于 \(X_1\sim N(0,1)\)，故
-\(
-X_1^2\sim\chi^2(1).
-\)
-又因为 \(X_2,\dots,X_n\) 相互独立且均服从 \(N(0,1)\)，所以
-\(
-\sum_{i=2}^{n}X_i^2\sim\chi^2(n-1),
-\)
-并且它与 \(X_1^2\) 相互独立。因此
-\[
-\frac{(n-1)X_1^2}{\sum_{i=2}^{n}X_i^2}
-=\frac{X_1^2/1}{\left(\sum_{i=2}^{n}X_i^2\right)/(n-1)}
-\sim F(1,n-1).
-\]
-故应填 \(F(1,n-1)\)。
-\end{solution}
-
-\begin{exercise}\label{exer:6-f-const}
-设 \(X_1, X_2, X_3, X_4\) 相互独立，均服从 \(N(0,1)\)。\(Z = c \times \dfrac{X_1^2/1}{X_2^2+X_3^2+X_4^2}\) 服从 \(F\) 分布，则常数 \(c =\,\underline{\hspace{2cm}}\)。\par
-A. \(3\)\quad B. \(\dfrac{1}{3}\)\quad C. \(\dfrac{2}{3}\)\quad D. \(1\)
-\end{exercise}
-\begin{solution}
-应选 A。
-
-因为 \(X_1,X_2,X_3,X_4\) 相互独立，且都服从 \(N(0,1)\)，所以
-\[
-X_1^2 \sim \chi^2(1),
-\qquad
-X_2^2+X_3^2+X_4^2 \sim \chi^2(3),
-\]
-并且这两个卡方变量相互独立。
-
-\(F\) 分布的标准形式是
-\(
-\frac{\chi^2(n_1)/n_1}{\chi^2(n_2)/n_2}\sim F(n_1,n_2).
-\)
-因此本题要写成
-\(
-\frac{X_1^2/1}{(X_2^2+X_3^2+X_4^2)/3} \sim F(1,3) \implies c = 3.
-\)
-
-所以常数应取
-\(
-c=3.
-\)
-\end{solution}
-
-\begin{exercise}\label{exer:6-t2-f}
-设随机变量 \(T \sim t(15)\)，则 \(T^2\) 服从的分布为\,\underline{\hspace{2cm}}。
-\end{exercise}
-\begin{solution}
-应填 \(F(1,15)\)。
-
-先回忆标准结论：若
-\(
-T = \frac{U}{\sqrt{V/n}},
-\)
-其中 \(U \sim N(0,1)\)，\(V \sim \chi^2(n)\) 且相互独立，则 \(T \sim t(n)\)。
-
-于是平方后
-\(
-T^2 = \frac{U^2/1}{V/n} \sim F(1,n),
-\)
-因为 \(U^2 \sim \chi^2(1)\)，所以这正好是 \(F\) 分布的标准形式。
-
-本题给定 \(T \sim t(15)\)，即 \(n=15\)，故
-\(
-T^2 \sim F(1,15).
-\)
-\end{solution}
-
-\begin{exercise}\label{exer:6-inv-t2}
-设随机变量 \(X \sim t(n)\ (n > 1)\)，则 \(Y = \dfrac{1}{X^2}\) 服从的分布为（\quad）。\par
-A. \(\chi^2(n)\)\quad B. \(\chi^2(n-1)\)\quad C. \(F(n,1)\)\quad D. \(F(1,n)\)
-\end{exercise}
-\begin{solution}
-应选 C。
-
-先把 \(X\sim t(n)\) 写成标准形式：
-\(
-X = \frac{U}{\sqrt{V/n}},
-\)
-其中 \(U \sim N(0,1)\)，\(V \sim \chi^2(n)\) 且相互独立。
-
-于是
-\(
-X^2 = \frac{U^2/1}{V/n} \sim F(1,n).
-\)
-题目要求的是 \(Y=\dfrac{1}{X^2}\)，也就是把一个 \(F(1,n)\) 变量取倒数。根据 \(F\) 分布的性质“若 \(F\sim F(n_1,n_2)\)，则 \(1/F\sim F(n_2,n_1)\)”，可得
-\(
-Y = \frac{1}{X^2} = \frac{V/n}{U^2/1} \sim F(n, 1).
-\)
-\(
-\text{故应选 } C.
-\)
-\end{solution}
-
-\begin{exercise}[\texorpdfstring{\(F\)}{F} 分布系数的确定] \label{ex:sampling_03}
-设总体 \(X\sim N(\mu_1,4),\ Y\sim N(\mu_2,5)\)，\(X\) 与 \(Y\) 独立，\(X_1,\dots,X_8\) 和 \(Y_1,\dots,Y_{10}\) 分别来自 \(X\) 和 \(Y\)，\(S_X^2,S_Y^2\) 为样本方差，则（\quad）。\par
-A. \(\dfrac{2S_X^2}{5S_Y^2}\sim F(7,9)\)\qquad
-B. \(\dfrac{5S_X^2}{2S_Y^2}\sim F(7,9)\)\par
-C. \(\dfrac{4S_X^2}{5S_Y^2}\sim F(7,9)\)\qquad
-D. \(\dfrac{5S_X^2}{4S_Y^2}\sim F(7,9)\)
-\end{exercise}
-
-\begin{solution}
-应选 D。由正态总体抽样分布：
-\[
-\frac{7S_X^2}{\sigma_1^2}=\frac{7S_X^2}{4}\sim\chi^2(7),\qquad \frac{9S_Y^2}{\sigma_2^2}=\frac{9S_Y^2}{5}\sim\chi^2(9).
-\]
-构造 \(F\) 统计量时，系数需使分子分母分别除以各自自由度：
-\[
-\frac{7S_X^2/4}{9S_Y^2/5}\cdot\frac{1}{7/9}=\frac{9\cdot 7S_X^2}{7\cdot 9S_Y^2}\cdot\frac{5}{4}=\frac{5S_X^2}{4S_Y^2}\sim F(7,9).
-\]
-\textbf{一般技巧}：若 \(\dfrac{(m-1)S_1^2}{\sigma_1^2}\sim\chi^2(m{-}1)\)，\(\dfrac{(n-1)S_2^2}{\sigma_2^2}\sim\chi^2(n{-}1)\)，则
-\(
-\frac{S_1^2/S_2^2}{\sigma_1^2/\sigma_2^2}\sim F(m{-}1,n{-}1).
-\)
-此处 \(\sigma_1^2/\sigma_2^2=4/5\)，故 \(\dfrac{S_1^2/S_2^2}{4/5}=\dfrac{5S_X^2}{4S_Y^2}\sim F(7,9)\)。
-\end{solution}
-
-
-
 \section{正态总体下的抽样分布}
-
-\begin{note}
-\textbf{自学导读：本节是第 7--9 章的"公式源头"。}
-
-下面的三条定理是整个数理统计的核心工具。后面点估计、区间估计、假设检验中出现的所有公式，都可以追溯到这里。建议你：
-\begin{enumerate}
-    \item 先记住结论的\textbf{形式}：$\bar{X}$ 标准化后是什么分布？$S^2$ 乘以什么系数后是什么分布？
-    \item 再理解\textbf{为什么}：$\bar{X}$ 是 $n$ 个正态变量的线性组合，所以仍是正态；$(n-1)S^2/\sigma^2$ 是 $n-1$ 个标准正态平方和，所以是 $\chi^2(n-1)$；用 $S$ 代替 $\sigma$ 后，分母变成随机的，所以从 $N(0,1)$ 变成了 $t(n-1)$。
-    \item 特别注意 $\bar{X}$ 与 $S^2$ \textbf{相互独立}这一结论——它不直观，但后面构造 $t$ 统计量和 $F$ 统计量时必须用到。
-\end{enumerate}
-\end{note}
 
 \subsection{单个正态总体}
 
@@ -10170,36 +8638,9 @@ DT = D(\overline{X}^2) + D\!\left(\frac{S^2}{n}\right) = \frac{2}{n^2} + \frac{2
 \)
 \end{solution}
 
-\begin{note}
-\textbf{自学检查点——抽样分布：}
-\begin{enumerate}
-    \item 样本方差 $S^2$ 的分母为什么是 $n-1$ 而不是 $n$？（答：为了保证 $E(S^2)=\sigma^2$，即无偏性。直觉上，$\bar{X}$ 已经用掉了一个"自由度"来估计 $\mu$）
-    \item $\frac{\bar{X}-\mu}{\sigma/\sqrt{n}}$ 服从什么分布？$\frac{\bar{X}-\mu}{S/\sqrt{n}}$ 呢？（答：前者 $N(0,1)$，后者 $t(n-1)$）
-    \item $\chi^2(n)$ 的期望和方差？（答：$n$ 和 $2n$）
-    \item $t_\alpha(n)$ 和 $t_{1-\alpha}(n)$ 的关系？（答：$t_{1-\alpha}(n)=-t_\alpha(n)$，由对称性）
-    \item $F_\alpha(m,n)$ 和 $F_{1-\alpha}(n,m)$ 的关系？（答：$F_{1-\alpha}(m,n)=1/F_\alpha(n,m)$）
-\end{enumerate}
-\end{note}
-
-
 
 \chapter{点估计}
 
-\begin{note}
-\textbf{自学导读：统计推断的第一步——用样本"猜"参数。}
-
-从本章开始，你正式进入统计推断。核心问题：总体分布的形式已知（比如正态），但参数 $\mu$、$\sigma^2$ 未知，你手里只有一组样本数据 $x_1,\dots,x_n$。怎么用这些数据"猜"出参数的值？
-
-\textbf{两种猜法：}
-\begin{itemize}
-    \item \textbf{矩估计（MME）}：用样本矩代替总体矩，解方程。思路朴素——"样本均值 $\approx$ 总体均值"，直接令 $\bar{X}=\mu$ 就得到 $\hat\mu$。
-    \item \textbf{最大似然估计（MLE）}：问"什么参数值最可能产生我观察到的这组数据？"然后选使似然函数最大的参数值。
-\end{itemize}
-
-\textbf{自学提醒：} MLE 的计算步骤是固定的（写似然函数 $\to$ 取对数 $\to$ 求导令为零 $\to$ 解方程），不要被不同分布的具体形式吓住——步骤永远一样，只是代入的密度函数不同。
-
-\textbf{前置知识：} 第 2 章的常见分布（正态、指数、均匀等）的密度函数，第 4 章的期望/方差公式，第 6 章的样本均值和样本方差概念。
-\end{note}
 
 {\small
 \[
@@ -10235,16 +8676,6 @@ DT = D(\overline{X}^2) + D\!\left(\frac{S^2}{n}\right) = \frac{2}{n^2} + \frac{2
 \]
 }
 
-\begin{introduction}
-    \item 点估计的基本概念~\ref{def:point-est}
-    \item 矩估计法~\ref{subsec:mme}
-    \item 最大似然估计法~\ref{subsec:mle}
-    \item 估计量的评价标准~\ref{subsec:criteria}
-\end{introduction}
-
-\begin{note}
-\textbf{使用提醒：} 点估计题通常先回答三个问题：要估哪个参数、准备用什么统计量、最后按什么标准评价它。矩估计更像“用样本矩替换总体矩再反解参数”，最大似然估计更像“让当前样本出现得尽可能合理”；而无偏性、有效性、一致性、均方误差，则是在得到估计量之后再判断它“好不好”的不同标尺。
-\end{note}
 
 \section{点估计的基本概念}
 
@@ -13307,55 +11738,7 @@ p\in\left(\hat p-1.96\sqrt{\frac{\hat p(1-\hat p)}{600}},\ \hat p+1.96\sqrt{\fra
 因为 \(0.5\) 不在区间内，故在 \(\alpha=0.05\) 下可认为这不是均匀硬币。
 \end{solution}
 
-\begin{exercise}\label{exer:src-2009-3a-06}
-某学校北区食堂为提高服务质量，要先对就餐率 \(p\) 进行调查。决定在某天中午，随机地对用过午餐的同学进行抽样调查。设调查了 \(n\) 个同学，其中在北区食堂用过餐的学生数为 \(m\)，若要求以大于 \(95\%\) 的概率保证调查所得的就餐频率与 \(p\) 之间的误差上下在 \(10\%\) 以内，问 \(n\) 应取多大？
-\end{exercise}
-\begin{solution}
-记 \(\hat p=m/n\)。由中心极限定理，
-\(
-\frac{\hat p-p}{\sqrt{p(1-p)/n}}\approx N(0,1).
-\)
-要求
-\(
-P\{|\hat p-p|<0.1\}>0.95.
-\)
-由于 \(p(1-p)\le \dfrac14\)，只需令最不利情形下仍满足
-\(
-P\left\{\left|Z\right|<\frac{0.1\sqrt n}{1/2}\right\}\ge0.95.
-\)
-由 \(z_{0.025}=1.96\)，得
-\(
-\frac{0.1\sqrt n}{1/2}\ge1.96,
-\)
-即
-\(
-n\ge\left(\frac{1.96}{0.2}\right)^2=96.04.
-\)
-故 \(n\) 至少取 \(97\)。
-\end{solution}
 
-\begin{note}
-\textbf{自学检查点——区间估计：}
-\begin{enumerate}
-    \item 置信水平 $1-\alpha=0.95$ 的正确含义是什么？（答：重复抽样 100 次，大约 95 次构造出的区间能覆盖真值）
-    \item 估计正态总体均值 $\mu$，$\sigma$ 已知用什么分布？未知呢？（答：已知用 $Z$，未知用 $t(n-1)$）
-    \item 估计正态总体方差 $\sigma^2$ 用什么分布？（答：$\chi^2(n-1)$）
-    \item 置信区间越宽，置信水平越高还是越低？（答：越高。宽区间更容易覆盖真值）
-    \item 增大样本量 $n$ 对置信区间有什么影响？（答：区间变窄，精度提高）
-\end{enumerate}
-\end{note}
-
-\begin{note}
-\textbf{【高频题型模板】区间估计大题的标准解法：}
-\begin{enumerate}
-    \item \textbf{判断题型：} 估 $\mu$ 还是 $\sigma^2$？$\sigma$ 已知还是未知？单总体还是双总体？
-    \item \textbf{选枢轴量：} 根据判断结果，从表中选对应的枢轴量（$Z$/$t$/$\chi^2$/$F$）。
-    \item \textbf{写概率式：} $P\{a\leq W\leq b\}=1-\alpha$，查表得分位数 $a,b$。
-    \item \textbf{反解参数：} 把不等式变形为"参数 $\in$ (下界, 上界)"。
-    \item \textbf{代入数据：} 算出 $\bar x$、$s^2$ 等样本统计量，代入得数值区间。
-\end{enumerate}
-\textbf{注意：} 对 $\chi^2$ 和 $F$ 分布（非对称），双侧区间的上下分位数不对称：用 $\chi^2_{\alpha/2}$ 和 $\chi^2_{1-\alpha/2}$，不能像正态那样只查一个值。
-\end{note}
 
 \subsection*{历年试题补充：2008-01 3学分 A 卷}
 
