@@ -2068,8 +2068,8 @@ f_Z(z)=\frac1{\sqrt{2\pi}}\exp\!\left\{-\frac{(z+1)^2}{2}\right\},
 
 
 \begin{exercise}\label{exer:2-12}\label{exer:src-2017-a-ii-05}
-设随机变量 $X$ 服从正态分布 $N(0,1)$，对给定的 $\alpha(0<\alpha<1)$，数 $u_\alpha$ 满足 $P\{X>u_\alpha\} = \alpha$，若 $P\{|X|<x\} = \alpha$，则 $x$ 等于（\quad）。
-(A) $u_{\frac{\alpha}{2}}$ \quad (B) $u_{1-\frac{\alpha}{2}}$ \quad (C) $u_{\frac{1-\alpha}{2}}$ \quad (D) $u_{1-\alpha}$
+设随机变量 $X$ 服从正态分布 $N(0,1)$，对给定的 $\alpha(0<\alpha<1)$，数 $u_\alpha$ 满足 $P\{X\le u_\alpha\} = \alpha$，若 $P\{|X|<x\} = \alpha$，则 $x$ 等于（\quad）。
+(A) $u_{\frac{\alpha}{2}}$ \quad (B) $u_{1-\frac{\alpha}{2}}$ \quad (C) $u_{\frac{1-\alpha}{2}}$ \quad (D) $u_{\frac{1+\alpha}{2}}$
 \end{exercise}
 
 \begin{solution}
@@ -2078,8 +2078,8 @@ f_Z(z)=\frac1{\sqrt{2\pi}}\exp\!\left\{-\frac{(z+1)^2}{2}\right\},
 P\{|X|<x\}=P\{-x<X<x\}=\alpha.
 \)
 由于正态分布关于 0 对称，所以区间外剩余的总概率为 \(1-\alpha\)，左右两边各占 \(\dfrac{1-\alpha}{2}\)。
-而 \(u_\beta\) 的定义是满足 \(P\{X>u_\beta\}=\beta\) 的点，与上式对照可知 \(x=u_{\frac{1-\alpha}{2}}\)。
-故答案选 \textbf{(C)}。
+而 \(u_\beta\) 的定义是满足 \(P\{X\le u_\beta\}=\beta\) 的点。因为 \(P(X<x)=\dfrac{1+\alpha}{2}\)，所以 \(x=u_{\frac{1+\alpha}{2}}\)。
+故答案选 \textbf{(D)}。
 \end{solution}
 
 
@@ -7469,7 +7469,7 @@ F=\frac{U/m}{V/n},~~~U\sim \chi^2(m), V\sim \chi^2(n)
 \begin{property}\label{prop:f-dist-property}
 \begin{enumerate}
     \item 若 \(F \sim F(n_1, n_2)\)，则 \(\dfrac{1}{F} \sim F(n_2, n_1)\)。
-    \item \(F_{1-\alpha}(n_1, n_2) = \dfrac{1}{F_\alpha(n_2, n_1)}\)，常用于求 \(F\) 分布表中未列出的分位数。
+    \item \(F_{\alpha}(n_1, n_2) = \dfrac{1}{F_{1-\alpha}(n_2, n_1)}\)，常用于求 \(F\) 分布表中未列出的分位数。
     \item 若 \(t \sim t(n)\)，则 \(t^2 \sim F(1, n)\)。
 \end{enumerate}
 \end{property}
@@ -8258,7 +8258,7 @@ Y=X^2\sim F(1,m).
 \begin{exercise}\label{exer:src-paper3-ii-01}\label{prob:p3-ii-01}
 设随机变量 \(X\sim N(0,1)\)。对给定的 \(\alpha\ (0<\alpha<1)\)，数 \(z_\alpha\) 满足
 \(
-P(X>z_\alpha)=\alpha.
+P(X\le z_\alpha)=\alpha.
 \)
 若
 \(
@@ -8277,11 +8277,11 @@ P(|X|<c)=\alpha
 \)
 因此
 \(
-P(X>c)=\frac{1-\alpha}{2}.
+P(X<c)=\frac{1+\alpha}{2}.
 \)
-按上侧分位数定义，
+按本书采用的左侧分位数定义，
 \(
-c=z_{\frac{1-\alpha}{2}}.
+c=z_{\frac{1+\alpha}{2}}.
 \)
 \end{solution}
 
@@ -8351,60 +8351,61 @@ X_2+X_3+X_4\sim N(0,27).
 \begin{note}
 \textbf{自学导读：分位数是查表的"接口"。}
 
-后面区间估计和假设检验中，你会反复看到 $z_{\alpha/2}$、$t_{\alpha/2}(n-1)$、$\chi^2_{\alpha/2}(n-1)$ 这类符号。它们的含义统一且简单：\textbf{上 $\alpha$ 分位数 $=$ 右尾面积恰好为 $\alpha$ 的那个临界点}。
+后面区间估计和假设检验中，你会反复看到 $z_{1-\alpha/2}$、$t_{1-\alpha/2}(n-1)$、$\chi^2_{\alpha/2}(n-1)$ 这类符号。它们的含义统一且简单：\textbf{\(\alpha\) 分位数就是左侧面积恰好为 \(\alpha\) 的那个临界点}。
 
-直觉：想象密度曲线下的面积为 1。从右边切掉面积 $\alpha$ 的那个"刀口"位置，就是上 $\alpha$ 分位数。
+直觉：想象密度曲线下的面积为 1。从左边累计到面积 $\alpha$ 的那个"刀口"位置，就是 $\alpha$ 分位数。
 
-\textbf{易错点：} 不同教材可能用"上侧"或"下侧"定义。本书统一用\textbf{上侧}：$P(X>a_\alpha)=\alpha$。做题时先确认教材/试卷用哪种定义，再查表。
+\textbf{易错点：} 不同教材可能用"上侧"或"下侧"定义。本书统一采用你校教材的\textbf{左侧}定义：$P(X\le a_\alpha)=\alpha$。若旧书采用右尾记号 \(P(X>q_\gamma)=\gamma\)，则旧 \(q_\gamma\) 等于本书的 \(q_{1-\gamma}\)。
 \end{note}
 
-\begin{definition}[上 \texorpdfstring{\(\alpha\)}{α} 分位数] \label{def:quantile}
-设 \(X\) 为随机变量，\(0 < \alpha < 1\)。若实数 \(a_\alpha\) 满足 \(P\{X > a_\alpha\} = \alpha\)（即上侧尾部面积为 \(\alpha\)），则称 \(a_\alpha\) 为 \(X\) 的\textbf{上 \(\alpha\) 分位数}。
+\begin{definition}[\texorpdfstring{\(\alpha\)}{α} 分位数] \label{def:quantile}
+设 \(X\) 为随机变量，\(0 < \alpha < 1\)。若实数 \(a_\alpha\) 满足 \(P\{X \le a_\alpha\} = \alpha\)（即左侧累计概率为 \(\alpha\)），则称 \(a_\alpha\) 为 \(X\) 的\textbf{\(\alpha\) 分位数}。
 \end{definition}
 
-三大抽样分布的上 \(\alpha\) 分位数分别为：
+常用分布的 \(\alpha\) 分位数分别为：
 \begin{enumerate}
-    \item \(\chi^2\) 分布：\(P\{\chi^2 > \chi_\alpha^2(n)\} = \alpha\)；
-    \item \(t\) 分布：\(P\{t > t_\alpha(n)\} = \alpha\)，由对称性 \(t_{1-\alpha}(n) = -t_\alpha(n)\)；
-    \item \(F\) 分布：\(P\{F > F_\alpha(m,n)\} = \alpha\)，且 \(F_{1-\alpha}(m,n) = \dfrac{1}{F_\alpha(n,m)}\)。
+    \item 标准正态分布：\(P\{Z\le z_\alpha\}=\alpha\)，也常记为 \(u_\alpha\)；
+    \item \(\chi^2\) 分布：\(P\{\chi^2 \le \chi_\alpha^2(n)\} = \alpha\)；
+    \item \(t\) 分布：\(P\{t \le t_\alpha(n)\} = \alpha\)，由对称性 \(t_{1-\alpha}(n) = -t_\alpha(n)\)；
+    \item \(F\) 分布：\(P\{F \le F_\alpha(m,n)\} = \alpha\)，且 \(F_\alpha(m,n) = \dfrac{1}{F_{1-\alpha}(n,m)}\)。
 \end{enumerate}
 
 \begin{note}
 不同教材对分位数的定义可能不同：有的用上侧（\(P\{X > a\} = \alpha\)），有的用下侧（\(P\{X \leq a\} = \alpha\)）。使用时需注意对应关系：
 \begin{itemize}
-    \item 上侧 \(\alpha\) 分位数 \(a_\alpha\) 对应下侧 \(1-\alpha\) 分位数；
-    \item 两种定义下，\(\chi^2\) 分布满足 \(\chi^2_{\alpha,\text{上侧}}(n) = \chi^2_{1-\alpha,\text{下侧}}(n)\)。
+    \item 旧的上侧 \(\gamma\) 分位数对应本书左侧 \(1-\gamma\) 分位数；
+    \item 两种定义下，\(\chi^2\) 分布满足 \(\chi^2_{\gamma,\text{上侧}}(n) = \chi^2_{1-\gamma,\text{左侧}}(n)\)。
 \end{itemize}
 \end{note}
 
 \begin{note}
-\textbf{使用提醒：} 查分位数表前，建议固定做三步检查：先认分布族（标准正态、\(t\)、\(\chi^2\) 还是 \(F\)），再认自由度，最后认清教材用的是上侧定义还是下侧定义。尤其 \(F\) 分布除了尾部方向外，还要额外检查第一、第二自由度的顺序，次序一换，分位数就会跟着变。
+\textbf{使用提醒：} 查分位数表前，建议固定做三步检查：先认分布族（标准正态、\(t\)、\(\chi^2\) 还是 \(F\)），再认自由度，最后认清表格用的是左侧定义还是上侧定义。尤其 \(F\) 分布除了尾部方向外，还要额外检查第一、第二自由度的顺序，次序一换，分位数就会跟着变。
 \end{note}
 
 \subsection*{历年试题补充：2009.07 3学分 A 卷}
 
 \begin{exercise}\label{exer:src-2009-07-3a-i-03}
-设连续随机变量 \(X\) 的密度函数满足 \(f(x)=f(-x)\)，\(x_\alpha\) 是 \(X\) 的上 \(\alpha\) 分位数，则
+设连续随机变量 \(X\) 的密度函数满足 \(f(x)=f(-x)\)，\(x_\alpha\) 是 \(X\) 的 \(\alpha\) 分位数，且 \(x_\alpha>0\)，则
 \(
 P(|X|>x_\alpha)=(\quad).
 \)
-A. \(2-\alpha\)\quad B. \(1-2\alpha\)\par
+A. \(2-2\alpha\)\quad B. \(1-2\alpha\)\par
 C. \(2\alpha-1\)\quad D. \(2\alpha\)
 \end{exercise}
 \begin{solution}
-应选 D。
+应选 A。
 
-由 \(f(x)=f(-x)\) 可知分布关于 \(0\) 对称。又 \(x_\alpha\) 是上 \(\alpha\) 分位数，所以
+由 \(f(x)=f(-x)\) 可知分布关于 \(0\) 对称。又 \(x_\alpha\) 是本书左侧 \(\alpha\) 分位数，所以
 \(
-P(X>x_\alpha)=\alpha.
+P(X\le x_\alpha)=\alpha,\qquad P(X>x_\alpha)=1-\alpha.
 \)
 由对称性，
 \(
-P(X<-x_\alpha)=\alpha.
+P(X<-x_\alpha)=P(X>x_\alpha)=1-\alpha.
 \)
 因此
 \(
-P(|X|>x_\alpha)=P(X>x_\alpha)+P(X<-x_\alpha)=2\alpha.
+P(|X|>x_\alpha)=P(X>x_\alpha)+P(X<-x_\alpha)=2(1-\alpha).
 \)
 \end{solution}
 
@@ -8418,7 +8419,7 @@ A. \(2-\alpha\)\quad B. \(1-2\alpha\)\quad C. \(2\alpha-1\)\quad D. \(2\alpha\)
 \begin{solution}
 应选 C。
 
-这里的 \(\alpha\) 分位数按下侧概率理解，即
+这里的 \(\alpha\) 分位数按本书左侧概率理解，即
 \(
 P(X\le x_\alpha)=\alpha.
 \)
@@ -8437,7 +8438,7 @@ P(|X|\le x_\alpha)
 
 \begin{exercise}\label{exer:6-quantile-s2}
 设总体 \(X \sim N(\mu, 16)\)，\(X_1, X_2, \dots, X_{10}\) 是取自 \(X\) 的样本，\(S^2\) 为样本方差。求常数 \(a =\,\underline{\hspace{2cm}}\)，使 \(P(S^2 \geq a) = 0.1\) 成立。\par
-A. \(\dfrac{16}{9}\chi_{0.1}^2(9)\)\quad B. \(\dfrac{16}{9}\chi_{0.05}^2(10)\)\quad C. \(\chi_{0.1}^2(10)\)\quad D. \(\chi_{0.05}^2(9)\)
+A. \(\dfrac{16}{9}\chi_{0.9}^2(9)\)\quad B. \(\dfrac{16}{9}\chi_{0.05}^2(10)\)\quad C. \(\chi_{0.1}^2(10)\)\quad D. \(\chi_{0.05}^2(9)\)
 \end{exercise}
 
 \begin{solution}
@@ -8455,20 +8456,20 @@ P(S^2 \geq a)=0.1,
 \(
 P\!\left(\frac{9}{16}S^2 \geq \frac{9}{16}a\right)=0.1.
 \)
-而上 \(0.1\) 分位数 \(\chi_{0.1}^2(9)\) 的定义正是右尾概率等于 \(0.1\) 的点，因此必须有
+而本书的 \(\chi_{0.9}^2(9)\) 表示左侧概率等于 \(0.9\) 的点，也就是右尾概率等于 \(0.1\) 的点，因此必须有
 \(
-\frac{9}{16}a = \chi_{0.1}^2(9)\implies a = \frac{16}{9}\chi_{0.1}^2(9).
+\frac{9}{16}a = \chi_{0.9}^2(9)\implies a = \frac{16}{9}\chi_{0.9}^2(9).
 \)
 故应选 A。
 \end{solution}
 
 \begin{exercise}\label{exer:6-quantile-range}
-设随机变量 \(X \sim \chi^2(2)\)，用 \(\chi_\alpha^2(2)\) 表示自由度为 2 的 \(\chi^2\) 分布的上 \(\alpha\) 分位数。已知 \(P(x < X < y) = 0.95\)，\(P(X > y) = 0.02\)，请用分位数表示 \(x\) 和 \(y\)。
+设随机变量 \(X \sim \chi^2(2)\)，用 \(\chi_\alpha^2(2)\) 表示自由度为 2 的 \(\chi^2\) 分布的 \(\alpha\) 分位数。已知 \(P(x < X < y) = 0.95\)，\(P(X > y) = 0.02\)，请用分位数表示 \(x\) 和 \(y\)。
 \end{exercise}
 
 \begin{solution}
 先看右端点 \(y\)。题目已给 \(P(X>y)=0.02\)。
-而 \(\chi^2_\alpha(2)\) 的定义正是“使右尾概率等于 \(\alpha\) 的点”，所以 \(y=\chi^2_{0.02}(2)\)。
+按本书左侧分位数定义，\(P(X\le y)=0.98\)，所以 \(y=\chi^2_{0.98}(2)\)。
 
 再求左端点 \(x\)。由 \(P(x<X<y)=0.95\) 以及右尾概率 \(P(X>y)=0.02\)，可知剩下的左侧概率为
 \(
@@ -8476,11 +8477,11 @@ P(X\le x)=1-0.95-0.02=0.03.
 \)
 这一步最容易算错成 \(0.05\) 或 \(0.02\)，本质上是在把总概率 1 分成三段：左边、中间、右边。
 
-于是 \(P(X>x)=1-0.03=0.97\)，按上 \(\alpha\) 分位数的定义，满足 \(P(X>x)=0.97\) 的点就是 \(x=\chi^2_{0.97}(2)\)。
+于是按左侧分位数定义，满足 \(P(X\le x)=0.03\) 的点就是 \(x=\chi^2_{0.03}(2)\)。
 
 所以
 \(
-x=\chi^2_{0.97}(2),\qquad y=\chi^2_{0.02}(2).
+x=\chi^2_{0.03}(2),\qquad y=\chi^2_{0.98}(2).
 \)
 \end{solution}
 
@@ -10877,13 +10878,13 @@ k=\frac1{n}\sqrt{\frac{n}{n-1}}\sqrt{\frac{\pi}{2}}
 \begin{cases}
 \text{总体均值 } \mu:
 \begin{cases}
-\sigma^2 \text{ 已知}: & \left( \overline{X} - \dfrac{\sigma}{\sqrt{n}} z_{\frac{\alpha}{2}}, \overline{X} + \dfrac{\sigma}{\sqrt{n}} z_{\frac{\alpha}{2}} \right)\\
-\sigma^2 \text{ 未知}: & \left( \overline{X} - \dfrac{S}{\sqrt{n}} t_{\frac{\alpha}{2}}(n-1), \overline{X} + \dfrac{S}{\sqrt{n}} t_{\frac{\alpha}{2}}(n-1) \right)
+\sigma^2 \text{ 已知}: & \left( \overline{X} - \dfrac{\sigma}{\sqrt{n}} z_{1-\frac{\alpha}{2}}, \overline{X} + \dfrac{\sigma}{\sqrt{n}} z_{1-\frac{\alpha}{2}} \right)\\
+\sigma^2 \text{ 未知}: & \left( \overline{X} - \dfrac{S}{\sqrt{n}} t_{1-\frac{\alpha}{2}}(n-1), \overline{X} + \dfrac{S}{\sqrt{n}} t_{1-\frac{\alpha}{2}}(n-1) \right)
 \end{cases}\\[8pt]
 \text{总体方差 } \sigma^2:
 \begin{cases}
-\mu \text{ 已知}: & \left( \dfrac{\sum_{i=1}^n (X_i-\mu)^2}{\chi_{\frac{\alpha}{2}}^2(n)}, \dfrac{\sum_{i=1}^n (X_i-\mu)^2}{\chi_{1-\frac{\alpha}{2}}^2(n)} \right)\\
-\mu \text{ 未知}: & \left( \dfrac{(n-1)S^2}{\chi_{\frac{\alpha}{2}}^2(n-1)}, \dfrac{(n-1)S^2}{\chi_{1-\frac{\alpha}{2}}^2(n-1)} \right)
+\mu \text{ 已知}: & \left( \dfrac{\sum_{i=1}^n (X_i-\mu)^2}{\chi_{1-\frac{\alpha}{2}}^2(n)}, \dfrac{\sum_{i=1}^n (X_i-\mu)^2}{\chi_{\frac{\alpha}{2}}^2(n)} \right)\\
+\mu \text{ 未知}: & \left( \dfrac{(n-1)S^2}{\chi_{1-\frac{\alpha}{2}}^2(n-1)}, \dfrac{(n-1)S^2}{\chi_{\frac{\alpha}{2}}^2(n-1)} \right)
 \end{cases}
 \end{cases}
 \]
@@ -10904,9 +10905,9 @@ k=\frac1{n}\sqrt{\frac{n}{n-1}}\sqrt{\frac{\pi}{2}}
 &\qquad
 \begin{cases}
 \sigma_1^2,\sigma_2^2 \text{ 已知}: \\[2pt]
-\quad (\bar X_1-\bar X_2) \pm z_{\alpha/2} \sqrt{\sigma_1^2/n_1+\sigma_2^2/n_2};\\[8pt]
+\quad (\bar X_1-\bar X_2) \pm z_{1-\alpha/2} \sqrt{\sigma_1^2/n_1+\sigma_2^2/n_2};\\[8pt]
 \sigma_1^2=\sigma_2^2=\sigma^2,\;\sigma^2 \text{ 未知}: \\[2pt]
-\quad(\bar X_1-\bar X_2) \pm t_{\alpha/2}(n_1+n_2-2)\,S_w\sqrt{1/n_1+1/n_2};
+\quad(\bar X_1-\bar X_2) \pm t_{1-\alpha/2}(n_1+n_2-2)\,S_w\sqrt{1/n_1+1/n_2};
 \end{cases}
 \\[12pt]
 &\text{总体方差比 } \bigl( \sigma_1^2/\sigma_2^2 \bigr): \\
@@ -10914,12 +10915,12 @@ k=\frac1{n}\sqrt{\frac{n}{n-1}}\sqrt{\frac{\pi}{2}}
 \begin{cases}
 \mu_1,\mu_2 \text{ 已知}: \\[2pt]
 \quad\Bigl( \frac{\frac1{n_1}\sum_{i=1}^{n_1}(X_i-\mu_1)^2}{\frac1{n_2}\sum_{j=1}^{n_2}(X_j-\mu_2)^2}
-\cdot\frac1{F_{\alpha/2}(n_1,n_2)},\;
+\cdot\frac1{F_{1-\alpha/2}(n_1,n_2)},\;
 \frac{\frac1{n_1}\sum_{i=1}^{n_1}(X_i-\mu_1)^2}{\frac1{n_2}\sum_{j=1}^{n_2}(X_j-\mu_2)^2}
-\cdot\frac1{F_{1-\alpha/2}(n_1,n_2)} \Bigr) \\[8pt]
+\cdot\frac1{F_{\alpha/2}(n_1,n_2)} \Bigr) \\[8pt]
 \mu_1,\mu_2 \text{ 未知}: \\[2pt]
-\quad\Bigl( \frac{S_1^2}{S_2^2}\cdot\frac1{F_{\alpha/2}(n_1-1,n_2-1)},\;
-\frac{S_1^2}{S_2^2}\cdot\frac1{F_{1-\alpha/2}(n_1-1,n_2-1)} \Bigr)
+\quad\Bigl( \frac{S_1^2}{S_2^2}\cdot\frac1{F_{1-\alpha/2}(n_1-1,n_2-1)},\;
+\frac{S_1^2}{S_2^2}\cdot\frac1{F_{\alpha/2}(n_1-1,n_2-1)} \Bigr)
 \end{cases}
 \end{aligned}
 \right.
@@ -11004,17 +11005,17 @@ P\{\underline{\theta}<\theta<\overline{\theta}\} \ge 1-\alpha
 \midrule
 \multicolumn{4}{c}{\textbf{单个正态总体 $X \sim N(\mu, \sigma^2)$}} \\
 \midrule
-$\sigma^2$ 已知 & $\mu$ & $\frac{\overline{X}-\mu}{\sigma/\sqrt{n}} \sim N(0,1)$ & $\left(\overline{X}-\frac{\sigma}{\sqrt{n}}z_{\alpha/2},\ \overline{X}+\frac{\sigma}{\sqrt{n}}z_{\alpha/2}\right)$ \\
-$\sigma^2$ 未知 & $\mu$ & $\frac{\overline{X}-\mu}{S/\sqrt{n}} \sim t(n-1)$ & $\left(\overline{X}-\frac{S}{\sqrt{n}}t_{\alpha/2}(n-1),\ \overline{X}+\frac{S}{\sqrt{n}}t_{\alpha/2}(n-1)\right)$ \\
-$\mu$ 未知 & $\sigma^2$ & $\frac{(n-1)S^2}{\sigma^2} \sim \chi^2(n-1)$ & $\left(\frac{(n-1)S^2}{\chi^2_{\alpha/2}(n-1)},\ \frac{(n-1)S^2}{\chi^2_{1-\alpha/2}(n-1)}\right)$ \\
-$\mu$ 已知 & $\sigma^2$ & $\frac{\sum(X_i-\mu)^2}{\sigma^2} \sim \chi^2(n)$ & $\left(\frac{\sum(X_i-\mu)^2}{\chi^2_{\alpha/2}(n)},\ \frac{\sum(X_i-\mu)^2}{\chi^2_{1-\alpha/2}(n)}\right)$ \\
+$\sigma^2$ 已知 & $\mu$ & $\frac{\overline{X}-\mu}{\sigma/\sqrt{n}} \sim N(0,1)$ & $\left(\overline{X}-\frac{\sigma}{\sqrt{n}}z_{1-\alpha/2},\ \overline{X}+\frac{\sigma}{\sqrt{n}}z_{1-\alpha/2}\right)$ \\
+$\sigma^2$ 未知 & $\mu$ & $\frac{\overline{X}-\mu}{S/\sqrt{n}} \sim t(n-1)$ & $\left(\overline{X}-\frac{S}{\sqrt{n}}t_{1-\alpha/2}(n-1),\ \overline{X}+\frac{S}{\sqrt{n}}t_{1-\alpha/2}(n-1)\right)$ \\
+$\mu$ 未知 & $\sigma^2$ & $\frac{(n-1)S^2}{\sigma^2} \sim \chi^2(n-1)$ & $\left(\frac{(n-1)S^2}{\chi^2_{1-\alpha/2}(n-1)},\ \frac{(n-1)S^2}{\chi^2_{\alpha/2}(n-1)}\right)$ \\
+$\mu$ 已知 & $\sigma^2$ & $\frac{\sum(X_i-\mu)^2}{\sigma^2} \sim \chi^2(n)$ & $\left(\frac{\sum(X_i-\mu)^2}{\chi^2_{1-\alpha/2}(n)},\ \frac{\sum(X_i-\mu)^2}{\chi^2_{\alpha/2}(n)}\right)$ \\
 \midrule
 \multicolumn{4}{c}{\textbf{两个正态总体 $X \sim N(\mu_1, \sigma_1^2), Y \sim N(\mu_2, \sigma_2^2)$}} \\
 \midrule
-$\sigma_1^2,\sigma_2^2$ 已知 & $\mu_1-\mu_2$ & 正态分布 $N(0,1)$ & $\left((\overline{X}-\overline{Y}) \pm z_{\alpha/2}\sqrt{\frac{\sigma_1^2}{n_1}+\frac{\sigma_2^2}{n_2}}\right)$ \\
-$\sigma_1^2=\sigma_2^2$ 未知 & $\mu_1-\mu_2$ & $t$ 分布 $t(n_1+n_2-2)$ & $\left((\overline{X}-\overline{Y}) \pm t_{\alpha/2}(n_1+n_2-2)S_w\sqrt{\frac{1}{n_1}+\frac{1}{n_2}}\right)$ \\
-$\mu_1,\mu_2$ 已知 & $\frac{\sigma_1^2}{\sigma_2^2}$ & $F$ 分布 $F(n_1,n_2)$ & $\left(\frac{\sum(X_i-\mu_1)^2/n_1}{\sum(Y_j-\mu_2)^2/n_2}\frac{1}{F_{\alpha/2}(n_1,n_2)},\ \frac{\sum(X_i-\mu_1)^2/n_1}{\sum(Y_j-\mu_2)^2/n_2} F_{\alpha/2}(n_2,n_1)\right)$ \\
-$\mu_1,\mu_2$ 未知 & $\frac{\sigma_1^2}{\sigma_2^2}$ & $F$ 分布 $F(n_1-1,n_2-1)$ & $\left(\frac{S_1^2}{S_2^2}\frac{1}{F_{\alpha/2}(n_1-1,n_2-1)},\ \frac{S_1^2}{S_2^2}F_{\alpha/2}(n_2-1,n_1-1)\right)$ \\
+$\sigma_1^2,\sigma_2^2$ 已知 & $\mu_1-\mu_2$ & 正态分布 $N(0,1)$ & $\left((\overline{X}-\overline{Y}) \pm z_{1-\alpha/2}\sqrt{\frac{\sigma_1^2}{n_1}+\frac{\sigma_2^2}{n_2}}\right)$ \\
+$\sigma_1^2=\sigma_2^2$ 未知 & $\mu_1-\mu_2$ & $t$ 分布 $t(n_1+n_2-2)$ & $\left((\overline{X}-\overline{Y}) \pm t_{1-\alpha/2}(n_1+n_2-2)S_w\sqrt{\frac{1}{n_1}+\frac{1}{n_2}}\right)$ \\
+$\mu_1,\mu_2$ 已知 & $\frac{\sigma_1^2}{\sigma_2^2}$ & $F$ 分布 $F(n_1,n_2)$ & $\left(\frac{\sum(X_i-\mu_1)^2/n_1}{\sum(Y_j-\mu_2)^2/n_2}\frac{1}{F_{1-\alpha/2}(n_1,n_2)},\ \frac{\sum(X_i-\mu_1)^2/n_1}{\sum(Y_j-\mu_2)^2/n_2} F_{1-\alpha/2}(n_2,n_1)\right)$ \\
+$\mu_1,\mu_2$ 未知 & $\frac{\sigma_1^2}{\sigma_2^2}$ & $F$ 分布 $F(n_1-1,n_2-1)$ & $\left(\frac{S_1^2}{S_2^2}\frac{1}{F_{1-\alpha/2}(n_1-1,n_2-1)},\ \frac{S_1^2}{S_2^2}F_{1-\alpha/2}(n_2-1,n_1-1)\right)$ \\
 \bottomrule
 \end{tabular}
 }
@@ -11059,26 +11060,26 @@ W=\frac{\overline{X}-\mu}{\sigma/\sqrt{n}}\sim N(0,1).
 
 第二步，根据置信水平 \(1-\alpha\) 写出等尾概率式：
 \[
-P\left\{-z_{\alpha/2}<\frac{\overline{X}-\mu}{\sigma/\sqrt{n}}<z_{\alpha/2}\right\}=1-\alpha.
+P\left\{-z_{1-\alpha/2}<\frac{\overline{X}-\mu}{\sigma/\sqrt{n}}<z_{1-\alpha/2}\right\}=1-\alpha.
 \]
 
 第三步，把中间的不等式对 \(\mu\) 进行变形。两边同乘 \(\sigma/\sqrt{n}\)，再移项，得到
 \[
-P\left\{\overline{X}-\frac{\sigma}{\sqrt{n}}z_{\alpha/2}<\mu<\overline{X}+\frac{\sigma}{\sqrt{n}}z_{\alpha/2}\right\}=1-\alpha.
+P\left\{\overline{X}-\frac{\sigma}{\sqrt{n}}z_{1-\alpha/2}<\mu<\overline{X}+\frac{\sigma}{\sqrt{n}}z_{1-\alpha/2}\right\}=1-\alpha.
 \]
 
 因此，\(\mu\) 的置信水平为 \(1-\alpha\) 的置信区间为
 \[
-\left(\overline{X}-\frac{\sigma}{\sqrt{n}}z_{\alpha/2},\ \overline{X}+\frac{\sigma}{\sqrt{n}}z_{\alpha/2}\right).
+\left(\overline{X}-\frac{\sigma}{\sqrt{n}}z_{1-\alpha/2},\ \overline{X}+\frac{\sigma}{\sqrt{n}}z_{1-\alpha/2}\right).
 \]
 
 \begin{note}
-本题之所以用 \(z_{\alpha/2}\)，关键在于\(\sigma\) 已知且采用双侧等尾区间。以后若 \(\sigma\) 未知，就不能继续使用这个正态枢轴量，而要改用 \(t\) 分布。
+本题之所以用 \(z_{1-\alpha/2}\)，关键在于\(\sigma\) 已知且采用双侧等尾区间。以后若 \(\sigma\) 未知，就不能继续使用这个正态枢轴量，而要改用 \(t\) 分布。
 \end{note}
 \end{solution}
 
 \begin{exercise}\label{exer:src-paper1-fill-06}\label{prob:p1-fill-06}
-设某种清漆干燥时间 \(X\sim N(\mu,\sigma^2)\)（单位：小时），取 \(n=9\) 的样本，得样本均值和方差分别为 \(\overline X=6,\ S^2=0.33\)。则 \(\mu\) 的置信度为 \(95\%\) 的单侧置信区间上限为 \(\underline{\hspace{2cm}}\)。已知 \(t_{0.05}(8)=1.8595\)。
+设某种清漆干燥时间 \(X\sim N(\mu,\sigma^2)\)（单位：小时），取 \(n=9\) 的样本，得样本均值和方差分别为 \(\overline X=6,\ S^2=0.33\)。则 \(\mu\) 的置信度为 \(95\%\) 的单侧置信区间上限为 \(\underline{\hspace{2cm}}\)。已知 \(t_{0.95}(8)=1.8595\)。
 \end{exercise}
 \begin{solution}
 应填 \(6.356\)。
@@ -11089,11 +11090,11 @@ T=\frac{\overline X-\mu}{S/\sqrt n}\sim t(n-1)=t(8).
 \)
 要构造置信度为 \(95\%\) 的单侧上限 \(U\)，取
 \(
-P\left\{T\ge -t_{0.05}(8)\right\}=0.95,
+P\left\{T\ge -t_{0.95}(8)\right\}=0.95,
 \)
 即
 \(
-P\left\{\mu\le \overline X+t_{0.05}(8)\frac{S}{\sqrt n}\right\}=0.95.
+P\left\{\mu\le \overline X+t_{0.95}(8)\frac{S}{\sqrt n}\right\}=0.95.
 \)
 因此
 \(
@@ -11126,7 +11127,7 @@ b=EX=E(e^Y)=e^{\mu+\frac12}.
 =\frac14(\ln0.50+\ln1.25+\ln0.80+\ln2.00)
 =\frac14\ln(0.50\times1.25\times0.80\times2.00)=0.
 \]
-置信度为 \(0.95\) 时，\(z_{0.025}=1.96\)，故 \(\mu\) 的置信区间为
+置信度为 \(0.95\) 时，\(z_{0.975}=1.96\)，故 \(\mu\) 的置信区间为
 \(
 \left(\overline y-\frac{1.96}{2},\ \overline y+\frac{1.96}{2}\right)
 =(-0.98,\ 0.98).
@@ -11163,7 +11164,7 @@ P\{|\overline X-\mu|\le20\}
 \)
 令其不小于 \(0.95\)，即
 \(
-\frac{20\sqrt n}{100}\ge z_{0.025}=1.96.
+\frac{20\sqrt n}{100}\ge z_{0.975}=1.96.
 \)
 于是
 \(
@@ -11213,21 +11214,21 @@ W=\frac{\overline{X}-\mu}{S/\sqrt{n}}\sim t(n-1).
 
 在置信水平 \(1-\alpha\) 下，取双侧等尾区间：
 \[
-P\left\{-t_{\alpha/2}(n-1)<\frac{\overline{X}-\mu}{S/\sqrt{n}}<t_{\alpha/2}(n-1)\right\}=1-\alpha.
+P\left\{-t_{1-\alpha/2}(n-1)<\frac{\overline{X}-\mu}{S/\sqrt{n}}<t_{1-\alpha/2}(n-1)\right\}=1-\alpha.
 \]
 
 把不等式解出 \(\mu\)，得到
 \[
-P\left\{\overline{X}-\frac{S}{\sqrt{n}}t_{\alpha/2}(n-1)<\mu<\overline{X}+\frac{S}{\sqrt{n}}t_{\alpha/2}(n-1)\right\}=1-\alpha.
+P\left\{\overline{X}-\frac{S}{\sqrt{n}}t_{1-\alpha/2}(n-1)<\mu<\overline{X}+\frac{S}{\sqrt{n}}t_{1-\alpha/2}(n-1)\right\}=1-\alpha.
 \]
 
 因此 \(\mu\) 的置信区间为
 \[
-\left(\overline{X}-\frac{S}{\sqrt{n}}t_{\alpha/2}(n-1),\ \overline{X}+\frac{S}{\sqrt{n}}t_{\alpha/2}(n-1)\right).
+\left(\overline{X}-\frac{S}{\sqrt{n}}t_{1-\alpha/2}(n-1),\ \overline{X}+\frac{S}{\sqrt{n}}t_{1-\alpha/2}(n-1)\right).
 \]
 
 \begin{note}
-这道题最容易错的地方有两个：一是把 \(z_{\alpha/2}\) 误写成 \(t_{\alpha/2}(n-1)\) 之外的正态分位点；二是把自由度写成 \(n\)。只要样本方差 \(S^2\) 是围绕 \(\overline{X}\) 构造的，\(t\) 分布自由度就是 \(n-1\)。
+这道题最容易错的地方有两个：一是把 \(z_{1-\alpha/2}\) 误写成 \(t_{1-\alpha/2}(n-1)\) 之外的正态分位点；二是把自由度写成 \(n\)。只要样本方差 \(S^2\) 是围绕 \(\overline{X}\) 构造的，\(t\) 分布自由度就是 \(n-1\)。
 \end{note}
 \end{solution}
 
@@ -11246,21 +11247,21 @@ W=\frac{(n-1)S^2}{\sigma^2}\sim\chi^2(n-1).
 
 由于 \(\chi^2\) 分布不是对称分布，双侧区间不能像正态和 \(t\) 分布那样写成“正负同一个分位点”的形式，而应分别取左右尾各 \(\alpha/2\)：
 \[
-P\left\{\chi^2_{1-\alpha/2}(n-1)<\frac{(n-1)S^2}{\sigma^2}<\chi^2_{\alpha/2}(n-1)\right\}=1-\alpha.
+P\left\{\chi^2_{\alpha/2}(n-1)<\frac{(n-1)S^2}{\sigma^2}<\chi^2_{1-\alpha/2}(n-1)\right\}=1-\alpha.
 \]
 
 现在解这个不等式。注意中间量与 \(\sigma^2\) 在分母上，变形时要格外小心方向：
 \[
-P\left\{\frac{(n-1)S^2}{\chi^2_{\alpha/2}(n-1)}<\sigma^2<\frac{(n-1)S^2}{\chi^2_{1-\alpha/2}(n-1)}\right\}=1-\alpha.
+P\left\{\frac{(n-1)S^2}{\chi^2_{1-\alpha/2}(n-1)}<\sigma^2<\frac{(n-1)S^2}{\chi^2_{\alpha/2}(n-1)}\right\}=1-\alpha.
 \]
 
 因此，\(\sigma^2\) 的置信区间为
 \[
-\left(\frac{(n-1)S^2}{\chi^2_{\alpha/2}(n-1)},\ \frac{(n-1)S^2}{\chi^2_{1-\alpha/2}(n-1)}\right).
+\left(\frac{(n-1)S^2}{\chi^2_{1-\alpha/2}(n-1)},\ \frac{(n-1)S^2}{\chi^2_{\alpha/2}(n-1)}\right).
 \]
 
 \begin{note}
-本题最容易错在上下界次序。因为 \(\chi^2_{\alpha/2}(n-1)\) 比 \(\chi^2_{1-\alpha/2}(n-1)\) 大，所以它反而出现在分母较大的那一侧，最终形成较小的下界和较大的上界。若机械照搬“左分位写左边、右分位写右边”，就很容易写反。
+本题最容易错在上下界次序。因为左侧定义下 \(\chi^2_{\alpha/2}(n-1)\) 比 \(\chi^2_{1-\alpha/2}(n-1)\) 小，所以反解 \(\sigma^2\) 时，较大的分位数出现在下界分母，较小的分位数出现在上界分母。若机械照搬“左分位写左边、右分位写右边”，就很容易写反。
 \end{note}
 \end{solution}
 
@@ -11288,13 +11289,13 @@ W=\frac{(\overline{X}-\overline{Y})-(\mu_1-\mu_2)}{S_w\sqrt{\frac{1}{n_1}+\frac{
 
 于是按双侧等尾原则写出
 \[
-P\left\{-t_{\alpha/2}(n_1+n_2-2)<\frac{(\overline{X}-\overline{Y})-(\mu_1-\mu_2)}{S_w\sqrt{\frac{1}{n_1}+\frac{1}{n_2}}}<t_{\alpha/2}(n_1+n_2-2)\right\}=1-\alpha.
+P\left\{-t_{1-\alpha/2}(n_1+n_2-2)<\frac{(\overline{X}-\overline{Y})-(\mu_1-\mu_2)}{S_w\sqrt{\frac{1}{n_1}+\frac{1}{n_2}}}<t_{1-\alpha/2}(n_1+n_2-2)\right\}=1-\alpha.
 \]
 
 解出 \(\mu_1-\mu_2\)，便得到区间
 \[
-\left((\overline{X}-\overline{Y})-t_{\alpha/2}(n_1+n_2-2)S_w\sqrt{\frac{1}{n_1}+\frac{1}{n_2}},\ 
-(\overline{X}-\overline{Y})+t_{\alpha/2}(n_1+n_2-2)S_w\sqrt{\frac{1}{n_1}+\frac{1}{n_2}}\right).
+\left((\overline{X}-\overline{Y})-t_{1-\alpha/2}(n_1+n_2-2)S_w\sqrt{\frac{1}{n_1}+\frac{1}{n_2}},\ 
+(\overline{X}-\overline{Y})+t_{1-\alpha/2}(n_1+n_2-2)S_w\sqrt{\frac{1}{n_1}+\frac{1}{n_2}}\right).
 \]
 
 \begin{note}
@@ -11317,24 +11318,24 @@ P\left\{-t_{\alpha/2}(n_1+n_2-2)<\frac{(\overline{X}-\overline{Y})-(\mu_1-\mu_2)
 
 在置信水平 \(1-\alpha\) 下，写成双侧形式：
 \[
-P\left\{F_{1-\alpha/2}(n_1-1,n_2-1)<\frac{S_1^2}{S_2^2}\cdot\frac{\sigma_2^2}{\sigma_1^2}<F_{\alpha/2}(n_1-1,n_2-1)\right\}=1-\alpha.
+P\left\{F_{\alpha/2}(n_1-1,n_2-1)<\frac{S_1^2}{S_2^2}\cdot\frac{\sigma_2^2}{\sigma_1^2}<F_{1-\alpha/2}(n_1-1,n_2-1)\right\}=1-\alpha.
 \]
 
 接下来把它整理成关于 \(\sigma_1^2/\sigma_2^2\) 的不等式。变形后得到
 \[
-P\left\{\frac{S_1^2}{S_2^2}\cdot\frac{1}{F_{\alpha/2}(n_1-1,n_2-1)}
+P\left\{\frac{S_1^2}{S_2^2}\cdot\frac{1}{F_{1-\alpha/2}(n_1-1,n_2-1)}
 <\frac{\sigma_1^2}{\sigma_2^2}
-<\frac{S_1^2}{S_2^2}\cdot\frac{1}{F_{1-\alpha/2}(n_1-1,n_2-1)}\right\}=1-\alpha.
+<\frac{S_1^2}{S_2^2}\cdot\frac{1}{F_{\alpha/2}(n_1-1,n_2-1)}\right\}=1-\alpha.
 \]
 
 再利用 \(F\) 分布分位点的倒数关系
 \(
-F_{1-\alpha/2}(n_1-1,n_2-1)=\frac{1}{F_{\alpha/2}(n_2-1,n_1-1)},
+F_{\alpha/2}(n_1-1,n_2-1)=\frac{1}{F_{1-\alpha/2}(n_2-1,n_1-1)},
 \)
 可把上界写得更常用一些。于是最终区间为
 \[
-\left(\frac{S_1^2}{S_2^2}\cdot\frac{1}{F_{\alpha/2}(n_1-1,n_2-1)},\ 
-\frac{S_1^2}{S_2^2}\cdot F_{\alpha/2}(n_2-1,n_1-1)\right).
+\left(\frac{S_1^2}{S_2^2}\cdot\frac{1}{F_{1-\alpha/2}(n_1-1,n_2-1)},\ 
+\frac{S_1^2}{S_2^2}\cdot F_{1-\alpha/2}(n_2-1,n_1-1)\right).
 \]
 
 \begin{note}
@@ -11360,24 +11361,24 @@ W = \sum_{i=1}^n \left(\frac{X_i-\mu}{\sigma}\right)^2 = \frac{\sum_{i=1}^n (X_i
 \end{equation*}
 此时 $W$ 服从自由度为 $n$ 的卡方分布（注意：因为使用的是已知的总体均值 $\mu$ 而不是样本均值 $\overline{X}$，所以自由度没有减少，仍为 $n$），且 $W$ 的分布不依赖于未知参数 $\sigma^2$，是一个理想的枢轴量。
 
-利用 $\chi^2(n)$ 分布的上 $\alpha/2$ 分位点 $\chi^2_{\alpha/2}(n)$ 和上 $1-\alpha/2$ 分位点 $\chi^2_{1-\alpha/2}(n)$，在等尾概率的情况下有：
+利用 \(\chi^2(n)\) 分布的左侧 \(\alpha/2\) 分位点 \(\chi^2_{\alpha/2}(n)\) 和左侧 \(1-\alpha/2\) 分位点 \(\chi^2_{1-\alpha/2}(n)\)，在等尾概率的情况下有：
 \begin{equation*}
-P\left\{\chi^2_{1-\alpha/2}(n) < \frac{\sum_{i=1}^n (X_i-\mu)^2}{\sigma^2} < \chi^2_{\alpha/2}(n)\right\}=1-\alpha
+P\left\{\chi^2_{\alpha/2}(n) < \frac{\sum_{i=1}^n (X_i-\mu)^2}{\sigma^2} < \chi^2_{1-\alpha/2}(n)\right\}=1-\alpha
 \end{equation*}
 
 接下来从不等式中解出 $\sigma^2$。对各项取倒数（此时不等号反向）：
 \begin{equation*}
-P\left\{\frac{1}{\chi^2_{\alpha/2}(n)} < \frac{\sigma^2}{\sum_{i=1}^n (X_i-\mu)^2} < \frac{1}{\chi^2_{1-\alpha/2}(n)}\right\}=1-\alpha
+P\left\{\frac{1}{\chi^2_{1-\alpha/2}(n)} < \frac{\sigma^2}{\sum_{i=1}^n (X_i-\mu)^2} < \frac{1}{\chi^2_{\alpha/2}(n)}\right\}=1-\alpha
 \end{equation*}
 
 同时乘以 $\sum_{i=1}^n (X_i-\mu)^2$，得到：
 \begin{equation*}
-P\left\{\frac{\sum_{i=1}^n (X_i-\mu)^2}{\chi^2_{\alpha/2}(n)} < \sigma^2 < \frac{\sum_{i=1}^n (X_i-\mu)^2}{\chi^2_{1-\alpha/2}(n)}\right\}=1-\alpha
+P\left\{\frac{\sum_{i=1}^n (X_i-\mu)^2}{\chi^2_{1-\alpha/2}(n)} < \sigma^2 < \frac{\sum_{i=1}^n (X_i-\mu)^2}{\chi^2_{\alpha/2}(n)}\right\}=1-\alpha
 \end{equation*}
 
 由此得到方差 $\sigma^2$ 的置信水平为 $1-\alpha$ 的置信区间为：
 \begin{equation*}
-\left(\frac{\sum_{i=1}^n(X_i-\mu)^2}{\chi^2_{\alpha/2}(n)},\ \frac{\sum_{i=1}^n(X_i-\mu)^2}{\chi^2_{1-\alpha/2}(n)}\right)
+\left(\frac{\sum_{i=1}^n(X_i-\mu)^2}{\chi^2_{1-\alpha/2}(n)},\ \frac{\sum_{i=1}^n(X_i-\mu)^2}{\chi^2_{\alpha/2}(n)}\right)
 \end{equation*}
 \begin{note}
 与“\(\mu\) 未知”时相比，这里自由度是 \(n\) 而不是 \(n-1\)。原因不在于题型换了，而在于我们没有再用样本去估计总体均值，因此没有损失那一个自由度。
@@ -11410,23 +11411,23 @@ D(\overline{X}-\overline{Y}) &= D(\overline{X}) + D(\overline{Y}) = \frac{\sigma
 W = \frac{(\overline{X}-\overline{Y}) - (\mu_1-\mu_2)}{\sqrt{\frac{\sigma_1^2}{n_1} + \frac{\sigma_2^2}{n_2}}} \sim N(0,1)
 \end{equation*}
 
-利用标准正态分布的对称性，以及上 $\alpha/2$ 分位点 $z_{\alpha/2}$，可以建立概率等式：
+利用标准正态分布的对称性，以及左侧 \(1-\alpha/2\) 分位点 \(z_{1-\alpha/2}\)，可以建立概率等式：
 \begin{equation*}
-P\left\{-z_{\alpha/2} < \frac{(\overline{X}-\overline{Y}) - (\mu_1-\mu_2)}{\sqrt{\frac{\sigma_1^2}{n_1} + \frac{\sigma_2^2}{n_2}}} < z_{\alpha/2}\right\} = 1-\alpha
+P\left\{-z_{1-\alpha/2} < \frac{(\overline{X}-\overline{Y}) - (\mu_1-\mu_2)}{\sqrt{\frac{\sigma_1^2}{n_1} + \frac{\sigma_2^2}{n_2}}} < z_{1-\alpha/2}\right\} = 1-\alpha
 \end{equation*}
 
 解此不等式，分离出待估参数 $\mu_1-\mu_2$：
 \begin{equation*}
--z_{\alpha/2}\sqrt{\frac{\sigma_1^2}{n_1} + \frac{\sigma_2^2}{n_2}} < (\overline{X}-\overline{Y}) - (\mu_1-\mu_2) < z_{\alpha/2}\sqrt{\frac{\sigma_1^2}{n_1} + \frac{\sigma_2^2}{n_2}}
+-z_{1-\alpha/2}\sqrt{\frac{\sigma_1^2}{n_1} + \frac{\sigma_2^2}{n_2}} < (\overline{X}-\overline{Y}) - (\mu_1-\mu_2) < z_{1-\alpha/2}\sqrt{\frac{\sigma_1^2}{n_1} + \frac{\sigma_2^2}{n_2}}
 \end{equation*}
 同时乘以 $-1$ 并加上 $\overline{X}-\overline{Y}$，由于对称性，正负边界的形式依然保持：
 \begin{equation*}
-P\left\{(\overline{X}-\overline{Y}) - z_{\alpha/2}\sqrt{\frac{\sigma_1^2}{n_1} + \frac{\sigma_2^2}{n_2}} < \mu_1-\mu_2 < (\overline{X}-\overline{Y}) + z_{\alpha/2}\sqrt{\frac{\sigma_1^2}{n_1} + \frac{\sigma_2^2}{n_2}}\right\} = 1-\alpha
+P\left\{(\overline{X}-\overline{Y}) - z_{1-\alpha/2}\sqrt{\frac{\sigma_1^2}{n_1} + \frac{\sigma_2^2}{n_2}} < \mu_1-\mu_2 < (\overline{X}-\overline{Y}) + z_{1-\alpha/2}\sqrt{\frac{\sigma_1^2}{n_1} + \frac{\sigma_2^2}{n_2}}\right\} = 1-\alpha
 \end{equation*}
 
 故 $\mu_1-\mu_2$ 的置信水平为 $1-\alpha$ 的置信区间为：
 \begin{equation*}
-\left((\overline{X}-\overline{Y}) - z_{\alpha/2}\sqrt{\frac{\sigma_1^2}{n_1}+\frac{\sigma_2^2}{n_2}},\ (\overline{X}-\overline{Y}) + z_{\alpha/2}\sqrt{\frac{\sigma_1^2}{n_1}+\frac{\sigma_2^2}{n_2}}\right)
+\left((\overline{X}-\overline{Y}) - z_{1-\alpha/2}\sqrt{\frac{\sigma_1^2}{n_1}+\frac{\sigma_2^2}{n_2}},\ (\overline{X}-\overline{Y}) + z_{1-\alpha/2}\sqrt{\frac{\sigma_1^2}{n_1}+\frac{\sigma_2^2}{n_2}}\right)
 \end{equation*}
 \end{solution}
 
@@ -11455,22 +11456,22 @@ W = \frac{\frac{1}{n_1}\sum_{i=1}^{n_1}(X_i-\mu_1)^2}{\frac{1}{n_2}\sum_{j=1}^{n
 
 利用 $F$ 分布的分位点，我们有：
 \begin{equation*}
-P\left\{F_{1-\alpha/2}(n_1, n_2) < \frac{\frac{1}{n_1}\sum_{i=1}^{n_1}(X_i-\mu_1)^2}{\frac{1}{n_2}\sum_{j=1}^{n_2}(Y_j-\mu_2)^2} \cdot \frac{\sigma_2^2}{\sigma_1^2} < F_{\alpha/2}(n_1, n_2)\right\}=1-\alpha
+P\left\{F_{\alpha/2}(n_1, n_2) < \frac{\frac{1}{n_1}\sum_{i=1}^{n_1}(X_i-\mu_1)^2}{\frac{1}{n_2}\sum_{j=1}^{n_2}(Y_j-\mu_2)^2} \cdot \frac{\sigma_2^2}{\sigma_1^2} < F_{1-\alpha/2}(n_1, n_2)\right\}=1-\alpha
 \end{equation*}
 
 对上述不等式的每一项取倒数（中间项的 $\sigma_2^2/\sigma_1^2$ 变为 $\sigma_1^2/\sigma_2^2$，且不等号方向反向）：
 \begin{equation*}
-P\left\{\frac{1}{F_{\alpha/2}(n_1, n_2)} < \frac{\frac{1}{n_2}\sum_{j=1}^{n_2}(Y_j-\mu_2)^2}{\frac{1}{n_1}\sum_{i=1}^{n_1}(X_i-\mu_1)^2} \cdot \frac{\sigma_1^2}{\sigma_2^2} < \frac{1}{F_{1-\alpha/2}(n_1, n_2)}\right\}=1-\alpha
+P\left\{\frac{1}{F_{1-\alpha/2}(n_1, n_2)} < \frac{\frac{1}{n_2}\sum_{j=1}^{n_2}(Y_j-\mu_2)^2}{\frac{1}{n_1}\sum_{i=1}^{n_1}(X_i-\mu_1)^2} \cdot \frac{\sigma_1^2}{\sigma_2^2} < \frac{1}{F_{\alpha/2}(n_1, n_2)}\right\}=1-\alpha
 \end{equation*}
 
 同时乘以 $\frac{\frac{1}{n_1}\sum_{i=1}^{n_1}(X_i-\mu_1)^2}{\frac{1}{n_2}\sum_{j=1}^{n_2}(Y_j-\mu_2)^2}$ 使得中间只留下待估的方差比：
 \begin{equation*}
-P\left\{\frac{\frac{1}{n_1}\sum(X_i-\mu_1)^2}{\frac{1}{n_2}\sum(Y_j-\mu_2)^2} \cdot \frac{1}{F_{\alpha/2}(n_1, n_2)} < \frac{\sigma_1^2}{\sigma_2^2} < \frac{\frac{1}{n_1}\sum(X_i-\mu_1)^2}{\frac{1}{n_2}\sum(Y_j-\mu_2)^2} \cdot \frac{1}{F_{1-\alpha/2}(n_1, n_2)}\right\}=1-\alpha
+P\left\{\frac{\frac{1}{n_1}\sum(X_i-\mu_1)^2}{\frac{1}{n_2}\sum(Y_j-\mu_2)^2} \cdot \frac{1}{F_{1-\alpha/2}(n_1, n_2)} < \frac{\sigma_1^2}{\sigma_2^2} < \frac{\frac{1}{n_1}\sum(X_i-\mu_1)^2}{\frac{1}{n_2}\sum(Y_j-\mu_2)^2} \cdot \frac{1}{F_{\alpha/2}(n_1, n_2)}\right\}=1-\alpha
 \end{equation*}
 
-最后，利用 $F$ 分布的倒数性质 $F_{1-\alpha/2}(n_1, n_2) = \frac{1}{F_{\alpha/2}(n_2, n_1)}$，可以将上限的右侧转化为更直观的形式。最终得到 $\sigma_1^2/\sigma_2^2$ 的置信区间为：
+最后，利用 \(F\) 分布的倒数性质 \(F_{\alpha/2}(n_1,n_2)=\dfrac{1}{F_{1-\alpha/2}(n_2,n_1)}\)，可以将上限的右侧转化为更直观的形式。最终得到 \(\sigma_1^2/\sigma_2^2\) 的置信区间为：
 \begin{equation*}
-\left(\frac{\frac{1}{n_1}\sum_{i=1}^{n_1}(X_i-\mu_1)^2}{\frac{1}{n_2}\sum_{j=1}^{n_2}(Y_j-\mu_2)^2}\frac{1}{F_{\alpha/2}(n_1,n_2)},\ \frac{\frac{1}{n_1}\sum_{i=1}^{n_1}(X_i-\mu_1)^2}{\frac{1}{n_2}\sum_{j=1}^{n_2}(Y_j-\mu_2)^2} F_{\alpha/2}(n_2,n_1)\right)
+\left(\frac{\frac{1}{n_1}\sum_{i=1}^{n_1}(X_i-\mu_1)^2}{\frac{1}{n_2}\sum_{j=1}^{n_2}(Y_j-\mu_2)^2}\frac{1}{F_{1-\alpha/2}(n_1,n_2)},\ \frac{\frac{1}{n_1}\sum_{i=1}^{n_1}(X_i-\mu_1)^2}{\frac{1}{n_2}\sum_{j=1}^{n_2}(Y_j-\mu_2)^2} F_{1-\alpha/2}(n_2,n_1)\right)
 \end{equation*}
 \end{solution}
 
@@ -11492,13 +11493,13 @@ P\left\{\frac{\frac{1}{n_1}\sum(X_i-\mu_1)^2}{\frac{1}{n_2}\sum(Y_j-\mu_2)^2} \c
 
 在给定条件下，由表~\ref{tab:confidence_intervals} 可知，未知参数 $\mu$ 的置信区间为：
 \begin{equation*}
-\left( \overline{X} - \frac{\sigma}{\sqrt{n}} z_{\alpha/2},\ \overline{X} + \frac{\sigma}{\sqrt{n}} z_{\alpha/2} \right)
+\left( \overline{X} - \frac{\sigma}{\sqrt{n}} z_{1-\alpha/2},\ \overline{X} + \frac{\sigma}{\sqrt{n}} z_{1-\alpha/2} \right)
 \end{equation*}
 该置信区间的长度为
 \(
-L = 2\frac{\sigma}{\sqrt{n}} z_{\alpha/2}.
+L = 2\frac{\sigma}{\sqrt{n}} z_{1-\alpha/2}.
 \)
-显然，区间长度 \(L\) 只与总体标准差 \(\sigma\)、样本容量 \(n\) 以及对应置信水平的分位点 \(z_{\alpha/2}\) 有关，而与样本均值 \(\overline{X}\) 毫无关系。
+显然，区间长度 \(L\) 只与总体标准差 \(\sigma\)、样本容量 \(n\) 以及对应置信水平的分位点 \(z_{1-\alpha/2}\) 有关，而与样本均值 \(\overline{X}\) 毫无关系。
 
 也就是说，\(\overline{X}\) 的变化只会让整个区间左右平移，不会改变区间的宽度。因此，随着 \(\overline{X}\) 的变化，置信区间的长度保持不变。
 \end{solution}
@@ -11512,7 +11513,7 @@ L = 2\frac{\sigma}{\sqrt{n}} z_{\alpha/2}.
 \begin{equation*}
 Z = \frac{\overline{X}-\mu}{\sigma/\sqrt{n}} = \frac{\overline{X}-\mu}{1/\sqrt{100}} \stackrel{\text{近似}}{\sim} N(0,1)
 \end{equation*}
-又因为 $\Phi(1.96)=0.975$，可知 $z_{0.025} = 1.96$，故 $P\{-1.96 < Z < 1.96\} \approx 0.95$。
+又因为 $\Phi(1.96)=0.975$，可知 $z_{0.975} = 1.96$，故 $P\{-1.96 < Z < 1.96\} \approx 0.95$。
 
 由此可得 $\mu$ 的近似置信区间为：
 \begin{equation*}
@@ -11526,14 +11527,14 @@ Z = \frac{\overline{X}-\mu}{\sigma/\sqrt{n}} = \frac{\overline{X}-\mu}{1/\sqrt{1
 
 \begin{exercise} \label{prob:ci_1}
 对于正态总体 $X \sim N(\mu, \sigma^2)$，$\sigma^2$ \textbf{已知}，记 $L$ 是 $\mu$ 的置信度为 $0.95$ 的置信区间的长度，那么当样本容量 $n$ \underline{\qquad\qquad} 时，$L \leq \sigma$。\\
-（参考数据：$z_{0.05}=1.645$，$z_{0.025}=1.96$，$t_{0.025}(15)=1.753$，$t_{0.025}(16)=2.12$）
+（参考数据：$z_{0.95}=1.645$，$z_{0.975}=1.96$，$t_{0.95}(15)=1.753$，$t_{0.975}(16)=2.12$）
 \end{exercise}
 \begin{solution}
 因为 $\sigma^2$ 已知，使用正态分布作为枢轴量。置信区间长度为：
 \begin{equation*}
-L = 2 \cdot \frac{\sigma}{\sqrt{n}} z_{0.025}
+L = 2 \cdot \frac{\sigma}{\sqrt{n}} z_{0.975}
 \end{equation*}
-代入 $z_{0.025}=1.96$，并令 $L \leq \sigma$：
+代入 $z_{0.975}=1.96$，并令 $L \leq \sigma$：
 \begin{equation*}
 2 \cdot 1.96 \cdot \frac{\sigma}{\sqrt{n}} \leq \sigma \implies \frac{3.92}{\sqrt{n}} \leq 1 \implies \sqrt{n} \geq 3.92 \implies n \geq 15.3664
 \end{equation*}
@@ -11542,13 +11543,13 @@ L = 2 \cdot \frac{\sigma}{\sqrt{n}} z_{0.025}
 
 \begin{exercise} \label{prob:ci_2}
 生产一个零件所需时间 $X \sim N(\mu, \sigma^2)$。现观察了 $25$ 个零件，测得样本均值 $\overline{X}=5.5$，样本标准差 $S=1.73$。求 $\mu$ 的置信度为 $0.95$ 的置信区间 \underline{\qquad\qquad}。\\
-（参考数据：$t_{0.05}(24)=1.7109,\ t_{0.025}(24)=2.0639,\ \Phi(1.96)=0.975$）
+（参考数据：$t_{0.95}(24)=1.7109,\ t_{0.975}(24)=2.0639,\ \Phi(1.96)=0.975$）
 \end{exercise}
 \begin{solution}
-由于总体方差 $\sigma^2$ 未知，需要使用 $t$ 分布。自由度 $df = n-1 = 24$，查表得 $t_{0.025}(24)=2.0639$。
+由于总体方差 $\sigma^2$ 未知，需要使用 $t$ 分布。自由度 $df = n-1 = 24$，查表得 $t_{0.975}(24)=2.0639$。
 置信区间公式为：
 \begin{equation*}
-\left( \overline{X}-\frac{S}{\sqrt{n}}t_{0.025}(24),\ \overline{X}+\frac{S}{\sqrt{n}}t_{0.025}(24) \right)
+\left( \overline{X}-\frac{S}{\sqrt{n}}t_{0.975}(24),\ \overline{X}+\frac{S}{\sqrt{n}}t_{0.975}(24) \right)
 \end{equation*}
 计算边际误差：
 \begin{equation*}
@@ -11559,13 +11560,13 @@ L = 2 \cdot \frac{\sigma}{\sqrt{n}} z_{0.025}
 
 \begin{exercise} \label{prob:ci_3}
 设总体 $X \sim N(\mu, \sigma^2)$，有一个容量为 $10$ 的样本，测得样本方差 $S^2=2$。求 $\sigma^2$ 的置信水平为 $0.95$ 的置信区间 \underline{\qquad\qquad}。\\
-（参考数据：$\chi^2_{0.975}(9)=2.70$，$\chi^2_{0.025}(9)=19.023$）
+（参考数据：$\chi^2_{0.025}(9)=2.70$，$\chi^2_{0.975}(9)=19.023$）
 \end{exercise}
 \begin{solution}
 由于 $\mu$ 未知，求 $\sigma^2$ 的置信区间使用 $\chi^2$ 分布，自由度 $df = 10-1 = 9$。
 方差的置信区间公式为：
 \begin{equation*}
-\left( \frac{(n-1)S^2}{\chi^2_{0.025}(9)},\ \frac{(n-1)S^2}{\chi^2_{0.975}(9)} \right)
+\left( \frac{(n-1)S^2}{\chi^2_{0.975}(9)},\ \frac{(n-1)S^2}{\chi^2_{0.025}(9)} \right)
 \end{equation*}
 计算分子：$(n-1)S^2 = 9 \times 2 = 18$。代入分母得到：
 \begin{equation*}
@@ -11587,9 +11588,9 @@ P\{\mu \ge \underline{\mu}\}=0.95.
 \)
 利用标准正态分布的枢轴量，有：
 \begin{equation*}
-P\left( \frac{\overline{X}-\mu}{\sigma/\sqrt{n}} \le z_{0.05} \right) = 0.95
+P\left( \frac{\overline{X}-\mu}{\sigma/\sqrt{n}} \le z_{0.95} \right) = 0.95
 \end{equation*}
-解得 $\mu \ge \overline{X} - z_{0.05}\frac{\sigma}{\sqrt{n}}$。代入数据 $\overline{X}=6, n=9, z_{0.05}=1.645$：
+解得 $\mu \ge \overline{X} - z_{0.95}\frac{\sigma}{\sqrt{n}}$。代入数据 $\overline{X}=6, n=9, z_{0.95}=1.645$：
 \begin{equation*}
 \underline{\mu} = 6 - 1.645 \frac{\sigma}{3} \approx 6 - 0.5483\sigma
 \end{equation*}
@@ -11634,7 +11635,7 @@ P\{\theta>\underline{\theta}\}=1-\alpha,
 \[
 Z=\frac{\overline{X}-\mu}{\sigma/\sqrt{n}}\sim N(0,1).
 \]
-由 \(\Phi(1.96)=0.975\)，得 \(z_{0.025}=1.96\)。样本均值为
+由 \(\Phi(1.96)=0.975\)，得 \(z_{0.975}=1.96\)。样本均值为
 \(
 \overline{x}
 =\frac{1820+1834+1831+1816+1824}{5}
@@ -11663,7 +11664,7 @@ Z=\frac{\overline{X}-\mu}{\sigma/\sqrt{n}}\sim N(0,1).
 
 \begin{exercise} \label{prob:ci_6}
 设总体 $X\sim N(\mu,\sigma^2)$，有一个容量 $n=9$ 的样本，已知 $\sum_{i=1}^9 X_i=198$，$\sum_{i=1}^9 X_i^2=4372$。求 $\mu$ 与 $\sigma$ 的置信水平为 $0.95$ 的双侧置信区间（结果保留四位小数）。\\
-（参考数据：$t_{0.025}(8)=2.306$，$\chi^2_{0.975}(8)=2.180$，$\chi^2_{0.025}(8)=17.535$）
+（参考数据：$t_{0.975}(8)=2.306$，$\chi^2_{0.025}(8)=2.180$，$\chi^2_{0.975}(8)=17.535$）
 \end{exercise}
 \begin{solution}
 首先计算样本均值和样本方差：
@@ -11676,14 +11677,14 @@ S^2 = \frac{1}{n-1}\left(\sum_{i=1}^9 X_i^2 - n\overline{X}^2\right) = \frac{1}{
 于是样本标准差 $S = \sqrt{2} \approx 1.4142$。
 
 求 $\mu$ 的置信区间（方差未知，用 $t$ 分布）：
-自由度 $df=8$，分位点 $t_{0.025}(8)=2.306$。边际误差为 $\frac{\sqrt{2}}{3} \times 2.306 \approx 1.0871$。
+自由度 $df=8$，分位点 $t_{0.975}(8)=2.306$。边际误差为 $\frac{\sqrt{2}}{3} \times 2.306 \approx 1.0871$。
 下限：$22 - 1.0871 = 20.9129$，上限：$22 + 1.0871 = 23.0871$。
 即 $\mu$ 的置信区间为 $(20.9129,\ 23.0871)$。
 
 求 $\sigma$ 的置信区间：
 先求出 $\sigma^2$ 的置信区间：
 \begin{equation*}
-\left( \frac{(n-1)S^2}{\chi^2_{0.025}(8)},\ \frac{(n-1)S^2}{\chi^2_{0.975}(8)} \right) = \left( \frac{16}{17.535},\ \frac{16}{2.180} \right) \approx (0.9125,\ 7.3395)
+\left( \frac{(n-1)S^2}{\chi^2_{0.975}(8)},\ \frac{(n-1)S^2}{\chi^2_{0.025}(8)} \right) = \left( \frac{16}{17.535},\ \frac{16}{2.180} \right) \approx (0.9125,\ 7.3395)
 \end{equation*}
 对上下限开平方，得到标准差 $\sigma$ 的置信区间：
 \begin{equation*}
@@ -11700,7 +11701,7 @@ S^2 = \frac{1}{n-1}\left(\sum_{i=1}^9 X_i^2 - n\overline{X}^2\right) = \frac{1}{
 \(
 \hat p=\frac{175}{400}=0.4375.
 \)
-由于样本容量较大，采用正态近似，取 \(z_{0.025}=1.96\)，则
+由于样本容量较大，采用正态近似，取 \(z_{0.975}=1.96\)，则
 \[
 p\in\left(\hat p-1.96\sqrt{\frac{\hat p(1-\hat p)}{400}},\ \hat p+1.96\sqrt{\frac{\hat p(1-\hat p)}{400}}\right).
 \]
@@ -11723,7 +11724,7 @@ p\in\left(\hat p-1.96\sqrt{\frac{\hat p(1-\hat p)}{400}},\ \hat p+1.96\sqrt{\fra
 \(
 \hat p=\frac{275}{600}\approx0.4583.
 \)
-由于样本容量较大，采用正态近似，取 \(z_{0.025}=1.96\)，得
+由于样本容量较大，采用正态近似，取 \(z_{0.975}=1.96\)，得
 \[
 p\in\left(\hat p-1.96\sqrt{\frac{\hat p(1-\hat p)}{600}},\ \hat p+1.96\sqrt{\frac{\hat p(1-\hat p)}{600}}\right).
 \]
@@ -11764,17 +11765,17 @@ P(\mu<\overline\mu)=0.95.
 \)
 由
 \(
-P\left\{\frac{\overline X-\mu}{S/\sqrt n}>-t_{0.05}(15)\right\}=0.95
+P\left\{\frac{\overline X-\mu}{S/\sqrt n}>-t_{0.95}(15)\right\}=0.95
 \)
 可得
 \(
-\mu<\overline X+t_{0.05}(15)\frac{S}{\sqrt n}.
+\mu<\overline X+t_{0.95}(15)\frac{S}{\sqrt n}.
 \)
 题中
 \(
 S=\sqrt{0.36}=0.6,\qquad n=16.
 \)
-查表 \(t_{0.05}(15)=1.7531\)，故单侧置信上限为
+查表 \(t_{0.95}(15)=1.7531\)，故单侧置信上限为
 \[
 \overline\mu
 =15+1.7531\cdot\frac{0.6}{4}
@@ -12080,29 +12081,29 @@ T=\frac{\overline{X}-\mu_0}{S/\sqrt{n}}\bigg|_{\mu_0=0}
 \toprule
 \textbf{参数} & \textbf{条件} & \textbf{原假设 $H_0$} & \textbf{检验统计量} & \textbf{拒绝域（对应右单边、左单边、双边）} \\
 \midrule
-\multirow{3}{*}{$\mu$} & \multirow{3}{*}{$\sigma^2$ 已知} & $\mu \leq \mu_0$ ($H_1: \mu > \mu_0$) & \multirow{3}{*}{$Z = \frac{\overline{X}-\mu_0}{\sigma/\sqrt{n}} \sim N(0,1)$} & $z \geq z_\alpha$ \\
-& & $\mu \geq \mu_0$ ($H_1: \mu < \mu_0$) & & $z \leq -z_\alpha$ \\
-& & $\mu = \mu_0$ ($H_1: \mu \neq \mu_0$) & & $|z| \geq z_{\frac{\alpha}{2}}$ \\
+\multirow{3}{*}{$\mu$} & \multirow{3}{*}{$\sigma^2$ 已知} & $\mu \leq \mu_0$ ($H_1: \mu > \mu_0$) & \multirow{3}{*}{$Z = \frac{\overline{X}-\mu_0}{\sigma/\sqrt{n}} \sim N(0,1)$} & $z \geq z_{1-\alpha}$ \\
+& & $\mu \geq \mu_0$ ($H_1: \mu < \mu_0$) & & $z \leq z_\alpha$ \\
+& & $\mu = \mu_0$ ($H_1: \mu \neq \mu_0$) & & $|z| \geq z_{1-\frac{\alpha}{2}}$ \\
 \midrule
-\multirow{3}{*}{$\mu$} & \multirow{3}{*}{$\sigma^2$ 未知} & $\mu \leq \mu_0$ ($H_1: \mu > \mu_0$) & \multirow{3}{*}{$t = \frac{\overline{X}-\mu_0}{S/\sqrt{n}} \sim t(n-1)$} & $t \geq t_\alpha(n-1)$ \\
-& & $\mu \geq \mu_0$ ($H_1: \mu < \mu_0$) & & $t \leq -t_\alpha(n-1)$ \\
-& & $\mu = \mu_0$ ($H_1: \mu \neq \mu_0$) & & $|t| \geq t_{\frac{\alpha}{2}}(n-1)$ \\
+\multirow{3}{*}{$\mu$} & \multirow{3}{*}{$\sigma^2$ 未知} & $\mu \leq \mu_0$ ($H_1: \mu > \mu_0$) & \multirow{3}{*}{$t = \frac{\overline{X}-\mu_0}{S/\sqrt{n}} \sim t(n-1)$} & $t \geq t_{1-\alpha}(n-1)$ \\
+& & $\mu \geq \mu_0$ ($H_1: \mu < \mu_0$) & & $t \leq t_\alpha(n-1)$ \\
+& & $\mu = \mu_0$ ($H_1: \mu \neq \mu_0$) & & $|t| \geq t_{1-\frac{\alpha}{2}}(n-1)$ \\
 \midrule
-\multirow{3}{*}{$\mu_1-\mu_2$} & \multirow{3}{*}{$\sigma_1^2,\sigma_2^2$ 已知} & $\mu_1-\mu_2 \leq \delta$ & \multirow{3}{*}{$Z = \frac{(\overline{X}-\overline{Y})-\delta}{\sqrt{\frac{\sigma_1^2}{n_1}+\frac{\sigma_2^2}{n_2}}} \sim N(0,1)$} & $z \geq z_\alpha$ \\
-& & $\mu_1-\mu_2 \geq \delta$ & & $z \leq -z_\alpha$ \\
-& & $\mu_1-\mu_2 = \delta$ & & $|z| \geq z_{\frac{\alpha}{2}}$ \\
+\multirow{3}{*}{$\mu_1-\mu_2$} & \multirow{3}{*}{$\sigma_1^2,\sigma_2^2$ 已知} & $\mu_1-\mu_2 \leq \delta$ & \multirow{3}{*}{$Z = \frac{(\overline{X}-\overline{Y})-\delta}{\sqrt{\frac{\sigma_1^2}{n_1}+\frac{\sigma_2^2}{n_2}}} \sim N(0,1)$} & $z \geq z_{1-\alpha}$ \\
+& & $\mu_1-\mu_2 \geq \delta$ & & $z \leq z_\alpha$ \\
+& & $\mu_1-\mu_2 = \delta$ & & $|z| \geq z_{1-\frac{\alpha}{2}}$ \\
 \midrule
-\multirow{3}{*}{$\mu_1-\mu_2$} & \multirow{3}{*}{$\sigma_1^2=\sigma_2^2$ 未知} & $\mu_1-\mu_2 \leq \delta$ & \multirow{3}{*}{$t = \frac{(\overline{X}-\overline{Y})-\delta}{S_w\sqrt{\frac{1}{n_1}+\frac{1}{n_2}}} \sim t(n_1+n_2-2)$} & $t \geq t_\alpha(n_1+n_2-2)$ \\
-& & $\mu_1-\mu_2 \geq \delta$ & & $t \leq -t_\alpha(n_1+n_2-2)$ \\
-& & $\mu_1-\mu_2 = \delta$ & & $|t| \geq t_{\frac{\alpha}{2}}(n_1+n_2-2)$ \\
+\multirow{3}{*}{$\mu_1-\mu_2$} & \multirow{3}{*}{$\sigma_1^2=\sigma_2^2$ 未知} & $\mu_1-\mu_2 \leq \delta$ & \multirow{3}{*}{$t = \frac{(\overline{X}-\overline{Y})-\delta}{S_w\sqrt{\frac{1}{n_1}+\frac{1}{n_2}}} \sim t(n_1+n_2-2)$} & $t \geq t_{1-\alpha}(n_1+n_2-2)$ \\
+& & $\mu_1-\mu_2 \geq \delta$ & & $t \leq t_\alpha(n_1+n_2-2)$ \\
+& & $\mu_1-\mu_2 = \delta$ & & $|t| \geq t_{1-\frac{\alpha}{2}}(n_1+n_2-2)$ \\
 \midrule
-\multirow{3}{*}{$\sigma^2$} & \multirow{3}{*}{$\mu$ 未知} & $\sigma^2 \leq \sigma_0^2$ & \multirow{3}{*}{$\chi^2 = \frac{(n-1)S^2}{\sigma_0^2} \sim \chi^2(n-1)$} & $\chi^2 \geq \chi^2_\alpha(n-1)$ \\
-& & $\sigma^2 \geq \sigma_0^2$ & & $\chi^2 \leq \chi^2_{1-\alpha}(n-1)$ \\
-& & $\sigma^2 = \sigma_0^2$ & & $\chi^2 \geq \chi^2_{\frac{\alpha}{2}}(n-1)$ 或 $\chi^2 \leq \chi^2_{1-\frac{\alpha}{2}}(n-1)$ \\
+\multirow{3}{*}{$\sigma^2$} & \multirow{3}{*}{$\mu$ 未知} & $\sigma^2 \leq \sigma_0^2$ & \multirow{3}{*}{$\chi^2 = \frac{(n-1)S^2}{\sigma_0^2} \sim \chi^2(n-1)$} & $\chi^2 \geq \chi^2_{1-\alpha}(n-1)$ \\
+& & $\sigma^2 \geq \sigma_0^2$ & & $\chi^2 \leq \chi^2_\alpha(n-1)$ \\
+& & $\sigma^2 = \sigma_0^2$ & & $\chi^2 \leq \chi^2_{\frac{\alpha}{2}}(n-1)$ 或 $\chi^2 \geq \chi^2_{1-\frac{\alpha}{2}}(n-1)$ \\
 \midrule
-\multirow{3}{*}{$\sigma_1^2 / \sigma_2^2$} & \multirow{3}{*}{$\mu_1,\mu_2$ 未知} & $\sigma_1^2 \leq \sigma_2^2$ & \multirow{3}{*}{$F = \frac{S_1^2}{S_2^2} \sim F(n_1-1,n_2-1)$} & $F \geq F_\alpha(n_1-1,n_2-1)$ \\
-& & $\sigma_1^2 \geq \sigma_2^2$ & & $F \leq F_{1-\alpha}(n_1-1,n_2-1)$ \\
-& & $\sigma_1^2 = \sigma_2^2$ & & $F \geq F_{\frac{\alpha}{2}}(n_1-1,n_2-1)$ 或 $F \leq F_{1-\frac{\alpha}{2}}(n_1-1,n_2-1)$ \\
+\multirow{3}{*}{$\sigma_1^2 / \sigma_2^2$} & \multirow{3}{*}{$\mu_1,\mu_2$ 未知} & $\sigma_1^2 \leq \sigma_2^2$ & \multirow{3}{*}{$F = \frac{S_1^2}{S_2^2} \sim F(n_1-1,n_2-1)$} & $F \geq F_{1-\alpha}(n_1-1,n_2-1)$ \\
+& & $\sigma_1^2 \geq \sigma_2^2$ & & $F \leq F_\alpha(n_1-1,n_2-1)$ \\
+& & $\sigma_1^2 = \sigma_2^2$ & & $F \leq F_{\frac{\alpha}{2}}(n_1-1,n_2-1)$ 或 $F \geq F_{1-\frac{\alpha}{2}}(n_1-1,n_2-1)$ \\
 \bottomrule
 \end{tabular}
 }
@@ -12147,9 +12148,9 @@ T=\frac{\overline{X}-\mu_0}{S/\sqrt{n}}\bigg|_{\mu_0=0}
 \toprule
 \(H_1\) & 拒绝域 \\
 \midrule
-\(\mu > \mu_0\) & \(z \geq z_\alpha\) \\
-\(\mu < \mu_0\) & \(z \leq -z_\alpha\) \\
-\(\mu \neq \mu_0\) & \(|z| \geq z_{\alpha/2}\) \\
+\(\mu > \mu_0\) & \(z \geq z_{1-\alpha}\) \\
+\(\mu < \mu_0\) & \(z \leq z_\alpha\) \\
+\(\mu \neq \mu_0\) & \(|z| \geq z_{1-\alpha/2}\) \\
 \bottomrule
 \end{tabular}
 \end{center}
@@ -12157,13 +12158,13 @@ T=\frac{\overline{X}-\mu_0}{S/\sqrt{n}}\bigg|_{\mu_0=0}
 
 \begin{exercise}[辛烷等级的左边 \texorpdfstring{\(Z\)}{Z} 检验] \label{ex:ht_z_left}
 一种燃料的辛烷等级服从正态分布，平均值为 98，标准差为 0.8。从一批新燃料中随机抽取 25 桶，样本均值为 97.7。假定新燃料辛烷等级标准差仍为 0.8，问新燃料辛烷等级平均值是否比原燃料偏低（\(\alpha=0.05\)）？
-（\(z_{0.05}=1.64\)）
+（\(z_{0.95}=1.64\)）
 \end{exercise}
 \begin{solution}
 \(H_0\colon\mu\geq98\)，\(H_1\colon\mu<98\)（左边检验，\(\alpha=0.05\)）。
 \(\sigma=0.8\) 已知，使用 \(Z\) 检验：
 \[
-Z=\frac{\overline{X}-98}{0.8/\sqrt{25}}\sim N(0,1),\quad\text{拒绝域}\ z\leq -z_{0.05}=-1.64.
+Z=\frac{\overline{X}-98}{0.8/\sqrt{25}}\sim N(0,1),\quad\text{拒绝域}\ z\leq z_{0.05}=-z_{0.95}=-1.64.
 \]
 \(
 z=\frac{97.7-98}{0.8/5}=\frac{-0.3}{0.16}=-1.875<-1.64.
@@ -12188,11 +12189,11 @@ Z=\frac{\overline{X}-5}{1/\sqrt{100}}\sim N(0,1).
 
 显著性水平 \(\alpha=0.01\)，双边检验的拒绝域为
 \(
-|Z|\ge z_{\alpha/2}=z_{0.005}.
+|Z|\ge z_{1-\alpha/2}=z_{0.995}.
 \)
 由 \(\Phi(2.57)=0.995\)，得
 \(
-z_{0.005}=2.57.
+z_{0.995}=2.57.
 \)
 
 代入样本均值：
@@ -12210,7 +12211,7 @@ z=\frac{5.32-5}{1/\sqrt{100}}
 
 \begin{exercise}\label{exer:src-2008-01-3a-iv-05a}\label{exer:src-paper2-app-05a}\label{prob:p2-app-05a}
 某厂生产的金属丝折断力 \(X\sim N(\mu,\sigma^2)\)，已知 \(\sigma=8\) kg。现抽取 \(10\) 根，测得平均折断力 \(\overline{x}=575.2\) kg。问在显著性水平 \(\alpha=0.05\) 下，能否认为这批金属丝的平均折断力为 \(570\) kg？
-（\(z_{0.025}=1.96\)）
+（\(z_{0.975}=1.96\)）
 \end{exercise}
 \begin{solution}
 检验问题为
@@ -12223,7 +12224,7 @@ Z=\frac{\overline{X}-570}{8/\sqrt{10}}\sim N(0,1).
 \)
 显著性水平为 \(0.05\)，拒绝域为
 \(
-|z|\ge z_{0.025}=1.96.
+|z|\ge z_{0.975}=1.96.
 \)
 代入样本均值：
 \[
@@ -12235,7 +12236,7 @@ z=\frac{575.2-570}{8/\sqrt{10}}
 \end{solution}
 
 \begin{exercise}\label{exer:9-z-test}
-某工厂生产灯泡的寿命 \(X \sim N(\mu, 200^2)\)。过去灯泡平均寿命为 1500 小时，采用新工艺后抽取 25 只，测得平均寿命为 1675 小时。问在显著性水平 \(\alpha = 0.05\) 下，新工艺是否显著提高了灯泡寿命？（\(z_{0.05}=1.65\)）
+某工厂生产灯泡的寿命 \(X \sim N(\mu, 200^2)\)。过去灯泡平均寿命为 1500 小时，采用新工艺后抽取 25 只，测得平均寿命为 1675 小时。问在显著性水平 \(\alpha = 0.05\) 下，新工艺是否显著提高了灯泡寿命？（\(z_{0.95}=1.65\)）
 \end{exercise}
 \begin{solution}
 \textbf{第一步：提出假设。}问题问"是否显著提高"，故用右边检验：
@@ -12246,7 +12247,7 @@ H_0\colon \mu \leq 1500,\quad H_1\colon \mu > 1500.
 \[
 Z = \frac{\overline{X}-\mu_0}{\sigma/\sqrt{n}} = \frac{\overline{X}-1500}{200/\sqrt{25}} \sim N(0,1).
 \]
-\textbf{第三步：确定拒绝域。}右边检验，\(\alpha=0.05\)，拒绝域为 \(z \geq z_{0.05}=1.65\)。\\
+\textbf{第三步：确定拒绝域。}右边检验，\(\alpha=0.05\)，拒绝域为 \(z \geq z_{0.95}=1.65\)。\\
 \textbf{第四步：计算并判断。}将样本数据代入：
 \(
 z = \frac{1675-1500}{200/5} = \frac{175}{40} = 4.375.
@@ -12262,9 +12263,9 @@ z = \frac{1675-1500}{200/5} = \frac{175}{40} = 4.375.
 \toprule
 \(H_1\) & 拒绝域 \\
 \midrule
-\(\mu > \mu_0\) & \(t \geq t_\alpha(n-1)\) \\
-\(\mu < \mu_0\) & \(t \leq -t_\alpha(n-1)\) \\
-\(\mu \neq \mu_0\) & \(|t| \geq t_{\alpha/2}(n-1)\) \\
+\(\mu > \mu_0\) & \(t \geq t_{1-\alpha}(n-1)\) \\
+\(\mu < \mu_0\) & \(t \leq t_\alpha(n-1)\) \\
+\(\mu \neq \mu_0\) & \(|t| \geq t_{1-\alpha/2}(n-1)\) \\
 \bottomrule
 \end{tabular}
 \end{center}
@@ -12273,7 +12274,7 @@ z = \frac{1675-1500}{200/5} = \frac{175}{40} = 4.375.
 
 \begin{exercise}\label{exer:9-t-test-two}
 某厂生产灯泡寿命 \(X \sim N(\mu, \sigma^2)\)（\(\mu, \sigma^2\) 均未知），抽取 25 只测得 \(\overline{x}=1700\)，\(s=490\)。在 \(\alpha=0.01\) 下，能否认为平均寿命为 2000 小时？
-（\(\;t_{0.005}(24)=2.7969\)）
+（\(\;t_{0.995}(24)=2.7969\)）
 \end{exercise}
 \begin{solution}
 \textbf{提出假设。}问题问"能否认为平均寿命为 2000"，属于双边检验：
@@ -12284,7 +12285,7 @@ H_0\colon \mu = 2000,\quad H_1\colon \mu \neq 2000.
 \[
 t = \frac{\overline{X}-\mu_0}{S/\sqrt{n}} \sim t(n-1) = t(24).
 \]
-\textbf{确定拒绝域。}双边检验，\(\alpha=0.01\)，拒绝域为 \(|t| \geq t_{\alpha/2}(24) = t_{0.005}(24)=2.7969\)。\\
+\textbf{确定拒绝域。}双边检验，\(\alpha=0.01\)，拒绝域为 \(|t| \geq t_{1-\alpha/2}(24) = t_{0.995}(24)=2.7969\)。\\
 \textbf{计算并判断。}已知 \(\overline{x}=1700,\ s=490,\ n=25\)：
 \[
 t = \frac{1700-2000}{490/\sqrt{25}} = \frac{-300}{98} = -3.061,\quad |t| = 3.061.
@@ -12294,7 +12295,7 @@ t = \frac{1700-2000}{490/\sqrt{25}} = \frac{-300}{98} = -3.061,\quad |t| = 3.061
 
 
 \begin{exercise}\label{exer:9-t-test-right}
-某高校某专业 25 名学生高数成绩服从正态分布，样本均值 \(\overline{x}=69.5\)，标准差 \(s=15\)。在 \(\alpha=0.05\) 下，检验该专业平均成绩是否\textbf{显著高于} 70 分。（\(t_{0.05}(24)=1.711\)）
+某高校某专业 25 名学生高数成绩服从正态分布，样本均值 \(\overline{x}=69.5\)，标准差 \(s=15\)。在 \(\alpha=0.05\) 下，检验该专业平均成绩是否\textbf{显著高于} 70 分。（\(t_{0.95}(24)=1.711\)）
 \end{exercise}
 \begin{solution}
 \textbf{提出假设。}问题问"是否\textbf{显著高于} 70 分"，故用右边检验：
@@ -12305,7 +12306,7 @@ H_0\colon \mu \leq 70,\quad H_1\colon \mu > 70.
 \(
 t = \frac{\overline{X}-\mu_0}{S/\sqrt{n}} \sim t(24).
 \)
-\textbf{确定拒绝域。}右边检验，\(\alpha=0.05\)，拒绝域为 \(t \geq t_{0.05}(24)=1.711\)。\\
+\textbf{确定拒绝域。}右边检验，\(\alpha=0.05\)，拒绝域为 \(t \geq t_{0.95}(24)=1.711\)。\\
 \textbf{计算并判断。}已知 \(\overline{x}=69.5,\ s=15,\ n=25\)：
 \(
 t = \frac{69.5-70}{15/\sqrt{25}} = \frac{-0.5}{3} = -0.167.
@@ -12320,7 +12321,7 @@ t = \frac{69.5-70}{15/\sqrt{25}} = \frac{-0.5}{3} = -0.167.
 设某次考试成绩服从正态分布 \(N(\mu,\sigma^2)\)，随机抽取 \(36\) 位考生，算得 \(\overline{x}=66.5\) 分，修正样本标准差 \(s=15\)。求：\par
 (1) \(\mu\) 的 \(95\%\) 置信区间；\par
 (2) 在 \(\alpha=0.05\) 下，是否可以认为全体考生平均成绩为 \(70\) 分？\par
-已知 \(t_{0.025}(35)=2.0301\)。
+已知 \(t_{0.975}(35)=2.0301\)。
 \end{exercise}
 \begin{solution}
 (1) 总体正态且 \(\sigma^2\) 未知，使用
@@ -12329,7 +12330,7 @@ T=\frac{\overline X-\mu}{S/\sqrt n}\sim t(n-1).
 \)
 这里 \(n=36,\ \overline x=66.5,\ s=15\)，故 \(\mu\) 的 \(95\%\) 置信区间为
 \(
-\overline x\pm t_{0.025}(35)\frac{s}{\sqrt n}.
+\overline x\pm t_{0.975}(35)\frac{s}{\sqrt n}.
 \)
 代入数值得误差限
 \[
@@ -12349,7 +12350,7 @@ H_0\colon\mu=70,\qquad H_1\colon\mu\neq70
 \]
 （双边 \(t\) 检验，\(\alpha=0.05\)）。在 \(H_0\) 成立时，
 \[
-t=\frac{\overline{X}-70}{S/\sqrt{n}}\sim t(35),\quad\text{拒绝域}\ |t|\geq t_{0.025}(35)=2.0301.
+t=\frac{\overline{X}-70}{S/\sqrt{n}}\sim t(35),\quad\text{拒绝域}\ |t|\geq t_{0.975}(35)=2.0301.
 \]
 \(
 t=\frac{66.5-70}{15/\sqrt{36}}=\frac{-3.5}{2.5}=-1.4,\quad |t|=1.4<2.0301.
@@ -12359,7 +12360,7 @@ t=\frac{66.5-70}{15/\sqrt{36}}=\frac{-3.5}{2.5}=-1.4,\quad |t|=1.4<2.0301.
 
 \begin{exercise}[电池寿命方差的双边 \texorpdfstring{\(\chi^2\)}{χ²} 检验] \label{ex:ht_chi2_battery}
 某厂电池寿命 \(X\sim N(\mu,\sigma^2)\)，正常生产时 \(\sigma^2=5000\)。现因生产条件波动较大，抽取 26 只电池测得样本方差 \(s^2=7200\)。能否判断寿命波动性有显著变化（\(\alpha=0.02\)）？
-（\(\chi^2_{0.01}(25)=44.314\)，\(\chi^2_{0.99}(25)=11.524\)）
+（\(\chi^2_{0.99}(25)=44.314\)，\(\chi^2_{0.01}(25)=11.524\)）
 \end{exercise}
 \begin{solution}
 \(H_0\colon\sigma^2=5000\)，\(H_1\colon\sigma^2\neq5000\)（双边 \(\chi^2\) 检验，\(\alpha=0.02\)）。
@@ -12368,7 +12369,7 @@ t=\frac{66.5-70}{15/\sqrt{36}}=\frac{-3.5}{2.5}=-1.4,\quad |t|=1.4<2.0301.
 \)
 \textbf{不拒绝域}为
 \(
-[\,\chi^2_{0.99}(25),\ \chi^2_{0.01}(25)\,]=[11.524,\ 44.314].
+[\,\chi^2_{0.01}(25),\ \chi^2_{0.99}(25)\,]=[11.524,\ 44.314].
 \)
 \(11.524<36<44.314\)，未落入拒绝域，故不能拒绝 \(H_0\)，即暂时没有充分证据判断波动性有显著变化。
 \end{solution}
@@ -12380,7 +12381,7 @@ t=\frac{66.5-70}{15/\sqrt{36}}=\frac{-3.5}{2.5}=-1.4,\quad |t|=1.4<2.0301.
 5.5,\ 6.0,\ 6.2,\ 5.8,\ 5.6,\ 6.0,\ 6.4,\ 6.4,\ 6.0,\ 6.1.
 \)
 能否认为标准差为 0.4（\(\alpha=0.05\)）？
-（\(\chi^2_{0.025}(9)=19.023\)，\(\chi^2_{0.975}(9)=2.700\)）
+（\(\chi^2_{0.975}(9)=19.023\)，\(\chi^2_{0.025}(9)=2.700\)）
 \end{exercise}
 \begin{solution}
 \(H_0\colon\sigma^2=0.16\)，\(H_1\colon\sigma^2\neq0.16\)（双边 \(\chi^2\) 检验）。\\
@@ -12403,7 +12404,7 @@ t=\frac{66.5-70}{15/\sqrt{36}}=\frac{-3.5}{2.5}=-1.4,\quad |t|=1.4<2.0301.
 设数据服从正态分布 \(N(\mu,\sigma^2)\)，以 \(\alpha=5\%\) 的水平作如下检验：\par
 (1) 这些结果是否符合公布的数字 \(1260^\circ\mathrm C\)？\par
 (2) 测定值的标准差是否不超过 \(2^\circ\mathrm C\)？\par
-已知 \(t_{0.025}(3)=3.1824,\ \chi^2_{0.05}(3)=7.815\)。
+已知 \(t_{0.975}(3)=3.1824,\ \chi^2_{0.95}(3)=7.815\)。
 \end{exercise}
 \begin{solution}
 样本均值为
@@ -12432,7 +12433,7 @@ T=\frac{\overline X-1260}{S/\sqrt4}\sim t(3).
 \)
 由于
 \(
-3.836>t_{0.025}(3)=3.1824,
+3.836>t_{0.975}(3)=3.1824,
 \)
 故拒绝 \(H_0\)。在 \(5\%\) 显著性水平下，不能认为这些结果符合公布的 \(1260^\circ\mathrm C\)。
 
@@ -12450,7 +12451,7 @@ H_0:\sigma\le2,\qquad H_1:\sigma>2.
 \)
 右边检验的拒绝域为
 \(
-\chi^2>\chi^2_{0.05}(3)=7.815.
+\chi^2>\chi^2_{0.95}(3)=7.815.
 \)
 由于 \(10>7.815\)，故拒绝 \(H_0\)。在 \(5\%\) 显著性水平下，有充分证据认为测定值的标准差超过 \(2^\circ\mathrm C\)。
 \end{solution}
@@ -12488,9 +12489,9 @@ t = \frac{(\overline{X}-\overline{Y})-\delta}{S_w\sqrt{1/n_1+1/n_2}} \sim t(n_1+
 \toprule
 \(H_1\) & 拒绝域（\(\mu\) 未知） \\
 \midrule
-\(\sigma^2 > \sigma_0^2\) & \(\chi^2 \geq \chi^2_\alpha(n-1)\) \\
-\(\sigma^2 < \sigma_0^2\) & \(\chi^2 \leq \chi^2_{1-\alpha}(n-1)\) \\
-\(\sigma^2 \neq \sigma_0^2\) & \(\chi^2 \geq \chi^2_{\alpha/2}(n-1)\) 或 \(\chi^2 \leq \chi^2_{1-\alpha/2}(n-1)\) \\
+\(\sigma^2 > \sigma_0^2\) & \(\chi^2 \geq \chi^2_{1-\alpha}(n-1)\) \\
+\(\sigma^2 < \sigma_0^2\) & \(\chi^2 \leq \chi^2_{\alpha}(n-1)\) \\
+\(\sigma^2 \neq \sigma_0^2\) & \(\chi^2 \leq \chi^2_{\alpha/2}(n-1)\) 或 \(\chi^2 \geq \chi^2_{1-\alpha/2}(n-1)\) \\
 \bottomrule
 \end{tabular}
 \end{center}
@@ -12498,7 +12499,7 @@ t = \frac{(\overline{X}-\overline{Y})-\delta}{S_w\sqrt{1/n_1+1/n_2}} \sim t(n_1+
 
 \begin{exercise}\label{exer:9-chi2-two}
 某厂铜线折断力 \(X \sim N(\mu, \sigma^2)\)，抽查 10 根，\(\overline{x}=575.2\)，\(s^2=68.16\)。在 \(\alpha=0.05\) 下检验 \(H_0\colon \sigma^2=64\)，\(H_1\colon \sigma^2\neq64\)。
-（\(\chi^2_{0.025}(9)=19.0\)，\(\chi^2_{0.975}(9)=2.7\)）
+（\(\chi^2_{0.975}(9)=19.0\)，\(\chi^2_{0.025}(9)=2.7\)）
 \end{exercise}
 \begin{solution}
 \textbf{提出假设。}检验方差是否为 64，使用双边检验：
@@ -12511,7 +12512,7 @@ H_0\colon \sigma^2 = 64,\quad H_1\colon \sigma^2 \neq 64.
 \)
 \textbf{确定拒绝域。}双边检验，\(\alpha=0.05\)，拒绝域为：
 \[
-\chi^2 \leq \chi^2_{0.975}(9) = 2.7 \quad\text{或}\quad \chi^2 \geq \chi^2_{0.025}(9) = 19.0.
+\chi^2 \leq \chi^2_{0.025}(9) = 2.7 \quad\text{或}\quad \chi^2 \geq \chi^2_{0.975}(9) = 19.0.
 \]
 不拒绝域为 \((2.7,\ 19.0)\)。\\
 \textbf{计算并判断。}
@@ -12570,10 +12571,10 @@ H_0\colon \sigma^2=0.048^2,\qquad H_1\colon \sigma^2\neq0.048^2.
 H_0\colon \sigma\ge2,\qquad H_1\colon \sigma<2,
 \]
 显著性水平为 \(\alpha\) 的拒绝域是（\quad）。\par
-A. \(\chi^2\le \chi^2_{1-\alpha/2}(n-1)\)\quad
-B. \(\chi^2\le \chi^2_{1-\alpha}(n-1)\)\par
-C. \(\chi^2\le \chi^2_{1-\alpha/2}(n)\)\quad
-D. \(\chi^2\le \chi^2_{1-\alpha}(n)\)
+A. \(\chi^2\le \chi^2_{\alpha/2}(n-1)\)\quad
+B. \(\chi^2\le \chi^2_{\alpha}(n-1)\)\par
+C. \(\chi^2\le \chi^2_{\alpha/2}(n)\)\quad
+D. \(\chi^2\le \chi^2_{\alpha}(n)\)
 \end{exercise}
 \begin{solution}
 应选 B。
@@ -12587,14 +12588,14 @@ D. \(\chi^2\le \chi^2_{1-\alpha}(n)\)
 
 备择假设为 \(\sigma<2\)，对应左尾拒绝域。因此显著性水平为 \(\alpha\) 时，
 \(
-\chi^2\le \chi^2_{1-\alpha}(n-1),
+\chi^2\le \chi^2_{\alpha}(n-1),
 \)
-其中本书采用上侧分位数记号 \(P\{\chi^2>\chi^2_\gamma(n-1)\}=\gamma\)。
+其中本书采用左侧分位数记号 \(P\{\chi^2\le\chi^2_\gamma(n-1)\}=\gamma\)。
 \end{solution}
 
 \begin{exercise}\label{exer:9-chi2-left}
 测定溶液水分，10 个测定值 \(s=0.037\%\)，总体服从正态分布。在 \(\alpha=0.05\) 下检验 \(H_0\colon \sigma \geq 0.04\%\)，\(H_1\colon \sigma < 0.04\%\)。
-（\(\chi^2_{0.95}(9)=3.325\)）
+（\(\chi^2_{0.05}(9)=3.325\)）
 \end{exercise}
 \begin{solution}
 \textbf{提出假设。}题目给出 \(H_0\colon \sigma \geq 0.04\%\)，需等价转化为关于 \(\sigma^2\) 的假设：
@@ -12606,7 +12607,7 @@ H_0\colon \sigma^2 \geq (0.04\%)^2 = 1.6\times10^{-6},\quad H_1\colon \sigma^2 <
 \(
 \chi^2 = \frac{(n-1)S^2}{\sigma_0^2} = \frac{9\,S^2}{(0.04\%)^2} \sim \chi^2(9).
 \)
-\textbf{确定拒绝域。}左边检验，\(\alpha=0.05\)，拒绝域为 \(\chi^2 \leq \chi^2_{1-\alpha}(9) = \chi^2_{0.95}(9) = 3.325\)。\\
+\textbf{确定拒绝域。}左边检验，\(\alpha=0.05\)，拒绝域为 \(\chi^2 \leq \chi^2_{\alpha}(9) = \chi^2_{0.05}(9) = 3.325\)。\\
 \textbf{计算并判断。}已知 \(s=0.037\%\)：
 \[
 \chi^2 = \frac{9 \times (0.037\%)^2}{(0.04\%)^2} = 9 \times \left(\frac{0.037}{0.04}\right)^{\!2} = 9 \times 0.8556 = 7.701.
@@ -12634,7 +12635,7 @@ u=\frac{48.5-50}{2/\sqrt9}=-2.25.
 \)
 当 \(\alpha=0.05\) 时，双边拒绝域为
 \(
-|u|\ge u_{0.025}=1.96.
+|u|\ge u_{0.975}=1.96.
 \)
 由于 \(|u|=2.25>1.96\)，拒绝 \(H_0\)。在已知 \(\sigma^2=4\) 时，样本显示平均质量与 \(50\) 有显著差异。
 
@@ -12648,7 +12649,7 @@ t=\frac{48.5-50}{2.5/\sqrt9}=-1.8.
 \)
 自由度为 \(8\)，显著性水平 \(\alpha=0.05\) 的双边拒绝域为
 \(
-|t|\ge t_{0.025}(8)=2.31.
+|t|\ge t_{0.975}(8)=2.31.
 \)
 由于 \(|t|=1.8<2.31\)，不能拒绝 \(H_0\)。在 \(\sigma^2\) 未知时，没有充分证据认为平均质量与 \(50\) 有显著差异。
 \end{solution}
@@ -12674,9 +12675,9 @@ t=\frac{48.5-50}{2.5/\sqrt9}=-1.8.
 \)
 故 \(\mu\) 的 \(95\%\) 置信区间为
 \(
-\overline x\pm u_{0.025}\frac{\sigma}{\sqrt n}.
+\overline x\pm u_{0.975}\frac{\sigma}{\sqrt n}.
 \)
-代入 \(u_{0.025}=1.96\)，得
+代入 \(u_{0.975}=1.96\)，得
 \(
 6\pm1.96\cdot\frac{0.6}{3}
 =6\pm0.392,
@@ -12695,9 +12696,9 @@ S^2=\frac1{n-1}\sum_{i=1}^9(x_i-\overline x)^2
 \(
 \frac{\overline X-\mu}{S/\sqrt n}\sim t(8).
 \)
-由 \(t_{0.025}(8)=2.306\)，置信区间为
+由 \(t_{0.975}(8)=2.306\)，置信区间为
 \[
-\overline x\pm t_{0.025}(8)\frac{S}{\sqrt n}
+\overline x\pm t_{0.975}(8)\frac{S}{\sqrt n}
 \approx6\pm2.306\frac{\sqrt{0.33}}{3}.
 \]
 因此
@@ -12720,13 +12721,13 @@ F = \frac{S_1^2}{S_2^2} \sim F(n_1-1, n_2-1).
 \toprule
 \(H_1\) & 拒绝域 \\
 \midrule
-\(\sigma_1^2 > \sigma_2^2\) & \(F \geq F_\alpha(n_1-1, n_2-1)\) \\
-\(\sigma_1^2 < \sigma_2^2\) & \(F \leq F_{1-\alpha}(n_1-1, n_2-1)\) \\
-\(\sigma_1^2 \neq \sigma_2^2\) & \(F \geq F_{\alpha/2}\) 或 \(F \leq F_{1-\alpha/2}\) \\
+\(\sigma_1^2 > \sigma_2^2\) & \(F \geq F_{1-\alpha}(n_1-1, n_2-1)\) \\
+\(\sigma_1^2 < \sigma_2^2\) & \(F \leq F_{\alpha}(n_1-1, n_2-1)\) \\
+\(\sigma_1^2 \neq \sigma_2^2\) & \(F \leq F_{\alpha/2}\) 或 \(F \geq F_{1-\alpha/2}\) \\
 \bottomrule
 \end{tabular}
 \end{center}
-其中 \(F_{1-\alpha}(n_1-1,n_2-1) = \dfrac{1}{F_\alpha(n_2-1,n_1-1)}\)。
+其中 \(F_{\alpha}(n_1-1,n_2-1) = \dfrac{1}{F_{1-\alpha}(n_2-1,n_1-1)}\)。
 \end{property}
 
 \begin{exercise}\label{exer:9-f-test}
@@ -12741,7 +12742,7 @@ F = \frac{S_1^2}{S_2^2} \sim F(n_1-1, n_2-1).
 \end{tabular}
 \end{center}
 在 \(\alpha=0.05\) 下：(1) 检验方差是否有显著差异；(2) 检验均值是否有显著差异。
-（\(F_{0.025}(9,9)=4.03\)，\(F_{0.975}(9,9)=0.248\)，\(t_{0.025}(18)=2.101\)）
+（\(F_{0.975}(9,9)=4.03\)，\(F_{0.025}(9,9)=0.248\)，\(t_{0.975}(18)=2.101\)）
 \end{exercise}
 \begin{solution}
 \textbf{准备工作}：\(n_1=n_2=10\)，\(\overline{x}_1=992/10=99.2\)，\(\overline{x}_2=989/10=98.9\)。
@@ -12756,7 +12757,7 @@ F = \frac{S_1^2}{S_2^2} \sim F(n_1-1, n_2-1).
 S_1^2 = \frac{7.6}{9} \approx 0.844,\quad S_2^2 = \frac{6.9}{9} \approx 0.767.
 \)
 \textbf{(1) 检验方差是否有显著差异（F 检验）。}提出假设：\(H_0\colon \sigma_1^2=\sigma_2^2\)，\(H_1\colon \sigma_1^2\neq\sigma_2^2\)（双边检验）。
-检验统计量 \(F = S_1^2/S_2^2 \sim F(9,9)\)（在 \(H_0\) 成立时）。拒绝域：\(F \geq F_{0.025}(9,9)=4.03\) 或 \(F \leq F_{0.975}(9,9)=0.248\)。
+检验统计量 \(F = S_1^2/S_2^2 \sim F(9,9)\)（在 \(H_0\) 成立时）。拒绝域：\(F \geq F_{0.975}(9,9)=4.03\) 或 \(F \leq F_{0.025}(9,9)=0.248\)。
 \(
 F = \frac{0.844}{0.767} \approx 1.100.
 \)
@@ -12769,7 +12770,7 @@ S_w^2 = \frac{(n_1-1)S_1^2+(n_2-1)S_2^2}{n_1+n_2-2} = \frac{9\times0.844+9\times
 \[
 t = \frac{\overline{X}_1-\overline{X}_2}{S_w\sqrt{1/n_1+1/n_2}} = \frac{99.2-98.9}{\sqrt{0.806\times(0.1+0.1)}} = \frac{0.3}{\sqrt{0.1612}} = \frac{0.3}{0.401} \approx 0.747.
 \]
-拒绝域：\(|t| \geq t_{0.025}(18)=2.101\)。\(|0.747| < 2.101\)，未落入拒绝域，故不能拒绝 \(H_0\)，即没有充分证据认为两品种均值存在显著差异。
+拒绝域：\(|t| \geq t_{0.975}(18)=2.101\)。\(|0.747| < 2.101\)，未落入拒绝域，故不能拒绝 \(H_0\)，即没有充分证据认为两品种均值存在显著差异。
 \begin{note}
 在实际应用中，检验两总体均值差时，通常\textbf{先}做 F 检验判断方差是否相等，再根据结果选择合适的 \(t\) 检验方法。
 \end{note}
@@ -12783,7 +12784,7 @@ t = \frac{\overline{X}_1-\overline{X}_2}{S_w\sqrt{1/n_1+1/n_2}} = \frac{99.2-98.
 设测量误差服从正态分布（\(\alpha=0.05\)）\\
 (1) 以前面积 \(\mu_0=1.23\) km\(^2\)，是否有必要修改？\\
 (2) 若要求标准差不超过 \(\sigma=0.015\)，能否认为标准差显著偏大？
-（\(t_{0.025}(4)=2.7764\)，\(\chi^2_{0.05}(4)=9.488\)）
+（\(t_{0.975}(4)=2.7764\)，\(\chi^2_{0.95}(4)=9.488\)）
 \end{exercise}
 \begin{solution}
 \(\overline{x}=1.228\)，离差平方和 \(\sum(x_i-\overline{x})^2=0.00188\)，\(s^2=0.000470\)，\(s\approx0.0217\)。\\
@@ -12817,7 +12818,7 @@ t=\frac{\overline X-100}{S/\sqrt n}\sim t(5).
 \(
 t=\frac{99.3-100}{6.24/\sqrt6}\approx -0.275.
 \)
-双边拒绝域为 \(|t|\ge t_{0.025}(5)=2.5706\)，故不能拒绝 \(H_0\)。
+双边拒绝域为 \(|t|\ge t_{0.975}(5)=2.5706\)，故不能拒绝 \(H_0\)。
 
 \textbf{(2) 检验方差。}规定标准差不能超过 \(5\) 克，作右边检验
 \[
@@ -12827,7 +12828,7 @@ H_0\colon \sigma\le5,\qquad H_1\colon \sigma>5.
 \(
 \chi^2=\frac{(n-1)S^2}{25}=\frac{5\times6.24^2}{25}\approx7.800.
 \)
-右边检验拒绝域为 \(\chi^2\ge\chi^2_{0.05}(5)=11.071\)，故不能拒绝 \(H_0\)。
+右边检验拒绝域为 \(\chi^2\ge\chi^2_{0.95}(5)=11.071\)，故不能拒绝 \(H_0\)。
 
 综上，在显著性水平 \(0.05\) 下，可认为该天包装机工作正常。
 \end{solution}
@@ -12854,7 +12855,7 @@ t=\frac{98.2-100}{2.25/\sqrt{10}}\approx -2.53.
 \)
 双边拒绝域为
 \(
-|t|\ge t_{0.025}(9)=2.26.
+|t|\ge t_{0.975}(9)=2.26.
 \)
 由于 \(|-2.53|>2.26\)，故拒绝 \(H_0\)，认为平均装袋量与 \(100\) 千克有显著差异，且样本均值偏低。
 
@@ -12872,7 +12873,7 @@ H_0\colon \sigma^2\le4,\qquad H_1\colon \sigma^2>4.
 \)
 右边检验拒绝域为
 \(
-\chi^2\ge \chi^2_{0.05}(9).
+\chi^2\ge \chi^2_{0.95}(9).
 \)
 由试卷给出的双侧分位点可见 \(2.7<11.39<19\)，故不拒绝 \(\sigma^2=4\) 的基准判断，也没有充分证据认为标准差超过 \(2\) 千克。
 
@@ -12909,16 +12910,16 @@ t=\frac{52.1357-52.00}{2.6954/\sqrt7}\approx0.133.
 \)
 显著性水平 \(\alpha=0.05\) 的右尾拒绝域为
 \(
-t\ge t_{0.05}(6)\approx1.943.
+t\ge t_{0.95}(6)\approx1.943.
 \)
 由于 \(0.133<1.943\)，故不能拒绝 \(H_0\)。在 \(0.05\) 显著性水平下，没有充分证据认为新工艺使平均强度显著提高。
 
 再求 \(95\%\) 置信区间。因 \(\sigma^2\) 未知，
 \[
-\mu\in\left(\overline{x}-t_{0.025}(6)\frac{s}{\sqrt n},
-\overline{x}+t_{0.025}(6)\frac{s}{\sqrt n}\right).
+\mu\in\left(\overline{x}-t_{0.975}(6)\frac{s}{\sqrt n},
+\overline{x}+t_{0.975}(6)\frac{s}{\sqrt n}\right).
 \]
-取 \(t_{0.025}(6)\approx2.447\)，得
+取 \(t_{0.975}(6)\approx2.447\)，得
 \[
 \mu\in
 \left(52.1357-2.447\frac{2.6954}{\sqrt7},
@@ -12949,7 +12950,7 @@ t=\frac{\sqrt n(\overline X-\mu_0)}{S}\sim t(n-1).
 \)
 自由度 \(48>30\)，可用标准正态分位点近似，显著性水平 \(\alpha=0.01\) 的双边拒绝域近似为
 \(
-|t|\ge u_{0.005}=2.58.
+|t|\ge u_{0.995}=2.58.
 \)
 由于
 \(
@@ -12968,7 +12969,7 @@ t=\frac{\sqrt n(\overline X-\mu_0)}{S}\sim t(n-1).
 s=13.74\ \text{克}.
 \)
 在显著性水平 \(\alpha=0.05\) 下，通过检验期望 \(\mu\) 和方差 \(\sigma^2\) 判断包装机该天工作是否正常。
-（\(t_{0.025}(5)=2.5706,\ \chi^2_{0.05}(5)=11.071,\ \chi^2_{0.025}(5)=12.833\)）
+（\(t_{0.975}(5)=2.5706,\ \chi^2_{0.95}(5)=11.071,\ \chi^2_{0.975}(5)=12.833\)）
 \end{exercise}
 \begin{solution}
 需要分别检验均值是否偏离标准重量，以及标准差是否超过规定上限。
@@ -12989,7 +12990,7 @@ t=\frac{495.3-500}{13.74/\sqrt6}
 \)
 双边检验拒绝域为
 \(
-|t|\ge t_{0.025}(5)=2.5706.
+|t|\ge t_{0.975}(5)=2.5706.
 \)
 由于 \(|t|=0.838<2.5706\)，故不能拒绝 \(H_0\)。没有充分证据认为平均净重偏离 \(500\) 克。
 
@@ -13009,7 +13010,7 @@ H_0\colon \sigma\le10,\qquad H_1\colon \sigma>10.
 \]
 右边检验拒绝域为
 \(
-\chi^2\ge\chi^2_{0.05}(5)=11.071.
+\chi^2\ge\chi^2_{0.95}(5)=11.071.
 \)
 由于 \(9.439<11.071\)，故不能拒绝 \(H_0\)。没有充分证据认为标准差超过 \(10\) 克。
 
@@ -13024,7 +13025,7 @@ H_0\colon \sigma\le10,\qquad H_1\colon \sigma>10.
 在显著性水平 \(\alpha=0.05\) 下检验：\par
 (1) \(H_0\colon \mu=500,\ H_1\colon \mu\ne500\)；\par
 (2) \(H_0\colon \sigma^2\le100,\ H_1\colon \sigma^2>100\)。\par
-已知 \(t_{0.025}(8)=2.306,\ \chi^2_{0.05}(8)=15.507\)。
+已知 \(t_{0.975}(8)=2.306,\ \chi^2_{0.95}(8)=15.507\)。
 \end{exercise}
 \begin{solution}
 (1) 检验均值。总体正态且方差未知，采用
@@ -13033,7 +13034,7 @@ T=\frac{\overline X-500}{S/\sqrt n}\sim t(8).
 \)
 双边检验的拒绝域为
 \(
-|T|>t_{0.025}(8)=2.306.
+|T|>t_{0.975}(8)=2.306.
 \)
 代入数据：
 \(
@@ -13050,7 +13051,7 @@ T_0=\frac{499-500}{16.03/3}
 \)
 在边界 \(\sigma^2=100\) 下服从 \(\chi^2(8)\)。拒绝域为
 \(
-\frac{8S^2}{100}>\chi^2_{0.05}(8)=15.507.
+\frac{8S^2}{100}>\chi^2_{0.95}(8)=15.507.
 \)
 代入数据：
 \(
@@ -13076,7 +13077,7 @@ T_0=\frac{499-500}{16.03/3}
 \end{center}
 设苗高服从正态分布（\(\alpha=0.05\)）。\\
 (1) 检验两组方差是否相同；(2) 检验施肥是否显著高于不施肥。
-（\(F_{0.025}(5,5)=7.15\)，\(F_{0.975}(5,5)=0.14\)，\(t_{0.05}(10)=1.812\)）
+（\(F_{0.975}(5,5)=7.15\)，\(F_{0.025}(5,5)=0.14\)，\(t_{0.95}(10)=1.812\)）
 \end{exercise}
 \begin{solution}
 \(n_1=n_2=6\)，\(\overline{x}_1=475.9/6\approx79.317\)，\(\overline{x}_2=456.3/6=76.05\)。
@@ -13099,7 +13100,7 @@ S_w^2=\frac{18.808+20.095}{10}=3.890,\quad S_w\approx1.972.
 \[
 t=\frac{79.317-76.05}{1.972\sqrt{1/6+1/6}}=\frac{3.267}{1.972/\sqrt{3}}\approx\frac{3.267}{1.139}\approx2.869.
 \]
-拒绝域 \(t\geq t_{0.05}(10)=1.812\)。\(2.869>1.812\)，拒绝 \(H_0\)，施肥苗高显著高于不施肥。
+拒绝域 \(t\geq t_{0.95}(10)=1.812\)。\(2.869>1.812\)，拒绝 \(H_0\)，施肥苗高显著高于不施肥。
 \end{solution}
 
 \begin{exercise}\label{exer:src-2015-spring-a-08}
@@ -13213,7 +13214,7 @@ T=\frac{\overline X-\mu_0}{S^*/\sqrt n}
 \[
 H_0\colon \theta=\theta_0,\quad H_1\colon \theta\neq\theta_0,
 \]
-“不能拒绝 \(H_0\)”等价于 “\(\theta_0\) 落在置信区间 \((\theta_L, \theta_U)\) 内”。对于单边检验也有类似的对应关系：若做右边检验 \(H_0\colon \theta\leq\theta_0\) 并构造下单侧置信区间 \((\underline{\theta},+\infty)\)，则拒绝域 \(z\geq z_\alpha\) 等价于 \(\theta_0<\underline{\theta}\)；若做左边检验 \(H_0\colon \theta\geq\theta_0\) 并构造上单侧置信区间 \((-\infty,\overline{\theta})\)，则拒绝域对应于 \(\theta_0>\overline{\theta}\)。
+“不能拒绝 \(H_0\)”等价于 “\(\theta_0\) 落在置信区间 \((\theta_L, \theta_U)\) 内”。对于单边检验也有类似的对应关系：若做右边检验 \(H_0\colon \theta\leq\theta_0\) 并构造下单侧置信区间 \((\underline{\theta},+\infty)\)，则拒绝域 \(z\geq z_{1-\alpha}\) 等价于 \(\theta_0<\underline{\theta}\)；若做左边检验 \(H_0\colon \theta\geq\theta_0\) 并构造上单侧置信区间 \((-\infty,\overline{\theta})\)，则拒绝域对应于 \(\theta_0>\overline{\theta}\)。
 \end{property}
 
 \begin{note}
@@ -13223,23 +13224,23 @@ H_0\colon \theta=\theta_0,\quad H_1\colon \theta\neq\theta_0,
 \begin{exercise}\label{exer:9-ci-test}
 零件长度 \(X \sim N(\mu, \sigma^2)\)（\(\mu, \sigma^2\) 均未知），\(n=16\)，\(\overline{x}=10\)，\(s^2=0.16\)。\\
 (1) 求 \(\mu\) 的置信水平为 0.95 的置信区间；\\
-(2) 在 \(\alpha=0.05\) 下检验 \(H_0\colon \mu=9.7\)，\(H_1\colon \mu\neq9.7\)。（\(t_{0.025}(15)=2.132\)）
+(2) 在 \(\alpha=0.05\) 下检验 \(H_0\colon \mu=9.7\)，\(H_1\colon \mu\neq9.7\)。（\(t_{0.975}(15)=2.132\)）
 \end{exercise}
 \begin{solution}
 \textbf{(1) 求置信区间。}\(\mu\) 未知，\(\sigma^2\) 未知，使用 \(t\) 分布。
-已知 \(n=16\)，\(\overline{x}=10\)，\(s=\sqrt{0.16}=0.4\)，\(t_{0.025}(15)=2.132\)。置信区间为：
+已知 \(n=16\)，\(\overline{x}=10\)，\(s=\sqrt{0.16}=0.4\)，\(t_{0.975}(15)=2.132\)。置信区间为：
 \[
-\left(\overline{x} - \frac{s}{\sqrt{n}}\,t_{\alpha/2}(n{-}1),\quad \overline{x} + \frac{s}{\sqrt{n}}\,t_{\alpha/2}(n{-}1)\right).
+\left(\overline{x} - \frac{s}{\sqrt{n}}\,t_{1-\alpha/2}(n{-}1),\quad \overline{x} + \frac{s}{\sqrt{n}}\,t_{1-\alpha/2}(n{-}1)\right).
 \]
 代入计算：
 \[
-\frac{s}{\sqrt{n}}\,t_{\alpha/2}(15) = \frac{0.4}{4}\times2.132 = 0.2132.
+\frac{s}{\sqrt{n}}\,t_{1-\alpha/2}(15) = \frac{0.4}{4}\times2.132 = 0.2132.
 \]
 \(
 \text{置信区间} = (10-0.2132,\ 10+0.2132) = (9.7868,\ 10.2132).
 \)
 \textbf{(2) 假设检验。}提出假设：\(H_0\colon \mu=9.7\)，\(H_1\colon \mu\neq9.7\)（双边检验，\(\alpha=0.05\)）。
-检验统计量 \(t = \dfrac{\overline{X}-9.7}{S/\sqrt{n}} \sim t(15)\)，拒绝域 \(|t| \geq t_{0.025}(15)=2.132\)。
+检验统计量 \(t = \dfrac{\overline{X}-9.7}{S/\sqrt{n}} \sim t(15)\)，拒绝域 \(|t| \geq t_{0.975}(15)=2.132\)。
 \(
 t = \frac{10-9.7}{0.4/4} = \frac{0.3}{0.1} = 3.0 > 2.132.
 \)
@@ -13248,25 +13249,25 @@ t = \frac{10-9.7}{0.4/4} = \frac{0.3}{0.1} = 3.0 > 2.132.
 \end{solution}
 
 \begin{exercise}\label{exer:src-2014-spring-a-07}
-(1) 设零件长度 \(X\sim N(\mu,\sigma^2)\)，其中 \(\mu,\sigma^2\) 均未知。现抽取容量为 \(16\) 的样本，测得 \(\overline x=10,\ s^2=0.16\)。求 \(\mu\) 的 \(95\%\) 置信区间。（已知 \(t_{0.025}(15)=2.132\)）\par
+(1) 设零件长度 \(X\sim N(\mu,\sigma^2)\)，其中 \(\mu,\sigma^2\) 均未知。现抽取容量为 \(16\) 的样本，测得 \(\overline x=10,\ s^2=0.16\)。求 \(\mu\) 的 \(95\%\) 置信区间。（已知 \(t_{0.975}(15)=2.132\)）\par
 (2) 某维尼纶纤维在正常生产条件下纤度服从 \(N(1.405,0.048^2)\)。现抽取 \(5\) 根纤维，测得纤度为
 \(
 1.32,\quad 1.55,\quad 1.36,\quad 1.40,\quad 1.44.
 \)
-试在显著性水平 \(\alpha=0.05\) 下检验生产方差是否正常。（已知 \(\chi^2_{0.025}(5)=12.833,\ \chi^2_{0.975}(5)=0.831\)）
+试在显著性水平 \(\alpha=0.05\) 下检验生产方差是否正常。（已知 \(\chi^2_{0.975}(5)=12.833,\ \chi^2_{0.025}(5)=0.831\)）
 \end{exercise}
 \begin{solution}
 (1) 因为总体正态且 \(\sigma^2\) 未知，使用 \(t\) 分布。由 \(s=\sqrt{0.16}=0.4,\ n=16\)，得
 \[
 \mu\in
 \left(
-\overline x-t_{0.025}(15)\frac{s}{\sqrt n},
-\overline x+t_{0.025}(15)\frac{s}{\sqrt n}
+\overline x-t_{0.975}(15)\frac{s}{\sqrt n},
+\overline x+t_{0.975}(15)\frac{s}{\sqrt n}
 \right).
 \]
 代入数值，
 \(
-t_{0.025}(15)\frac{s}{\sqrt n}
+t_{0.975}(15)\frac{s}{\sqrt n}
 =2.132\cdot\frac{0.4}{4}=0.2132.
 \)
 故
@@ -13297,9 +13298,9 @@ H_1\colon \sigma^2\ne0.048^2.
 \)
 双边检验的拒绝域为
 \[
-\chi^2>\chi^2_{0.025}(5)=12.833
+\chi^2>\chi^2_{0.975}(5)=12.833
 \quad\text{或}\quad
-\chi^2<\chi^2_{0.975}(5)=0.831.
+\chi^2<\chi^2_{0.025}(5)=0.831.
 \]
 由于 \(13.683>12.833\)，故拒绝 \(H_0\)，认为生产方差不正常。
 \end{solution}
@@ -13315,7 +13316,7 @@ H_1\colon \sigma^2\ne0.048^2.
 已知各包重量服从正态分布 \(N(\mu,\sigma^2)\)。求：\par
 (1) 在显著性水平 \(\alpha=0.05\) 下，是否可以认为每包平均重量为 \(100\) 斤？\par
 (2) 参数 \(\sigma^2\) 的 \(90\%\) 置信区间。\par
-可用分位点：\(t_{0.025}(7)\approx2.365\)，\(\chi^2_{0.05}(7)=14.067\)，\(\chi^2_{0.95}(7)=2.167\)。
+可用分位点：\(t_{0.975}(7)\approx2.365\)，\(\chi^2_{0.95}(7)=14.067\)，\(\chi^2_{0.05}(7)=2.167\)。
 \end{exercise}
 \begin{solution}
 由样本数据得
@@ -13345,7 +13346,7 @@ t=\frac{99.975-100}{1.1222/\sqrt8}\approx -0.063.
 \)
 双边检验的拒绝域为
 \(
-|t|\ge t_{0.025}(7)\approx2.365.
+|t|\ge t_{0.975}(7)\approx2.365.
 \)
 由于
 \(
@@ -13360,8 +13361,8 @@ t=\frac{99.975-100}{1.1222/\sqrt8}\approx -0.063.
 \(\sigma^2\) 的 \(90\%\) 置信区间为
 \(
 \left(
-\frac{(n-1)S^2}{\chi^2_{0.05}(7)},
-\frac{(n-1)S^2}{\chi^2_{0.95}(7)}
+\frac{(n-1)S^2}{\chi^2_{0.95}(7)},
+\frac{(n-1)S^2}{\chi^2_{0.05}(7)}
 \right).
 \)
 代入 \((n-1)S^2=8.815\)，得
@@ -13385,7 +13386,7 @@ t=\frac{99.975-100}{1.1222/\sqrt8}\approx -0.063.
 \)
 (1) 求 \(\mu\) 的置信度为 95\% 的置信区间；\\
 (2) 能否据此说明有害物质含量超过了规定标准（\(\alpha=0.05\)）？
-（\(t_{0.05}(4)=2.132\)，\(t_{0.025}(4)=2.776\)）
+（\(t_{0.95}(4)=2.132\)，\(t_{0.975}(4)=2.776\)）
 \end{exercise}
 \begin{solution}
 \textbf{数据预处理。} \(n=5\)
@@ -13400,14 +13401,14 @@ s^2=\frac{0.001321}{4}=0.000330,\quad s\approx 0.0182.
 \)
 (1) \(\sigma^2\) 未知，\(\mu\) 的 95\% 置信区间为
 \begin{align*}
-&\left(\overline{x}-\frac{s}{\sqrt{n}}\,t_{0.025}(4),\;\overline{x}+\frac{s}{\sqrt{n}}\,t_{0.025}(4)\right)\\
+&\left(\overline{x}-\frac{s}{\sqrt{n}}\,t_{0.975}(4),\;\overline{x}+\frac{s}{\sqrt{n}}\,t_{0.975}(4)\right)\\
 =&\left(0.5184-\frac{0.0182}{\sqrt{5}}\times2.776,\;0.5184+\frac{0.0182}{\sqrt{5}}\times2.776\right)=(0.4958,\;0.5410).
 \end{align*}
 (2) 右边检验：\(H_0\colon\mu\leq 0.5\)，\(H_1\colon\mu>0.5\)。
 \[
 t=\frac{0.5184-0.5}{0.0182/\sqrt{5}}=\frac{0.0184}{0.00813}\approx 2.264.
 \]
-拒绝域 \(t\geq t_{0.05}(4)=2.132\)。\(2.264>2.132\)，落入拒绝域，拒绝 \(H_0\)，即认为有害物质含量超过了规定标准。
+拒绝域 \(t\geq t_{0.95}(4)=2.132\)。\(2.264>2.132\)，落入拒绝域，拒绝 \(H_0\)，即认为有害物质含量超过了规定标准。
 \begin{note}
 也可以利用(1)的结论：\(\mu_0=0.5\) 不在置信区间 \((0.4958,0.5410)\) 内，但此区间为\textbf{双侧}置信区间，对应\textbf{双边}检验。而本题(2)是\textbf{单边}检验，二者不完全等价，需单独计算。
 \end{note}
@@ -13562,7 +13563,7 @@ C. \(H_0\) 不成立，经检验被拒绝的概率\qquad D. \(H_0\) 不成立，
 \end{solution}
 \begin{exercise}
 \par
-设随机变量 \(X\sim P(3)\)，\(Y\sim B\!\left(8,\frac13\right)\)，且 \(X,Y\) 相互独立，则 \(\mathrm{Var}(X-3Y-4)=（ ）\)。
+设随机变量 \(X\sim P(3)\)，\(Y\sim B\!\left(8,\frac13\right)\)，且 \(X,Y\) 相互独立，则 \(\mathrm{Var}(X-3Y-4)=(\quad)\)。
 
 A. \(-13\)\qquad B. \(15\)\qquad C. \(19\)\qquad D. \(23\)
 \end{exercise}
@@ -13598,20 +13599,20 @@ A. \(\frac{3}{10}\)\qquad B. \(\frac{5}{10}\)\qquad C. \(\frac{7}{10}\)\qquad D.
 \end{solution}
 \begin{exercise}
 \par
-随机变量 \(X\sim N(0,1)\)。对于给定的 \(\alpha\ (0<\alpha<1)\)，数 \(u_\alpha\) 满足 \(P(u>u_\alpha)=\alpha\)。若 \(P(|X|<c)=\alpha\)，则 \(c=\)（ ）。
+随机变量 \(X\sim N(0,1)\)。对于给定的 \(\alpha\ (0<\alpha<1)\)，数 \(u_\alpha\) 满足 \(P(X\le u_\alpha)=\alpha\)。若 \(P(|X|<c)=\alpha\)，则 \(c=\)（ ）。
 
-A. \(u_{\alpha/2}\)\qquad B. \(u_{(1-\alpha)/2}\)\qquad C. \(u_{1-\alpha}\)\qquad D. \(u_{1-\alpha/2}\)
+A. \(u_{\alpha/2}\)\qquad B. \(u_{(1-\alpha)/2}\)\qquad C. \(u_{1-\alpha}\)\qquad D. \(u_{(1+\alpha)/2}\)
 \end{exercise}
 
 \begin{solution}
 \par
 由 \(P(|X|<c)=\alpha\) 知两侧尾概率各为 \(\dfrac{1-\alpha}{2}\)。
-又 \(u_\beta\) 表示上侧 \(\beta\) 分位点，即 \(P(X>u_\beta)=\beta\)。
+又 \(u_\beta\) 表示左侧 \(\beta\) 分位点，即 \(P(X\le u_\beta)=\beta\)。
 故
 \[
-  c=u_{(1-\alpha)/2}.
+  c=u_{(1+\alpha)/2}.
 \]
-选 B。
+选 D。
 \end{solution}
 \begin{exercise}
 \par
@@ -14109,17 +14110,17 @@ f_Y(y)=f_X\!\left(\frac y2\right)\cdot\frac12
 
 \begin{exercise}
 \par
-设随机变量 \(X\) 服从 \(t\) 分布 \(t(n)\)，对给定的 \(\alpha(0<\alpha<1)\)，数 \(t_\alpha(n)\) 满足 \(P(X>t_\alpha(n))=\alpha\)，若 \(P(|X|\le x)=\alpha\)，则 \(x\) 等于（\( \boldsymbol{A} \)）。
-A. \(t_{\frac{1-\alpha}{2}}(n)\)； B. \(t_{1-\frac{\alpha}{2}}(n)\)； C. \(t_{\frac{\alpha}{2}}(n)\)； D. \(t_{1-\alpha}(n)\)。
+设随机变量 \(X\) 服从 \(t\) 分布 \(t(n)\)，对给定的 \(\alpha(0<\alpha<1)\)，数 \(t_\alpha(n)\) 满足 \(P(X\le t_\alpha(n))=\alpha\)，若 \(P(|X|\le x)=\alpha\)，则 \(x\) 等于（\( \boldsymbol{B} \)）。
+A. \(t_{\frac{1-\alpha}{2}}(n)\)； B. \(t_{\frac{1+\alpha}{2}}(n)\)； C. \(t_{\frac{\alpha}{2}}(n)\)； D. \(t_{1-\alpha}(n)\)。
 \end{exercise}
 
 \begin{solution}
 \par
-由对称性，\(P(|X|\le x)=\alpha\) 等价于两侧尾概率各为 \(\frac{1-\alpha}{2}\)，故
+由对称性，\(P(|X|\le x)=\alpha\) 等价于两侧尾概率各为 \(\frac{1-\alpha}{2}\)，于是
 \[
-x=t_{\frac{1-\alpha}{2}}(n).
+x=t_{1-\frac{1-\alpha}{2}}(n)=t_{\frac{1+\alpha}{2}}(n).
 \]
-故选 A。
+故选 B。
 \end{solution}
 
 \paragraph*{二、填空题}
