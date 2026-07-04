@@ -73,73 +73,6 @@
 
 \chapter{不定积分}
 
-
-\section{模法与有理分式}
-
-\begin{note}[什么是"对多项式取模"]
-你已经熟悉整数取模：$17\bmod 5=2$ 意思是 $17$ 除以 $5$ 余 $2$。多项式取模完全类似：$P(x)\bmod A(x)$ 就是用 $A(x)$ 去除 $P(x)$ 后的余式。特别地，"令 $A(x)=0$"是一种快速取模的方法——把 $A(x)$ 的根代入，或者用 $A(x)=0$ 这个关系消去高次项，效果等同于做多项式除法取余。
-
-所谓"$B(x)$ 在模 $A(x)$ 下的逆元"，就是找一个多项式 $B^{-1}(x)$ 使得 $B(x)\cdot B^{-1}(x)\equiv 1\pmod{A(x)}$（即乘积除以 $A(x)$ 余 $1$）。只要 $A(x)$ 和 $B(x)$ 互素（没有公因式），这样的逆元一定存在，可以用辗转相除法求得。
-\end{note}
-
-\par\medskip\noindent 模法处理有理分式时，关键是把系数比较改写成模运算。\par
-
-题目要求把有理分式拆成部分分式，且分母已经分解成若干互素因式或重因式；如果直接比较系数会列出很大的方程组，就立刻改走 mod 法。
-
-若
-\[
-\frac{P(x)}{A(x)B(x)}
-=\frac{U(x)}{A(x)}+\frac{V(x)}{B(x)},\qquad (A,B)=1,
-\]
-则通分得到
-\[
-U(x)B(x)+V(x)A(x)=P(x),\qquad
-U(x)B(x)\equiv P(x)\pmod{A(x)}.
-\]
-所以本质是在模 $A$ 下求 $B$ 的逆元。若有重因式 $(x-a)^2$，则
-\[
-B=\left[(x-a)^2F(x)\right]_{x=a},
-\qquad
-A=\left[\frac{\mathrm d}{\mathrm{d}x}(x-a)^2F(x)\right]_{x=a}.
-\]
-
-分母需要完全因式分解，并按因式类型写出正确的部分分式形式：一次因式配常数分子，不可约二次因式配一次分子，重因式要把每一层都写全。简单线性因式可用掩盖法；重线性因式可先取最高层系数，再求导取下一层。若分母是两个互素大块 $A,B$，就对 $A$ 取模求 $U$，对 $B$ 取模求 $V$，避免硬比较所有系数。若出现 $A^mB^n$，则从一次情形的裴蜀等式出发，再升幂或连续带余除法。每个分式还要做分子降次，保证分子次数严格低于对应分母块。
-
-标准落笔是：先写“设 $\dfrac{P}{AB}=\dfrac{U}{A}+\dfrac{V}{B}$，则 $UB+VA=P$”。然后写“模 $A$”或“令 $x=a$”，直接拿到一块分子。若有重根，再写“对 $(x-a)^2F(x)$ 求导并代入 $x=a$”。求出局部块以后，作差相消，把剩余项继续降维。
-
-“原分母可拆成互素两块，比较系数太长，改用 mod 法。对 $A$ 取模得 $U\equiv PB^{-1}\pmod A$，从而 $U=\cdots$；同理 $V=\cdots$，故原式分解为 $\cdots$。”
-
-若分母尚未完全因式分解，先分解再谈 mod。若两个分母块不互素，不能直接求逆元，先把公因式拆开。若题目只是单个线性因式或单个二次因式，直接凑微分往往更短。
-
-检查三件事：部分分式写法有没有漏层；每一项分子次数是否合格；把关键根代回去时，左右两边是否真的相等。
-\par\medskip
-
-
-有理分式分解为
-\(\dfrac{P(x)}{A(x)B(x)}=\dfrac{U(x)}{A(x)}+\dfrac{V(x)}{B(x)}\)。
-通分后，在等式两边对 $A(x)$ 取模（也就是令 $A(x)=0$），那么 $V(x)A(x)$ 这一项消失：
-\[
-U(x)B(x)+V(x)A(x)=P(x),\qquad
-U(x)B(x)\equiv P(x)\pmod{A(x)}.
-\]
-也就是 \(U(x)\equiv P(x)\,B^{-1}(x)\pmod{A(x)}\)。
-问题转化为求 $B(x)$ 在模 $A(x)$ 下的“乘法逆元” $B^{-1}(x)$（也就是多项式的倒数）。
-\begin{itemize}
-\item 只要 $A(x)$ 和 $B(x)$ 没公因式，必存在多项式 $u(x)$ 和 $v(x)$使${u(x)A(x) + v(x)B(x) = 1}$。
-\item 遇到重因式 $(x^2+1)^2$ 时，类比把十进制数字转成二进制一样：只要把分子连续除以底座 $(x^2+1)$ 取余数，就能将其逐步拆解。
-\item 二项式升幂法：遇到混合重因式 $A^m B^n$ 时，可先找到一次方情形的裴蜀等式，再将两边提升到 $(m+n-1)$ 次方展开。
-\end{itemize}
-
-\par\medskip\noindent 双元法把实圆和虚圆底座连成一条线：先认底座，再认微元。\par
-
-\begin{note}[从一个熟悉的例子看双元法的动机]
-考虑 $\displaystyle\int\frac{\mathrm{d}x}{\sqrt{1-x^2}}$。标准做法是令 $x=\sin\theta$，但换一个视角：设 $y=\sqrt{1-x^2}$，则 $x^2+y^2=1$（实圆底座）。对两边微分得 $x\,\mathrm{d}x+y\,\mathrm{d}y=0$，即 $\mathrm{d}x/y=-\mathrm{d}y/x$。而原积分恰好就是 $\int\mathrm{d}x/y$，它等于角度的累积 $-\theta+C=\arcsin x+C$。
-
-关键观察：引入第二个变量 $y$ 并用约束 $x^2+y^2=1$ 把它们绑在一起后，微分关系自动产生，不需要再做"换元后回代"。这就是双元法的核心思想。
-\end{note}
-
-下面这些母式、微分公式和典型递推，都是同一底座的不同写法。
-
 \par\medskip\noindent 本章内容概览。\par
 
 第1章的题目看起来很多，其实都在做同一件事：把被积式送回已经熟悉的导数结构，或者送进少数几条基本母式。真正容易失分的地方不是算不出来，而是入口选错，例如该先凑微分时跑去分部，该先配方时直接硬换元，该用恒等变形时一上来就套万能代换。因此，下面的内容按入口类型展开；入口一旦确定，同一道题中应保持同一路径推进，不要来回试法。
@@ -277,6 +210,866 @@ t=\tan\frac{x}{2},\qquad
 \item \textbf{常见遗漏。} 不定积分一定补上 $+C$；定积分不能补 $+C$。若中途除过某个因子、取过倒数、开过方、设过新元，就要回头补查零解、常值解或特殊支；若题目来自根式或对数，还要核对定义域、绝对值以及回代后的变量是否已经全部换回原来的 $x$。这一层收束的重点，是把所有可能被代换掩盖掉的分支重新带回原题。
 \end{itemize}
 \par\medskip
+
+
+
+\section{有理函数积分：部分分式与模法}
+
+
+\par\medskip\noindent\textbf{为什么先处理有理分式}\par
+
+纯有理函数积分的主路线是先把分式化成真分式，再做部分分式分解，最后回到对数、反正切等基本母式。也就是
+\[
+\text{带余除法} \longrightarrow \text{部分分式分解} \longrightarrow \text{基本积分母式}.
+\]
+本节只处理这一条代数化入口：分母怎样拆、分子怎样配、什么时候用模法避免大规模比较系数。后面的根式、三角、指数、对数等入口，分别在相应主题流中展开。
+
+\par\medskip\noindent\textbf{部分分式的标准形}\par
+
+分母需要先完全因式分解。一次因式、重一次因式、不可约二次因式与重二次因式分别对应
+\[
+\frac{A}{x-a},\qquad
+\frac{A_1}{x-a}+\frac{A_2}{(x-a)^2}+\cdots+\frac{A_m}{(x-a)^m},
+\]
+\[
+\frac{Mx+N}{x^2+px+q},\qquad
+\frac{M_1x+N_1}{x^2+px+q}+\cdots+\frac{M_kx+N_k}{(x^2+px+q)^k}.
+\]
+部分分式写法的第一要求是“不漏层”：重因式每一层都要写出；不可约二次因式的分子必须保留一次式。若原分子次数不低于分母次数，先做带余除法，把多项式部分拿出去，再分解真分式。
+
+\par\medskip\noindent\textbf{简单根与重根的快速系数}\par
+
+简单线性因式可用掩盖法。若
+\[
+F(x)=\frac{P(x)}{(x-a)Q(x)}=\frac{A}{x-a}+\cdots,\qquad Q(a)\ne0,
+\]
+则 \(A=\dfrac{P(a)}{Q(a)}\)。若出现重根，例如
+\[
+F(x)=\frac{A}{x-a}+\frac{B}{(x-a)^2}+\cdots,
+\]
+可先令 \(G(x)=(x-a)^2F(x)\)，则 \(B=G(a)\)，\(A=G'(a)\)。求出局部块以后，再作差相消，把剩余项继续降维。
+
+\par\medskip\noindent\textbf{随堂练习：} 重根与不可约二次因式\par
+\smallskip
+\begin{exercise}[混合分解 $\frac{x^3+2}{(x-1)^2(x^2+1)}$]
+    分解 $\displaystyle F(x) = \frac{x^3+2}{(x-1)^2(x^2+1)}$
+\end{exercise}
+\begin{solution}
+原分母含有重根线性因式 $(x-1)^2$ 和不可约二次因式 $x^2+1$。按正文的重根口径，先设
+\(F(x)=\frac{A}{x-1}+\frac{B}{(x-1)^2}+\frac{Cx+D}{x^2+1}.\)
+两边同乘 $(x-1)^2$，并记
+\(G(x)=(x-1)^2F(x)=\frac{x^3+2}{x^2+1}.\)
+则最高层系数由掩盖赋值得到：
+\(B=G(1)=\frac{1^3+2}{1^2+1}=\frac32.\)
+次高层系数由求导得到。因为
+\(G'(x) =\frac{3x^2(x^2+1)-2x(x^3+2)}{(x^2+1)^2},\)
+所以
+\[
+A=G'(1)
+=\frac{3\cdot1^2(1^2+1)-2\cdot1(1^3+2)}{(1^2+1)^2}
+=0.
+\]
+减去已确定的重根部分，剩余项为
+\begin{align*}
+H(x)
+&=F(x)-\frac{3}{2(x-1)^2}\\
+&=\frac{x^3+2}{(x-1)^2(x^2+1)}
+  -\frac{3}{2(x-1)^2}\\
+&=\frac{x^3+2-\frac32(x^2+1)}
+        {(x-1)^2(x^2+1)}\\
+&=\frac{x^3-\frac32x^2+\frac12}
+        {(x-1)^2(x^2+1)}.
+\end{align*}
+分子应含有 $(x-1)^2$，作除法可得
+\(x^3-\frac32x^2+\frac12 =(x-1)^2\left(x+\frac12\right).\)
+因此
+\(H(x)=\frac{x+\frac12}{x^2+1} =\frac{2x+1}{2(x^2+1)}.\)
+综上，
+\(F(x)=\frac{3}{2(x-1)^2} +\frac{2x+1}{2(x^2+1)}.\)
+\end{solution}
+
+\par\medskip\noindent\textbf{互素分母块的 mod 法}\par
+
+
+\begin{note}[什么是"对多项式取模"]
+你已经熟悉整数取模：$17\bmod 5=2$ 意思是 $17$ 除以 $5$ 余 $2$。多项式取模完全类似：$P(x)\bmod A(x)$ 就是用 $A(x)$ 去除 $P(x)$ 后的余式。特别地，"令 $A(x)=0$"是一种快速取模的方法——把 $A(x)$ 的根代入，或者用 $A(x)=0$ 这个关系消去高次项，效果等同于做多项式除法取余。
+
+所谓"$B(x)$ 在模 $A(x)$ 下的逆元"，就是找一个多项式 $B^{-1}(x)$ 使得 $B(x)\cdot B^{-1}(x)\equiv 1\pmod{A(x)}$（即乘积除以 $A(x)$ 余 $1$）。只要 $A(x)$ 和 $B(x)$ 互素（没有公因式），这样的逆元一定存在，可以用辗转相除法求得。
+\end{note}
+
+\par\medskip\noindent 模法处理有理分式时，关键是把系数比较改写成模运算。\par
+
+题目要求把有理分式拆成部分分式，且分母已经分解成若干互素因式或重因式；如果直接比较系数会列出很大的方程组，就立刻改走 mod 法。
+
+若
+\[
+\frac{P(x)}{A(x)B(x)}
+=\frac{U(x)}{A(x)}+\frac{V(x)}{B(x)},\qquad (A,B)=1,
+\]
+则通分得到
+\[
+U(x)B(x)+V(x)A(x)=P(x),\qquad
+U(x)B(x)\equiv P(x)\pmod{A(x)}.
+\]
+所以本质是在模 $A$ 下求 $B$ 的逆元。若有重因式 $(x-a)^2$，则
+\[
+B=\left[(x-a)^2F(x)\right]_{x=a},
+\qquad
+A=\left[\frac{\mathrm d}{\mathrm{d}x}(x-a)^2F(x)\right]_{x=a}.
+\]
+
+分母需要完全因式分解，并按因式类型写出正确的部分分式形式：一次因式配常数分子，不可约二次因式配一次分子，重因式要把每一层都写全。简单线性因式可用掩盖法；重线性因式可先取最高层系数，再求导取下一层。若分母是两个互素大块 $A,B$，就对 $A$ 取模求 $U$，对 $B$ 取模求 $V$，避免硬比较所有系数。若出现 $A^mB^n$，则从一次情形的裴蜀等式出发，再升幂或连续带余除法。每个分式还要做分子降次，保证分子次数严格低于对应分母块。
+
+标准落笔是：先写“设 $\dfrac{P}{AB}=\dfrac{U}{A}+\dfrac{V}{B}$，则 $UB+VA=P$”。然后写“模 $A$”或“令 $x=a$”，直接拿到一块分子。若有重根，再写“对 $(x-a)^2F(x)$ 求导并代入 $x=a$”。求出局部块以后，作差相消，把剩余项继续降维。
+
+“原分母可拆成互素两块，比较系数太长，改用 mod 法。对 $A$ 取模得 $U\equiv PB^{-1}\pmod A$，从而 $U=\cdots$；同理 $V=\cdots$，故原式分解为 $\cdots$。”
+
+若分母尚未完全因式分解，先分解再谈 mod。若两个分母块不互素，不能直接求逆元，先把公因式拆开。若题目只是单个线性因式或单个二次因式，直接凑微分往往更短。
+
+检查三件事：部分分式写法有没有漏层；每一项分子次数是否合格；把关键根代回去时，左右两边是否真的相等。
+\par\medskip
+
+
+有理分式分解为
+\(\dfrac{P(x)}{A(x)B(x)}=\dfrac{U(x)}{A(x)}+\dfrac{V(x)}{B(x)}\)。
+通分后，在等式两边对 $A(x)$ 取模（也就是令 $A(x)=0$），那么 $V(x)A(x)$ 这一项消失：
+\[
+U(x)B(x)+V(x)A(x)=P(x),\qquad
+U(x)B(x)\equiv P(x)\pmod{A(x)}.
+\]
+也就是 \(U(x)\equiv P(x)\,B^{-1}(x)\pmod{A(x)}\)。
+问题转化为求 $B(x)$ 在模 $A(x)$ 下的“乘法逆元” $B^{-1}(x)$（也就是多项式的倒数）。
+\begin{itemize}
+\item 只要 $A(x)$ 和 $B(x)$ 没公因式，必存在多项式 $u(x)$ 和 $v(x)$使${u(x)A(x) + v(x)B(x) = 1}$。
+\item 遇到重因式 $(x^2+1)^2$ 时，类比把十进制数字转成二进制一样：只要把分子连续除以底座 $(x^2+1)$ 取余数，就能将其逐步拆解。
+\item 二项式升幂法：遇到混合重因式 $A^m B^n$ 时，可先找到一次方情形的裴蜀等式，再将两边提升到 $(m+n-1)$ 次方展开。
+\end{itemize}
+
+
+\par\medskip\noindent\textbf{随堂练习：} 互素分母块与模法分解\par
+\smallskip
+\begin{exercise}[分解$\frac{x+2}{(x^2+2x+2)(x^2+1)}$]
+分解$\dfrac{x+2}{(x^2+2x+2)(x^2+1)}$
+\end{exercise}
+\begin{solution}
+设 $A=x^2+2x+2,\ B=x^2+1$。先用带余除法构造 $A,B$ 的裴蜀恒等式。由 $A-B=2x+1$ 以及
+$B-(2x+1)\dfrac{2x-1}{4}=\dfrac54$ 可得
+\begin{align*}
+\frac54
+&=B-(A-B)\frac{2x-1}{4},\\
+5&=(2x+3)B-(2x-1)A.
+\end{align*}
+将这个恒等式乘以分子 $x+2$ 并除以 $5AB$：
+\begin{align*}
+\frac{x+2}{AB}
+&=\frac{(x+2)\bigl((2x+3)B-(2x-1)A\bigr)}{5AB}\\
+&=\frac{(x+2)(2x+3)}{5A}
+  -\frac{(x+2)(2x-1)}{5B}.
+\end{align*}
+分别对两个分子降次：
+\begin{align*}
+(x+2)(2x+3)
+&=2x^2+7x+6\\
+&=2A+(3x+2),\\
+(x+2)(2x-1)
+&=2x^2+3x-2\\
+&=2B+(3x-4).
+\end{align*}
+常数项相消，故
+\[
+\frac{x+2}{(x^2+2x+2)(x^2+1)}
+=\frac{3x+2}{5(x^2+2x+2)}
++\frac{4-3x}{5(x^2+1)}.
+\]
+\end{solution}
+\begin{exercise}[分解 $\frac{2x^2 + 3}{(x-1)(x^2+x+1)}$]
+    分解 $\displaystyle F(x) = \frac{2x^2 + 3}{(x-1)(x^2+x+1)}$
+\end{exercise}
+\begin{solution}
+设
+\[
+A=x^2+x+1,\qquad B=x-1,\qquad P(x)=2x^2+3.
+\]
+带余除法给出 $A=B(x+2)+3$，于是
+$1=\dfrac13A-\dfrac{x+2}{3}B$。
+将该恒等式乘以 $P(x)$ 并除以 $AB$：
+\begin{align*}
+\frac{P(x)}{AB}
+&=\frac{P(x)}{AB}
+  \left(\frac13A-\frac{x+2}{3}B\right)\\
+&=\frac{2x^2+3}{3B}
+  -\frac{(2x^2+3)(x+2)}{3A}.
+\end{align*}
+两项分别降次：
+\begin{align*}
+\frac{2x^2+3}{3(x-1)}
+&=\frac{2(x^2-1)+5}{3(x-1)}
+=\frac{2x+2}{3}+\frac{5}{3(x-1)},\\
+\frac{(2x^2+3)(x+2)}{3(x^2+x+1)}
+&=\frac{2x^3+4x^2+3x+6}{3(x^2+x+1)}\\
+&=\frac{2x(x^2+x+1)+2(x^2+x+1)-x+4}
+        {3(x^2+x+1)}\\
+&=\frac{2x+2}{3}
+  +\frac{-x+4}{3(x^2+x+1)}.
+\end{align*}
+多项式部分相消，故
+\(F(x)=\frac{5}{3(x-1)} +\frac{x-4}{3(x^2+x+1)}.\)
+\end{solution}
+\begin{exercise}[分解 $F(x) = \frac{1}{x(x-1)(x^2+1)}$]
+    分解 $\displaystyle F(x) = \frac{1}{x(x-1)(x^2+1)}$
+\end{exercise}
+\begin{solution}
+先分离因式 $x$。设 $A=x,\ M=(x-1)(x^2+1)$。带余除法给出 $M=A(x^2-x+1)-1$，即
+$1=A(x^2-x+1)-M$。
+于是
+\begin{align*}
+\frac{1}{AM}
+&=\frac{A(x^2-x+1)-M}{AM}\\
+&=\frac{x^2-x+1}{(x-1)(x^2+1)}
+  -\frac1x.
+\end{align*}
+下面分解 \(\dfrac{x^2-x+1}{(x-1)(x^2+1)}\)。
+设
+\[
+B=x^2+1,\qquad C=x-1,\qquad P(x)=x^2-x+1.
+\]
+由 $B=C(x+1)+2$ 可得
+$1=\dfrac12B-\dfrac{x+1}{2}C$。
+乘入 $P(x)$ 并除以 $BC$：
+\begin{align*}
+\frac{P(x)}{BC}
+&=\frac{P(x)}{BC}
+  \left(\frac12B-\frac{x+1}{2}C\right)\\
+&=\frac{x^2-x+1}{2(x-1)}
+  -\frac{(x^2-x+1)(x+1)}{2(x^2+1)}.
+\end{align*}
+两项降次为
+\begin{align*}
+\frac{x^2-x+1}{2(x-1)}
+&=\frac{x}{2}+\frac{1}{2(x-1)},\\
+\frac{(x^2-x+1)(x+1)}{2(x^2+1)}
+&=\frac{x^3+1}{2(x^2+1)}\\
+&=\frac{x}{2}+\frac{1-x}{2(x^2+1)}.
+\end{align*}
+相减后一次项相消：
+\(\frac{P(x)}{BC} =\frac{1}{2(x-1)} +\frac{x-1}{2(x^2+1)}.\)
+因此
+\[
+F(x)
+=-\frac1x
++\frac{1}{2(x-1)}
++\frac{x-1}{2(x^2+1)}.
+\]
+\end{solution}
+\begin{exercise}[分解 $\frac{x^3}{(x-1)(x+1)(x^2+x+1)}$]
+    分解 $\displaystyle F(x) = \frac{x^3}{(x-1)(x+1)(x^2+x+1)}$
+\end{exercise}
+\begin{solution}
+一次因式 $(x-1)$ 与 $(x+1)$ 可先用掩盖赋值求系数。设
+\(F(x)=\frac{A}{x-1} +\frac{B}{x+1} +\frac{Cx+D}{x^2+x+1}.\)
+对 $x=1$ 与 $x=-1$ 分别代入：
+\[
+A=\frac{1^3}{(1+1)(1+1+1)}=\frac16,
+\qquad
+B=\frac{(-1)^3}{(-1-1)(1-1+1)}=\frac12.
+\]
+先合并已求出的两项：
+\begin{align*}
+\frac{1}{6(x-1)}+\frac{1}{2(x+1)}
+&=\frac{(x+1)+3(x-1)}{6(x^2-1)}\\
+&=\frac{2x-1}{3(x^2-1)}.
+\end{align*}
+将原式减去这两项，剩余项为
+\begin{align*}
+R(x)
+&=\frac{x^3}{(x^2-1)(x^2+x+1)}
+  -\frac{2x-1}{3(x^2-1)}\\
+&=\frac{3x^3-(2x-1)(x^2+x+1)}
+        {3(x^2-1)(x^2+x+1)}.
+\end{align*}
+计算分子：
+\[
+3x^3-(2x-1)(x^2+x+1)
+=x^3-x^2-x+1
+=(x^2-1)(x-1).
+\]
+因此 \(R(x)=\dfrac{x-1}{3(x^2+x+1)}\)。综上，
+\[
+F(x)=\frac{1}{6(x-1)}
++\frac{1}{2(x+1)}
++\frac{x-1}{3(x^2+x+1)}.
+\]
+\end{solution}
+
+\par\medskip\noindent\textbf{重因式、连续带余与升幂}\par
+
+遇到 \((x^2+1)^2\) 这类重二次因式时，常把分子连续按底座 \(x^2+1\) 带余展开；每展开一层，就对应部分分式中的一层。遇到混合重因式 \(A^mB^n\) 时，可以先找到一次情形的裴蜀恒等式，再升到足够高的幂并按 \(A^m\)、\(B^n\) 分组。
+
+这类题的检查点有三个：每一层是否都出现；每个分子的次数是否低于对应底座；升幂展开后常数项或多项式项是否在两边相消。
+
+\par\medskip\noindent\textbf{随堂练习：} 重因式与分层降次\par
+\smallskip
+\begin{exercise}[提取 $\frac{x^3+3x}{(x^2+1)^2}$]
+提取 $\dfrac{x^3+3x}{(x^2+1)^2}$
+\end{exercise}
+\begin{solution}
+把分子按底座 $x^2+1$ 作一次带余拆分：\(x^3+3x=x(x^2+1)+2x\)。
+代回原式并逐项约分：
+\begin{align*}
+\frac{x^3+3x}{(x^2+1)^2}
+&=\frac{x(x^2+1)+2x}{(x^2+1)^2}\\
+&=\frac{x}{x^2+1}
+  +\frac{2x}{(x^2+1)^2}.
+\end{align*}
+\end{solution}
+\begin{exercise}[分解 $\frac{x^5}{(x^2+1)^3}$]
+    分解 $\displaystyle F(x) = \frac{x^5}{(x^2+1)^3}$
+\end{exercise}
+\begin{solution}
+设底座 \(t=x^2+1,\ x^2=t-1\)。分子可按 $t$ 展开为
+\[
+x^5=x(x^2)^2=x(t-1)^2=x(t^2-2t+1).
+\]
+代回并逐项约分：
+\begin{align*}
+F(x)
+&=\frac{x\bigl((x^2+1)^2-2(x^2+1)+1\bigr)}
+        {(x^2+1)^3}\\
+&=\frac{x}{x^2+1}
+  -\frac{2x}{(x^2+1)^2}
+  +\frac{x}{(x^2+1)^3}.
+\end{align*}
+\end{solution}
+\begin{exercise}[分解$\frac{1}{(x-1)^2(x^2+1)^2}$]
+分解$\dfrac{1}{(x-1)^2(x^2+1)^2}$
+\end{exercise}
+\begin{solution}
+设 $A=x-1,\ B=x^2+1$。由带余除法有 $B-(x+1)A=2$。
+分母为 $A^2B^2$，从一次裴蜀恒等式升到三次：
+\begin{align*}
+8
+&=\bigl(B-(x+1)A\bigr)^3\\
+&=B^3-3(x+1)AB^2
+  +3(x+1)^2A^2B-(x+1)^3A^3\\
+&=B^2\bigl(B-3(x+1)A\bigr)
+  +A^2\bigl(3(x+1)^2B-(x+1)^3A\bigr).
+\end{align*}
+两边同除以 $8A^2B^2$，得
+\[
+\frac{1}{A^2B^2}
+=\frac{B-3(x+1)A}{8A^2}
++\frac{3(x+1)^2B-(x+1)^3A}{8B^2}.
+\]
+分别代入 $A=x-1,\ B=x^2+1$ 并降次：
+\begin{align*}
+\frac{B-3(x+1)A}{8A^2}
+&=\frac{2-x^2}{4A^2}\\
+&=-\frac14+\frac{3-2x}{4A^2}\\
+&=-\frac14-\frac{1}{2A}+\frac{1}{4A^2},\\
+\frac{3(x+1)^2B-(x+1)^3A}{8B^2}
+&=\frac{x^4+2x^3+3x^2+4x+2}{4B^2}\\
+&=\frac14+\frac{2x^3+x^2+4x+1}{4B^2}\\
+&=\frac14+\frac{2x+1}{4B}+\frac{x}{2B^2}.
+\end{align*}
+两处常数项相消，回代 $A,B$ 得标准分层结果：
+\[
+\frac{1}{(x-1)^2(x^2+1)^2}
+=-\frac{1}{2(x-1)}
++\frac{1}{4(x-1)^2}
++\frac{2x+1}{4(x^2+1)}
++\frac{x}{2(x^2+1)^2}.
+\]
+\end{solution}
+\begin{exercise}[分解 $\frac{x}{(x-1)^2(x+1)^2}$]
+    分解 $\displaystyle F(x) = \frac{x}{(x-1)^2(x+1)^2}$
+\end{exercise}
+\begin{solution}
+设 $A=x+1,\ B=x-1$。因为 $A-B=2$，所以 $1=\dfrac{A-B}{2}$。
+原分母为 $A^2B^2$，将一次恒等式升到三次并分组：
+\begin{align*}
+1
+&=\left(\frac{A-B}{2}\right)^3\\
+&=\frac18(A^3-3A^2B+3AB^2-B^3)\\
+&=A^2\left(\frac{A-3B}{8}\right)
+  +B^2\left(\frac{3A-B}{8}\right).
+\end{align*}
+代入 $A=x+1,\ B=x-1$ 后，$1=A^2\dfrac{2-x}{4}+B^2\dfrac{x+2}{4}$。
+因此
+\begin{align*}
+F(x)
+&=\frac{x}{A^2B^2}\\
+&=\frac{x(2-x)}{4B^2}
+  +\frac{x(x+2)}{4A^2}\\
+&=\frac{2x-x^2}{4(x-1)^2}
+  +\frac{x^2+2x}{4(x+1)^2}.
+\end{align*}
+对两个分子降次：$2x-x^2=-(x-1)^2+1$，$x^2+2x=(x+1)^2-1$。
+于是常数项相消，最终
+\(F(x)=\frac{1}{4(x-1)^2} -\frac{1}{4(x+1)^2}.\)
+\end{solution}
+\begin{exercise}[分解 $\frac{x^2}{(x^2+1)^2(x^2+x+1)}$]
+    分解 $\displaystyle F(x) = \frac{x^2}{(x^2+1)^2(x^2+x+1)}$
+\end{exercise}
+\begin{solution}
+设 $A=x^2+x+1,\ B=x^2+1$。
+由于 $x^2=B-1$，先把原式降为两个较简单的分式：
+\begin{align*}
+\frac{x^2}{AB^2}
+&=\frac{B-1}{AB^2}\\
+&=\frac{1}{AB}-\frac{1}{AB^2}.
+\end{align*}
+先求 $\frac1{AB}$。由 $A-B=x$，且 $B=x\cdot x+1$，得 $1=B-x(A-B)=(x+1)B-xA$。
+因此
+\(\frac{1}{AB} =\frac{(x+1)B-xA}{AB} =\frac{x+1}{A}-\frac{x}{B}.\)
+再求 $\frac1{AB^2}$。将上式两边同除以 $B$：
+\(\frac{1}{AB^2}=\frac{x+1}{AB}-\frac{x}{B^2}.\)
+利用同一个恒等式计算 $\frac{x+1}{AB}$：
+\begin{align*}
+x+1&=(x+1)^2B-x(x+1)A,\\
+\frac{x+1}{AB}
+&=\frac{(x+1)^2}{A}
+  -\frac{x^2+x}{B}.
+\end{align*}
+于是
+\[
+\frac{1}{AB^2}
+=\frac{(x+1)^2}{A}
+-\frac{x^2+x}{B}
+-\frac{x}{B^2}.
+\]
+将两个分子降次：$\dfrac{(x+1)^2}{A}=1+\dfrac{x}{A}$，$\dfrac{x^2+x}{B}=1+\dfrac{x-1}{B}$。
+所以
+\(\frac{1}{AB^2} =\frac{x}{A}-\frac{x-1}{B}-\frac{x}{B^2}.\)
+最终相减：
+\begin{align*}
+F(x)
+&=\frac{1}{AB}-\frac{1}{AB^2}\\
+&=\left(\frac{x+1}{A}-\frac{x}{B}\right)
+  -\left(\frac{x}{A}-\frac{x-1}{B}-\frac{x}{B^2}\right)\\
+&=\frac{1}{A}-\frac{1}{B}+\frac{x}{B^2}\\
+&=\frac{1}{x^2+x+1}
+  -\frac{1}{x^2+1}
+  +\frac{x}{(x^2+1)^2}.
+\end{align*}
+\end{solution}
+
+\par\medskip\noindent\textbf{分解之后怎样积分}\par
+
+完成部分分式分解后，积分只剩几类基本母式。一次因式给出对数：
+\[
+\int\frac{A}{x-a}\,\mathrm{d}x=A\ln|x-a|+C,\qquad
+\int\frac{A}{(x-a)^k}\,\mathrm{d}x=\frac{A(x-a)^{1-k}}{1-k}+C\quad(k>1).
+\]
+不可约二次因式则先把分子拆成分母导数的一部分与常数余项：
+\[
+\frac{Mx+N}{x^2+px+q}=\frac{M}{2}\frac{2x+p}{x^2+px+q}+\frac{N-\frac{Mp}{2}}{x^2+px+q}.
+\]
+前一项积分为对数，后一项配方后进入反正切母式。因此有理函数积分的真正难点，主要集中在分解阶段；分解一旦干净，积分收尾就应尽量机械化。
+
+\section{一次式与一次根式}
+
+\par\medskip\noindent\textbf{一次式积分}\par
+
+分母或根式里反复出现 $ax+b$，分子却是 $1,x,x^2$ 或者 $x$ 的低次多项式；或者题目长成 $\dfrac{1}{x(ax+b)}$、$\dfrac{x}{(ax+b)^2}$ 这类“一个一次式配一个 $x$”的结构。令 \(\displaystyle u=ax+b,\ \mathrm{d}u=a\,\mathrm{d}x,\ x=\frac{u-b}{a}\)。
+\[
+\int \frac{\mathrm{d}x}{ax+b}=\frac{1}{a}\ln|ax+b|+C,\qquad
+\int (ax+b)^\alpha \,\mathrm{d}x=\frac{(ax+b)^{\alpha+1}}{a(\alpha+1)}+C.
+\]
+并记
+\[
+x=\frac{(ax+b)-b}{a},\qquad
+x^k=\frac{\bigl((ax+b)-b\bigr)^k}{a^k},\qquad
+\frac{1}{x(ax+b)}=\frac{1}{b}\left(\frac{1}{x}-\frac{a}{ax+b}\right).
+\]
+
+如果整题只围绕一个 $ax+b$，先令 $u=ax+b$。若分子里有 $x$ 或 $x^2$，一律先把 $x$ 改写成 $\dfrac{u-b}{a}$，把原式压成 $u$ 的有理函数。若分母还带一个 $x$，优先做拆项，把 $\dfrac{1}{x(ax+b)}$、$\dfrac{1}{x^2(ax+b)}$ 这类结构拆回母式。若出现 $(ax+b)^2$，仍然先改写分子，再把整题看成关于 $u$ 的幂函数或有理分式。
+常见开头是“令 $u=ax+b$，则 $x=\dfrac{u-b}{a}$，$\mathrm{d}x=\dfrac{1}{a}\mathrm{d}u$”。若分子含 $x^k$，直接写成 $\dfrac{(u-b)^k}{a^k}$；若分母还有 $x$，先拆成 $\dfrac{1}{x}$ 母式与 $\dfrac{1}{u}$ 母式的线性组合。
+“原式围绕 $ax+b$ 展开，令 $u=ax+b$。再用 $x=\dfrac{u-b}{a}$ 消去 $x$，原积分化为 $u$ 的初等积分，故结果为 $\cdots$。”
+若题目分母已经是两个不同一次因式的乘积，直接部分分式可能更短。若 $a=0$，这节写法失效，要先把题目还原成常数情形。
+\par\medskip
+
+
+\par\medskip\noindent\textbf{一次根式积分}\par
+
+题目中反复出现 $\sqrt{ax+b}$、$\dfrac{1}{\sqrt{ax+b}}$、$\dfrac{\sqrt{ax+b}}{x}$、$\dfrac{1}{x\sqrt{ax+b}}$ 这类一次根式。
+\begin{align*}
+y&=\sqrt{ax+b},\qquad y^2=ax+b,\qquad x=\frac{y^2-b}{a},\qquad \mathrm{d}x=\frac{2y}{a}\,\mathrm{d}y,\\
+\int \frac{\mathrm{d}x}{x\sqrt{ax+b}}
+&=\int \frac{2}{y^2-b}\,\mathrm{d}y,\qquad
+\int \frac{\sqrt{ax+b}}{x}\,\mathrm{d}x=\int \frac{2y^2}{y^2-b}\,\mathrm{d}y.
+\end{align*}
+
+做题时先设 $y=\sqrt{ax+b}$，于是 $y^2=ax+b$、$x=\dfrac{y^2-b}{a}$、$\mathrm{d}x=\dfrac{2y}{a}\mathrm{d}y$；原式很快就会变成关于 $y$ 的有理式。若只剩 $y$ 的幂，就直接幂积分；若出现 $\dfrac{1}{y^2-b}$，则按 $b>0$ 用对数、$b<0$ 用反正切；若出现 $\dfrac{y^2}{y^2-b}$ 或 $\dfrac{1}{(y^2-b)^2}$，先拆成常数项加母式，不要硬算。
+
+卷面上通常先写“设 $y=\sqrt{ax+b}$，则 $y^2=ax+b,\ x=\dfrac{y^2-b}{a},\ \mathrm{d}x=\dfrac{2y}{a}\mathrm{d}y$”，然后把原式化成 $y$ 的有理式，再按幂函数、$\dfrac{1}{y^2-b}$ 或其递推变体收尾。若题目绕着的不止一个一次根式，或者根号外层还套着一般二次式，就应转去二次根式或纯根式双元；若 $a=0$，先把题目退化成常数根式。最后核对是否把 $y$ 全换回 $\sqrt{ax+b}$，以及 $b>0$ 与 $b<0$ 的收尾公式有没有混用、根号前的系数 $2/a$ 是否漏掉。
+\par\medskip
+
+
+
+\par\medskip\noindent\textbf{随堂练习：} 第二节习题：\texorpdfstring{含有 $ax+b$ 的积分}{含有 ax+b 的积分}\par
+\smallskip
+\begin{exercise}[含有 $ax+b$ 的积分 - 1]
+$\displaystyle \int \frac{\mathrm{d}x}{ax+b}$
+\end{exercise}
+\begin{solution}
+设 \(a\neq0\)。令 \(u=ax+b\)，则 \(\mathrm{d}u=a\,\mathrm{d}x\)，所以
+\begin{align*}
+\int \frac{\mathrm{d}x}{ax+b}
+&= \frac{1}{a}\int \frac{\mathrm{d}u}{u} \\
+&= \frac{1}{a}\ln|u|+C \\
+&= \frac{1}{a}\ln|ax+b|+C.
+\end{align*}
+\end{solution}
+
+\begin{exercise}[含有 $ax+b$ 的积分 - 2]
+$\displaystyle \int (ax+b)^{\alpha}\mathrm{d}x$
+\end{exercise}
+\begin{solution}
+设 \(a\neq0\)。令 \(u=ax+b\)，则 \(\mathrm{d}u=a\,\mathrm{d}x\)。当 \(\alpha\neq-1\) 时，
+\begin{align*}
+\int (ax+b)^{\alpha}\mathrm{d}x
+&= \frac{1}{a}\int u^{\alpha}\,\mathrm{d}u \\
+&= \frac{u^{\alpha+1}}{a(\alpha+1)}+C \\
+&= \frac{(ax+b)^{\alpha+1}}{a(\alpha+1)}+C.
+\end{align*}
+当 \(\alpha=-1\) 时，原积分退回上一题的对数母式。
+\end{solution}
+
+\begin{exercise}[含有 $ax+b$ 的积分 - 3]
+$\displaystyle \int \frac{x}{ax+b}\mathrm{d}x$
+\end{exercise}
+\begin{solution}
+设 \(a\neq0\)。令 \(u=ax+b\)，则 \(x=\dfrac{u-b}{a}\)、\(\mathrm{d}x=\dfrac{1}{a}\mathrm{d}u\)。于是
+\begin{align*}
+\int \frac{x}{ax+b}\mathrm{d}x
+&= \frac{1}{a^2}\int \frac{u-b}{u}\,\mathrm{d}u \\
+&= \frac{1}{a^2}\int \left(1-\frac{b}{u}\right)\mathrm{d}u \\
+&= \frac{1}{a^2}\bigl(u-b\ln|u|\bigr)+C \\
+&= \frac{1}{a^2}\bigl(ax+b-b\ln|ax+b|\bigr)+C.
+\end{align*}
+\end{solution}
+
+\begin{exercise}[含有 $ax+b$ 的积分 - 4]
+$\displaystyle \int \frac{x^2}{ax+b}\mathrm{d}x$
+\end{exercise}
+\begin{solution}
+设 \(a\neq0\)。令 \(u=ax+b\)，则 \(x=\dfrac{u-b}{a}\)、\(\mathrm{d}x=\dfrac{1}{a}\mathrm{d}u\)。于是
+\begin{align*}
+\int \frac{x^2}{ax+b}\mathrm{d}x
+&= \frac{1}{a^3}\int \frac{(u-b)^2}{u}\,\mathrm{d}u \\
+&= \frac{1}{a^3}\int \left(u-2b+\frac{b^2}{u}\right)\mathrm{d}u \\
+&= \frac{1}{a^3}\left(\frac{u^2}{2}-2bu+b^2\ln|u|\right)+C \\
+&= \frac{1}{a^3}\left[\frac{(ax+b)^2}{2}-2b(ax+b)+b^2\ln|ax+b|\right]+C.
+\end{align*}
+\end{solution}
+
+\begin{exercise}[含有 $ax+b$ 的积分 - 5]
+$\displaystyle \int \frac{\mathrm{d}x}{x(ax+b)}$
+\end{exercise}
+\begin{solution}
+设 \(a\neq0\)。若 \(b\neq0\)，先做部分分式分解：
+\(\frac{1}{x(ax+b)} =\frac{1}{b}\left(\frac{1}{x}-\frac{a}{ax+b}\right).\)
+因此
+\begin{align*}
+\int \frac{\mathrm{d}x}{x(ax+b)}
+&= \frac{1}{b}\int \left(\frac{1}{x}-\frac{a}{ax+b}\right)\mathrm{d}x \\
+&= \frac{1}{b}\bigl(\ln|x|-\ln|ax+b|\bigr)+C \\
+&= -\frac{1}{b}\ln\left|\frac{ax+b}{x}\right|+C.
+\end{align*}
+若 \(b=0\)，原式退化为
+\(\int \frac{\mathrm{d}x}{a x^2} =-\frac{1}{a x}+C.\)
+\end{solution}
+
+\begin{exercise}[含有 $ax+b$ 的积分 - 6]
+$\displaystyle \int \frac{\mathrm{d}x}{x^2(ax+b)}$
+\end{exercise}
+\begin{solution}
+设 \(a\neq0\)。若 \(b\neq0\)，先拆成
+\(\frac{1}{x^2(ax+b)} =\frac{1}{b}\left(\frac{1}{x^2}-\frac{a}{x(ax+b)}\right),\)
+再调用上一题 \(b\neq0\) 时的母式：
+\begin{align*}
+\int \frac{\mathrm{d}x}{x^2(ax+b)}
+&= \frac{1}{b}\int \left(\frac{1}{x^2}-\frac{a}{x(ax+b)}\right)\mathrm{d}x \\
+&= -\frac{1}{bx}-\frac{a}{b}\int \frac{\mathrm{d}x}{x(ax+b)} \\
+&= -\frac{1}{bx}+\frac{a}{b^2}\ln\left|\frac{ax+b}{x}\right|+C.
+\end{align*}
+若 \(b=0\)，则
+\(\int \frac{\mathrm{d}x}{a x^3} =-\frac{1}{2a x^2}+C.\)
+\end{solution}
+
+\begin{exercise}[含有 $ax+b$ 的积分 - 7]
+$\displaystyle \int \frac{x}{(ax+b)^2}\mathrm{d}x$
+\end{exercise}
+\begin{solution}
+设 \(a\neq0\)。令 \(u=ax+b\)，则 \(x=\dfrac{u-b}{a}\)、\(\mathrm{d}x=\dfrac{1}{a}\mathrm{d}u\)。于是
+\begin{align*}
+\int \frac{x}{(ax+b)^2}\mathrm{d}x
+&= \frac{1}{a^2}\int \frac{u-b}{u^2}\,\mathrm{d}u \\
+&= \frac{1}{a^2}\int \left(\frac{1}{u}-\frac{b}{u^2}\right)\mathrm{d}u \\
+&= \frac{1}{a^2}\left(\ln|u|+\frac{b}{u}\right)+C \\
+&= \frac{1}{a^2}\left(\ln|ax+b|+\frac{b}{ax+b}\right)+C.
+\end{align*}
+\end{solution}
+
+\begin{exercise}[含有 $ax+b$ 的积分 - 8]
+$\displaystyle \int \frac{x^2}{(ax+b)^2}\mathrm{d}x$
+\end{exercise}
+\begin{solution}
+设 \(a\neq0\)。令 \(u=ax+b\)，则 \(x=\dfrac{u-b}{a}\)、\(\mathrm{d}x=\dfrac{1}{a}\mathrm{d}u\)。于是
+\begin{align*}
+\int \frac{x^2}{(ax+b)^2}\mathrm{d}x
+&= \frac{1}{a^3}\int \frac{(u-b)^2}{u^2}\,\mathrm{d}u \\
+&= \frac{1}{a^3}\int \left(1-\frac{2b}{u}+\frac{b^2}{u^2}\right)\mathrm{d}u \\
+&= \frac{1}{a^3}\left(u-2b\ln|u|-\frac{b^2}{u}\right)+C \\
+&= \frac{1}{a^3}\left(ax+b-2b\ln|ax+b|-\frac{b^2}{ax+b}\right)+C.
+\end{align*}
+\end{solution}
+
+\begin{exercise}[含有 $ax+b$ 的积分 - 9]
+$\displaystyle \int \frac{\mathrm{d}x}{x(ax+b)^2}$
+\end{exercise}
+\begin{solution}
+设 \(a\neq0\)。若 \(b\neq0\)，先拆成
+\[
+\frac{1}{x(ax+b)^2}
+=\frac{1}{b}\left(\frac{1}{x(ax+b)}-\frac{a}{(ax+b)^2}\right).
+\]
+于是
+\begin{align*}
+\int \frac{\mathrm{d}x}{x(ax+b)^2}
+&= \frac{1}{b}\int \left(\frac{1}{x(ax+b)}-\frac{a}{(ax+b)^2}\right)\mathrm{d}x \\
+&= -\frac{1}{b^2}\ln\left|\frac{ax+b}{x}\right|
+   +\frac{1}{b(ax+b)}+C.
+\end{align*}
+若 \(b=0\)，原积分为
+\(\int \frac{\mathrm{d}x}{a^2x^3} =-\frac{1}{2a^2x^2}+C.\)
+\end{solution}
+
+
+\par\medskip\noindent\textbf{随堂练习：} 第三节习题：\texorpdfstring{含有 $\sqrt{ax+b}$ 的积分}{含有 sqrt(ax+b) 的积分}\par
+\smallskip
+\begin{exercise}[含有 $\sqrt{ax+b}$ 的积分 - 10]
+$\displaystyle \int \sqrt{ax+b}\mathrm{d}x$
+\end{exercise}
+\begin{solution}
+设 \(a\neq0\)。记 \(y=\sqrt{ax+b}\)，则
+\[
+y^2=ax+b,\qquad x=\frac{y^2-b}{a},\qquad
+\mathrm{d}x=\frac{2y}{a}\,\mathrm{d}y.
+\]
+原积分中的根式正好就是 $y$，因此可直接化为幂函数积分
+\begin{align*}
+\int \sqrt{ax+b}\mathrm{d}x
+&= \int y\cdot\frac{2y}{a}\,\mathrm{d}y \\
+&= \frac{2}{a}\int y^2\,\mathrm{d}y \\
+&= \frac{2}{3a}y^3+C \\
+&= \frac{2}{3a}(ax+b)^{3/2}+C.
+\end{align*}
+\end{solution}
+
+\begin{exercise}[含有 $\sqrt{ax+b}$ 的积分 - 11]
+$\displaystyle \int x\sqrt{ax+b}\mathrm{d}x$
+\end{exercise}
+\begin{solution}
+设 \(a\neq0\)。记 \(y=\sqrt{ax+b}\)，则
+\[
+y^2=ax+b,\qquad x=\frac{y^2-b}{a},\qquad
+\mathrm{d}x=\frac{2y}{a}\,\mathrm{d}y.
+\]
+这样分子里的 $x$ 与根式都能化成 $y$ 的多项式：
+\begin{align*}
+\int x\sqrt{ax+b}\mathrm{d}x
+&= \int \frac{y^2-b}{a}\cdot y\cdot\frac{2y}{a}\,\mathrm{d}y \\
+&= \frac{2}{a^2}\int (y^4-by^2)\,\mathrm{d}y \\
+&= \frac{2}{a^2}\left(\frac{y^5}{5}-\frac{by^3}{3}\right)+C \\
+&= \frac{2}{15a^2}y^3(3y^2-5b)+C \\
+&= \frac{2}{15a^2}(3ax-2b)(ax+b)^{3/2}+C.
+\end{align*}
+\end{solution}
+
+\begin{exercise}[含有 $\sqrt{ax+b}$ 的积分 - 12]
+$\displaystyle \int x^2\sqrt{ax+b}\mathrm{d}x$
+\end{exercise}
+\begin{solution}
+设 \(a\neq0\)。记 \(y=\sqrt{ax+b}\)，则
+\[
+y^2=ax+b,\qquad x=\frac{y^2-b}{a},\qquad
+\mathrm{d}x=\frac{2y}{a}\,\mathrm{d}y.
+\]
+把 $x^2$ 先写成 $\left(\dfrac{y^2-b}{a}\right)^2$，原积分就退化为 $y$ 的多项式积分：
+\begin{align*}
+\int x^2\sqrt{ax+b}\mathrm{d}x
+&= \int \left(\frac{y^2-b}{a}\right)^2\cdot y\cdot\frac{2y}{a}\,\mathrm{d}y \\
+&= \frac{2}{a^3}\int (y^6-2by^4+b^2y^2)\,\mathrm{d}y \\
+&= \frac{2}{a^3}\left(\frac{y^7}{7}-\frac{2by^5}{5}+\frac{b^2y^3}{3}\right)+C \\
+&= \frac{2}{105a^3}y^3(15y^4-42by^2+35b^2)+C \\
+&= \frac{2}{105a^3}(15a^2x^2-12abx+8b^2)(ax+b)^{3/2}+C.
+\end{align*}
+\end{solution}
+
+\begin{exercise}[含有 $\sqrt{ax+b}$ 的积分 - 13]
+$\displaystyle \int \frac{x}{\sqrt{ax+b}}\mathrm{d}x$
+\end{exercise}
+\begin{solution}
+设 \(a\neq0\)。记 \(y=\sqrt{ax+b}\)，则
+\[
+y^2=ax+b,\qquad x=\frac{y^2-b}{a},\qquad
+\mathrm{d}x=\frac{2y}{a}\,\mathrm{d}y.
+\]
+由于分母中已有一个 $y$，代换后正好可以约去：
+\begin{align*}
+\int \frac{x}{\sqrt{ax+b}}\mathrm{d}x
+&= \int \frac{\frac{y^2-b}{a}}{y}\cdot \frac{2y}{a}\,\mathrm{d}y \\
+&= \frac{2}{a^2}\int (y^2-b)\,\mathrm{d}y \\
+&= \frac{2}{a^2}\left(\frac{y^3}{3}-by\right)+C \\
+&= \frac{2}{3a^2}y(y^2-3b)+C \\
+&= \frac{2}{3a^2}(ax-2b)\sqrt{ax+b}+C.
+\end{align*}
+\end{solution}
+
+\begin{exercise}[含有 $\sqrt{ax+b}$ 的积分 - 14]
+$\displaystyle \int \frac{x^2}{\sqrt{ax+b}}\mathrm{d}x$
+\end{exercise}
+\begin{solution}
+设 \(a\neq0\)。记 \(y=\sqrt{ax+b}\)，则
+\[
+y^2=ax+b,\qquad x=\frac{y^2-b}{a},\qquad
+\mathrm{d}x=\frac{2y}{a}\,\mathrm{d}y.
+\]
+代换后分母中的根式与 $\mathrm{d}x$ 里的 $y$ 抵消，只剩普通多项式：
+\begin{align*}
+\int \frac{x^2}{\sqrt{ax+b}}\mathrm{d}x
+&= \int \frac{\left(\frac{y^2-b}{a}\right)^2}{y}\cdot\frac{2y}{a}\,\mathrm{d}y \\
+&= \frac{2}{a^3}\int (y^4-2by^2+b^2)\,\mathrm{d}y \\
+&= \frac{2}{a^3}\left(\frac{y^5}{5}-\frac{2by^3}{3}+b^2y\right)+C \\
+&= \frac{2}{15a^3}y(3y^4-10by^2+15b^2)+C \\
+&= \frac{2}{15a^3}(3a^2x^2-4abx+8b^2)\sqrt{ax+b}+C.
+\end{align*}
+\end{solution}
+
+\begin{exercise}[含有 $\sqrt{ax+b}$ 的积分 - 15]
+$\displaystyle \int \frac{\mathrm{d}x}{x\sqrt{ax+b}}$
+\end{exercise}
+\begin{solution}
+设 \(a\neq0\)。记 \(y=\sqrt{ax+b}\)，则
+\[
+y^2=ax+b,\qquad x=\frac{y^2-b}{a},\qquad
+\mathrm{d}x=\frac{2y}{a}\,\mathrm{d}y.
+\]
+于是
+\begin{align*}
+\int \frac{\mathrm{d}x}{x\sqrt{ax+b}}
+&= \int \frac{\frac{2y}{a}\,\mathrm{d}y}{\frac{y^2-b}{a}\cdot y} \\
+&= \int \frac{2}{y^2-b}\,\mathrm{d}y.
+\end{align*}
+因此按 \(b\) 的符号分三类：
+\[
+\int \frac{\mathrm{d}x}{x\sqrt{ax+b}}
+=
+\begin{cases}
+\dfrac{1}{\sqrt{b}}
+\ln\left|\dfrac{\sqrt{ax+b}-\sqrt{b}}{\sqrt{ax+b}+\sqrt{b}}\right|+C,
+& b>0,\\[1.1em]
+\dfrac{2}{\sqrt{-b}}
+\arctan\dfrac{\sqrt{ax+b}}{\sqrt{-b}}+C,
+& b<0,\\[1.1em]
+-\dfrac{2}{\sqrt{ax}}+C,
+& b=0.
+\end{cases}
+\]
+\end{solution}
+
+\begin{exercise}[含有 $\sqrt{ax+b}$ 的积分 - 16]
+$\displaystyle \int \frac{\mathrm{d}x}{x^2\sqrt{ax+b}}$
+\end{exercise}
+\begin{solution}
+设 \(a\neq0\)。记 \(y=\sqrt{ax+b}\)，则
+\[
+y^2=ax+b,\qquad x=\frac{y^2-b}{a},\qquad
+\mathrm{d}x=\frac{2y}{a}\,\mathrm{d}y.
+\]
+代换后得到
+\(\int \frac{\mathrm{d}x}{x^2\sqrt{ax+b}} =\int \frac{2a}{(y^2-b)^2}\,\mathrm{d}y.\)
+若 \(b\neq0\)，使用恒等式
+\[
+\mathrm{d}\left(\frac{y}{y^2-b}\right)
+=-\frac{y^2+b}{(y^2-b)^2}\,\mathrm{d}y
+=-\frac{1}{y^2-b}\,\mathrm{d}y
+ -\frac{2b}{(y^2-b)^2}\,\mathrm{d}y.
+\]
+由此整理出目标积分：
+\begin{align*}
+\int \frac{2a}{(y^2-b)^2}\,\mathrm{d}y
+&= -\frac{a}{b}\int \mathrm{d}\left(\frac{y}{y^2-b}\right)
+   -\frac{a}{b}\int \frac{\mathrm{d}y}{y^2-b} \\
+&= -\frac{ay}{b(y^2-b)}
+   -\frac{a}{2b}\int \frac{2}{y^2-b}\,\mathrm{d}y+C \\
+&= -\frac{\sqrt{ax+b}}{bx}
+   -\frac{a}{2b}\int \frac{\mathrm{d}x}{x\sqrt{ax+b}}+C.
+\end{align*}
+其中最后一个母式按上一题的三种分支代入。若 \(b=0\)，则
+\[
+\int \frac{\mathrm{d}x}{x^2\sqrt{ax}}
+=\int 2a\,y^{-4}\,\mathrm{d}y
+=-\frac{2a}{3(ax)^{3/2}}+C.
+\]
+\end{solution}
+
+\begin{exercise}[含有 $\sqrt{ax+b}$ 的积分 - 17]
+$\displaystyle \int \frac{\sqrt{ax+b}}{x}\mathrm{d}x$
+\end{exercise}
+\begin{solution}
+设 \(a\neq0\)。记 \(y=\sqrt{ax+b}\)，则
+\[
+y^2=ax+b,\qquad x=\frac{y^2-b}{a},\qquad
+\mathrm{d}x=\frac{2y}{a}\,\mathrm{d}y.
+\]
+代换后把分式先拆成常数项加第 15 题的母式：
+\begin{align*}
+\int \frac{\sqrt{ax+b}}{x}\mathrm{d}x
+&= \int \frac{y}{\frac{y^2-b}{a}}\cdot\frac{2y}{a}\,\mathrm{d}y \\
+&= \int \frac{2y^2}{y^2-b}\,\mathrm{d}y \\
+&= \int \left(2+\frac{2b}{y^2-b}\right)\mathrm{d}y \\
+&= 2y+b\int \frac{2}{y^2-b}\,\mathrm{d}y \\
+&= 2\sqrt{ax+b}
+   +b\int \frac{\mathrm{d}x}{x\sqrt{ax+b}}+C.
+\end{align*}
+其中第 15 题母式按 \(b>0\)、\(b<0\)、\(b=0\) 完整取用；当 \(b=0\) 时，上式直接化为 \(2\sqrt{ax}+C\)。
+\end{solution}
+
+\begin{exercise}[含有 $\sqrt{ax+b}$ 的积分 - 18]
+$\displaystyle \int \frac{\sqrt{ax+b}}{x^2}\mathrm{d}x$
+\end{exercise}
+\begin{solution}
+设 \(a\neq0\)。记 \(y=\sqrt{ax+b}\)，则
+\[
+y^2=ax+b,\qquad x=\frac{y^2-b}{a},\qquad
+\mathrm{d}x=\frac{2y}{a}\,\mathrm{d}y.
+\]
+代换后出现 $\dfrac{2ay^2}{(y^2-b)^2}$，把它写成 $ay\cdot\dfrac{2y}{(y^2-b)^2}$，即可直接凑出微分：
+\begin{align*}
+\int \frac{\sqrt{ax+b}}{x^2}\mathrm{d}x
+&= \int \frac{y}{\left(\frac{y^2-b}{a}\right)^2}\cdot\frac{2y}{a}\,\mathrm{d}y \\
+&= \int \frac{2ay^2}{(y^2-b)^2}\,\mathrm{d}y \\
+&= a\int y\,\mathrm{d}\left(-\frac{1}{y^2-b}\right) \\
+&= -\frac{ay}{y^2-b}+a\int \frac{\mathrm{d}y}{y^2-b} \\
+&= -\frac{\sqrt{ax+b}}{x}
+   +\frac{a}{2}\int \frac{\mathrm{d}x}{x\sqrt{ax+b}}+C.
+\end{align*}
+最后的母式仍按第 15 题的三种分支代入。
+\end{solution}
+
+\section{二次式与二次根式}
+
+\par\medskip\noindent 双元法把实圆和虚圆底座连成一条线：先认底座，再认微元。\par
+
+\begin{note}[从一个熟悉的例子看双元法的动机]
+考虑 $\displaystyle\int\frac{\mathrm{d}x}{\sqrt{1-x^2}}$。标准做法是令 $x=\sin\theta$，但换一个视角：设 $y=\sqrt{1-x^2}$，则 $x^2+y^2=1$（实圆底座）。对两边微分得 $x\,\mathrm{d}x+y\,\mathrm{d}y=0$，即 $\mathrm{d}x/y=-\mathrm{d}y/x$。而原积分恰好就是 $\int\mathrm{d}x/y$，它等于角度的累积 $-\theta+C=\arcsin x+C$。
+
+关键观察：引入第二个变量 $y$ 并用约束 $x^2+y^2=1$ 把它们绑在一起后，微分关系自动产生，不需要再做"换元后回代"。这就是双元法的核心思想。
+\end{note}
+
+下面这些母式、微分公式和典型递推，都是同一底座的不同写法。
 
 \par\medskip\noindent\textbf{双元微分公式}\par
 \begin{theorem}[微分公式]
@@ -920,745 +1713,6 @@ x^2-(1-x^2)=2x^2-1
 检查你造出的 $p,q,r$ 是否真的能把原式全部改写；检查微分关系是否和底座符号一致，特别是实圆的负号与虚圆的正号。
 \par\medskip
 
-
-
-\par\medskip\noindent\textbf{随堂练习：} 第一节习题：模法与多项式逆元\par
-\smallskip
-\begin{exercise}[混合分解 $\frac{x^3+2}{(x-1)^2(x^2+1)}$]
-    分解 $\displaystyle F(x) = \frac{x^3+2}{(x-1)^2(x^2+1)}$
-\end{exercise}
-\begin{solution}
-原分母含有重根线性因式 $(x-1)^2$ 和不可约二次因式 $x^2+1$。按正文的重根口径，先设
-\(F(x)=\frac{A}{x-1}+\frac{B}{(x-1)^2}+\frac{Cx+D}{x^2+1}.\)
-两边同乘 $(x-1)^2$，并记
-\(G(x)=(x-1)^2F(x)=\frac{x^3+2}{x^2+1}.\)
-则最高层系数由掩盖赋值得到：
-\(B=G(1)=\frac{1^3+2}{1^2+1}=\frac32.\)
-次高层系数由求导得到。因为
-\(G'(x) =\frac{3x^2(x^2+1)-2x(x^3+2)}{(x^2+1)^2},\)
-所以
-\[
-A=G'(1)
-=\frac{3\cdot1^2(1^2+1)-2\cdot1(1^3+2)}{(1^2+1)^2}
-=0.
-\]
-减去已确定的重根部分，剩余项为
-\begin{align*}
-H(x)
-&=F(x)-\frac{3}{2(x-1)^2}\\
-&=\frac{x^3+2}{(x-1)^2(x^2+1)}
-  -\frac{3}{2(x-1)^2}\\
-&=\frac{x^3+2-\frac32(x^2+1)}
-        {(x-1)^2(x^2+1)}\\
-&=\frac{x^3-\frac32x^2+\frac12}
-        {(x-1)^2(x^2+1)}.
-\end{align*}
-分子应含有 $(x-1)^2$，作除法可得
-\(x^3-\frac32x^2+\frac12 =(x-1)^2\left(x+\frac12\right).\)
-因此
-\(H(x)=\frac{x+\frac12}{x^2+1} =\frac{2x+1}{2(x^2+1)}.\)
-综上，
-\(F(x)=\frac{3}{2(x-1)^2} +\frac{2x+1}{2(x^2+1)}.\)
-\end{solution}
-
-\begin{exercise}[分解$\frac{x+2}{(x^2+2x+2)(x^2+1)}$]
-分解$\dfrac{x+2}{(x^2+2x+2)(x^2+1)}$
-\end{exercise}
-\begin{solution}
-设 $A=x^2+2x+2,\ B=x^2+1$。先用带余除法构造 $A,B$ 的裴蜀恒等式。由 $A-B=2x+1$ 以及
-$B-(2x+1)\dfrac{2x-1}{4}=\dfrac54$ 可得
-\begin{align*}
-\frac54
-&=B-(A-B)\frac{2x-1}{4},\\
-5&=(2x+3)B-(2x-1)A.
-\end{align*}
-将这个恒等式乘以分子 $x+2$ 并除以 $5AB$：
-\begin{align*}
-\frac{x+2}{AB}
-&=\frac{(x+2)\bigl((2x+3)B-(2x-1)A\bigr)}{5AB}\\
-&=\frac{(x+2)(2x+3)}{5A}
-  -\frac{(x+2)(2x-1)}{5B}.
-\end{align*}
-分别对两个分子降次：
-\begin{align*}
-(x+2)(2x+3)
-&=2x^2+7x+6\\
-&=2A+(3x+2),\\
-(x+2)(2x-1)
-&=2x^2+3x-2\\
-&=2B+(3x-4).
-\end{align*}
-常数项相消，故
-\[
-\frac{x+2}{(x^2+2x+2)(x^2+1)}
-=\frac{3x+2}{5(x^2+2x+2)}
-+\frac{4-3x}{5(x^2+1)}.
-\]
-\end{solution}
-
-\begin{exercise}[提取 $\frac{x^3+3x}{(x^2+1)^2}$]
-提取 $\dfrac{x^3+3x}{(x^2+1)^2}$
-\end{exercise}
-\begin{solution}
-把分子按底座 $x^2+1$ 作一次带余拆分：\(x^3+3x=x(x^2+1)+2x\)。
-代回原式并逐项约分：
-\begin{align*}
-\frac{x^3+3x}{(x^2+1)^2}
-&=\frac{x(x^2+1)+2x}{(x^2+1)^2}\\
-&=\frac{x}{x^2+1}
-  +\frac{2x}{(x^2+1)^2}.
-\end{align*}
-\end{solution}
-
-\begin{exercise}[分解$\frac{1}{(x-1)^2(x^2+1)^2}$]
-分解$\dfrac{1}{(x-1)^2(x^2+1)^2}$
-\end{exercise}
-\begin{solution}
-设 $A=x-1,\ B=x^2+1$。由带余除法有 $B-(x+1)A=2$。
-分母为 $A^2B^2$，从一次裴蜀恒等式升到三次：
-\begin{align*}
-8
-&=\bigl(B-(x+1)A\bigr)^3\\
-&=B^3-3(x+1)AB^2
-  +3(x+1)^2A^2B-(x+1)^3A^3\\
-&=B^2\bigl(B-3(x+1)A\bigr)
-  +A^2\bigl(3(x+1)^2B-(x+1)^3A\bigr).
-\end{align*}
-两边同除以 $8A^2B^2$，得
-\[
-\frac{1}{A^2B^2}
-=\frac{B-3(x+1)A}{8A^2}
-+\frac{3(x+1)^2B-(x+1)^3A}{8B^2}.
-\]
-分别代入 $A=x-1,\ B=x^2+1$ 并降次：
-\begin{align*}
-\frac{B-3(x+1)A}{8A^2}
-&=\frac{2-x^2}{4A^2}\\
-&=-\frac14+\frac{3-2x}{4A^2}\\
-&=-\frac14-\frac{1}{2A}+\frac{1}{4A^2},\\
-\frac{3(x+1)^2B-(x+1)^3A}{8B^2}
-&=\frac{x^4+2x^3+3x^2+4x+2}{4B^2}\\
-&=\frac14+\frac{2x^3+x^2+4x+1}{4B^2}\\
-&=\frac14+\frac{2x+1}{4B}+\frac{x}{2B^2}.
-\end{align*}
-两处常数项相消，回代 $A,B$ 得标准分层结果：
-\[
-\frac{1}{(x-1)^2(x^2+1)^2}
-=-\frac{1}{2(x-1)}
-+\frac{1}{4(x-1)^2}
-+\frac{2x+1}{4(x^2+1)}
-+\frac{x}{2(x^2+1)^2}.
-\]
-\end{solution}
-
-\begin{exercise}[分解 $\frac{2x^2 + 3}{(x-1)(x^2+x+1)}$]
-    分解 $\displaystyle F(x) = \frac{2x^2 + 3}{(x-1)(x^2+x+1)}$
-\end{exercise}
-\begin{solution}
-设
-\[
-A=x^2+x+1,\qquad B=x-1,\qquad P(x)=2x^2+3.
-\]
-带余除法给出 $A=B(x+2)+3$，于是
-$1=\dfrac13A-\dfrac{x+2}{3}B$。
-将该恒等式乘以 $P(x)$ 并除以 $AB$：
-\begin{align*}
-\frac{P(x)}{AB}
-&=\frac{P(x)}{AB}
-  \left(\frac13A-\frac{x+2}{3}B\right)\\
-&=\frac{2x^2+3}{3B}
-  -\frac{(2x^2+3)(x+2)}{3A}.
-\end{align*}
-两项分别降次：
-\begin{align*}
-\frac{2x^2+3}{3(x-1)}
-&=\frac{2(x^2-1)+5}{3(x-1)}
-=\frac{2x+2}{3}+\frac{5}{3(x-1)},\\
-\frac{(2x^2+3)(x+2)}{3(x^2+x+1)}
-&=\frac{2x^3+4x^2+3x+6}{3(x^2+x+1)}\\
-&=\frac{2x(x^2+x+1)+2(x^2+x+1)-x+4}
-        {3(x^2+x+1)}\\
-&=\frac{2x+2}{3}
-  +\frac{-x+4}{3(x^2+x+1)}.
-\end{align*}
-多项式部分相消，故
-\(F(x)=\frac{5}{3(x-1)} +\frac{x-4}{3(x^2+x+1)}.\)
-\end{solution}
-
-\begin{exercise}[分解 $\frac{x^5}{(x^2+1)^3}$]
-    分解 $\displaystyle F(x) = \frac{x^5}{(x^2+1)^3}$
-\end{exercise}
-\begin{solution}
-设底座 \(t=x^2+1,\ x^2=t-1\)。分子可按 $t$ 展开为
-\[
-x^5=x(x^2)^2=x(t-1)^2=x(t^2-2t+1).
-\]
-代回并逐项约分：
-\begin{align*}
-F(x)
-&=\frac{x\bigl((x^2+1)^2-2(x^2+1)+1\bigr)}
-        {(x^2+1)^3}\\
-&=\frac{x}{x^2+1}
-  -\frac{2x}{(x^2+1)^2}
-  +\frac{x}{(x^2+1)^3}.
-\end{align*}
-\end{solution}
-
-\begin{exercise}[分解 $\frac{x}{(x-1)^2(x+1)^2}$]
-    分解 $\displaystyle F(x) = \frac{x}{(x-1)^2(x+1)^2}$
-\end{exercise}
-\begin{solution}
-设 $A=x+1,\ B=x-1$。因为 $A-B=2$，所以 $1=\dfrac{A-B}{2}$。
-原分母为 $A^2B^2$，将一次恒等式升到三次并分组：
-\begin{align*}
-1
-&=\left(\frac{A-B}{2}\right)^3\\
-&=\frac18(A^3-3A^2B+3AB^2-B^3)\\
-&=A^2\left(\frac{A-3B}{8}\right)
-  +B^2\left(\frac{3A-B}{8}\right).
-\end{align*}
-代入 $A=x+1,\ B=x-1$ 后，$1=A^2\dfrac{2-x}{4}+B^2\dfrac{x+2}{4}$。
-因此
-\begin{align*}
-F(x)
-&=\frac{x}{A^2B^2}\\
-&=\frac{x(2-x)}{4B^2}
-  +\frac{x(x+2)}{4A^2}\\
-&=\frac{2x-x^2}{4(x-1)^2}
-  +\frac{x^2+2x}{4(x+1)^2}.
-\end{align*}
-对两个分子降次：$2x-x^2=-(x-1)^2+1$，$x^2+2x=(x+1)^2-1$。
-于是常数项相消，最终
-\(F(x)=\frac{1}{4(x-1)^2} -\frac{1}{4(x+1)^2}.\)
-\end{solution}
-
-\begin{exercise}[分解 $\frac{x^2}{(x^2+1)^2(x^2+x+1)}$]
-    分解 $\displaystyle F(x) = \frac{x^2}{(x^2+1)^2(x^2+x+1)}$
-\end{exercise}
-\begin{solution}
-设 $A=x^2+x+1,\ B=x^2+1$。
-由于 $x^2=B-1$，先把原式降为两个较简单的分式：
-\begin{align*}
-\frac{x^2}{AB^2}
-&=\frac{B-1}{AB^2}\\
-&=\frac{1}{AB}-\frac{1}{AB^2}.
-\end{align*}
-先求 $\frac1{AB}$。由 $A-B=x$，且 $B=x\cdot x+1$，得 $1=B-x(A-B)=(x+1)B-xA$。
-因此
-\(\frac{1}{AB} =\frac{(x+1)B-xA}{AB} =\frac{x+1}{A}-\frac{x}{B}.\)
-再求 $\frac1{AB^2}$。将上式两边同除以 $B$：
-\(\frac{1}{AB^2}=\frac{x+1}{AB}-\frac{x}{B^2}.\)
-利用同一个恒等式计算 $\frac{x+1}{AB}$：
-\begin{align*}
-x+1&=(x+1)^2B-x(x+1)A,\\
-\frac{x+1}{AB}
-&=\frac{(x+1)^2}{A}
-  -\frac{x^2+x}{B}.
-\end{align*}
-于是
-\[
-\frac{1}{AB^2}
-=\frac{(x+1)^2}{A}
--\frac{x^2+x}{B}
--\frac{x}{B^2}.
-\]
-将两个分子降次：$\dfrac{(x+1)^2}{A}=1+\dfrac{x}{A}$，$\dfrac{x^2+x}{B}=1+\dfrac{x-1}{B}$。
-所以
-\(\frac{1}{AB^2} =\frac{x}{A}-\frac{x-1}{B}-\frac{x}{B^2}.\)
-最终相减：
-\begin{align*}
-F(x)
-&=\frac{1}{AB}-\frac{1}{AB^2}\\
-&=\left(\frac{x+1}{A}-\frac{x}{B}\right)
-  -\left(\frac{x}{A}-\frac{x-1}{B}-\frac{x}{B^2}\right)\\
-&=\frac{1}{A}-\frac{1}{B}+\frac{x}{B^2}\\
-&=\frac{1}{x^2+x+1}
-  -\frac{1}{x^2+1}
-  +\frac{x}{(x^2+1)^2}.
-\end{align*}
-\end{solution}
-
-\begin{exercise}[分解 $F(x) = \frac{1}{x(x-1)(x^2+1)}$]
-    分解 $\displaystyle F(x) = \frac{1}{x(x-1)(x^2+1)}$
-\end{exercise}
-\begin{solution}
-先分离因式 $x$。设 $A=x,\ M=(x-1)(x^2+1)$。带余除法给出 $M=A(x^2-x+1)-1$，即
-$1=A(x^2-x+1)-M$。
-于是
-\begin{align*}
-\frac{1}{AM}
-&=\frac{A(x^2-x+1)-M}{AM}\\
-&=\frac{x^2-x+1}{(x-1)(x^2+1)}
-  -\frac1x.
-\end{align*}
-下面分解 \(\dfrac{x^2-x+1}{(x-1)(x^2+1)}\)。
-设
-\[
-B=x^2+1,\qquad C=x-1,\qquad P(x)=x^2-x+1.
-\]
-由 $B=C(x+1)+2$ 可得
-$1=\dfrac12B-\dfrac{x+1}{2}C$。
-乘入 $P(x)$ 并除以 $BC$：
-\begin{align*}
-\frac{P(x)}{BC}
-&=\frac{P(x)}{BC}
-  \left(\frac12B-\frac{x+1}{2}C\right)\\
-&=\frac{x^2-x+1}{2(x-1)}
-  -\frac{(x^2-x+1)(x+1)}{2(x^2+1)}.
-\end{align*}
-两项降次为
-\begin{align*}
-\frac{x^2-x+1}{2(x-1)}
-&=\frac{x}{2}+\frac{1}{2(x-1)},\\
-\frac{(x^2-x+1)(x+1)}{2(x^2+1)}
-&=\frac{x^3+1}{2(x^2+1)}\\
-&=\frac{x}{2}+\frac{1-x}{2(x^2+1)}.
-\end{align*}
-相减后一次项相消：
-\(\frac{P(x)}{BC} =\frac{1}{2(x-1)} +\frac{x-1}{2(x^2+1)}.\)
-因此
-\[
-F(x)
-=-\frac1x
-+\frac{1}{2(x-1)}
-+\frac{x-1}{2(x^2+1)}.
-\]
-\end{solution}
-
-\begin{exercise}[分解 $\frac{x^3}{(x-1)(x+1)(x^2+x+1)}$]
-    分解 $\displaystyle F(x) = \frac{x^3}{(x-1)(x+1)(x^2+x+1)}$
-\end{exercise}
-\begin{solution}
-一次因式 $(x-1)$ 与 $(x+1)$ 可先用掩盖赋值求系数。设
-\(F(x)=\frac{A}{x-1} +\frac{B}{x+1} +\frac{Cx+D}{x^2+x+1}.\)
-对 $x=1$ 与 $x=-1$ 分别代入：
-\[
-A=\frac{1^3}{(1+1)(1+1+1)}=\frac16,
-\qquad
-B=\frac{(-1)^3}{(-1-1)(1-1+1)}=\frac12.
-\]
-先合并已求出的两项：
-\begin{align*}
-\frac{1}{6(x-1)}+\frac{1}{2(x+1)}
-&=\frac{(x+1)+3(x-1)}{6(x^2-1)}\\
-&=\frac{2x-1}{3(x^2-1)}.
-\end{align*}
-将原式减去这两项，剩余项为
-\begin{align*}
-R(x)
-&=\frac{x^3}{(x^2-1)(x^2+x+1)}
-  -\frac{2x-1}{3(x^2-1)}\\
-&=\frac{3x^3-(2x-1)(x^2+x+1)}
-        {3(x^2-1)(x^2+x+1)}.
-\end{align*}
-计算分子：
-\[
-3x^3-(2x-1)(x^2+x+1)
-=x^3-x^2-x+1
-=(x^2-1)(x-1).
-\]
-因此 \(R(x)=\dfrac{x-1}{3(x^2+x+1)}\)。综上，
-\[
-F(x)=\frac{1}{6(x-1)}
-+\frac{1}{2(x+1)}
-+\frac{x-1}{3(x^2+x+1)}.
-\]
-\end{solution}
-
-\section{一次式与一次根式}
-
-\par\medskip\noindent\textbf{一次式积分}\par
-
-分母或根式里反复出现 $ax+b$，分子却是 $1,x,x^2$ 或者 $x$ 的低次多项式；或者题目长成 $\dfrac{1}{x(ax+b)}$、$\dfrac{x}{(ax+b)^2}$ 这类“一个一次式配一个 $x$”的结构。令 \(\displaystyle u=ax+b,\ \mathrm{d}u=a\,\mathrm{d}x,\ x=\frac{u-b}{a}\)。
-\[
-\int \frac{\mathrm{d}x}{ax+b}=\frac{1}{a}\ln|ax+b|+C,\qquad
-\int (ax+b)^\alpha \,\mathrm{d}x=\frac{(ax+b)^{\alpha+1}}{a(\alpha+1)}+C.
-\]
-并记
-\[
-x=\frac{(ax+b)-b}{a},\qquad
-x^k=\frac{\bigl((ax+b)-b\bigr)^k}{a^k},\qquad
-\frac{1}{x(ax+b)}=\frac{1}{b}\left(\frac{1}{x}-\frac{a}{ax+b}\right).
-\]
-
-如果整题只围绕一个 $ax+b$，先令 $u=ax+b$。若分子里有 $x$ 或 $x^2$，一律先把 $x$ 改写成 $\dfrac{u-b}{a}$，把原式压成 $u$ 的有理函数。若分母还带一个 $x$，优先做拆项，把 $\dfrac{1}{x(ax+b)}$、$\dfrac{1}{x^2(ax+b)}$ 这类结构拆回母式。若出现 $(ax+b)^2$，仍然先改写分子，再把整题看成关于 $u$ 的幂函数或有理分式。
-常见开头是“令 $u=ax+b$，则 $x=\dfrac{u-b}{a}$，$\mathrm{d}x=\dfrac{1}{a}\mathrm{d}u$”。若分子含 $x^k$，直接写成 $\dfrac{(u-b)^k}{a^k}$；若分母还有 $x$，先拆成 $\dfrac{1}{x}$ 母式与 $\dfrac{1}{u}$ 母式的线性组合。
-“原式围绕 $ax+b$ 展开，令 $u=ax+b$。再用 $x=\dfrac{u-b}{a}$ 消去 $x$，原积分化为 $u$ 的初等积分，故结果为 $\cdots$。”
-若题目分母已经是两个不同一次因式的乘积，直接部分分式可能更短。若 $a=0$，这节写法失效，要先把题目还原成常数情形。
-\par\medskip
-
-
-\par\medskip\noindent\textbf{一次根式积分}\par
-
-题目中反复出现 $\sqrt{ax+b}$、$\dfrac{1}{\sqrt{ax+b}}$、$\dfrac{\sqrt{ax+b}}{x}$、$\dfrac{1}{x\sqrt{ax+b}}$ 这类一次根式。
-\begin{align*}
-y&=\sqrt{ax+b},\qquad y^2=ax+b,\qquad x=\frac{y^2-b}{a},\qquad \mathrm{d}x=\frac{2y}{a}\,\mathrm{d}y,\\
-\int \frac{\mathrm{d}x}{x\sqrt{ax+b}}
-&=\int \frac{2}{y^2-b}\,\mathrm{d}y,\qquad
-\int \frac{\sqrt{ax+b}}{x}\,\mathrm{d}x=\int \frac{2y^2}{y^2-b}\,\mathrm{d}y.
-\end{align*}
-
-做题时先设 $y=\sqrt{ax+b}$，于是 $y^2=ax+b$、$x=\dfrac{y^2-b}{a}$、$\mathrm{d}x=\dfrac{2y}{a}\mathrm{d}y$；原式很快就会变成关于 $y$ 的有理式。若只剩 $y$ 的幂，就直接幂积分；若出现 $\dfrac{1}{y^2-b}$，则按 $b>0$ 用对数、$b<0$ 用反正切；若出现 $\dfrac{y^2}{y^2-b}$ 或 $\dfrac{1}{(y^2-b)^2}$，先拆成常数项加母式，不要硬算。
-
-卷面上通常先写“设 $y=\sqrt{ax+b}$，则 $y^2=ax+b,\ x=\dfrac{y^2-b}{a},\ \mathrm{d}x=\dfrac{2y}{a}\mathrm{d}y$”，然后把原式化成 $y$ 的有理式，再按幂函数、$\dfrac{1}{y^2-b}$ 或其递推变体收尾。若题目绕着的不止一个一次根式，或者根号外层还套着一般二次式，就应转去二次根式或纯根式双元；若 $a=0$，先把题目退化成常数根式。最后核对是否把 $y$ 全换回 $\sqrt{ax+b}$，以及 $b>0$ 与 $b<0$ 的收尾公式有没有混用、根号前的系数 $2/a$ 是否漏掉。
-\par\medskip
-
-
-
-\par\medskip\noindent\textbf{随堂练习：} 第二节习题：\texorpdfstring{含有 $ax+b$ 的积分}{含有 ax+b 的积分}\par
-\smallskip
-\begin{exercise}[含有 $ax+b$ 的积分 - 1]
-$\displaystyle \int \frac{\mathrm{d}x}{ax+b}$
-\end{exercise}
-\begin{solution}
-设 \(a\neq0\)。令 \(u=ax+b\)，则 \(\mathrm{d}u=a\,\mathrm{d}x\)，所以
-\begin{align*}
-\int \frac{\mathrm{d}x}{ax+b}
-&= \frac{1}{a}\int \frac{\mathrm{d}u}{u} \\
-&= \frac{1}{a}\ln|u|+C \\
-&= \frac{1}{a}\ln|ax+b|+C.
-\end{align*}
-\end{solution}
-
-\begin{exercise}[含有 $ax+b$ 的积分 - 2]
-$\displaystyle \int (ax+b)^{\alpha}\mathrm{d}x$
-\end{exercise}
-\begin{solution}
-设 \(a\neq0\)。令 \(u=ax+b\)，则 \(\mathrm{d}u=a\,\mathrm{d}x\)。当 \(\alpha\neq-1\) 时，
-\begin{align*}
-\int (ax+b)^{\alpha}\mathrm{d}x
-&= \frac{1}{a}\int u^{\alpha}\,\mathrm{d}u \\
-&= \frac{u^{\alpha+1}}{a(\alpha+1)}+C \\
-&= \frac{(ax+b)^{\alpha+1}}{a(\alpha+1)}+C.
-\end{align*}
-当 \(\alpha=-1\) 时，原积分退回上一题的对数母式。
-\end{solution}
-
-\begin{exercise}[含有 $ax+b$ 的积分 - 3]
-$\displaystyle \int \frac{x}{ax+b}\mathrm{d}x$
-\end{exercise}
-\begin{solution}
-设 \(a\neq0\)。令 \(u=ax+b\)，则 \(x=\dfrac{u-b}{a}\)、\(\mathrm{d}x=\dfrac{1}{a}\mathrm{d}u\)。于是
-\begin{align*}
-\int \frac{x}{ax+b}\mathrm{d}x
-&= \frac{1}{a^2}\int \frac{u-b}{u}\,\mathrm{d}u \\
-&= \frac{1}{a^2}\int \left(1-\frac{b}{u}\right)\mathrm{d}u \\
-&= \frac{1}{a^2}\bigl(u-b\ln|u|\bigr)+C \\
-&= \frac{1}{a^2}\bigl(ax+b-b\ln|ax+b|\bigr)+C.
-\end{align*}
-\end{solution}
-
-\begin{exercise}[含有 $ax+b$ 的积分 - 4]
-$\displaystyle \int \frac{x^2}{ax+b}\mathrm{d}x$
-\end{exercise}
-\begin{solution}
-设 \(a\neq0\)。令 \(u=ax+b\)，则 \(x=\dfrac{u-b}{a}\)、\(\mathrm{d}x=\dfrac{1}{a}\mathrm{d}u\)。于是
-\begin{align*}
-\int \frac{x^2}{ax+b}\mathrm{d}x
-&= \frac{1}{a^3}\int \frac{(u-b)^2}{u}\,\mathrm{d}u \\
-&= \frac{1}{a^3}\int \left(u-2b+\frac{b^2}{u}\right)\mathrm{d}u \\
-&= \frac{1}{a^3}\left(\frac{u^2}{2}-2bu+b^2\ln|u|\right)+C \\
-&= \frac{1}{a^3}\left[\frac{(ax+b)^2}{2}-2b(ax+b)+b^2\ln|ax+b|\right]+C.
-\end{align*}
-\end{solution}
-
-\begin{exercise}[含有 $ax+b$ 的积分 - 5]
-$\displaystyle \int \frac{\mathrm{d}x}{x(ax+b)}$
-\end{exercise}
-\begin{solution}
-设 \(a\neq0\)。若 \(b\neq0\)，先做部分分式分解：
-\(\frac{1}{x(ax+b)} =\frac{1}{b}\left(\frac{1}{x}-\frac{a}{ax+b}\right).\)
-因此
-\begin{align*}
-\int \frac{\mathrm{d}x}{x(ax+b)}
-&= \frac{1}{b}\int \left(\frac{1}{x}-\frac{a}{ax+b}\right)\mathrm{d}x \\
-&= \frac{1}{b}\bigl(\ln|x|-\ln|ax+b|\bigr)+C \\
-&= -\frac{1}{b}\ln\left|\frac{ax+b}{x}\right|+C.
-\end{align*}
-若 \(b=0\)，原式退化为
-\(\int \frac{\mathrm{d}x}{a x^2} =-\frac{1}{a x}+C.\)
-\end{solution}
-
-\begin{exercise}[含有 $ax+b$ 的积分 - 6]
-$\displaystyle \int \frac{\mathrm{d}x}{x^2(ax+b)}$
-\end{exercise}
-\begin{solution}
-设 \(a\neq0\)。若 \(b\neq0\)，先拆成
-\(\frac{1}{x^2(ax+b)} =\frac{1}{b}\left(\frac{1}{x^2}-\frac{a}{x(ax+b)}\right),\)
-再调用上一题 \(b\neq0\) 时的母式：
-\begin{align*}
-\int \frac{\mathrm{d}x}{x^2(ax+b)}
-&= \frac{1}{b}\int \left(\frac{1}{x^2}-\frac{a}{x(ax+b)}\right)\mathrm{d}x \\
-&= -\frac{1}{bx}-\frac{a}{b}\int \frac{\mathrm{d}x}{x(ax+b)} \\
-&= -\frac{1}{bx}+\frac{a}{b^2}\ln\left|\frac{ax+b}{x}\right|+C.
-\end{align*}
-若 \(b=0\)，则
-\(\int \frac{\mathrm{d}x}{a x^3} =-\frac{1}{2a x^2}+C.\)
-\end{solution}
-
-\begin{exercise}[含有 $ax+b$ 的积分 - 7]
-$\displaystyle \int \frac{x}{(ax+b)^2}\mathrm{d}x$
-\end{exercise}
-\begin{solution}
-设 \(a\neq0\)。令 \(u=ax+b\)，则 \(x=\dfrac{u-b}{a}\)、\(\mathrm{d}x=\dfrac{1}{a}\mathrm{d}u\)。于是
-\begin{align*}
-\int \frac{x}{(ax+b)^2}\mathrm{d}x
-&= \frac{1}{a^2}\int \frac{u-b}{u^2}\,\mathrm{d}u \\
-&= \frac{1}{a^2}\int \left(\frac{1}{u}-\frac{b}{u^2}\right)\mathrm{d}u \\
-&= \frac{1}{a^2}\left(\ln|u|+\frac{b}{u}\right)+C \\
-&= \frac{1}{a^2}\left(\ln|ax+b|+\frac{b}{ax+b}\right)+C.
-\end{align*}
-\end{solution}
-
-\begin{exercise}[含有 $ax+b$ 的积分 - 8]
-$\displaystyle \int \frac{x^2}{(ax+b)^2}\mathrm{d}x$
-\end{exercise}
-\begin{solution}
-设 \(a\neq0\)。令 \(u=ax+b\)，则 \(x=\dfrac{u-b}{a}\)、\(\mathrm{d}x=\dfrac{1}{a}\mathrm{d}u\)。于是
-\begin{align*}
-\int \frac{x^2}{(ax+b)^2}\mathrm{d}x
-&= \frac{1}{a^3}\int \frac{(u-b)^2}{u^2}\,\mathrm{d}u \\
-&= \frac{1}{a^3}\int \left(1-\frac{2b}{u}+\frac{b^2}{u^2}\right)\mathrm{d}u \\
-&= \frac{1}{a^3}\left(u-2b\ln|u|-\frac{b^2}{u}\right)+C \\
-&= \frac{1}{a^3}\left(ax+b-2b\ln|ax+b|-\frac{b^2}{ax+b}\right)+C.
-\end{align*}
-\end{solution}
-
-\begin{exercise}[含有 $ax+b$ 的积分 - 9]
-$\displaystyle \int \frac{\mathrm{d}x}{x(ax+b)^2}$
-\end{exercise}
-\begin{solution}
-设 \(a\neq0\)。若 \(b\neq0\)，先拆成
-\[
-\frac{1}{x(ax+b)^2}
-=\frac{1}{b}\left(\frac{1}{x(ax+b)}-\frac{a}{(ax+b)^2}\right).
-\]
-于是
-\begin{align*}
-\int \frac{\mathrm{d}x}{x(ax+b)^2}
-&= \frac{1}{b}\int \left(\frac{1}{x(ax+b)}-\frac{a}{(ax+b)^2}\right)\mathrm{d}x \\
-&= -\frac{1}{b^2}\ln\left|\frac{ax+b}{x}\right|
-   +\frac{1}{b(ax+b)}+C.
-\end{align*}
-若 \(b=0\)，原积分为
-\(\int \frac{\mathrm{d}x}{a^2x^3} =-\frac{1}{2a^2x^2}+C.\)
-\end{solution}
-
-
-\par\medskip\noindent\textbf{随堂练习：} 第三节习题：\texorpdfstring{含有 $\sqrt{ax+b}$ 的积分}{含有 sqrt(ax+b) 的积分}\par
-\smallskip
-\begin{exercise}[含有 $\sqrt{ax+b}$ 的积分 - 10]
-$\displaystyle \int \sqrt{ax+b}\mathrm{d}x$
-\end{exercise}
-\begin{solution}
-设 \(a\neq0\)。记 \(y=\sqrt{ax+b}\)，则
-\[
-y^2=ax+b,\qquad x=\frac{y^2-b}{a},\qquad
-\mathrm{d}x=\frac{2y}{a}\,\mathrm{d}y.
-\]
-原积分中的根式正好就是 $y$，因此可直接化为幂函数积分
-\begin{align*}
-\int \sqrt{ax+b}\mathrm{d}x
-&= \int y\cdot\frac{2y}{a}\,\mathrm{d}y \\
-&= \frac{2}{a}\int y^2\,\mathrm{d}y \\
-&= \frac{2}{3a}y^3+C \\
-&= \frac{2}{3a}(ax+b)^{3/2}+C.
-\end{align*}
-\end{solution}
-
-\begin{exercise}[含有 $\sqrt{ax+b}$ 的积分 - 11]
-$\displaystyle \int x\sqrt{ax+b}\mathrm{d}x$
-\end{exercise}
-\begin{solution}
-设 \(a\neq0\)。记 \(y=\sqrt{ax+b}\)，则
-\[
-y^2=ax+b,\qquad x=\frac{y^2-b}{a},\qquad
-\mathrm{d}x=\frac{2y}{a}\,\mathrm{d}y.
-\]
-这样分子里的 $x$ 与根式都能化成 $y$ 的多项式：
-\begin{align*}
-\int x\sqrt{ax+b}\mathrm{d}x
-&= \int \frac{y^2-b}{a}\cdot y\cdot\frac{2y}{a}\,\mathrm{d}y \\
-&= \frac{2}{a^2}\int (y^4-by^2)\,\mathrm{d}y \\
-&= \frac{2}{a^2}\left(\frac{y^5}{5}-\frac{by^3}{3}\right)+C \\
-&= \frac{2}{15a^2}y^3(3y^2-5b)+C \\
-&= \frac{2}{15a^2}(3ax-2b)(ax+b)^{3/2}+C.
-\end{align*}
-\end{solution}
-
-\begin{exercise}[含有 $\sqrt{ax+b}$ 的积分 - 12]
-$\displaystyle \int x^2\sqrt{ax+b}\mathrm{d}x$
-\end{exercise}
-\begin{solution}
-设 \(a\neq0\)。记 \(y=\sqrt{ax+b}\)，则
-\[
-y^2=ax+b,\qquad x=\frac{y^2-b}{a},\qquad
-\mathrm{d}x=\frac{2y}{a}\,\mathrm{d}y.
-\]
-把 $x^2$ 先写成 $\left(\dfrac{y^2-b}{a}\right)^2$，原积分就退化为 $y$ 的多项式积分：
-\begin{align*}
-\int x^2\sqrt{ax+b}\mathrm{d}x
-&= \int \left(\frac{y^2-b}{a}\right)^2\cdot y\cdot\frac{2y}{a}\,\mathrm{d}y \\
-&= \frac{2}{a^3}\int (y^6-2by^4+b^2y^2)\,\mathrm{d}y \\
-&= \frac{2}{a^3}\left(\frac{y^7}{7}-\frac{2by^5}{5}+\frac{b^2y^3}{3}\right)+C \\
-&= \frac{2}{105a^3}y^3(15y^4-42by^2+35b^2)+C \\
-&= \frac{2}{105a^3}(15a^2x^2-12abx+8b^2)(ax+b)^{3/2}+C.
-\end{align*}
-\end{solution}
-
-\begin{exercise}[含有 $\sqrt{ax+b}$ 的积分 - 13]
-$\displaystyle \int \frac{x}{\sqrt{ax+b}}\mathrm{d}x$
-\end{exercise}
-\begin{solution}
-设 \(a\neq0\)。记 \(y=\sqrt{ax+b}\)，则
-\[
-y^2=ax+b,\qquad x=\frac{y^2-b}{a},\qquad
-\mathrm{d}x=\frac{2y}{a}\,\mathrm{d}y.
-\]
-由于分母中已有一个 $y$，代换后正好可以约去：
-\begin{align*}
-\int \frac{x}{\sqrt{ax+b}}\mathrm{d}x
-&= \int \frac{\frac{y^2-b}{a}}{y}\cdot \frac{2y}{a}\,\mathrm{d}y \\
-&= \frac{2}{a^2}\int (y^2-b)\,\mathrm{d}y \\
-&= \frac{2}{a^2}\left(\frac{y^3}{3}-by\right)+C \\
-&= \frac{2}{3a^2}y(y^2-3b)+C \\
-&= \frac{2}{3a^2}(ax-2b)\sqrt{ax+b}+C.
-\end{align*}
-\end{solution}
-
-\begin{exercise}[含有 $\sqrt{ax+b}$ 的积分 - 14]
-$\displaystyle \int \frac{x^2}{\sqrt{ax+b}}\mathrm{d}x$
-\end{exercise}
-\begin{solution}
-设 \(a\neq0\)。记 \(y=\sqrt{ax+b}\)，则
-\[
-y^2=ax+b,\qquad x=\frac{y^2-b}{a},\qquad
-\mathrm{d}x=\frac{2y}{a}\,\mathrm{d}y.
-\]
-代换后分母中的根式与 $\mathrm{d}x$ 里的 $y$ 抵消，只剩普通多项式：
-\begin{align*}
-\int \frac{x^2}{\sqrt{ax+b}}\mathrm{d}x
-&= \int \frac{\left(\frac{y^2-b}{a}\right)^2}{y}\cdot\frac{2y}{a}\,\mathrm{d}y \\
-&= \frac{2}{a^3}\int (y^4-2by^2+b^2)\,\mathrm{d}y \\
-&= \frac{2}{a^3}\left(\frac{y^5}{5}-\frac{2by^3}{3}+b^2y\right)+C \\
-&= \frac{2}{15a^3}y(3y^4-10by^2+15b^2)+C \\
-&= \frac{2}{15a^3}(3a^2x^2-4abx+8b^2)\sqrt{ax+b}+C.
-\end{align*}
-\end{solution}
-
-\begin{exercise}[含有 $\sqrt{ax+b}$ 的积分 - 15]
-$\displaystyle \int \frac{\mathrm{d}x}{x\sqrt{ax+b}}$
-\end{exercise}
-\begin{solution}
-设 \(a\neq0\)。记 \(y=\sqrt{ax+b}\)，则
-\[
-y^2=ax+b,\qquad x=\frac{y^2-b}{a},\qquad
-\mathrm{d}x=\frac{2y}{a}\,\mathrm{d}y.
-\]
-于是
-\begin{align*}
-\int \frac{\mathrm{d}x}{x\sqrt{ax+b}}
-&= \int \frac{\frac{2y}{a}\,\mathrm{d}y}{\frac{y^2-b}{a}\cdot y} \\
-&= \int \frac{2}{y^2-b}\,\mathrm{d}y.
-\end{align*}
-因此按 \(b\) 的符号分三类：
-\[
-\int \frac{\mathrm{d}x}{x\sqrt{ax+b}}
-=
-\begin{cases}
-\dfrac{1}{\sqrt{b}}
-\ln\left|\dfrac{\sqrt{ax+b}-\sqrt{b}}{\sqrt{ax+b}+\sqrt{b}}\right|+C,
-& b>0,\\[1.1em]
-\dfrac{2}{\sqrt{-b}}
-\arctan\dfrac{\sqrt{ax+b}}{\sqrt{-b}}+C,
-& b<0,\\[1.1em]
--\dfrac{2}{\sqrt{ax}}+C,
-& b=0.
-\end{cases}
-\]
-\end{solution}
-
-\begin{exercise}[含有 $\sqrt{ax+b}$ 的积分 - 16]
-$\displaystyle \int \frac{\mathrm{d}x}{x^2\sqrt{ax+b}}$
-\end{exercise}
-\begin{solution}
-设 \(a\neq0\)。记 \(y=\sqrt{ax+b}\)，则
-\[
-y^2=ax+b,\qquad x=\frac{y^2-b}{a},\qquad
-\mathrm{d}x=\frac{2y}{a}\,\mathrm{d}y.
-\]
-代换后得到
-\(\int \frac{\mathrm{d}x}{x^2\sqrt{ax+b}} =\int \frac{2a}{(y^2-b)^2}\,\mathrm{d}y.\)
-若 \(b\neq0\)，使用恒等式
-\[
-\mathrm{d}\left(\frac{y}{y^2-b}\right)
-=-\frac{y^2+b}{(y^2-b)^2}\,\mathrm{d}y
-=-\frac{1}{y^2-b}\,\mathrm{d}y
- -\frac{2b}{(y^2-b)^2}\,\mathrm{d}y.
-\]
-由此整理出目标积分：
-\begin{align*}
-\int \frac{2a}{(y^2-b)^2}\,\mathrm{d}y
-&= -\frac{a}{b}\int \mathrm{d}\left(\frac{y}{y^2-b}\right)
-   -\frac{a}{b}\int \frac{\mathrm{d}y}{y^2-b} \\
-&= -\frac{ay}{b(y^2-b)}
-   -\frac{a}{2b}\int \frac{2}{y^2-b}\,\mathrm{d}y+C \\
-&= -\frac{\sqrt{ax+b}}{bx}
-   -\frac{a}{2b}\int \frac{\mathrm{d}x}{x\sqrt{ax+b}}+C.
-\end{align*}
-其中最后一个母式按上一题的三种分支代入。若 \(b=0\)，则
-\[
-\int \frac{\mathrm{d}x}{x^2\sqrt{ax}}
-=\int 2a\,y^{-4}\,\mathrm{d}y
-=-\frac{2a}{3(ax)^{3/2}}+C.
-\]
-\end{solution}
-
-\begin{exercise}[含有 $\sqrt{ax+b}$ 的积分 - 17]
-$\displaystyle \int \frac{\sqrt{ax+b}}{x}\mathrm{d}x$
-\end{exercise}
-\begin{solution}
-设 \(a\neq0\)。记 \(y=\sqrt{ax+b}\)，则
-\[
-y^2=ax+b,\qquad x=\frac{y^2-b}{a},\qquad
-\mathrm{d}x=\frac{2y}{a}\,\mathrm{d}y.
-\]
-代换后把分式先拆成常数项加第 15 题的母式：
-\begin{align*}
-\int \frac{\sqrt{ax+b}}{x}\mathrm{d}x
-&= \int \frac{y}{\frac{y^2-b}{a}}\cdot\frac{2y}{a}\,\mathrm{d}y \\
-&= \int \frac{2y^2}{y^2-b}\,\mathrm{d}y \\
-&= \int \left(2+\frac{2b}{y^2-b}\right)\mathrm{d}y \\
-&= 2y+b\int \frac{2}{y^2-b}\,\mathrm{d}y \\
-&= 2\sqrt{ax+b}
-   +b\int \frac{\mathrm{d}x}{x\sqrt{ax+b}}+C.
-\end{align*}
-其中第 15 题母式按 \(b>0\)、\(b<0\)、\(b=0\) 完整取用；当 \(b=0\) 时，上式直接化为 \(2\sqrt{ax}+C\)。
-\end{solution}
-
-\begin{exercise}[含有 $\sqrt{ax+b}$ 的积分 - 18]
-$\displaystyle \int \frac{\sqrt{ax+b}}{x^2}\mathrm{d}x$
-\end{exercise}
-\begin{solution}
-设 \(a\neq0\)。记 \(y=\sqrt{ax+b}\)，则
-\[
-y^2=ax+b,\qquad x=\frac{y^2-b}{a},\qquad
-\mathrm{d}x=\frac{2y}{a}\,\mathrm{d}y.
-\]
-代换后出现 $\dfrac{2ay^2}{(y^2-b)^2}$，把它写成 $ay\cdot\dfrac{2y}{(y^2-b)^2}$，即可直接凑出微分：
-\begin{align*}
-\int \frac{\sqrt{ax+b}}{x^2}\mathrm{d}x
-&= \int \frac{y}{\left(\frac{y^2-b}{a}\right)^2}\cdot\frac{2y}{a}\,\mathrm{d}y \\
-&= \int \frac{2ay^2}{(y^2-b)^2}\,\mathrm{d}y \\
-&= a\int y\,\mathrm{d}\left(-\frac{1}{y^2-b}\right) \\
-&= -\frac{ay}{y^2-b}+a\int \frac{\mathrm{d}y}{y^2-b} \\
-&= -\frac{\sqrt{ax+b}}{x}
-   +\frac{a}{2}\int \frac{\mathrm{d}x}{x\sqrt{ax+b}}+C.
-\end{align*}
-最后的母式仍按第 15 题的三种分支代入。
-\end{solution}
-
-\section{二次式与二次根式}
 
 \par\medskip\noindent\textbf{$x^2\pm a^2$ 基本母式}\par
 
