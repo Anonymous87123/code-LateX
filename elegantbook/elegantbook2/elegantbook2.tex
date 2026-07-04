@@ -73,9 +73,8 @@
 
 \chapter{不定积分}
 
-\section{知识讲解}
 
-\subsection{模法：有理分式与多项式逆元}
+\section{模法：有理分式与多项式逆元}
 
 \begin{note}[什么是"对多项式取模"]
 你已经熟悉整数取模：$17\bmod 5=2$ 意思是 $17$ 除以 $5$ 余 $2$。多项式取模完全类似：$P(x)\bmod A(x)$ 就是用 $A(x)$ 去除 $P(x)$ 后的余式。特别地，"令 $A(x)=0$"是一种快速取模的方法——把 $A(x)$ 的根代入，或者用 $A(x)=0$ 这个关系消去高次项，效果等同于做多项式除法取余。
@@ -922,457 +921,7 @@ x^2-(1-x^2)=2x^2-1
 \par\medskip
 
 
-\subsection{\texorpdfstring{含有 $ax+b$ 与 $\sqrt{ax+b}$ 的积分}{一次式与一次根式的积分}}
-
-\par\medskip\noindent\textbf{一次式积分}\par
-
-分母或根式里反复出现 $ax+b$，分子却是 $1,x,x^2$ 或者 $x$ 的低次多项式；或者题目长成 $\dfrac{1}{x(ax+b)}$、$\dfrac{x}{(ax+b)^2}$ 这类“一个一次式配一个 $x$”的结构。令 \(\displaystyle u=ax+b,\ \mathrm{d}u=a\,\mathrm{d}x,\ x=\frac{u-b}{a}\)。
-\[
-\int \frac{\mathrm{d}x}{ax+b}=\frac{1}{a}\ln|ax+b|+C,\qquad
-\int (ax+b)^\alpha \,\mathrm{d}x=\frac{(ax+b)^{\alpha+1}}{a(\alpha+1)}+C.
-\]
-并记
-\[
-x=\frac{(ax+b)-b}{a},\qquad
-x^k=\frac{\bigl((ax+b)-b\bigr)^k}{a^k},\qquad
-\frac{1}{x(ax+b)}=\frac{1}{b}\left(\frac{1}{x}-\frac{a}{ax+b}\right).
-\]
-
-如果整题只围绕一个 $ax+b$，先令 $u=ax+b$。若分子里有 $x$ 或 $x^2$，一律先把 $x$ 改写成 $\dfrac{u-b}{a}$，把原式压成 $u$ 的有理函数。若分母还带一个 $x$，优先做拆项，把 $\dfrac{1}{x(ax+b)}$、$\dfrac{1}{x^2(ax+b)}$ 这类结构拆回母式。若出现 $(ax+b)^2$，仍然先改写分子，再把整题看成关于 $u$ 的幂函数或有理分式。
-常见开头是“令 $u=ax+b$，则 $x=\dfrac{u-b}{a}$，$\mathrm{d}x=\dfrac{1}{a}\mathrm{d}u$”。若分子含 $x^k$，直接写成 $\dfrac{(u-b)^k}{a^k}$；若分母还有 $x$，先拆成 $\dfrac{1}{x}$ 母式与 $\dfrac{1}{u}$ 母式的线性组合。
-“原式围绕 $ax+b$ 展开，令 $u=ax+b$。再用 $x=\dfrac{u-b}{a}$ 消去 $x$，原积分化为 $u$ 的初等积分，故结果为 $\cdots$。”
-若题目分母已经是两个不同一次因式的乘积，直接部分分式可能更短。若 $a=0$，这节写法失效，要先把题目还原成常数情形。
-\par\medskip
-
-
-\par\medskip\noindent\textbf{一次根式积分}\par
-
-题目中反复出现 $\sqrt{ax+b}$、$\dfrac{1}{\sqrt{ax+b}}$、$\dfrac{\sqrt{ax+b}}{x}$、$\dfrac{1}{x\sqrt{ax+b}}$ 这类一次根式。
-\begin{align*}
-y&=\sqrt{ax+b},\qquad y^2=ax+b,\qquad x=\frac{y^2-b}{a},\qquad \mathrm{d}x=\frac{2y}{a}\,\mathrm{d}y,\\
-\int \frac{\mathrm{d}x}{x\sqrt{ax+b}}
-&=\int \frac{2}{y^2-b}\,\mathrm{d}y,\qquad
-\int \frac{\sqrt{ax+b}}{x}\,\mathrm{d}x=\int \frac{2y^2}{y^2-b}\,\mathrm{d}y.
-\end{align*}
-
-做题时先设 $y=\sqrt{ax+b}$，于是 $y^2=ax+b$、$x=\dfrac{y^2-b}{a}$、$\mathrm{d}x=\dfrac{2y}{a}\mathrm{d}y$；原式很快就会变成关于 $y$ 的有理式。若只剩 $y$ 的幂，就直接幂积分；若出现 $\dfrac{1}{y^2-b}$，则按 $b>0$ 用对数、$b<0$ 用反正切；若出现 $\dfrac{y^2}{y^2-b}$ 或 $\dfrac{1}{(y^2-b)^2}$，先拆成常数项加母式，不要硬算。
-
-卷面上通常先写“设 $y=\sqrt{ax+b}$，则 $y^2=ax+b,\ x=\dfrac{y^2-b}{a},\ \mathrm{d}x=\dfrac{2y}{a}\mathrm{d}y$”，然后把原式化成 $y$ 的有理式，再按幂函数、$\dfrac{1}{y^2-b}$ 或其递推变体收尾。若题目绕着的不止一个一次根式，或者根号外层还套着一般二次式，就应转去二次根式或纯根式双元；若 $a=0$，先把题目退化成常数根式。最后核对是否把 $y$ 全换回 $\sqrt{ax+b}$，以及 $b>0$ 与 $b<0$ 的收尾公式有没有混用、根号前的系数 $2/a$ 是否漏掉。
-\par\medskip
-
-
-\subsection{二次式及其根式}
-
-\par\medskip\noindent\textbf{$x^2\pm a^2$ 基本母式}\par
-
-分母直接长成 $x^2+a^2$、$x^2-a^2$ 或 $(x^2+a^2)^n$，没有线性项，也还没进入根式。
-
-\[
-\int \frac{\mathrm{d}x}{x^2+a^2}=\frac{1}{a}\arctan\frac{x}{a}+C,
-\qquad
-\int \frac{\mathrm{d}x}{x^2-a^2}=\frac{1}{2a}\ln\left|\frac{x-a}{x+a}\right|+C.
-\]
-对 \(\displaystyle I_n=\int \frac{\mathrm{d}x}{(x^2+a^2)^n}\)，必背递推：
-\[
-I_n=
-\frac{x}{2(n-1)a^2(x^2+a^2)^{n-1}}
-+\frac{2n-3}{2(n-1)a^2}I_{n-1}.
-\]
-
-若是 $x^2+a^2$，先提出 $a^2$，再换成标准母式 $1+u^2$。若是 $x^2-a^2$，先因式分解成 $(x-a)(x+a)$，不要硬背奇怪变形。若是 $(x^2+a^2)^n$，直接调用递推，把 $n$ 一路降到 $1$。这一节的核心不是乱换元，而是先认出“反正切母式、对数母式、递推母式”三条主路。
-对 $x^2+a^2$ 型，写“令 $u=x/a$”；对 $x^2-a^2$ 型，写“先分解并部分分式”；对高次幂型，先写 $I_n$，再把递推公式直接代上去。
-“原式属于 $x^2+a^2$ 母式，令 $u=x/a$ 后得到反正切。” 或 “原式属于 $x^2-a^2$ 母式，分解为 $(x-a)(x+a)$ 后作部分分式。” 或 “原式为 $(x^2+a^2)^{-n}$，直接按递推降次。”
-若题目其实是 $ax^2+b$ 或 $ax^2+bx+c$，不要套本节公式，要先提出系数或配方。若分母伴随根号，这一节也不是终点，要跳去根式章的底座写法。
-检查 $a$ 有没有提出干净；检查 $x^2-a^2$ 的对数答案分子分母顺序是否写对；检查递推里 $2n-3$ 和 $2(n-1)a^2$ 有没有抄错。
-\par\medskip
-
-
-\par\medskip\noindent\textbf{$ax^2+b$ 型积分的处理}\par
-
-题面中心是 $ax^2+b$，分子只到 $x^2$ 或者分母里还挂着 $x,x^2,x^3$ 这类幂。
-
-\[
-\int \frac{\mathrm{d}x}{ax^2+b}
-=
-\begin{cases}
-\dfrac{1}{\sqrt{ab}}\arctan\!\left(\sqrt{\dfrac{a}{b}}\,x\right)+C, & b>0,\\[0.9em]
-\dfrac{1}{2\sqrt{-ab}}
-\ln\left|\dfrac{\sqrt{a}x-\sqrt{-b}}{\sqrt{a}x+\sqrt{-b}}\right|+C, & b<0.
-\end{cases}
-\]
-\[
-\int \frac{x}{ax^2+b}\,\mathrm{d}x=\frac{1}{2a}\ln|ax^2+b|+C,\qquad
-\frac{1}{x(ax^2+b)}=\frac{1}{2b}\left(\frac{2}{x}-\frac{2ax}{ax^2+b}\right).
-\]
-
-先判 $b$ 的符号：$b>0$ 走反正切，$b<0$ 走对数。若分子正好带一个 $x$，立刻凑 $\mathrm{d}(ax^2+b)=2ax\,\mathrm{d}x$。若分子次数和分母同阶，就用 $ax^2=(ax^2+b)-b$ 拆项。若分母外面还挂着 $x^k$，优先把常数 $b$ 改写成 $(ax^2+b)-ax^2$，把题目拆回 $\dfrac{1}{x^m}$ 和基础母式。若分母平方出现 $(ax^2+b)^2$，先分部积分或先把 $ax^2$ 拆开，再回到基础母式。
-开头可写“按 $b$ 的符号分类”。然后如果有 $x$，就写“凑 $\mathrm{d}(ax^2+b)$”；如果有 $x^{-1}$、$x^{-2}$、$x^{-3}$，就写“用 $b=(ax^2+b)-ax^2$ 拆项”。
-“原式围绕 $ax^2+b$ 展开，先按 $b$ 的符号确定反正切或对数母式；其余部分通过 $ax^2=(ax^2+b)-b$ 或 $b=(ax^2+b)-ax^2$ 拆回基础母式。”
-若中间已经出现 $bx$，说明应跳去一般二次式章节。若根号已经罩在外面，则应跳去 $\sqrt{x^2\pm a^2}$ 或一般二次根式章节。
-检查 $b>0,b<0$ 的答案族是否写反；检查对数前面的 $\sqrt a,\sqrt{-b}$ 是否漏掉；检查拆项后每一项都确实简化了难度。
-\par\medskip
-
-
-\par\medskip\noindent\textbf{一般二次式积分的处理}\par
-
-分母是 $ax^2+bx+c$，分子至多一次，题目核心障碍是中间的 $bx$ 项。
-
-先配方：\(\displaystyle ax^2+bx+c=a\left(x+\frac{b}{2a}\right)^2+\frac{4ac-b^2}{4a}\)。
-记判别量 $\Delta=b^2-4ac$。则
-\[
-\int \frac{\mathrm{d}x}{ax^2+bx+c}
-=
-\begin{cases}
-\dfrac{1}{\sqrt{\Delta}}
-\ln\left|\dfrac{2ax+b-\sqrt{\Delta}}{2ax+b+\sqrt{\Delta}}\right|+C, & \Delta>0,\\[1.1em]
-\dfrac{2}{\sqrt{-\Delta}}
-\arctan\dfrac{2ax+b}{\sqrt{-\Delta}}+C, & \Delta<0.
-\end{cases}
-\]
-\[
-\int \frac{x}{ax^2+bx+c}\,\mathrm{d}x
-=\frac{1}{2a}\ln|ax^2+bx+c|
--\frac{b}{2a}\int \frac{\mathrm{d}x}{ax^2+bx+c}.
-\]
-
-处理这类积分时，配方与判别式决定结果类型：$\Delta>0$ 对应对数母式，$\Delta<0$ 对应反正切母式。若分子是 $x$，就把 $2ax+b$ 凑出来，让一部分变成对数，另一部分回到基础母式。若题目再往上叠根号，则配方后的结果应转入二次根式章节，不在这里硬打。
-常见处理是把二次式先配方，再按判别式分情况。如果分子含 $x$，就补一个 $b$，写成 \(\displaystyle x=\frac{(2ax+b)-b}{2a}\)，然后一半变对数，一半使用上一条基础公式。
-“将 $ax^2+bx+c$ 配方为 $a(x+\frac{b}{2a})^2+\cdots$。由判别式 $\Delta$ 的符号，原式分别化为对数母式或反正切母式。”
-若 $b=0$，应退回上一节 $ax^2+b$。若题目是 $\sqrt{ax^2+bx+c}$ 而不是倒数，应跳去二次根式章节。
-检查配方常数是否写成 $\dfrac{4ac-b^2}{4a}$；检查 $\Delta$ 的正负是否和最终函数族一致；检查分子拆成 $(2ax+b)-b$ 时前面的 $\dfrac{1}{2a}$ 是否保留。
-\par\medskip
-
-
-\par\medskip\noindent\textbf{$\sqrt{x^2+a^2}$ 型积分的处理}\par
-
-题目出现 $\sqrt{x^2+a^2}$、$\dfrac{1}{\sqrt{x^2+a^2}}$、$\dfrac{1}{(x^2+a^2)^{3/2}}$、$\ln(x+\sqrt{x^2+a^2})$，或者分子分母都只由 $x$ 与 $\sqrt{x^2+a^2}$ 组成。
-
-\begin{align*}
-y&=\sqrt{x^2+a^2},\qquad y^2-x^2=a^2,\qquad x\,\mathrm{d}x=y\,\mathrm{d}y,\\
-\int \frac{\mathrm{d}x}{y}
-&=\ln(x+y)+C
-=\operatorname{arsinh}\frac{x}{a}+C,\\
-\int \frac{\mathrm{d}x}{y^3}&=\frac{x}{a^2y}+C,\qquad
-\int \frac{\mathrm{d}x}{x^2y}=-\frac{y}{a^2x}+C.
-\end{align*}
-
-若题目只要求一条标准母式，可直接使用 $\int \mathrm{d}x/\sqrt{x^2+a^2}=\ln(x+\sqrt{x^2+a^2})+C$。若题目里高频出现 $x,y,\mathrm{d}x,\mathrm{d}y$，优先双元法；若题目明显更适合 $\tan t,\sec t$，可改用 $x=a\tan t$。分子里有 $x\,\mathrm{d}x$ 时，立刻换成 $y\,\mathrm{d}y$；分母是三次根式时，立刻查比值微元。
-先设 $y=\sqrt{x^2+a^2}$，把所有根式统一写成 $y$。然后用 $y^2-x^2=a^2$ 改写平方项，用 $x\,\mathrm{d}x=y\,\mathrm{d}y$ 转移微分，把题目压回母式、比值微元或对数微分。
-“设 $y=\sqrt{x^2+a^2}$，则 $y^2-x^2=a^2$，且 $x\,\mathrm{d}x=y\,\mathrm{d}y$。原式化为 $\cdots$，最后回到 $\int \mathrm{d}x/y$ 或 $\int \mathrm{d}(x/y)$，故结果为 $\cdots$。”
-若题目已经天然适合 $x=a\tan t$，三角代换同样合法，但要少走回代弯路。若根式不是 $x^2+a^2$ 而是 $a^2-x^2$ 或 $x^2-a^2$，要换成对应章节的底座。
-检查对数里是否写成 $x+\sqrt{x^2+a^2}$；检查回代后是否完全消掉了临时变量 $y$。
-\par\medskip
-
-
-\begin{note}[双元法里的约束别丢]
-\begin{itemize}
-  \item 设 $y=\sqrt{x^2+a^2}$ 后，$x$ 与 $y$ 仍受约束 $y^2-x^2=a^2$，不能把它们当成彼此独立的两个变量。
-  \item 看到 $\int \frac{\mathrm{d}x}{y}$、$\int \frac{\mathrm{d}x}{y^3}$、$\int \frac{\mathrm{d}x}{x^2y}$ 这类形式时，不要急着硬算，先检查是否能凑出 $\mathrm{d}\ln(x+y)$、$\mathrm{d}\!\left(\frac{x}{y}\right)$ 或 $\mathrm{d}\!\left(\frac{y}{x}\right)$。
-\end{itemize}
-\end{note}
-
-\begin{note}[这一组为什么是虚圆版本]
-令 $y=\sqrt{x^2-a^2}$ 后，立刻得到虚圆底座 $x^2-y^2=a^2$。这意味着本节最先该检查的不是三角代换，而是四类虚圆母动作：$\dfrac{\mathrm{d}x}{y}$、$\mathrm{d}\!\left(\dfrac{x}{y}\right)$、$\mathrm{d}\!\left(\dfrac{y}{x}\right)$、$\mathrm{d}\ln(x+y)$。
-
-如果题目主要由 $x,y$ 及其商组成，那么双元法往往比设 $x=a\sec t$ 更短，因为它始终保留了代数底座 $x^2-y^2=a^2$，不用来回在三角和代数形式之间切换。
-\end{note}
-
-\par\medskip\noindent\textbf{虚圆根式的处理}\par
-
-题目含 $\sqrt{x^2-a^2}$、$\dfrac{1}{\sqrt{x^2-a^2}}$、$\dfrac{1}{x\sqrt{x^2-a^2}}$、$\dfrac{\sqrt{x^2-a^2}}{x^2}$ 等结构，答案常出现对数或反三角函数。
-
-\begin{align*}
-y&=\sqrt{x^2-a^2},\qquad x^2-y^2=a^2,\qquad x\,\mathrm{d}x=y\,\mathrm{d}y,\\
-\int \frac{\mathrm{d}x}{y}&=\ln|x+y|+C,\\
-\mathrm{d}\!\left(\frac{x}{y}\right)&=-\frac{a^2}{y^3}\,\mathrm{d}x,\qquad
-\mathrm{d}\!\left(\frac{y}{x}\right)=\frac{a^2}{x^2y}\,\mathrm{d}x,\\
-\int y\,\mathrm{d}x&=\frac{1}{2}xy-\frac{a^2}{2}\ln|x+y|+C.
-\end{align*}
-
-先设 $y=\sqrt{x^2-a^2}$。若分母只有一个 $y$，优先调用 $\ln|x+y|$。若分母是 $y^3$，优先看 $\dfrac{x}{y}$ 的微分；若分母是 $x^2y$，优先看 $\dfrac{y}{x}$ 的微分。若分子含 $x$，就用 $x\,\mathrm{d}x=y\,\mathrm{d}y$；若分子含 $x^2$，就换成 $y^2+a^2$。只有当双元改写不顺时，才退回 $x=a\sec t$。
-
-落笔可写为“设 $y=\sqrt{x^2-a^2}$，则 $x^2-y^2=a^2,\ x\,\mathrm{d}x=y\,\mathrm{d}y$”。随后把原式压回四个母动作：$\dfrac{\mathrm{d}x}{y}$、$\dfrac{\mathrm{d}x}{y^3}$、$\dfrac{\mathrm{d}x}{x^2y}$、$y\,\mathrm{d}x$。
-
-“设 $y=\sqrt{x^2-a^2}$。由 $x^2-y^2=a^2$ 及 $x\,\mathrm{d}x=y\,\mathrm{d}y$，原式化为虚圆母式 $\cdots$，故积分为 $\cdots$。”
-
-若根式其实是 $\sqrt{x^2+a^2}$ 或 $\sqrt{a^2-x^2}$，不要乱套符号。若题目只有 $\dfrac{1}{x^2-a^2}$ 而没有根号，应回到上一节的部分分式写法。
-
-检查对数里是 $x+\sqrt{x^2-a^2}$ 而不是别的组合；检查 $\dfrac{x}{y}$ 与 $\dfrac{y}{x}$ 的符号是否写对；检查回代后是否仍满足 $x^2-a^2>0$ 的定义域。
-\par\medskip
-
-
-\begin{note}[这一组为什么是实圆版本]
-令 $y=\sqrt{a^2-x^2}$ 后，得到的是实圆底座 $x^2+y^2=a^2$。和上一节相比，最关键的变化是符号：这里有 $x\,\mathrm{d}x=-y\,\mathrm{d}y$，所以参数角、面积微元、比值微元都会自动带上实圆的符号结构。
-
-因此凡是答案里自然出现 $\arcsin$、$\arccos$、面积微元或实圆比值微元的题，都应优先想到这一套底座，而不是把它只当成“又一类根式积分写法”。
-\end{note}
-
-\par\medskip\noindent\textbf{实圆根式的处理}\par
-
-题目含 $\sqrt{a^2-x^2}$、$\dfrac{1}{\sqrt{a^2-x^2}}$、$\dfrac{1}{x\sqrt{a^2-x^2}}$、$\dfrac{\sqrt{a^2-x^2}}{x}$ 等结构，答案常出现 $\arcsin$、$\arccos$。
-
-\begin{align*}
-y&=\sqrt{a^2-x^2},\qquad x^2+y^2=a^2,\qquad x\,\mathrm{d}x=-y\,\mathrm{d}y,\\
-\int \frac{\mathrm{d}x}{y}&=\arcsin\frac{x}{a}+C,\\
-\mathrm{d}\!\left(\frac{x}{y}\right)&=\frac{a^2}{y^3}\,\mathrm{d}x,\qquad
-\mathrm{d}\!\left(\frac{y}{x}\right)=-\frac{a^2}{x^2y}\,\mathrm{d}x,\\
-\int y\,\mathrm{d}x&=\frac{1}{2}xy+\frac{a^2}{2}\arcsin\frac{x}{a}+C.
-\end{align*}
-
-先设 $y=\sqrt{a^2-x^2}$。若分母只有一个 $y$，直接出 $\arcsin(x/a)$。若分母是 $y^3$，优先看 $\dfrac{x}{y}$ 的微分；若分母是 $x^2y$，优先看 $\dfrac{y}{x}$ 的微分。若分子含 $x$，就用 $x\,\mathrm{d}x=-y\,\mathrm{d}y$；若分子含 $x^2$，先改成 $a^2-y^2$。若题目还伴随 $\arcsin,\arccos$，就把这里当成它们的基础母式库。
-
-常见处理是“设 $y=\sqrt{a^2-x^2}$，则 $x^2+y^2=a^2,\ x\,\mathrm{d}x=-y\,\mathrm{d}y$”。然后把原式收缩到 $\dfrac{\mathrm{d}x}{y}$、$\dfrac{\mathrm{d}x}{y^3}$、$\dfrac{\mathrm{d}x}{x^2y}$ 或 $y\,\mathrm{d}x$ 这些基本母式。
-
-“设 $y=\sqrt{a^2-x^2}$。由实圆底座 $x^2+y^2=a^2$ 及 $x\,\mathrm{d}x=-y\,\mathrm{d}y$，原式化为 $\cdots$，故结果为 $\cdots$。”
-
-若根号改成 $\sqrt{x^2-a^2}$，符号体系全部要换。若题目只是 $\dfrac{1}{x^2+a^2}$，那是反正切母式，不在本节。
-
-检查 $\arcsin$ 与 $\arccos$ 有没有写混；检查实圆里负号是否保留；检查定义域 $|x|\le a$ 是否与题目相符。
-\par\medskip
-
-
-\begin{note}[配方后二次根式为什么还能回到双元]
-这一组表面上比 $\sqrt{x^2\pm a^2}$ 更复杂，但关键只是先把二次式配方，再用
-\(\displaystyle u=2ax\pm b,\ v=2\sqrt a\,y\) 把它改造成标准的实圆或虚圆底座。换句话说，这一步不是额外发明新方法，而是在制造前面已经熟悉的双元母场景。
-
-所以读题时若看到根号里是一般二次式，不必急着分别记很多公式。先问自己：能否把它压成 $u^2+v^2=\Delta$ 或 $v^2-u^2=\Delta$？一旦能，后面就只是调用前面的 $\int \frac{\mathrm{d}u}{v}$、面积微元和比值微元。
-\end{note}
-
-\par\medskip\noindent\textbf{一般二次根式的处理}\par
-
-根号里一旦是一般二次式，最稳的路径不是单独记新公式，而是先配方，把它压成前面已经熟悉的实圆或虚圆底座。若是 $ax^2+bx+c$，就对应虚圆情形处理；若是 $c+bx-ax^2$，就对应实圆情形处理。
-
-若 \(\displaystyle y=\sqrt{ax^2+bx+c},\ u=2ax+b,\ v=2\sqrt a\,y\)，则 \(\displaystyle v^2-u^2=4ac-b^2\)。
-于是
-\[
-\int \frac{\mathrm{d}x}{\sqrt{ax^2+bx+c}}
-=\frac{1}{\sqrt a}\ln|u+v|+C
-=\frac{1}{\sqrt a}\ln|2ax+b+2\sqrt a\,y|+C.
-\]
-若 \(\displaystyle y=\sqrt{c+bx-ax^2},\ u=2ax-b,\ v=2\sqrt a\,y\)，则 \(\displaystyle u^2+v^2=b^2+4ac\)，从而
-\[
-\int \frac{\mathrm{d}x}{\sqrt{c+bx-ax^2}}
-=\frac{1}{\sqrt a}\arcsin\frac{u}{\sqrt{b^2+4ac}}+C.
-\]
-
-到这一步后，后面的动作已经很明确：分子若含 $x$，就用 $x=\dfrac{u\mp b}{2a}$ 消去；若要算 $\int y\,\mathrm{d}x$，直接使用面积微元，不必重做分部积分。卷面上可以写成“设 $y=\sqrt{\cdots}$，再令 $u=2ax\pm b,\ v=2\sqrt a\,y$，则得到实圆 / 虚圆底座”，这样后面所有积分都尽量改成 $\dfrac{\mathrm{d}u}{v}$、$v\,\mathrm{d}u$、$\dfrac{u\,\mathrm{d}u}{v}$ 这三类。若根号内其实已是 $x^2\pm a^2$，就不用多此一举；若根号外面只是倒数二次式，也该回到一般二次式积分章节。最后核对 $u=2ax+b$ 还是 $2ax-b$、$\sqrt a$ 有没有漏乘，以及结果的函数族是否和底座类型一致。
-\par\medskip
-
-
-\begin{note}[纯根式双元的想法]
-这一组最容易误以为只能靠乘共轭或继续套换元。其实更系统的做法，是把两个根号本身直接当成双元：一个承担 $p$，一个承担 $q$，然后看它们满足的是 $p^2-q^2=\text{常数}$ 还是 $p^2+q^2=\text{常数}$。
-
-这样做的好处是，题目里原本零散的根式差、根式和、分式结构，会立刻回收到标准实圆或虚圆底座里。换句话说，这里不是“根式方法”孤立出现，而是双元法向纯根式情形的自然延伸。
-\end{note}
-
-\par\medskip\noindent\textbf{纯根式双元处理}\par
-
-题目出现 $\sqrt{\dfrac{x-a}{x-b}}$、$\sqrt{\dfrac{x-a}{b-x}}$、$\sqrt{(x-a)(b-x)}$ 这类“两个一次根式互相缠绕”的结构时，最自然的做法就是把两个根号本身直接当成双元 \(p,q\)。
-
-若设
-\[
-p=\sqrt{x-a},\qquad q=\sqrt{x-b},\qquad
-p^2-q^2=b-a,\qquad \mathrm{d}x=2p\,\mathrm{d}p=2q\,\mathrm{d}q.
-\]
-若设
-\[
-p=\sqrt{x-a},\qquad q=\sqrt{b-x},\qquad
-p^2+q^2=b-a,\qquad \mathrm{d}x=2p\,\mathrm{d}p=-2q\,\mathrm{d}q.
-\]
-
-先看两个根号是“同向增长”还是“一个增一个减”。若同向，就优先造虚圆 $p^2-q^2=\text{常数}$；若一增一减，就优先造实圆 $p^2+q^2=\text{常数}$。然后把原式中的根式商、根式积全部改成 $p/q$、$pq$、$p^2-q^2$ 或 $p^2+q^2$，能直接变成 $\dfrac{\mathrm{d}p}{q}$、$\dfrac{\mathrm{d}q}{p}$、$p\,\mathrm{d}q$、$q\,\mathrm{d}p$ 时，题目就已经被收回到标准母式里了。
-
-卷面上可以直接写“设 $p=\sqrt{x-a}, q=\sqrt{x-b}$”或“设 $p=\sqrt{x-a}, q=\sqrt{b-x}$”，再把底座恒等式和 $\mathrm{d}x$ 的表达带上。若根号内部不是一次式，而是二次式或三角式，就不要硬套这一节；若已经能单次换元化成 $\sqrt{t^2\pm c}$，也可以直接转去前面的根式章节。最后只需核对 $q$ 的定义、底座的平方和还是平方差，以及收尾函数到底该是对数还是反三角。
-\par\medskip
-
-
-\subsection{含有三角函数的积分}
-
-\begin{note}[三角函数其实就是实圆双元的参数化]
-把 \(\displaystyle p=\sin x,\ q=\cos x\) 写出来以后，立刻回到实圆底座 $p^2+q^2=1$；而把 $p=\sec x,q=\tan x$ 写出来，则回到另一种常见的代数底座 $p^2-q^2=1$。所以三角函数积分里很多看似分散的做法，本质上仍是在调用“底座 + 微元 + 递推/对数微元”这同一套结构。
-
-因此，当题目可以明显分离出一对彼此满足平方恒等式的三角量时，就可以把它当成双元题看，而不是只靠积化和差、半角或万能代换硬推。
-\end{note}
-
-\par\medskip\noindent\textbf{三角函数积分的处理}\par
-
-题面是三角函数积分，尤其是幂次、乘积、倒幂、混合频率、$R(\sin x,\cos x)$ 这几类。
-
-\begin{align*}
-\int \sin x\,\mathrm{d}x&=-\cos x+C,\quad
-\int \cos x\,\mathrm{d}x=\sin x+C,\\
-\int \tan x\,\mathrm{d}x&=-\ln|\cos x|+C,\quad
-\int \cot x\,\mathrm{d}x=\ln|\sin x|+C,\\
-\int \sec x\,\mathrm{d}x&=\ln|\sec x+\tan x|+C,\quad
-\int \csc x\,\mathrm{d}x=\ln|\csc x-\cot x|+C.
-\end{align*}
-\[
-\sin x=\frac{2t}{1+t^2},\quad
-\cos x=\frac{1-t^2}{1+t^2},\quad
-\mathrm{d}x=\frac{2}{1+t^2}\,\mathrm{d}t,
-\quad t=\tan\frac{x}{2}.
-\]
-\begin{align*}
-\int \sin^n x\,\mathrm{d}x
-&=-\frac{1}{n}\sin^{n-1}x\cos x+\frac{n-1}{n}\int \sin^{n-2}x\,\mathrm{d}x,\\
-\int \cos^n x\,\mathrm{d}x
-&=\frac{1}{n}\cos^{n-1}x\sin x+\frac{n-1}{n}\int \cos^{n-2}x\,\mathrm{d}x.
-\end{align*}
-\begin{align*}
-\int \sec^n x\,\mathrm{d}x
-&=\frac{\sin x}{(n-1)\cos^{n-1}x}
-+\frac{n-2}{n-1}\int \sec^{n-2}x\,\mathrm{d}x,\\
-\int \csc^n x\,\mathrm{d}x
-&=-\frac{\cos x}{(n-1)\sin^{n-1}x}
-+\frac{n-2}{n-1}\int \csc^{n-2}x\,\mathrm{d}x.
-\end{align*}
-
-单个基本函数可直接使用结论；若是 $\sin^m x\cos^n x$，先看奇偶：有一个奇幂时，拆一个出来，剩余部分用 $1-\sin^2 x$ 或 $1-\cos^2 x$；两者都偶时，用半角。若是 $\sec,\tan$ 型，优先找 $\sec x\tan x$ 或 $\sec^2x$；若是 $\csc,\cot$ 型，优先找 $\csc x\cot x$ 或 $\csc^2x$。若是不同频率的 $\sin ax\cos bx$、$\sin ax\sin bx$、$\cos ax\cos bx$，先积化和差。若是 $R(\sin x,\cos x)$ 怎么变都不顺，最后再上万能代换 $t=\tan(x/2)$。
-
-做题时先写“判奇偶”或“判频率”。如果是幂次题，就先写“拆一因子 + 余项降次”或“半角降次”；如果是混合频率，就先写积化和差；如果是有理式，就先写万能代换公式。能用积化和差解决的，不要直接上万能代换；能拆奇幂的，不要先半角。最后只需检查奇偶判定、半角系数 $\frac12$ 和 $\frac14$、万能代换有没有把 $x$ 全换掉，以及结果是否回到原变量。
-\par\medskip
-
-
-\subsection{\texorpdfstring{含有反三角函数的积分 $(a>0)$}{含有反三角函数的积分 (a>0)}}
-
-\par\medskip\noindent\textbf{反三角函数积分的处理}\par
-
-被积函数外层常是 $\arcsin\dfrac{x}{a}$、$\arccos\dfrac{x}{a}$ 或 $\arctan\dfrac{x}{a}$。
-前面通常再乘 $1,x,x^2$ 等低次多项式。
-
-\begin{compactenum}
-\item \(\displaystyle \left(\arcsin\frac{x}{a}\right)'=\frac{1}{\sqrt{a^2-x^2}}\)。
-\item \(\displaystyle \left(\arccos\frac{x}{a}\right)'=-\frac{1}{\sqrt{a^2-x^2}}\)。
-\item \(\displaystyle \left(\arctan\frac{x}{a}\right)'=\frac{a}{x^2+a^2}\)。
-\end{compactenum}
-因此本节余项一定回流到前面两类母式：\(\displaystyle \sqrt{a^2-x^2}\) 或 \(\displaystyle x^2+a^2\)。
-
-这类题通常先分部积分，把反三角函数放进 $u$；再对导数项分类判断，若是 $\arcsin,\arccos$，余项回到 \(\displaystyle \frac{x^k}{\sqrt{a^2-x^2}}\)，若是 $\arctan$，余项回到 \(\displaystyle \frac{x^k}{x^2+a^2}\)；分子若是 $x^2$，就优先拆成 $a^2-(a^2-x^2)$ 或 $(x^2+a^2)-a^2$，不要做无意义长除。
-\begin{compactenum}
-\item 先分部积分，把反三角函数放进 $u$。
-\item 再对导数项分类判断。若是 $\arcsin,\arccos$，余项回到 \(\displaystyle \frac{x^k}{\sqrt{a^2-x^2}}\)；若是 $\arctan$，余项回到 \(\displaystyle \frac{x^k}{x^2+a^2}\)。
-\item 分子若是 $x^2$，优先拆成 $a^2-(a^2-x^2)$ 或 $(x^2+a^2)-a^2$，不要做无意义长除。
-\end{compactenum}
-
-常见开头是“取 $u=\arcsin\frac{x}{a}$（或 $\arccos,\arctan$），$\mathrm{d}v=x^m\,\mathrm{d}x$”。分部以后，剩下的积分应明确回到 $\sqrt{a^2-x^2}$ 或 $x^2+a^2$ 的母式。不要一上来对 $\arcsin,\arccos,\arctan$ 自己再设新元，通常比直接分部更长；若题目本身就是导数母式，如 $\dfrac{1}{\sqrt{a^2-x^2}}$，应回前面章节，不要留在本节硬转。最后核对分部积分的正负号，尤其是 $\arccos$ 的导数自带负号，以及最后留下的母式是否确实属于实圆根式或反正切母式。
-\par\medskip
-
-
-\subsection{含有指数函数的积分}
-
-\par\medskip\noindent\textbf{指数函数积分的处理}\par
-
-题目含 $e^{ax}$、$a^x$，并与多项式、三角函数、三角幂相乘。
-
-\[
-\begin{aligned}
-\int e^{ax}\,\mathrm{d}x&=\frac{1}{a}e^{ax}+C,\\
-\int a^x\,\mathrm{d}x&=\frac{1}{\ln a}a^x+C.
-\end{aligned}
-\]
-\[
-\begin{aligned}
-I_n&=\int x^n e^{ax}\,\mathrm{d}x
-=\frac{x^n e^{ax}}{a}-\frac{n}{a}I_{n-1},\\
-J_n&=\int x^n a^x\,\mathrm{d}x
-=\frac{x^n a^x}{\ln a}-\frac{n}{\ln a}J_{n-1}.
-\end{aligned}
-\]
-\begin{compactenum}
-\item
-\[
-\int e^{ax}\sin bx\,\mathrm{d}x
-=\frac{e^{ax}}{a^2+b^2}(a\sin bx-b\cos bx)+C.
-\]
-\item
-\[
-\int e^{ax}\cos bx\,\mathrm{d}x
-=\frac{e^{ax}}{a^2+b^2}(a\cos bx+b\sin bx)+C.
-\]
-\end{compactenum}
-\[
-\int e^{ax}\sin^n bx\,\mathrm{d}x
-=\frac{e^{ax}\sin^{n-1}bx}{a^2+n^2b^2}(a\sin bx-nb\cos bx)
-+\frac{n(n-1)b^2}{a^2+n^2b^2}I_{n-2}.
-\]
-\[
-\int e^{ax}\cos^n bx\,\mathrm{d}x
-=\frac{e^{ax}\cos^{n-1}bx}{a^2+n^2b^2}(a\cos bx+nb\sin bx)
-+\frac{n(n-1)b^2}{a^2+n^2b^2}J_{n-2}.
-\]
-
-纯指数直接积；若是多项式乘指数，反复分部积分，永远让多项式降次；若是指数乘 $\sin bx$ 或 $\cos bx$，可直接使用闭式，不必临场重推两次分部；若是指数乘三角幂，就按上面的递推把幂次降下去。若底数不是 $e$，就先看成 $a^x=e^{x\ln a}$，只是把 $a$ 换成 $\ln a$。
-
-开头先判“三类对象”：纯指数、指数乘多项式、指数乘振荡项。多项式类统一写递推；振荡类统一写闭式或递推；不要在一种题里混好几套方法。若只是 $a^x$，无需先写成 $e^{x\ln a}$ 再大算，直接套母式更快。最后核对 $a^2+b^2$ 分母是否漏写、三角项前的符号是否正确，以及递推是否真的降了一阶而不是写回原题。
-\par\medskip
-
-
-\subsection{含有对数函数的积分}
-
-\par\medskip\noindent\textbf{对数函数积分的处理}\par
-
-题面含 $\ln x$、$(\ln x)^n$、$x^m(\ln x)^n$、$\dfrac{1}{x\ln x}$ 这几类。
-
-\(\displaystyle \int \ln x\,\mathrm{d}x=x\ln x-x+C\)，以及 \(\displaystyle \int \frac{\mathrm{d}x}{x\ln x}=\ln|\ln x|+C\)。
-对 \(\displaystyle I_{m,n}=\int x^m(\ln x)^n\,\mathrm{d}x\)，当 $m\neq -1$ 时，
-有 \(\displaystyle I_{m,n}=\frac{x^{m+1}}{m+1}(\ln x)^n-\frac{n}{m+1}I_{m,n-1}\)。
-当 $m=-1$ 时，令 $t=\ln x$，则 \(\displaystyle \int \frac{(\ln x)^n}{x}\,\mathrm{d}x=\int t^n\,\mathrm{d}t\)。
-
-若分母正好含一个 $x$，先检查能否把 $\ln x$ 看成新元 $t$。若外面是 $\ln x$ 或 $(\ln x)^n$，优先分部积分，并且通常让 $u=(\ln x)^n$。若前面还乘了 $x^m$，只要 $m\neq -1$，照递推直接降 $n$；若 $m=-1$，立刻改用 $t=\ln x$。对数题的关键不是花哨换元，而是认出“分部降幂”和“$x^{-1}\mathrm{d}x$ 变 $\mathrm{d}t$”这两条路。
-
-常见开头是“取 $u=(\ln x)^n,\ \mathrm{d}v=x^m\mathrm{d}x$”或“令 $t=\ln x$，则 $\mathrm{d}t=\dfrac{\mathrm{d}x}{x}$”。前者负责 $m\neq -1$，后者负责 $m=-1$。若没有 $\dfrac{\mathrm{d}x}{x}$，不要硬做 $t=\ln x$；若只是 $\dfrac{1}{x\ln x}$，不要分部积分，直接凑微分最快。最后核对 $m=-1$ 是否单独处理、分部积分里前面的 $\dfrac{1}{m+1}$，以及 $\ln|\ln x|$ 的绝对值有没有漏。
-\par\medskip
-
-
-\subsection{含有双曲函数的积分}
-
-\begin{note}[双曲函数就是虚圆双元的参数化]
-若记 \(\displaystyle p=\cosh x,\qquad q=\sinh x\)，则立刻得到虚圆底座 $p^2-q^2=1$，并伴随微分关系 $\mathrm{d}p=q\,\mathrm{d}x,\ \mathrm{d}q=p\,\mathrm{d}x$。因此本节的对数微元、降次递推、面积型拆分，都不是新花样，而是前面虚圆母式在双曲参数下的直接改写。
-
-所以遇到双曲函数积分时，最稳的想法往往不是先展开成指数，而是先看它是否已经天然给出了一个虚圆双元坐标系。
-\end{note}
-
-\par\medskip\noindent\textbf{双曲函数积分的处理}\par
-
-题目含 $\sinh x,\cosh x,\tanh x$ 及其低次幂，或者明显能写成双曲恒等式。
-
-\begin{align*}
-(\sinh x)'&=\cosh x,\qquad (\cosh x)'=\sinh x,\qquad \cosh^2x-\sinh^2x=1,\\
-\int \sinh x\,\mathrm{d}x&=\cosh x+C,\qquad
-\int \cosh x\,\mathrm{d}x=\sinh x+C,\qquad
-\int \tanh x\,\mathrm{d}x=\ln\cosh x+C,\\
-\sinh^2x&=\frac{\cosh 2x-1}{2},
-\qquad
-\cosh^2x=\frac{\cosh 2x+1}{2}.
-\end{align*}
-
-若是单个 $\sinh,\cosh,\tanh$，可直接使用结论；若是 $\sinh^m x\cosh^n x$，先看能否拆出一个导数因子：$\sinh$ 配 $\mathrm{d}(\cosh x)$，$\cosh$ 配 $\mathrm{d}(\sinh x)$；若是平方，优先用半角公式。若题目里天然出现 \(\displaystyle p=\cosh x,\ q=\sinh x\)，就把它当成虚圆底座 $p^2-q^2=1$ 来看，不必急着拆指数。
-
-开头先判“直接导数 / 半角降次 / 双元底座”。基本题直接凑微分，平方题直接半角，复杂题再写 $p=\cosh x,\ q=\sinh x$。若题目只是 $e^x$ 与 $e^{-x}$ 的组合，直接回指数函数章节也可以；若双曲幂次很高但没有明显导数因子，先试半角再决定是否双元化。最后核对 $\cosh^2x-\sinh^2x=1$ 的符号、$\ln\cosh x$ 是否需要绝对值，以及半角公式里的 $\pm 1$ 有没有写反。
-\par\medskip
-
-
-\subsection{定积分}
-
-\par\medskip\noindent\textbf{定积分中的双元法思路}\par
-
-定积分里出现圆、半圆、三角函数整周期、Wallis 递推、正交性，或者换成双元坐标后端点和对称性能明显简化时，就可以沿这一思路处理。
-
-实圆端点常映到 $(0,1)$、$(1,0)$、$(-1,0)$ 等标准点；复指数法常用
-\[
-\mathrm{e}^{ix}=\cos x+i\sin x,\qquad
-\cos x=\frac{\mathrm{e}^{ix}+\mathrm{e}^{-ix}}{2},\qquad
-\sin x=\frac{\mathrm{e}^{ix}-\mathrm{e}^{-ix}}{2i}.
-\]
-若区间是整周期，先查奇偶性与正交性，再决定是否真的展开。
-
-先判奇偶性、周期性、对称性，能秒杀就别换元。若需要双元法，不是为了求原函数，而是为了把端点、边界项、正交项暴露出来；若是三角函数乘积，优先比较“积化和差”和“复指数双元”谁更短。常见推导可以概括成“端点映射 $\to$ 对称判零或递推 $\to$ 必要时再积分”，例如 Wallis 递推先把 $p=\sin x,\ q=\cos x$ 写出来，再用端点 $(0,1)$、$(1,0)$ 消边界项。若直接用牛顿-莱布尼茨就能结束，不要为了统一风格强行双元化；若区间不是整周期，复指数展开后未必更短。最后核对端点映射是否正确，以及正交性使用条件是否真是整数频率和完整周期。
-\par\medskip
-
-
-\section{习题}
-
-\subsection{第一节习题：模法与多项式逆元}
+\section{第一节习题：模法与多项式逆元}
 \begin{exercise}[混合分解 $\frac{x^3+2}{(x-1)^2(x^2+1)}$]
     分解 $\displaystyle F(x) = \frac{x^3+2}{(x-1)^2(x^2+1)}$
 \end{exercise}
@@ -1714,7 +1263,46 @@ F(x)=\frac{1}{6(x-1)}
 \]
 \end{solution}
 
-\subsection{第二节习题：\texorpdfstring{含有 $ax+b$ 的积分}{含有 ax+b 的积分}}
+\section{\texorpdfstring{含有 $ax+b$ 与 $\sqrt{ax+b}$ 的积分}{一次式与一次根式的积分}}
+
+\par\medskip\noindent\textbf{一次式积分}\par
+
+分母或根式里反复出现 $ax+b$，分子却是 $1,x,x^2$ 或者 $x$ 的低次多项式；或者题目长成 $\dfrac{1}{x(ax+b)}$、$\dfrac{x}{(ax+b)^2}$ 这类“一个一次式配一个 $x$”的结构。令 \(\displaystyle u=ax+b,\ \mathrm{d}u=a\,\mathrm{d}x,\ x=\frac{u-b}{a}\)。
+\[
+\int \frac{\mathrm{d}x}{ax+b}=\frac{1}{a}\ln|ax+b|+C,\qquad
+\int (ax+b)^\alpha \,\mathrm{d}x=\frac{(ax+b)^{\alpha+1}}{a(\alpha+1)}+C.
+\]
+并记
+\[
+x=\frac{(ax+b)-b}{a},\qquad
+x^k=\frac{\bigl((ax+b)-b\bigr)^k}{a^k},\qquad
+\frac{1}{x(ax+b)}=\frac{1}{b}\left(\frac{1}{x}-\frac{a}{ax+b}\right).
+\]
+
+如果整题只围绕一个 $ax+b$，先令 $u=ax+b$。若分子里有 $x$ 或 $x^2$，一律先把 $x$ 改写成 $\dfrac{u-b}{a}$，把原式压成 $u$ 的有理函数。若分母还带一个 $x$，优先做拆项，把 $\dfrac{1}{x(ax+b)}$、$\dfrac{1}{x^2(ax+b)}$ 这类结构拆回母式。若出现 $(ax+b)^2$，仍然先改写分子，再把整题看成关于 $u$ 的幂函数或有理分式。
+常见开头是“令 $u=ax+b$，则 $x=\dfrac{u-b}{a}$，$\mathrm{d}x=\dfrac{1}{a}\mathrm{d}u$”。若分子含 $x^k$，直接写成 $\dfrac{(u-b)^k}{a^k}$；若分母还有 $x$，先拆成 $\dfrac{1}{x}$ 母式与 $\dfrac{1}{u}$ 母式的线性组合。
+“原式围绕 $ax+b$ 展开，令 $u=ax+b$。再用 $x=\dfrac{u-b}{a}$ 消去 $x$，原积分化为 $u$ 的初等积分，故结果为 $\cdots$。”
+若题目分母已经是两个不同一次因式的乘积，直接部分分式可能更短。若 $a=0$，这节写法失效，要先把题目还原成常数情形。
+\par\medskip
+
+
+\par\medskip\noindent\textbf{一次根式积分}\par
+
+题目中反复出现 $\sqrt{ax+b}$、$\dfrac{1}{\sqrt{ax+b}}$、$\dfrac{\sqrt{ax+b}}{x}$、$\dfrac{1}{x\sqrt{ax+b}}$ 这类一次根式。
+\begin{align*}
+y&=\sqrt{ax+b},\qquad y^2=ax+b,\qquad x=\frac{y^2-b}{a},\qquad \mathrm{d}x=\frac{2y}{a}\,\mathrm{d}y,\\
+\int \frac{\mathrm{d}x}{x\sqrt{ax+b}}
+&=\int \frac{2}{y^2-b}\,\mathrm{d}y,\qquad
+\int \frac{\sqrt{ax+b}}{x}\,\mathrm{d}x=\int \frac{2y^2}{y^2-b}\,\mathrm{d}y.
+\end{align*}
+
+做题时先设 $y=\sqrt{ax+b}$，于是 $y^2=ax+b$、$x=\dfrac{y^2-b}{a}$、$\mathrm{d}x=\dfrac{2y}{a}\mathrm{d}y$；原式很快就会变成关于 $y$ 的有理式。若只剩 $y$ 的幂，就直接幂积分；若出现 $\dfrac{1}{y^2-b}$，则按 $b>0$ 用对数、$b<0$ 用反正切；若出现 $\dfrac{y^2}{y^2-b}$ 或 $\dfrac{1}{(y^2-b)^2}$，先拆成常数项加母式，不要硬算。
+
+卷面上通常先写“设 $y=\sqrt{ax+b}$，则 $y^2=ax+b,\ x=\dfrac{y^2-b}{a},\ \mathrm{d}x=\dfrac{2y}{a}\mathrm{d}y$”，然后把原式化成 $y$ 的有理式，再按幂函数、$\dfrac{1}{y^2-b}$ 或其递推变体收尾。若题目绕着的不止一个一次根式，或者根号外层还套着一般二次式，就应转去二次根式或纯根式双元；若 $a=0$，先把题目退化成常数根式。最后核对是否把 $y$ 全换回 $\sqrt{ax+b}$，以及 $b>0$ 与 $b<0$ 的收尾公式有没有混用、根号前的系数 $2/a$ 是否漏掉。
+\par\medskip
+
+
+\section{第二节习题：\texorpdfstring{含有 $ax+b$ 的积分}{含有 ax+b 的积分}}
 \begin{exercise}[含有 $ax+b$ 的积分 - 1]
 $\displaystyle \int \frac{\mathrm{d}x}{ax+b}$
 \end{exercise}
@@ -1852,7 +1440,7 @@ $\displaystyle \int \frac{\mathrm{d}x}{x(ax+b)^2}$
 \(\int \frac{\mathrm{d}x}{a^2x^3} =-\frac{1}{2a^2x^2}+C.\)
 \end{solution}
 
-\subsection{第三节习题：\texorpdfstring{含有 $\sqrt{ax+b}$ 的积分}{含有 sqrt(ax+b) 的积分}}
+\section{第三节习题：\texorpdfstring{含有 $\sqrt{ax+b}$ 的积分}{含有 sqrt(ax+b) 的积分}}
 \begin{exercise}[含有 $\sqrt{ax+b}$ 的积分 - 10]
 $\displaystyle \int \sqrt{ax+b}\mathrm{d}x$
 \end{exercise}
@@ -2064,7 +1652,232 @@ y^2=ax+b,\qquad x=\frac{y^2-b}{a},\qquad
 最后的母式仍按第 15 题的三种分支代入。
 \end{solution}
 
-\subsection{第四节习题：\texorpdfstring{含有 $x^2\pm a^2$ 的积分}{平方项积分}}
+\section{二次式及其根式}
+
+\par\medskip\noindent\textbf{$x^2\pm a^2$ 基本母式}\par
+
+分母直接长成 $x^2+a^2$、$x^2-a^2$ 或 $(x^2+a^2)^n$，没有线性项，也还没进入根式。
+
+\[
+\int \frac{\mathrm{d}x}{x^2+a^2}=\frac{1}{a}\arctan\frac{x}{a}+C,
+\qquad
+\int \frac{\mathrm{d}x}{x^2-a^2}=\frac{1}{2a}\ln\left|\frac{x-a}{x+a}\right|+C.
+\]
+对 \(\displaystyle I_n=\int \frac{\mathrm{d}x}{(x^2+a^2)^n}\)，必背递推：
+\[
+I_n=
+\frac{x}{2(n-1)a^2(x^2+a^2)^{n-1}}
++\frac{2n-3}{2(n-1)a^2}I_{n-1}.
+\]
+
+若是 $x^2+a^2$，先提出 $a^2$，再换成标准母式 $1+u^2$。若是 $x^2-a^2$，先因式分解成 $(x-a)(x+a)$，不要硬背奇怪变形。若是 $(x^2+a^2)^n$，直接调用递推，把 $n$ 一路降到 $1$。这一节的核心不是乱换元，而是先认出“反正切母式、对数母式、递推母式”三条主路。
+对 $x^2+a^2$ 型，写“令 $u=x/a$”；对 $x^2-a^2$ 型，写“先分解并部分分式”；对高次幂型，先写 $I_n$，再把递推公式直接代上去。
+“原式属于 $x^2+a^2$ 母式，令 $u=x/a$ 后得到反正切。” 或 “原式属于 $x^2-a^2$ 母式，分解为 $(x-a)(x+a)$ 后作部分分式。” 或 “原式为 $(x^2+a^2)^{-n}$，直接按递推降次。”
+若题目其实是 $ax^2+b$ 或 $ax^2+bx+c$，不要套本节公式，要先提出系数或配方。若分母伴随根号，这一节也不是终点，要跳去根式章的底座写法。
+检查 $a$ 有没有提出干净；检查 $x^2-a^2$ 的对数答案分子分母顺序是否写对；检查递推里 $2n-3$ 和 $2(n-1)a^2$ 有没有抄错。
+\par\medskip
+
+
+\par\medskip\noindent\textbf{$ax^2+b$ 型积分的处理}\par
+
+题面中心是 $ax^2+b$，分子只到 $x^2$ 或者分母里还挂着 $x,x^2,x^3$ 这类幂。
+
+\[
+\int \frac{\mathrm{d}x}{ax^2+b}
+=
+\begin{cases}
+\dfrac{1}{\sqrt{ab}}\arctan\!\left(\sqrt{\dfrac{a}{b}}\,x\right)+C, & b>0,\\[0.9em]
+\dfrac{1}{2\sqrt{-ab}}
+\ln\left|\dfrac{\sqrt{a}x-\sqrt{-b}}{\sqrt{a}x+\sqrt{-b}}\right|+C, & b<0.
+\end{cases}
+\]
+\[
+\int \frac{x}{ax^2+b}\,\mathrm{d}x=\frac{1}{2a}\ln|ax^2+b|+C,\qquad
+\frac{1}{x(ax^2+b)}=\frac{1}{2b}\left(\frac{2}{x}-\frac{2ax}{ax^2+b}\right).
+\]
+
+先判 $b$ 的符号：$b>0$ 走反正切，$b<0$ 走对数。若分子正好带一个 $x$，立刻凑 $\mathrm{d}(ax^2+b)=2ax\,\mathrm{d}x$。若分子次数和分母同阶，就用 $ax^2=(ax^2+b)-b$ 拆项。若分母外面还挂着 $x^k$，优先把常数 $b$ 改写成 $(ax^2+b)-ax^2$，把题目拆回 $\dfrac{1}{x^m}$ 和基础母式。若分母平方出现 $(ax^2+b)^2$，先分部积分或先把 $ax^2$ 拆开，再回到基础母式。
+开头可写“按 $b$ 的符号分类”。然后如果有 $x$，就写“凑 $\mathrm{d}(ax^2+b)$”；如果有 $x^{-1}$、$x^{-2}$、$x^{-3}$，就写“用 $b=(ax^2+b)-ax^2$ 拆项”。
+“原式围绕 $ax^2+b$ 展开，先按 $b$ 的符号确定反正切或对数母式；其余部分通过 $ax^2=(ax^2+b)-b$ 或 $b=(ax^2+b)-ax^2$ 拆回基础母式。”
+若中间已经出现 $bx$，说明应跳去一般二次式章节。若根号已经罩在外面，则应跳去 $\sqrt{x^2\pm a^2}$ 或一般二次根式章节。
+检查 $b>0,b<0$ 的答案族是否写反；检查对数前面的 $\sqrt a,\sqrt{-b}$ 是否漏掉；检查拆项后每一项都确实简化了难度。
+\par\medskip
+
+
+\par\medskip\noindent\textbf{一般二次式积分的处理}\par
+
+分母是 $ax^2+bx+c$，分子至多一次，题目核心障碍是中间的 $bx$ 项。
+
+先配方：\(\displaystyle ax^2+bx+c=a\left(x+\frac{b}{2a}\right)^2+\frac{4ac-b^2}{4a}\)。
+记判别量 $\Delta=b^2-4ac$。则
+\[
+\int \frac{\mathrm{d}x}{ax^2+bx+c}
+=
+\begin{cases}
+\dfrac{1}{\sqrt{\Delta}}
+\ln\left|\dfrac{2ax+b-\sqrt{\Delta}}{2ax+b+\sqrt{\Delta}}\right|+C, & \Delta>0,\\[1.1em]
+\dfrac{2}{\sqrt{-\Delta}}
+\arctan\dfrac{2ax+b}{\sqrt{-\Delta}}+C, & \Delta<0.
+\end{cases}
+\]
+\[
+\int \frac{x}{ax^2+bx+c}\,\mathrm{d}x
+=\frac{1}{2a}\ln|ax^2+bx+c|
+-\frac{b}{2a}\int \frac{\mathrm{d}x}{ax^2+bx+c}.
+\]
+
+处理这类积分时，配方与判别式决定结果类型：$\Delta>0$ 对应对数母式，$\Delta<0$ 对应反正切母式。若分子是 $x$，就把 $2ax+b$ 凑出来，让一部分变成对数，另一部分回到基础母式。若题目再往上叠根号，则配方后的结果应转入二次根式章节，不在这里硬打。
+常见处理是把二次式先配方，再按判别式分情况。如果分子含 $x$，就补一个 $b$，写成 \(\displaystyle x=\frac{(2ax+b)-b}{2a}\)，然后一半变对数，一半使用上一条基础公式。
+“将 $ax^2+bx+c$ 配方为 $a(x+\frac{b}{2a})^2+\cdots$。由判别式 $\Delta$ 的符号，原式分别化为对数母式或反正切母式。”
+若 $b=0$，应退回上一节 $ax^2+b$。若题目是 $\sqrt{ax^2+bx+c}$ 而不是倒数，应跳去二次根式章节。
+检查配方常数是否写成 $\dfrac{4ac-b^2}{4a}$；检查 $\Delta$ 的正负是否和最终函数族一致；检查分子拆成 $(2ax+b)-b$ 时前面的 $\dfrac{1}{2a}$ 是否保留。
+\par\medskip
+
+
+\par\medskip\noindent\textbf{$\sqrt{x^2+a^2}$ 型积分的处理}\par
+
+题目出现 $\sqrt{x^2+a^2}$、$\dfrac{1}{\sqrt{x^2+a^2}}$、$\dfrac{1}{(x^2+a^2)^{3/2}}$、$\ln(x+\sqrt{x^2+a^2})$，或者分子分母都只由 $x$ 与 $\sqrt{x^2+a^2}$ 组成。
+
+\begin{align*}
+y&=\sqrt{x^2+a^2},\qquad y^2-x^2=a^2,\qquad x\,\mathrm{d}x=y\,\mathrm{d}y,\\
+\int \frac{\mathrm{d}x}{y}
+&=\ln(x+y)+C
+=\operatorname{arsinh}\frac{x}{a}+C,\\
+\int \frac{\mathrm{d}x}{y^3}&=\frac{x}{a^2y}+C,\qquad
+\int \frac{\mathrm{d}x}{x^2y}=-\frac{y}{a^2x}+C.
+\end{align*}
+
+若题目只要求一条标准母式，可直接使用 $\int \mathrm{d}x/\sqrt{x^2+a^2}=\ln(x+\sqrt{x^2+a^2})+C$。若题目里高频出现 $x,y,\mathrm{d}x,\mathrm{d}y$，优先双元法；若题目明显更适合 $\tan t,\sec t$，可改用 $x=a\tan t$。分子里有 $x\,\mathrm{d}x$ 时，立刻换成 $y\,\mathrm{d}y$；分母是三次根式时，立刻查比值微元。
+先设 $y=\sqrt{x^2+a^2}$，把所有根式统一写成 $y$。然后用 $y^2-x^2=a^2$ 改写平方项，用 $x\,\mathrm{d}x=y\,\mathrm{d}y$ 转移微分，把题目压回母式、比值微元或对数微分。
+“设 $y=\sqrt{x^2+a^2}$，则 $y^2-x^2=a^2$，且 $x\,\mathrm{d}x=y\,\mathrm{d}y$。原式化为 $\cdots$，最后回到 $\int \mathrm{d}x/y$ 或 $\int \mathrm{d}(x/y)$，故结果为 $\cdots$。”
+若题目已经天然适合 $x=a\tan t$，三角代换同样合法，但要少走回代弯路。若根式不是 $x^2+a^2$ 而是 $a^2-x^2$ 或 $x^2-a^2$，要换成对应章节的底座。
+检查对数里是否写成 $x+\sqrt{x^2+a^2}$；检查回代后是否完全消掉了临时变量 $y$。
+\par\medskip
+
+
+\begin{note}[双元法里的约束别丢]
+\begin{itemize}
+  \item 设 $y=\sqrt{x^2+a^2}$ 后，$x$ 与 $y$ 仍受约束 $y^2-x^2=a^2$，不能把它们当成彼此独立的两个变量。
+  \item 看到 $\int \frac{\mathrm{d}x}{y}$、$\int \frac{\mathrm{d}x}{y^3}$、$\int \frac{\mathrm{d}x}{x^2y}$ 这类形式时，不要急着硬算，先检查是否能凑出 $\mathrm{d}\ln(x+y)$、$\mathrm{d}\!\left(\frac{x}{y}\right)$ 或 $\mathrm{d}\!\left(\frac{y}{x}\right)$。
+\end{itemize}
+\end{note}
+
+\begin{note}[这一组为什么是虚圆版本]
+令 $y=\sqrt{x^2-a^2}$ 后，立刻得到虚圆底座 $x^2-y^2=a^2$。这意味着本节最先该检查的不是三角代换，而是四类虚圆母动作：$\dfrac{\mathrm{d}x}{y}$、$\mathrm{d}\!\left(\dfrac{x}{y}\right)$、$\mathrm{d}\!\left(\dfrac{y}{x}\right)$、$\mathrm{d}\ln(x+y)$。
+
+如果题目主要由 $x,y$ 及其商组成，那么双元法往往比设 $x=a\sec t$ 更短，因为它始终保留了代数底座 $x^2-y^2=a^2$，不用来回在三角和代数形式之间切换。
+\end{note}
+
+\par\medskip\noindent\textbf{虚圆根式的处理}\par
+
+题目含 $\sqrt{x^2-a^2}$、$\dfrac{1}{\sqrt{x^2-a^2}}$、$\dfrac{1}{x\sqrt{x^2-a^2}}$、$\dfrac{\sqrt{x^2-a^2}}{x^2}$ 等结构，答案常出现对数或反三角函数。
+
+\begin{align*}
+y&=\sqrt{x^2-a^2},\qquad x^2-y^2=a^2,\qquad x\,\mathrm{d}x=y\,\mathrm{d}y,\\
+\int \frac{\mathrm{d}x}{y}&=\ln|x+y|+C,\\
+\mathrm{d}\!\left(\frac{x}{y}\right)&=-\frac{a^2}{y^3}\,\mathrm{d}x,\qquad
+\mathrm{d}\!\left(\frac{y}{x}\right)=\frac{a^2}{x^2y}\,\mathrm{d}x,\\
+\int y\,\mathrm{d}x&=\frac{1}{2}xy-\frac{a^2}{2}\ln|x+y|+C.
+\end{align*}
+
+先设 $y=\sqrt{x^2-a^2}$。若分母只有一个 $y$，优先调用 $\ln|x+y|$。若分母是 $y^3$，优先看 $\dfrac{x}{y}$ 的微分；若分母是 $x^2y$，优先看 $\dfrac{y}{x}$ 的微分。若分子含 $x$，就用 $x\,\mathrm{d}x=y\,\mathrm{d}y$；若分子含 $x^2$，就换成 $y^2+a^2$。只有当双元改写不顺时，才退回 $x=a\sec t$。
+
+落笔可写为“设 $y=\sqrt{x^2-a^2}$，则 $x^2-y^2=a^2,\ x\,\mathrm{d}x=y\,\mathrm{d}y$”。随后把原式压回四个母动作：$\dfrac{\mathrm{d}x}{y}$、$\dfrac{\mathrm{d}x}{y^3}$、$\dfrac{\mathrm{d}x}{x^2y}$、$y\,\mathrm{d}x$。
+
+“设 $y=\sqrt{x^2-a^2}$。由 $x^2-y^2=a^2$ 及 $x\,\mathrm{d}x=y\,\mathrm{d}y$，原式化为虚圆母式 $\cdots$，故积分为 $\cdots$。”
+
+若根式其实是 $\sqrt{x^2+a^2}$ 或 $\sqrt{a^2-x^2}$，不要乱套符号。若题目只有 $\dfrac{1}{x^2-a^2}$ 而没有根号，应回到上一节的部分分式写法。
+
+检查对数里是 $x+\sqrt{x^2-a^2}$ 而不是别的组合；检查 $\dfrac{x}{y}$ 与 $\dfrac{y}{x}$ 的符号是否写对；检查回代后是否仍满足 $x^2-a^2>0$ 的定义域。
+\par\medskip
+
+
+\begin{note}[这一组为什么是实圆版本]
+令 $y=\sqrt{a^2-x^2}$ 后，得到的是实圆底座 $x^2+y^2=a^2$。和上一节相比，最关键的变化是符号：这里有 $x\,\mathrm{d}x=-y\,\mathrm{d}y$，所以参数角、面积微元、比值微元都会自动带上实圆的符号结构。
+
+因此凡是答案里自然出现 $\arcsin$、$\arccos$、面积微元或实圆比值微元的题，都应优先想到这一套底座，而不是把它只当成“又一类根式积分写法”。
+\end{note}
+
+\par\medskip\noindent\textbf{实圆根式的处理}\par
+
+题目含 $\sqrt{a^2-x^2}$、$\dfrac{1}{\sqrt{a^2-x^2}}$、$\dfrac{1}{x\sqrt{a^2-x^2}}$、$\dfrac{\sqrt{a^2-x^2}}{x}$ 等结构，答案常出现 $\arcsin$、$\arccos$。
+
+\begin{align*}
+y&=\sqrt{a^2-x^2},\qquad x^2+y^2=a^2,\qquad x\,\mathrm{d}x=-y\,\mathrm{d}y,\\
+\int \frac{\mathrm{d}x}{y}&=\arcsin\frac{x}{a}+C,\\
+\mathrm{d}\!\left(\frac{x}{y}\right)&=\frac{a^2}{y^3}\,\mathrm{d}x,\qquad
+\mathrm{d}\!\left(\frac{y}{x}\right)=-\frac{a^2}{x^2y}\,\mathrm{d}x,\\
+\int y\,\mathrm{d}x&=\frac{1}{2}xy+\frac{a^2}{2}\arcsin\frac{x}{a}+C.
+\end{align*}
+
+先设 $y=\sqrt{a^2-x^2}$。若分母只有一个 $y$，直接出 $\arcsin(x/a)$。若分母是 $y^3$，优先看 $\dfrac{x}{y}$ 的微分；若分母是 $x^2y$，优先看 $\dfrac{y}{x}$ 的微分。若分子含 $x$，就用 $x\,\mathrm{d}x=-y\,\mathrm{d}y$；若分子含 $x^2$，先改成 $a^2-y^2$。若题目还伴随 $\arcsin,\arccos$，就把这里当成它们的基础母式库。
+
+常见处理是“设 $y=\sqrt{a^2-x^2}$，则 $x^2+y^2=a^2,\ x\,\mathrm{d}x=-y\,\mathrm{d}y$”。然后把原式收缩到 $\dfrac{\mathrm{d}x}{y}$、$\dfrac{\mathrm{d}x}{y^3}$、$\dfrac{\mathrm{d}x}{x^2y}$ 或 $y\,\mathrm{d}x$ 这些基本母式。
+
+“设 $y=\sqrt{a^2-x^2}$。由实圆底座 $x^2+y^2=a^2$ 及 $x\,\mathrm{d}x=-y\,\mathrm{d}y$，原式化为 $\cdots$，故结果为 $\cdots$。”
+
+若根号改成 $\sqrt{x^2-a^2}$，符号体系全部要换。若题目只是 $\dfrac{1}{x^2+a^2}$，那是反正切母式，不在本节。
+
+检查 $\arcsin$ 与 $\arccos$ 有没有写混；检查实圆里负号是否保留；检查定义域 $|x|\le a$ 是否与题目相符。
+\par\medskip
+
+
+\begin{note}[配方后二次根式为什么还能回到双元]
+这一组表面上比 $\sqrt{x^2\pm a^2}$ 更复杂，但关键只是先把二次式配方，再用
+\(\displaystyle u=2ax\pm b,\ v=2\sqrt a\,y\) 把它改造成标准的实圆或虚圆底座。换句话说，这一步不是额外发明新方法，而是在制造前面已经熟悉的双元母场景。
+
+所以读题时若看到根号里是一般二次式，不必急着分别记很多公式。先问自己：能否把它压成 $u^2+v^2=\Delta$ 或 $v^2-u^2=\Delta$？一旦能，后面就只是调用前面的 $\int \frac{\mathrm{d}u}{v}$、面积微元和比值微元。
+\end{note}
+
+\par\medskip\noindent\textbf{一般二次根式的处理}\par
+
+根号里一旦是一般二次式，最稳的路径不是单独记新公式，而是先配方，把它压成前面已经熟悉的实圆或虚圆底座。若是 $ax^2+bx+c$，就对应虚圆情形处理；若是 $c+bx-ax^2$，就对应实圆情形处理。
+
+若 \(\displaystyle y=\sqrt{ax^2+bx+c},\ u=2ax+b,\ v=2\sqrt a\,y\)，则 \(\displaystyle v^2-u^2=4ac-b^2\)。
+于是
+\[
+\int \frac{\mathrm{d}x}{\sqrt{ax^2+bx+c}}
+=\frac{1}{\sqrt a}\ln|u+v|+C
+=\frac{1}{\sqrt a}\ln|2ax+b+2\sqrt a\,y|+C.
+\]
+若 \(\displaystyle y=\sqrt{c+bx-ax^2},\ u=2ax-b,\ v=2\sqrt a\,y\)，则 \(\displaystyle u^2+v^2=b^2+4ac\)，从而
+\[
+\int \frac{\mathrm{d}x}{\sqrt{c+bx-ax^2}}
+=\frac{1}{\sqrt a}\arcsin\frac{u}{\sqrt{b^2+4ac}}+C.
+\]
+
+到这一步后，后面的动作已经很明确：分子若含 $x$，就用 $x=\dfrac{u\mp b}{2a}$ 消去；若要算 $\int y\,\mathrm{d}x$，直接使用面积微元，不必重做分部积分。卷面上可以写成“设 $y=\sqrt{\cdots}$，再令 $u=2ax\pm b,\ v=2\sqrt a\,y$，则得到实圆 / 虚圆底座”，这样后面所有积分都尽量改成 $\dfrac{\mathrm{d}u}{v}$、$v\,\mathrm{d}u$、$\dfrac{u\,\mathrm{d}u}{v}$ 这三类。若根号内其实已是 $x^2\pm a^2$，就不用多此一举；若根号外面只是倒数二次式，也该回到一般二次式积分章节。最后核对 $u=2ax+b$ 还是 $2ax-b$、$\sqrt a$ 有没有漏乘，以及结果的函数族是否和底座类型一致。
+\par\medskip
+
+
+\begin{note}[纯根式双元的想法]
+这一组最容易误以为只能靠乘共轭或继续套换元。其实更系统的做法，是把两个根号本身直接当成双元：一个承担 $p$，一个承担 $q$，然后看它们满足的是 $p^2-q^2=\text{常数}$ 还是 $p^2+q^2=\text{常数}$。
+
+这样做的好处是，题目里原本零散的根式差、根式和、分式结构，会立刻回收到标准实圆或虚圆底座里。换句话说，这里不是“根式方法”孤立出现，而是双元法向纯根式情形的自然延伸。
+\end{note}
+
+\par\medskip\noindent\textbf{纯根式双元处理}\par
+
+题目出现 $\sqrt{\dfrac{x-a}{x-b}}$、$\sqrt{\dfrac{x-a}{b-x}}$、$\sqrt{(x-a)(b-x)}$ 这类“两个一次根式互相缠绕”的结构时，最自然的做法就是把两个根号本身直接当成双元 \(p,q\)。
+
+若设
+\[
+p=\sqrt{x-a},\qquad q=\sqrt{x-b},\qquad
+p^2-q^2=b-a,\qquad \mathrm{d}x=2p\,\mathrm{d}p=2q\,\mathrm{d}q.
+\]
+若设
+\[
+p=\sqrt{x-a},\qquad q=\sqrt{b-x},\qquad
+p^2+q^2=b-a,\qquad \mathrm{d}x=2p\,\mathrm{d}p=-2q\,\mathrm{d}q.
+\]
+
+先看两个根号是“同向增长”还是“一个增一个减”。若同向，就优先造虚圆 $p^2-q^2=\text{常数}$；若一增一减，就优先造实圆 $p^2+q^2=\text{常数}$。然后把原式中的根式商、根式积全部改成 $p/q$、$pq$、$p^2-q^2$ 或 $p^2+q^2$，能直接变成 $\dfrac{\mathrm{d}p}{q}$、$\dfrac{\mathrm{d}q}{p}$、$p\,\mathrm{d}q$、$q\,\mathrm{d}p$ 时，题目就已经被收回到标准母式里了。
+
+卷面上可以直接写“设 $p=\sqrt{x-a}, q=\sqrt{x-b}$”或“设 $p=\sqrt{x-a}, q=\sqrt{b-x}$”，再把底座恒等式和 $\mathrm{d}x$ 的表达带上。若根号内部不是一次式，而是二次式或三角式，就不要硬套这一节；若已经能单次换元化成 $\sqrt{t^2\pm c}$，也可以直接转去前面的根式章节。最后只需核对 $q$ 的定义、底座的平方和还是平方差，以及收尾函数到底该是对数还是反三角。
+\par\medskip
+
+
+\section{第四节习题：\texorpdfstring{含有 $x^2\pm a^2$ 的积分}{平方项积分}}
 \begin{exercise}[含有 $x^2\pm a^2$ 的积分 - 19]
 $\displaystyle \int \frac{\mathrm{d}x}{x^2+a^2}$
 \end{exercise}
@@ -2128,7 +1941,7 @@ $\displaystyle \int \frac{\mathrm{d}x}{x^2-a^2}$
 \end{align*}
 \end{solution}
 
-\subsection{第五节习题：\texorpdfstring{含有 $ax^2+b\ (a>0)$ 的积分}{二次项加常数积分}}
+\section{第五节习题：\texorpdfstring{含有 $ax^2+b\ (a>0)$ 的积分}{二次项加常数积分}}
 \begin{exercise}[含有 $ax^2+b$ 的积分 - 22]
 $\displaystyle \int \frac{\mathrm{d}x}{ax^2+b}$
 \end{exercise}
@@ -2278,7 +2091,7 @@ $\displaystyle \int \frac{\mathrm{d}x}{(ax^2+b)^2}$
 \]
 \end{solution}
 
-\subsection{第六节习题：\texorpdfstring{含有 $ax^2+bx+c\ (a>0)$ 的积分}{二次三项式积分}}
+\section{第六节习题：\texorpdfstring{含有 $ax^2+bx+c\ (a>0)$ 的积分}{二次三项式积分}}
 \begin{exercise}[含有 $ax^2+bx+c$ 的积分 - 29]
 $\displaystyle \int \frac{\mathrm{d}x}{ax^2+bx+c}$
 \end{exercise}
@@ -2347,7 +2160,7 @@ $\displaystyle \int \frac{x}{ax^2+bx+c}\mathrm{d}x$
 最后的母式由上一题按 \(\Delta>0\)、\(\Delta<0\)、\(\Delta=0\) 三种情况代入。
 \end{solution}
 
-\subsection{第七节习题：\texorpdfstring{含有 $\sqrt{x^2+a^2}\ (a>0)$ 的积分}{根式积分（加号）}}
+\section{第七节习题：\texorpdfstring{含有 $\sqrt{x^2+a^2}\ (a>0)$ 的积分}{根式积分（加号）}}
 \begin{exercise}[含有 $\sqrt{x^2+a^2}$ 的积分 - 31]
 $\displaystyle \int \frac{\mathrm{d}x}{\sqrt{x^2+a^2}}$
 \end{exercise}
@@ -2667,7 +2480,7 @@ $\displaystyle \int \frac{\sqrt{x^2+a^2}}{x^2}\mathrm{d}x$
 \end{align*}
 \end{solution}
 
-\subsection{第八节习题：\texorpdfstring{含有 $\sqrt{x^2-a^2}\ (a>0)$ 的积分}{根式积分（减号）}}
+\section{第八节习题：\texorpdfstring{含有 $\sqrt{x^2-a^2}\ (a>0)$ 的积分}{根式积分（减号）}}
 \begin{exercise}[含有 $\sqrt{x^2-a^2}$ 的积分 - 45]
 $\displaystyle \int \frac{\mathrm{d}x}{\sqrt{x^2-a^2}}$
 \end{exercise}
@@ -2978,7 +2791,7 @@ $\displaystyle \int \frac{\sqrt{x^2-a^2}}{x^2}\mathrm{d}x$
 \end{align*}
 \end{solution}
 
-\subsection{第九节习题：\texorpdfstring{含有 $\sqrt{a^2-x^2}\ (a>0)$ 的积分}{根式积分（圆弧型）}}
+\section{第九节习题：\texorpdfstring{含有 $\sqrt{a^2-x^2}\ (a>0)$ 的积分}{根式积分（圆弧型）}}
 \begin{exercise}[含有 $\sqrt{a^2-x^2}$ 的积分 - 59]
 $\displaystyle \int \frac{\mathrm{d}x}{\sqrt{a^2-x^2}}$
 \end{exercise}
@@ -3285,7 +3098,7 @@ $\displaystyle \int \frac{\sqrt{a^2-x^2}}{x^2}\mathrm{d}x$
 \end{align*}
 \end{solution}
 
-\subsection{第十节习题：\texorpdfstring{含有 $\sqrt{ax^2+bx+c}\ (a>0)$ 的积分}{二次根式积分}}
+\section{第十节习题：\texorpdfstring{含有 $\sqrt{ax^2+bx+c}\ (a>0)$ 的积分}{二次根式积分}}
 \begin{exercise}[含有 $\sqrt{ax^2+bx+c}$ 的积分 - 73]
 $\displaystyle \int \frac{\mathrm{d}x}{\sqrt{ax^2+bx+c}}$
 \end{exercise}
@@ -3434,7 +3247,7 @@ $\displaystyle \int \frac{x}{\sqrt{c+bx-ax^2}}\mathrm{d}x$
 \end{align*}
 \end{solution}
 
-\subsection{第十一节习题：\texorpdfstring{含有 $\sqrt{\frac{x-a}{x-b}}$ 或 $\sqrt{(x-a)(b-x)}$ 的积分}{含有 sqrt((x-a)/(x-b)) 或 sqrt((x-a)(b-x)) 的积分}}
+\section{第十一节习题：\texorpdfstring{含有 $\sqrt{\frac{x-a}{x-b}}$ 或 $\sqrt{(x-a)(b-x)}$ 的积分}{含有 sqrt((x-a)/(x-b)) 或 sqrt((x-a)(b-x)) 的积分}}
 \begin{exercise}[含有 $\sqrt{\frac{x-a}{x-b}}$ 的积分 - 79]
 $\displaystyle \int \sqrt{\frac{x-a}{x-b}}\mathrm{d}x$
 \end{exercise}
@@ -3530,7 +3343,54 @@ u^2+v^2=(b-a)^2,\qquad \mathrm{d}u=2\,\mathrm{d}x.
 最后一步使用 \(\arcsin(2t-1)=2\arcsin\sqrt t-\dfrac{\pi}{2}\)，其中常数项已并入 \(C\)。
 \end{solution}
 
-\subsection{第十二节习题：含有三角函数的积分}
+\section{含有三角函数的积分}
+
+\begin{note}[三角函数其实就是实圆双元的参数化]
+把 \(\displaystyle p=\sin x,\ q=\cos x\) 写出来以后，立刻回到实圆底座 $p^2+q^2=1$；而把 $p=\sec x,q=\tan x$ 写出来，则回到另一种常见的代数底座 $p^2-q^2=1$。所以三角函数积分里很多看似分散的做法，本质上仍是在调用“底座 + 微元 + 递推/对数微元”这同一套结构。
+
+因此，当题目可以明显分离出一对彼此满足平方恒等式的三角量时，就可以把它当成双元题看，而不是只靠积化和差、半角或万能代换硬推。
+\end{note}
+
+\par\medskip\noindent\textbf{三角函数积分的处理}\par
+
+题面是三角函数积分，尤其是幂次、乘积、倒幂、混合频率、$R(\sin x,\cos x)$ 这几类。
+
+\begin{align*}
+\int \sin x\,\mathrm{d}x&=-\cos x+C,\quad
+\int \cos x\,\mathrm{d}x=\sin x+C,\\
+\int \tan x\,\mathrm{d}x&=-\ln|\cos x|+C,\quad
+\int \cot x\,\mathrm{d}x=\ln|\sin x|+C,\\
+\int \sec x\,\mathrm{d}x&=\ln|\sec x+\tan x|+C,\quad
+\int \csc x\,\mathrm{d}x=\ln|\csc x-\cot x|+C.
+\end{align*}
+\[
+\sin x=\frac{2t}{1+t^2},\quad
+\cos x=\frac{1-t^2}{1+t^2},\quad
+\mathrm{d}x=\frac{2}{1+t^2}\,\mathrm{d}t,
+\quad t=\tan\frac{x}{2}.
+\]
+\begin{align*}
+\int \sin^n x\,\mathrm{d}x
+&=-\frac{1}{n}\sin^{n-1}x\cos x+\frac{n-1}{n}\int \sin^{n-2}x\,\mathrm{d}x,\\
+\int \cos^n x\,\mathrm{d}x
+&=\frac{1}{n}\cos^{n-1}x\sin x+\frac{n-1}{n}\int \cos^{n-2}x\,\mathrm{d}x.
+\end{align*}
+\begin{align*}
+\int \sec^n x\,\mathrm{d}x
+&=\frac{\sin x}{(n-1)\cos^{n-1}x}
++\frac{n-2}{n-1}\int \sec^{n-2}x\,\mathrm{d}x,\\
+\int \csc^n x\,\mathrm{d}x
+&=-\frac{\cos x}{(n-1)\sin^{n-1}x}
++\frac{n-2}{n-1}\int \csc^{n-2}x\,\mathrm{d}x.
+\end{align*}
+
+单个基本函数可直接使用结论；若是 $\sin^m x\cos^n x$，先看奇偶：有一个奇幂时，拆一个出来，剩余部分用 $1-\sin^2 x$ 或 $1-\cos^2 x$；两者都偶时，用半角。若是 $\sec,\tan$ 型，优先找 $\sec x\tan x$ 或 $\sec^2x$；若是 $\csc,\cot$ 型，优先找 $\csc x\cot x$ 或 $\csc^2x$。若是不同频率的 $\sin ax\cos bx$、$\sin ax\sin bx$、$\cos ax\cos bx$，先积化和差。若是 $R(\sin x,\cos x)$ 怎么变都不顺，最后再上万能代换 $t=\tan(x/2)$。
+
+做题时先写“判奇偶”或“判频率”。如果是幂次题，就先写“拆一因子 + 余项降次”或“半角降次”；如果是混合频率，就先写积化和差；如果是有理式，就先写万能代换公式。能用积化和差解决的，不要直接上万能代换；能拆奇幂的，不要先半角。最后只需检查奇偶判定、半角系数 $\frac12$ 和 $\frac14$、万能代换有没有把 $x$ 全换掉，以及结果是否回到原变量。
+\par\medskip
+
+
+\section{第十二节习题：含有三角函数的积分}
 \begin{exercise}[含有三角函数的积分 - 83]
 $\displaystyle \int \sin x\mathrm{d}x$
 \end{exercise}
@@ -4429,7 +4289,32 @@ u=x^n,\qquad
 \end{enumerate}
 \end{solution}
 
-\subsection{第十三节习题：\texorpdfstring{含有反三角函数的积分 $(a>0)$}{含有反三角函数的积分 (a>0)}}
+\section{\texorpdfstring{含有反三角函数的积分 $(a>0)$}{含有反三角函数的积分 (a>0)}}
+
+\par\medskip\noindent\textbf{反三角函数积分的处理}\par
+
+被积函数外层常是 $\arcsin\dfrac{x}{a}$、$\arccos\dfrac{x}{a}$ 或 $\arctan\dfrac{x}{a}$。
+前面通常再乘 $1,x,x^2$ 等低次多项式。
+
+\begin{compactenum}
+\item \(\displaystyle \left(\arcsin\frac{x}{a}\right)'=\frac{1}{\sqrt{a^2-x^2}}\)。
+\item \(\displaystyle \left(\arccos\frac{x}{a}\right)'=-\frac{1}{\sqrt{a^2-x^2}}\)。
+\item \(\displaystyle \left(\arctan\frac{x}{a}\right)'=\frac{a}{x^2+a^2}\)。
+\end{compactenum}
+因此本节余项一定回流到前面两类母式：\(\displaystyle \sqrt{a^2-x^2}\) 或 \(\displaystyle x^2+a^2\)。
+
+这类题通常先分部积分，把反三角函数放进 $u$；再对导数项分类判断，若是 $\arcsin,\arccos$，余项回到 \(\displaystyle \frac{x^k}{\sqrt{a^2-x^2}}\)，若是 $\arctan$，余项回到 \(\displaystyle \frac{x^k}{x^2+a^2}\)；分子若是 $x^2$，就优先拆成 $a^2-(a^2-x^2)$ 或 $(x^2+a^2)-a^2$，不要做无意义长除。
+\begin{compactenum}
+\item 先分部积分，把反三角函数放进 $u$。
+\item 再对导数项分类判断。若是 $\arcsin,\arccos$，余项回到 \(\displaystyle \frac{x^k}{\sqrt{a^2-x^2}}\)；若是 $\arctan$，余项回到 \(\displaystyle \frac{x^k}{x^2+a^2}\)。
+\item 分子若是 $x^2$，优先拆成 $a^2-(a^2-x^2)$ 或 $(x^2+a^2)-a^2$，不要做无意义长除。
+\end{compactenum}
+
+常见开头是“取 $u=\arcsin\frac{x}{a}$（或 $\arccos,\arctan$），$\mathrm{d}v=x^m\,\mathrm{d}x$”。分部以后，剩下的积分应明确回到 $\sqrt{a^2-x^2}$ 或 $x^2+a^2$ 的母式。不要一上来对 $\arcsin,\arccos,\arctan$ 自己再设新元，通常比直接分部更长；若题目本身就是导数母式，如 $\dfrac{1}{\sqrt{a^2-x^2}}$，应回前面章节，不要留在本节硬转。最后核对分部积分的正负号，尤其是 $\arccos$ 的导数自带负号，以及最后留下的母式是否确实属于实圆根式或反正切母式。
+\par\medskip
+
+
+\section{第十三节习题：\texorpdfstring{含有反三角函数的积分 $(a>0)$}{含有反三角函数的积分 (a>0)}}
 本小节以下各题均设 \(a>0\)。
 
 \begin{exercise}[含有反三角函数的积分 - 114]
@@ -4737,7 +4622,56 @@ $\displaystyle \int x^2\arctan\frac{x}{a}\mathrm{d}x$
 \end{enumerate}
 \end{solution}
 
-\subsection{第十四节习题：含有指数函数的积分}
+\section{含有指数函数的积分}
+
+\par\medskip\noindent\textbf{指数函数积分的处理}\par
+
+题目含 $e^{ax}$、$a^x$，并与多项式、三角函数、三角幂相乘。
+
+\[
+\begin{aligned}
+\int e^{ax}\,\mathrm{d}x&=\frac{1}{a}e^{ax}+C,\\
+\int a^x\,\mathrm{d}x&=\frac{1}{\ln a}a^x+C.
+\end{aligned}
+\]
+\[
+\begin{aligned}
+I_n&=\int x^n e^{ax}\,\mathrm{d}x
+=\frac{x^n e^{ax}}{a}-\frac{n}{a}I_{n-1},\\
+J_n&=\int x^n a^x\,\mathrm{d}x
+=\frac{x^n a^x}{\ln a}-\frac{n}{\ln a}J_{n-1}.
+\end{aligned}
+\]
+\begin{compactenum}
+\item
+\[
+\int e^{ax}\sin bx\,\mathrm{d}x
+=\frac{e^{ax}}{a^2+b^2}(a\sin bx-b\cos bx)+C.
+\]
+\item
+\[
+\int e^{ax}\cos bx\,\mathrm{d}x
+=\frac{e^{ax}}{a^2+b^2}(a\cos bx+b\sin bx)+C.
+\]
+\end{compactenum}
+\[
+\int e^{ax}\sin^n bx\,\mathrm{d}x
+=\frac{e^{ax}\sin^{n-1}bx}{a^2+n^2b^2}(a\sin bx-nb\cos bx)
++\frac{n(n-1)b^2}{a^2+n^2b^2}I_{n-2}.
+\]
+\[
+\int e^{ax}\cos^n bx\,\mathrm{d}x
+=\frac{e^{ax}\cos^{n-1}bx}{a^2+n^2b^2}(a\cos bx+nb\sin bx)
++\frac{n(n-1)b^2}{a^2+n^2b^2}J_{n-2}.
+\]
+
+纯指数直接积；若是多项式乘指数，反复分部积分，永远让多项式降次；若是指数乘 $\sin bx$ 或 $\cos bx$，可直接使用闭式，不必临场重推两次分部；若是指数乘三角幂，就按上面的递推把幂次降下去。若底数不是 $e$，就先看成 $a^x=e^{x\ln a}$，只是把 $a$ 换成 $\ln a$。
+
+开头先判“三类对象”：纯指数、指数乘多项式、指数乘振荡项。多项式类统一写递推；振荡类统一写闭式或递推；不要在一种题里混好几套方法。若只是 $a^x$，无需先写成 $e^{x\ln a}$ 再大算，直接套母式更快。最后核对 $a^2+b^2$ 分母是否漏写、三角项前的符号是否正确，以及递推是否真的降了一阶而不是写回原题。
+\par\medskip
+
+
+\section{第十四节习题：含有指数函数的积分}
 \begin{exercise}[含有指数函数的积分 - 123]
 $\displaystyle \int a^x\mathrm{d}x$
 \end{exercise}
@@ -5020,7 +4954,24 @@ I_n
 \end{enumerate}
 \end{solution}
 
-\subsection{第十五节习题：含有对数函数的积分}
+\section{含有对数函数的积分}
+
+\par\medskip\noindent\textbf{对数函数积分的处理}\par
+
+题面含 $\ln x$、$(\ln x)^n$、$x^m(\ln x)^n$、$\dfrac{1}{x\ln x}$ 这几类。
+
+\(\displaystyle \int \ln x\,\mathrm{d}x=x\ln x-x+C\)，以及 \(\displaystyle \int \frac{\mathrm{d}x}{x\ln x}=\ln|\ln x|+C\)。
+对 \(\displaystyle I_{m,n}=\int x^m(\ln x)^n\,\mathrm{d}x\)，当 $m\neq -1$ 时，
+有 \(\displaystyle I_{m,n}=\frac{x^{m+1}}{m+1}(\ln x)^n-\frac{n}{m+1}I_{m,n-1}\)。
+当 $m=-1$ 时，令 $t=\ln x$，则 \(\displaystyle \int \frac{(\ln x)^n}{x}\,\mathrm{d}x=\int t^n\,\mathrm{d}t\)。
+
+若分母正好含一个 $x$，先检查能否把 $\ln x$ 看成新元 $t$。若外面是 $\ln x$ 或 $(\ln x)^n$，优先分部积分，并且通常让 $u=(\ln x)^n$。若前面还乘了 $x^m$，只要 $m\neq -1$，照递推直接降 $n$；若 $m=-1$，立刻改用 $t=\ln x$。对数题的关键不是花哨换元，而是认出“分部降幂”和“$x^{-1}\mathrm{d}x$ 变 $\mathrm{d}t$”这两条路。
+
+常见开头是“取 $u=(\ln x)^n,\ \mathrm{d}v=x^m\mathrm{d}x$”或“令 $t=\ln x$，则 $\mathrm{d}t=\dfrac{\mathrm{d}x}{x}$”。前者负责 $m\neq -1$，后者负责 $m=-1$。若没有 $\dfrac{\mathrm{d}x}{x}$，不要硬做 $t=\ln x$；若只是 $\dfrac{1}{x\ln x}$，不要分部积分，直接凑微分最快。最后核对 $m=-1$ 是否单独处理、分部积分里前面的 $\dfrac{1}{m+1}$，以及 $\ln|\ln x|$ 的绝对值有没有漏。
+\par\medskip
+
+
+\section{第十五节习题：含有对数函数的积分}
 \begin{exercise}[含有对数函数的积分 - 132(b)]
 $\displaystyle \int \ln x\mathrm{d}x$
 \end{exercise}
@@ -5164,7 +5115,35 @@ I_{-1,n}=
 \end{enumerate}
 \end{solution}
 
-\subsection{第十六节习题：含有双曲函数的积分}
+\section{含有双曲函数的积分}
+
+\begin{note}[双曲函数就是虚圆双元的参数化]
+若记 \(\displaystyle p=\cosh x,\qquad q=\sinh x\)，则立刻得到虚圆底座 $p^2-q^2=1$，并伴随微分关系 $\mathrm{d}p=q\,\mathrm{d}x,\ \mathrm{d}q=p\,\mathrm{d}x$。因此本节的对数微元、降次递推、面积型拆分，都不是新花样，而是前面虚圆母式在双曲参数下的直接改写。
+
+所以遇到双曲函数积分时，最稳的想法往往不是先展开成指数，而是先看它是否已经天然给出了一个虚圆双元坐标系。
+\end{note}
+
+\par\medskip\noindent\textbf{双曲函数积分的处理}\par
+
+题目含 $\sinh x,\cosh x,\tanh x$ 及其低次幂，或者明显能写成双曲恒等式。
+
+\begin{align*}
+(\sinh x)'&=\cosh x,\qquad (\cosh x)'=\sinh x,\qquad \cosh^2x-\sinh^2x=1,\\
+\int \sinh x\,\mathrm{d}x&=\cosh x+C,\qquad
+\int \cosh x\,\mathrm{d}x=\sinh x+C,\qquad
+\int \tanh x\,\mathrm{d}x=\ln\cosh x+C,\\
+\sinh^2x&=\frac{\cosh 2x-1}{2},
+\qquad
+\cosh^2x=\frac{\cosh 2x+1}{2}.
+\end{align*}
+
+若是单个 $\sinh,\cosh,\tanh$，可直接使用结论；若是 $\sinh^m x\cosh^n x$，先看能否拆出一个导数因子：$\sinh$ 配 $\mathrm{d}(\cosh x)$，$\cosh$ 配 $\mathrm{d}(\sinh x)$；若是平方，优先用半角公式。若题目里天然出现 \(\displaystyle p=\cosh x,\ q=\sinh x\)，就把它当成虚圆底座 $p^2-q^2=1$ 来看，不必急着拆指数。
+
+开头先判“直接导数 / 半角降次 / 双元底座”。基本题直接凑微分，平方题直接半角，复杂题再写 $p=\cosh x,\ q=\sinh x$。若题目只是 $e^x$ 与 $e^{-x}$ 的组合，直接回指数函数章节也可以；若双曲幂次很高但没有明显导数因子，先试半角再决定是否双元化。最后核对 $\cosh^2x-\sinh^2x=1$ 的符号、$\ln\cosh x$ 是否需要绝对值，以及半角公式里的 $\pm 1$ 有没有写反。
+\par\medskip
+
+
+\section{第十六节习题：含有双曲函数的积分}
 \begin{exercise}[含有双曲函数的积分 - 137]
 $\displaystyle \int \sinh x\,\mathrm{d}x$
 \end{exercise}
@@ -5293,7 +5272,25 @@ $\displaystyle \int \cosh^2 x\,\mathrm{d}x$
 \end{enumerate}
 \end{solution}
 
-\subsection{第十七节习题：定积分}
+\section{定积分}
+
+\par\medskip\noindent\textbf{定积分中的双元法思路}\par
+
+定积分里出现圆、半圆、三角函数整周期、Wallis 递推、正交性，或者换成双元坐标后端点和对称性能明显简化时，就可以沿这一思路处理。
+
+实圆端点常映到 $(0,1)$、$(1,0)$、$(-1,0)$ 等标准点；复指数法常用
+\[
+\mathrm{e}^{ix}=\cos x+i\sin x,\qquad
+\cos x=\frac{\mathrm{e}^{ix}+\mathrm{e}^{-ix}}{2},\qquad
+\sin x=\frac{\mathrm{e}^{ix}-\mathrm{e}^{-ix}}{2i}.
+\]
+若区间是整周期，先查奇偶性与正交性，再决定是否真的展开。
+
+先判奇偶性、周期性、对称性，能秒杀就别换元。若需要双元法，不是为了求原函数，而是为了把端点、边界项、正交项暴露出来；若是三角函数乘积，优先比较“积化和差”和“复指数双元”谁更短。常见推导可以概括成“端点映射 $\to$ 对称判零或递推 $\to$ 必要时再积分”，例如 Wallis 递推先把 $p=\sin x,\ q=\cos x$ 写出来，再用端点 $(0,1)$、$(1,0)$ 消边界项。若直接用牛顿-莱布尼茨就能结束，不要为了统一风格强行双元化；若区间不是整周期，复指数展开后未必更短。最后核对端点映射是否正确，以及正交性使用条件是否真是整数频率和完整周期。
+\par\medskip
+
+
+\section{第十七节习题：定积分}
 \begin{exercise}[定积分 - 142]
 $\displaystyle \int_{-\pi}^{\pi} \cos nx\mathrm{d}x = \int_{-\pi}^{\pi} \sin nx\mathrm{d}x$
 \end{exercise}
