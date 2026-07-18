@@ -1,0 +1,174 @@
+
+\section{动量与动量守恒}
+
+\begin{definition}[动量和冲量]\label{def:momentum}
+质量为 \(m\) 的质点的动量定义为 \(\vb*{p}=m\vb*{v}\)。若研究对象不是单个质点，而是由多个物体组成的系统，那么系统总动量就是各物体动量的矢量和：
+ \(\vb*{P}=\sum_i \vb*{p}_i.\) 下面定义冲量并引出质点的动量定理：
+\begin{itemize}
+\item $\dd\vec{I}$: 在 $\dd t$ 时间内质点所受到合外力的冲量，定义为 $\dd\vec{I}=\vec{F}\dd t$。
+\item $\vec{I}$: \textbf{总冲量}。力 $\vec{F}(t)$ 在 $t_1$ 到 $t_2$ 时间内的冲量，定义为 $\vec{I}=\int_{t_1}^{t_2}\vec{F}\dd t$。对恒力而言，总冲量简化为 $\vec{I}=\vec{F}(t_2-t_1)$。
+\end{itemize}
+\end{definition}
+
+\begin{theorem}[动量定理]\label{thm:impulse-momentum}
+对质量不变的质点，
+ \(\vb*{F}=m\dv{\vb*{v}}{t}=\dv{(m\vb*{v})}{t}=\dv{\vb*{p}}{t}.\) 
+两边同乘 \(\dd t\) 并沿全过程积分，才得到
+ \(\vb*{I}=\int_{t_1}^{t_2}\vb*{F}\,\dd t=\Delta \vb*{p}.\) 
+\end{theorem}
+
+\begin{theorem}[动量守恒定律]\label{thm:momentum-conservation}
+若一个系统所受外力的矢量和为零，或者某一短过程里外力冲量可以忽略，则系统总动量保持不变：
+ \(\vb*{P}_{\text{初}}=\vb*{P}_{\text{末}} \qquad\text{或}\qquad \sum \vb*{p}_{\text{初}}=\sum \vb*{p}_{\text{末}}.\) 
+\end{theorem}
+
+\begin{example}
+一垒球质量 $m = 0.3\,\mathrm{kg}$，以水平初速度 $v_1 = 20\,\mathrm{m/s}$ 飞来，被棒打击后速度大小变为 $v_2 = 30\,\mathrm{m/s}$，方向与 $x$ 轴正方向（即初速度反方向的夹角）成 $\theta = 30^\circ$ 仰角朝左上方飞出。设球与棒接触时间 $\Delta t = 0.01\,\mathrm{s}$，忽略重力，求垒球受到的平均打击力 $\vec{F}$。
+\end{example}
+\begin{solution}
+\textbf{方法一：直角坐标分量式求解（推荐，最具普适性）}：建立直角坐标系 $Oxy$，设垒球飞来的方向为 $x$ 轴正方向。
+由题意可写出初速度与末速度的成分矢量式：$\vec{v}_1 = v_1\vec{i} = 20\vec{i}$。末速度斜向左上方，与 $x$ 轴负方向成 $30^\circ$ 夹角，故其 $x$ 分量为负，$y$ 分量为正：$\vec{v}_2 = -v_2\cos 30^\circ\vec{i} + v_2\sin 30^\circ\vec{j} \approx -26\vec{i} + 15\vec{j}$。根据分量形式的动量定理 $\vec{F} = \frac{\Delta\vec{p}}{\Delta t}$，分别计算两个轴向上的平均作用力：
+$x$ 轴方向：$F_x = \frac{m(v_{2x} - v_{1x})}{\Delta t} = \frac{0.3 \times (-26 - 20)}{0.01} = -1380\,\mathrm{N}$。
+$y$ 轴方向：$F_y = \frac{m(v_{2y} - v_{1y})}{\Delta t} = \frac{0.3 \times (15 - 0)}{0.01} = 450\,\mathrm{N}$。
+利用勾股定理求得平均打击力的大小：
+$F = \sqrt{F_x^2 + F_y^2} = \sqrt{(-1380)^2 + 450^2} \approx 1451\,\mathrm{N}$。
+设力 $\vec{F}$ 与 $x$ 轴正方向的夹角为 $\alpha$，则 $\tan\alpha = \frac{F_y}{F_x} = \frac{450}{-1380} \approx -0.328$。由于 $F_x < 0, F_y > 0$，力位于第二象限，解得 $\alpha = 162^\circ$。
+
+\textbf{方法二：矢量三角形余弦定理求解}：根据动量定理的矢量式 $\vec{F}\Delta t = m\vec{v}_2 - m\vec{v}_1$，可以将三个矢量构成一个首尾相接的三角形：从共起点的初动量 $m\vec{v}_1$ 箭头指向末动量 $m\vec{v}_2$ 箭头的矢量即为冲量 $\vec{F}\Delta t$。
+在动量三角形中，$m\vec{v}_1$ 沿 $x$ 轴正向，$m\vec{v}_2$ 沿左上方。两矢量的夹角为其方向的补角 $\pi - \theta = 180^\circ - 30^\circ = 150^\circ$。
+根据余弦定理，冲量大小的平方为：
+\[(F\Delta t)^2 = (mv_1)^2 + (mv_2)^2 - 2(mv_1)(mv_2)\cos(180^\circ - \theta)\]
+两边开方并提取常数 $m$，代入已知数据可直接求出力的大小：
+\[F = \frac{m}{\Delta t}\sqrt{v_1^2 + v_2^2 - 2v_1v_2\cos 150^\circ} = \frac{0.3}{0.01}\sqrt{20^2 + 30^2 - 2 \times 20 \times 30 \times \left(-\frac{\sqrt{3}}{2}\right)} \approx 1451\,\mathrm{N}\]
+随后，在动量三角形中应用正弦定理求取方向：设冲量矢量与初动量矢量之间的夹角为 $\varphi$，有 $\frac{mv_2}{\sin\varphi} = \frac{F\Delta t}{\sin(180^\circ - \theta)}$，代入数据解得 $\varphi \approx 18^\circ$。因为冲量是从初速度方向逆时针偏转，故力与 $x$ 轴正方向的夹角为 $180^\circ - 18^\circ = 162^\circ$。
+\end{solution}
+
+\begin{example}
+一装沙车以恒定速率 $v = 3\,\mathrm{m/s}$ 从沙斗下通过，每秒钟落入车厢的沙子质量为 $\Delta m = 500\,\mathrm{kg}$。如果使车厢的速率保持不变，在忽略车轮与轨道间摩擦的情况下，应施加多大的水平牵引力 $\vec{F}$？
+\end{example}
+\begin{solution}
+最通用且严谨的方法是强行构建一个在 $t$ 到 $t+\dd t$ 时间内总质量绝对恒定不变的闭合系统：“在 $t$ 时刻的运沙车以及车厢内已有的沙子合体（总质量为 $m$），加上在下一瞬间 $\dd t$ 内即将从小孔落入车厢内的一撮微元沙子（质量为 $\dd m$）”。建立水平直角坐标系，以沙车恒定的前进速度 $\vec{v}$ 的方向为 $x$ 轴正方向。在 $t$ 时刻（落入前），质量为 $m$ 的车厢对地绝对速度为 $v$，而此时漏斗中那一小撮质量为 $\dd m$ 的沙子尚未落入车厢，其在水平方向上没有初速度，即对地的水平绝对速度为 $0$。故此时系统在水平方向上的总动量为：
+ \(p_1 = mv + \dd m \cdot 0 = mv\) 
+在 $t+\dd t$ 时刻（落入后），这一小撮沙子已经完全落入车厢中，并在摩擦力的牵引下被车厢带动，达到了与车厢完全相同的对地绝对速度。由于题目要求车厢的速率保持恒定不变，故此时系统合为一体后的整体速度依然为 $v$，此时系统在水平方向上的总动量为：
+ \(p_2 = (m + \dd m)v = mv + v\dd m\) 
+在 $\dd t$ 时间内，整个闭合系统在水平方向上受到的外力仅为维持车速恒定所需的水平牵引力 $F$。根据微分形式的系统动量定理 $F\dd t = p_2 - p_1$，将动量表达式代入：
+ \(F\dd t = (mv + v\dd m) - mv \implies F\dd t = v\dd m\) 
+两边同时除以时间微元 $\dd t$，便可以极其自然地导出所需的水平牵引力方程：
+ \(F = v\frac{\dd m}{\dd t}\) 
+式中的 $\frac{\dd m}{\dd t}$ 物理意义即为每秒钟落入车厢的沙子质量变化率（质量流）。由题意已知，沙车的恒定速率 $v = 3\,\mathrm{m/s}$，质量变化率 $\frac{\dd m}{\dd t} = 500\,\mathrm{kg/s}$。代入上述方程可直接求得：
+ \(F = 3 \times 500 = 1500\,\mathrm{N} = 1.5 \times 10^3\,\mathrm{N}\) 
+\end{solution}
+
+\begin{example}
+一柔软链条长为 $l$，单位长度的质量为 $\lambda$。链条放在开有小孔的水平桌面上，其一端由小孔稍微伸下，其余部分无初速度地堆在小孔周围。由于某种扰动，链条因自身重量开始下落。求链条下落速度 $v$ 与下落高度 $y$ 之间的关系（各处摩擦均不计，且认为链条软得可以自由伸开）。
+\end{example}
+\begin{solution}
+强行构建一个在 $t$ 到 $t+\dd t$ 时间内总质量绝对恒定不变的闭合系统:“在 $t$ 时刻已经从小孔漏下、正在空中悬挂并处于运动状态的这一部分链条（长度为 $y$，质量为 $m_1 = \lambda y$），以及在下一瞬间 $\dd t$ 内即将被拉动、原本静止在桌面上的那一小节微元链条（质量为 $\dd m$）”。以小孔位置为原点 $O$，竖直向下为 $y$ 轴正方向。在 $t$ 时刻（拉动前），悬挂部分的链条对地绝对速度为 $v$，而桌面上那一小节微元链条尚处于静止状态，其绝对速度为 $0$，故此时系统的总动量为：
+ \(p_1 = (\lambda y)v + \dd m \cdot 0 = \lambda yv\) 
+在 $t+\dd t$ 时刻（拉动后），该微元链条已经被拉下小孔，并融入运动系统。此时整段运动链条的长度增加为 $y+\dd y$，其总质量变为 $\lambda y + \dd m$，而对地绝对速度整体微增为 $v+\dd v$，故此时系统的总动量为：
+\[
+p_2 = (\lambda y + \dd m)(v + \dd v) = \lambda yv + \lambda y\dd v + v\dd m + \dd m\dd v
+\]
+由于在 $\dd t$ 时间内，该系统在竖直方向上受到的合外力仅为悬挂部分链条所受的重力，即 $F_{\text{合}} = m_1 g = \lambda yg$，根据微分形式的动量定理 $F_{\text{合}}\dd t = p_2 - p_1$，带入动量表达式得：
+ \(\lambda yg\dd t = \lambda y\dd v + v\dd m + \dd m\dd v\) 
+根据线密度的几何物理关系，在 $\dd t$ 时间内被拉下小孔的微元链条质量可表示为 $\dd m = \lambda \dd y$。我们将其代入上式，同时抹去二阶无穷小量 $\dd m\dd v$（即 $\lambda \dd y\dd v$），方程化简为：
+ \(\lambda yg\dd t = \lambda y\dd v + \lambda v\dd y\) 
+两边同时消去恒不为零的线密度 $\lambda$，并注意到右边利用乘积求导法则刚好可以凑出全微分 $\mathrm{d}(yv) = y\dd v + v\dd y$，从而使方程转化为极其简洁的微分形式：
+ \(yg\dd t = \mathrm{d}(yv)\) 
+由于方程中同时包含时间元 $\dd t$ 与空间位移，不便于直接积分，我们利用速度的定义式 $v = \frac{\dd y}{\dd t}$，即 $\dd t = \frac{\dd y}{v}$ 将时间元消除分离变量：
+ \(yg \cdot \frac{\dd y}{v} = \mathrm{d}(yv) \implies y^2g\dd y = yv\mathrm{d}(yv)\) 
+结合初始条件（开始时无初速度下落，即 $t=0$ 时，下落高度 $y=0$ 且速度 $v=0$），对上式两边分别加积分号进行定积分。为了使右边的积分形式更加直观，我们可以将整体变量 $yv$ 视为一个换元对象：
+\[
+\int_{0}^{y} gy^2\dd y = \int_{0}^{yv} (yv)\mathrm{d}(yv) \implies g \cdot \frac{1}{3}y^3 = \frac{1}{2}(yv)^2
+\implies
+\frac{1}{3}gy = \frac{1}{2}v^2 \implies v^2 = \frac{2}{3}gy
+\]
+由此便求得链条下落速度 $v$ 与下落高度 $y$ 之间的最终关系为 $v = \sqrt{\dfrac{2}{3}gy}$。
+\end{solution}
+
+\begin{example}
+火箭是一种自带燃料和助燃剂的太空飞行器，它依靠燃料燃烧喷出气体所产生的反冲推力向前推进。设在不计地球引力和空气阻力的理想情况下，火箭的初质量为 $M_{\text{初}}$，初速度为 $v_{\text{初}}$，气体相对于火箭的喷气速率为恒定常数 $u$。求燃料全部燃烧完毕后（此时火箭剩余质量为 $M_{\text{末}}$），火箭所能达到的最大速度 $v_{\text{末}}$。
+\end{example}
+\begin{solution}
+强行寻找或凑出一个在 $t$ 到 $t+\dd t$ 时间内，总质量绝对不改变的完整系统。对于火箭喷气：系统 = 火箭主体 $M$ $+$ 即将喷出的一撮燃料 $\dd m$。写动量表达式时，所有物体的速度必须全部转换成相对于同一个惯性参考系（通常是地面）的绝对速度。这一小撮燃料还在火箭肚子里，和火箭是一个整体，以相同的绝对速度 $v$ 向上飞行。 \(\text{系统总动量 } p_1 = (M) \cdot v\) 
+喷气后的$t+\mathrm{d}t$ 时刻，系统分裂成了两部分：火箭残体：质量减少了，变为 $M - \mathrm{d}m_{\text{流}}$，速度则由于反冲略微增加，变为 $v + \mathrm{d}v$。喷出气体：质量为 $\mathrm{d}m_{\text{流}}$，它对地的绝对速度我们记为 $v_{\text{流}}=v+\dd v-u$。
+$$\text{系统总动量 } p_2 = \underbrace{(M - \mathrm{d}m_{\text{流}})(v + \mathrm{d}v)}_{\text{火箭残体动量}} + \underbrace{\mathrm{d}m_{\text{流}} \cdot (v+\mathrm{d} v-u)}_{\text{喷出气体动量}}$$
+消去两边的同类项 $Mv$、$v\dd m_{\text{流}}$，以及相互抵消的二阶小量（或通过高阶无穷小直接抹去 $\dd m_{\text{流}}\dd v$）:
+ \(M\dd v - u\dd m_{\text{流}} = 0\) 根据质量守恒，火箭主体质量的增量 $\dd M$ 刚好等于流出气体质量的相反数，即 $\dd M = -\dd m_{\text{流}}$。代入上式完成分离变量：
+\[
+\dd v = -u\frac{\dd M}{M}\implies
+\int_{v_{\text{初}}}^{v_{\text{末}}} \dd v = -u \int_{M_{\text{初}}}^{M_{\text{末}}} \frac{\dd M}{M} \implies v_{\text{末}} - v_{\text{初}} = -u \ln\left(\frac{M_{\text{末}}}{M_{\text{初}}}\right)
+\]
+\end{solution}
+
+\begin{example}
+设有一静止的原子核，衰变辐射出一个电子和一个中微子后成为一个新的原子核。已知电子和中微子的运动方向互相垂直，且电子动量大小为 $p_{\text{e}} = 1.2 \times 10^{-22}\,\mathrm{kg \cdot m \cdot s^{-1}}$，中微子的动量大小为 $p_{\nu} = 6.4 \times 10^{-23}\,\mathrm{kg \cdot m \cdot s^{-1}}$。问新的原子核的动量的值和方向如何？
+\end{example}
+\begin{solution}
+设静止母核的初动量为 $\vec{p}_0 = 0$。衰变后，系统由电子（动量 $\vec{p}_{\text{e}}$）、中微子（动量 $\vec{p}_{\nu}$）以及新原子核（动量 $\vec{p}_{\text{N}}$）三部分组成。根据动量守恒定律有：
+\[\vec{p}_{\text{e}} + \vec{p}_{\nu} + \vec{p}_{\text{N}} = 0 \implies \vec{p}_{\text{N}} = -(\vec{p}_{\text{e}} + \vec{p}_{\nu})\]
+这表明，新原子核的动量与电子、中微子的合动量\textbf{大小相等、方向相反}。令中微子的出射方向为 $x$ 轴正方向，则其动量为：$\vec{p}_{\nu} = p_{\nu}\vec{i} = 6.4 \times 10^{-23}\vec{i}$。
+由于电子的运动方向与中微子垂直，我们不妨令电子沿 $y$ 轴正方向出射，则其动量为：$\vec{p}_{\text{e}} = p_{\text{e}}\vec{j} = 1.2 \times 10^{-22}\vec{j}$。将两个分量代入动量守恒方程，求得新原子核的动量矢量式为：
+\[\vec{p}_{\text{N}} = -p_{\nu}\vec{i} - p_{\text{e}}\vec{j} = -6.4 \times 10^{-23}\vec{i} - 1.2 \times 10^{-22}\vec{j}\]
+\[p_{\text{N}} = \sqrt{p_{\nu}^2 + p_{\text{e}}^2} = \sqrt{(6.4 \times 10^{-23})^2 + (1.2 \times 10^{-22})^2} \approx 1.36 \times 10^{-22}\,\mathrm{kg \cdot m \cdot s^{-1}}\]
+由于 $\vec{p}_{\text{N}}$ 的 $x$ 分量和 $y$ 分量均为负值，该矢量严格指向第三象限（即与中微子、电子发射方向截然相反的斜后方）。
+我们选择以中微子的出射方向（$x$ 轴正方向）为基准，计算 $\vec{p}_{\text{N}}$ 的逆时针偏转角 $\theta$。
+首先计算新原子核动量与 $x$ 轴负方向之间的夹角 $\alpha$（即在第三象限内与负 $x$ 轴的夹角）：
+\[\tan\alpha = \frac{|p_{\text{Ny}}|}{|p_{\text{Nx}}|} = \frac{p_{\text{e}}}{p_{\nu}} = \frac{1.2 \times 10^{-22}}{6.4 \times 10^{-23}} = 1.875 \implies \alpha \approx 61.9^\circ\]
+\end{solution}
+
+\begin{example}
+水平光滑铁轨上有一小车长为 $l$，质量为 $M$。车的一端站有一人，质量为 $m$，均静止。现设人从一端走向另一端，求人和小车相对地面各移动了多少距离？
+\end{example}
+\begin{solution}
+建立水平直角坐标系 $Ox$，以人相对于小车前进的方向为 $x$ 轴正方向。根据速度合成定理，人对地的绝对速度 $\vec{v}_{\text{人地}}$ 等于人对车的相对速度 $\vec{v}_{\text{人车}}$ 与车对地的绝对速度 $\vec{v}_{\text{车地}}$ 的矢量和：
+ \(\vec{v}_{\text{人地}} = \vec{v}_{\text{人车}} + \vec{v}_{\text{车地}}\) 
+系统在水平方向上动量守恒，且初始状态为静止（总动量为 0），故在任意时刻有：
+ \(m v_{\text{人地}} - M v_{\text{车地}} = 0\) 
+联立：
+\[v_{\text{车地}} = \frac{m}{m + M} v_{\text{人车}} ,~~v_{\text{人地}} = \frac{M}{m + M} v_{\text{人车}}\]
+利用瞬时速度的微分定义 $v = \frac{\mathrm{d}s}{\mathrm{d}t}$，将上式两边同乘以 $\mathrm{d}t$：
+\[\mathrm{d}s_{\text{车地}} = \frac{m}{m + M} \mathrm{d}s_{\text{人车}},~~\mathrm{d}s_{\text{人地}} = \frac{M}{m + M} \mathrm{d}s_{\text{人车}}\]
+设人从车头走到车尾的过程中，人相对车的总位移大小为 $\Delta s_{\text{人车}} = l$。对上述微元方程两边从初始状态到最终状态进行定积分：
+\[
+\begin{aligned}
+\int_{0}^{s_{\text{车}}} \dd s_{\text{车地}}
+&= \frac{m}{m + M} \int_{0}^{l} \dd s_{\text{人车}}
+\implies s_{\text{车}} = \frac{m}{m + M} l,\\
+\int_{0}^{s_{\text{人}}} \dd s_{\text{人地}}
+&= \frac{M}{m + M} \int_{0}^{l} \dd s_{\text{人车}}
+\implies s_{\text{人}} = \frac{M}{m + M} l.
+\end{aligned}
+\]
+此结果也可以直接利用系统质心位置守恒得出。因为系统水平方向不受外力，且初速度为零，因此整个系统的质心在水平方向上的绝对位置始终保持不动：
+$m \vec{s}_{\text{人}} + M \vec{s}_{\text{车}} = 0 \implies m s_{\text{人}} = M s_{\text{车}}$
+由于人和车相对位移的几何纽带关系为 $s_{\text{人}} + s_{\text{车}} = l$，联立这两个简单的代数方程即可瞬间解出答案，免去了繁琐的微分积分过程。
+\end{solution}
+
+\begin{exercise}[2010模拟题：车上人相对车前走时怎样写动量守恒]
+质量为 \(M\) 的车沿光滑水平轨道以速度 \(v_0\) 前进，车上的人质量为 \(m\)。开始时人相对于车静止，后来人以相对于车的速度 \(v\) 向前走，此时车速变为 \(V\)。写出车与人系统沿轨道方向的动量守恒方程，并求 \(V\)。
+\end{exercise}
+\begin{solution}
+动量守恒方程应写成
+ \((M+m)v_0=MV+m(V+v)\implies \boxed{V=v_0-\frac{m}{M+m}v}.\) 
+\end{solution}
+
+\begin{exercise}[2010级期末：木料与天鹅分离时的水平动量守恒]
+一块木料质量为 \(\SI{45}{kg}\)，以 \(\SI{8}{km/h}\) 的恒定速度向下游漂动。一只质量为 \(\SI{10}{kg}\) 的天鹅以 \(\SI{8}{km/h}\) 的速率向上游飞来，企图降落在木料上。它在木料上尚未站稳时，又以相对木料为 \(\SI{2}{km/h}\) 的速率离开木料，向上游飞去。忽略水的摩擦，所有速度均为水平速度，求木料的末速度。
+\end{exercise}
+\begin{solution}
+水平方向外力冲量可忽略，因此“木料 + 天鹅”系统水平方向动量守恒。题目给的 \(\SI{2}{km/h}\) 是天鹅相对木料的速度，不是天鹅对水面的速度。取下游方向为正。木料初速$v_{M0}=+8$，天鹅初速$v_{m0}=-8$，单位均为 \(\si{km/h}\)。设木料末速为 \(V\)，天鹅离开时相对木料向上游，故天鹅对水面的末速为$v_m=V-2$，动量守恒：\[45\times 8+10\times(-8)=45V+10(V-2)\implies 280=55V-20\implies V=\frac{300}{55}\approx \SI{5.46}{km/h}\]
+方向仍向下游。
+\end{solution}
+
+\begin{exercise}[2013级期末：等质量滑块沿可动圆槽滑下后的离槽速度]
+一质量为 \(m\) 的滑块，从静止开始沿一个光滑的 \(1/4\) 圆弧木槽滑下。木槽质量也为 \(m\)，半径为 \(R\)，放在光滑水平面上。滑块从上端滑到下端并离开木槽时，求滑块相对地面的速度大小。
+\end{exercise}
+\begin{solution}
+水平方向动量守恒给出
+ \(mv+mV=0\implies V=-v.\) 
+滑块下降高度为 \(R\)，故机械能守恒为
+ \(mgR=\frac12mv^2+\frac12mV^2.\) 
+因此
+ \(v=\sqrt{gR}.\) 
+\end{solution}

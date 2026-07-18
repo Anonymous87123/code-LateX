@@ -1,0 +1,27 @@
+usage: audit_humanize_generation_qualification.py [-h]
+                                                  [--skill-root SKILL_ROOT]
+                                                  [--requirements REQUIREMENTS]
+                                                  [--contract CONTRACT]
+                                                  [--artifact-root ARTIFACT_ROOT]
+                                                  [--replay-timeout REPLAY_TIMEOUT]
+                                                  [--format {json,text}]
+                                                  [--output OUTPUT]
+                                                  [manifest]
+
+Audit current forward-generation qualification evidence. A missing manifest is
+an honest NOT_EVALUATED audit, not a PASS.
+
+positional arguments:
+  manifest              strict JSON evidence manifest
+
+options:
+  -h, --help            show this help message and exit
+  --skill-root SKILL_ROOT
+  --requirements REQUIREMENTS
+  --contract CONTRACT
+  --artifact-root ARTIFACT_ROOT
+                        root for all manifest-relative evidence paths;
+                        defaults to the manifest directory
+  --replay-timeout REPLAY_TIMEOUT
+  --format {json,text}
+  --output OUTPUT       optional report path outside the Skill root

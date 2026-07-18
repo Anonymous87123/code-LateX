@@ -1,0 +1,103 @@
+
+
+\chapter{热力学第一定律}
+
+\begin{definition}[准静态过程，弛豫时间，热量]
+    \begin{itemize}
+    \item 准静态过程（理想化的过程）：从一个平衡态到另一平衡态所经过的每一中间状态都可近似看作平衡态的过程。条件：状态变化必须非常缓慢，使过程中的每个中间状态都近似平衡态。
+    \item 弛豫时间是一个系统的平衡态从破坏到恢复到新平衡态所经历的时间 \(\tau\)。例：气缸内气体从非平衡态到平衡态的过渡时间约 \(10^{-3}\,\text{s}\)；实际内燃机气缸内一次压缩的时间大约是 \(10^{-2}\,\text{s}\)。
+    \item 改变热力学系统内能的两条路：
+    \begin{itemize}
+    \item 热传递：通过分子间相互作用完成，是系统外、内部分子无规则运动之间的转换；
+    \item 做功：通过物体宏观位移完成，是系统外物体的有规则运动与系统内分子无规则运动之间的转换。做功大小取决于路径，不能只看初末态。准静态过程中\[\delta A = F\mathrm dl = pS\mathrm dl = p\mathrm dV\]因此\[A=\int_{V_1}^{V_2}p\mathrm dV.\]
+    \end{itemize}
+    \item 热量（过程量）。热是通过传热方式传递能量的量度，\(\delta Q\) 表示微小过程传递的热量。
+    \end{itemize}
+\end{definition}
+绝热自由膨胀的初态和末态都可以用状态方程描述，但中间过程不是准静态过程，因此\textbf{不能}套用 \(pV^\gamma=\text{const}\)。这正是课件反复强调的“端点可算，中间路径不能乱套方程”。
+\begin{theorem}[热力学第一定律]
+系统从外界吸收的热量，一部分使系统内能增加，另一部分使系统对外界做功。公式：
+\[
+Q=\Delta U+A.
+\]
+\begin{itemize}
+    \item \(Q>0\)：系统吸热；\(Q<0\)：系统放热；
+    \item \(\Delta U>0\)：内能增加；\(\Delta U<0\)：内能减少；
+    \item \(A>0\)：系统对外做功；\(A<0\)：外界对系统做功。
+\end{itemize}
+准静态过程：\[
+Q=\Delta U+\int_{V_1}^{V_2}p\mathrm dV,
+\]微小过程：\[
+\delta Q=\mathrm dU+\delta A=dU+p\mathrm dV.
+\]
+\end{theorem}
+
+\begin{exercise}
+    系统沿 \(abc\) 过程变化到 \(c\) 状态时吸收热量 \(500\,\text{J}\)；沿 \(cda\) 回到 \(a\) 状态时放热 \(300\,\text{J}\)，外界对系统作功 \(200\,\text{J}\)。求 \(abc\) 过程中内能增加和对外作功。
+\end{exercise}
+\begin{solution}
+在 \(cda\) 过程中
+\[Q=-300\,\text{J},~A=-200\,\text{J}\implies U_a-U_c=Q-A=-300-(-200)=-100\,\text{J}\implies U_c-U_a=100\,\text{J}\]对 \(abc\) 过程：\[A=Q-(U_c-U_a)=500-100=400\,\text{J}.\]
+\end{solution}
+
+
+\begin{exercise}[电热丝加热开口水桶时怎样给 \(Q\) 判号]
+水的定压比热为 \(c=\SI{4.2}{J/(g.K)}\)。有 \(\SI{1}{kg}\) 水放在带电热丝的开口桶内，通电使水从 \(\SI{30}{\celsius}\) 升高到 \(\SI{80}{\celsius}\)，电流做功为 \(W_{\text{电}}=\SI{4.2e5}{J}\)。求过程中系统从外界吸收的热量 \(Q\)。
+\end{exercise}
+
+\begin{solution}
+ \[Q=mc\Delta T-W_{\text{电}} =2.1\times10^5-4.2\times10^5 =-\SI{2.1e5}{J}\]
+\end{solution}
+
+\begin{exercise}[多方关系下的准静态体积功]
+设理想气体由状态 \((p_1,V_1)\) 准静态变化到状态 \((p_2,V_2)\)，并满足
+ \(pV^n=C.\) 
+求系统对外所做的功。
+\end{exercise}
+
+\begin{solution}
+多方过程仍是准静态体积功，先把 \(p\) 用 \(V\) 表示，再沿体积积分：
+\[
+\begin{aligned}
+A&=\int_{V_1}^{V_2}p\,\dd V,\qquad p=\frac{C}{V^n},\\
+\implies A&=\int_{V_1}^{V_2}\frac{C}{V^n}\,\dd V
+=\frac{C}{1-n}\left(V_2^{\,1-n}-V_1^{\,1-n}\right)=\frac{p_1V_1-p_2V_2}{n-1}\qquad (n\neq1).
+\end{aligned}
+\]
+\end{solution}
+
+\begin{exercise}[2010级期末：用绝热线参照判断任意压缩过程吸放热]
+\(p\)-\(V\) 图中，理想气体从状态 \(b\) 压缩到状态 \(a\)。其中 \(bca\) 为绝热过程，\(b1a\) 和 \(b2a\) 为两条任意准静态过程；图中 \(b1a\) 位于绝热线下方，\(b2a\) 位于绝热线上方。判断两条任意过程中气体吸热还是放热，并判断气体作功正负。
+\end{exercise}
+
+\begin{solution}
+三条路径的始末态相同，所以 \(\Delta U=Q-A_{\text{内对外}}\) 相同；但作功由 \(p\)-\(V\) 图下方面积决定。\(b\to a\) 是压缩过程，\(\dd V<0\)，所以两条任意路径中气体对外作功都为负。\(b1a\) 在绝热线下方，压缩时面积较小，外界作功没有绝热线那么多，即$A_{\text{外对内}}=-A_{\text{内对外}}$更小，所以由$\Delta U$不变得知$Q>0$，气体要从外界吸热。 在绝热线上方，压缩时面积较大，外界作功比绝热线多，所以$A_{\text{外对内}}=-A_{\text{内对外}}$更大，由$\Delta U$不变得知$Q>0$，气体要对外界放热。
+\end{solution}
+
+\begin{exercise}[2015-2016期末：已知一路吸热时怎样求闭合路径吸热]
+\(p\)-\(V\) 图中有状态 \(a( V=\SI{1e-3}{m^3},p=\SI{4e5}{Pa})\)、\(b( V=\SI{4e-3}{m^3},p=\SI{1e5}{Pa})\)、\(d( V=\SI{4e-3}{m^3},p=\SI{4e5}{Pa})\)。理想气体沿曲线 \(a\to c\to b\) 过程吸热 \(\SI{500}{J}\)。若再沿 \(b\to d\to a\) 回到初态，求整个 \(a\to c\to b\to d\to a\) 过程的吸热量。
+\end{exercise}
+\begin{solution}
+理想气体沿曲线 \(a\to c\to b\) 过程吸热 \(\SI{500}{J}\)。但是温度不变所以内能不变，必然对外做功\(\SI{500}{J}\)，再沿 \(b\to d\to a\) 回到初态，此过程初末温度不变，且外界做功$1200\text{J}$，所以放热$1200\text{J}$，所以整个过程吸热 \(500-1200=-700\text{J}\)。
+\end{solution}
+
+\begin{exercise}[\(p\)-\(V\) 图上一条直线过程为什么能先看面积和温度]
+一定量理想气体由状态 \(a\) 经 \(b\) 到状态 \(c\)，且 \(abc\) 在 \(p\)-\(V\) 图上是一条直线。已知图上可读出：\(a\) 点约为 \((V=\SI{1}{L},p=\SI{3}{atm})\)，\(c\) 点约为 \((V=\SI{3}{L},p=\SI{1}{atm})\)。求这一过程中：1. 气体对外做功；2. 气体内能增量；3. 气体吸收的热量。
+\end{exercise}
+
+\begin{solution}
+\[
+\begin{aligned}
+A&=\frac12(p_a+p_c)(V_c-V_a)=\frac12(3+1)\,\si{atm}\times 2\,\si{L}=\frac12\times4\times2\times101.3\approx \SI{405.2}{J}
+\end{aligned}
+\]
+再\(T_a=T_c\)，进而 \(\Delta U=0\)。于是 \(Q=\Delta U+A=A\approx \SI{405.2}{J}\)。
+\end{solution}
+
+\begin{exercise}[2007级期末：同终温等体与等压吸热之差就是等压功]
+处于平衡态 \(A\) 的一定量理想气体，若经准静态等体过程变到平衡态 \(B\)，从外界吸收热量 \(\SI{416}{J}\)；若经准静态等压过程变到与 \(B\) 有相同温度的平衡态 \(C\)，从外界吸收热量 \(\SI{582}{J}\)。求从 \(A\) 到 \(C\) 的准静态等压过程中气体对外界所作的功。
+\end{exercise}
+
+\begin{solution}
+由$A$到$B$内能增加\(\SI{416}{J}\)，$B,C$温度相同，所以内能相同。从$A$到$C$吸热\(\SI{582}{J}\)，所以必定对外做功$582-416 =\SI{166}{J}$ 
+\end{solution}

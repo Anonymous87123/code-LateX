@@ -1,0 +1,113 @@
+
+
+\chapter{机械振动}
+
+\begin{definition}[机械振动/简谐振动]
+如果一个物体在平衡位置附近作往复运动，并且这种运动具有周期性，就称为机械振动。弹簧振子、单摆、音叉、钟摆都属于这一类问题。\textbf{有周期}并不自动推出\textbf{是简谐振动}。例如大摆角单摆仍然会周期性摆动，但因为回复力不再严格正比于位移，所以不能直接算作简谐振动。\\若振动物体的位移可以表示为 \(x=A\cos(\omega t+\varphi_0)\)，则称该振动为\textbf{简谐振动}。其中 \(A\) 是振幅，\(\omega\) 是角频率，\(\varphi=\omega t+\varphi_0\) 是相位，\(\varphi_0\) 是初相。
+\begin{enumerate}
+ \item 合外力满足 \(F=-kx\)，也就是回复力与位移成正比、方向相反；
+ \item 势能可写成二次型 \(U=\frac{1}{2}kx^2\)，并且系统机械能守恒；
+ \item 动力学方程可写成 \(\dv[2]{x}{t}+\omega^2x=0\)；
+ \item 运动学方程可写成 \(x=A\cos(\omega t+\varphi_0)\)。
+\end{enumerate}
+\begin{align*}
+F=-kx &\implies m\dv[2]{x}{t}=-kx\implies \dv[2]{x}{t}+\omega^2x=0\implies x=A\cos(\omega t+\varphi_0).
+\end{align*}
+其中 \(\omega^2=\frac{k}{m}\)。从位移方程
+\[
+\begin{aligned}
+x&=A\cos(\omega t+\varphi_0),\\
+v&=\dv{x}{t}=-A\omega\sin(\omega t+\varphi_0),\\
+a&=\dv{v}{t}=-A\omega^2\cos(\omega t+\varphi_0)
+\implies a=-\omega^2x.
+\end{aligned}
+\]
+这说明简谐振动中的速度、加速度也都是周期变化的，而且加速度总是指向平衡位置。进一步可得 \(v_{\max}=\omega A,\ a_{\max}=\omega^2A\)。同一简谐振动里，位移、速度、加速度都由同一个相位 \(\varphi=\omega t+\varphi_0\) 控制。相位相同，说明“振动状态”相同；相位不同，说明它们虽然可能位移一样，但运动方向、受力状态未必相同。例如，当 \(x=0\) 时，质点可能正向右穿过平衡位置，也可能正向左穿过平衡位置。单看位移分不出来，但结合相位或者速度符号就能区分。
+\end{definition}
+\begin{note}
+已知系统总能量为常数：$$E = \frac{1}{2}m v^2 + \frac{1}{2}k x^2 = \text{常量}$$两边同时关于时间 $t$ 求一阶导数，常数项导数必然归零：$$\frac{\mathrm{d}}{\mathrm{d}t} \left( \frac{1}{2}m v^2 + \frac{1}{2}k x^2 \right) =\frac{1}{2}m \cdot \left( 2v \frac{\mathrm{d}v}{\mathrm{d}t} \right) + \frac{1}{2}k \cdot \left( 2x \frac{\mathrm{d}x}{\mathrm{d}t} \right) = 0 \implies m v \frac{\mathrm{d}v}{\mathrm{d}t} + k x \frac{\mathrm{d}x}{\mathrm{d}t} = 0$$
+由于 $\frac{\mathrm{d}x}{\mathrm{d}t} = v$，且 $\frac{\mathrm{d}v}{\mathrm{d}t} = \frac{\mathrm{d}^2x}{\mathrm{d}t^2}$，代回上式：$$m v \frac{\mathrm{d}^2x}{\mathrm{d}t^2} + k x v = 0 \implies v \cdot \left( m \frac{\mathrm{d}^2x}{\mathrm{d}t^2} + k x \right) = 0$$由于质点在往复运动过程中其瞬时速度 $v$ 显然不可能恒等于 0：$$m \frac{\mathrm{d}^2x}{\mathrm{d}t^2} + k x = 0 \implies \boxed{\frac{\mathrm{d}^2x}{\mathrm{d}t^2} + \frac{k}{m}x = 0}$$
+\end{note}
+
+\begin{exercise}[用平衡位置证明竖直弹簧振子作简谐振动]
+一轻弹簧上端固定，下端挂一重物。静止时弹簧伸长 \(l=9.8\ \text{cm}\)。现给物体一个向下的瞬时冲击，使它在 \(t=0\) 时通过平衡位置并具有向下速度 \(v_0=1\ \text{m/s}\)。证明物体作简谐振动，并写出振动方程。
+\end{exercise}
+
+\begin{solution}
+取平衡位置为原点，向下为 \(x\) 轴正方向。静止时弹簧伸长 \(l\)，故 \(kl=mg\)。若物体相对平衡位置再向下偏离 \(x\)，弹簧总伸长为 \(l+x\)，于是
+\[
+mg-k(l+x)=m\dv[2]{x}{t},\qquad kl=mg
+\implies m\dv[2]{x}{t}+kx=0.
+\]
+这已经是简谐振动方程，角频率由
+\[
+\begin{aligned}
+\omega^2&=\frac{k}{m}=\frac{g}{l}
+=\frac{9.8}{0.098}=100
+\implies \omega=10\ \si{s^{-1}},\\
+x&=A\sin 10t,\qquad v(0)=10A=1
+\implies A=0.10\ \si{m}.
+\end{aligned}
+\]由于 \(t=0\) 时物体从平衡位置向下通过，可直接写成正弦形式；所以振动方程为 \(x=0.10\sin(10t)\)，其中 \(x\) 以米计，正方向向下。
+\end{solution}
+
+\begin{theorem}[简谐振动的相位关系]
+设有两组角频率严格相等的同方向简谐振动方程：$$x_1 = A_1 \cos(\omega t + \phi_1),~x_2 = A_2 \cos(\omega t + \phi_2)$$
+定义它们的相位差$\Delta \phi$ ：$$\Delta \phi = (\omega t + \phi_2) - (\omega t + \phi_1) = \phi_2 - \phi_1$$然后为了方便比较超前和落后，将$\Delta \phi$通过加$2k\pi$或者减$2k\pi$使得$\| \Delta \phi \| \le \pi$，当 $\Delta \phi = \phi_2 - \phi_1 > 0$ 时称振动 2 比振动 1 超前 $\Delta \phi$（或称振动 1 比振动 2 落后），当 $\Delta \phi = \phi_2 - \phi_1 < 0$ 时称振动 2 比振动 1 落后 $|\Delta \phi|$。
+\end{theorem}
+
+\begin{theorem}[由初始条件确定简谐振动的振幅与初相]
+    设在 $t = 0$ 时刻，质点的初始位移为 $x_0$，初始速度为 $v_0$。简谐振动的通用运动学方程及其速度方程分别为：$$x = A \cos(\omega t + \phi),~~v = \frac{\mathrm{d}x}{\mathrm{d}t} = -\omega A \sin(\omega t + \phi)$$将初始条件 $t = 0, x = x_0, v = v_0$ 代入得：$$x_0 = A \cos\phi ,~~v_0 = -\omega A \sin\phi \implies x_0^2 = A^2 \cos^2\phi,~~\left(\frac{v_0}{\omega}\right)^2 = A^2 \sin^2\phi\implies x_0^2 + \left(\frac{v_0}{\omega}\right)^2 = A^2$$所以$A = \sqrt{x_0^2 + \left(\dfrac{v_0}{\omega}\right)^2} $，由 $- \frac{v_0}{\omega} = A \sin\phi$，然后与$x_0 = A \cos\phi$相除：$$\frac{A \sin\phi}{A \cos\phi} = \frac{-\frac{v_0}{\omega}}{x_0} \implies \tan\phi = -\frac{v_0}{\omega x_0}\implies\boxed{\phi = \arctan\left(-\frac{v_0}{\omega x_0}\right)} $$我们可以构建一个名义上的直角三角形来强行记忆上述两个公式：以初始位移 $x_0$ 为邻边，以 $-\frac{v_0}{\omega}$ 为对边。根据勾股定理，其斜边长恰好就是振幅 $A$。该直角三角形中邻边与斜边的夹角，正好对应初相 $\phi$ 。
+    
+    由反正切方程 $\tan\phi = -\frac{v_0}{\omega x_0}$ 确定的初相 $\phi$，在它的标准周期范围（$[0, 2\pi)$ 或 $[-\pi, \pi]$）内必然同时存在两个满足条件的代数解（它们彼此相差 $\pi$），必须将求得的两个候选值反代回原始的方程$x_0 = A \cos\phi$ 与方程$v_0 = -\omega A \sin\phi$ 中进行符号一致性检验。由于 $A > 0, \omega > 0$ 恒成立，初相 $\phi$ 的象限完全由 $x_0$ 和 $v_0$ 的正负号唯一锁定：
+    \begin{itemize}
+    \item 若 $x_0 > 0, v_0 < 0 \implies \cos\phi > 0, \sin\phi > 0 \implies \phi$ 落在第一象限。
+    \item 若 $x_0 < 0, v_0 < 0 \implies \cos\phi < 0, \sin\phi > 0 \implies \phi$ 落在第二象限。
+    \item 若 $x_0 < 0, v_0 > 0 \implies \cos\phi < 0, \sin\phi < 0 \implies \phi$ 落在第三象限。
+    \item 若 $x_0 > 0, v_0 > 0 \implies \cos\phi > 0, \sin\phi < 0 \implies \phi$ 落在第四象限。
+    \end{itemize}
+\end{theorem}
+
+\begin{definition}[旋转矢量法]
+首先实战确定振动方程时要用$\cos(\omega t+\phi)$的形式，不要用正弦，然后根据\[A = \sqrt{x_0^2 + \left(\dfrac{v_0}{\omega}\right)^2},~\tan\phi = -\frac{v_0}{\omega x_0}\]就能通过旋转矢量法得到相位:把长度为 \(A\) 的矢量放在平面内，让它以角速度 \(\omega\) 匀速逆时针转动。若 \(t=0\) 时它与 \(x\) 轴夹角为 \(\varphi_0\)，则时刻 \(t\) 的夹角为
+ \(\theta=\omega t+\varphi_0 \implies x=A\cos\theta=A\cos(\omega t+\varphi_0),\) 
+这正是简谐振动方程。只知道初始位置 \(x_0\)，通常只能确定旋转矢量在 \(x\) 轴上的投影，因此会有两个关于 \(x\) 轴对称的可能位置；再结合初始速度方向，才能判断它在上半平面还是下半平面，从而唯一确定初相。
+\end{definition}
+
+\begin{exercise}[由位置和速度确定初相]
+某简谐振动的振幅为 \(A\)，角频率为 \(\omega\)。已知 \(t=0\) 时 \(x_0=A/2\)，且质点正沿负方向运动。求初相 \(\varphi_0\)。
+\end{exercise}
+
+\begin{solution}
+由初始位置 \(x_0=A\cos\varphi_0=A/2\) 可知 \(\cos\varphi_0=1/2\)，候选角为 \(\pi/3\) 或 \(5\pi/3\)。又因 \(v_0=-A\omega\sin\varphi_0<0\)，可知 \(\sin\varphi_0>0\)，只能取上半平面的候选角，故 \(\varphi_0=\frac{\pi}{3}\)。这类题不能只看位置，还要用速度方向把象限定住。
+\end{solution}
+
+\begin{example}
+一水平简谐弹簧振子，取平衡位置为坐标原点 $O$。在 $t = 0$ 瞬间，小球恰好经过平衡位置 $x = 0$，且其瞬时速度偏向 $x$ 轴负方向（即 $v_0 < 0$）。求该振子的初相 $\phi$ 并写出其位置振动方程。
+\end{example}
+\begin{solution}
+我们将初始条件 $t = 0, x_0 = 0, v_0 < 0$ 代入方程中：
+$$0 = A \cos\phi \implies \cos\phi = 0\implies\phi = \frac{\pi}{2} \text{或} \phi = -\frac{\pi}{2},~v_0 = -\omega A \sin\phi <0 \implies\sin\phi > 0$$
+比对两个候选角：$\sin\left(\frac{\pi}{2}\right) = 1 > 0$（符合条件）；而 $\sin\left(-\frac{\pi}{2}\right) = -1 < 0$（舍去）。因此初相解为：$\phi = \frac{\pi}{2}$，振动方程：$x = A \cos\left(\omega t + \frac{\pi}{2}\right)$
+\end{solution}
+
+\begin{exercise}
+一轻弹簧的右端连着一物体，弹簧的劲度系数 $k = 0.72\,\text{N}\cdot\text{m}^{-1}$，物体的质量 $m = 20\,\text{g}$。\\
+（1）把物体从平衡位置向右拉到 $x = 0.05\,\text{m}$ 处停下后再释放，求其简谐运动方程；\\
+（2) 在（1）的条件下，求物体从初始位置运动到第一次经过 $x = \frac{A}{2}$ 处时的瞬时速度；\\
+（3）若在 $t = 0$ 时物体同样在 $x = 0.05\,\text{m}$ 处，但具有向右的初速度 $v_0 = 0.30\,\text{m}\cdot\text{s}^{-1}$，求此时系统的运动方程。
+\end{exercise}
+\begin{solution}
+（1）$$\omega = \sqrt{\frac{k}{m}} = \sqrt{\frac{0.72}{0.02}}= 6.0\,\text{s}^{-1},~A = \sqrt{x_0^2 + \left(\frac{v_0}{\omega}\right)^2} = 0.05\,\text{m},~\tan\phi = -\frac{v_0}{\omega x_0} = 0 $$所以$\phi = 0 \text{或}\phi = \pi$，在 $t=0$ 时，由于初始位移处于正向最大值（$x_0 = A = 0.05\,\text{m}$），旋转矢量 $\vec{A}$ 必须严格指向 $x$ 轴的正对方向。此时，矢量与 $x$ 轴正方向的夹角显然为 $0$。由此初相$\phi = 0$，将参数代回标准的余弦表达式，得到简谐运动方程：\[x = (0.05\,\text{m})\cos\left[\left(6.0\,\text{s}^{-1}\right)t\right]\]\\
+（2）系统当前的位置方程为 $x = A\cos(\omega t)$。现求物体第一次运动到 $x = \frac{A}{2}$ 处的动力学状态。列出位置代数方程：$\cos(\omega t) = \frac{x}{A} = \frac{\frac{A}{2}}{A} = \frac{1}{2}$，在基本周期域内，余弦值为 $\frac{1}{2}$ 的角度有两个：$\omega t = \frac{\pi}{3} \text{或}\omega t = \frac{5\pi}{3}$，旋转矢量 $\vec{A}$ 从 $t=0$ 处的 $x$ 轴正方向出发，以角速度 $\omega$ 逆时针旋转。当它第一次过投影点 $x = \frac{A}{2}$ 时，其在第一象限对应的转角 $\omega t$ 必然为最小正角，所以$\omega t = \frac{\pi}{3}$
+\[v = -A\omega\sin(\omega t)= -0.05 \times 6.0 \times \sin\left(\frac{\pi}{3}\right) = -0.30 \times \frac{\sqrt{3}}{2} \approx -0.26\,\text{m}\cdot\text{s}^{-1}\]
+（3）初始条件变更为：$t = 0, x_0 = 0.05\,\text{m}, v_0 = 0.30\,\text{m}\cdot\text{s}^{-1}$（向右为正向）。$$A' = \sqrt{x_0^2 + \left(\frac{v_0}{\omega}\right)^2} = \sqrt{0.05^2 + \left(\frac{0.30}{6.0}\right)^2} = \sqrt{0.05^2 + 0.05^2} = 0.05\sqrt{2} \approx 0.0707\,\text{m}$$
+\end{solution}
+
+\begin{definition}[复摆]
+在重力作用下，能够绕通过自身某一固定水平光滑轴作微小摆动的任意形状的刚体。设刚体的总质量为 $m$，其绕固定转轴 $O$ 的转动惯量为 $J$。刚体的质心记为 $C$ 点，质心 $C$ 到转轴 $O$ 的几何垂直距离为 $l$。设某一瞬间，连线 $OC$ 偏离竖直方向的角位移为 $\theta$。整个刚体在竖直平面内受到的合外力矩仅由重力 $\vec{P} = m\vec{g}$ 贡献（轴支持力矩为零）。重力作用在质心 $C$ 上，其对转轴 $O$ 的力臂为 $l\sin\theta$。规定逆时针为角位移的正方向，则重力矩企图使刚体回到平衡位置：$$M = -mgl\sin\theta= J\alpha= J\frac{\mathrm{d}^2\theta}{\mathrm{d}t^2}\implies-mgl\theta = J\frac{\mathrm{d}^2\theta}{\mathrm{d}t^2} \implies \frac{\mathrm{d}^2\theta}{\mathrm{d}t^2} + \frac{mgl}{J}\theta = 0\implies\omega=\sqrt{ \frac{mgl}{J}}$$如果当刚体退化为绳连接小球，则$J=ml^2$，此时$\omega=\sqrt{ \frac{mgl}{ml^2}}=\sqrt{ \frac{g}{l}}$
+\end{definition}
+
+\begin{definition}[扭摆]
+扭摆：通过一根垂直悬挂的金属丝悬挂一刚体（如圆盘），当刚体在水平面内转过一个角度时，利用金属丝扭转产生的弹性回复力矩驱动系统作往复旋转振动的装置。我们以水平面内质量均匀分布、绕几何中心对称轴转动的圆盘为研究对象。设圆盘对其中心竖直轴的转动惯量为 $J_z$。当圆盘在水平面内被转过一个微小的扭转角 $\theta$ 时，上方的金属丝发生扭转形变。根据材料力学定律，在扭转角不太大（即处于线弹性形变区间）时，金属丝对圆盘产生的瞬时弹性回复力矩 $M_z$ 与扭转角 $\theta$ 成严格的正比，且方向总是相反：$$M_z = -D\theta$$式中的比例系数 $D$ （金属丝的扭转系数）由金属丝的材料、长度和截面粗细决定：$$J_z \frac{\mathrm{d}^2\theta}{\mathrm{d}t^2} = -D\theta \implies \frac{\mathrm{d}^2\theta}{\mathrm{d}t^2} + \frac{D}{J_z}\theta = 0\implies\boxed{\omega = \sqrt{\frac{D}{J_z}}, \qquad T = 2\pi\sqrt{\frac{J_z}{D}}}$$
+\end{definition}

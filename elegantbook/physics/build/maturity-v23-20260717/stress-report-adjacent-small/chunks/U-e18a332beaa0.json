@@ -1,0 +1,260 @@
+{
+  "author_chars": 814,
+  "chunk_binding_sha256": "819e7ae3f6c833479c36d712bd02d5b59cf284fc026610c8a48c81ad2555c47f",
+  "context_after_unit": "U-b4ae71fb8740",
+  "context_before_unit": "U-9a83ca0a0d3b",
+  "diff_path": "",
+  "end": 73672,
+  "end_line": 1854,
+  "file_id": "F00001",
+  "hash_after": "",
+  "hash_before": "30dc252354398e2c6970516a1af6057b16b96cb34c5025dba39ba8158a806077",
+  "heading_path": "GPT 中文语言风格全域重整报告：以 MD/TEX 学术成文为核心 / 板块二：模型学术写作语言风格库（核心） / 2.48 第十六轮：正向风格材料降为零生产卡，避免用未知来源定义“人味”",
+  "intensity": "STRUCTURAL",
+  "line_count": 62,
+  "masked_text": "[[PROTECTED:F00001-P01181:55e5a0eafd0e]]\nv15 完成了[[PROTECTED:F00001-P01182:7a050a21aee6]]，但来源审计继续追问了一个更严格的问题：没有明确写\n[[PROTECTED:F00001-P01183:d6276834a9f4]]，是否就能当作人类正向语料？答案是否定的。旧 catalog 中 31 张正向卡的\n来源分布为：0 张有可核对的人类创作确认，17 张来自 8 个 [[PROTECTED:F00001-P01184:747f7bc4138c]] 来源，14 张来自 3 个\n[[PROTECTED:F00001-P01185:cfb0fbc3d5b7]] 来源。这里的[[PROTECTED:F00001-P01186:311d6068d9a5]]只说明分析人员读过材料，不说明材料由人写。\n\n这一区分直接改变了前面对 GPT 风格与人类化动作的解释：\n\n- GPT TeX、assistant-output 路径和来源未决材料可以继续告诉我们[[PROTECTED:F00001-P01187:a74ea1a74aa0]]；\n- UNKNOWN 材料可以保留可审计的组织动作假设，但不能证明这种动作就是人类写作习惯；\n- 只有 [[PROTECTED:F00001-P01188:0b13509d7cc2]] 来源达到独立来源门槛，才有资格支撑 production action card；\n- [[PROTECTED:F00001-P01189:0b13509d7cc2]] 本身仍不证明作者身份、PERSONAL Voice、事实正确或复制许可。\n\nv16 删除了三份 [[PROTECTED:F00001-P01190:cfb0fbc3d5b7]] 来源支撑的 14 张建模正向卡，包括 controlled\ncontrast、data role、trajectory classification、negative control、backend boundary 等。三份来源\n不从台账消失，而是改成 [[PROTECTED:F00001-P01191:f76e21f105b1]]：保留 ID、路径和排除理由，构建器不打开\n正文，也不允许旧 profile 或复制检查重新激活它们。\n\n剩余 17 张正向卡全部标成 [[PROTECTED:F00001-P01192:6e114cfc4359]]：COURSE 4 张，MODELING 13 张。场景状态新增\n[[PROTECTED:F00001-P01193:b20bf76f2db5]]，不再沿用含混的 [[PROTECTED:F00001-P01194:b1f9024c4536]]。生产路径固定为：\n\n| 场景状态 | 使用 action card | 使用 [[PROTECTED:F00001-P01195:320e4c755d49]] |\n|---|---|---|\n| [[PROTECTED:F00001-P01196:fcf5c5315b0a]] | 通过来源门后继续其他验证 | 不允许无理由绕开生产卡 |\n| [[PROTECTED:F00001-P01197:b20bf76f2db5]] | 固定 [[PROTECTED:F00001-P01198:bd036b668dc6]]，不得 accepted | 允许，继续原稿、Voice 和统一验证器 |\n| [[PROTECTED:F00001-P01199:4ff8d92a448c]] | 固定 [[PROTECTED:F00001-P01200:bd036b668dc6]] | 允许，继续普通文风门 |\n\n因此当前安装版的准确语料画像是：COURSE/MODELING 只有 provisional 组织参考，\nRESEARCH/GENERAL/REPORT 仍无正向卡，五类场景的生产改写都使用 NONE。NONE 不是跳过验证；公式、\n数字、引语、TeX、模态、言语行为、AI 风味信号和长文覆盖门仍照常执行。\n\n这也修正了报告中[[PROTECTED:F00001-P01201:798161bcaf88]]的潜在误读。大样本非常适合提取\nAI 的高频口头禅、句壳、收尾、列表和自证结构，也适合发现规则漏项；但没有来源身份的材料不能\n反向充当人类范文。负面 detector 的证据量与正向 Voice 的证据质量是两套不同问题，不能用前者\n替代后者。\n\n本轮把这一边界写进 [[PROTECTED:F00001-P01202:fa16f7bfb0f5]] 三个 P0 资格原子，完整矩阵从 176 增为 179。后验评估还\n发现两条可操作漏口：生成器先看到 provisional 卡再自报 NONE，以及外部 catalog 自填\n[[PROTECTED:F00001-P01203:0b13509d7cc2]]。当前 projection 已确定性删除 provisional 卡、动作描述及其外部路径；外部\ncatalog 选卡固定 [[PROTECTED:F00001-P01204:3dd475b172ce]]。同一后验还复现了 Windows 深层 queue history\n约 294 字符路径发布失败，现用短存储键与文件内完整哈希冲突检查修复。\n\n结果为 461 项通过、1 项 Windows symlink 权限跳过；18 个脚本通过编译和 [[PROTECTED:F00001-P01205:c1e791124798]]，quick\nvalidation 通过。action profile 为 26 个来源、20 READABLE、6 EXCLUDED_CONFIG、27 张可用卡：\n0 production positive、17 provisional positive、10 negative guard。\n\n两次最终 30 文件 projection 完全一致：capability\n[[PROTECTED:F00001-P01206:597a0402dd0e]]，manifest\n[[PROTECTED:F00001-P01207:41a19d741b97]]，tree\n[[PROTECTED:F00001-P01208:2683730431f5]]；投影 catalog 为 0 正向卡、\n10 张负例卡、0 个外部来源路径。正式资格仍为\n[[PROTECTED:F00001-P01209:5d9b04217e88]]。工件见\n[v16 action profile]([[PROTECTED:F00001-P01210:bcc3eff1cba6]])、\n[v16 final projection]([[PROTECTED:F00001-P01211:15386893d8c1]])、\n[v16 repro projection]([[PROTECTED:F00001-P01212:5d48631af783]]) 和\n[v16 qualification]([[PROTECTED:F00001-P01213:d6e0cedb55dd]])。\n\n所以 v16 后仍应把成熟度拆开说：确定性终审、保护和拒绝错误完成态的工具链可以生产使用；生成\n模型没有通过 179 原子资格，也没有一张 production 正向语料卡。它能可靠地避免一批已编码的\nAI 风味和伪闭环，不能声称已经学会某个真实作者或普遍[[PROTECTED:F00001-P01214:314048dffa36]]。\n\n",
+  "mode": "REWRITE",
+  "notes": "",
+  "owner_chunk": "U-e18a332beaa0",
+  "part": 1,
+  "protected_hashes_ok": "NOT_RUN",
+  "protected_ids": [
+    "F00001-P01181",
+    "F00001-P01182",
+    "F00001-P01183",
+    "F00001-P01184",
+    "F00001-P01185",
+    "F00001-P01186",
+    "F00001-P01187",
+    "F00001-P01188",
+    "F00001-P01189",
+    "F00001-P01190",
+    "F00001-P01191",
+    "F00001-P01192",
+    "F00001-P01193",
+    "F00001-P01194",
+    "F00001-P01195",
+    "F00001-P01196",
+    "F00001-P01197",
+    "F00001-P01198",
+    "F00001-P01199",
+    "F00001-P01200",
+    "F00001-P01201",
+    "F00001-P01202",
+    "F00001-P01203",
+    "F00001-P01204",
+    "F00001-P01205",
+    "F00001-P01206",
+    "F00001-P01207",
+    "F00001-P01208",
+    "F00001-P01209",
+    "F00001-P01210",
+    "F00001-P01211",
+    "F00001-P01212",
+    "F00001-P01213",
+    "F00001-P01214"
+  ],
+  "protected_spans": 34,
+  "read_only_context_after": "[[PROTECTED:F00001-P01215:3f47ee9eb420]]\nv16 的当前数据没有 production 正向卡，但红队用临时 catalog 复现了旧合同的 fail-open：只要在\n默认 catalog 中自填 [[PROTECTED:F00001-P01216:0b13509d7cc2]]，action profile 就会给出 [[PROTECTED:F00001-P01217:021a7f39ca16]]，候选可直接\naccepted；同一文件复制成两个 source ID 还能制造两个[[PROTECTED:F00001-P01218:85d54a94d348]]。projection 的 approval hash\n也在本地，同一主体能同时修改 catalog 与批准值。换言之，v16 证明的是[[PROTECTED:F00001-P01219:578731a95c3c]]，不是\n[[PROTECTED:F00001-P01220:83dfb86a57f3]]。",
+  "read_only_context_before": "所以当前成熟度应拆成两句话：确定性终审、保护、路由、Voice 绑定和拒绝伪完成态的工具链已经\n达到可生产使用水平；生成模型本身仍没有 176 原子真实前向资格，RESEARCH/GENERAL/REPORT 也\n缺合格正向人类语料，不能宣称[[PROTECTED:F00001-P01180:712391e1569b]]。",
+  "scene": "GENERAL",
+  "scene_document_prior": "",
+  "scene_requested": "GENERAL",
+  "scene_routing_ambiguous_scenes": [],
+  "scene_routing_decision": "EXPLICIT",
+  "scene_routing_evidence": [],
+  "scene_routing_margin": 0,
+  "scene_routing_policy_revision": 2,
+  "scene_routing_policy_sha256": "8d0f916d91b5753fd94d358c4b32e9a6c02b1f30120f43b4cbb2165dc1684450",
+  "scene_routing_scores": {
+    "COURSE": 0,
+    "MODELING": 0,
+    "RESEARCH": 0
+  },
+  "scene_routing_top_score": 0,
+  "start": 70853,
+  "start_line": 1793,
+  "status": "PENDING",
+  "structural_cross_unit_moves_allowed": false,
+  "structural_inventory_sha256": "1c8aff41b2738a4759ade66b26431bc697fa2514323c60a9e94fa3a2ed6368fa",
+  "structural_paragraphs": [
+    {
+      "author_chars": 102,
+      "lock_reason": "contains_immovable_protected_span",
+      "movable": false,
+      "ordinal": 1,
+      "paragraph_id": "P001-005f438eb2bd",
+      "protected_ids": [
+        "F00001-P01181",
+        "F00001-P01182",
+        "F00001-P01183",
+        "F00001-P01184",
+        "F00001-P01185",
+        "F00001-P01186"
+      ],
+      "responsibility": "EXPOSITION",
+      "sha256": "005f438eb2bdd0afa4e6b26e008ec9b69c4fc70d3885aa67a1db6d7c0a51bcf3"
+    },
+    {
+      "author_chars": 23,
+      "lock_reason": "introduces_following_block",
+      "movable": false,
+      "ordinal": 2,
+      "paragraph_id": "P002-a3af9994cf85",
+      "protected_ids": [],
+      "responsibility": "EXPOSITION",
+      "sha256": "a3af9994cf85dc7c0bc27cff483c69a3d0ad96bb264ecbc22104c934bf98b6bd"
+    },
+    {
+      "author_chars": 87,
+      "lock_reason": "contains_immovable_protected_span",
+      "movable": false,
+      "ordinal": 3,
+      "paragraph_id": "P003-4d1cc94da9e1",
+      "protected_ids": [
+        "F00001-P01187",
+        "F00001-P01188",
+        "F00001-P01189"
+      ],
+      "responsibility": "EXPOSITION",
+      "sha256": "4d1cc94da9e138b1c426a23e8431aa888d60689076b95a0cb870fc728db438fa"
+    },
+    {
+      "author_chars": 66,
+      "lock_reason": "",
+      "movable": true,
+      "ordinal": 4,
+      "paragraph_id": "P004-724e1bf6899b",
+      "protected_ids": [
+        "F00001-P01190",
+        "F00001-P01191"
+      ],
+      "responsibility": "EXPOSITION",
+      "sha256": "724e1bf6899b00ac16c4a927029b61d7c2b0c4c2d8a8bdadc06ced9fa58c4936"
+    },
+    {
+      "author_chars": 32,
+      "lock_reason": "introduces_following_block",
+      "movable": false,
+      "ordinal": 5,
+      "paragraph_id": "P005-4705f9a437ab",
+      "protected_ids": [
+        "F00001-P01192",
+        "F00001-P01193",
+        "F00001-P01194"
+      ],
+      "responsibility": "EXPOSITION",
+      "sha256": "4705f9a437ab6a4c28a71e36309ec9815dc967b1cce8d50a033a1327a3178196"
+    },
+    {
+      "author_chars": 58,
+      "lock_reason": "contains_markdown_structure",
+      "movable": false,
+      "ordinal": 6,
+      "paragraph_id": "P006-f1d2291ce8fb",
+      "protected_ids": [
+        "F00001-P01195",
+        "F00001-P01196",
+        "F00001-P01197",
+        "F00001-P01198",
+        "F00001-P01199",
+        "F00001-P01200"
+      ],
+      "responsibility": "EXPOSITION",
+      "sha256": "f1d2291ce8fb330b1b435896095f84c0a27c1a6be004192c6864739361f7f362"
+    },
+    {
+      "author_chars": 71,
+      "lock_reason": "context_dependent_opening",
+      "movable": false,
+      "ordinal": 7,
+      "paragraph_id": "P007-5556a9a2132b",
+      "protected_ids": [],
+      "responsibility": "EXPOSITION",
+      "sha256": "5556a9a2132bce5c699060d31e732c60d634cc261926fe2e714aa96d45d074a4"
+    },
+    {
+      "author_chars": 98,
+      "lock_reason": "contains_immovable_protected_span",
+      "movable": false,
+      "ordinal": 8,
+      "paragraph_id": "P008-75dd4cce7ff0",
+      "protected_ids": [
+        "F00001-P01201"
+      ],
+      "responsibility": "EXPOSITION",
+      "sha256": "75dd4cce7ff0825c8e9c5dcbc515e2a5df2e41fec6bc69935cd30b722237acec"
+    },
+    {
+      "author_chars": 116,
+      "lock_reason": "",
+      "movable": true,
+      "ordinal": 9,
+      "paragraph_id": "P009-3fedea9d06a5",
+      "protected_ids": [
+        "F00001-P01202",
+        "F00001-P01203",
+        "F00001-P01204"
+      ],
+      "responsibility": "EXPOSITION",
+      "sha256": "3fedea9d06a5cf3bb55f6c607e20ffbc2c68657af31abd32f94327639bb38a6c"
+    },
+    {
+      "author_chars": 29,
+      "lock_reason": "fixed_paragraph_responsibility",
+      "movable": false,
+      "ordinal": 10,
+      "paragraph_id": "P010-31d6a20bfde5",
+      "protected_ids": [
+        "F00001-P01205"
+      ],
+      "responsibility": "RESULT",
+      "sha256": "31d6a20bfde523b9c2c83826fcefef2478d28635b61c261716e047d11ef6caa4"
+    },
+    {
+      "author_chars": 37,
+      "lock_reason": "",
+      "movable": true,
+      "ordinal": 11,
+      "paragraph_id": "P011-e1f381fc18cd",
+      "protected_ids": [
+        "F00001-P01206",
+        "F00001-P01207",
+        "F00001-P01208",
+        "F00001-P01209",
+        "F00001-P01210",
+        "F00001-P01211",
+        "F00001-P01212",
+        "F00001-P01213"
+      ],
+      "responsibility": "EXPOSITION",
+      "sha256": "e1f381fc18cd2bfdf5c89f708566e7d8a8c08e23969474922b035802a0a0bac5"
+    },
+    {
+      "author_chars": 95,
+      "lock_reason": "contains_immovable_protected_span",
+      "movable": false,
+      "ordinal": 12,
+      "paragraph_id": "P012-f5f1f08bebe9",
+      "protected_ids": [
+        "F00001-P01214"
+      ],
+      "responsibility": "EXPOSITION",
+      "sha256": "f5f1f08bebe9e81d4f2758ecfe55e96ea43fb4b3bfe443c7992be906435c944d"
+    }
+  ],
+  "structural_plan_schema": "humanize-structural-plan/v1",
+  "structural_plan_status": "NOT_RUN",
+  "structural_scope": "UNIT",
+  "structural_title_lock": true,
+  "style_validation": "NOT_RUN",
+  "unit_id": "U-e18a332beaa0",
+  "voice_default_disclosure": true,
+  "voice_profile_binding_scene": "GENERAL",
+  "voice_profile_confidence": "DEFAULT",
+  "voice_profile_id": "scene-default-general",
+  "voice_profile_kind": "DEFAULT",
+  "voice_profile_revision": 1,
+  "voice_profile_sha256": "3b4eeeaeb3af397378ead360550371ff4632cbce6fceca8923479c53de23a112",
+  "voice_profile_source": "SCENE_DEFAULT"
+}

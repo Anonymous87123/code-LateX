@@ -1,0 +1,243 @@
+{
+  "author_chars": 865,
+  "chunk_binding_sha256": "8bb515070254515db7f6a480ed4509c80775a248a067e6edae5ef6014042ce26",
+  "context_after_unit": "U-bfdde3fad7d5",
+  "context_before_unit": "U-e4771b5f9a2b",
+  "diff_path": "",
+  "end": 64933,
+  "end_line": 1697,
+  "file_id": "F00001",
+  "hash_after": "",
+  "hash_before": "894d01e37fa070edf3a2c23cd0b423689175be0c250724199cdacd6af98f8f58",
+  "heading_path": "GPT 中文语言风格全域重整报告：以 MD/TEX 学术成文为核心 / 板块二：模型学术写作语言风格库（核心） / 2.46 第十三轮：阻断“第二遍再换一套说法”的随机改写味",
+  "intensity": "STRUCTURAL",
+  "line_count": 67,
+  "masked_text": "[[PROTECTED:F00001-P01078:4757df836dad]]\n前面的 MD/TeX 逐文档阅读反复出现一个现象：GPT 不一定保留最刺眼的“值得注意的是、综上所述、\n奠定基础”，但在再次润色时会把已经直接的句子继续轮换成另一套近义表达。常见结果不是事实\n更清楚，而是标点来回、句序往返、限定词增删和[[PROTECTED:F00001-P01079:77c965084c65]]等修复话术反复\n出现。这类 AI 味不能只靠禁词表解决，因为第二遍每一句都可能不命中旧词，问题在于改写决策不\n稳定。\n\nv14 因此把 fresh second pass 变成独立控制面，而不是让同一个模型在同一上下文中自称“已经\n复核”。第一遍 clean [[PROTECTED:F00001-P01080:37981f380cf9]] 被重新当作 source，重新生成 snapshot、unit、保护 span、\nchunk binding 和 Voice binding；每个 unit 在新进程中只看到当前 masked chunk 和同一 canonical\nprompt。prompt 同时允许 REWRITE 与 NO_CHANGE，不给出期望答案，也不暴露第一遍 diff、decision\n或验收 atom。\n\n这里最关键的不是[[PROTECTED:F00001-P01081:53ee0d194d51]]，而是让两种结果承担不同语义：\n\n- fresh [[PROTECTED:F00001-P01082:938c25f25bf8]] 表示模型仍发现实质文风问题，因此文本没有收敛，状态为 REVIEW；\n- 全部 fresh [[PROTECTED:F00001-P01083:9cb6fce862b9]] 只是必要条件，还要第二遍 coverage ledger 全为 NO_CHANGE、两遍 rendered\n  tree 字节一致、每个 runner 工件相互绑定；\n- plan、collection、run id、receipt、record、seal、projection、Voice 或 scene 任一错配，是证据\n  硬失败，不是[[PROTECTED:F00001-P01084:594dde6b868a]]。\n\n第一版实现仍有四个典型假闭环，随后由红队测试击穿：receipt 与 record 可以使用不同 run id；\n两个 unit 可以复用同一 run；receipt 可以写另一棵 projection；删除 trials 后，自哈希 receipt\n仍能被 finalizer 接受。修复后，receipt 只是一张活证据索引：它记录 first/second run、cases、\ntrials、rewrites 五个根及其 tree/hash。第一遍 finalizer 消费 receipt 时会从固定 Skill 路径重载\nverifier，重新打开所有底层工件并重新出一张 live receipt；两者不逐字段相同就 FAIL。\n\n后续攻击又扩展到更接近实际伪造的路径：\n\n- 在第一遍 rendered 中塞入 manifest 外文件，second prepare 现在直接拒绝；\n- 把 plan 重签为 [[PROTECTED:F00001-P01085:e21b94b68043]]，collect 现在拒绝；\n- 把 [[PROTECTED:F00001-P01086:e2e0bff8c342]] 偷改成 true，verifier 现在拒绝；\n- 在 isolation 子记录中声称 oracle 已不可达，verifier 现在拒绝；\n- 只改 trial 中实际给模型看的 [[PROTECTED:F00001-P01087:d8a6467f3afd]]，不改 receipt 字段，现场 projection 重验仍拒绝；\n- 在 [[PROTECTED:F00001-P01088:5836d926d391]] 注入同名假 verifier，finalizer 固定路径 loader 不再复用它。\n\n反泄漏边界也作了兼容取舍。把 [[PROTECTED:F00001-P01089:609afdae2f20]] 和\n[[PROTECTED:F00001-P01090:76de7d05053f]] 加入 generator projection 虽然看似[[PROTECTED:F00001-P01091:ed0ecf856827]]，实际上会把\n[[PROTECTED:F00001-P01092:93980df38522]]这套验收条件直接展示给模型。最终仍保持 28 文件 projection：\n两个控制脚本进入 evaluation exclusion；SKILL 的控制块、长文工作流第 16 节和 finalizer 的验收\nPython span 在投影时分别确定性删除或替换。builder 会拒绝 marker 漂移、残留 verifier basename\n和控制字段。两次重建得到相同 manifest SHA-256\n[[PROTECTED:F00001-P01093:fe14d702afe0]] 与 tree\n[[PROTECTED:F00001-P01094:0ec168743989]]。\n\n真实试跑没有被测试绿灯覆盖。研究类 fixture 的第一遍以 1 个 unit、111 个作者汉字完整发布；\nsecond prepare 生成 sealed case 后，首次真实 [[PROTECTED:F00001-P01095:629346d6e364]] 暴露了 runner 只杀父进程、node/codex\n后代继续持有管道的问题。修复为 Windows 整棵进程树终止和 POSIX process group 后，真实孙进程\n回归由约 8.06 秒缩短到约 1.38 秒。45 秒真实 retry 在 46.3 秒内形成\n[[PROTECTED:F00001-P01096:865d050ca8eb]] receipt：无 output、projection 后验未完成、隔离未验证，而且没有残留进程。\ncollect 随后 FAIL，第二遍 finalizer 与 verifier 均为 REVIEW/2，没有 convergence receipt，第一遍\nHumanize completion 继续为 false。证据见\n[v14 real second-pass audit]([[PROTECTED:F00001-P01097:27814ae99f11]])。\n\n当前快照为：421 项 unittest 全部通过，1 项 Windows symlink 权限测试跳过；17 个 Skill 脚本\n通过 [[PROTECTED:F00001-P01098:90040d20d3df]] 与 [[PROTECTED:F00001-P01099:c1e791124798]]；UTF-8 重试后官方 quick validation 通过；contract\n[[PROTECTED:F00001-P01100:826e5fe9c707]]、requirements [[PROTECTED:F00001-P01101:21a88d0cf496]]、oracle [[PROTECTED:F00001-P01102:952e2427bb2d]]，资格矩阵为 169 原子，仍是\n[[PROTECTED:F00001-P01103:2106485b6b28]]。50 张语料动作卡仍全部 AVAILABLE，\nGENERAL 仍明确 [[PROTECTED:F00001-P01104:4ff8d92a448c]]。机器工件见\n[v14 projection]([[PROTECTED:F00001-P01105:bcb35b0c23dd]])、\n[v14 qualification]([[PROTECTED:F00001-P01106:f549aeba6ba2]]) 和\n[v14 action profile]([[PROTECTED:F00001-P01107:7a750bef621a]])。\n\n这轮提高的是[[PROTECTED:F00001-P01108:9b19a448a670]]的成熟度，不是模型生成资格。真实 second pass 本次没有输出，AUTO\n逐 unit 路由、PERSONAL 外部签名、E3 隔离和 E4 可信人工链仍是明确缺口。\n\n",
+  "mode": "REWRITE",
+  "notes": "",
+  "owner_chunk": "U-1b01afefca71",
+  "part": 1,
+  "protected_hashes_ok": "NOT_RUN",
+  "protected_ids": [
+    "F00001-P01078",
+    "F00001-P01079",
+    "F00001-P01080",
+    "F00001-P01081",
+    "F00001-P01082",
+    "F00001-P01083",
+    "F00001-P01084",
+    "F00001-P01085",
+    "F00001-P01086",
+    "F00001-P01087",
+    "F00001-P01088",
+    "F00001-P01089",
+    "F00001-P01090",
+    "F00001-P01091",
+    "F00001-P01092",
+    "F00001-P01093",
+    "F00001-P01094",
+    "F00001-P01095",
+    "F00001-P01096",
+    "F00001-P01097",
+    "F00001-P01098",
+    "F00001-P01099",
+    "F00001-P01100",
+    "F00001-P01101",
+    "F00001-P01102",
+    "F00001-P01103",
+    "F00001-P01104",
+    "F00001-P01105",
+    "F00001-P01106",
+    "F00001-P01107",
+    "F00001-P01108"
+  ],
+  "protected_spans": 31,
+  "read_only_context_after": "[[PROTECTED:F00001-P01109:ad4d0e206801]]\n构建脚本：[build_full_style_corpus.py]([[PROTECTED:F00001-P01110:3474cb7e6077]])。  \n统计脚本：[analyze_full_style_corpus.py]([[PROTECTED:F00001-P01111:b7e72f2953a9]])。  \n构建测试：[test_full_style_corpus.py]([[PROTECTED:F00001-P01112:12e5f5b1ced3]])。  \n统计测试：[test_analyze_full_style_corpus.py]([[PROTECTED:F00001-P01113:2bd9fd954ef6]])。\n场景分类测试：[test_academic_scenario_classification.py]([[PROTECTED:F00001-P01114:acfef0c2ef12]])。  \nSkill 集群测试：[test_scene_skill_cluster.py]([[PROTECTED:F00001-P01115:da62e596e39a]])。\n纯文风合同测试：[test_humanize_academic_chinese_skill.py]([[PROTECTED:F00001-P01116:78336953e8ae]])。  \n词项扫描测试：[test_humanize_lexical_scan.py]([[PROTECTED:F00001-P01117:6182071c4e34]])。  \n不变量测试：[test_humanize_invariants.py]([[PROTECTED:F00001-P01118:f2063dfcec26]])。  \n统一验证测试：[test_validate_humanize_output.py]([[PROTECTED:F00001-P01119:09085c4a7775]])。  \n长文准备测试：[test_prepare_humanize_long_document.py]([[PROTECTED:F00001-P01120:e7f784c37ca0]])。  \n长文收尾测试：[test_finalize_humanize_long_document.py]([[PROTECTED:F00001-P01121:cc94c671c64a]])。\nVoice Profile 构建与重建测试：[test_humanize_voice_profile.py]([[PROTECTED:F00001-P01122:50ac2d57404d]])；长文 Profile 绑定测试：[test_long_do",
+  "read_only_context_before": "这轮关闭了全文 Voice 与跨 unit 修复模板两个明确缺口，但没有把 Skill 宣称为最终成熟：fresh\nsecond pass 仍是 [[PROTECTED:F00001-P01077:436d26f8f16d]]，AUTO 逐 unit 路由仍未实现，PERSONAL 来源身份和生成 E3/E4\n隔离仍缺代理不可访问私钥的外部信任根。",
+  "scene": "GENERAL",
+  "scene_document_prior": "",
+  "scene_requested": "GENERAL",
+  "scene_routing_ambiguous_scenes": [],
+  "scene_routing_decision": "EXPLICIT",
+  "scene_routing_evidence": [],
+  "scene_routing_margin": 0,
+  "scene_routing_policy_revision": 2,
+  "scene_routing_policy_sha256": "8d0f916d91b5753fd94d358c4b32e9a6c02b1f30120f43b4cbb2165dc1684450",
+  "scene_routing_scores": {
+    "COURSE": 0,
+    "MODELING": 0,
+    "RESEARCH": 0
+  },
+  "scene_routing_top_score": 0,
+  "start": 61729,
+  "start_line": 1631,
+  "status": "PENDING",
+  "structural_cross_unit_moves_allowed": false,
+  "structural_inventory_sha256": "c3d67c8ceb1e23cbf816ff31ced984ff6acdc1469ffd5fb1dc7ec57e23a62bb2",
+  "structural_paragraphs": [
+    {
+      "author_chars": 142,
+      "lock_reason": "contains_immovable_protected_span",
+      "movable": false,
+      "ordinal": 1,
+      "paragraph_id": "P001-38d9ddfae756",
+      "protected_ids": [
+        "F00001-P01078",
+        "F00001-P01079"
+      ],
+      "responsibility": "EXPOSITION",
+      "sha256": "38d9ddfae7564bd25fb1c895d7be903d48f9224904e71902f3fd6c259d45d994"
+    },
+    {
+      "author_chars": 84,
+      "lock_reason": "",
+      "movable": true,
+      "ordinal": 2,
+      "paragraph_id": "P002-225ca45e14a1",
+      "protected_ids": [
+        "F00001-P01080"
+      ],
+      "responsibility": "EXPOSITION",
+      "sha256": "225ca45e14a1b20b20820dd6dcb1d2b26e252bff301dcee1f8ef42196b3ba740"
+    },
+    {
+      "author_chars": 21,
+      "lock_reason": "contains_immovable_protected_span",
+      "movable": false,
+      "ordinal": 3,
+      "paragraph_id": "P003-d25052d47573",
+      "protected_ids": [
+        "F00001-P01081"
+      ],
+      "responsibility": "EXPOSITION",
+      "sha256": "d25052d47573ab61fc6fe745256463ac5f08ca09280698eaaf4699638b5666b7"
+    },
+    {
+      "author_chars": 66,
+      "lock_reason": "contains_immovable_protected_span",
+      "movable": false,
+      "ordinal": 4,
+      "paragraph_id": "P004-399544c4f2f2",
+      "protected_ids": [
+        "F00001-P01082",
+        "F00001-P01083",
+        "F00001-P01084"
+      ],
+      "responsibility": "EXPOSITION",
+      "sha256": "399544c4f2f240b5644f5a21ce55ea96063fd99f32fc1211111783266b39dfbe"
+    },
+    {
+      "author_chars": 114,
+      "lock_reason": "",
+      "movable": true,
+      "ordinal": 5,
+      "paragraph_id": "P005-0c4f269f1d74",
+      "protected_ids": [],
+      "responsibility": "EXPOSITION",
+      "sha256": "0c4f269f1d74048cc96a6cc7db6d76d839df7ab4a2464c31b7ccd0d1f569c2d8"
+    },
+    {
+      "author_chars": 18,
+      "lock_reason": "introduces_following_block",
+      "movable": false,
+      "ordinal": 6,
+      "paragraph_id": "P006-3576174985a6",
+      "protected_ids": [],
+      "responsibility": "EXPOSITION",
+      "sha256": "3576174985a6b0fd51420f57a684f373384c5ed9799f58174a656906a8737702"
+    },
+    {
+      "author_chars": 83,
+      "lock_reason": "contains_markdown_structure",
+      "movable": false,
+      "ordinal": 7,
+      "paragraph_id": "P007-9b1422917d7b",
+      "protected_ids": [
+        "F00001-P01085",
+        "F00001-P01086",
+        "F00001-P01087",
+        "F00001-P01088"
+      ],
+      "responsibility": "EXPOSITION",
+      "sha256": "9b1422917d7b3b2c979352877c454962b8094793c3eb3f10ef7034567451090a"
+    },
+    {
+      "author_chars": 103,
+      "lock_reason": "contains_immovable_protected_span",
+      "movable": false,
+      "ordinal": 8,
+      "paragraph_id": "P008-cf89680657ba",
+      "protected_ids": [
+        "F00001-P01089",
+        "F00001-P01090",
+        "F00001-P01091",
+        "F00001-P01092",
+        "F00001-P01093",
+        "F00001-P01094"
+      ],
+      "responsibility": "EXPOSITION",
+      "sha256": "cf89680657ba053f4818a06d8dd97051918b915a6f4a1c68d110bd8fbc4d225d"
+    },
+    {
+      "author_chars": 130,
+      "lock_reason": "",
+      "movable": true,
+      "ordinal": 9,
+      "paragraph_id": "P009-57f9c4d631a3",
+      "protected_ids": [
+        "F00001-P01095",
+        "F00001-P01096",
+        "F00001-P01097"
+      ],
+      "responsibility": "EXPOSITION",
+      "sha256": "57f9c4d631a3cf8b50a1a50bbae3cdcd543557b6fe49e827dd23e5cfb93c4ece"
+    },
+    {
+      "author_chars": 57,
+      "lock_reason": "fixed_paragraph_responsibility",
+      "movable": false,
+      "ordinal": 10,
+      "paragraph_id": "P010-ddc67bd15c94",
+      "protected_ids": [
+        "F00001-P01098",
+        "F00001-P01099",
+        "F00001-P01100",
+        "F00001-P01101",
+        "F00001-P01102",
+        "F00001-P01103",
+        "F00001-P01104",
+        "F00001-P01105",
+        "F00001-P01106",
+        "F00001-P01107"
+      ],
+      "responsibility": "CONDITION",
+      "sha256": "ddc67bd15c94744d79d57fdb48ce45f9817d0f9bececafc66c240cc8efd5f10a"
+    },
+    {
+      "author_chars": 47,
+      "lock_reason": "contains_immovable_protected_span",
+      "movable": false,
+      "ordinal": 11,
+      "paragraph_id": "P011-d4bc4cd7d207",
+      "protected_ids": [
+        "F00001-P01108"
+      ],
+      "responsibility": "EXPOSITION",
+      "sha256": "d4bc4cd7d207f19c62290fa0ad6599f6261a516326d4c66d1244500ae08d05e2"
+    }
+  ],
+  "structural_plan_schema": "humanize-structural-plan/v1",
+  "structural_plan_status": "NOT_RUN",
+  "structural_scope": "UNIT",
+  "structural_title_lock": true,
+  "style_validation": "NOT_RUN",
+  "unit_id": "U-1b01afefca71",
+  "voice_default_disclosure": true,
+  "voice_profile_binding_scene": "GENERAL",
+  "voice_profile_confidence": "DEFAULT",
+  "voice_profile_id": "scene-default-general",
+  "voice_profile_kind": "DEFAULT",
+  "voice_profile_revision": 1,
+  "voice_profile_sha256": "3b4eeeaeb3af397378ead360550371ff4632cbce6fceca8923479c53de23a112",
+  "voice_profile_source": "SCENE_DEFAULT"
+}

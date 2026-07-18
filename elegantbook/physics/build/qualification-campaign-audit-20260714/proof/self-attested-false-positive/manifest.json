@@ -1,0 +1,68 @@
+{
+  "schema_version": "humanize-generation-qualification-manifest/v1",
+  "bindings": {
+    "skill_snapshot_sha256": "c0cb4cc79203d02b066e4309728208e1c72e5d0e854cbf9f43c195f72001e97f",
+    "contract_sha256": "f1d9da16e594e7362bfaf43455463eba1759ef59e0e4e0a2c03da1fc56195e3a",
+    "requirements_sha256": "079bb8056b0727dca228f3ebd924dd2d981397450f7ac0673526c58c291c33fe"
+  },
+  "cases": [
+    {
+      "id": "AUDIT-FALSE-POSITIVE-001",
+      "artifacts": {
+        "input": {
+          "path": "input.md",
+          "sha256": "f03dbaa1a314d01dea21e39f82dc48d5867037f968e48b9f923d3f89b11bfc9d"
+        },
+        "output": {
+          "path": "output.md",
+          "sha256": "f03dbaa1a314d01dea21e39f82dc48d5867037f968e48b9f923d3f89b11bfc9d"
+        },
+        "prompt": {
+          "path": "prompt.txt",
+          "sha256": "76e0a1c1f10dab241053d730194b9a75c61e9c4491a78d2511eca3d8d0714fd2"
+        },
+        "context": {
+          "path": "context.json",
+          "sha256": "a1d0f9a5128c87429c31b7dac0e0b503973b55963f2bbb2e97d6434cc6ef31dc"
+        },
+        "raw_run": {
+          "path": "raw-run.json",
+          "sha256": "e8b62f3c69bb0e0813733097d3c2c1f8bbfaa56713f51b274cfd07bf1c5facbd"
+        }
+      },
+      "replays": [
+        {
+          "tool_id": "validate_humanize_output",
+          "args": ["${INPUT}", "${OUTPUT}", "--scene", "RESEARCH", "--format", "json"],
+          "expected": {
+            "status": "PASS",
+            "delivery_gate_status": "PASS",
+            "exit_code": 0,
+            "academic_correctness": "NOT_EVALUATED"
+          }
+        }
+      ],
+      "generation": {
+        "run_id": "AUDIT-FALSE-POSITIVE-001",
+        "raw_run_artifact": "raw_run",
+        "raw_run_sha256": "e8b62f3c69bb0e0813733097d3c2c1f8bbfaa56713f51b274cfd07bf1c5facbd",
+        "fresh_context": true,
+        "blindness_attestation": "CALLER_ATTESTED_STAGED_CONTEXT"
+      },
+      "assertions": [
+        {
+          "id": "AUDIT-SELF-ASSERTED-PASS",
+          "result": "PASS"
+        }
+      ],
+      "claims": [
+        {
+          "claim_id": "AUDIT-MODE-01-CLAIM",
+          "atom_id": "MODE-01",
+          "assertion_ids": ["AUDIT-SELF-ASSERTED-PASS"]
+        }
+      ]
+    }
+  ],
+  "archived_failures": []
+}

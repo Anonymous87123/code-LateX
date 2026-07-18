@@ -1,0 +1,30 @@
+
+\section{共振}
+
+\begin{definition}[共振]
+受迫振动稳态振幅：
+\[B=\frac{F_0/m}{\sqrt{(\omega_0^2-\Omega^2)^2+4\beta^2\Omega^2}}\]其中\(\Omega\)是驱动力角频率，共振时\(\Omega\)取共振角频率，弱阻尼（\(\beta\ll\omega_0\)）下共振角频率近似等于固有角频率：\(\Omega\approx\omega_0\)。
+\end{definition}
+\begin{remark}
+把阻尼振动、受迫振动和共振连起来看，逻辑就完整了：真实系统会因阻尼漏能；外界周期力可以持续补能；当补能的节奏和系统固有节奏最匹配时，补能效率最高，于是出现共振。
+\end{remark}
+\begin{center}
+\includegraphics[width=0.5\linewidth]{pdf-exercises/2.png}
+\end{center}
+如上图所示，当我们将受迫振动的振幅响应按驱动频率比例（$f/f_0$ 或 $\omega/\omega_0$）绘制出来时，可得
+\begin{itemize}
+\item 阻尼对峰值的控制：当系统处于极低阻尼系数（如 $\text{Damping Ratio} = 0.05$）时，共振曲线极其陡峭尖锐，其峰值振幅 $A/A_0$ 呈爆发式飙升。随着阻尼系数（从 $0.05 \to 0.10 \to 0.25 \to 0.75$）不断增大，共振峰明显向下塌陷、变矮变宽，且共振点逐渐偏向左侧低频区。
+\item 频率区间的边界特征：当驱动力频率趋近于 0（$\omega \to 0$）时，振幅收拢为一个恒定的静力学初始形变量（$A/A_0 \to 1$）；而当驱动力频率极高（$\omega \to \infty$）时，系统由于质量自身的惯性阻碍，振幅各曲线统一单调衰减、逼近于 0。
+\end{itemize}
+
+
+\begin{exercise}
+一根弹簧振子，固有频率 \(f_0=\SI{5}{Hz}\)，阻尼系数 \(\beta=\SI{2}{s^{-1}}\)，驱动力振幅 \(F_0=\SI{0.1}{N}\)，质量 \(m=\SI{0.05}{kg}\)。求共振时稳态振幅。
+\end{exercise}
+\begin{solution}
+弱阻尼下共振角频率近似取固有角频率，\(\Omega\approx\omega_0=2\pi f_0=\SI{31.4}{rad/s}\)。这时振幅公式的 \((\omega_0^2-\Omega^2)^2\) 项近似为零，于是
+\[
+B_{\max}\approx\frac{F_0/m}{2\beta\omega_0}=\frac{0.1/0.05}{2\times2\times31.4}=\SI{0.016}{m}=\SI{1.6}{cm}.
+\]
+若阻尼减半（\(\beta=\SI{1}{s^{-1}}\)），共振振幅翻倍至 \(\SI{3.2}{cm}\)——阻尼越小，共振越剧烈。
+\end{solution}

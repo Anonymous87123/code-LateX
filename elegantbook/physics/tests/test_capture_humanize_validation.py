@@ -1,0 +1,438 @@
+import hashlib
+import importlib.util
+import json
+import os
+import shutil
+import subprocess
+import sys
+import tempfile
+import unittest
+from pathlib import Path
+from unittest import mock
+
+
+SKILL = Path.home() / ".codex" / "skills" / "humanize-academic-chinese"
+CAPTURE_PATH = SKILL / "scripts" / "capture_humanize_validation.py"
+CAPTURE_REPLAY_PATH = SKILL / "scripts" / "replay_humanize_validation_capture.py"
+VALIDATOR_PATH = SKILL / "scripts" / "validate_humanize_output.py"
+
+
+def load_module(name: str, path: Path):
+    spec = importlib.util.spec_from_file_location(name, path)
+    assert spec is not None and spec.loader is not None
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[name] = module
+    spec.loader.exec_module(module)
+    return module
+
+
+capture = load_module("humanize_capture_v29_tests", CAPTURE_PATH)
+capture_replay = load_module("humanize_capture_replay_v29_tests", CAPTURE_REPLAY_PATH)
+validator = load_module("humanize_capture_validator_v29_tests", VALIDATOR_PATH)
+
+
+class HumanizeValidationCaptureTests(unittest.TestCase):
+    def setUp(self) -> None:
+        self.temp = tempfile.TemporaryDirectory()
+        self.root = Path(self.temp.name)
+        self.output = self.root / "captures"
+        self.before = self.root / "before.md"
+        self.after = self.root / "after.md"
+        self.before.write_text("值得注意的是，峰值出现在高温组。", encoding="utf-8")
+        self.after.write_text("峰值出现在高温组。", encoding="utf-8")
+
+    def tearDown(self) -> None:
+        self.temp.cleanup()
+
+    def run_capture(
+        self,
+        validator_args: list[str] | None = None,
+        *,
+        expected_exit: int | None = None,
+        output: Path | None = None,
+    ) -> tuple[subprocess.CompletedProcess[str], dict]:
+        arguments = (
+            [str(self.before), str(self.after), "--scene", "RESEARCH", "--format", "json"]
+            if validator_args is None
+            else validator_args
+        )
+        completed = subprocess.run(
+            [
+                sys.executable,
+                str(CAPTURE_PATH),
+                "--output-root",
+                str(output or self.output),
+                "--capture-format",
+                "json",
+                "--",
+                *arguments,
+            ],
+            check=False,
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            env={**os.environ, "PYTHONUTF8": "1"},
+        )
+        payload = json.loads(completed.stdout)
+        if expected_exit is not None:
+            self.assertEqual(
+                expected_exit,
+                completed.returncode,
+                json.dumps(payload, ensure_ascii=False, indent=2),
+            )
+        return completed, payload
+
+    def replay(self, record: Path) -> tuple[subprocess.CompletedProcess[str], dict]:
+        completed = subprocess.run(
+            [
+                sys.executable,
+                str(CAPTURE_REPLAY_PATH),
+                str(record),
+                "--format",
+                "json",
+            ],
+            check=False,
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            env={**os.environ, "PYTHONUTF8": "1"},
+        )
+        return completed, json.loads(completed.stdout)
+
+    @staticmethod
+    def tree_bytes(root: Path) -> dict[str, bytes]:
+        return {
+            path.relative_to(root).as_posix(): path.read_bytes()
+            for path in root.rglob("*")
+            if path.is_file()
+        }
+
+    @staticmethod
+    def refresh_manifest(record: Path) -> None:
+        manifest_path = record / "capture-manifest.json"
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+        records = {}
+        for path in record.rglob("*"):
+            if not path.is_file() or path == manifest_path:
+                continue
+            raw = path.read_bytes()
+            records[path.relative_to(record).as_posix()] = {
+                "sha256": hashlib.sha256(raw).hexdigest(),
+                "size": len(raw),
+            }
+        manifest["artifacts"] = dict(sorted(records.items()))
+        identity = {"schema": manifest["schema"], "artifacts": manifest["artifacts"]}
+        record_sha = hashlib.sha256(capture._canonical_json_bytes(identity)).hexdigest()
+        manifest["record_sha256"] = record_sha
+        manifest["capture_id"] = f"hvc1-{record_sha}"
+        body = dict(manifest)
+        body.pop("manifest_sha256", None)
+        manifest["manifest_sha256"] = hashlib.sha256(
+            capture._canonical_json_bytes(body)
+        ).hexdigest()
+        manifest_path.write_bytes(capture._pretty_json_bytes(manifest))
+
+    def test_review_exit_is_observed_and_not_upgraded_to_capture_pass(self) -> None:
+        _completed, payload = self.run_capture(expected_exit=2)
+        record = Path(payload["capture_record"])
+        observation = json.loads(
+            (record / "process-observation.json").read_text(encoding="utf-8")
+        )
+        inner = json.loads(
+            (record / "validation-record" / "validation-result.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        self.assertEqual("PASS", payload["capture_integrity_status"])
+        self.assertEqual("REVIEW", payload["status"])
+        self.assertEqual(2, payload["observed_os_exit_code"])
+        self.assertEqual(2, observation["observed_os_exit_code"])
+        self.assertEqual(2, inner["exit_code"])
+        self.assertEqual(
+            (record / "observed-stdout.bin").read_bytes(),
+            (record / "validation-record" / "rendered-output.txt").read_bytes(),
+        )
+        replayed, replay_payload = self.replay(record)
+        self.assertEqual(2, replayed.returncode)
+        self.assertEqual("REVIEW", replay_payload["status"])
+        self.assertEqual("PASS", replay_payload["reexecution_status"])
+        self.assertFalse(replay_payload["humanize_quality_claim_allowed"])
+
+    def test_draft_pass_and_hard_failure_both_preserve_validator_gate(self) -> None:
+        supplied = self.root / "supplied.md"
+        draft = self.root / "draft.md"
+        supplied.write_text("材料 A 的结果为 1。", encoding="utf-8")
+        draft.write_text("材料 A 的结果为 1。", encoding="utf-8")
+        _, passed = self.run_capture(
+            [str(supplied), str(draft), "--mode", "DRAFT", "--format", "json"],
+            expected_exit=0,
+            output=self.root / "draft-captures",
+        )
+        self.assertEqual("PASS", passed["status"])
+        self.assertEqual("PASS", passed["capture_integrity_status"])
+
+        hard_before = self.root / "hard-before.tex"
+        hard_after = self.root / "hard-after.tex"
+        hard_before.write_text("公式为 $x=1$。", encoding="utf-8")
+        hard_after.write_text("公式为 $x=2$。", encoding="utf-8")
+        _, failed = self.run_capture(
+            [str(hard_before), str(hard_after), "--format", "json"],
+            expected_exit=1,
+            output=self.root / "hard-captures",
+        )
+        self.assertEqual("FAIL", failed["status"])
+        self.assertEqual("PASS", failed["capture_integrity_status"])
+        self.assertEqual(1, failed["observed_os_exit_code"])
+
+    def test_argparse_exit_two_without_inner_record_is_capture_fail_one(self) -> None:
+        _completed, payload = self.run_capture([], expected_exit=1)
+        record = Path(payload["capture_record"])
+        observation = json.loads(
+            (record / "process-observation.json").read_text(encoding="utf-8")
+        )
+        self.assertEqual(2, payload["observed_os_exit_code"])
+        self.assertEqual("FAIL", payload["status"])
+        self.assertEqual("NOT_AVAILABLE", payload["validation_delivery_gate_status"])
+        self.assertEqual("ABSENT", observation["inner_record"]["record_status"])
+        self.assertFalse((record / "validation-record").exists())
+
+    def test_missing_and_invalid_utf8_inputs_are_captured_without_source_locator(self) -> None:
+        cases: list[tuple[str, Path]] = []
+        missing = self.root / "private-project-name" / "missing.md"
+        cases.append(("missing", missing))
+        invalid = self.root / "private-project-name" / "invalid.md"
+        invalid.parent.mkdir()
+        invalid.write_bytes(b"\xff\xfe")
+        cases.append(("invalid", invalid))
+        for index, (name, after) in enumerate(cases):
+            with self.subTest(name=name):
+                _, payload = self.run_capture(
+                    [str(self.before), str(after), "--format", "json"],
+                    expected_exit=1,
+                    output=self.root / f"error-captures-{index}",
+                )
+                record = Path(payload["capture_record"])
+                all_bytes = b"\n".join(self.tree_bytes(record).values())
+                self.assertEqual(2, payload["observed_os_exit_code"])
+                self.assertNotIn(str(after).encode("utf-8"), all_bytes)
+                self.assertNotIn(after.name.encode("utf-8"), all_bytes)
+                self.assertNotIn(
+                    hashlib.sha256(str(after).encode("utf-8")).hexdigest().encode("ascii"),
+                    all_bytes,
+                )
+
+    def test_anonymous_request_bound_proposal_replays_without_human_identity(self) -> None:
+        before = self.root / "warning-before.md"
+        after = self.root / "warning-after.md"
+        before.write_text("结果可能变化。", encoding="utf-8")
+        after.write_text("结果发生变化。", encoding="utf-8")
+        first = validator.validate(before, after, scene="GENERAL")
+        request = first["warning_review_request"]
+        fingerprint = request["warnings"][0]["warning_fingerprint"]
+        _, payload = self.run_capture(
+            [
+                str(before),
+                str(after),
+                "--scene",
+                "GENERAL",
+                "--format",
+                "json",
+                "--propose-warning-resolution",
+                f"{fingerprint}=调用方建议恢复原句中的模态范围以保留表达功能",
+                "--warning-review-request-sha256",
+                request["request_sha256"],
+            ],
+            expected_exit=2,
+            output=self.root / "proposal-captures",
+        )
+        record = Path(payload["capture_record"])
+        result = json.loads(
+            (record / "validation-record" / "validation-result.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        proposal = result["warning_proposal_state"]
+        self.assertEqual("UNVERIFIED_CALLER_PROPOSAL", proposal["proposal_source"])
+        self.assertFalse(proposal["reviewer_identifier_collected"])
+        self.assertNotIn("warning_review", result)
+        replayed, replay_payload = self.replay(record)
+        self.assertEqual(2, replayed.returncode)
+        self.assertEqual("PASS", replay_payload["reexecution_status"])
+        self.assertEqual("REVIEW", replay_payload["status"])
+
+    def test_retired_reviewer_label_and_plain_hash_never_enter_capture_tree(self) -> None:
+        label = "alice"
+        _, payload = self.run_capture(
+            [
+                str(self.before),
+                str(self.after),
+                "--warning-reviewer-kind",
+                "HUMAN",
+                "--warning-reviewer-id",
+                label,
+            ],
+            expected_exit=1,
+            output=self.root / "retired-identity-captures",
+        )
+        record = Path(payload["capture_record"])
+        all_bytes = b"\n".join(self.tree_bytes(record).values())
+        self.assertNotIn(label.encode("utf-8"), all_bytes)
+        self.assertNotIn(hashlib.sha256(label.encode()).hexdigest().encode(), all_bytes)
+        self.assertNotIn(b"reviewer_id_sha256", all_bytes)
+
+    def test_same_content_in_different_private_directories_has_identical_record(self) -> None:
+        first_dir = self.root / "alice-project"
+        second_dir = self.root / "bob-project"
+        first_dir.mkdir()
+        second_dir.mkdir()
+        for directory in (first_dir, second_dir):
+            (directory / "named-before.md").write_bytes(self.before.read_bytes())
+            (directory / "named-after.md").write_bytes(self.after.read_bytes())
+        _, first = self.run_capture(
+            [
+                str(first_dir / "named-before.md"),
+                str(first_dir / "named-after.md"),
+                "--scene",
+                "RESEARCH",
+                "--format",
+                "json",
+            ],
+            expected_exit=2,
+            output=self.root / "cross-path-a",
+        )
+        _, second = self.run_capture(
+            [
+                str(second_dir / "named-before.md"),
+                str(second_dir / "named-after.md"),
+                "--scene",
+                "RESEARCH",
+                "--format",
+                "json",
+            ],
+            expected_exit=2,
+            output=self.root / "cross-path-b",
+        )
+        self.assertEqual(first["capture_id"], second["capture_id"])
+        self.assertEqual(
+            self.tree_bytes(Path(first["capture_record"])),
+            self.tree_bytes(Path(second["capture_record"])),
+        )
+
+    def test_identical_capture_is_idempotent_and_byte_preserving(self) -> None:
+        _, first = self.run_capture(expected_exit=2)
+        record = Path(first["capture_record"])
+        baseline = self.tree_bytes(record)
+        _, second = self.run_capture(expected_exit=2)
+        self.assertEqual(first["capture_id"], second["capture_id"])
+        self.assertEqual("IDEMPOTENT_REPLAY", second["publication_status"])
+        self.assertEqual(baseline, self.tree_bytes(record))
+
+    def test_existing_lock_is_not_deleted_by_failed_publisher(self) -> None:
+        _, first = self.run_capture(expected_exit=2)
+        record = Path(first["capture_record"])
+        lock = record.parent / f".{first['capture_id']}.publish.lock"
+        lock.write_bytes(b"foreign-owner-sentinel")
+        _completed, failed = self.run_capture(expected_exit=1)
+        self.assertEqual("CAPTURE_IO_ERROR", failed["error_code"])
+        self.assertEqual(b"foreign-owner-sentinel", lock.read_bytes())
+
+    def test_extra_empty_directory_and_hardlink_are_rejected(self) -> None:
+        _, payload = self.run_capture(expected_exit=2)
+        source = Path(payload["capture_record"])
+        with_extra = self.root / source.name
+        shutil.copytree(source, with_extra)
+        (with_extra / "extra-empty").mkdir()
+        completed, replayed = self.replay(with_extra)
+        self.assertEqual(1, completed.returncode)
+        self.assertEqual("CAPTURE_INVENTORY_MISMATCH", replayed["error_code"])
+
+        hardlinked = self.root / "hardlinked" / source.name
+        shutil.copytree(source, hardlinked)
+        try:
+            os.link(
+                hardlinked / "observed-stdout.bin",
+                self.root / "stdout-hardlink.bin",
+            )
+        except OSError as error:
+            self.skipTest(f"hard links unavailable: {error}")
+        completed, replayed = self.replay(hardlinked)
+        self.assertEqual(1, completed.returncode)
+        self.assertEqual("HARDLINK_REJECTED", replayed["error_code"])
+
+    def test_artifact_tamper_and_rehashed_manifest_status_forgery_fail(self) -> None:
+        _, payload = self.run_capture(expected_exit=2)
+        source = Path(payload["capture_record"])
+        tampered = self.root / "tampered" / source.name
+        shutil.copytree(source, tampered)
+        stream = tampered / "observed-stdout.bin"
+        stream.write_bytes(stream.read_bytes() + b"X")
+        completed, replayed = self.replay(tampered)
+        self.assertEqual(1, completed.returncode)
+        self.assertEqual("ARTIFACT_HASH_MISMATCH", replayed["error_code"])
+
+        forged = self.root / "forged" / source.name
+        shutil.copytree(source, forged)
+        manifest_path = forged / "capture-manifest.json"
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+        manifest["status"] = "PASS"
+        manifest["exit_code"] = 0
+        body = dict(manifest)
+        body.pop("manifest_sha256")
+        manifest["manifest_sha256"] = hashlib.sha256(
+            capture._canonical_json_bytes(body)
+        ).hexdigest()
+        manifest_path.write_bytes(capture._pretty_json_bytes(manifest))
+        completed, replayed = self.replay(forged)
+        self.assertEqual(1, completed.returncode)
+        self.assertEqual("CAPTURE_INTEGRITY_MISMATCH", replayed["error_code"])
+
+    def test_policy_drift_is_review_and_does_not_reexecute(self) -> None:
+        _, payload = self.run_capture(expected_exit=2)
+        record = Path(payload["capture_record"])
+        current = capture._capture_policy_hashes()
+        changed = json.loads(json.dumps(current))
+        changed["capture_script_sha256"] = "0" * 64
+        with mock.patch.object(capture_replay.capture, "_capture_policy_hashes", return_value=changed):
+            replayed, exit_code = capture_replay.replay_capture(record)
+        self.assertEqual(2, exit_code)
+        self.assertEqual("REVIEW", replayed["status"])
+        self.assertEqual("PASS", replayed["record_integrity_status"])
+        self.assertEqual("NOT_RUN", replayed["reexecution_status"])
+
+    def test_timeout_observation_is_fail_and_has_no_fake_delivery_status(self) -> None:
+        def fake_run(
+            _arguments,
+            *,
+            inner_dir,
+            stdout_path,
+            stderr_path,
+            timeout_seconds,
+        ):
+            del inner_dir, timeout_seconds
+            stdout_path.write_bytes(b"partial")
+            stderr_path.write_bytes(b"")
+            return {
+                "termination_reason": "TIMEOUT",
+                "observed_os_exit_code": None,
+                "process_returncode_after_termination": 1,
+            }
+
+        with mock.patch.object(capture, "_run_validator", side_effect=fake_run):
+            payload, exit_code = capture.capture_validation(
+                [str(self.before), str(self.after)],
+                output_root=self.root / "timeout-captures",
+            )
+        self.assertEqual(1, exit_code)
+        self.assertEqual("FAIL", payload["status"])
+        self.assertEqual("NOT_AVAILABLE", payload["validation_delivery_gate_status"])
+
+    def test_output_inside_installed_skill_is_rejected(self) -> None:
+        with self.assertRaisesRegex(capture.CaptureError, "must not pollute"):
+            capture.capture_validation(
+                [str(self.before), str(self.after)],
+                output_root=SKILL / "build" / "forbidden-capture",
+            )
+
+
+if __name__ == "__main__":
+    unittest.main()

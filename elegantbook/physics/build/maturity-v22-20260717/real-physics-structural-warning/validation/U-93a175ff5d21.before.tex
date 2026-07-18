@@ -1,0 +1,83 @@
+
+\section{变力做功}
+
+当质点沿任意曲线从点 $a$ 运动到点 $b$ 时，我们在轨道上截取一段无限短的微元位移 $\mathrm{d}\vec{r}$。由于该位移极短，在此极其微小的空间邻域内，力 $\vec{F}$ 的大小和方向的改变可以忽略不计，从而可以近似看作恒力。力 $\vec{F}$ 在这段微元位移上所做的功称为\textbf{元功}，其微分表达式为：$\mathrm{d}A = \vec{F} \cdot \mathrm{d}\vec{r}$，整个运动过程中变力 $\vec{F}$ 所做的总功，即为整个曲线上所有元功的积分总和：
+ \(A = \int_{a}^{b} \vec{F} \cdot \mathrm{d}\vec{r}\) 
+在实际的代数运算中，根据问题所选取的参考坐标系不同，总功的曲线积分通常有以下两种极其重要的正交分解计算方案。若将力和微元位移在直角坐标系 $Oxy$ 下正交分解：
+\[
+\vec{F}(x, y) = F_x(x, y)\vec{i} + F_y(x, y)\vec{j}, \qquad \mathrm{d}\vec{r} = \mathrm{d}x\vec{i} + \mathrm{d}y\vec{j}
+\]
+根据向量点积的代数运算法则，元功展开为 $\mathrm{d}A = F_x\mathrm{d}x + F_y\mathrm{d}y$（这里角标是分量的意思，不是求偏导数）。总功的积分式即化为两个常规一维定积分的叠加：
+\[
+A = \int_{a}^{b} \left( F_x(x, y)\mathrm{d}x + F_y(x, y)\mathrm{d}y \right) = \int_{a}^{b} F_x(x, y)\mathrm{d}x + \int_{a}^{b} F_y(x, y)\mathrm{d}y = A_x + A_y
+\]
+
+\begin{exercise}
+设作用在质量为 $2\,\text{kg}$ 的物体上的合外力大小随时间变化，满足关系式 $F = 6t\,\text{N}$。如果物体由静止出发沿直线运动，求在头 $2\,\text{s}$ 内该合外力对物体做了多少功？
+\end{exercise}
+\begin{solution}
+首先求出物体的瞬时加速度大小： \(a = \frac{F}{m} = \frac{6t}{2} = 3t\) ，静止出发，即 $t=0$ 时 $v=0$：
+$$\int_{0}^{v} \mathrm{d}v = \int_{0}^{t} 3t' \mathrm{d}t' \implies v = \frac{3}{2}t^2,~~\mathrm{d}x = v\mathrm{d}t = \frac{3}{2}t^2\mathrm{d}t$$将力 $F = 6t$ 以及位移元 $\mathrm{d}x = \frac{3}{2}t^2\mathrm{d}t$ 一并代入功的定义式中。积分区间也随之完美转换为了时间的头 $2\,\text{s}$（即 $0 \to 2$）：$$A = \int F \mathrm{d}x = \int_{0}^{2} (6t) \cdot \left(\frac{3}{2}t^2\mathrm{d}t\right)=\int_{0}^{2} 9t^3 \mathrm{d}t = \frac{9}{4}t^4 \Big|_0^2 = \frac{9}{4} \cdot (2^4 - 0) = \frac{9}{4} \cdot 16 = 36\,\text{J}$$
+\end{solution}
+
+\begin{exercise}
+质量为 $m$ 的物体从静止开始，在竖直平面内沿着四分之一的圆周从 $A$ 滑到 $B$。在 $B$ 处速度的大小是 $v$，已知圆的半径为 $R$。试运用功的积分定义，求物体从 $A$ 到 $B$ 运动过程中摩擦力所做的功。
+\end{exercise}
+\begin{solution}
+对圆弧上任意位置的物体进行受力分析：沿法向（指向圆心）：受到轨道的支持力 $N$ 和重力的法向分力 $mg\sin\theta$。沿切向（运动方向）：受到向下的重力切向分力 $mg\cos\theta$，以及阻碍相对运动、沿切线向后的摩擦力 $f$。根据牛顿第二定律，物体沿圆弧轨道的切向运动微分方程为：$$mg\cos\theta - f = ma_\tau = m\frac{\mathrm{d}v}{\mathrm{d}t}\implies f = mg\cos\theta - m\frac{\mathrm{d}v}{\mathrm{d}t}$$
+在轨道上截取一段微元弧长 $\mathrm{d}s$，由于摩擦力方向与瞬时速度反向，做的元功 $\mathrm{d}A_f$ 为：
+$$\mathrm{d}A_f = -f\mathrm{d}s = -\left(mg\cos\theta - m\frac{\mathrm{d}v}{\mathrm{d}t}\right)\mathrm{d}s= -mg\cos\theta\mathrm{d}s + m\frac{\mathrm{d}v}{\mathrm{d}t}\mathrm{d}s= -mg\cos\theta\mathrm{d}s + mv\mathrm{d}v$$
+微元弧长与圆心角满足 $\mathrm{d}s = R\mathrm{d}\theta$，故 $-mg\cos\theta\mathrm{d}s = -mg\cos\theta \cdot R\mathrm{d}\theta$。对于第一项，积分变量为角度 $\theta$，从最高点 $A$ 滑到最低点 $B$，角度变化区间为 $0 \to \frac{\pi}{2}$；对于第二项，积分变量为速度 $v$，从静止释放到末速度，变化区间为 $0 \to v$：
+$$A_f = \int_{0}^{\frac{\pi}{2}} -mg\cos\theta \cdot R\mathrm{d}\theta + \int_{0}^{v} mv'\mathrm{d}v'= -mgR \cdot \sin\theta \Big|_0^{\frac{\pi}{2}} + \frac{1}{2}mv'^2 \Big|_0^v= -mgR + \frac{1}{2}mv^2$$
+\end{solution}
+
+\begin{definition}[功率]
+功描述了力对空间的累积效应，而功率（Power）则是描述力做功快慢程度的物理量，即单位时间内力所做的功。平均功率：在时间间隔 $\Delta t$ 内，力所做的总功为 $\Delta A$，则平均功率 $\overline{P}$ 定义为： \(\overline{P} = \frac{\Delta A}{\Delta t}\) 瞬时功率：当时间间隔趋近于无穷小时，平均功率的极限即为瞬时功率 $P$。利用元功的定义 $\mathrm{d}A = \vec{F} \cdot \mathrm{d}\vec{r}$，可将其转化为力与速度的内积表达式：$$P = \lim_{\Delta t \to 0} \frac{\Delta A}{\Delta t} = \frac{\mathrm{d}A}{\mathrm{d}t} = \frac{\vec{F} \cdot \mathrm{d}\vec{r}}{\mathrm{d}t} = \vec{F} \cdot \vec{v}$$
+\end{definition}
+
+\begin{theorem}[质点动能定理]
+当一个合外力 $\vec{F}$ 作用在质量为 $m$ 的质点上，使其沿任意曲线从点 $a$ 运动到点 $b$ 时，合外力对质点所做的总功 $A_{ab}$ 可以由切向分力 $F_\tau$ 在轨道弧长上积分得到：$$A_{ab} = \int_{a}^{b} \vec{F} \cdot \mathrm{d}\vec{r} = \int_{a}^{b} F_\tau \mathrm{d}s$$根据牛顿第二定律在自然坐标系下的切向分量式，切向分力等于质量乘以切向加速度，即 $F_\tau = ma_\tau = m\frac{\mathrm{d}v}{\mathrm{d}t}$。代入总功积分式中： \(A_{ab} = \int_{a}^{b} m\frac{\mathrm{d}v}{\mathrm{d}t} \mathrm{d}s\) 利用速度的微分定义 $v = \frac{\mathrm{d}s}{\mathrm{d}t}$，将时间元 $\mathrm{d}t$ 转移到弧长微元 $\mathrm{d}s$ 下，使空间曲线积分完美转化为关于瞬时速度标量 $v$ 的一维定积分，积分区间随之变轨为初速度 $v_a$ 到末速度 $v_b$：$$A_{ab} = \int_{a}^{b} m \cdot \mathrm{d}v \cdot \frac{\mathrm{d}s}{\mathrm{d}t} = \int_{v_a}^{v_b} mv \mathrm{d}v$$对该一维幂函数直接进行定积分计算：$$A_{ab} = \frac{1}{2}mv^2 \Big|_{v_a}^{v_b} = \frac{1}{2}mv_b^2 - \frac{1}{2}mv_a^2$$为了赋予该数学结果明确的物理图像，我们定义一个只与质点运动状态相关的状态量——动能（Kinetic Energy），记为 $E_{\text{k}}$： \(E_{\text{k}} = \frac{1}{2}mv^2\) 由此，上式可以简洁地改写为系统始末状态动能的差值：$$A_{ab} = E_{\text{k}b} - E_{\text{k}a} = E_{\text{k,末}} - E_{\text{k,初}} = \Delta E_{\text{k}}$$这就是质点动能定理。
+\end{theorem}
+
+\begin{exercise}
+质量为 $m = 10\,\text{kg}$ 的物体沿 $x$ 轴无摩擦地运动，$t = 0$ 时，速度为零。设物体在大小随时间变化的合外力 $F = 4 + 2t^2\,\text{(N)}$ 的作用下运动，经历了 $3\,\text{s}$，求力 $\vec{F}$ 对质点所做的功。
+\end{exercise}
+\begin{solution}
+根据牛顿第二定律：$$a = \frac{F}{m} = \frac{4 + 2t^2}{10}\implies\mathrm{d}v = a\mathrm{d}t = \frac{4 + 2t^2}{10}\mathrm{d}t$$结合$t = 0$ 时质点静止，即初速度 $v_1 = 0$；经历了 $t = 3\,\text{s}$ 后，末速度记为 $v_2$：
+$$\int_{0}^{v_2} \mathrm{d}v = \int_{0}^{3} \left( \frac{4 + 2t^2}{10} \right) \mathrm{d}t\implies v_2 = \frac{1}{10} \left[ 4t + \frac{2}{3}t^3 \right]_0^3= \frac{1}{10} \left[ \left(4 \times 3 + \frac{2}{3} \times 3^3\right) - 0 \right] = 3\,\text{m/s}$$
+已知质点的初速度 $v_1 = 0$，末速度 $v_2 = 3\,\text{m/s}$，质量 $m = 10\,\text{kg}$。直接套用质点动能定理： \(A = \Delta E_{\text{k}} = \frac{1}{2}mv_2^2 - \frac{1}{2}mv_1^2\) 代入具体的代数状态量： \(A = \frac{1}{2} \times 10 \times 3^2 - 0 = 5 \times 9 = 45\,\text{J}\) 
+\end{solution}
+
+\begin{exercise}
+一个质量为 $15\,\text{g}$ 的子弹，以 $200\,\text{m/s}$ 的速度射入一固定的木板内。如果木板对子弹的阻力与射入木板的深度成正比，即满足标量关系式 $f = -\beta x$（其中比例系数 $\beta = 5.0 \times 10^3\,\text{N/cm}$）。求子弹射入木板的最大深度 $l$。
+\end{exercise}
+\begin{solution}
+以木板左边界为坐标原点 $O$，子弹入射方向为 $x$ 轴正方向建立一维直角坐标系。设子弹射入木板的最大深度为 $l$。在此运动轨迹上，阻力的方向与位移方向严格相反。在位置 $x$ 处，力在 $x$ 轴上的投影分量为 $F_x = -\beta x$。根据功的积分定义，阻力所做的总功为：
+$$A = \int_{0}^{l} F_x \mathrm{d}x = \int_{0}^{l} (-\beta x) \mathrm{d}x = -\frac{1}{2}\beta x^2 \Big|_0^l = -\frac{1}{2}\beta l^2= 0 - \frac{1}{2}mv_0^2 \implies \beta l^2 = mv_0^2$$
+两边开平方，求得最大射入深度 $l$ ：$$l = \sqrt{\frac{mv_0^2}{\beta}}= \sqrt{\frac{15 \times 10^{-3} \times 200^2}{5.0 \times 10^5}}= \sqrt{\frac{600}{5.0 \times 10^5}} = \sqrt{1.2 \times 10^{-3}} \approx 3.46 \times 10^{-2}\,\text{m} = 3.46\,\text{cm}$$
+\end{solution}
+
+\begin{exercise}
+一质量为 $1.0\,\text{kg}$ 的小球系在长为 $1.0\,\text{m}$ 细绳下端，绳的上端固定在天花板上。起初把绳子拉侧到与竖直线成 $30^\circ$ 角处，然后无初速度放手使小球沿圆弧下落。试求绳与竖直线成 $10^\circ$ 角时小球的速率。
+\end{exercise}
+\begin{solution}
+ 当小球沿着圆弧轨道下落时，其轨迹是一条圆弧。
+ \begin{itemize}
+ \item 法向（指向悬点）：小球受到绳子的拉力 $F_{\text{T}}$ 以及重力的法向分量 $mg\cos\theta$。由于拉力始终与瞬时位移 $\mathrm{d}\vec{s}$ 垂直，因此拉力在整个运动过程中不做功。
+ \item 切向（沿运动方向）：小球受到重力的切向分量。需要特别注意，由于夹角 $\theta$ 是由竖直方向向外定义的，当小球向下摆动时，弧长增量 $\mathrm{d}s$ 的方向使 $\theta$ 减小。因此，重力的切向分力方向与运动方向相同，其大小为： \(F_\tau = -mg\sin\theta\) （注：负号来源于当夹角 $\theta$ 减小时，回复力指向摆动平衡位置的运动方向。）
+ \end{itemize}
+ 小球在沿圆弧滑行一段微元弧长 $\mathrm{d}s = l\mathrm{d}\theta$，元功：
+ $$\mathrm{d}A = F_\tau \mathrm{d}s = (-mg\sin\theta) \cdot (l\mathrm{d}\theta) = -mgl\sin\theta\mathrm{d}\theta$$
+ 设初状态细绳与竖直方向的夹角为 $\theta_0 = 30^\circ$，末状态的夹角为 $\theta = 10^\circ$。对元功在整个角度区间上进行定积分：$$A = \int_{\theta_0}^{\theta} -mgl\sin\theta' \mathrm{d}\theta' = mgl\cos\theta' \Big|_{\theta_0}^{\theta} = mgl(\cos\theta - \cos\theta_0)=\Delta E_{\text{k}} = \frac{1}{2}mv^2 - \frac{1}{2}mv_0^2=\frac{1}{2}mv^2$$解出瞬时速率 $v$ 的通用代数解析式：$$v = \sqrt{2gl(\cos\theta - \cos\theta_0)} \approx \sqrt{19.6 \times (0.9848 - 0.8660)}\approx 1.53\,\text{m/s}$$
+\end{solution}
+
+\begin{theorem}[质点系动能定理]
+对于第 $i$ 个质点 $m_i$：$$A_{F_i} + A_{f_{i\text{内}}} = \frac{1}{2}m_iv_{i\text{末}}^2 - \frac{1}{2}m_iv_{i\text{初}}^2$$既然对系统内的任意个体方程都成立，我们将这 $n$ 个代数方程的左边和右边分别进行整体求和（求和范围为 $i=1 \to n$）：$$\sum_{i=1}^{n} A_{F_i} + \sum_{i=1}^{n} A_{f_{i\text{内}}} = \sum_{i=1}^{n} \frac{1}{2}m_iv_{i\text{末}}^2 - \sum_{i=1}^{n} \frac{1}{2}m_iv_{i\text{初}}^2$$得到了质点系的动能定理： \(A_{\text{外}} + A_{\text{内}} = E_{\text{k,末}} - E_{\text{k,初}} = \Delta E_{\text{k}}\) 
+\end{theorem}
+\begin{note}
+虽然成对的内力大小相等、方向相反，但在相同的 $\mathrm{d}t$ 时间内，相互作用的两个质点产生的空间位移通常是各不相同的（$\mathrm{d}\vec{r}_i \neq \mathrm{d}\vec{r}_j$）。$$\mathrm{d}A_{\text{内对}} = \vec{f}_{ij} \cdot \mathrm{d}\vec{r}_i + \vec{f}_{ji} \cdot \mathrm{d}\vec{r}_j = \vec{f}_{ij} \cdot (\mathrm{d}\vec{r}_i - \mathrm{d}\vec{r}_j)$$利用相对位移的物理概念，两者的位移差刚好就是它们的相对位移微元 $\mathrm{d}\vec{r}_{\text{相}}$： \(\mathrm{d}A_{\text{内对}} = \vec{f}_{ij} \cdot \mathrm{d}\vec{r}_{\text{相}}\) 
+\begin{itemize}
+\item 非刚体系统（内力做功）：当系统内各质点之间存在相对位移时（如火药爆炸、弹簧拉伸、两物体发生非弹性碰撞摩擦），内力就会做功。内力做功的本质是系统内部不同能量形式之间的转化（如化学能、弹性势能、内能与机械动能之间的剧烈转化）。
+\item 刚体系统（内力不做功）：只有当物体是绝对不可变形的刚体时，任意两点间的相对距离保持恒定（相对位移 $\mathrm{d}\vec{r}_{\text{相}} \equiv 0$），成对内力做的总功才恒为 0。
+\end{itemize}
+\end{note}

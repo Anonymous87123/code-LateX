@@ -1,0 +1,5 @@
+Use $humanize-academic-chinese to perform a fresh second-pass review of the single masked long-document chunk in input.txt.
+
+Treat this as a new review from the current chunk, its read-only context, and the installed generator projection only. Do not look for or reuse any first-pass rewrite, diff, validation result, expected answer, or convergence decision.
+
+Return exactly one strict JSON object and no code fence or commentary. Echo unit_id, chunk_binding_sha256, and voice_profile_sha256 exactly from the chunk. If a substantive style change is still necessary, return decision=REWRITE with the complete masked_text and keep_reasons. If no substantive change is necessary, return decision=NO_CHANGE with a concrete Chinese reason of at least four Chinese characters and keep_reasons. Never remove, duplicate, rename, reorder, or edit a [[PROTECTED:...]] placeholder.

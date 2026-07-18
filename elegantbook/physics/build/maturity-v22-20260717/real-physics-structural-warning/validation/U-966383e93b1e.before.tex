@@ -1,0 +1,81 @@
+
+\section{振动能量}
+
+\begin{definition}[动能与势能]
+系统的瞬时动能 $E_{\text{k}}$：由质点的平动线速度决定$$E_{\text{k}} = \frac{1}{2}m v^2 = \frac{1}{2}m\omega^2 A^2 \sin^2(\omega t + \phi)$$系统的瞬时弹性势能 $E_{\text{p}}$：由线性回复力的空间空间积累决定$$E_{\text{p}} = \frac{1}{2}k x^2 = \frac{1}{2}k A^2 \cos^2(\omega t + \phi)$$由于系统固有属性满足 $\omega^2 = \frac{k}{m} \implies m\omega^2 = k$，动能项的前置系数可完美无损地代换为弹性系数：$$E = E_{\text{k}} + E_{\text{p}} = \frac{1}{2}k A^2 \sin^2(\omega t + \phi) + \frac{1}{2}k A^2 \cos^2(\omega t + \phi) =\frac{1}{2}k A^2 \propto A^2$$
+\end{definition}
+
+\begin{example}
+一质量为 $m = 0.10\,\text{kg}$ 的物体，以振幅 $A = 1.0 \times 10^{-2}\,\text{m}$ 作简谐运动。已知该物体的最大加速度大小为 $a_{\text{max}} = 4.0\,\text{m}\cdot\text{s}^{-2}$。试求：\\（1）振动的周期 $T$；（2）物体通过平衡位置时的动能 $E_{\text{k,max}}$；（3）系统的总机械能 $E_{\text{总}}$；\\（4）物体在何处其瞬时动能与弹性势能恰好严格相等？
+\end{example}
+\begin{solution}
+（1）由简谐运动方程求两次导数得到$a_{\text{max}} = A\omega^2$，则$$\omega = \sqrt{\frac{a_{\text{max}}}{A}} = \sqrt{\frac{4.0}{1.0 \times 10^{-2}}} = \sqrt{400} = 20\,\text{s}^{-1},~~T = \frac{2\pi}{\omega} = \frac{2 \times 3.14159}{20} \approx \boxed{0.314\,\text{s}}$$
+（2）质点通过平衡位置（$x=0$）时，弹性势能完全释放，全部转化为最大瞬时速度动能。已知最大线速度为 $v_{\text{max}} = A\omega$。代入动能方程：$$E_{\text{k,max}} = \frac{1}{2}m v_{\text{max}}^2 = \frac{1}{2}m\omega^2 A^2= \frac{1}{2} \times 0.10 \times 20^2 \times (1.0 \times 10^{-2})^2 = \boxed{2.0 \times 10^{-3}\,\text{J}}$$
+（3）$$E_{\text{总}} = E_{\text{k,max}} = \boxed{2.0 \times 10^{-3}\,\text{J}}$$
+（4）$$E_{\text{p}} = \frac{1}{2}E_{\text{总}} \implies \frac{1}{2}k x^2 = \frac{1}{2} \cdot \left( \frac{1}{2}k A^2 \right)\implies x^2 = \frac{1}{2}A^2 \implies x = \pm \frac{A}{\sqrt{2}}= \pm \frac{1.0\,\text{cm}}{\sqrt{2}} = \boxed{\pm 0.707\,\text{cm}}$$
+\end{solution}
+
+\begin{exercise}[2012级期末：恒力推粗糙桌面弹簧物块的最大弹性势能]
+劲度系数为 \(k\) 的轻弹簧水平放置，一端固定在墙壁上，另一端连接质量为 \(m\) 的物体。物体在坐标原点 \(O\) 时弹簧为原长，物体与桌面间的滑动摩擦系数为 \(\mu\)。若物体在水平向右的不变外力 \(F\) 作用下向右移动，求物体到达最远位置时弹簧系统的弹性势能。设 \(F>\mu mg\)。
+\end{exercise}
+\begin{solution}
+由能量守恒
+\[
+\begin{aligned}
+Fx_m-\mu mg\,x_m&=\frac12kx_m^2
+\implies x_m=\frac{2(F-\mu mg)}{k},E_p=\frac12kx_m^2=\frac{2(F-\mu mg)^2}{k}.
+\end{aligned}
+\]
+\end{solution}
+
+\begin{exercise}[木板简谐振动时物体不滑的最大振幅]
+一物体放在水平木板上，木板以频率 \(\nu=\SI{2}{Hz}\) 沿水平直线作简谐振动。物体与木板间静摩擦系数为 \(\mu_s=0.50\)。求物体不在木板上滑动时木板振动的最大振幅 \(A_{\max}\)。
+\end{exercise}
+\begin{solution}
+物体能跟着板一起做简谐振动，靠的是静摩擦力提供所需水平加速度。因此最大不滑条件就是“所需最大摩擦力不超过最大静摩擦力”。
+ \(a_{\max}=\omega^2A\le \mu_sg \implies A_{\max}=\frac{\mu_s g}{\omega^2} =\frac{\mu_s g}{4\pi^2\nu^2}=\dfrac{0.50\times9.8}{4\pi^2\times2^2}\approx \SI{3.1e-2}{m}\)，即 \(A_{\max}\approx\SI{0.031}{m}\)。频率越高，同样振幅下所需加速度越大，允许振幅应随 \(\nu^{-2}\) 变小；静摩擦力只在临界不滑时才达到 \(\mu_smg\)。
+\end{solution}
+
+\begin{exercise}[由振动曲线判断最大速率比]
+第一条曲线的振幅约为 \(\SI{1}{cm}\)、周期约为 \(\SI{2}{s}\)；第二条曲线的振幅约为 \(\SI{2}{cm}\)、周期约为 \(\SI{4}{s}\)。求它们的最大速率之比。
+\end{exercise}
+\begin{solution}
+\[v_{\max}=A\omega=2\pi A/T\implies\dfrac{v_{\max,1}}{v_{\max,2}}
+=\dfrac{A_1/T_1}{A_2/T_2}
+=\dfrac{1/2}{2/4}=1\]
+\end{solution}
+
+\begin{exercise}[2004级期末：由初位移和初速度求振幅与初相]
+一简谐振动的表达式为
+ \(x=A\cos(3t+\phi).\) 
+已知 \(t=0\) 时初位移为 \(\SI{0.04}{m}\)，初速度为 \(\SI{0.09}{m/s}\)。求振幅 \(A\) 和初相 \(\phi\)。
+\end{exercise}
+\begin{solution}
+ \[A\cos\phi=0.04,\qquad v(t)=-3A\sin(3t+\phi),\qquad -3A\sin\phi=0.09 \implies A\sin\phi=-0.03.\] 
+于是
+\[
+\begin{aligned}
+A&=\sqrt{(A\cos\phi)^2+(A\sin\phi)^2}=\SI{0.05}{m},~\cos\phi=\frac{0.04}{0.05}=0.8,\sin\phi=\frac{-0.03}{0.05}=-0.6.
+\end{aligned}
+\]
+故 \(\phi\) 位于第四象限，
+\(\phi\approx -36.9^\circ\approx -0.205\pi\)。只由 \(\tan\phi=-0.75\) 还不能直接定象限，必须同时看 \(\cos\phi>0,\sin\phi<0\)，速度公式中的负号也不能漏。
+\end{solution}
+
+\begin{exercise}[2008级期末：给定简谐方程求首次到达指定状态的时间]
+一质点沿 \(x\) 轴作简谐振动，振动方程为
+ \(x=4\times10^{-2}\cos\left(2\pi t+\frac{\pi}{3}\right)\quad(\mathrm{SI}).\) 
+从 \(t=0\) 时刻起，到质点位置在 \(x=-\SI{2}{cm}\) 处且向 \(x\) 轴正方向运动的最短时间间隔是多少？
+\end{exercise}
+\begin{solution}
+设相位为$\phi=2\pi t+\frac{\pi}{3}$，则
+\[
+\begin{aligned}
+x&=-\frac{A}{2}\implies
+\cos\phi=-\frac12
+\implies
+\phi=\frac{2\pi}{3}\ \text{或}\ \frac{4\pi}{3}\pmod{2\pi}.
+\end{aligned}
+\]
+又要求 \(v>0\)，即 \(\sin\phi<0\)，所以取 \(\phi=\frac{4\pi}{3}\pmod{2\pi}\)。从初相 \(\pi/3\) 到第一次满足条件的相位 \(4\pi/3\)，相位增加 \(\pi\)。角频率 \(\omega=2\pi\,\si{rad/s}\)，故 \(\Delta t=\dfrac{\pi}{2\pi}=\SI{0.5}{s}\)。
+\end{solution}

@@ -1,0 +1,14 @@
+Use the humanize-academic-chinese Skill at skill/SKILL.md for this one task.
+Read the source artifact at case/input.txt.
+Apply this exact configuration: {"intensity":"BALANCED","mode":"REWRITE","output":"PATCH","report_context":"NONE","scene":"RESEARCH"}.
+Honor these scope and structure locks: {"scope":"section","structure_lock":true,"title_lock":true}.
+Honor these task options when present: {}.
+Operate only on resources provided in this execution root.
+Return the requested deliverable in the final response only.
+
+User request:
+Use $humanize-academic-chinese to perform a fresh second-pass review of the single masked long-document chunk in input.txt.
+
+Treat this as a new review from the current chunk, its read-only context, and the installed generator projection only. Do not look for or reuse any first-pass rewrite, diff, validation result, expected answer, or convergence decision.
+
+Return exactly one strict JSON object and no code fence or commentary. Echo unit_id, chunk_binding_sha256, and voice_profile_sha256 exactly from the chunk. If a substantive style change is still necessary, return decision=REWRITE with the complete masked_text and keep_reasons. If no substantive change is necessary, return decision=NO_CHANGE with a concrete Chinese reason of at least four Chinese characters and keep_reasons. Never remove, duplicate, rename, reorder, or edit a [[PROTECTED:...]] placeholder.

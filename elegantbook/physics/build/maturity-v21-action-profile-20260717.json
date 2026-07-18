@@ -1,0 +1,2425 @@
+{
+  "action_cards": [
+    {
+      "action": "Reject repeated model-generated meta-question contrasts and self-validating closures that narrate what a section should prove instead of letting the evidence carry the paragraph.",
+      "copy_limit": {
+        "max_contiguous_han_chars": 7,
+        "rule": "Source material may inform an editing action only. Do not reuse eight or more contiguous Chinese characters from a source in a candidate rewrite."
+      },
+      "detector": {
+        "minimum_groups": 1,
+        "pattern_groups": [
+          {
+            "id": "repeated_meta_answer",
+            "minimum_occurrences": 2,
+            "regex": "(?:真正要回答的不是|核心不是|更关注[^。；！？!?]{0,40}而不是)"
+          },
+          {
+            "id": "repeated_self_validating_close",
+            "minimum_occurrences": 2,
+            "regex": "(?:这样处理(?:后)?|也正因为如此|这样一来)[^。；！？!?]{0,80}(?:更符合|就会|才能|足以|完成)"
+          }
+        ]
+      },
+      "forbids": [
+        "repeated 不是/而是 section framing",
+        "automatic 这样处理 closure",
+        "using model-generated prose as a positive action source"
+      ],
+      "id": "NEGATIVE-RESEARCH-MAIN-META-SHELL-01",
+      "kind": "negative_guard",
+      "negative_guard_runtime_authorized": true,
+      "origin_assurance": "NEGATIVE_ONLY",
+      "production_positive": null,
+      "required_anchor_roles": [
+        "template"
+      ],
+      "requires": [
+        "repeated meta-question contrast or automatic closure"
+      ],
+      "scene": "RESEARCH",
+      "source_origin_classes": [
+        "MODEL_GENERATED"
+      ],
+      "source_provenance_decisions": [
+        {
+          "allowed_uses": [
+            "AUDIT",
+            "NEGATIVE_GUARD"
+          ],
+          "assurance": "NEGATIVE_ONLY",
+          "production_positive": false,
+          "reason_code": "MODEL_TEXT_NEGATIVE_ONLY"
+        }
+      ],
+      "source_refs": [
+        {
+          "content_sha256": "2d76a569d1ff5f67c05c2b25e77090af8145c9a9e8b4a9222e933e1ca07cc016",
+          "line_end": 77,
+          "line_start": 50,
+          "nonblank_line_count": 16,
+          "source_id": "SOURCE-MAIN-TEX",
+          "status": "VERIFIED"
+        }
+      ],
+      "status": "AVAILABLE"
+    },
+    {
+      "action": "Organize an explanation as object identification, applicable condition, tool choice, and a final domain-specific check.",
+      "copy_limit": {
+        "max_contiguous_han_chars": 7,
+        "rule": "Source material may inform an editing action only. Do not reuse eight or more contiguous Chinese characters from a source in a candidate rewrite."
+      },
+      "forbids": [
+        "generic motivational scaffolding",
+        "research-paper transfer",
+        "formula-first explanation without object or condition"
+      ],
+      "id": "COURSE-DECISION-01",
+      "kind": "positive_action",
+      "negative_guard_runtime_authorized": null,
+      "origin_assurance": "PROVISIONAL",
+      "production_positive": false,
+      "required_anchor_roles": [
+        "object",
+        "condition",
+        "method",
+        "check"
+      ],
+      "requires": [
+        "problem object",
+        "condition",
+        "tool or method",
+        "check"
+      ],
+      "scene": "COURSE",
+      "source_origin_classes": [
+        "UNKNOWN"
+      ],
+      "source_provenance_decisions": [
+        {
+          "allowed_uses": [
+            "AUDIT",
+            "EXPERIMENTAL_POSITIVE_REVIEW"
+          ],
+          "assurance": "PROVISIONAL",
+          "production_positive": false,
+          "reason_code": "ORIGIN_UNKNOWN"
+        }
+      ],
+      "source_refs": [
+        {
+          "content_sha256": "ebe7df8211aa525d4ccd2d66865ef259fea61e7c5e7847b53ef87f6b3a0345f1",
+          "line_end": 680,
+          "line_start": 674,
+          "nonblank_line_count": 7,
+          "source_id": "SOURCE-PHYSICS2-TEX",
+          "status": "VERIFIED"
+        }
+      ],
+      "status": "AVAILABLE"
+    },
+    {
+      "action": "Tie each warning to a specific mistaken reading and correct that reading with the relevant local distinction.",
+      "copy_limit": {
+        "max_contiguous_han_chars": 7,
+        "rule": "Source material may inform an editing action only. Do not reuse eight or more contiguous Chinese characters from a source in a candidate rewrite."
+      },
+      "forbids": [
+        "vague warning",
+        "rhetorical question chain",
+        "unrelated conclusion"
+      ],
+      "id": "COURSE-ERROR-01",
+      "kind": "positive_action",
+      "negative_guard_runtime_authorized": null,
+      "origin_assurance": "PROVISIONAL",
+      "production_positive": false,
+      "required_anchor_roles": [
+        "misconception",
+        "correction"
+      ],
+      "requires": [
+        "specific misconception",
+        "specific correction"
+      ],
+      "scene": "COURSE",
+      "source_origin_classes": [
+        "UNKNOWN"
+      ],
+      "source_provenance_decisions": [
+        {
+          "allowed_uses": [
+            "AUDIT",
+            "EXPERIMENTAL_POSITIVE_REVIEW"
+          ],
+          "assurance": "PROVISIONAL",
+          "production_positive": false,
+          "reason_code": "ORIGIN_UNKNOWN"
+        }
+      ],
+      "source_refs": [
+        {
+          "content_sha256": "971aa551333d231d12d885dcb03ade9d5c71abeb75f44e97dc9fe40c32a49dda",
+          "line_end": 694,
+          "line_start": 691,
+          "nonblank_line_count": 4,
+          "source_id": "SOURCE-PHYSICS2-TEX",
+          "status": "VERIFIED"
+        }
+      ],
+      "status": "AVAILABLE"
+    },
+    {
+      "action": "Explain a derivation through the dependency order of its stated conditions, then identify which step controls the result.",
+      "copy_limit": {
+        "max_contiguous_han_chars": 7,
+        "rule": "Source material may inform an editing action only. Do not reuse eight or more contiguous Chinese characters from a source in a candidate rewrite."
+      },
+      "forbids": [
+        "changed formula",
+        "new assumption",
+        "formula deletion"
+      ],
+      "id": "COURSE-DERIVATION-01",
+      "kind": "positive_action",
+      "negative_guard_runtime_authorized": null,
+      "origin_assurance": "PROVISIONAL",
+      "production_positive": false,
+      "required_anchor_roles": [
+        "condition",
+        "method",
+        "result"
+      ],
+      "requires": [
+        "given condition",
+        "derivation order",
+        "result relation"
+      ],
+      "scene": "COURSE",
+      "source_origin_classes": [
+        "UNKNOWN"
+      ],
+      "source_provenance_decisions": [
+        {
+          "allowed_uses": [
+            "AUDIT",
+            "EXPERIMENTAL_POSITIVE_REVIEW"
+          ],
+          "assurance": "PROVISIONAL",
+          "production_positive": false,
+          "reason_code": "ORIGIN_UNKNOWN"
+        }
+      ],
+      "source_refs": [
+        {
+          "content_sha256": "78244f028a9b0259c17cc4cd90aba619117ed8c2e68e1d82172decd14bead6f8",
+          "line_end": 1028,
+          "line_start": 1020,
+          "nonblank_line_count": 8,
+          "source_id": "SOURCE-PHYSICS2-TEX",
+          "status": "VERIFIED"
+        }
+      ],
+      "status": "AVAILABLE"
+    },
+    {
+      "action": "After a formula or rule, add only the local physical or conceptual meaning needed to prevent a direction, unit, or object-level misreading.",
+      "copy_limit": {
+        "max_contiguous_han_chars": 7,
+        "rule": "Source material may inform an editing action only. Do not reuse eight or more contiguous Chinese characters from a source in a candidate rewrite."
+      },
+      "forbids": [
+        "symbol-by-symbol narration",
+        "new formula",
+        "generic motivational close"
+      ],
+      "id": "COURSE-MEANING-01",
+      "kind": "positive_action",
+      "negative_guard_runtime_authorized": null,
+      "origin_assurance": "PROVISIONAL",
+      "production_positive": false,
+      "required_anchor_roles": [
+        "formula",
+        "meaning"
+      ],
+      "requires": [
+        "stated formula or rule",
+        "specific likely misreading",
+        "local meaning or check"
+      ],
+      "scene": "COURSE",
+      "source_origin_classes": [
+        "UNKNOWN"
+      ],
+      "source_provenance_decisions": [
+        {
+          "allowed_uses": [
+            "AUDIT",
+            "EXPERIMENTAL_POSITIVE_REVIEW"
+          ],
+          "assurance": "PROVISIONAL",
+          "production_positive": false,
+          "reason_code": "ORIGIN_UNKNOWN"
+        }
+      ],
+      "source_refs": [
+        {
+          "content_sha256": "63d4771f3cb1b6f36b2e32610fa9f4d1040207983f6b6e3d65d46dbd36695729",
+          "line_end": 86,
+          "line_start": 70,
+          "nonblank_line_count": 15,
+          "source_id": "SOURCE-PHYSICS1-TEX",
+          "status": "VERIFIED"
+        }
+      ],
+      "status": "AVAILABLE"
+    },
+    {
+      "action": "Reject a repeated fixed chain that forces a surface explanation, deeper mechanism, balanced limitation, and aspirational closure into unrelated paragraphs.",
+      "copy_limit": {
+        "max_contiguous_han_chars": 7,
+        "rule": "Source material may inform an editing action only. Do not reuse eight or more contiguous Chinese characters from a source in a candidate rewrite."
+      },
+      "detector": {
+        "minimum_groups": 1,
+        "pattern_groups": [
+          {
+            "id": "future_bridge",
+            "minimum_occurrences": 1,
+            "regex": "(?:为|给|供)(?:后续|未来)(?:研究|分析|检验|工作|探索)?.{0,12}(?:提供|奠定|打下|形成).{0,12}(?:基础|支撑|线索|参考|依据|方向)"
+          },
+          {
+            "id": "repeated_forced_contrast",
+            "minimum_occurrences": 2,
+            "regex": "不是[^。；！？!?]{1,80}?而是"
+          }
+        ]
+      },
+      "forbids": [
+        "automatic escalation",
+        "forced contrast",
+        "automatic future bridge",
+        "synonym-only variation"
+      ],
+      "id": "NEGATIVE-TEMPLATE-01",
+      "kind": "negative_guard",
+      "negative_guard_runtime_authorized": true,
+      "origin_assurance": "NEGATIVE_ONLY",
+      "production_positive": null,
+      "required_anchor_roles": [
+        "template"
+      ],
+      "requires": [
+        "repeated paragraph-level structural pattern"
+      ],
+      "scene": "ALL",
+      "source_origin_classes": [
+        "MODEL_GENERATED"
+      ],
+      "source_provenance_decisions": [
+        {
+          "allowed_uses": [
+            "AUDIT",
+            "NEGATIVE_GUARD"
+          ],
+          "assurance": "NEGATIVE_ONLY",
+          "production_positive": false,
+          "reason_code": "MODEL_TEXT_NEGATIVE_ONLY"
+        }
+      ],
+      "source_refs": [
+        {
+          "content_sha256": "c28510269cb1ded4d511de2920ee344bbcc0fb0df08622e171f28f93b8bf701e",
+          "line_end": 226,
+          "line_start": 226,
+          "nonblank_line_count": 1,
+          "source_id": "SOURCE-CET6-TEMPLATE-NEGATIVE",
+          "status": "VERIFIED"
+        }
+      ],
+      "status": "AVAILABLE"
+    },
+    {
+      "action": "Decide a metric's manuscript role from cross-configuration comparability, reader-facing meaning, and decision responsibility before deciding where to report it.",
+      "copy_limit": {
+        "max_contiguous_han_chars": 7,
+        "rule": "Source material may inform an editing action only. Do not reuse eight or more contiguous Chinese characters from a source in a candidate rewrite."
+      },
+      "forbids": [
+        "treating a logged field as a valid paper metric",
+        "treating audit integrity as algorithm performance",
+        "migration of source metric names or values"
+      ],
+      "id": "MODELING-METRIC-ROLE-01",
+      "kind": "positive_action",
+      "negative_guard_runtime_authorized": null,
+      "origin_assurance": "PROVISIONAL",
+      "production_positive": false,
+      "required_anchor_roles": [
+        "metric",
+        "comparison",
+        "purpose"
+      ],
+      "requires": [
+        "metric definition",
+        "comparison object",
+        "intended use"
+      ],
+      "scene": "MODELING",
+      "source_origin_classes": [
+        "UNKNOWN"
+      ],
+      "source_provenance_decisions": [
+        {
+          "allowed_uses": [
+            "AUDIT",
+            "EXPERIMENTAL_POSITIVE_REVIEW"
+          ],
+          "assurance": "PROVISIONAL",
+          "production_positive": false,
+          "reason_code": "ORIGIN_UNKNOWN"
+        }
+      ],
+      "source_refs": [
+        {
+          "content_sha256": "7feb7536a4e3df1c4e0b10229575e66de544506ba28ac31cfd998889d9a024f5",
+          "line_end": 214,
+          "line_start": 192,
+          "nonblank_line_count": 12,
+          "source_id": "SOURCE-MODELING-METRIC-NOTES",
+          "status": "VERIFIED"
+        }
+      ],
+      "status": "AVAILABLE"
+    },
+    {
+      "action": "Separate outcome metrics, process-analysis metrics, and record-audit quantities so that they do not share one conclusion outlet.",
+      "copy_limit": {
+        "max_contiguous_han_chars": 7,
+        "rule": "Source material may inform an editing action only. Do not reuse eight or more contiguous Chinese characters from a source in a candidate rewrite."
+      },
+      "forbids": [
+        "mechanical three-layer headings",
+        "role-free metric lists",
+        "migration of source values"
+      ],
+      "id": "MODELING-METRIC-PLACEMENT-01",
+      "kind": "positive_action",
+      "negative_guard_runtime_authorized": null,
+      "origin_assurance": "PROVISIONAL",
+      "production_positive": false,
+      "required_anchor_roles": [
+        "metric",
+        "evidence_role"
+      ],
+      "requires": [
+        "named metric",
+        "explicit analytical role"
+      ],
+      "scene": "MODELING",
+      "source_origin_classes": [
+        "UNKNOWN"
+      ],
+      "source_provenance_decisions": [
+        {
+          "allowed_uses": [
+            "AUDIT",
+            "EXPERIMENTAL_POSITIVE_REVIEW"
+          ],
+          "assurance": "PROVISIONAL",
+          "production_positive": false,
+          "reason_code": "ORIGIN_UNKNOWN"
+        }
+      ],
+      "source_refs": [
+        {
+          "content_sha256": "f36d292960d4834ee2b664914f6b15b9fca9b070b7f05a3273511d075547e9b2",
+          "line_end": 225,
+          "line_start": 218,
+          "nonblank_line_count": 6,
+          "source_id": "SOURCE-MODELING-METRIC-NOTES",
+          "status": "VERIFIED"
+        },
+        {
+          "content_sha256": "337a22a4d9e2ec0d21f01244c497ac20981156ea5c72217a2be1b53803f57637",
+          "line_end": 322,
+          "line_start": 316,
+          "nonblank_line_count": 5,
+          "source_id": "SOURCE-MODELING-METRIC-NOTES",
+          "status": "VERIFIED"
+        },
+        {
+          "content_sha256": "daae35e960988d5db573074306dde87109cc9a667cceecd3320ed24e5d547f0a",
+          "line_end": 410,
+          "line_start": 405,
+          "nonblank_line_count": 4,
+          "source_id": "SOURCE-MODELING-METRIC-NOTES",
+          "status": "VERIFIED"
+        }
+      ],
+      "status": "AVAILABLE"
+    },
+    {
+      "action": "Report the structural output first, then state the specific consequence it has for scheduling space, stage cost, or interpretability under the stated setting.",
+      "copy_limit": {
+        "max_contiguous_han_chars": 7,
+        "rule": "Source material may inform an editing action only. Do not reuse eight or more contiguous Chinese characters from a source in a candidate rewrite."
+      },
+      "forbids": [
+        "universal mechanism invented from one structure",
+        "raw value migration",
+        "generic efficiency praise"
+      ],
+      "id": "MODELING-STRUCTURE-COST-01",
+      "kind": "positive_action",
+      "negative_guard_runtime_authorized": null,
+      "origin_assurance": "PROVISIONAL",
+      "production_positive": false,
+      "required_anchor_roles": [
+        "structure",
+        "consequence",
+        "condition"
+      ],
+      "requires": [
+        "structural output",
+        "specific operational consequence",
+        "active setting"
+      ],
+      "scene": "MODELING",
+      "source_origin_classes": [
+        "UNKNOWN"
+      ],
+      "source_provenance_decisions": [
+        {
+          "allowed_uses": [
+            "AUDIT",
+            "EXPERIMENTAL_POSITIVE_REVIEW"
+          ],
+          "assurance": "PROVISIONAL",
+          "production_positive": false,
+          "reason_code": "ORIGIN_UNKNOWN"
+        }
+      ],
+      "source_refs": [
+        {
+          "content_sha256": "e0dfc4955c1c5d945b12e2e3b5c7f52d38aa61d02a288e17fc18c0105113b393",
+          "line_end": 304,
+          "line_start": 282,
+          "nonblank_line_count": 17,
+          "source_id": "SOURCE-MODELING-METRIC-NOTES",
+          "status": "VERIFIED"
+        },
+        {
+          "content_sha256": "60f3a1ce81292db91c6a5af54d4512a6a61b8fd7a626398661453fdc0103ccc9",
+          "line_end": 367,
+          "line_start": 324,
+          "nonblank_line_count": 30,
+          "source_id": "SOURCE-MODELING-METRIC-NOTES",
+          "status": "VERIFIED"
+        }
+      ],
+      "status": "AVAILABLE"
+    },
+    {
+      "action": "When a new check changes an earlier judgment, state the revision and enumerate the benchmark, object, configuration, and budget actually covered by the new evidence.",
+      "copy_limit": {
+        "max_contiguous_han_chars": 7,
+        "rule": "Source material may inform an editing action only. Do not reuse eight or more contiguous Chinese characters from a source in a candidate rewrite."
+      },
+      "forbids": [
+        "generalization to all algorithms or problems",
+        "project-status language in manuscript prose",
+        "migration of source configuration facts"
+      ],
+      "id": "MODELING-SCOPE-UPDATE-01",
+      "kind": "positive_action",
+      "negative_guard_runtime_authorized": null,
+      "origin_assurance": "PROVISIONAL",
+      "production_positive": false,
+      "required_anchor_roles": [
+        "prior_claim",
+        "evidence",
+        "scope"
+      ],
+      "requires": [
+        "earlier judgment",
+        "new check",
+        "explicit coverage"
+      ],
+      "scene": "MODELING",
+      "source_origin_classes": [
+        "UNKNOWN"
+      ],
+      "source_provenance_decisions": [
+        {
+          "allowed_uses": [
+            "AUDIT",
+            "EXPERIMENTAL_POSITIVE_REVIEW"
+          ],
+          "assurance": "PROVISIONAL",
+          "production_positive": false,
+          "reason_code": "ORIGIN_UNKNOWN"
+        }
+      ],
+      "source_refs": [
+        {
+          "content_sha256": "b15a699777b9415f607906c8a76bed6d763e7eb8ecc6bc75312a7707c7f5beaf",
+          "line_end": 546,
+          "line_start": 511,
+          "nonblank_line_count": 23,
+          "source_id": "SOURCE-MODELING-METRIC-NOTES",
+          "status": "VERIFIED"
+        }
+      ],
+      "status": "AVAILABLE"
+    },
+    {
+      "action": "Expand a method concept into inputs, intermediate quantities, objective, constraints, output, and computational cost before making a contribution claim.",
+      "copy_limit": {
+        "max_contiguous_han_chars": 7,
+        "rule": "Source material may inform an editing action only. Do not reuse eight or more contiguous Chinese characters from a source in a candidate rewrite."
+      },
+      "forbids": [
+        "copied formulas or complexity",
+        "claiming contribution from field completeness alone",
+        "invented algorithm facts"
+      ],
+      "id": "MODELING-PROBLEM-CONTRACT-01",
+      "kind": "positive_action",
+      "negative_guard_runtime_authorized": null,
+      "origin_assurance": "PROVISIONAL",
+      "production_positive": false,
+      "required_anchor_roles": [
+        "input",
+        "objective",
+        "constraint",
+        "output",
+        "cost"
+      ],
+      "requires": [
+        "method concept",
+        "available contract fields"
+      ],
+      "scene": "MODELING",
+      "source_origin_classes": [
+        "UNKNOWN"
+      ],
+      "source_provenance_decisions": [
+        {
+          "allowed_uses": [
+            "AUDIT",
+            "EXPERIMENTAL_POSITIVE_REVIEW"
+          ],
+          "assurance": "PROVISIONAL",
+          "production_positive": false,
+          "reason_code": "ORIGIN_UNKNOWN"
+        }
+      ],
+      "source_refs": [
+        {
+          "content_sha256": "93a771dcabff4e8103314d1b09a4b3c43da2950266504850544354fe22e3090c",
+          "line_end": 132,
+          "line_start": 90,
+          "nonblank_line_count": 31,
+          "source_id": "SOURCE-MODELING-CAG-DRAFT",
+          "status": "VERIFIED"
+        },
+        {
+          "content_sha256": "cbed770dc31c2111fc2449e2ff5a31ec074f21bfca9030f375641c1097a9e7d4",
+          "line_end": 232,
+          "line_start": 198,
+          "nonblank_line_count": 23,
+          "source_id": "SOURCE-MODELING-CAG-DRAFT",
+          "status": "VERIFIED"
+        }
+      ],
+      "status": "AVAILABLE"
+    },
+    {
+      "action": "State the idealized model under which a relation holds, then identify the proxy used by the actual method and preserve the boundary between them.",
+      "copy_limit": {
+        "max_contiguous_han_chars": 7,
+        "rule": "Source material may inform an editing action only. Do not reuse eight or more contiguous Chinese characters from a source in a candidate rewrite."
+      },
+      "forbids": [
+        "unconditional transfer to a general nonlinear problem",
+        "formula migration",
+        "renaming a proxy as the exact quantity"
+      ],
+      "id": "MODELING-IDEALIZED-BRIDGE-01",
+      "kind": "positive_action",
+      "negative_guard_runtime_authorized": null,
+      "origin_assurance": "PROVISIONAL",
+      "production_positive": false,
+      "required_anchor_roles": [
+        "idealized_model",
+        "proxy",
+        "boundary"
+      ],
+      "requires": [
+        "idealized relation already present",
+        "actual proxy",
+        "boundary"
+      ],
+      "scene": "MODELING",
+      "source_origin_classes": [
+        "UNKNOWN"
+      ],
+      "source_provenance_decisions": [
+        {
+          "allowed_uses": [
+            "AUDIT",
+            "EXPERIMENTAL_POSITIVE_REVIEW"
+          ],
+          "assurance": "PROVISIONAL",
+          "production_positive": false,
+          "reason_code": "ORIGIN_UNKNOWN"
+        }
+      ],
+      "source_refs": [
+        {
+          "content_sha256": "90acf03298e41ed80219e802972486ce5719136bf37d11d323d9f12895bc71b1",
+          "line_end": 79,
+          "line_start": 53,
+          "nonblank_line_count": 20,
+          "source_id": "SOURCE-MODELING-CAG-DRAFT",
+          "status": "VERIFIED"
+        }
+      ],
+      "status": "AVAILABLE"
+    },
+    {
+      "action": "Separate the smallest currently testable method from a more complex extension, and let the main experiment answer only the question supported by the current design.",
+      "copy_limit": {
+        "max_contiguous_han_chars": 7,
+        "rule": "Source material may inform an editing action only. Do not reuse eight or more contiguous Chinese characters from a source in a candidate rewrite."
+      },
+      "forbids": [
+        "automatic future work",
+        "project-manager closure language",
+        "claiming an untested extension"
+      ],
+      "id": "MODELING-MINIMUM-TEST-01",
+      "kind": "positive_action",
+      "negative_guard_runtime_authorized": null,
+      "origin_assurance": "PROVISIONAL",
+      "production_positive": false,
+      "required_anchor_roles": [
+        "method",
+        "research_question",
+        "scope"
+      ],
+      "requires": [
+        "current method",
+        "testable question",
+        "scope boundary"
+      ],
+      "scene": "MODELING",
+      "source_origin_classes": [
+        "UNKNOWN"
+      ],
+      "source_provenance_decisions": [
+        {
+          "allowed_uses": [
+            "AUDIT",
+            "EXPERIMENTAL_POSITIVE_REVIEW"
+          ],
+          "assurance": "PROVISIONAL",
+          "production_positive": false,
+          "reason_code": "ORIGIN_UNKNOWN"
+        }
+      ],
+      "source_refs": [
+        {
+          "content_sha256": "d2519f9c28aa4736ec60cbf0ff0a489000233458c314f70cd0d9b6605ee25c1e",
+          "line_end": 270,
+          "line_start": 236,
+          "nonblank_line_count": 22,
+          "source_id": "SOURCE-MODELING-CAG-DRAFT",
+          "status": "VERIFIED"
+        }
+      ],
+      "status": "AVAILABLE"
+    },
+    {
+      "action": "For every algorithm stage, name the object being handled, the criterion or tool applied, and the resulting classification or state update.",
+      "copy_limit": {
+        "max_contiguous_han_chars": 7,
+        "rule": "Source material may inform an editing action only. Do not reuse eight or more contiguous Chinese characters from a source in a candidate rewrite."
+      },
+      "forbids": [
+        "empty stage-one-stage-two skeleton",
+        "algorithm fact migration",
+        "advantage lists without comparison"
+      ],
+      "id": "MODELING-ALGORITHM-STAGE-01",
+      "kind": "positive_action",
+      "negative_guard_runtime_authorized": null,
+      "origin_assurance": "PROVISIONAL",
+      "production_positive": false,
+      "required_anchor_roles": [
+        "object",
+        "method",
+        "update"
+      ],
+      "requires": [
+        "stage object",
+        "criterion or tool",
+        "state result"
+      ],
+      "scene": "MODELING",
+      "source_origin_classes": [
+        "UNKNOWN"
+      ],
+      "source_provenance_decisions": [
+        {
+          "allowed_uses": [
+            "AUDIT",
+            "EXPERIMENTAL_POSITIVE_REVIEW"
+          ],
+          "assurance": "PROVISIONAL",
+          "production_positive": false,
+          "reason_code": "ORIGIN_UNKNOWN"
+        }
+      ],
+      "source_refs": [
+        {
+          "content_sha256": "585b6ec49434de7163766c5294c1b4fafb16f02285ac052f32e634086e4400cd",
+          "line_end": 21,
+          "line_start": 14,
+          "nonblank_line_count": 6,
+          "source_id": "SOURCE-MODELING-README-CSG",
+          "status": "VERIFIED"
+        }
+      ],
+      "status": "AVAILABLE"
+    },
+    {
+      "action": "Ground a resource-saving claim in the exact prior state that is reused and the new computation thereby avoided.",
+      "copy_limit": {
+        "max_contiguous_han_chars": 7,
+        "rule": "Source material may inform an editing action only. Do not reuse eight or more contiguous Chinese characters from a source in a candidate rewrite."
+      },
+      "forbids": [
+        "new zero-cost claim",
+        "formula or evaluation-count migration",
+        "generic high-efficiency praise"
+      ],
+      "id": "MODELING-STATE-REUSE-01",
+      "kind": "positive_action",
+      "negative_guard_runtime_authorized": null,
+      "origin_assurance": "PROVISIONAL",
+      "production_positive": false,
+      "required_anchor_roles": [
+        "state",
+        "avoided_computation",
+        "claim"
+      ],
+      "requires": [
+        "reused state",
+        "avoided computation",
+        "efficiency claim already present"
+      ],
+      "scene": "MODELING",
+      "source_origin_classes": [
+        "UNKNOWN"
+      ],
+      "source_provenance_decisions": [
+        {
+          "allowed_uses": [
+            "AUDIT",
+            "EXPERIMENTAL_POSITIVE_REVIEW"
+          ],
+          "assurance": "PROVISIONAL",
+          "production_positive": false,
+          "reason_code": "ORIGIN_UNKNOWN"
+        }
+      ],
+      "source_refs": [
+        {
+          "content_sha256": "91de80c13c65954713a7f21757cc85683aacb715361e072f9cdcad01604ac2d1",
+          "line_end": 99,
+          "line_start": 79,
+          "nonblank_line_count": 16,
+          "source_id": "SOURCE-MODELING-README-EADG",
+          "status": "VERIFIED"
+        }
+      ],
+      "status": "AVAILABLE"
+    },
+    {
+      "action": "Describe iterative refinement through a trigger condition, candidate selection, transformation, and state update.",
+      "copy_limit": {
+        "max_contiguous_han_chars": 7,
+        "rule": "Source material may inform an editing action only. Do not reuse eight or more contiguous Chinese characters from a source in a candidate rewrite."
+      },
+      "forbids": [
+        "continuous optimization without a trigger",
+        "dynamic adjustment as filler",
+        "algorithm fact migration"
+      ],
+      "id": "MODELING-REFINEMENT-TRIGGER-01",
+      "kind": "positive_action",
+      "negative_guard_runtime_authorized": null,
+      "origin_assurance": "PROVISIONAL",
+      "production_positive": false,
+      "required_anchor_roles": [
+        "trigger",
+        "candidate",
+        "action",
+        "update"
+      ],
+      "requires": [
+        "trigger",
+        "candidate",
+        "transformation",
+        "state update"
+      ],
+      "scene": "MODELING",
+      "source_origin_classes": [
+        "UNKNOWN"
+      ],
+      "source_provenance_decisions": [
+        {
+          "allowed_uses": [
+            "AUDIT",
+            "EXPERIMENTAL_POSITIVE_REVIEW"
+          ],
+          "assurance": "PROVISIONAL",
+          "production_positive": false,
+          "reason_code": "ORIGIN_UNKNOWN"
+        }
+      ],
+      "source_refs": [
+        {
+          "content_sha256": "b6464474c29e23b739f7934c63af787bd4ce5feb61ba2c80ce5fa9311cd603d0",
+          "line_end": 100,
+          "line_start": 67,
+          "nonblank_line_count": 25,
+          "source_id": "SOURCE-MODELING-README-OEDG",
+          "status": "VERIFIED"
+        }
+      ],
+      "status": "AVAILABLE"
+    },
+    {
+      "action": "Separate primary, supporting, and boundary evidence, and require boundary cases to remain in the final interpretation.",
+      "copy_limit": {
+        "max_contiguous_han_chars": 7,
+        "rule": "Source material may inform an editing action only. Do not reuse eight or more contiguous Chinese characters from a source in a candidate rewrite."
+      },
+      "forbids": [
+        "project labels in manuscript prose",
+        "removing counterexamples",
+        "migration of source results or paths"
+      ],
+      "id": "MODELING-EVIDENCE-LAYERS-01",
+      "kind": "positive_action",
+      "negative_guard_runtime_authorized": null,
+      "origin_assurance": "PROVISIONAL",
+      "production_positive": false,
+      "required_anchor_roles": [
+        "claim",
+        "evidence_role",
+        "boundary_case"
+      ],
+      "requires": [
+        "claim",
+        "evidence roles",
+        "boundary case"
+      ],
+      "scene": "MODELING",
+      "source_origin_classes": [
+        "UNKNOWN"
+      ],
+      "source_provenance_decisions": [
+        {
+          "allowed_uses": [
+            "AUDIT",
+            "EXPERIMENTAL_POSITIVE_REVIEW"
+          ],
+          "assurance": "PROVISIONAL",
+          "production_positive": false,
+          "reason_code": "ORIGIN_UNKNOWN"
+        }
+      ],
+      "source_refs": [
+        {
+          "content_sha256": "e647db82a4782a965fec85ecdce2ebee443624b1abfc64389ecb490378817e8f",
+          "line_end": 105,
+          "line_start": 28,
+          "nonblank_line_count": 65,
+          "source_id": "SOURCE-MODELING-RESULTS-NOTES",
+          "status": "VERIFIED"
+        }
+      ],
+      "status": "AVAILABLE"
+    },
+    {
+      "action": "When metrics rank methods differently, state which stage each metric observes and narrow the conclusion to the predeclared primary endpoint.",
+      "copy_limit": {
+        "max_contiguous_han_chars": 7,
+        "rule": "Source material may inform an editing action only. Do not reuse eight or more contiguous Chinese characters from a source in a candidate rewrite."
+      },
+      "forbids": [
+        "selective deletion of an unfavorable metric",
+        "overall-better claim",
+        "source result migration"
+      ],
+      "id": "MODELING-CONFLICTING-METRICS-01",
+      "kind": "positive_action",
+      "negative_guard_runtime_authorized": null,
+      "origin_assurance": "PROVISIONAL",
+      "production_positive": false,
+      "required_anchor_roles": [
+        "metric_a",
+        "metric_b",
+        "endpoint",
+        "claim"
+      ],
+      "requires": [
+        "conflicting metrics",
+        "metric stages",
+        "primary endpoint"
+      ],
+      "scene": "MODELING",
+      "source_origin_classes": [
+        "UNKNOWN"
+      ],
+      "source_provenance_decisions": [
+        {
+          "allowed_uses": [
+            "AUDIT",
+            "EXPERIMENTAL_POSITIVE_REVIEW"
+          ],
+          "assurance": "PROVISIONAL",
+          "production_positive": false,
+          "reason_code": "ORIGIN_UNKNOWN"
+        }
+      ],
+      "source_refs": [
+        {
+          "content_sha256": "8849f78483c8457b9b8cfabb70e04e26d8873c3b831b734388a13232dcd0ed5d",
+          "line_end": 164,
+          "line_start": 146,
+          "nonblank_line_count": 14,
+          "source_id": "SOURCE-MODELING-RESULTS-NOTES",
+          "status": "VERIFIED"
+        },
+        {
+          "content_sha256": "65c98f655e1f99b48b837b4da7767d169fd8ea928bf1a47d5b6eca9eda94f12e",
+          "line_end": 201,
+          "line_start": 192,
+          "nonblank_line_count": 8,
+          "source_id": "SOURCE-MODELING-RESULTS-NOTES",
+          "status": "VERIFIED"
+        }
+      ],
+      "status": "AVAILABLE"
+    },
+    {
+      "action": "Assign different proof duties to mechanism evidence, controlled contrasts, and cross-sample correlation; retain correlation only as consistency support.",
+      "copy_limit": {
+        "max_contiguous_han_chars": 7,
+        "rule": "Source material may inform an editing action only. Do not reuse eight or more contiguous Chinese characters from a source in a candidate rewrite."
+      },
+      "forbids": [
+        "correlation written as causation",
+        "merging evidence roles",
+        "source statistic migration"
+      ],
+      "id": "MODELING-MECHANISM-CORRELATION-01",
+      "kind": "positive_action",
+      "negative_guard_runtime_authorized": null,
+      "origin_assurance": "PROVISIONAL",
+      "production_positive": false,
+      "required_anchor_roles": [
+        "mechanism_evidence",
+        "controlled_contrast",
+        "correlation",
+        "claim"
+      ],
+      "requires": [
+        "mechanism evidence",
+        "controlled contrast",
+        "correlation",
+        "claim"
+      ],
+      "scene": "MODELING",
+      "source_origin_classes": [
+        "UNKNOWN"
+      ],
+      "source_provenance_decisions": [
+        {
+          "allowed_uses": [
+            "AUDIT",
+            "EXPERIMENTAL_POSITIVE_REVIEW"
+          ],
+          "assurance": "PROVISIONAL",
+          "production_positive": false,
+          "reason_code": "ORIGIN_UNKNOWN"
+        }
+      ],
+      "source_refs": [
+        {
+          "content_sha256": "d9b51d595c9a88f7273d0f557d13f501f464ca71068a2303e57aa69a491704f4",
+          "line_end": 241,
+          "line_start": 229,
+          "nonblank_line_count": 10,
+          "source_id": "SOURCE-MODELING-RESULTS-NOTES",
+          "status": "VERIFIED"
+        }
+      ],
+      "status": "AVAILABLE"
+    },
+    {
+      "action": "Reject a repeated algorithm README shell that substitutes headings and promotional advantages for a manuscript argument.",
+      "copy_limit": {
+        "max_contiguous_han_chars": 7,
+        "rule": "Source material may inform an editing action only. Do not reuse eight or more contiguous Chinese characters from a source in a candidate rewrite."
+      },
+      "detector": {
+        "minimum_groups": 1,
+        "pattern_groups": [
+          {
+            "id": "readme_headings",
+            "minimum_occurrences": 3,
+            "regex": "(?m)^(?:#{1,6}|\\\\(?:sub)*section\\{)[^\\n}]*(?:核心特点|分组流程|主要优势|机制说明|复杂度)[^\\n}]*\\}?"
+          },
+          {
+            "id": "promotional_adjectives",
+            "minimum_occurrences": 3,
+            "regex": "(?:高效|准确|全面|显著降低|鲁棒|无参数自适应)"
+          }
+        ]
+      },
+      "forbids": [
+        "definition-features-stages-advantages-mechanism-complexity shell",
+        "ungrounded efficiency or robustness adjectives"
+      ],
+      "id": "NEGATIVE-MODELING-README-SHELL-01",
+      "kind": "negative_guard",
+      "negative_guard_runtime_authorized": false,
+      "origin_assurance": "NEGATIVE_ONLY",
+      "production_positive": null,
+      "required_anchor_roles": [
+        "template"
+      ],
+      "requires": [
+        "repeated README-like heading family or promotional claim cluster"
+      ],
+      "scene": "MODELING",
+      "source_origin_classes": [
+        "UNKNOWN"
+      ],
+      "source_provenance_decisions": [
+        {
+          "allowed_uses": [
+            "AUDIT",
+            "EXPERIMENTAL_POSITIVE_REVIEW"
+          ],
+          "assurance": "PROVISIONAL",
+          "production_positive": false,
+          "reason_code": "ORIGIN_UNKNOWN"
+        }
+      ],
+      "source_refs": [
+        {
+          "content_sha256": "dcecb4bd145a3af7e6a6145228f7c516c2f1bd7300df1cd2577697e5c275577d",
+          "line_end": 21,
+          "line_start": 5,
+          "nonblank_line_count": 12,
+          "source_id": "SOURCE-NEG-MODELING-README-SHELL",
+          "status": "VERIFIED"
+        }
+      ],
+      "status": "AUDIT_ONLY"
+    },
+    {
+      "action": "Reject construction-plan and implementation-order language when it appears in finished modeling prose.",
+      "copy_limit": {
+        "max_contiguous_han_chars": 7,
+        "rule": "Source material may inform an editing action only. Do not reuse eight or more contiguous Chinese characters from a source in a candidate rewrite."
+      },
+      "detector": {
+        "minimum_groups": 1,
+        "pattern_groups": [
+          {
+            "id": "construction_plan_terms",
+            "minimum_occurrences": 3,
+            "regex": "(?:总编施工图|数据锚点|最终模型结构|代码实现顺序|论文写法|先读结论)"
+          }
+        ]
+      },
+      "forbids": [
+        "chief-editor construction voice",
+        "code implementation order in manuscript prose",
+        "data-anchor task list as a result section"
+      ],
+      "id": "NEGATIVE-MODELING-CONSTRUCTION-PLAN-01",
+      "kind": "negative_guard",
+      "negative_guard_runtime_authorized": true,
+      "origin_assurance": "NEGATIVE_ONLY",
+      "production_positive": null,
+      "required_anchor_roles": [
+        "template"
+      ],
+      "requires": [
+        "planning-language cluster"
+      ],
+      "scene": "MODELING",
+      "source_origin_classes": [
+        "MODEL_ORIGIN_UNRESOLVED"
+      ],
+      "source_provenance_decisions": [
+        {
+          "allowed_uses": [
+            "AUDIT",
+            "NEGATIVE_GUARD"
+          ],
+          "assurance": "NEGATIVE_ONLY",
+          "production_positive": false,
+          "reason_code": "MODEL_ORIGIN_UNRESOLVED_NEGATIVE_ONLY"
+        }
+      ],
+      "source_refs": [
+        {
+          "content_sha256": "1c42846a06a06d6ddd54d95dddd8c0334bf5f85acfda81fd6790c348015abd95",
+          "line_end": 55,
+          "line_start": 3,
+          "nonblank_line_count": 44,
+          "source_id": "SOURCE-NEG-MODELING-CONSTRUCTION-PLAN",
+          "status": "VERIFIED"
+        }
+      ],
+      "status": "AVAILABLE"
+    },
+    {
+      "action": "Reject governance, acceptance, and repeated final-judgment voice in ordinary academic prose.",
+      "copy_limit": {
+        "max_contiguous_han_chars": 7,
+        "rule": "Source material may inform an editing action only. Do not reuse eight or more contiguous Chinese characters from a source in a candidate rewrite."
+      },
+      "detector": {
+        "minimum_groups": 2,
+        "pattern_groups": [
+          {
+            "id": "governance_state",
+            "minimum_occurrences": 2,
+            "regex": "(?:收口|闭环|主链路|完成度)"
+          },
+          {
+            "id": "final_judgment",
+            "minimum_occurrences": 1,
+            "regex": "(?:最终(?:强化判断|自检|结论)|最后一句(?:总)?判断|最值得记住的一句话)"
+          },
+          {
+            "id": "risk_register",
+            "minimum_occurrences": 2,
+            "regex": "(?:风险项|风险\\s*[A-ZＡ-Ｚ一二三四五六七八九十])"
+          }
+        ]
+      },
+      "forbids": [
+        "closure and main-chain language",
+        "risk-register substitution for argument",
+        "repeated final acceptance judgment"
+      ],
+      "id": "GENERAL-NEG-GOVERNANCE-VOICE",
+      "kind": "negative_guard",
+      "negative_guard_runtime_authorized": false,
+      "origin_assurance": "NEGATIVE_ONLY",
+      "production_positive": null,
+      "required_anchor_roles": [
+        "template"
+      ],
+      "requires": [
+        "at least two governance-voice clusters"
+      ],
+      "scene": "GENERAL",
+      "source_origin_classes": [
+        "UNKNOWN"
+      ],
+      "source_provenance_decisions": [
+        {
+          "allowed_uses": [
+            "AUDIT",
+            "EXPERIMENTAL_POSITIVE_REVIEW"
+          ],
+          "assurance": "PROVISIONAL",
+          "production_positive": false,
+          "reason_code": "ORIGIN_UNKNOWN"
+        }
+      ],
+      "source_refs": [
+        {
+          "content_sha256": "aa26796bec0103bb2cbcf1c65ef51b7c7e29873a7a3164460d927e4dfbdae1dc",
+          "line_end": 1075,
+          "line_start": 983,
+          "nonblank_line_count": 56,
+          "source_id": "SOURCE-NEG-GENERAL-GOVERNANCE",
+          "status": "VERIFIED"
+        },
+        {
+          "content_sha256": "396b6b46dda712061c17ccf57989354c96726161e995d2088b36d5dac5a4d4c8",
+          "line_end": 1406,
+          "line_start": 1378,
+          "nonblank_line_count": 19,
+          "source_id": "SOURCE-NEG-GENERAL-GOVERNANCE",
+          "status": "VERIFIED"
+        },
+        {
+          "content_sha256": "d09f6677c4c00c2234c252dde1f89caec0279ce9eb3b7555f7587c8178f342ca",
+          "line_end": 1573,
+          "line_start": 1561,
+          "nonblank_line_count": 9,
+          "source_id": "SOURCE-NEG-GENERAL-GOVERNANCE",
+          "status": "VERIFIED"
+        }
+      ],
+      "status": "AUDIT_ONLY"
+    },
+    {
+      "action": "Reject automatic promotion of GENERAL prose into a journal-defense shell with contribution lists and routine future work.",
+      "copy_limit": {
+        "max_contiguous_han_chars": 7,
+        "rule": "Source material may inform an editing action only. Do not reuse eight or more contiguous Chinese characters from a source in a candidate rewrite."
+      },
+      "detector": {
+        "minimum_groups": 2,
+        "pattern_groups": [
+          {
+            "id": "contribution_heading",
+            "minimum_occurrences": 1,
+            "regex": "(?:主要贡献如下|本文的主要贡献)"
+          },
+          {
+            "id": "future_work",
+            "minimum_occurrences": 1,
+            "regex": "(?:未来|后续)(?:研究|工作)(?:可|将|需要|可以)?进一步"
+          },
+          {
+            "id": "defensive_contrast",
+            "minimum_occurrences": 2,
+            "regex": "不是[^。；！？!?]{1,80}?而是"
+          }
+        ]
+      },
+      "forbids": [
+        "abstract-contribution-defense-future-work shell",
+        "automatic reviewer-defense contrast",
+        "routine three-item outlook"
+      ],
+      "id": "GENERAL-NEG-RESEARCH-JOURNAL-OVERFIT",
+      "kind": "negative_guard",
+      "negative_guard_runtime_authorized": false,
+      "origin_assurance": "NEGATIVE_ONLY",
+      "production_positive": null,
+      "required_anchor_roles": [
+        "template"
+      ],
+      "requires": [
+        "at least two journal-shell clusters"
+      ],
+      "scene": "GENERAL",
+      "source_origin_classes": [
+        "UNKNOWN"
+      ],
+      "source_provenance_decisions": [
+        {
+          "allowed_uses": [
+            "AUDIT",
+            "EXPERIMENTAL_POSITIVE_REVIEW"
+          ],
+          "assurance": "PROVISIONAL",
+          "production_positive": false,
+          "reason_code": "ORIGIN_UNKNOWN"
+        }
+      ],
+      "source_refs": [
+        {
+          "content_sha256": "5f1df8a7cd90d5c883f7d8f8f5e5dbb8b699b16daaffc4c86d8d56f295592e00",
+          "line_end": 82,
+          "line_start": 47,
+          "nonblank_line_count": 26,
+          "source_id": "SOURCE-NEG-GENERAL-JOURNAL-OVERFIT",
+          "status": "VERIFIED"
+        },
+        {
+          "content_sha256": "5a1a6f00d687c5340057354cd5e6311981bb65c42359864458f0d89abacf4e27",
+          "line_end": 502,
+          "line_start": 500,
+          "nonblank_line_count": 2,
+          "source_id": "SOURCE-NEG-GENERAL-JOURNAL-OVERFIT",
+          "status": "VERIFIED"
+        },
+        {
+          "content_sha256": "d2a63a606789daae5ca8084ab3364704689f45279810d470b16cd4244d81fcea",
+          "line_end": 541,
+          "line_start": 537,
+          "nonblank_line_count": 3,
+          "source_id": "SOURCE-NEG-GENERAL-JOURNAL-OVERFIT",
+          "status": "VERIFIED"
+        },
+        {
+          "content_sha256": "e63cb9e3f9f7b5a00a09380c388d0648422e3da3ace296e47d3e2d38f71ede50",
+          "line_end": 578,
+          "line_start": 569,
+          "nonblank_line_count": 6,
+          "source_id": "SOURCE-NEG-GENERAL-JOURNAL-OVERFIT",
+          "status": "VERIFIED"
+        }
+      ],
+      "status": "AUDIT_ONLY"
+    },
+    {
+      "action": "Reject product-application claim stacks that compress problems, features, scale, efficiency, and deliverables into promotional density.",
+      "copy_limit": {
+        "max_contiguous_han_chars": 7,
+        "rule": "Source material may inform an editing action only. Do not reuse eight or more contiguous Chinese characters from a source in a candidate rewrite."
+      },
+      "detector": {
+        "minimum_groups": 2,
+        "pattern_groups": [
+          {
+            "id": "core_claim",
+            "minimum_occurrences": 1,
+            "regex": "(?:核心是解决|核心逻辑流|核心在于解决)"
+          },
+          {
+            "id": "promotional_metrics",
+            "minimum_occurrences": 3,
+            "regex": "(?:\\d+(?:\\.\\d+)?(?:\\+|%|％)|\\d+\\s*[-–—]\\s*\\d+%)"
+          },
+          {
+            "id": "application_labels",
+            "minimum_occurrences": 2,
+            "regex": "(?:硬信息|深度参与|完整闭环|效率提升)"
+          }
+        ]
+      },
+      "forbids": [
+        "core-logic marketing shell",
+        "dense unsupported scale numbers",
+        "hard-information repetition after prose"
+      ],
+      "id": "GENERAL-NEG-PROMOTIONAL-CLAIM-STACK",
+      "kind": "negative_guard",
+      "negative_guard_runtime_authorized": true,
+      "origin_assurance": "NEGATIVE_ONLY",
+      "production_positive": null,
+      "required_anchor_roles": [
+        "template"
+      ],
+      "requires": [
+        "at least two promotional clusters"
+      ],
+      "scene": "GENERAL",
+      "source_origin_classes": [
+        "MODEL_ORIGIN_UNRESOLVED"
+      ],
+      "source_provenance_decisions": [
+        {
+          "allowed_uses": [
+            "AUDIT",
+            "NEGATIVE_GUARD"
+          ],
+          "assurance": "NEGATIVE_ONLY",
+          "production_positive": false,
+          "reason_code": "MODEL_ORIGIN_UNRESOLVED_NEGATIVE_ONLY"
+        }
+      ],
+      "source_refs": [
+        {
+          "content_sha256": "a43fd673d9a2a707e02b2c59a6a0977e41ee592250ef6a5b0df12166b97621fd",
+          "line_end": 31,
+          "line_start": 23,
+          "nonblank_line_count": 5,
+          "source_id": "SOURCE-NEG-GENERAL-PROMOTIONAL",
+          "status": "VERIFIED"
+        },
+        {
+          "content_sha256": "c9802c4429a395dd57fd01f07cb45ea7ff008c1fe5f59e6941c93f10d84a6589",
+          "line_end": 68,
+          "line_start": 59,
+          "nonblank_line_count": 9,
+          "source_id": "SOURCE-NEG-GENERAL-PROMOTIONAL",
+          "status": "VERIFIED"
+        }
+      ],
+      "status": "AVAILABLE"
+    },
+    {
+      "action": "Reject rumor, emotional judgment, or mobilizing commands when they substitute for academic evidence.",
+      "copy_limit": {
+        "max_contiguous_han_chars": 7,
+        "rule": "Source material may inform an editing action only. Do not reuse eight or more contiguous Chinese characters from a source in a candidate rewrite."
+      },
+      "detector": {
+        "minimum_groups": 1,
+        "pattern_groups": [
+          {
+            "id": "rumor_or_certainty",
+            "minimum_occurrences": 1,
+            "regex": "(?:据说|半官方消息|不争的事实|大概率)"
+          },
+          {
+            "id": "emotional_judgment",
+            "minimum_occurrences": 1,
+            "regex": "(?:危害无穷|令人心痛|必须淘汰)"
+          },
+          {
+            "id": "mobilizing_command",
+            "minimum_occurrences": 2,
+            "regex": "(?:(?:考生|学生|大家|我们|你|读者)[^。！？\\n]{0,12}?(?:必须|务必|一定要)|(?:必须|务必|一定要)[^。！？\\n]{0,12}?(?:牢记|记住|掌握|坚持|做到|避免|警惕|高度重视|积极行动))"
+          }
+        ]
+      },
+      "forbids": [
+        "rumor as evidence",
+        "opinion stated as universal fact",
+        "mobilizing or blessing-style close"
+      ],
+      "id": "GENERAL-NEG-OPINION-AS-EVIDENCE",
+      "kind": "negative_guard",
+      "negative_guard_runtime_authorized": false,
+      "origin_assurance": "NEGATIVE_ONLY",
+      "production_positive": null,
+      "required_anchor_roles": [
+        "template"
+      ],
+      "requires": [
+        "unsupported-attribution, emotional-judgment, or command cluster"
+      ],
+      "scene": "GENERAL",
+      "source_origin_classes": [
+        "THIRD_PARTY"
+      ],
+      "source_provenance_decisions": [
+        {
+          "allowed_uses": [
+            "AUDIT"
+          ],
+          "assurance": "NEGATIVE_ONLY",
+          "production_positive": false,
+          "reason_code": "THIRD_PARTY_NOT_AUTHOR_VOICE"
+        }
+      ],
+      "source_refs": [
+        {
+          "content_sha256": "28bfeb132ae34d0e556b736183199e2ad7a9ee430d45018b269c8c6010fb2497",
+          "line_end": 37,
+          "line_start": 24,
+          "nonblank_line_count": 10,
+          "source_id": "SOURCE-NEG-GENERAL-OPINION",
+          "status": "VERIFIED"
+        },
+        {
+          "content_sha256": "9631bde00bcf926c99a6ab4566f979e20c223b7bf0e6914cf0cd119b9f61e1aa",
+          "line_end": 54,
+          "line_start": 41,
+          "nonblank_line_count": 10,
+          "source_id": "SOURCE-NEG-GENERAL-OPINION",
+          "status": "VERIFIED"
+        },
+        {
+          "content_sha256": "a9c7c127c38e2db7f0f22eed8c6a4c46fd6f8f90855e458cc4111591b64449b9",
+          "line_end": 69,
+          "line_start": 58,
+          "nonblank_line_count": 9,
+          "source_id": "SOURCE-NEG-GENERAL-OPINION",
+          "status": "VERIFIED"
+        },
+        {
+          "content_sha256": "f91d7033d0b1c3f0ab6f770edd2c0b92222ce383d5bd7f85f43c69e5215d3ff1",
+          "line_end": 88,
+          "line_start": 71,
+          "nonblank_line_count": 11,
+          "source_id": "SOURCE-NEG-GENERAL-OPINION",
+          "status": "VERIFIED"
+        }
+      ],
+      "status": "AUDIT_ONLY"
+    },
+    {
+      "action": "Reject OCR-damaged textbook Q&A and memorization-note structure as a positive academic prose model.",
+      "copy_limit": {
+        "max_contiguous_han_chars": 7,
+        "rule": "Source material may inform an editing action only. Do not reuse eight or more contiguous Chinese characters from a source in a candidate rewrite."
+      },
+      "detector": {
+        "minimum_groups": 2,
+        "pattern_groups": [
+          {
+            "id": "dense_enumeration",
+            "minimum_occurrences": 5,
+            "regex": "(?m)^\\s*(?:\\d+[.、]|[（(]\\d+[）)])"
+          },
+          {
+            "id": "question_answer_markers",
+            "minimum_occurrences": 3,
+            "regex": "(?:答[:：]|为什么|如何理解|怎样做)"
+          }
+        ]
+      },
+      "forbids": [
+        "OCR repair guessing",
+        "exam-answer enumeration",
+        "textbook memorization couplets as continuous argument"
+      ],
+      "id": "GENERAL-NEG-OCR-AND-TEXTBOOK",
+      "kind": "negative_guard",
+      "negative_guard_runtime_authorized": false,
+      "origin_assurance": "NEGATIVE_ONLY",
+      "production_positive": null,
+      "required_anchor_roles": [
+        "template"
+      ],
+      "requires": [
+        "dense enumeration plus Q&A marker cluster"
+      ],
+      "scene": "GENERAL",
+      "source_origin_classes": [
+        "OCR_INHERITED"
+      ],
+      "source_provenance_decisions": [
+        {
+          "allowed_uses": [
+            "AUDIT"
+          ],
+          "assurance": "NEGATIVE_ONLY",
+          "production_positive": false,
+          "reason_code": "OCR_PROVENANCE_NOT_AUTHOR_VOICE"
+        }
+      ],
+      "source_refs": [
+        {
+          "content_sha256": "f7592b61b57fafbf34f224d965568b88b23a8d94844e398c043f02ff6cc2f5cd",
+          "line_end": 70,
+          "line_start": 54,
+          "nonblank_line_count": 11,
+          "source_id": "SOURCE-NEG-GENERAL-OCR-TEXTBOOK",
+          "status": "VERIFIED"
+        },
+        {
+          "content_sha256": "36d8dd41a04c403a335f33bea3fe12951a046b31be308964e9e025d5e7d334bd",
+          "line_end": 162,
+          "line_start": 109,
+          "nonblank_line_count": 28,
+          "source_id": "SOURCE-NEG-GENERAL-OCR-TEXTBOOK",
+          "status": "VERIFIED"
+        }
+      ],
+      "status": "AUDIT_ONLY"
+    },
+    {
+      "action": "Reject API-documentation columns and navigation structure when they replace continuous academic explanation.",
+      "copy_limit": {
+        "max_contiguous_han_chars": 7,
+        "rule": "Source material may inform an editing action only. Do not reuse eight or more contiguous Chinese characters from a source in a candidate rewrite."
+      },
+      "detector": {
+        "minimum_groups": 1,
+        "pattern_groups": [
+          {
+            "id": "api_heading_family",
+            "minimum_occurrences": 3,
+            "regex": "(?m)^#{1,6}\\s*(?:概述|API\\s*参考|使用示例|高级用法|参考文献|下一页)"
+          }
+        ]
+      },
+      "forbids": [
+        "bilingual heading mirror",
+        "API reference skeleton",
+        "navigation ending in academic prose"
+      ],
+      "id": "GENERAL-NEG-API-TEMPLATE",
+      "kind": "negative_guard",
+      "negative_guard_runtime_authorized": false,
+      "origin_assurance": "NEGATIVE_ONLY",
+      "production_positive": null,
+      "required_anchor_roles": [
+        "template"
+      ],
+      "requires": [
+        "dense API heading family"
+      ],
+      "scene": "GENERAL",
+      "source_origin_classes": [
+        "UNKNOWN"
+      ],
+      "source_provenance_decisions": [
+        {
+          "allowed_uses": [
+            "AUDIT",
+            "EXPERIMENTAL_POSITIVE_REVIEW"
+          ],
+          "assurance": "PROVISIONAL",
+          "production_positive": false,
+          "reason_code": "ORIGIN_UNKNOWN"
+        }
+      ],
+      "source_refs": [
+        {
+          "content_sha256": "1335c0c1490fea0eb45af25738885c0675ac64c9ab513cffdb695244c84e4b99",
+          "line_end": 34,
+          "line_start": 1,
+          "nonblank_line_count": 21,
+          "source_id": "SOURCE-NEG-GENERAL-API",
+          "status": "VERIFIED"
+        },
+        {
+          "content_sha256": "1dc5a3206a30dcee9b867bae195dc5249c3709547601827a8bc806d1f74d8eda",
+          "line_end": 85,
+          "line_start": 43,
+          "nonblank_line_count": 34,
+          "source_id": "SOURCE-NEG-GENERAL-API",
+          "status": "VERIFIED"
+        },
+        {
+          "content_sha256": "f9f57b99052a3847d8d74aba0387854e3072df436c61b50c62ea947ea0581f35",
+          "line_end": 372,
+          "line_start": 303,
+          "nonblank_line_count": 52,
+          "source_id": "SOURCE-NEG-GENERAL-API",
+          "status": "VERIFIED"
+        }
+      ],
+      "status": "AUDIT_ONLY"
+    }
+  ],
+  "catalog_path": "C:\\Users\\Lenovo\\.codex\\skills\\humanize-academic-chinese\\references\\corpus-action-sources.json",
+  "global_copy_limit": {
+    "max_contiguous_han_chars": 7,
+    "rule": "Source material may inform an editing action only. Do not reuse eight or more contiguous Chinese characters from a source in a candidate rewrite."
+  },
+  "purpose": "Audited source-action index for the humanize workflow. It records only abstract writing actions and source locations. It must never store source excerpts, facts, quotations, formulas, numerical results, or reusable sentence templates.",
+  "schema_version": 2,
+  "source_trust_policy": {
+    "external_verifier_required": true,
+    "policy_version": "1.0.0",
+    "production_attestation_enabled": false,
+    "production_path_available": false,
+    "schema_version": "humanize-source-provenance-trust/v1",
+    "sha256": "d3d98acd993973ee9c7631aeb2cf0b11e873b3fb388e9d0e0398d2d3b4cd5340"
+  },
+  "source_trust_policy_path": "C:\\Users\\Lenovo\\.codex\\skills\\humanize-academic-chinese\\references\\source-provenance-trust.json",
+  "sources": [
+    {
+      "encoding": "utf-8-sig",
+      "id": "SOURCE-MAIN-TEX",
+      "line_count": 479,
+      "origin_class": "MODEL_GENERATED",
+      "path": "C:\\Users\\Lenovo\\Documents\\xwechat_files\\wxid_kngort9edhrs22_6b6f\\msg\\file\\2026-05\\main.tex",
+      "referenced_ranges": [
+        {
+          "line_end": 77,
+          "line_start": 50
+        }
+      ],
+      "role": "negative_template_reference",
+      "scene_scope": [
+        "RESEARCH"
+      ],
+      "sha256": "f97c5dc63e66d094e2ec73fbd2c935393a3370229db1d46baae9772bdacd0625",
+      "source_tier": "A1",
+      "status": "READABLE"
+    },
+    {
+      "encoding": "utf-8-sig",
+      "id": "SOURCE-PHYSICS2-TEX",
+      "line_count": 4767,
+      "origin_class": "UNKNOWN",
+      "path": "D:\\code LateX\\elegantbook\\physics\\physics2.tex",
+      "referenced_ranges": [
+        {
+          "line_end": 680,
+          "line_start": 674
+        },
+        {
+          "line_end": 694,
+          "line_start": 691
+        },
+        {
+          "line_end": 1028,
+          "line_start": 1020
+        }
+      ],
+      "role": "positive_action_reference",
+      "scene_scope": [
+        "COURSE"
+      ],
+      "sha256": "11f4e8476c97dbd7609577921a9d4217908bb7b95b42a47738fda01fa316ea2e",
+      "source_tier": "B",
+      "status": "READABLE"
+    },
+    {
+      "encoding": "utf-8-sig",
+      "id": "SOURCE-PHYSICS1-TEX",
+      "line_count": 4685,
+      "origin_class": "UNKNOWN",
+      "path": "D:\\code LateX\\elegantbook\\physics\\physics1.tex",
+      "referenced_ranges": [
+        {
+          "line_end": 86,
+          "line_start": 70
+        }
+      ],
+      "role": "positive_action_reference",
+      "scene_scope": [
+        "COURSE"
+      ],
+      "sha256": "41a3720133f7ae54731f3a6dea71071fe87dbddea21667819077e16502c3a8ca",
+      "source_tier": "B",
+      "status": "READABLE"
+    },
+    {
+      "encoding": "utf-8-sig",
+      "id": "SOURCE-CET6-REPORT-EARLY",
+      "line_count": 981,
+      "origin_class": "MODEL_GENERATED",
+      "path": "D:\\code LateX\\elegantbook\\cet6\\cet 6\\_analysis_output\\section_b_final_conclusions_report.tex",
+      "referenced_ranges": [],
+      "role": "negative_template_reference",
+      "scene_scope": [
+        "REPORT"
+      ],
+      "sha256": "2e27968e0772c731e25497d87668464fcd2a92bb090abdb1c3e3a092ad293c77",
+      "source_tier": "A1",
+      "status": "READABLE"
+    },
+    {
+      "encoding": "utf-8-sig",
+      "id": "SOURCE-CET6-REPORT-CANONICAL",
+      "line_count": 3305,
+      "origin_class": "MODEL_GENERATED",
+      "path": "D:\\code LateX\\elegantbook\\cet6\\cet 6\\_analysis_output\\section_b_final_conclusions_report_unified59.tex",
+      "referenced_ranges": [],
+      "role": "canonical_version_reference",
+      "scene_scope": [
+        "REPORT"
+      ],
+      "sha256": "9ebef5f364b06b9c3dcafc0ca40abeda3a1d50d8d597fe216ee8692268080fa0",
+      "source_tier": "A1",
+      "status": "READABLE"
+    },
+    {
+      "duplicate_of": "SOURCE-CET6-REPORT-CANONICAL",
+      "id": "SOURCE-CET6-REPORT-V2",
+      "origin_class": "MODEL_GENERATED",
+      "path": "D:\\code LateX\\elegantbook\\cet6\\cet 6\\_analysis_output\\section_b_final_conclusions_report_v2.tex",
+      "reason": "Version-family duplicate: retain only for audit and do not create action cards from it.",
+      "referenced_ranges": [],
+      "role": "version_duplicate_excluded",
+      "scene_scope": [
+        "REPORT"
+      ],
+      "source_tier": "A1",
+      "status": "EXCLUDED_CONFIG"
+    },
+    {
+      "encoding": "utf-8-sig",
+      "id": "SOURCE-CET6-TEMPLATE-NEGATIVE",
+      "line_count": 430,
+      "origin_class": "MODEL_GENERATED",
+      "path": "D:\\code LateX\\elegantbook\\cet6\\test.tex",
+      "referenced_ranges": [
+        {
+          "line_end": 226,
+          "line_start": 226
+        }
+      ],
+      "role": "negative_template_reference",
+      "scene_scope": [
+        "ALL"
+      ],
+      "sha256": "55a8e3e331b9e71a2e57cc7973d3e1d3813774557086a6d3c9c2a08386843367",
+      "source_tier": "A1",
+      "status": "READABLE"
+    },
+    {
+      "id": "SOURCE-CET6-DAMAGED",
+      "origin_class": "MODEL_GENERATED",
+      "path": "D:\\code LateX\\elegantbook\\cet6\\CET6.source-damaged.backup.tex",
+      "reason": "Known damaged source. Do not attempt recovery, infer language features, or generate action cards from it.",
+      "referenced_ranges": [],
+      "role": "unreadable_excluded",
+      "scene_scope": [
+        "ALL"
+      ],
+      "source_tier": "A1",
+      "status": "EXCLUDED_CONFIG"
+    },
+    {
+      "id": "SOURCE-CET6-USER-EXCLUDED",
+      "origin_class": "UNKNOWN",
+      "path": "D:\\code LateX\\elegantbook\\cet6\\cet6.tex",
+      "reason": "User exclusion. Do not read or use this file.",
+      "referenced_ranges": [],
+      "role": "user_excluded",
+      "scene_scope": [
+        "ALL"
+      ],
+      "source_tier": "EXCLUDED",
+      "status": "EXCLUDED_CONFIG"
+    },
+    {
+      "encoding": "utf-8-sig",
+      "id": "SOURCE-MODELING-METRIC-NOTES",
+      "line_count": 619,
+      "origin_class": "UNKNOWN",
+      "path": "D:\\LSGO-platform\\docs\\metric_screening_notes.md",
+      "referenced_ranges": [
+        {
+          "line_end": 214,
+          "line_start": 192
+        },
+        {
+          "line_end": 225,
+          "line_start": 218
+        },
+        {
+          "line_end": 322,
+          "line_start": 316
+        },
+        {
+          "line_end": 410,
+          "line_start": 405
+        },
+        {
+          "line_end": 304,
+          "line_start": 282
+        },
+        {
+          "line_end": 367,
+          "line_start": 324
+        },
+        {
+          "line_end": 546,
+          "line_start": 511
+        }
+      ],
+      "role": "positive_action_reference",
+      "scene_scope": [
+        "MODELING"
+      ],
+      "sha256": "f2c3430d55f8dcc31f4343ac201f186f3326f0d4f44196bc4b6c522a25717e3c",
+      "source_tier": "B",
+      "status": "READABLE"
+    },
+    {
+      "encoding": "utf-8-sig",
+      "id": "SOURCE-MODELING-CAG-DRAFT",
+      "line_count": 280,
+      "origin_class": "UNKNOWN",
+      "path": "D:\\2026-BYD-arxiv\\drafts\\conditioning_aware_grouping_algorithm.md",
+      "referenced_ranges": [
+        {
+          "line_end": 132,
+          "line_start": 90
+        },
+        {
+          "line_end": 232,
+          "line_start": 198
+        },
+        {
+          "line_end": 79,
+          "line_start": 53
+        },
+        {
+          "line_end": 270,
+          "line_start": 236
+        }
+      ],
+      "role": "positive_action_reference",
+      "scene_scope": [
+        "MODELING"
+      ],
+      "sha256": "649292619164b779727badc9bb937539445d3e1e5c2da963e4b3fafbff8b7a55",
+      "source_tier": "B",
+      "status": "READABLE"
+    },
+    {
+      "id": "SOURCE-MODELING-METHOD-SECTION",
+      "origin_class": "MODEL_ORIGIN_UNRESOLVED",
+      "path": "D:\\2026-BYD-arxiv\\drafts\\method_section_cn_cag_sort_v1.md",
+      "reason": "Path-level assistant output evidence leaves model origin unresolved; this source cannot support a positive action until sentence-level human authorship is established.",
+      "referenced_ranges": [],
+      "role": "origin_unresolved_excluded",
+      "scene_scope": [
+        "MODELING"
+      ],
+      "source_tier": "B",
+      "status": "EXCLUDED_CONFIG"
+    },
+    {
+      "encoding": "utf-8-sig",
+      "id": "SOURCE-MODELING-README-CSG",
+      "line_count": 153,
+      "origin_class": "UNKNOWN",
+      "path": "D:\\LSGO-platform\\baseline\\cc\\vil\\csg\\README.zh-CN.md",
+      "referenced_ranges": [
+        {
+          "line_end": 21,
+          "line_start": 14
+        }
+      ],
+      "role": "positive_action_reference",
+      "scene_scope": [
+        "MODELING"
+      ],
+      "sha256": "925492376c4f51b8d249884aceaa174847322942829c857814a5fa85e120013e",
+      "source_tier": "B",
+      "status": "READABLE"
+    },
+    {
+      "encoding": "utf-8-sig",
+      "id": "SOURCE-MODELING-README-EADG",
+      "line_count": 106,
+      "origin_class": "UNKNOWN",
+      "path": "D:\\LSGO-platform\\baseline\\cc\\vil\\eadg\\README.zh-CN.md",
+      "referenced_ranges": [
+        {
+          "line_end": 99,
+          "line_start": 79
+        }
+      ],
+      "role": "positive_action_reference",
+      "scene_scope": [
+        "MODELING"
+      ],
+      "sha256": "cb7ee0683c48e3841138bdd05456319f19274db1323201960e3778283c038360",
+      "source_tier": "B",
+      "status": "READABLE"
+    },
+    {
+      "encoding": "utf-8-sig",
+      "id": "SOURCE-MODELING-README-OEDG",
+      "line_count": 119,
+      "origin_class": "UNKNOWN",
+      "path": "D:\\LSGO-platform\\baseline\\cc\\vil\\oedg\\README.zh-CN.md",
+      "referenced_ranges": [
+        {
+          "line_end": 100,
+          "line_start": 67
+        }
+      ],
+      "role": "positive_action_reference",
+      "scene_scope": [
+        "MODELING"
+      ],
+      "sha256": "1bf6b80b09c2231ee8475076860755aec6f27eb1036964969ccac2e5b5141529",
+      "source_tier": "B",
+      "status": "READABLE"
+    },
+    {
+      "id": "SOURCE-MODELING-PAPER-MAIN",
+      "origin_class": "MODEL_ORIGIN_UNRESOLVED",
+      "path": "D:\\【赛题相关】2026 广州高校数学建模邀请赛题相关\\2026A-长江流域人类活动对长江渔业生态的影响\\solution\\paper\\main.tex",
+      "reason": "Assistant-output provenance is unresolved at sentence level; the source remains auditable but cannot back positive actions.",
+      "referenced_ranges": [],
+      "role": "origin_unresolved_excluded",
+      "scene_scope": [
+        "MODELING"
+      ],
+      "source_tier": "A2_PATH_ONLY_B",
+      "status": "EXCLUDED_CONFIG"
+    },
+    {
+      "encoding": "utf-8-sig",
+      "id": "SOURCE-MODELING-RESULTS-NOTES",
+      "line_count": 337,
+      "origin_class": "UNKNOWN",
+      "path": "D:\\2026-BYD-arxiv\\notes\\paper_results_conclusions.md",
+      "referenced_ranges": [
+        {
+          "line_end": 105,
+          "line_start": 28
+        },
+        {
+          "line_end": 164,
+          "line_start": 146
+        },
+        {
+          "line_end": 201,
+          "line_start": 192
+        },
+        {
+          "line_end": 241,
+          "line_start": 229
+        }
+      ],
+      "role": "positive_action_reference",
+      "scene_scope": [
+        "MODELING"
+      ],
+      "sha256": "955f4cad40a83790c82eec3ab3b9321212d545d1bd3ece500c042e93a3389b63",
+      "source_tier": "B",
+      "status": "READABLE"
+    },
+    {
+      "id": "SOURCE-MODELING-PAPER-CN",
+      "origin_class": "MODEL_ORIGIN_UNRESOLVED",
+      "path": "D:\\2026-BYD-arxiv\\paper\\paper_CN.tex",
+      "reason": "Path-level assistant output evidence does not establish human authorship; positive action use is disabled while provenance remains unresolved.",
+      "referenced_ranges": [],
+      "role": "origin_unresolved_excluded",
+      "scene_scope": [
+        "MODELING"
+      ],
+      "source_tier": "A2_PATH_ONLY_B",
+      "status": "EXCLUDED_CONFIG"
+    },
+    {
+      "encoding": "utf-8-sig",
+      "id": "SOURCE-NEG-MODELING-README-SHELL",
+      "line_count": 153,
+      "origin_class": "UNKNOWN",
+      "path": "D:\\LSGO-platform\\baseline\\cc\\vil\\csg\\README.zh-CN.md",
+      "referenced_ranges": [
+        {
+          "line_end": 21,
+          "line_start": 5
+        }
+      ],
+      "role": "negative_template_reference",
+      "scene_scope": [
+        "ALL",
+        "MODELING"
+      ],
+      "sha256": "925492376c4f51b8d249884aceaa174847322942829c857814a5fa85e120013e",
+      "source_tier": "B",
+      "status": "READABLE"
+    },
+    {
+      "encoding": "utf-8-sig",
+      "id": "SOURCE-NEG-MODELING-CONSTRUCTION-PLAN",
+      "line_count": 55,
+      "origin_class": "MODEL_ORIGIN_UNRESOLVED",
+      "path": "D:\\【赛题相关】2026 广州高校数学建模邀请赛题相关\\2026A-长江流域人类活动对长江渔业生态的影响\\gpt思路.md",
+      "referenced_ranges": [
+        {
+          "line_end": 55,
+          "line_start": 3
+        }
+      ],
+      "role": "negative_template_reference",
+      "scene_scope": [
+        "ALL",
+        "MODELING"
+      ],
+      "sha256": "654c7257bf3685c5d2b0c64d3fa15022d9e30f3573766ae94c42c6dae55e1c74",
+      "source_tier": "A2_PATH_ONLY_B",
+      "status": "READABLE"
+    },
+    {
+      "encoding": "utf-8-sig",
+      "id": "SOURCE-NEG-GENERAL-GOVERNANCE",
+      "line_count": 1988,
+      "origin_class": "UNKNOWN",
+      "path": "D:\\LSGO-platform\\report.md",
+      "referenced_ranges": [
+        {
+          "line_end": 1075,
+          "line_start": 983
+        },
+        {
+          "line_end": 1406,
+          "line_start": 1378
+        },
+        {
+          "line_end": 1573,
+          "line_start": 1561
+        }
+      ],
+      "role": "negative_template_reference",
+      "scene_scope": [
+        "ALL",
+        "GENERAL"
+      ],
+      "sha256": "9c2e18537cdc359625e1aa38cd746a6a14c087438dc30e88daa945295c9566aa",
+      "source_tier": "B",
+      "status": "READABLE"
+    },
+    {
+      "encoding": "utf-8-sig",
+      "id": "SOURCE-NEG-GENERAL-JOURNAL-OVERFIT",
+      "line_count": 718,
+      "origin_class": "UNKNOWN",
+      "path": "D:\\2026-BYD-arxiv\\paper\\paper_CN.tex",
+      "referenced_ranges": [
+        {
+          "line_end": 82,
+          "line_start": 47
+        },
+        {
+          "line_end": 502,
+          "line_start": 500
+        },
+        {
+          "line_end": 541,
+          "line_start": 537
+        },
+        {
+          "line_end": 578,
+          "line_start": 569
+        }
+      ],
+      "role": "negative_template_reference",
+      "scene_scope": [
+        "ALL",
+        "GENERAL"
+      ],
+      "sha256": "790fbc6c4c5af0350b3c391959ac6c394976cc6fdc01568b4ca7fe8980879959",
+      "source_tier": "B",
+      "status": "READABLE"
+    },
+    {
+      "encoding": "utf-8-sig",
+      "id": "SOURCE-NEG-GENERAL-PROMOTIONAL",
+      "line_count": 68,
+      "origin_class": "MODEL_ORIGIN_UNRESOLVED",
+      "path": "D:\\project-costrict\\Project_Documentation\\Xiaomi_MiMo问卷填写建议.md",
+      "referenced_ranges": [
+        {
+          "line_end": 31,
+          "line_start": 23
+        },
+        {
+          "line_end": 68,
+          "line_start": 59
+        }
+      ],
+      "role": "negative_template_reference",
+      "scene_scope": [
+        "ALL",
+        "GENERAL"
+      ],
+      "sha256": "1e492f94641de3ae5437db32f917cb4c5d8b07e9c902d506b708050d6157379c",
+      "source_tier": "C",
+      "status": "READABLE"
+    },
+    {
+      "encoding": "utf-8-sig",
+      "id": "SOURCE-NEG-GENERAL-OPINION",
+      "line_count": 124,
+      "origin_class": "THIRD_PARTY",
+      "path": "D:\\高中时期资料\\世间再无张居正\\2024年数学高考前瞻.md",
+      "referenced_ranges": [
+        {
+          "line_end": 37,
+          "line_start": 24
+        },
+        {
+          "line_end": 54,
+          "line_start": 41
+        },
+        {
+          "line_end": 69,
+          "line_start": 58
+        },
+        {
+          "line_end": 88,
+          "line_start": 71
+        }
+      ],
+      "role": "negative_template_reference",
+      "scene_scope": [
+        "ALL",
+        "GENERAL"
+      ],
+      "sha256": "f1cf82bd0e4b3e6cbd1eeb2a206afef7d9c9e1b661122ebbe8aeb3956bbb80a8",
+      "source_tier": "D_THIRD_PARTY",
+      "status": "READABLE"
+    },
+    {
+      "encoding": "utf-8-sig",
+      "id": "SOURCE-NEG-GENERAL-OCR-TEXTBOOK",
+      "line_count": 6690,
+      "origin_class": "OCR_INHERITED",
+      "path": "D:\\code LateX\\elegantbook\\道德与法治\\ocr.tex",
+      "referenced_ranges": [
+        {
+          "line_end": 70,
+          "line_start": 54
+        },
+        {
+          "line_end": 162,
+          "line_start": 109
+        }
+      ],
+      "role": "negative_template_reference",
+      "scene_scope": [
+        "ALL",
+        "GENERAL"
+      ],
+      "sha256": "100ef501d582e0407aabd1a052cf91c0f8bd9fddf29833ca068a7e5c70990302",
+      "source_tier": "D_OCR_INHERITED",
+      "status": "READABLE"
+    },
+    {
+      "encoding": "utf-8-sig",
+      "id": "SOURCE-NEG-GENERAL-API",
+      "line_count": 374,
+      "origin_class": "UNKNOWN",
+      "path": "D:\\LSGO-platform\\docs\\zh\\api\\algorithms.md",
+      "referenced_ranges": [
+        {
+          "line_end": 34,
+          "line_start": 1
+        },
+        {
+          "line_end": 85,
+          "line_start": 43
+        },
+        {
+          "line_end": 372,
+          "line_start": 303
+        }
+      ],
+      "role": "negative_template_reference",
+      "scene_scope": [
+        "ALL",
+        "GENERAL"
+      ],
+      "sha256": "412cf69adfeedbfd7ba9237bf4e034155a075ad35d01b07bd0da36bc95acd50c",
+      "source_tier": "C",
+      "status": "READABLE"
+    }
+  ],
+  "status": "PASS",
+  "summary": {
+    "action_card_statuses": {
+      "AUDIT_ONLY": 6,
+      "AVAILABLE": 21
+    },
+    "audit_only_action_cards": 6,
+    "audit_only_negative_guard_count": 6,
+    "available_action_cards": 21,
+    "externally_attested_positive_source_count": 0,
+    "human_confirmed_positive_source_count": 0,
+    "human_confirmed_unattested_positive_source_count": 0,
+    "model_generated_positive_source_count": 0,
+    "model_origin_unresolved_positive_source_count": 0,
+    "origin_class_statuses": {
+      "MODEL_GENERATED": 6,
+      "MODEL_ORIGIN_UNRESOLVED": 5,
+      "OCR_INHERITED": 1,
+      "THIRD_PARTY": 1,
+      "UNKNOWN": 13
+    },
+    "production_available_positive_action_cards": 0,
+    "provisional_available_positive_action_cards": 17,
+    "provisional_positive_source_count": 8,
+    "runtime_authorized_negative_guard_count": 4,
+    "scene_corpus_support": {
+      "COURSE": {
+        "available_positive_action_card_count": 4,
+        "independent_positive_source_count": 2,
+        "minimum_independent_positive_sources": 1,
+        "origin_assurance": "PROVISIONAL_ONLY",
+        "positive_source_origin_classes": {
+          "UNKNOWN": 2
+        },
+        "production_independent_positive_source_count": 0,
+        "production_positive_action_card_count": 0,
+        "production_source_ids": [],
+        "provisional_independent_positive_source_count": 2,
+        "provisional_positive_action_card_count": 4,
+        "provisional_source_ids": [
+          "SOURCE-PHYSICS1-TEX",
+          "SOURCE-PHYSICS2-TEX"
+        ],
+        "source_ids": [
+          "SOURCE-PHYSICS1-TEX",
+          "SOURCE-PHYSICS2-TEX"
+        ],
+        "status": "SUPPORTED_PROVISIONAL"
+      },
+      "GENERAL": {
+        "available_positive_action_card_count": 0,
+        "independent_positive_source_count": 0,
+        "minimum_independent_positive_sources": 2,
+        "origin_assurance": "INSUFFICIENT",
+        "positive_source_origin_classes": {},
+        "production_independent_positive_source_count": 0,
+        "production_positive_action_card_count": 0,
+        "production_source_ids": [],
+        "provisional_independent_positive_source_count": 0,
+        "provisional_positive_action_card_count": 0,
+        "provisional_source_ids": [],
+        "source_ids": [],
+        "status": "CORPUS_INSUFFICIENT"
+      },
+      "MODELING": {
+        "available_positive_action_card_count": 13,
+        "independent_positive_source_count": 4,
+        "minimum_independent_positive_sources": 1,
+        "origin_assurance": "PROVISIONAL_ONLY",
+        "positive_source_origin_classes": {
+          "UNKNOWN": 6
+        },
+        "production_independent_positive_source_count": 0,
+        "production_positive_action_card_count": 0,
+        "production_source_ids": [],
+        "provisional_independent_positive_source_count": 4,
+        "provisional_positive_action_card_count": 13,
+        "provisional_source_ids": [
+          "SOURCE-MODELING-CAG-DRAFT",
+          "SOURCE-MODELING-METRIC-NOTES",
+          "SOURCE-MODELING-README-CSG",
+          "SOURCE-MODELING-README-EADG",
+          "SOURCE-MODELING-README-OEDG",
+          "SOURCE-MODELING-RESULTS-NOTES"
+        ],
+        "source_ids": [
+          "SOURCE-MODELING-CAG-DRAFT",
+          "SOURCE-MODELING-METRIC-NOTES",
+          "SOURCE-MODELING-README-CSG",
+          "SOURCE-MODELING-README-EADG",
+          "SOURCE-MODELING-README-OEDG",
+          "SOURCE-MODELING-RESULTS-NOTES"
+        ],
+        "status": "SUPPORTED_PROVISIONAL"
+      },
+      "REPORT": {
+        "available_positive_action_card_count": 0,
+        "independent_positive_source_count": 0,
+        "minimum_independent_positive_sources": 1,
+        "origin_assurance": "INSUFFICIENT",
+        "positive_source_origin_classes": {},
+        "production_independent_positive_source_count": 0,
+        "production_positive_action_card_count": 0,
+        "production_source_ids": [],
+        "provisional_independent_positive_source_count": 0,
+        "provisional_positive_action_card_count": 0,
+        "provisional_source_ids": [],
+        "source_ids": [],
+        "status": "CORPUS_INSUFFICIENT"
+      },
+      "RESEARCH": {
+        "available_positive_action_card_count": 0,
+        "independent_positive_source_count": 0,
+        "minimum_independent_positive_sources": 1,
+        "origin_assurance": "INSUFFICIENT",
+        "positive_source_origin_classes": {},
+        "production_independent_positive_source_count": 0,
+        "production_positive_action_card_count": 0,
+        "production_source_ids": [],
+        "provisional_independent_positive_source_count": 0,
+        "provisional_positive_action_card_count": 0,
+        "provisional_source_ids": [],
+        "source_ids": [],
+        "status": "CORPUS_INSUFFICIENT"
+      }
+    },
+    "source_statuses": {
+      "EXCLUDED_CONFIG": 6,
+      "READABLE": 20
+    },
+    "source_text_exported": false,
+    "unavailable_action_cards": 0
+  },
+  "tool": "build_humanize_action_profile.py"
+}

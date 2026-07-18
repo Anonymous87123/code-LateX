@@ -1,0 +1,94 @@
+
+\section{干涉的光强分布与光程}
+
+\begin{definition}[干涉的光强分布]
+频率相同、振动方向平行的两列相干光在点 \(P\) 处叠加时，先叠加电场，再由合振幅决定光强。设
+\[
+E_{1P}=E_{10}\cos\!\left(\omega t+\varphi_1-\frac{2\pi r_1}{\lambda}\right),\qquad
+E_{2P}=E_{20}\cos\!\left(\omega t+\varphi_2-\frac{2\pi r_2}{\lambda}\right),
+\]
+则合振动可写成
+\[
+E=E_{1P}+E_{2P}=E_0\cos(\omega t+\varphi),
+\]
+其中
+\[
+E_0^2=E_{10}^2+E_{20}^2+2E_{10}E_{20}\cos\Delta\varphi,\qquad
+\Delta\varphi=\varphi_2-\varphi_1-\frac{2\pi}{\lambda}(r_2-r_1).
+\]
+光强与 \(E_0^2\) 成正比，所以
+\[
+I=I_1+I_2+2\sqrt{I_1I_2}\cos\Delta\varphi.
+\]
+若 \(\Delta\varphi\) 在一个周期内均匀扫过 \(0\sim2\pi\)，交叉项平均为零，平均光强变为
+\[
+\bar I=\frac{1}{\tau}\int_0^\tau I\,\dd t=I_1+I_2,
+\]
+这叫非相干叠加。
+
+若相位差保持不变，则是相干叠加。此时
+\[
+\Delta\varphi=\pm 2k\pi\ (k=0,1,2,\dots)\Rightarrow I=I_{\max}=I_1+I_2+2\sqrt{I_1I_2},
+\]
+\[
+\Delta\varphi=\pm(2k+1)\pi\ (k=0,1,2,\dots)\Rightarrow I=I_{\min}=I_1+I_2-2\sqrt{I_1I_2}.
+\]
+条纹明暗对比度定义为
+\[
+V=\frac{I_{\max}-I_{\min}}{I_{\max}+I_{\min}}
+=\frac{2\sqrt{I_1I_2}}{I_1+I_2}\le1.
+\]
+若 \(I_1=I_2=I_0\)，则
+\[
+I=4I_0\cos^2\frac{\Delta\varphi}{2},\qquad I_{\max}=4I_0,\qquad I_{\min}=0,\qquad V=1.
+\]
+若 \(I_1\gg I_2\) 或 \(I_2\gg I_1\)，则 \(V\to0\)，条纹几乎看不清。
+\end{definition}
+
+\begin{definition}[光程]\label{def:optical-path}
+\textbf{光程}是光在介质中传播时的等效路程，定义为几何路程与折射率的乘积：
+\[
+L=n\ell.
+\]
+它真正要表达的不是“走了多远”，而是“相位累计了多少”。
+
+\begin{itemize}
+    \item \textbf{光疏介质}：折射率较小的介质。
+    \item \textbf{光密介质}：折射率较大的介质。
+    \item \textbf{相位突变（半波损失）}：在垂直入射或小角度斜入射近似下，光从光疏介质射向光密介质并发生反射时，反射光会发生相位突变 \(\pi\)，等效于额外增加 \(\lambda/2\) 的附加光程差。这里 \(\lambda\) 是真空中的波长。
+\end{itemize}
+
+若两束光的光程差为
+\[
+\Delta L=L_2-L_1\implies
+\Delta\varphi=\frac{2\pi}{\lambda}\Delta L,
+\]
+于是，介质中的传播路径只要先折算成光程，就能直接拿来比较相位。若讨论的是反射光，还要先检查反射界面有没有半波损失；有的话，记总光程差时要再补上 \(\lambda/2\)。
+
+若光在折射率为 \(n\) 的介质中传播几何距离 \(d\)，则介质中的波长为 \(\lambda_n=\lambda/n\)，相位差也可写成
+\[
+\Delta\varphi=\frac{2\pi}{\lambda_n}d=\frac{2\pi}{\lambda}nd.
+\]
+所以，光程本质上是在替几何距离“加权”：折射率越大，同样的几何长度对应的相位转角越多。
+\end{definition}
+
+\begin{exercise}[2008级期末：双缝一缝加玻璃纸后原明纹变暗]
+在双缝干涉实验中，入射光波长为 \(\lambda\)。用玻璃纸遮住双缝中的一个缝，若玻璃纸中光程比相同厚度空气的光程大 \(2.5\lambda\)，判断屏上原来的明纹处变成明纹还是暗纹。
+\end{exercise}
+
+\begin{solution}
+原来的明纹处说明两路光到该点的光程差为整数倍波长。现在只在其中一路插入玻璃纸，相当于额外增加一段光程差。
+新的总光程差为
+ \(\Delta L =k\lambda+2.5\lambda =\left(k+2+\frac12\right)\lambda.\) 
+它比整数倍波长多出半个波长，因此两束光在原明纹处变为反相。所以屏上原来的明纹处变为暗纹。
+\end{solution}
+
+\begin{exercise}[2006级期末：由相位差反推介质中的光程]
+在真空中波长为 \(\lambda\) 的单色光，在折射率为 \(n\) 的透明介质中从 \(A\) 沿某路径传播到 \(B\)。若 \(A,B\) 两点相位差为 \(3\pi\)，求此路径 \(AB\) 的光程。
+\end{exercise}
+
+\begin{solution}
+设 \(L\) 为从 \(A\) 到 \(B\) 累积的光程，则
+ \(\Delta\varphi=\frac{2\pi}{\lambda}L,\qquad 3\pi=\frac{2\pi}{\lambda}L \implies L=\frac{3}{2}\lambda.\) 
+题目问的是光程，不是介质中的几何路程；若再除以 \(n\)，得到的是几何长度 \(\ell=L/n\)，不是本题所求。
+\end{solution}

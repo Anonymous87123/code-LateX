@@ -1,0 +1,55 @@
+
+\section{一对力的功，势能}
+
+\begin{definition}[一对力]
+一对力：分别作用在两个物体（或质点）上的大小相等、方向相反的力。它们通常是满足牛顿第三定律的作用力与反作用力（如物体间的滑动摩擦力、成对的万有引力），但在某些特定的受力约束下，也可以不是作用力与反作用力。
+\end{definition}
+考虑两个质点 $m_1$ 和 $m_2$ 组成的质点系。在某个惯性参考系 $Oxyz$ 中：
+\begin{itemize}
+\item 质点 $m_1$ 受到质点 $m_2$ 对它的作用力 $\vec{f}_1$，其对地位置矢量为 $\vec{r}_1$。在 $\mathrm{d}t$ 时间内，其产生的对地绝对元位移为 $\mathrm{d}\vec{r}_1$。
+\item 质点 $m_2$ 受到质点 $m_1$ 对它的作用力 $\vec{f}_2$，其对地位置矢量为 $\vec{r}_2$。在 $\mathrm{d}t$ 时间内，其产生的对地绝对元位移为 $\mathrm{d}\vec{r}_2$。
+\end{itemize}
+据一对力的物理定义，显然有$\vec{f}_1 = -\vec{f}_2$，在 $\mathrm{d}t$ 时间内，这一对力分别在两个物体上所做的元功之和 $\mathrm{d}A_{\text{对}}$ 为：
+$$\mathrm{d}A_{\text{对}} = \vec{f}_1 \cdot \mathrm{d}\vec{r}_1 + \vec{f}_2 \cdot \mathrm{d}\vec{r}_2= (-\vec{f}_2) \cdot \mathrm{d}\vec{r}_1 + \vec{f}_2 \cdot \mathrm{d}\vec{r}_2 = \vec{f}_2 \cdot (\mathrm{d}\vec{r}_2 - \mathrm{d}\vec{r}_1)= \vec{f}_2 \cdot \mathrm{d}\vec{r}_{21}$$同理，也可以完全等价地写作 $\vec{f}_1 \cdot \mathrm{d}\vec{r}_{12}$。对该元功关系式进行过程积分，即可得到这一对力在整个运动路径上所做的总功 $A_{12\text{对}}$：
+$$A_{12\text{对}} = \int_{(1)}^{(2)} \vec{f}_2 \cdot \mathrm{d}\vec{r}_{21} = \int_{(1)}^{(2)} \vec{f}_1 \cdot \mathrm{d}\vec{r}_{12}$$
+根据内积的几何性质 $\vec{f}_2 \cdot \mathrm{d}\vec{r}_{21} = f_2 \mathrm{d}r_{21} \cos\phi$，一对力做功之和若想严格为零，必须满足以下两个条件之一：
+\begin{itemize}
+\item 两物体间没有任何相对位移（$\mathrm{d}\vec{r}_{21} \equiv 0$）：比如绝对不可变形的刚体系统，或者两人中间拉着一根紧绷的死绳。
+\item 相对位移与这一对力始终保持正交垂直（$\phi = \pi/2$）：比如光滑圆柱面上两接触物体间的正压力偶。
+\end{itemize}
+如果不满足上述条件（如块体在粗糙木板上发生相对滑动摩擦），则这一对力做的总功必定不为零（滑动摩擦力一对力的总功恒为负值，其绝对值刚好等于系统损失并转化为内能的机械能）。
+
+\begin{definition}[势能]
+功是能量转化的量度。当质点在保守力（如重力、万有引力、弹簧弹力）的作用下在空间运动时，其所做的功具有一个核心特征：只与物体的始末空间位置有关，而与具体的运动路径无关。基于这一优良的数学性质，我们可以在空间中引入一个仅与空间位置相关的状态函数——势能（Potential Energy），通常记为 $E_{\text{p}}$。保守力从空间点 $a$ 到点 $b$ 所做的功 $A_{\text{保}a \to b}$，定义为 $a$ 点的势能函数值减去 $b$ 点的势能函数值（即势能改变量的负值）：$$A_{\text{保}a \to b} = E_{\text{p}_a} - E_{\text{p}_b} = -\left(E_{\text{p}_b} - E_{\text{p}_a}\right) = -\Delta E_{\text{p}}$$由此可见，在保守力的作用下，系统势能增量的负值等于保守力所做的功。当保守力做正功时，系统势能减少；当保守力做负功（即物体克服保守力做功）时，系统势能增加。
+\end{definition}
+如果我们在三维直角坐标系下精细地考察一个微观元的空间过程：元功的代数展开式：$\mathrm{d}A = \vec{F} \cdot \mathrm{d}\vec{r} = F_x\mathrm{d}x + F_y\mathrm{d}y + F_z\mathrm{d}z$势能的全微分展开式：根据多元微积分法则，势能函数 $E_{\text{p}}(x, y, z)$ 的全微分 $\mathrm{d}E_{\text{p}}$ 为：
+ \(\mathrm{d}E_{\text{p}} = \frac{\partial E_{\text{p}}}{\partial x}\mathrm{d}x + \frac{\partial E_{\text{p}}}{\partial y}\mathrm{d}y + \frac{\partial E_{\text{p}}}{\partial z}\mathrm{d}z\) 
+由于变力功与势能满足微分形式的关系 $\mathrm{d}A = -\mathrm{d}E_{\text{p}}$，我们令上面两式的标量对应项完全相等：
+$$F_x\mathrm{d}x + F_y\mathrm{d}y + F_z\mathrm{d}z = -\left( \frac{\partial E_{\text{p}}}{\partial x}\mathrm{d}x + \frac{\partial E_{\text{p}}}{\partial y}\mathrm{d}y + \frac{\partial E_{\text{p}}}{\partial z}\mathrm{d}z \right)$$
+从而得到（注意角标指的是分量而不是偏导数）：
+$$F_x = -\frac{\partial E_{\text{p}}}{\partial x}, \qquad F_y = -\frac{\partial E_{\text{p}}}{\partial y}, \qquad F_z = -\frac{\partial E_{\text{p}}}{\partial z}$$
+为了使这一关系更加紧凑，我们引入多元微积分学中的梯度算符（Gradient Operator）$\nabla$：
+ \(\nabla = \frac{\partial}{\partial x}\vec{i} + \frac{\partial}{\partial y}\vec{j} + \frac{\partial}{\partial z}\vec{k}\) 
+将三个轴向上的偏导数合成为一个矢量式，便得到了经典力学中极具统治力的场论公式：
+$$\vec{F} = -\left( \frac{\partial E_{\text{p}}}{\partial x}\vec{i} + \frac{\partial E_{\text{p}}}{\partial y}\vec{j} + \frac{\partial E_{\text{p}}}{\partial z}\vec{k} \right) = -\nabla E_{\text{p}}$$
+
+\begin{theorem}
+保守力在空间中构成的保守力场，严格等于其相应势能函数的负梯度。
+\end{theorem}
+
+\begin{example}
+一轻弹簧，其一端系在铅直放置的圆环的顶点 $P$，另一端系一质量为 $m$ 的小球，小球穿过圆环并在环上运动（摩擦因数 $\mu=0$）。开始时小球静止于点 $A$，弹簧恰好处于自然状态，其原长为环半径 $R$。当球运动到环的底端点 $B$ 时，球对环恰好没有压力。求弹簧的劲度系数 $k$。
+\end{example}
+\begin{solution}
+根据机械能守恒定律 $E_B = E_A$，列出能量方程：
+ \(\frac{1}{2}mv_B^2 + \frac{1}{2}kR^2 = mgR(2 - \sin 30^\circ)\) 
+在最低点 $B$ 处，小球做半径为 $R$ 的圆周运动。我们对小球进行受力分析：小球受到竖直向下的重力 $mg$，由于小球对环没有压力，根据牛顿第三定律，圆环对小球的支持力 $N = 0$。此外，被拉伸的弹簧对小球施加一个竖直向上的弹力 $F_{\text{弹}} = k \cdot \Delta x = kR$。
+根据牛顿第二定律，合外力提供小球在最低点向上的向心力：
+\[
+F_{\text{弹}} - mg = m\frac{v_B^2}{R} \implies kR - mg = m\frac{v_B^2}{R}\implies mv_B^2 = kR^2 - mgR
+\]消去动能项：
+\[
+\frac{1}{2}(kR^2 - mgR) + \frac{1}{2}kR^2 = mgR(2 - \sin 30^\circ)
+\]
+解得弹簧的劲度系数为：$k = \frac{2mg}{R}$
+\end{solution}

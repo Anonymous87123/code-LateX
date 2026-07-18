@@ -1,0 +1,80 @@
+
+\section{气体分子数按速率分布的统计规律}
+
+\begin{definition}[三种统计速率]
+给出麦克斯韦速率分布函数（概率密度）：
+\[
+f(v)=4\pi\left(\frac{m}{2\pi kT}\right)^{3/2}v^2e^{-\frac{mv^2}{2kT}}
+\]其中$m$是单个分子的质量，再规定$M$为摩尔质量。速度位于 \(v_1\to v_2\) 区间的分子数占总数的百分比：
+\[\frac{\Delta N}{N}=\int_{v_1}^{v_2}f(v)dv~\text{微分得}:\frac{\mathrm dN}{N}=f(v)\mathrm dv=4\pi\left(\frac{m}{2\pi kT}\right)^{3/2}v^2e^{-\frac{mv^2}{2kT}}\mathrm dv\]麦克斯韦速率分布：反映理想气体在热平衡下，各速率区间分子数占总分子数的百分比的规律：\(v=0\) 附近分子很少，速率增加后分子数比例增大，达到峰值 \(v_p\)，再往高速方向下降，但有长尾。
+\begin{enumerate}
+    \item 最概然速率 \(v_p\)：气体在一定温度下分布在最概然速率 \(v_p\) 附近单位速率间隔内的相对分子数最多。
+    \[v_p=\sqrt{\frac{2kT}{m}}=\sqrt2\sqrt{\frac{RT}{M}}=\sqrt2\sqrt{\frac{pV}{M_{气体总质量}}},~~~~f_{\max}(v_p)=\sqrt{\frac{8m}{\pi kT}}\cdot e^{-1}\]注意：\(v_p\) 是横坐标，是速率；\(f_{\max}\) 是纵坐标，是分布函数最大值。$m$是单个分子的质量，再规定$M$为摩尔质量。
+    \item 平均速率 \(\overline v\)：大量分子的速率的算术平均值。求期望：
+\[\overline v=\int_0^\infty vf(v)\mathrm dv=\int_0^\infty 4\pi\left(\frac{m}{2\pi kT}\right)^{3/2}e^{-\frac{mv^2}{2kT}}v^3\mathrm dv=\sqrt{\frac{8kT}{\pi m}}=\sqrt{\frac{8}{\pi }}\sqrt{\dfrac{RT}{M}}\]
+\item 方均根速率\(v_{\text{rms}}=\sqrt{\overline{v^2}}\)：由一般统计平均：
+\[\overline{v^2}=\int_0^\infty v^2f(v)dv=\frac{3kT}{m}\implies v_{\text{rms}}=\sqrt{\overline{v^2}}=\sqrt{\frac{3kT}{m}}=\sqrt3\sqrt{\frac{RT}{M}}\]
+\end{enumerate}
+\end{definition}
+
+\begin{exercise}
+已知分子数 \(N\)，分子质量 \(m\)，分布函数 \(f(v)\)。求：\\
+1）速率在 \(v_p\sim \overline v\) 间的分子数；\\
+2）速率在 \(v_p\sim\infty\) 间所有分子动能之和。
+\end{exercise}
+\begin{solution}
+（1）\[\frac{\mathrm dN}{N}=f(v)\mathrm dv\implies \Delta N=\int_{v_p}^{\overline v}Nf(v)\mathrm dv\]
+（2）速率在 \(v\sim v+dv\) 内的 \(dN\) 个分子总动能：\[\frac12mv^2dN=\frac12mv^2Nf(v)dv\]所以速率在 \(v_p\sim\infty\) 内所有分子的动能和：\[E_k=\int_{v_p}^{\infty}\frac12mv^2Nf(v)\mathrm dv\]
+\end{solution}
+
+\begin{exercise}[分段常数分布函数怎样先归一化再求平均速率]
+有 \(N\) 个粒子，其速率分布函数为
+\[
+f(v)=
+\begin{cases}
+C,&0<v<v_0,\\
+0,&v>v_0.
+\end{cases}
+\]
+求归一化常数 \(C\) 及平均速率 \(\bar v\)。
+\end{exercise}
+\begin{solution}
+\[
+\int_0^{v_0}C\,\dd v=1\implies C=\frac1{v_0},\qquad
+\bar v=\int_0^{v_0} v\cdot \frac{1}{v_0}\,\dd v
+=\frac{1}{v_0}\cdot \frac{v_0^2}{2}
+=\frac{v_0}{2}.
+\]
+由于 \(0\) 到 \(v_0\) 区间内各速率出现得同样频繁，平均速率落在中点 \(v_0/2\) 很自然；若把 \(f(v)\) 误当成分子数密度而不做归一化，就会失去这个统计意义。
+\end{solution}
+
+
+\begin{exercise}[2013级期末：由质量体积压强求气体最概然速率]
+质量为 \(M=\SI{3.0e-2}{kg}\) 的气体放在容积为 \(V=\SI{3.0e-2}{m^3}\) 的容器中，容器内气体压强为 \(p=0.2\times10^5\,\si{Pa}\)。求气体分子的最概然速率。取普通气体常量 \(R=\SI{8.31}{J/(mol.K)}\)。
+\end{exercise}
+
+\begin{solution}
+最概然速率的基本式是
+ \(v_p=\sqrt{\frac{2RT}{M_{\mathrm{mol}}}},\) 
+但题目没有直接给温度和摩尔质量。此时要把状态方程 \(pV=nRT\) 与总质量 \(M=nM_{\mathrm{mol}}\) 合起来，把 \(RT/M_{\mathrm{mol}}\) 换成宏观量。
+ \(pV=nRT=\frac{M}{M_{\mathrm{mol}}}RT \implies \frac{RT}{M_{\mathrm{mol}}}=\frac{pV}{M},\qquad v_p=\sqrt{\frac{2pV}{M}}.\) 
+代入数据，
+\[
+v_p=\sqrt{\frac{2\times(0.2\times10^5)\times(3.0\times10^{-2})}{3.0\times10^{-2}}}
+=\sqrt{4.0\times10^4}
+=\SI{200}{m/s}.
+\]
+\(\frac{pV}{M}\) 的量纲是 \(\si{m^2/s^2}\)，开方后正好是速率；这里的 \(M\) 是气体总质量，而不是摩尔质量。
+\end{solution}
+
+\begin{exercise}[从同温氢气和氧气的分布图怎样反推最概然速率]
+同一温度下，氢气与氧气的麦克斯韦速率分布曲线中，右侧峰对应较轻的氢气，且峰值位置约为 \(\SI{2000}{m/s}\)。求氢气与氧气的最概然速率。
+\end{exercise}
+
+\begin{solution}
+先认出右侧峰值对应的是轻分子氢气，因为同温下轻分子跑得更快。接着不用重推分布函数，只需抓住
+ \(v_p=\sqrt{\frac{2RT}{M}}\) 
+给出的质量依赖关系。
+ \(\frac{v_{p,\mathrm{H_2}}}{v_{p,\mathrm{O_2}}} =\sqrt{\frac{M_{\mathrm{O_2}}}{M_{\mathrm{H_2}}}} =\sqrt{\frac{32}{2}}=4.\) 
+于是右侧读数就是 \(v_{p,\mathrm{H_2}}=\SI{2000}{m/s}\)，氧气的最概然速率为 \(v_{p,\mathrm{O_2}}=2000/4=\SI{500}{m/s}\)。
+\end{solution}

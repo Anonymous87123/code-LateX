@@ -1,0 +1,121 @@
+{
+  "author_chars": 253,
+  "chunk_binding_sha256": "2a34e04de8e0a690d22ab0e519c9dd4d40f8415b62a76ad49192ec2a567b469d",
+  "context_after_unit": "U-9819bed24077",
+  "context_before_unit": "U-53959edae3b1",
+  "diff_path": "",
+  "end": 58983,
+  "end_line": 1440,
+  "file_id": "F00001",
+  "hash_after": "",
+  "hash_before": "1eb2cf8ee3a9966eac2e49e29dc434f0759080e10403b99848b0196c8fa797bb",
+  "heading_path": "中文学术纯文风 Humanize Skill：生产化交付与红队报告 / 18. v12：Voice Profile 从说明文档变成可重建工件 / 18.14 v14：fresh second pass 从声明字段升级为活证据控制面 / 18.14.1 五段式执行链",
+  "intensity": "STRUCTURAL",
+  "line_count": 24,
+  "masked_text": "[[PROTECTED:F00001-P00932:073504b9e576]]\n第一遍完整发布后，[[PROTECTED:F00001-P00933:609afdae2f20]] 读取第一遍 [[PROTECTED:F00001-P00934:c566ad1df09d]]，逐个\n复核路径、字节数与 SHA-256，并拒绝 manifest 外新增文件、重复 file/unit identity 或任何\n[[PROTECTED:F00001-P00935:6396cb327368]]。它把第一遍 rendered 文件作为第二 run 的唯一 source，再由原长文 preparer\n重新生成 snapshot、units、chunks、保护 span 和 Voice 绑定。因此第二遍不是拿旧 chunks 改名，\n而是对 clean 文件重新走完整准备流程。\n\n每个第二遍 PENDING chunk 单独封存为 public case。所有 case 使用完全相同的 canonical prompt：\n只要求模型重新阅读当前 masked chunk，并根据是否仍需实质修改选择 [[PROTECTED:F00001-P00936:938c25f25bf8]] 或 [[PROTECTED:F00001-P00937:9cb6fce862b9]]。\nprompt 不含第一遍 bundle、diff、decision、expected answer、资格 atom 或 verifier 规则。public\nmanifest 与 seal 绑定 input、prompt 和 public context；unit、chunk 与 Voice 三个身份必须在输出\nstrict JSON 中精确回显。\n\n生成后按以下顺序处理：\n\n1. 每个 unit 用 [[PROTECTED:F00001-P00938:099657a4865a]] 启动独立新进程；\n2. collect 只复制 strict、无 code fence、无重复键、unit/chunk/Voice 精确匹配的原始 output；\n3. 第二遍 finalizer 对全部 bundle 运行普通长文门，产生真实 coverage ledger 与 rendered tree；\n4. [[PROTECTED:F00001-P00939:76de7d05053f]] 重读 plan、collection、runner receipt、run record、run seal、\n   public seal、execution projection、第二遍 finalization 和两遍 rendered；\n5. 第一遍 finalizer 接收 receipt 时不只验自哈希，而是按 receipt 的 evidence roots 重新执行\n   verifier；live receipt 与提交 receipt 必须逐字段相同。\n\n",
+  "mode": "REWRITE",
+  "notes": "",
+  "owner_chunk": "U-84b8c7557834",
+  "part": 1,
+  "protected_hashes_ok": "NOT_RUN",
+  "protected_ids": [
+    "F00001-P00932",
+    "F00001-P00933",
+    "F00001-P00934",
+    "F00001-P00935",
+    "F00001-P00936",
+    "F00001-P00937",
+    "F00001-P00938",
+    "F00001-P00939"
+  ],
+  "protected_spans": 8,
+  "read_only_context_after": "[[PROTECTED:F00001-P00940:52ed1e13db1f]]\n[[PROTECTED:F00001-P00941:905cc7daf61c]] 把三类结果分开：",
+  "read_only_context_before": "- [[PROTECTED:F00001-P00928:38fb1b921bbd]] 继续只回答[[PROTECTED:F00001-P00929:fa507c3076ac]]；\n- [[PROTECTED:F00001-P00930:f5b9955dbee6]] 只由新的 fresh 控制面产生；\n- 两者都 PASS，仍需 coverage、scene、rewrite binding、Voice binding、全文 Voice 与跨 unit 门\n  全部 PASS，才能令 [[PROTECTED:F00001-P00931:d7f02b30dba4]]。",
+  "scene": "GENERAL",
+  "scene_document_prior": "",
+  "scene_requested": "GENERAL",
+  "scene_routing_ambiguous_scenes": [],
+  "scene_routing_decision": "EXPLICIT",
+  "scene_routing_evidence": [],
+  "scene_routing_margin": 0,
+  "scene_routing_policy_revision": 2,
+  "scene_routing_policy_sha256": "8d0f916d91b5753fd94d358c4b32e9a6c02b1f30120f43b4cbb2165dc1684450",
+  "scene_routing_scores": {
+    "COURSE": 0,
+    "MODELING": 0,
+    "RESEARCH": 0
+  },
+  "scene_routing_top_score": 0,
+  "start": 57856,
+  "start_line": 1417,
+  "status": "PENDING",
+  "structural_cross_unit_moves_allowed": false,
+  "structural_inventory_sha256": "68632285a4a2282f51aa849f29d85a23b73a29bef79ba22fd48f75b459c78bce",
+  "structural_paragraphs": [
+    {
+      "author_chars": 89,
+      "lock_reason": "contains_immovable_protected_span",
+      "movable": false,
+      "ordinal": 1,
+      "paragraph_id": "P001-b9bada26a5d1",
+      "protected_ids": [
+        "F00001-P00932",
+        "F00001-P00933",
+        "F00001-P00934",
+        "F00001-P00935"
+      ],
+      "responsibility": "EXPOSITION",
+      "sha256": "b9bada26a5d1845299961436c8bdab0a93fec0f79ea20494e181ad6941ef9a40"
+    },
+    {
+      "author_chars": 73,
+      "lock_reason": "",
+      "movable": true,
+      "ordinal": 2,
+      "paragraph_id": "P002-2c301b80cf56",
+      "protected_ids": [
+        "F00001-P00936",
+        "F00001-P00937"
+      ],
+      "responsibility": "EXPOSITION",
+      "sha256": "2c301b80cf560a63c7711cacfb50620a3990e03f2a5b026f27f894334a4fad43"
+    },
+    {
+      "author_chars": 10,
+      "lock_reason": "introduces_following_block",
+      "movable": false,
+      "ordinal": 3,
+      "paragraph_id": "P003-685594123025",
+      "protected_ids": [],
+      "responsibility": "EXPOSITION",
+      "sha256": "68559412302585932b777f835cec4319216d65cf3ab2a2e222339d6d5ae8bdf7"
+    },
+    {
+      "author_chars": 81,
+      "lock_reason": "contains_markdown_structure",
+      "movable": false,
+      "ordinal": 4,
+      "paragraph_id": "P004-d824f16dee9b",
+      "protected_ids": [
+        "F00001-P00938",
+        "F00001-P00939"
+      ],
+      "responsibility": "EXPOSITION",
+      "sha256": "d824f16dee9b4b57b48f66c334b6224ba7c771485638554eac6e6c155a056e78"
+    }
+  ],
+  "structural_plan_schema": "humanize-structural-plan/v1",
+  "structural_plan_status": "NOT_RUN",
+  "structural_scope": "UNIT",
+  "structural_title_lock": true,
+  "style_validation": "NOT_RUN",
+  "unit_id": "U-84b8c7557834",
+  "voice_default_disclosure": true,
+  "voice_profile_binding_scene": "GENERAL",
+  "voice_profile_confidence": "DEFAULT",
+  "voice_profile_id": "scene-default-general",
+  "voice_profile_kind": "DEFAULT",
+  "voice_profile_revision": 1,
+  "voice_profile_sha256": "3b4eeeaeb3af397378ead360550371ff4632cbce6fceca8923479c53de23a112",
+  "voice_profile_source": "SCENE_DEFAULT"
+}

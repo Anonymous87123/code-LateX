@@ -1,0 +1,55 @@
+\documentclass[lang=cn,11pt]{elegantbook}
+
+\title{大学物理（上）}
+\subtitle{大学物理笔记}
+\author{夏同}
+\institute{华南理工大学}
+\date{\today}
+\version{0.2}
+
+\setcounter{tocdepth}{3}
+
+\logo{logo-blue.png}
+\cover{cover.jpg}
+
+\usepackage{array}
+\usepackage{amsmath,amssymb,mathtools}
+\usepackage{siunitx}
+\usepackage{physics}
+\usepackage{tikz}
+\usepackage{graphicx}
+\makeatletter
+\@ifundefined{newCJKfontfamily}{
+  \providecommand{\physicskaishu}{\kaishu}
+}{
+  \newCJKfontfamily\physicskaishu[AutoFakeBold=2]{KaiTi}
+}
+\@ifundefined{citshape}{
+  \newcommand{\citshape}{\physicskaishu}
+}{
+  \renewcommand{\citshape}{\physicskaishu}
+}
+\makeatother
+\ExplSyntaxOn
+\msg_redirect_name:nnn { siunitx } { physics-pkg } { none }
+\ExplSyntaxOff
+
+\newcommand{\bridge}[1]{\begin{note}#1\end{note}}
+\newcommand{\chapterroadmap}[3]{%
+\begin{introduction}
+ \item {\heiti 这章解决什么问题：}#1
+ \item {\heiti 你已经会什么：}#2
+ \item {\heiti 这章新增什么：}#3
+\end{introduction}}
+\newcommand{\summaryline}[1]{\par\noindent\textbf{1分钟回顾：}#1\par}
+\newcommand{\chapterselfcheck}[1]{\par\noindent\textbf{自测问题：}#1\par}
+
+\begin{document}
+
+\maketitle
+\frontmatter
+\pagenumbering{arabic}
+
+\tableofcontents
+\makeenvindex
+\mainmatter

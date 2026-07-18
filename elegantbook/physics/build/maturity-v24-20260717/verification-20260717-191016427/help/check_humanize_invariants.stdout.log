@@ -1,0 +1,25 @@
+usage: check_humanize_invariants.py [-h] [--format {auto,markdown,tex}]
+                                    [--json] [--allow-quote-edits]
+                                    [--strict-speech-acts] [--fragment]
+                                    [--term TERM]
+                                    before after
+
+Check preservation invariants between original and humanized Markdown/TeX.
+
+positional arguments:
+  before                Original UTF-8 Markdown or TeX file
+  after                 Humanized UTF-8 Markdown or TeX file
+
+options:
+  -h, --help            show this help message and exit
+  --format {auto,markdown,tex}
+  --json                Emit machine-readable JSON
+  --allow-quote-edits   Do not protect direct quotations (off by default)
+  --strict-speech-acts  Treat changes to
+                        negation/modality/focus/definition/reporting markers
+                        as hard errors
+  --fragment            Validate a document fragment: unchanged boundary
+                        imbalance is allowed, but any environment or brace-
+                        balance drift still fails
+  --term TERM           Protect an exact method, material, or glossary term;
+                        repeat for multiple terms

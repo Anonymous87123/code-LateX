@@ -1,0 +1,16 @@
+
+\section{受迫振动}
+
+\begin{definition}[受迫振动]
+受迫振动（Forced Oscillations）是指系统在周期性的驱动力持续作用下所发生的振动。
+设想一个振幅为 $F_0$、角频率为 $\omega$ 的余弦式驱动力 $F_{\text{驱}} = F_0 \cos \omega t$ 持续作用于有阻尼的弹簧振子上。此时系统同时承受回复力、介质阻力和外加驱动力，由牛顿第二定律列出动力学方程：$$m \frac{\mathrm{d}^2x}{\mathrm{d}t^2} = -kx - \gamma v + F_0 \cos \omega t\Longleftrightarrow m \frac{\mathrm{d}^2x}{\mathrm{d}t^2} + \gamma \frac{\mathrm{d}x}{\mathrm{d}t} + kx = F_0 \cos \omega t$$
+两边同除以质量 $m$，并代入阻尼常数 $2\beta = \frac{\gamma}{m}$、固有角频率 $\omega_0^2 = \frac{k}{m}$ 以及特征驱动力项 $f = \frac{F_0}{m}$：$$\boxed{\frac{\mathrm{d}^2x}{\mathrm{d}t^2} + 2\beta \frac{\mathrm{d}x}{\mathrm{d}t} + \omega_0^2 x = f \cos \omega t}$$该非齐次二阶微分方程的通解由齐次方程的通解（自由项）与非齐次方程的特解（强迫项）直接相加而成：$$x = \underbrace{A_1 e^{-\beta t} \cos\left( \sqrt{\omega_0^2 - \beta^2} t + \phi_0 \right)}_{\text{暂态响应}} + \underbrace{A_2 \cos(\omega t + \delta)}_{\text{稳态响应}}$$
+\begin{itemize}
+\item 暂态响应：随时间按指数衰减。在开机一段时间后，这一部分振动即因阻尼耗散而衰减消失。
+\item 稳态响应：不随时间衰减，是长周期稳定运行后的唯一存留项。
+\end{itemize}
+系统稳定进入受迫振动后的解为一等幅同频运动：$$x = A_2 \cos(\omega t + \delta)$$其振幅 $A_2$ 与初相 $\delta$ 分别严格满足以下解析方程：$$\boxed{A_2 = \frac{f}{\sqrt{(\omega_0^2 - \omega^2)^2 + 4\beta^2 \omega^2}}},~\boxed{\delta = \arctan \frac{-2\beta \omega}{\omega_0^2 - \omega^2}}$$受迫振动稳定后的实际运动角频率完全等于外加驱动力的角频率 $\omega$，而其振幅 $A_2$ 与初相 $\delta$ 则直接取决于驱动力频率 $\omega$ 与系统固有频率 $\omega_0$ 的接近程度。
+\end{definition}
+\begin{remark}
+做题时最容易错的一步，是把“固有频率”和“稳态振动频率”混为一谈。真正长期留下来的，是外界逼出来的频率 \(\Omega\)；系统自己的 \(\omega_0\) 则藏在振幅和相位如何随 \(\Omega\) 变化这件事里。
+\end{remark}

@@ -1,0 +1,250 @@
+{
+  "author_chars": 714,
+  "chunk_binding_sha256": "fafa20c46e72dcdf9ba159feae8e27ea72ec0651302b9bf23aaf82877d09656b",
+  "context_after_unit": "U-bd65864f1f34",
+  "context_before_unit": "U-b4ae71fb8740",
+  "diff_path": "",
+  "end": 78585,
+  "end_line": 1967,
+  "file_id": "F00001",
+  "hash_after": "",
+  "hash_before": "33da6d1df9a57f62d79428ed5ef45e7bb8f14cc6489958422674c6db46f62615",
+  "heading_path": "GPT 中文语言风格全域重整报告：以 MD/TEX 学术成文为核心 / 板块二：模型学术写作语言风格库（核心） / 2.50 v18：AI 风味负例可以用，但“可审计”不等于“可执行拦截”",
+  "intensity": "STRUCTURAL",
+  "line_count": 66,
+  "masked_text": "[[PROTECTED:F00001-P01250:37d77d2541bc]]\nv18 没有继续从大样本里机械增加禁词，而是追问两件更实际的事：负例 detector 在生产运行时到底\n需要哪些字段；一个来源被列为负例，是否自动获得影响正文交付的拦截权。\n\n第一问的答案很小。长文 finalizer 实际只消费 guard 的 ID、场景和 detector。v17 投影却仍带完整\naction-profile builder，以及每张卡的动作描述、requires/forbids、来源行号和来源角色。新建的\n[[PROTECTED:F00001-P01251:aad953569fda]] 把投影 registry 压缩为：\n\n[[PROTECTED:F00001-P01252:800f4e3dcdbc]]\n完整 builder 仍留在安装版审计链，生产 finalizer 和 generator projection 不再拥有解析正向动作卡\n的入口。这个改动不会让 detector 少识别一种已授权模式，却删除了与生产扫描无关的来源台账和\n正向动作能力。\n\n第二问暴露了 v17 的权限旁路。来源 policy 只授权 [[PROTECTED:F00001-P01253:d6276834a9f4]] 与\n[[PROTECTED:F00001-P01254:cfb0fbc3d5b7]] 形成 [[PROTECTED:F00001-P01255:df6f9ffc9e3c]]，但旧 builder/transform 实际把 10 张 guard\n全部放行。其中 6 张来自 [[PROTECTED:F00001-P01256:747f7bc4138c]]、[[PROTECTED:F00001-P01257:70820b1169c0]] 或 [[PROTECTED:F00001-P01258:384aeb6b0f97]]：建模 README 壳、治理\n报告腔、研究论文过拟合壳、第三方意见腔、OCR 教材问答壳和 API 文档壳。\n\n这些材料仍有分析价值，却只有审计价值。尤其第三方和 OCR 文本并不是 GPT 风格证据；让它们自动\n阻断正文，会把[[PROTECTED:F00001-P01259:2f02b25f756f]]的人工观察扩大成未经授权的生产规则。修复后：\n\n- 4 张模型来源 guard 为 runtime [[PROTECTED:F00001-P01260:144d42912eb1]]；\n- 6 张其他来源 guard 为 [[PROTECTED:F00001-P01261:f9c55795f75f]]；\n- candidate queue 不执行 [[PROTECTED:F00001-P01262:f9c55795f75f]]；\n- projection 只输出 4 张 runtime guard；\n- 修改本地 policy 给 UNKNOWN/THIRD_PARTY 增加负例权限会 fail closed。\n\n这也修正了[[PROTECTED:F00001-P01263:e52f3b664c70]]的理解。样本可以同时承担四种不同角色：\n\n1. GPT 明确生成文本：可抽象为带 detector 的 AI 风味负例；\n2. 模型来源仅路径级可证：可作为 [[PROTECTED:F00001-P01264:cfb0fbc3d5b7]] 负例，但不能正向；\n3. 来源未知文本：可支撑人工审计和 provisional 研究，不直接进入生产 detector；\n4. 第三方/OCR 文本：只展示体裁错配或文本损伤，不作为 GPT 指纹，也不自动拦截。\n\nstrict loader 进一步拒绝重复 JSON key、未知字段、非法 UTF-8、重复 ID、非法 scene、坏 regex、\n阈值越界、悬空 source ref 和本地 trust 扩权。registry 故障时跨 unit 门是 [[PROTECTED:F00001-P01265:c25fbd6c2b27]]，不能把“没有\n加载到 guard”解释成[[PROTECTED:F00001-P01266:3e8d08c23851]]。\n\nv17 fresh timeout 也重新按原始证据拆解。事件只到 [[PROTECTED:F00001-P01267:f1106e5acebb]] 和一次 reconnect，\n没有 provider ID、output 或 post-run audit。因此它是传输/调用基础设施超时，不是模型拒绝，也不是\n模型文风 FAIL。runner 1.2 为以后运行封存 sanitized argv、真实 timeout、runner source、事件摘要、\n终止方式、failure domain/phase 和 attained evidence；短于 900 秒的运行固定是 diagnostic，不进入\n资格。本轮没有自动重试真实请求，避免用重复调用污染 fresh 证据。\n\n最终可复核值：\n\n- 481 项测试通过，1 项 Windows symlink 权限跳过；\n- 19 个脚本 compile/help 通过，Skill quick validation 通过；\n- 完整 profile：21 AVAILABLE、6 AUDIT_ONLY、0 UNAVAILABLE；\n- 正向：17 provisional、0 production；负例：4 runtime、6 audit-only；\n- projection：29 文件，builder absent、loader present、4 guards、0 positive；\n- manifest 两次均为 [[PROTECTED:F00001-P01268:be4853208f49]]；\n- tree 两次均为 [[PROTECTED:F00001-P01269:1e5002c8e23e]]；\n- contract/requirements/oracle 为 [[PROTECTED:F00001-P01270:b61fd57c9948]]；\n- 生成资格仍为 [[PROTECTED:F00001-P01271:b014a47b5a82]]。\n\n因此 v18 对[[PROTECTED:F00001-P01272:bab205ba08f6]]的结论更严格：**GPT/MD/TEX 大样本最可靠的用途，是暴露\n具体句壳、词簇和失真路径；能否进入生产拦截还必须经过来源角色授权。负例多，不等于运行权限大。**\n\n",
+  "mode": "REWRITE",
+  "notes": "",
+  "owner_chunk": "U-2f8693861208",
+  "part": 1,
+  "protected_hashes_ok": "NOT_RUN",
+  "protected_ids": [
+    "F00001-P01250",
+    "F00001-P01251",
+    "F00001-P01252",
+    "F00001-P01253",
+    "F00001-P01254",
+    "F00001-P01255",
+    "F00001-P01256",
+    "F00001-P01257",
+    "F00001-P01258",
+    "F00001-P01259",
+    "F00001-P01260",
+    "F00001-P01261",
+    "F00001-P01262",
+    "F00001-P01263",
+    "F00001-P01264",
+    "F00001-P01265",
+    "F00001-P01266",
+    "F00001-P01267",
+    "F00001-P01268",
+    "F00001-P01269",
+    "F00001-P01270",
+    "F00001-P01271",
+    "F00001-P01272"
+  ],
+  "protected_spans": 23,
+  "read_only_context_after": "[[PROTECTED:F00001-P01273:3bb4df26daca]]\nv19 用 COURSE、MODELING、RESEARCH 三个真实 GPT TeX 片段做 fresh A/B。旧 Skill 生成的三个\n候选都通过 validator，但独立盲评只有 COURSE 可交付；MODELING 因删除表格职责和主语错位判平局，\nRESEARCH 因[[PROTECTED:F00001-P01274:2da88e07356b]]病句和机械拆句反而偏好原文。这一结果证明：去掉禁词、缩短句子和\n保护公式都不足以证明文风变好。",
+  "read_only_context_before": "最终机器证据为 468 项 unittest 全绿、1 项 Windows symlink 权限跳过；18 个脚本通过 compile/\nhelp，quick validation 通过；完整 action profile 为 0 production positive、17 provisional positive、\n10 negative guard。资格仍是 [[PROTECTED:F00001-P01249:5d9b04217e88]]。因此 v17\n提高的是来源信任和能力面隔离的可信度，不是生成模型的前向合格率。",
+  "scene": "GENERAL",
+  "scene_document_prior": "",
+  "scene_requested": "GENERAL",
+  "scene_routing_ambiguous_scenes": [],
+  "scene_routing_decision": "EXPLICIT",
+  "scene_routing_evidence": [],
+  "scene_routing_margin": 0,
+  "scene_routing_policy_revision": 2,
+  "scene_routing_policy_sha256": "8d0f916d91b5753fd94d358c4b32e9a6c02b1f30120f43b4cbb2165dc1684450",
+  "scene_routing_scores": {
+    "COURSE": 0,
+    "MODELING": 0,
+    "RESEARCH": 0
+  },
+  "scene_routing_top_score": 0,
+  "start": 76042,
+  "start_line": 1902,
+  "status": "PENDING",
+  "structural_cross_unit_moves_allowed": false,
+  "structural_inventory_sha256": "9d974c0f18c66bfa27ed28a79c2c70e5efe71cbccddd1296588af99bc2198045",
+  "structural_paragraphs": [
+    {
+      "author_chars": 67,
+      "lock_reason": "contains_immovable_protected_span",
+      "movable": false,
+      "ordinal": 1,
+      "paragraph_id": "P001-9922c84fad77",
+      "protected_ids": [
+        "F00001-P01250"
+      ],
+      "responsibility": "EXPOSITION",
+      "sha256": "9922c84fad772a7695adee54ad385ea4a3f8f19d67d0cf3681af44f8a6e049b2"
+    },
+    {
+      "author_chars": 54,
+      "lock_reason": "introduces_following_block",
+      "movable": false,
+      "ordinal": 2,
+      "paragraph_id": "P002-8cb3931ad843",
+      "protected_ids": [
+        "F00001-P01251"
+      ],
+      "responsibility": "EXPOSITION",
+      "sha256": "8cb3931ad8437da29dbcdea3f6774c82e19b9470b224cdc7fabbaac54d139a87"
+    },
+    {
+      "author_chars": 68,
+      "lock_reason": "",
+      "movable": true,
+      "ordinal": 3,
+      "paragraph_id": "P003-b21b407caf8b",
+      "protected_ids": [
+        "F00001-P01252"
+      ],
+      "responsibility": "EXPOSITION",
+      "sha256": "b21b407caf8b168e74f2fbe29fc71b85dee90f45a6ee692f7defcd65fbe2baac"
+    },
+    {
+      "author_chars": 66,
+      "lock_reason": "",
+      "movable": true,
+      "ordinal": 4,
+      "paragraph_id": "P004-333b76590df1",
+      "protected_ids": [
+        "F00001-P01253",
+        "F00001-P01254",
+        "F00001-P01255",
+        "F00001-P01256",
+        "F00001-P01257",
+        "F00001-P01258"
+      ],
+      "responsibility": "EXPOSITION",
+      "sha256": "333b76590df103190085b6857563e05492e6f954f1dcdaca360d8fa816351299"
+    },
+    {
+      "author_chars": 63,
+      "lock_reason": "contains_immovable_protected_span",
+      "movable": false,
+      "ordinal": 5,
+      "paragraph_id": "P005-07e8cfb5d942",
+      "protected_ids": [
+        "F00001-P01259"
+      ],
+      "responsibility": "EXPOSITION",
+      "sha256": "07e8cfb5d942df3a0954402c93dba537cfa7ca45f1d7bd6d9f4c7201391f03a0"
+    },
+    {
+      "author_chars": 31,
+      "lock_reason": "contains_markdown_structure",
+      "movable": false,
+      "ordinal": 6,
+      "paragraph_id": "P006-ecf4fc945f14",
+      "protected_ids": [
+        "F00001-P01260",
+        "F00001-P01261",
+        "F00001-P01262"
+      ],
+      "responsibility": "EXPOSITION",
+      "sha256": "ecf4fc945f14dfd5c18a71b1fa88d5b051339e70a91efa3ec43cafb3ebd65794"
+    },
+    {
+      "author_chars": 22,
+      "lock_reason": "contains_immovable_protected_span",
+      "movable": false,
+      "ordinal": 7,
+      "paragraph_id": "P007-86d28819a014",
+      "protected_ids": [
+        "F00001-P01263"
+      ],
+      "responsibility": "EXPOSITION",
+      "sha256": "86d28819a0143290d6f43e96b3da95b83a63bf2df5b36de73a61c471c19b170d"
+    },
+    {
+      "author_chars": 87,
+      "lock_reason": "contains_markdown_structure",
+      "movable": false,
+      "ordinal": 8,
+      "paragraph_id": "P008-065a9a3a908d",
+      "protected_ids": [
+        "F00001-P01264"
+      ],
+      "responsibility": "EXPOSITION",
+      "sha256": "065a9a3a908d480dba59497ba587f9ac26dd48edfb92c663c6c80257f3ce16c0"
+    },
+    {
+      "author_chars": 46,
+      "lock_reason": "contains_immovable_protected_span",
+      "movable": false,
+      "ordinal": 9,
+      "paragraph_id": "P009-a1a927453135",
+      "protected_ids": [
+        "F00001-P01265",
+        "F00001-P01266"
+      ],
+      "responsibility": "EXPOSITION",
+      "sha256": "a1a927453135415fb7d9074a52f93f8f157acdf6e60ba62d6843072fd30c754f"
+    },
+    {
+      "author_chars": 102,
+      "lock_reason": "",
+      "movable": true,
+      "ordinal": 10,
+      "paragraph_id": "P010-4903d90c0741",
+      "protected_ids": [
+        "F00001-P01267"
+      ],
+      "responsibility": "EXPOSITION",
+      "sha256": "4903d90c074115b21a1105857ac125f339593b4be0513cfa44d3e09c5bba38d4"
+    },
+    {
+      "author_chars": 6,
+      "lock_reason": "insufficient_author_prose",
+      "movable": false,
+      "ordinal": 11,
+      "paragraph_id": "P011-afb2bdb50c3c",
+      "protected_ids": [],
+      "responsibility": "RESULT",
+      "sha256": "afb2bdb50c3c34dc3efd632058f1d4c37db0fbd95b7cc848cd642c4320a08797"
+    },
+    {
+      "author_chars": 40,
+      "lock_reason": "contains_markdown_structure",
+      "movable": false,
+      "ordinal": 12,
+      "paragraph_id": "P012-395761097ac8",
+      "protected_ids": [
+        "F00001-P01268",
+        "F00001-P01269",
+        "F00001-P01270",
+        "F00001-P01271"
+      ],
+      "responsibility": "EXPOSITION",
+      "sha256": "395761097ac81fbdca593d6de29511707cc18f09264c8c557fa794e2311ace65"
+    },
+    {
+      "author_chars": 62,
+      "lock_reason": "contains_immovable_protected_span",
+      "movable": false,
+      "ordinal": 13,
+      "paragraph_id": "P013-66702372f13e",
+      "protected_ids": [
+        "F00001-P01272"
+      ],
+      "responsibility": "EXPOSITION",
+      "sha256": "66702372f13ea90bb951c487d5f5953f69716a73fe94ca184e39e192e0d72bb2"
+    }
+  ],
+  "structural_plan_schema": "humanize-structural-plan/v1",
+  "structural_plan_status": "NOT_RUN",
+  "structural_scope": "UNIT",
+  "structural_title_lock": true,
+  "style_validation": "NOT_RUN",
+  "unit_id": "U-2f8693861208",
+  "voice_default_disclosure": true,
+  "voice_profile_binding_scene": "GENERAL",
+  "voice_profile_confidence": "DEFAULT",
+  "voice_profile_id": "scene-default-general",
+  "voice_profile_kind": "DEFAULT",
+  "voice_profile_revision": 1,
+  "voice_profile_sha256": "3b4eeeaeb3af397378ead360550371ff4632cbce6fceca8923479c53de23a112",
+  "voice_profile_source": "SCENE_DEFAULT"
+}

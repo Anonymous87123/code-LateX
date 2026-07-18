@@ -1,0 +1,679 @@
+# TeX 与 Markdown 长文工作流
+
+## 目录
+
+1. 适用范围
+2. 长文完成定义
+3. 固定输入快照
+4. 文件清单
+5. TeX 感知解析
+6. Markdown 感知解析
+7. 来源角色保护
+8. 文档单元清单
+9. 分块预算
+10. 重叠上下文
+11. 场景与 Voice Profile
+12. 覆盖账本
+13. 分节编辑
+14. Diff 与回滚
+15. 合并与冲突
+16. 幂等重跑
+17. 编译与格式检查
+18. 乱码与异常
+19. 完成交付
+20. 长文检查表
+
+## 1. 适用范围
+
+在以下任一条件成立时使用本工作流：
+
+- 单文件超过 1200 行；
+- 可编辑作者正文超过 20000 个汉字；
+- 文档包含 10 个以上一级或二级章节；
+- TeX 文档通过 `\input` 或 `\include` 引用多个文件；
+- 用户要求“全文”“整本”“所有章节”Humanize；
+- 单次上下文无法连续阅读完整文档。
+
+只处理文风、节奏、句式、模板和语态。不要在长文流程中加入内容审查。
+
+## 2. 长文完成定义
+
+先区分两个完成态：
+
+- `coverage_completion_claim_allowed`：只证明快照、单元覆盖、局部保护和格式/编译门闭合；
+- `humanize_completion_claim_allowed`：还必须证明 Voice 绑定、逐单元场景裁决、全文声线与跨块重复门、以及 fresh second-pass convergence。
+
+只有后者为 true 时才声明“全文 Humanize 已完成”。它至少要求：
+
+- 输入文件均已进入固定快照；
+- 每个文档单元均出现在 manifest；
+- 每个可编辑单元均有覆盖状态；
+- 所有可编辑 `author` 单元均为 `DONE` 或 `NO_CHANGE`，且不存在 `PENDING`、`IN_PROGRESS` 或 `UNRESOLVED`；
+- 文件级不存在 `SKIPPED_GARBLED` 或 `CHANGED_AFTER_SNAPSHOT`；
+- 每个修改单元均有 diff 和回滚依据；
+- 重叠区没有重复编辑；
+- TeX/Markdown 结构检查通过，或失败位置已明确报告；
+- 同一输出重跑不再产生无意义措辞漂移。
+
+当前收尾器尚未实现 hash-bound Voice Profile、全文声线/跨块重复门和 fresh 第二遍生成，
+因此即使局部覆盖闭合，也只允许 `coverage_completion_claim_allowed=true`；
+`humanize_completion_claim_allowed=false`，兼容字段 `full_completion_claim_allowed=false`。
+
+不要用抽样阅读支持“全文完成”。抽样只能用于预诊断和确定规则优先级。
+
+## 3. 固定输入快照
+
+在编辑前固定以下信息：
+
+```yaml
+snapshot_id:
+created_at:
+root:
+files:
+  - path:
+    bytes:
+    readable_bytes:
+    encoding:
+    sha256:
+    modified_at:
+```
+
+按字节读取并计算 SHA-256。记录开始时可读长度。若活动文件在处理期间追加内容，不把新增字节混入本轮；将文件标为 `CHANGED_AFTER_SNAPSHOT`。
+
+不要覆盖源文件来制造快照。优先使用副本、版本控制 diff 或独立 patch 记录。
+
+### 3.1 使用准备器固定快照
+
+```powershell
+python scripts/prepare_humanize_long_document.py <main.tex|document.md> `
+  --output <empty-run-dir> `
+  --scene <AUTO|GENERAL|COURSE|MODELING|RESEARCH>
+```
+
+TeX 正文需要清理装饰性样式包装时，只有用户明确授权后才追加
+`--editable-style-wrapper textbf`（也支持 `emph/textit`，可重复）。默认不传时仍保护全部命令；该参数只开放包装命令本身，不开放标题、引用、数学、标签或内部文字的语义改写。
+
+准备器只读源文件，并在读取开始时固定字节长度。它先尝试 UTF-8/UTF-8-SIG，再尝试 GB18030；仍不可读的文件标 `SKIPPED_GARBLED`，不会阻断其他 include。输出目录必须为空，避免旧 manifest 与新快照混合。
+
+固定产物：
+
+| 文件/目录 | 用途 |
+|---|---|
+| `snapshot.json` | 输入长度、编码、SHA-256、修改时间和快照 ID |
+| `source/` | 只读快照副本；作为回滚依据，不是编辑目标 |
+| `file_manifest.csv` | seed、include 关系、缺失/乱码/变动状态 |
+| `units.jsonl` | 单元锚点、行范围、hash、owner 与初始状态 |
+| `coverage_ledger.csv` | 初始覆盖账本；不得出现 `DONE` |
+| `protected_spans.jsonl` | 保护区 ID、范围、理由、hash 与恢复内容 |
+| `chunks/<unit_id>.json` | 带 `[[PROTECTED:...]]` 占位符的可编辑块 |
+| `run_metadata.json` | 预算、状态回加、保护数和完成声明权限 |
+| `prepare_integrity.json` | prepare 产物完整性清单；覆盖上述状态/结构文件与全部 chunk 的 SHA-256 |
+
+`run_metadata.json` 在准备阶段固定写 `completion_claim_allowed=false`。准备成功只表示材料可进入改写，不表示任何正文已处理。若 `processable_editable_units=0`，准备状态必须为 `REVIEW`，并标记 `no_editable_scope=true`；仅有标题、公式、标签、引语或其他保护内容的文件不能进入“可处理长文”状态。
+
+`finalize_humanize_long_document.py` 在读取任何终态前必须校验 `prepare_integrity.json`。
+该清单缺失、文件集合变化、`units.jsonl`、初始账本、protected spans、snapshot、manifest
+或任一 chunk 被修改时，收尾直接失败，不发布 `rendered` 或 `rendered_partial`。完整性清单
+只是审计辅助，不是独立信任根：收尾器还会从冻结 `source/` 副本、文件范围、预算、保护
+跨度和 canonical chunk 独立重建初始 units、账本、占位符恢复结果与 `author_chars`，并要求
+`units.jsonl` 与 chunk 一一相等。即使攻击者同时修改台账和重算封条，也不能把含正文的
+`PENDING` 伪装成 `SKIPPED_PROTECTED` 或其他终态。不能通过手工修改 `units.jsonl` 的
+`status/hash_after/style_validation` 伪造 DONE；终态只能由本次实际提交的 `REWRITE`/`NO_CHANGE`
+和逐单元验证产生。
+
+同一个 `run-dir` 的 finalize 通过跨进程锁串行执行，共享 staging 目录不得并发清理或发布。
+可选检查命令只在正文 staging 的一次性副本中运行；运行前后同时核对真实正文 staging、
+待发布的 validation/diff 证据 staging 和其余 run 产物。任一文件被新增、删除或修改都使
+编译门 `FAIL`，受污染证据不得发布。
+空文件集或零可处理单元属于 `REVIEW`，不能把“没有待处理内容”解释为全文完成；只有
+`finalization_metadata.json` 明确给出 `humanize_completion_claim_allowed=true`（兼容字段
+`full_completion_claim_allowed=true`）才能对外声明全文 Humanize 完成。覆盖层单独读取
+`coverage_completion_claim_allowed`。
+
+每个 chunk 还包含 `context_before_unit/context_after_unit` 和最多 1200 字符的 `read_only_context_before/read_only_context_after`。这些字段只用于判断衔接，唯一 owner 仍是当前 `unit_id`；改写包只能提交当前 `masked_text`，不得把只读上下文复制进输出。
+
+## 4. 文件清单
+
+递归追踪主文件中的本地引用：
+
+- `\input{...}`；
+- `\include{...}`；
+- `\subfile{...}`；
+- Markdown 相对链接中明确作为正文纳入的文件；
+- 用户显式指定的附录和章节文件。
+
+为每个文件记录：
+
+| 字段 | 说明 |
+|---|---|
+| `file_id` | 稳定短 ID |
+| `path` | 规范化绝对路径 |
+| `parent` | 引用它的文件 |
+| `include_order` | 文档展开顺序 |
+| `encoding` | 实际读取编码 |
+| `hash_before` | 快照哈希 |
+| `role` | 主文件、章节、附录、模板或资产 |
+| `editable` | 是否包含可编辑作者正文 |
+| `status` | `PENDING/DONE/NO_CHANGE/SKIPPED/UNRESOLVED` |
+
+不要扫描构建目录、生成文件、缓存、第三方模板或用户未纳入正文的备份文件。
+
+## 5. TeX 感知解析
+
+### 5.1 先识别结构，不按空行盲切
+
+识别：
+
+- `\part`、`\chapter`、`\section`、`\subsection`、`\subsubsection`；
+- `\paragraph` 和 `\subparagraph`；
+- `\begin{...}` / `\end{...}` 环境边界；
+- 命令参数和可选参数；
+- 注释行与转义百分号；
+- `\input`、`\include` 和文件展开顺序；
+- 行内与陈列数学边界；
+- verbatim 类环境。
+
+保持命令、花括号、方括号、标签、引用键和环境边界原样。
+
+### 5.2 区分结构参数与可编辑文本参数
+
+使用以下固定分类：
+
+| TeX 对象 | 处理方式 |
+|---|---|
+| 章节标题参数 | 默认受 `title_lock` 保护；解锁后仅改标题文字 |
+| `\caption{作者说明}` | 可将文字部分标为 `author`，保留命令结构 |
+| `\footnote{作者说明}` | 可编辑文字部分，保持嵌套命令完整 |
+| `\textbf/\emph/\textit{作者正文}` | 默认保护包装命令；用户授权格式清理时用 `--editable-style-wrapper` 开放，内部文字仍受不变量和 Voice 约束 |
+| `\label{}`、`\ref{}`、`\cite{}` | 全部保护 |
+| `\url{}`、`\path{}`、`\verb` | 全部保护 |
+| 自定义命令参数 | 默认保护；只有明确知道参数为作者正文时才编辑 |
+| 数学环境 | 标 `math`，不编辑内部内容 |
+| `verbatim`、`lstlisting`、`minted` | 标 `code`，不编辑内部内容 |
+| 注释 | 默认不作为正文改写；用户明确要求时单独处理 |
+
+不要用正则替换穿越嵌套命令边界。若无法可靠解析嵌套范围，标 `UNRESOLVED`，不要猜测。
+
+### 5.3 保存 TeX 锚点
+
+为每个可编辑单元保存：
+
+```yaml
+unit_id:
+file_id:
+heading_path:
+start_line:
+end_line:
+prefix_hash:
+content_hash:
+suffix_hash:
+```
+
+使用标题路径和前后文哈希共同定位。不要只依赖行号；前序编辑会改变行号。
+
+## 6. Markdown 感知解析
+
+识别：
+
+- ATX 与 Setext 标题；
+- YAML frontmatter；
+- fenced code block 与缩进代码；
+- blockquote；
+- 表格；
+- 列表层级；
+- HTML 块；
+- 链接目标、图片和引用定义；
+- 行内代码和公式；
+- 脚注定义。
+
+默认保护 YAML、代码、HTML 属性、链接目标、图片路径和引用键。根据来源角色决定是否编辑 blockquote；直接引语标 `quoted`，作者自写的提示块可标 `author`。
+
+保持表格列数、分隔行和列表层级。只编辑确认属于作者正文的单元格或列表项。
+
+## 7. 来源角色保护
+
+为每个文本 span 标记：
+
+- `author`；
+- `quoted`；
+- `exam-original`；
+- `OCR`；
+- `code`；
+- `math`。
+
+使用最内层保护优先。不要编辑 `quoted`、`exam-original`、`OCR`、`code` 和 `math` 内部内容。
+
+建立保护区清单：
+
+```yaml
+protected_id:
+unit_id:
+role:
+start_anchor:
+end_anchor:
+hash_before:
+reason:
+```
+
+编辑后再次计算保护区哈希。任何保护区哈希变化都必须回滚该单元并重新处理。
+
+## 8. 文档单元清单
+
+按最小完整写作功能建立 unit，不逐句切块：
+
+1. 优先使用完整小节；
+2. 小节过长时按段落组切分；
+3. 保持列表、表格、引语和公式邻接说明完整；
+4. 不跨文件引用边界生成一个可编辑 unit；
+5. 不把标题与其首段分开；
+6. 不把公式与紧随其后的作者解释无故分开。
+
+记录：
+
+| 字段 | 说明 |
+|---|---|
+| `unit_id` | 稳定 ID |
+| `file_id` | 所属文件 |
+| `heading_path` | 章节路径 |
+| `scene` | 场景路由 |
+| `voice_profile` | 使用的声线档案 |
+| `author_chars` | 可编辑正文规模 |
+| `protected_spans` | 保护区数量 |
+| `owner_chunk` | 唯一编辑分块 |
+| `status` | 覆盖状态 |
+
+## 9. 分块预算
+
+按可见作者正文字符而不是文件字节控制分块：
+
+| 项目 | 预算 |
+|---|---|
+| 目标分块 | 4000 至 7000 个可见正文字符 |
+| 硬上限 | 8000 个可见正文字符 |
+| 最小分块 | 1200 个可见正文字符，除非完整小节更短 |
+| 上下文重叠 | 前后各 1 个完整段落，合计不超过 1200 字符 |
+| 单次结构重排 | 不跨越一个授权章节 |
+
+若一个不可拆结构超过硬上限，保留完整结构并标记超限原因。不要在表格、列表、数学环境、引语或 TeX 命令中间硬切。
+
+对密集 TeX 命令的分块，额外限制总行数，避免保护区吞噬上下文。每块最多 600 行；超出时在完整段落边界继续切分。
+
+## 10. 重叠上下文
+
+只把重叠段用于理解衔接，不重复编辑。
+
+为每个重叠段指定唯一 owner：
+
+```yaml
+overlap_id:
+owner_chunk:
+reader_chunks: []
+hash_before:
+```
+
+执行以下规则：
+
+- owner chunk 可编辑重叠段；
+- reader chunk 只读，不输出该段改写；
+- 合并时只接受 owner 版本；
+- owner 版本变化后，更新相邻块的衔接检查；
+- 相邻块不得各自生成一份竞争改写。
+
+若跨块衔接必须同时改两侧，将两块提升为一个临时合并单元；不要分别猜测。
+
+## 11. 场景与 Voice Profile
+
+先在文档级识别主要用途，再按完整 unit 路由。不要逐句切换场景。
+
+为每个 unit 记录：
+
+- 显式用户场景；
+- 自动路由得分；
+- 最终场景；
+- 平局裁决；
+- Voice Profile 版本；
+- Profile 置信等级；
+- 未提供作者样本时的默认声明。
+
+混合文档允许不同 unit 使用不同场景。共享摘要或总引言用途不明时使用 `GENERAL`，不要拼接三种声线。
+
+## 12. 覆盖账本
+
+为每个 unit 使用且只使用一个状态：
+
+| 状态 | 含义 |
+|---|---|
+| `PENDING` | 已列入但尚未处理 |
+| `IN_PROGRESS` | 当前唯一正在处理的单元 |
+| `DONE` | 已改写、终审并生成 diff |
+| `NO_CHANGE` | 已完整阅读且不需改写 |
+| `SKIPPED_PROTECTED` | 全单元均为保护角色 |
+| `SKIPPED_GARBLED` | 可读性不足，按规则跳过 |
+| `UNRESOLVED` | 角色、权限、解析或冲突无法解决 |
+| `CHANGED_AFTER_SNAPSHOT` | 源文件在快照后变化，未混入本轮 |
+
+账本至少包含：
+
+```yaml
+unit_id:
+status:
+scene:
+mode:
+intensity:
+decisions:
+hash_before:
+hash_after:
+diff_path:
+protected_hashes_ok:
+style_gates:
+notes:
+```
+
+不要把只抽查了首尾的 unit 标为 `DONE` 或 `NO_CHANGE`。
+
+## 13. 分节编辑
+
+对每个 owner unit 执行：
+
+1. 核对快照哈希；
+2. 加载前后重叠只读上下文；
+3. 标记保护区；
+4. 加载场景规则和 Voice Profile；
+5. 连续阅读完整 unit；
+6. 给候选位置分配 `KEEP/DELETE/REWRITE/REVIEW/NO_CHANGE/UNRESOLVED`；
+7. 按强度改写；
+8. 比较改前改后；
+9. 核对保护区哈希；
+10. 运行纯文风终审；
+11. 生成 diff；
+12. 更新覆盖账本。
+
+一次只把一个 unit 标为 `IN_PROGRESS`。发生中断时从该状态恢复，不重复改写已完成单元。
+
+### 13.1 改写包合同
+
+只读取 `chunks/<unit_id>.json` 中状态为 `PENDING` 的块。`masked_text` 中的每个保护占位符必须原样、恰好保留一次；不得改 ID、12 位 hash、顺序或数量。
+
+改写结果写到独立 `<rewrites-dir>/<unit_id>.json`：
+
+```json
+{
+  "decision": "REWRITE",
+  "masked_text": "改写后的完整占位文本",
+  "keep_reasons": {
+    "LEX-RESULT-01": "此处承担结果报告言语行为"
+  },
+  "warning_resolutions": {
+    "<warning_fingerprint>": "建议恢复原句模态以保留结论范围"
+  },
+  "warning_review_request_sha256": "<current_request_sha256>",
+  "warning_review": {
+    "reviewer_kind": "HUMAN",
+    "reviewer_id": "调用方标签"
+  }
+}
+```
+
+上例是 warning proposal 包，不是可完成的 `DONE/PASS` 包。首次运行没有 warning 时，或尚未
+提交 proposal 时，省略 `warning_resolutions`、`warning_review_request_sha256` 和
+`warning_review`，不得单独携带其中任一字段。
+
+已连续阅读且无需改写的单元必须显式提交：
+
+```json
+{
+  "decision": "NO_CHANGE",
+  "reason": "正式定义组保持原有等权结构",
+  "keep_reasons": {}
+}
+```
+
+`NO_CHANGE` 理由至少含 4 个汉字，并仍对原文运行统一验证器。若单元含 high 表面命中，必须在 `keep_reasons` 中逐 signal 说明其正式功能或用户锁定依据，否则保持 `UNRESOLVED`。不要用空改写包或复制原文冒充处理；`REWRITE` 与原文完全相同时，收尾器会拒绝并要求改用带理由的 `NO_CHANGE`。
+
+`warning_resolutions` 只记录统一验证器非硬性言语行为 warning 的处理 proposal。每个 key
+必须是当前 `warning_review_request` 中的完整 fingerprint，且
+`warning_review_request_sha256` 必须精确绑定当前 unit 的 before/after SHA、warning details、
+场景/格式/保护术语和 validator/invariant/scanner/lexicon policy hash。模型或执行代理可以
+生成建议，但不得把自身复核描述为人工审批。`warning_review.reviewer_kind=HUMAN` 和 3 至
+128 字符 reviewer label 仅形成 caller assertion；收尾结果只保存 label 哈希，并固定写
+`identity_verified=false`、`review_clearance_granted=false`、
+`attestation_status=CALLER_ASSERTED_HUMAN_REVIEW`。proposal 对应 warning 仍是 pending，unit
+保持 `UNRESOLVED/REVIEW`，不得成为 `DONE/PASS`。跨 unit、跨 artifact 或 policy 变化后的
+request 重放必须拒绝。
+
+本地收尾器没有外部信任根，不能把 caller assertion 升级为 `VERIFIED_HUMAN`。真正的
+`VERIFIED_HUMAN` 必须由代理不可访问私钥的外部审批服务签发，并验证签名、unit/artifact、
+request hash、审批范围和时效；当前 rewrite bundle 不承载这种 clearance。未接入该服务时，
+应按 proposal 继续修改 `masked_text`，直到新版本不再产生 warning。公式、数字、单位、引语、
+代码、TeX 命令、环境或结构等硬错误无论如何都不可降级。
+
+## 14. Diff 与回滚
+
+完成一个或一批改写包后运行：
+
+```powershell
+python scripts/finalize_humanize_long_document.py `
+  --run-dir <run-dir> `
+  --rewrites <rewrites-dir> `
+  --check-command "<optional project build command>"
+```
+
+收尾器按单元恢复保护占位符，核对单元原始 hash，调用统一输出验证器，再决定是否接受。任何占位缺失、重复、未知或 hash 不符都会把该单元标为 `UNRESOLVED`，不会进入派生稿。
+
+### 14.1 保存每节 diff
+
+每个 `DONE` unit 必须保存：
+
+- 原始内容哈希；
+- 修改后内容哈希；
+- 上下文锚点；
+- 统一 diff 或等价逐段 patch；
+- 使用的参数和规则版本；
+- 保护区校验结果；
+- 回滚内容或可逆 patch。
+
+不要只保存最终整文件 diff；逐节 diff 才能定位回滚。
+
+### 14.2 使用原子回滚
+
+出现以下任一情况时回滚整个 unit：
+
+- 保护区哈希变化；
+- TeX/Markdown 结构边界损坏；
+- patch 无法在原锚点唯一应用；
+- unit 被快照后外部修改；
+- 改写越过授权强度；
+- 二次阅读发现言语行为被改变。
+
+回滚后将状态设为 `UNRESOLVED` 或重新处理。不要只手工补一个括号后继续宣称通过。
+
+收尾器从不覆盖原源文件。所有接受的单元先写入 `.rendered_staging`；全文不变量和可选编译门通过后才原子发布到 `rendered/` 或 `rendered_partial/`。编译失败时 staging 改名为 `failed_staging/`，不创建 `rendered/`。`rollback_manifest.json` 明确记录源文件未改、快照依据和丢弃失败 staging 的动作。
+
+逐单元证据保存在：
+
+- `validation/<unit_id>.before.*` 与 `.after.*`；
+- `validation/<unit_id>.validation.json`；
+- `diffs/<unit_id>.diff`；
+- `coverage_ledger.final.csv`；
+- `rendered_manifest.csv`；
+- `finalization_metadata.json`；
+- `rollback_manifest.json`。
+
+## 15. 合并与冲突
+
+按 include 顺序和 unit 顺序合并。使用以下优先级：
+
+1. 用户最新明确修改；
+2. 快照后外部修改；
+3. owner unit 的已验证 patch；
+4. 未修改原文。
+
+若源文件在处理期间变化：
+
+- 不直接覆盖；
+- 尝试用锚点做三方定位；
+- 只有上下文唯一且保护区未变时才重放 patch；
+- 其他情况标 `CHANGED_AFTER_SNAPSHOT` 并保留外部修改。
+
+不要用“最后写入者胜出”覆盖用户变化。
+
+## 16. 幂等重跑
+
+把幂等定义为：对上一轮 clean 输出使用相同参数、相同规则版本和相同 Voice Profile 重跑时，不再产生实质文风改动。
+
+执行以下检查：
+
+1. 固定上一轮输出为新输入；
+2. 使用相同 unit 边界和场景路由；
+3. 重新运行诊断；
+4. 将只涉及同义词轮换、标点来回切换、句序往返的变化判为 churn；
+5. 对 churn 决策为 `NO_CHANGE`；
+6. 要求第二次 patch 为空，或仅包含明确的格式规范化；
+7. 若第二次仍出现结构性变化，回到首轮规则查找不稳定冲突。
+
+不要把“每次输出都不一样”当作拟人化。稳定取舍比随机变化更重要。
+
+同一 run-dir、同一 rewrites 目录再次运行收尾器时，派生目录哈希完全相同只记录
+`assembly_replay_idempotency=PASS`（旧字段 `idempotency` 为兼容别名）。它不等于上文的
+fresh second pass；后者单独记录 `humanize_second_pass_convergence`。若已发布完整
+`rendered/` 而新 staging 不同，保存为 `non_idempotent_staging/` 并返回 `FAIL`，不覆盖旧
+输出。分批补齐 `rendered_partial/` 属于推进而非幂等比较，替换前后 hash 写入
+`partial_history.jsonl`；覆盖终态后删除陈旧 partial，只保留完整 `rendered/`。
+
+## 17. 编译与格式检查
+
+这些检查只验证编辑没有破坏文件形式，不评价内容。
+
+### 17.1 TeX 检查
+
+优先使用项目现有构建命令。若没有，至少检查：
+
+- 花括号与环境边界是否平衡；
+- `\begin` / `\end` 是否配对；
+- 引用键、标签和文件引用是否原样保留；
+- verbatim、代码和数学环境哈希是否不变；
+- 主文件是否仍能解析 include 图；
+- 已存在的编译流程是否成功退出。
+
+只报告由编辑引入的形式错误。不要借编译过程分析公式或论证。
+
+### 17.2 Markdown 检查
+
+检查：
+
+- fenced code block 是否闭合；
+- 标题层级是否符合授权；
+- 表格列数是否保持；
+- 链接目标和引用定义是否不变；
+- 列表层级是否未意外漂移；
+- YAML frontmatter 是否保持原样。
+
+### 17.3 格式失败处理
+
+定位失败到最小 unit，回滚该 unit，重跑检查。若项目原本就无法编译或格式检查已有失败，记录 baseline，不把它归因于本次编辑，也不要在纯文风任务中修复。
+
+`--check-command` 默认在 `.compile_check_staging/` 的一次性副本中执行，不直接接触待发布的 staging、run/source 快照或原始源文件。命令必须由调用方选用项目现有构建流程；若构建依赖原项目资产，应在命令中显式设置搜索路径或调用能接受派生主文件的现有脚本。检查副本会在命令后删除；命令在副本中产生的辅助文件不进入发布目录。收尾器同时对真实 staging 和 run 产物做前后文件集合/字节哈希核对，任何新增、删除或修改都使 `compile_check=FAIL`。未提供命令时 `compile_check=NOT_RUN`，但全文结构不变量仍会逐文件运行。不得把 `NOT_RUN` 写成编译通过。
+
+## 18. 乱码与异常
+
+遇到乱码时：
+
+1. 尝试识别已有文件编码，不转换源文件；
+2. 若同一段在候选编码下均不可读，标 `OCR` 或 `SKIPPED_GARBLED`；
+3. 保存位置、行号范围和哈希；
+4. 跳过该段，继续其他单元；
+5. 不猜字、不调用上下文补写；
+6. 交付时汇总跳过范围。
+
+遇到截断命令、未闭合环境或无法解析的嵌套结构时，标 `UNRESOLVED`。不要为完成覆盖率擅自修复结构。
+
+## 19. 完成交付
+
+输出以下长文交付摘要：
+
+```yaml
+snapshot_id:
+files_total:
+files_changed:
+units_total:
+units_done:
+units_no_change:
+units_protected:
+units_garbled:
+units_unresolved:
+units_changed_after_snapshot:
+scenes:
+voice_profile:
+diffs:
+assembly_replay_idempotency:
+humanize_second_pass_convergence:
+scene_routing_status:
+voice_binding_status:
+voice_conformance_status:
+cross_unit_repetition_status:
+coverage_completion_claim_allowed:
+humanize_completion_claim_allowed:
+format_check:
+```
+
+附上：
+
+- 修改文件列表；
+- 每节 diff 或其目录；
+- 覆盖账本；
+- `UNRESOLVED`、乱码和活动文件变化位置；
+- 使用场景默认声线的披露；
+- 格式检查结果。
+
+只有 `PENDING` 和 `IN_PROGRESS` 均为 0 时，才能结束本轮。存在明确列出的
+`UNRESOLVED` 不等于隐瞒未完成；必须准确说“可处理范围已完成”，不要说“全文完成”或
+“无遗漏”。任何 `UNRESOLVED`、`SKIPPED_GARBLED` 或 `CHANGED_AFTER_SNAPSHOT` 都使
+`coverage_completion_claim_allowed=false`；Voice、全局重复或 fresh second pass 未评估时，
+`humanize_completion_claim_allowed=false`。
+
+机器可读完成证据以 `finalization_metadata.json` 为准：
+
+- `status=PASS`：没有硬失败、PENDING 或未决单元；
+- `status=REVIEW`：仍有 PENDING、UNRESOLVED、乱码或快照后变化；
+- `status=FAIL`：全文形式检查、编译门或完整输出幂等检查失败；
+- `processable_scope_complete=true`：PENDING/IN_PROGRESS 为 0，不代表无乱码或未决；
+- `coverage_completion_claim_allowed=true`：覆盖终态闭合、无未决且无硬失败，只允许声明
+  覆盖与局部保护闭合；
+- `scene_routing_status`、`voice_binding_status`、`voice_conformance_status`、
+  `cross_unit_repetition_status`：分别报告逐单元场景、Profile 绑定、声线符合性和跨块新增
+  模板；`NOT_EVALUATED` 不得改写成 PASS；
+- `assembly_replay_idempotency`：同一 rewrite bundle 的派生字节重放；不是二次 Humanize；
+- `humanize_second_pass_convergence`：把上一轮 clean 输出作为新输入的 fresh second pass；
+- `humanize_completion_claim_allowed=true`：上述 Humanize 级门全部通过，才允许“全文
+  Humanize 已完成”；兼容字段 `full_completion_claim_allowed` 必须与它相同；
+- `source_files_modified=0`：原源文件没有被工具覆盖。
+- `run_artifacts_changed_during_check=true`、`staging_artifacts_changed_during_check=true` 或
+  `evidence_artifacts_changed_during_check=true`：检查命令通过绝对路径污染了快照、正文
+  staging 或 validation/diff 证据；编译门必须 `FAIL`。检测到证据 staging 污染时，
+  本轮未发布的 validation/diff 会被丢弃；若已有正式发布证据，必须保留旧证据而不覆盖。
+- `staged_evidence_discarded=true`：本轮证据因污染被丢弃，不表示旧证据不存在，也不表示
+  新一轮正文或文风验证通过。
+
+不得以 `units_done > 0`、`rendered_partial` 存在或准备器 `status=READY` 代替全文完成门。
+
+## 20. 长文检查表
+
+- [ ] 已固定字节长度、编码和 SHA-256；
+- [ ] 已递归列出正文引用文件；
+- [ ] 已排除模板、缓存、构建和生成文件；
+- [ ] 已识别 TeX/Markdown 结构边界；
+- [ ] 已区分作者正文和五类保护角色；
+- [ ] 每个 unit 都有稳定锚点和唯一 owner chunk；
+- [ ] 分块未切断环境、表格、列表、引语或公式；
+- [ ] 重叠段只被 owner 编辑一次；
+- [ ] 每个 unit 已路由场景并绑定 Voice Profile；
+- [ ] 每个可编辑 unit 均有终态；
+- [ ] 每个修改 unit 均有可逆 diff；
+- [ ] 保护区哈希全部通过；
+- [ ] 活动文件追加未混入本轮；
+- [ ] 幂等重跑没有同义词 churn；
+- [ ] TeX/Markdown 形式检查已执行；
+- [ ] baseline 失败与本次引入失败已区分；
+- [ ] 乱码和未决位置已报告；
+- [ ] 未用抽样结果代替全文覆盖；
+- [ ] 未输出内容正确性或检测规避结论。

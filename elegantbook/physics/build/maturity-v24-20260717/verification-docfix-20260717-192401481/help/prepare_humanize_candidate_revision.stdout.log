@@ -1,0 +1,26 @@
+usage: prepare_humanize_candidate_revision.py [-h] --after AFTER
+                                              --output OUTPUT
+                                              [--set-anchor ID=EXACT_TEXT]
+                                              [--supersedes-result SUPERSEDES_RESULT]
+                                              candidate
+
+Prepare an explicit, lineage-bound revision of a Humanize candidate package.
+The helper never guesses replacement anchors. An anchor that disappeared from
+the new candidate body must be supplied explicitly as ``ID=EXACT_TEXT`` and
+that text must occur exactly once. A previous queue result can be bound as the
+revision's ``supersedes_candidate_sha256`` so the queue validator can replace
+the old accepted/rejected state without a candidate-id collision.
+
+positional arguments:
+  candidate             previous candidate package JSON
+
+options:
+  -h, --help            show this help message and exit
+  --after AFTER         revised candidate body
+  --output OUTPUT       new candidate package path
+  --set-anchor ID=EXACT_TEXT
+                        explicit replacement for an anchor that no longer
+                        survives; repeatable
+  --supersedes-result SUPERSEDES_RESULT
+                        previous queue result JSON whose candidate hash this
+                        revision supersedes

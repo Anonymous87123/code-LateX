@@ -1,0 +1,173 @@
+{
+  "schema_version": "humanize-generation-oracle-catalog/v1",
+  "catalog_version": "1.0.0",
+  "grader_engine_version": "1",
+  "contract_binding": {
+    "version": "2026-07-14",
+    "sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+  },
+  "requirements_binding": {
+    "version": "1.1.0",
+    "sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+  },
+  "policy": {
+    "unknown_fields": "REJECT",
+    "text_encoding": "UTF-8",
+    "unicode_normalization": "NONE"
+  },
+  "checks": [
+    {
+      "id": "validator/MODE-02/pass/v1",
+      "atom_id": "MODE-02",
+      "type": "replay_result",
+      "source": "validator",
+      "configuration": {
+        "tool_id": "validate_humanize_output",
+        "args": [
+          "${ARTIFACT:input}",
+          "${ARTIFACT:output}",
+          "--scene",
+          "RESEARCH",
+          "--format",
+          "json"
+        ],
+        "expected": {
+          "status": "PASS",
+          "delivery_gate_status": "PASS",
+          "exit_code": 0,
+          "academic_correctness": "NOT_EVALUATED"
+        }
+      }
+    },
+    {
+      "id": "text/MODE-02/no-audit-ledger/v1",
+      "atom_id": "MODE-02",
+      "type": "utf8_literal",
+      "source": "artifact:output",
+      "configuration": {
+        "forbidden": [
+          {
+            "literal": "Severity | Location | Source role | Scene",
+            "maximum_occurrences": 0
+          }
+        ]
+      }
+    },
+    {
+      "id": "validator/PATH-05/positive/pass/v1",
+      "atom_id": "PATH-05/positive",
+      "type": "replay_result",
+      "source": "validator",
+      "configuration": {
+        "tool_id": "validate_humanize_output",
+        "args": [
+          "${ARTIFACT:input}",
+          "${ARTIFACT:output}",
+          "--scene",
+          "RESEARCH",
+          "--format",
+          "json"
+        ],
+        "expected": {
+          "status": "PASS",
+          "delivery_gate_status": "PASS",
+          "exit_code": 0,
+          "academic_correctness": "NOT_EVALUATED"
+        }
+      }
+    },
+    {
+      "id": "measurement/PROTECTED/hash-zero/v1",
+      "atom_id": "PROTECTED/hash-zero",
+      "type": "measurement_result",
+      "source": "measurement:protected_hash",
+      "configuration": {
+        "expected": {
+          "status": "PASS",
+          "changed_spans": 0
+        }
+      }
+    }
+  ],
+  "review_rubrics": [
+    {
+      "id": "style/PATH-05/equal-weight/v1",
+      "atom_id": "PATH-05/positive",
+      "reviewer_kinds": [
+        "MODEL",
+        "HUMAN"
+      ],
+      "minimum_distinct_reviewers": 1,
+      "questions": [
+        {
+          "id": "paragraphs-not-equal-weight",
+          "answer_type": "PASS_FAIL"
+        },
+        {
+          "id": "scene-formality-preserved",
+          "answer_type": "PASS_FAIL"
+        }
+      ],
+      "aggregation": "ALL_PASS"
+    }
+  ],
+  "suites": [
+    {
+      "id": "MODE-02/basic-rewrite/v1",
+      "atom_id": "MODE-02",
+      "fixture_bindings": {
+        "input": {
+          "sha256": "1111111111111111111111111111111111111111111111111111111111111111"
+        },
+        "prompt": {
+          "sha256": "2222222222222222222222222222222222222222222222222222222222222222"
+        },
+        "context": {
+          "sha256": "3333333333333333333333333333333333333333333333333333333333333333"
+        }
+      },
+      "required_checks": [
+        "validator/MODE-02/pass/v1",
+        "text/MODE-02/no-audit-ledger/v1"
+      ],
+      "required_reviews": []
+    },
+    {
+      "id": "PATH-05/positive/v1",
+      "atom_id": "PATH-05/positive",
+      "fixture_bindings": {
+        "input": {
+          "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "prompt": {
+          "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        },
+        "context": {
+          "sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+        }
+      },
+      "required_checks": [
+        "validator/PATH-05/positive/pass/v1"
+      ],
+      "required_reviews": [
+        "style/PATH-05/equal-weight/v1"
+      ]
+    },
+    {
+      "id": "PROTECTED/hash-zero/v1",
+      "atom_id": "PROTECTED/hash-zero",
+      "fixture_bindings": {
+        "input": {
+          "sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+        },
+        "protected_spans": {
+          "sha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+        }
+      },
+      "required_checks": [
+        "measurement/PROTECTED/hash-zero/v1"
+      ],
+      "required_reviews": []
+    }
+  ]
+}

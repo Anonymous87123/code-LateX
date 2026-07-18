@@ -1,0 +1,93 @@
+
+\section{压强和温度的微观解释}
+
+\begin{definition}[气体压强的微观来源]
+设一个长方体容器，边长分别为$x,y,z$，容器中有 \(N\) 个完全相同的气体分子，每个分子质量为 \(m\)。
+目标是计算 \(A_1\) 壁面所受压强，面积为$A_1=yz$，某个分子速度：$\vec v_i=v_{ix}\vec i+v_{iy}\vec j+v_{iz}\vec k$，它撞到右侧壁 \(A_1\) 后，只有 \(x\) 方向速度反向（分子施于器壁的冲量$I_i=-\Delta p_{ix}=2mv_{ix}$），两次碰撞 \(A_1\) 的时间间隔为$\Delta t=\dfrac{2x}{v_{ix}}$，单个分子施于器壁的平均冲力\[F_i=\frac{I_i}{\Delta t}=\frac{mv_{ix}^2}{x}\implies\overline F=\sum_iF_i=\sum_i\frac{mv_{ix}^2}{x}=\frac{m}{x}\sum_i v_{ix}^2=\frac{Nm}{x}\overline{v_x^2}\]容器壁面积$yz$，所以压强\[p=\frac{\overline F}{yz}=\frac{N}{xyz}m\overline{v_x^2}=\frac{N}{V}m\overline{v_x^2}=nm\overline{v_x^2}=nm\frac{\overline{v^2}}{3}=\frac13\rho \overline{v^2}\]定义分子平均平动动能：\[\overline{\varepsilon_t}=\frac12m\overline{v^2}\implies \boxed{p=\frac{1}{3}nm\overline{v^2}=\frac13\rho\overline{v^2}=\frac23n\overline{\varepsilon_t}}\]
+又$p=nKT$，则\[p=nkT=\frac23n\overline{\varepsilon_t}\implies\overline{\varepsilon_t}=\frac32kT,~T=\frac{2}{3k}\overline{\varepsilon_t}\]可见气体温度是气体分子平均平动动能（大量分子无规则热运动剧烈程度）的量度，\(0\text{ K}\) 的经典物理意义是分子完全停止运动的状态，不可能使一个物体冷却到绝对零度 \(0\text{ K}\)。
+\end{definition}
+
+\begin{exercise}
+一瓶氮气和一瓶氦气质量密度相同，分子平均平动动能相同，而且它们都处于平衡状态，则它们？\\
+A. 温度相同、压强相同\\
+B. 温度、压强都不同\\
+C. 温度相同，但氮气的压强大于氦气的压强\\
+D. 温度相同，但氮气的压强小于氦气的压强
+\end{exercise}
+\begin{solution}
+\[p=\frac13\rho\overline{v^2}=\frac23\frac{\rho}{m}\overline{\varepsilon_t},\overline{\varepsilon_t}=\frac32kT\]显然温度一样，而He单个分子质量更小，所以压强更大。
+\end{solution}
+
+\begin{exercise}[2006级期末：同温单原子气体的平均速率之比]
+容器内盛有两种不同单原子分子理想气体，处于同一平衡态。若两种分子的质量分别为 \(M_1,M_2\)，求两种气体分子的平均速率之比 \(\bar v_1/\bar v_2\)。
+\end{exercise}
+
+\begin{solution}
+ \[\bar v=\sqrt{\frac{8kT}{\pi m}},\qquad \frac{\bar v_1}{\bar v_2} =\sqrt{\frac{8kT/(\pi M_1)}{8kT/(\pi M_2)}} =\sqrt{\frac{M_2}{M_1}}\] 
+\end{solution}
+
+\begin{exercise}[2014级期末：由方均根速率求容器中气体压强]
+容积为 \(10^{-2}\,\si{m^3}\) 的容器中装有质量 \(\SI{100}{g}\) 的气体。若气体分子的方均根速率为 \(\SI{300}{m/s}\)，求气体压强。
+\end{exercise}
+
+\begin{solution}
+ \[\rho=\frac{0.100}{10^{-2}}=\SI{10}{kg/m^3},p=\frac13\rho\,\overline{v^2}=\frac13\times 10\times 300^2 =\SI{3.0e5}{Pa}\]
+\end{solution}
+
+\begin{exercise}[2014级期末：同种气体方均根速率比怎样决定压强比]
+有三瓶同种理想气体，分子数密度相同，方均根速率之比为 \(v_{\mathrm{rms},1}:v_{\mathrm{rms},2}:v_{\mathrm{rms},3}=1:2:4.\) ，求三瓶气体压强之比。
+\end{exercise}
+
+\begin{solution}
+ \[p=\frac13 nm\overline{v^2} =\frac13nmv_{\mathrm{rms}}^2\implies p_1:p_2:p_3 =1^2:2^2:4^2 =1:4:16\]
+\end{solution}
+
+\begin{exercise}[2011级期末：由 \(T,p,\rho\) 求气体方均根速率]
+某气体在温度 \(T=\SI{273}{K}\) 时，压强为 \(p=1.0\times10^{-2}\,\si{atm}\)，密度为 \(\rho=1.24\times10^{-2}\,\si{kg/m^3}\)。求该气体分子的方均根速率。取 \(1\,\si{atm}=1.013\times10^5\,\si{Pa}\)。
+\end{exercise}
+
+\begin{solution}
+\[v_{\mathrm{rms}} =\sqrt{\frac{3\times1.013\times10^3}{1.24\times10^{-2}}} =\sqrt{2.4508\times10^5} \approx \SI{495}{m/s}\]
+\end{solution}
+
+\begin{exercise}[2012级期末：定容气体平均速率加倍时温度和压强怎样变]
+一定量理想气体贮存在体积不变的封闭容器内。若气体分子的平均速率提高为原来的 \(2\) 倍，求气体温度和压强分别变为原来的多少倍。
+\end{exercise}
+
+\begin{solution}
+\[\overline{v}=\sqrt{\frac{8}{\pi}}\sqrt{\frac{RT}{M}}=\sqrt{\frac{8}{\pi}}\sqrt{\frac{pV}{m}}\]
+ 所以压强，温度都变为原来的 \(4\) 倍。
+\end{solution}
+
+\begin{exercise}[温度升到 \(4T_0\) 时平均速率、碰撞频率和自由程怎样变]
+在一个体积不变的容器中储有一定量理想气体。温度为 \(T_0\) 时，分子的平均速率为 \(\bar v_0\)，平均碰撞频率为 \(\bar Z_0\)，平均自由程为 \(\bar\lambda_0\)。若温度升高到 \(4T_0\)，求 \(\bar v,\bar Z,\bar\lambda\) 分别变为多少。
+\end{exercise}
+
+\begin{solution}
+ \[\bar v\propto\sqrt{T},\qquad \bar Z\sim \frac{\bar v}{\bar\lambda},\qquad \bar\lambda=\frac{1}{\sqrt2\pi d^2 n}\] 
+其中 \(n=N/V\) 是分子数密度。分子有效直径 \(d\) 在这个模型中也不随温度改变，当 \(T\) 由 \(T_0\) 升到 \(4T_0\) 时，\(\bar v=2\bar v_0\)， \(\bar Z=2\bar Z_0\)。其余不变。
+\end{solution}
+
+
+
+\begin{exercise}[用麦克斯韦分布函数表示速率区间和条件平均速率]
+已知 \(f(v)\) 为麦克斯韦速率分布函数，\(v_p\) 为分子的最概然速率。说明
+ \(\int_0^{v_p}f(v)\,\dd v\) 表示什么，并写出速率 \(v>v_p\) 的分子的平均速率表达式。
+\end{exercise}
+
+\begin{solution}
+ \(\int_0^{v_p}f(v)\,\dd v\) 表示速率在 \(0\sim v_p\) 区间内的分子数占总分子数的百分率。
+对速率大于 \(v_p\) 的分子，平均速率为 \(\displaystyle\bar v_{(v>v_p)} =\frac{\int_{v_p}^{\infty}v f(v)\,\dd v} {\int_{v_p}^{\infty}f(v)\,\dd v}.\) 
+\end{solution}
+
+\begin{exercise}[2005级期末：由真空度估算电子管内分子数密度]
+有一个电子管，其真空度（即管内气体压强）为 \(1.0\times10^{-5}\,\mathrm{mmHg}\)。求 \(\SI{27}{\celsius}\) 时管内单位体积的分子数。已知玻尔兹曼常量 \(k=1.38\times10^{-23}\,\si{J/K}\)，且
+ \(1\,\mathrm{atm}=1.013\times10^5\,\si{Pa}=76\,\mathrm{cmHg}.\) 
+\end{exercise}
+
+\begin{solution}
+\[
+p=1.0\times10^{-5}\times \frac{1.013\times10^5}{760}
+\approx \SI{1.33e-3}{Pa},~n=\frac{p}{kT}=\frac{1.33\times10^{-3}}{1.38\times10^{-23}\times300} \approx \SI{3.2e17}{m^{-3}}
+\]
+\end{solution}

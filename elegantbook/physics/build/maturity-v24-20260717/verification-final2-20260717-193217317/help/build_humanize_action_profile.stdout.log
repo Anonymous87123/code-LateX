@@ -1,0 +1,18 @@
+usage: build_humanize_action_profile.py [-h] [--catalog CATALOG]
+                                        [--source-trust-policy SOURCE_TRUST_POLICY]
+                                        --output OUTPUT [--format {json,text}]
+
+Build an auditable, excerpt-free action profile from approved MD/TeX sources.
+The profile is intentionally not a language-model prompt and not a corpus
+export. It verifies that abstract action cards still point at readable source
+locations, then emits hashes and audit statuses rather than any source prose.
+This makes source-derived editing actions reproducible without turning private
+documents into a sentence bank.
+
+options:
+  -h, --help            show this help message and exit
+  --catalog CATALOG     source-action catalog JSON
+  --source-trust-policy SOURCE_TRUST_POLICY
+                        fixed source provenance trust policy JSON
+  --output OUTPUT       profile JSON to create or replace
+  --format {json,text}

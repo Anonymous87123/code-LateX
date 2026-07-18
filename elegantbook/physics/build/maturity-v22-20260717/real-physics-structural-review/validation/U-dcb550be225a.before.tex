@@ -1,0 +1,63 @@
+
+\section{圆孔夫琅禾费衍射与光学仪器的分辨本领}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.6\textwidth]{pdf-exercises/11.png}
+\caption{圆孔衍射示意图}
+\end{figure}
+
+\begin{definition}[圆孔夫琅禾费衍射]
+光通过圆孔以后会形成一个有大小的亮斑，也就是艾里斑。图中$d$为艾里斑直径，$\theta$为衍射角，$\theta_1$为艾里斑的半角宽度，也就是从光轴到第一暗环边界的角度
+\[\theta_1=\frac{d/2}{f}=1.22\frac{\lambda}{D}\]
+屏上中央亮斑的半径是 \(d/2\)，放到透镜焦平面里去看，它对应的角宽就是 \(\theta_1\)。而这个角宽又由波长 \(\lambda\) 和孔径 \(D\) 决定。孔越大，\(\theta_1\) 越小，斑越小；波长越长，\(\theta_1\) 越大，斑越大。
+\end{definition}
+
+\begin{definition}[光学仪器能否区分两个物点与瑞利判据]
+真实的光是波，物点 \(S\) 成像后是一个有扩展范围的衍射斑；如果还有另一个物点 \(S_1\)，它也会形成另一个艾里斑；两个物点如果都在透镜的焦平面上，那么屏上看到的是两个艾里斑的叠加；由于这两个点光源是不相干的，所以总光强是  \[
+I=I_1+I_2
+\]对于两个强度相等的不相干点光源（物点），如果一个点光源的衍射图样的主极大，刚好和另一个点光源衍射图样的第一极小重合，那么这两个点光源（或物点）就恰好能被这一光学仪器分辨。（两个亮斑只要“肩碰肩”，中间还能看出一点凹下去，就算刚好分辨；如果凹不出来，就分不清了。）在瑞利条件下，两个物点刚好能分辨时，它们对仪器中心的张角，就是最小分辨角：
+\[
+\delta\theta_0=1.22\frac{\lambda}{D}
+\]
+这其实就是圆孔衍射的第一暗环半角宽度。也就是说第一暗环半角宽度，最小分辨角本质上是同一个量。接着定义分辨率（分辨本领）：
+\[
+R=\frac{1}{\delta\theta_0}=\frac{D}{1.22\lambda}\propto D,\ \frac{1}{\lambda}
+\]孔径 \(D\) 越大，分辨本领越强；波长 \(\lambda\) 越短，分辨本领越强。所以提高分辨率，只有两个大方向：增大孔径，减小波长。
+\end{definition}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.6\textwidth]{pdf-exercises/12.png}
+\caption{学仪器能否区分两个物点与瑞利判据}
+\end{figure}
+
+\begin{exercise}[人眼分辨两盏车灯的最远距离]
+设两盏车灯相距 \(\delta y=\SI{1.5}{m}\)，人眼瞳孔直径约为 \(D=\SI{4}{mm}\)，取最敏感黄绿光波长 \(\lambda=\SI{555}{nm}\)。问人眼最远在多大距离 \(L\) 处还能恰好分辨这两盏灯？
+\end{exercise}
+
+\begin{solution}
+把人眼看成一个有限孔径的成像系统。恰好能分辨时，角分辨极限满足瑞利判据：
+\[
+\theta_{\min}=1.22\frac{\lambda}{D},\qquad
+\theta\approx \frac{\delta y}{L}
+\implies
+\frac{\delta y}{L}=1.22\frac{\lambda}{D}
+\implies
+L=\frac{\delta y\,D}{1.22\lambda}
+=\frac{1.5\times 4.0\times 10^{-3}}{1.22\times 555\times 10^{-9}}
+\approx \SI{8.9e3}{m}.
+\]
+
+所以最远约在 \(\SI{8.9}{km}\) 处，人眼还能勉强把两盏车灯分开。这个例子说明：瑞利判据不是抽象结论，而是直接限制“现实里到底看不看得开”。
+\end{solution}
+
+\begin{exercise}[2008级期末：望远镜分辨两颗星所需物镜口径]
+设天空中两颗星对一望远镜的张角为 \(4.84\times10^{-6}\,\si{rad}\)，它们都发出波长为 \(\SI{550}{nm}\) 的光。为了分辨出这两颗星，望远镜物镜的口径至少要多大？
+\end{exercise}
+
+\begin{solution}
+望远镜物镜是有限圆孔系统，能否分辨两颗星由瑞利判据控制。题目已经给出张角，所以不需要再做线距离到角度的换算。
+ \(\theta_{\min}=1.22\frac{\lambda}{D},\qquad \theta=\theta_{\min} \implies D=\frac{1.22\times 550\times10^{-9}}{4.84\times10^{-6}} \approx \SI{0.139}{m} =\SI{13.9}{cm}.\) 
+张角越小，所需口径越大；波长越短，分辨越容易。最后得到的是 \(\SI{0.139}{m}\)，按题意写成 \(\SI{13.9}{cm}\) 更直观。
+\end{solution}

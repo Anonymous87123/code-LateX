@@ -1,0 +1,113 @@
+{
+  "author_chars": 161,
+  "chunk_binding_sha256": "b20c917017c2118193a32e12018196fb8ca4ac3b88b052834b0b75fa4dd3a3b7",
+  "context_after_unit": "U-9c00722f942c",
+  "context_before_unit": "U-84b8c7557834",
+  "diff_path": "",
+  "end": 59537,
+  "end_line": 1454,
+  "file_id": "F00001",
+  "hash_after": "",
+  "hash_before": "29be3440d8160399c43711c0ea6112986fa1471c97d27700583c9edb992a5bc5",
+  "heading_path": "中文学术纯文风 Humanize Skill：生产化交付与红队报告 / 18. v12：Voice Profile 从说明文档变成可重建工件 / 18.14 v14：fresh second pass 从声明字段升级为活证据控制面 / 18.14.2 收敛和失败不再共用一个模糊状态",
+  "intensity": "STRUCTURAL",
+  "line_count": 14,
+  "masked_text": "[[PROTECTED:F00001-P00940:52ed1e13db1f]]\n[[PROTECTED:F00001-P00941:905cc7daf61c]] 把三类结果分开：\n\n| 情形 | 状态 | 完成声明 |\n|---|---:|---:|\n| 全部初始 PENDING unit 均有 fresh [[PROTECTED:F00001-P00942:9cb6fce862b9]]；第二遍 ledger 全为 NO_CHANGE；两遍 rendered tree 相同；活证据复验一致 | [[PROTECTED:F00001-P00943:294046bb5908]] | 只放开 second-pass 这一门 |\n| 缺 trial、缺 bundle、第二遍仍有 PENDING/UNRESOLVED、任一 fresh [[PROTECTED:F00001-P00944:938c25f25bf8]]、两遍树不同 | [[PROTECTED:F00001-P00945:bd036b668dc6]] | false |\n| plan/collection/receipt/record/seal/scene/Voice/tree/hash 错配，重复 run id，projection 漂移，receipt 底层证据被删除 | [[PROTECTED:F00001-P00946:699451f5660b]] | false |\n\n这一分级避免了两个相反错误：不能因为第二遍提出了合理修改就写[[PROTECTED:F00001-P00947:fc0f1a3a3cb1]]，也不能把外部\n服务暂时无输出误写成文稿硬损坏。[[PROTECTED:F00001-P00948:938c25f25bf8]] 意味着文风尚未稳定，应回到第一遍规则查冲突；\n证据错配则意味着审计链本身不可信，必须硬失败。\n\n",
+  "mode": "REWRITE",
+  "notes": "",
+  "owner_chunk": "U-9819bed24077",
+  "part": 1,
+  "protected_hashes_ok": "NOT_RUN",
+  "protected_ids": [
+    "F00001-P00940",
+    "F00001-P00941",
+    "F00001-P00942",
+    "F00001-P00943",
+    "F00001-P00944",
+    "F00001-P00945",
+    "F00001-P00946",
+    "F00001-P00947",
+    "F00001-P00948"
+  ],
+  "protected_spans": 9,
+  "read_only_context_after": "[[PROTECTED:F00001-P00949:c0eff4d2ca21]]\n第一版草案只校验 receipt schema、自哈希、tree、Voice、scene 和若干 64 位十六进制字段。\n红队证明这仍可伪造：任何调用方都能填写假的 process hash 后重算 JSON 自哈希，或者在 receipt\n生成后删除全部 trials，而第一遍 finalizer 仍会 PASS。v14 将 receipt 扩展为活证据索引：",
+  "read_only_context_before": "1. 每个 unit 用 [[PROTECTED:F00001-P00938:099657a4865a]] 启动独立新进程；\n2. collect 只复制 strict、无 code fence、无重复键、unit/chunk/Voice 精确匹配的原始 output；\n3. 第二遍 finalizer 对全部 bundle 运行普通长文门，产生真实 coverage ledger 与 rendered tree；\n4. [[PROTECTED:F00001-P00939:76de7d05053f]] 重读 plan、collection、runner receipt、run record、run seal、\n   public seal、execution projection、第二遍 finalization 和两遍 rendered；\n5. 第一遍 finalizer 接收 receipt 时不只验自哈希，而是按 receipt 的 evidence roots 重新执行\n   verifier；live receipt 与提交 receipt 必须逐字段相同。",
+  "scene": "GENERAL",
+  "scene_document_prior": "",
+  "scene_requested": "GENERAL",
+  "scene_routing_ambiguous_scenes": [],
+  "scene_routing_decision": "EXPLICIT",
+  "scene_routing_evidence": [],
+  "scene_routing_margin": 0,
+  "scene_routing_policy_revision": 2,
+  "scene_routing_policy_sha256": "8d0f916d91b5753fd94d358c4b32e9a6c02b1f30120f43b4cbb2165dc1684450",
+  "scene_routing_scores": {
+    "COURSE": 0,
+    "MODELING": 0,
+    "RESEARCH": 0
+  },
+  "scene_routing_top_score": 0,
+  "start": 58983,
+  "start_line": 1441,
+  "status": "PENDING",
+  "structural_cross_unit_moves_allowed": false,
+  "structural_inventory_sha256": "5e6d22268a3626ce349ffedd36656b04091e6fbf446c151009ccf77a57617c83",
+  "structural_paragraphs": [
+    {
+      "author_chars": 7,
+      "lock_reason": "insufficient_author_prose",
+      "movable": false,
+      "ordinal": 1,
+      "paragraph_id": "P001-731561f0597b",
+      "protected_ids": [
+        "F00001-P00940",
+        "F00001-P00941"
+      ],
+      "responsibility": "EXPOSITION",
+      "sha256": "731561f0597be0fad33b6385ca00b9621cc8eef2a09a9360e4755e6736421def"
+    },
+    {
+      "author_chars": 63,
+      "lock_reason": "contains_markdown_structure",
+      "movable": false,
+      "ordinal": 2,
+      "paragraph_id": "P002-7f8c8c54eefd",
+      "protected_ids": [
+        "F00001-P00942",
+        "F00001-P00943",
+        "F00001-P00944",
+        "F00001-P00945",
+        "F00001-P00946"
+      ],
+      "responsibility": "EXPOSITION",
+      "sha256": "7f8c8c54eefdb1aa89ac302df6699a9a21f1bac785243f1a145389fa75564c02"
+    },
+    {
+      "author_chars": 91,
+      "lock_reason": "contains_immovable_protected_span",
+      "movable": false,
+      "ordinal": 3,
+      "paragraph_id": "P003-24c5badc7272",
+      "protected_ids": [
+        "F00001-P00947",
+        "F00001-P00948"
+      ],
+      "responsibility": "EXPOSITION",
+      "sha256": "24c5badc727289a7ca1851ee7b17efa4cb71eb5b89468d34bb6e4ace013a0e64"
+    }
+  ],
+  "structural_plan_schema": "humanize-structural-plan/v1",
+  "structural_plan_status": "NOT_RUN",
+  "structural_scope": "UNIT",
+  "structural_title_lock": true,
+  "style_validation": "NOT_RUN",
+  "unit_id": "U-9819bed24077",
+  "voice_default_disclosure": true,
+  "voice_profile_binding_scene": "GENERAL",
+  "voice_profile_confidence": "DEFAULT",
+  "voice_profile_id": "scene-default-general",
+  "voice_profile_kind": "DEFAULT",
+  "voice_profile_revision": 1,
+  "voice_profile_sha256": "3b4eeeaeb3af397378ead360550371ff4632cbce6fceca8923479c53de23a112",
+  "voice_profile_source": "SCENE_DEFAULT"
+}

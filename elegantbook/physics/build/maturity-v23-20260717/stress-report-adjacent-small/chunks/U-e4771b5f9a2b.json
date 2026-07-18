@@ -1,0 +1,258 @@
+{
+  "author_chars": 1014,
+  "chunk_binding_sha256": "01b491988f8dab068158d68f3819cd807f6bebf4a749868b28e512ea26f7236c",
+  "context_after_unit": "U-1b01afefca71",
+  "context_before_unit": "U-4190be19b2aa",
+  "diff_path": "",
+  "end": 61729,
+  "end_line": 1630,
+  "file_id": "F00001",
+  "hash_after": "",
+  "hash_before": "2155b559758933e31e1004c1ff03969f1fbf68b186156ac69abc7ac7e6eabc20",
+  "heading_path": "GPT 中文语言风格全域重整报告：以 MD/TEX 学术成文为核心 / 板块二：模型学术写作语言风格库（核心） / 2.45 第十二轮：把“修复后的 AI 味”作为全文问题处理",
+  "intensity": "STRUCTURAL",
+  "line_count": 71,
+  "masked_text": "[[PROTECTED:F00001-P01040:19536bd9bf74]]\n此前报告已经从真实 MD/TeX 中归纳出一类很具体的二次 AI 味：模型删掉“值得注意的是、综上\n所述、奠定基础”后，容易批量换成[[PROTECTED:F00001-P01041:a5a864badb29]]这套克制\n短句。单段看每一句都可能合理，跨章节看却会形成新的统一口头禅。旧 validator 按 unit 工作，\n两个 unit 各出现一次时都能局部 PASS；这说明[[PROTECTED:F00001-P01042:67bfbe9782e3]]仍不能替代全文聚合。\n\nv13 为此增加了二阶段提交。局部 PASS 的候选先进入临时接受集，不立即成为不可逆 DONE。\nfinalize 对全部初始 PENDING unit 建立 protected-masked before/after：公式、代码、引语、题干、\nOCR 和其他保护 span 只保留占位符，不进入措辞统计。全局门先执行 [[PROTECTED:F00001-P01043:b31eae91ea43]]，再执行\n真实语料目录中仍为 AVAILABLE 的 negative guard。这里没有建立[[PROTECTED:F00001-P01044:a788c30b7e0e]]的\n通用 n-gram 门，因为物理、数学和工程论文必然重复术语；第一版只处理已有逐文档阅读和规则证据\n支撑的模板家族。\n\n真实语料在这一层不是装饰性来源说明。GPT 生成的 CET6 TeX 被标为负例而非作者 Voice，\n其中固定升级链被蒸馏为 [[PROTECTED:F00001-P01045:477d0d90b1bc]]：自动未来桥接，以及跨段重复\n[[PROTECTED:F00001-P01046:c6758d3bb232]]。建模 README、施工计划、治理报告、产品宣传、OCR 教材和 API 文档也\n各自形成场景限定的 negative guard。只有来源仍可读、行范围和 hash 有效的 guard 才能执行；\n适用 guard 失效时状态是 REVIEW，而不是[[PROTECTED:F00001-P01047:f1d9c77f31be]]。正向 action card 不会反向变成\ndetector，防止把有用语料变成禁句库。\n\n新增重复按 unit 做差，不只比较全文总数。假设甲 unit 原文已有一次[[PROTECTED:F00001-P01048:c531cdb40b42]]，乙 unit\n本轮新增一次：门只回退乙，不连坐甲；若甲乙原文都已有且 NO_CHANGE，则记录 inherited，\n不阻断。命中后回退动作也不是文字标签：新增 unit 的 [[PROTECTED:F00001-P01049:077c476ea2f9]] 改为 UNRESOLVED，清空\n[[PROTECTED:F00001-P01050:0297203bbc1b]]，从待组装 patch 中移除，发布稿恢复原文。这样解决了“报告写 REVIEW，\ncoverage ledger 却还写 DONE”的虚假闭环。\n\n匹配视图执行 NFKC、删除零宽字符和汉字内部空格，所以[[PROTECTED:F00001-P01051:757c7a3365bf]]不能绕过；但不跨\n空段、标题、列表、TeX 环境、公式或引语拼接。证据记录 finding fingerprint、introduced unit、\ninherited unit、逻辑文档 hash、lexicon hash、action catalog/profile hash 和 detector definition\nhash，同一 bundle 重放必须产生相同 fingerprint 与 blocking unit 集。\n\n同一轮还把 Voice Profile 从[[PROTECTED:F00001-P01052:a71f8d2dacb6]]推进到[[PROTECTED:F00001-P01053:9671aa7d7c03]]。extractor 正则\n现在只有 builder 一份注册表，并有独立 policy hash；finalize 不再复制一套容易漂移的正则。\nDEFAULT PASS 只表示场景默认、绑定、逐 unit validator 和披露闭合，个人声线明确为 N/A。\nPERSONAL 至少需要 6 个目标正文块，逐项比较 before/after 的支持数和比例；只有明显回退才\nREVIEW，不因为作者样本常用[[PROTECTED:F00001-P01054:a127ce043587]]就强迫目标段补这些形式。已知 AI 壳和重复\n段首作为 [[PROTECTED:F00001-P01055:a413a36a2c0b]]，只能保持或减少。无论 PASS 与否，[[PROTECTED:F00001-P01056:3a64c93f0e81]] 不变。\n\n新增回归不是只验证字段存在：\n\n- 6 个[[PROTECTED:F00001-P01057:1df940c070c1]]段落 NO_CHANGE，Voice feature 支持保持 [[PROTECTED:F00001-P01058:69b71218e28a]]，PERSONAL 门 PASS；\n- 全部改成未注册的[[PROTECTED:F00001-P01059:7c1af8dd2c2a]]，支持降到 [[PROTECTED:F00001-P01060:d463a6d83c53]]，门 REVIEW；\n- 只有 2 个目标块时返回样本不足，不宣称全文拟声；\n- 两个 TeX unit 分别把[[PROTECTED:F00001-P01061:e1eb66a8ce0c]]改成[[PROTECTED:F00001-P01062:ec72765c89e7]]，局部均 PASS，全文\n  [[PROTECTED:F00001-P01063:b31eae91ea43]] 命中并把两个 unit 回退；\n- 原文已含两个句壳且 NO_CHANGE 时只记录 inherited；\n- 两个 unit 各写一次[[PROTECTED:F00001-P01064:c6758d3bb232]]，命中真实 CET6 负例 guard；\n- 保护占位符内同样短语不计数，零宽字符绕过失败；\n- partial scope、适用 guard unavailable 和伪造带 detector 的 positive card 均不能得到 PASS。\n\n微信 [[PROTECTED:F00001-P01065:4fb904fb5092]] 的回归仍保留旧 fresh agent 的原始正文，只更新 v13 必需的 chunk/Voice 绑定，\n因此不冒充新鲜前向。结果仍是 FRAGMENT 硬不变量 PASS、\n[[PROTECTED:F00001-P01066:a929015ddb96]]、unit UNRESOLVED；全文 Voice 与跨 unit 门因 27 个\nPENDING 分别返回 REVIEW 和 REVIEW/PARTIAL，新增跨块 finding 为 0，源文件修改为 0。新门\n没有洗掉旧 warning，也没有把[[PROTECTED:F00001-P01067:de49e9b9d792]]误写成完整范围 PASS。证据见\n[v13 real-main audit]([[PROTECTED:F00001-P01068:6f5cbb5a46ac]])。\n\n当前机器快照为：402 项 unittest 整体 OK、1 项 symlink 权限测试跳过；15 个脚本通过编译和\n帮助入口；50 张动作卡可用、0 不可用；合同 [[PROTECTED:F00001-P01069:247a835eb62b]]、requirements [[PROTECTED:F00001-P01070:3c0b65037ee6]]、oracle\n[[PROTECTED:F00001-P01071:4a3243b2ba97]]，资格矩阵扩到 168 个原子。28 文件 projection tree 为\n[[PROTECTED:F00001-P01072:e479af3adcb7]]；无 manifest 资格仍是\n[[PROTECTED:F00001-P01073:ce2282181550]]。机器产物见\n[v13 projection]([[PROTECTED:F00001-P01074:a0f490d008ea]])、\n[v13 qualification]([[PROTECTED:F00001-P01075:52744d533742]]) 和\n[v13 action profile]([[PROTECTED:F00001-P01076:bba09546e212]])。\n\n这轮关闭了全文 Voice 与跨 unit 修复模板两个明确缺口，但没有把 Skill 宣称为最终成熟：fresh\nsecond pass 仍是 [[PROTECTED:F00001-P01077:436d26f8f16d]]，AUTO 逐 unit 路由仍未实现，PERSONAL 来源身份和生成 E3/E4\n隔离仍缺代理不可访问私钥的外部信任根。\n\n",
+  "mode": "REWRITE",
+  "notes": "",
+  "owner_chunk": "U-e4771b5f9a2b",
+  "part": 1,
+  "protected_hashes_ok": "NOT_RUN",
+  "protected_ids": [
+    "F00001-P01040",
+    "F00001-P01041",
+    "F00001-P01042",
+    "F00001-P01043",
+    "F00001-P01044",
+    "F00001-P01045",
+    "F00001-P01046",
+    "F00001-P01047",
+    "F00001-P01048",
+    "F00001-P01049",
+    "F00001-P01050",
+    "F00001-P01051",
+    "F00001-P01052",
+    "F00001-P01053",
+    "F00001-P01054",
+    "F00001-P01055",
+    "F00001-P01056",
+    "F00001-P01057",
+    "F00001-P01058",
+    "F00001-P01059",
+    "F00001-P01060",
+    "F00001-P01061",
+    "F00001-P01062",
+    "F00001-P01063",
+    "F00001-P01064",
+    "F00001-P01065",
+    "F00001-P01066",
+    "F00001-P01067",
+    "F00001-P01068",
+    "F00001-P01069",
+    "F00001-P01070",
+    "F00001-P01071",
+    "F00001-P01072",
+    "F00001-P01073",
+    "F00001-P01074",
+    "F00001-P01075",
+    "F00001-P01076",
+    "F00001-P01077"
+  ],
+  "protected_spans": 38,
+  "read_only_context_after": "[[PROTECTED:F00001-P01078:4757df836dad]]\n前面的 MD/TeX 逐文档阅读反复出现一个现象：GPT 不一定保留最刺眼的“值得注意的是、综上所述、\n奠定基础”，但在再次润色时会把已经直接的句子继续轮换成另一套近义表达。常见结果不是事实\n更清楚，而是标点来回、句序往返、限定词增删和[[PROTECTED:F00001-P01079:77c965084c65]]等修复话术反复\n出现。这类 AI 味不能只靠禁词表解决，因为第二遍每一句都可能不命中旧词，问题在于改写决策不\n稳定。",
+  "read_only_context_before": "这轮对中文去 AI 文风的直接启示是：真实材料不仅用来统计[[PROTECTED:F00001-P01039:a063dc38cb59]]这类\n表层抓手，还必须用来验证编辑工件在 TeX 结构中的实际语义。否则一个词项扫描器可以很丰富，\n最终链路仍可能因为 chunk 边界把原本合法的文章判死，或反过来用局部 PASS 掩盖全文未检查。\n当前 Skill 在工件绑定、错误分层和边界披露上继续成熟，但全文 Voice conformance、跨 unit\n修复语重复、fresh second pass、AUTO 逐单元路由与外部 E3/E4 仍未闭合。",
+  "scene": "GENERAL",
+  "scene_document_prior": "",
+  "scene_requested": "GENERAL",
+  "scene_routing_ambiguous_scenes": [],
+  "scene_routing_decision": "EXPLICIT",
+  "scene_routing_evidence": [],
+  "scene_routing_margin": 0,
+  "scene_routing_policy_revision": 2,
+  "scene_routing_policy_sha256": "8d0f916d91b5753fd94d358c4b32e9a6c02b1f30120f43b4cbb2165dc1684450",
+  "scene_routing_scores": {
+    "COURSE": 0,
+    "MODELING": 0,
+    "RESEARCH": 0
+  },
+  "scene_routing_top_score": 0,
+  "start": 58487,
+  "start_line": 1560,
+  "status": "PENDING",
+  "structural_cross_unit_moves_allowed": false,
+  "structural_inventory_sha256": "c35f6ed69a2869b28b99de364c2463f72751c2fe576af11b4fbe949f12aeafe6",
+  "structural_paragraphs": [
+    {
+      "author_chars": 107,
+      "lock_reason": "contains_immovable_protected_span",
+      "movable": false,
+      "ordinal": 1,
+      "paragraph_id": "P001-f6b6d37c0e23",
+      "protected_ids": [
+        "F00001-P01040",
+        "F00001-P01041",
+        "F00001-P01042"
+      ],
+      "responsibility": "EXPOSITION",
+      "sha256": "f6b6d37c0e2327e1fe9f73532f638ef7a7dfdd7a7e1bad9ca211a9033f31f3ea"
+    },
+    {
+      "author_chars": 135,
+      "lock_reason": "contains_immovable_protected_span",
+      "movable": false,
+      "ordinal": 2,
+      "paragraph_id": "P002-6d8024215afd",
+      "protected_ids": [
+        "F00001-P01043",
+        "F00001-P01044"
+      ],
+      "responsibility": "EXPOSITION",
+      "sha256": "6d8024215afdb9699ee112445c2ff0a65bdfbda0d8d589b8037cefa8ddfad7a3"
+    },
+    {
+      "author_chars": 130,
+      "lock_reason": "contains_immovable_protected_span",
+      "movable": false,
+      "ordinal": 3,
+      "paragraph_id": "P003-8c2573c7fb8a",
+      "protected_ids": [
+        "F00001-P01045",
+        "F00001-P01046",
+        "F00001-P01047"
+      ],
+      "responsibility": "EXPOSITION",
+      "sha256": "8c2573c7fb8a6030707ba68ffa81cd835df24619f1178776a147c950e8482658"
+    },
+    {
+      "author_chars": 106,
+      "lock_reason": "contains_immovable_protected_span",
+      "movable": false,
+      "ordinal": 4,
+      "paragraph_id": "P004-4a412817b652",
+      "protected_ids": [
+        "F00001-P01048",
+        "F00001-P01049",
+        "F00001-P01050"
+      ],
+      "responsibility": "EXPOSITION",
+      "sha256": "4a412817b652263bfd769423d22ef2e1d2093395b57c29c8dbb937a428aa9f11"
+    },
+    {
+      "author_chars": 64,
+      "lock_reason": "contains_immovable_protected_span",
+      "movable": false,
+      "ordinal": 5,
+      "paragraph_id": "P005-3af1136187a3",
+      "protected_ids": [
+        "F00001-P01051"
+      ],
+      "responsibility": "EXPOSITION",
+      "sha256": "3af1136187a3d7e0bf55320ecc752f330c91d2b708ac4ab3bf0e972ba82008d0"
+    },
+    {
+      "author_chars": 130,
+      "lock_reason": "contains_immovable_protected_span",
+      "movable": false,
+      "ordinal": 6,
+      "paragraph_id": "P006-33d46d9800a7",
+      "protected_ids": [
+        "F00001-P01052",
+        "F00001-P01053",
+        "F00001-P01054",
+        "F00001-P01055",
+        "F00001-P01056"
+      ],
+      "responsibility": "EXPOSITION",
+      "sha256": "33d46d9800a72d245866fa8361fa56b08943271edca40922288c342c4be638a6"
+    },
+    {
+      "author_chars": 13,
+      "lock_reason": "introduces_following_block",
+      "movable": false,
+      "ordinal": 7,
+      "paragraph_id": "P007-5f6a2740dcf6",
+      "protected_ids": [],
+      "responsibility": "EXPOSITION",
+      "sha256": "5f6a2740dcf62a1ac0ab2bfe6b3fff7b09aa8bce35fc2cdcc1902f857a2164de"
+    },
+    {
+      "author_chars": 119,
+      "lock_reason": "contains_immovable_protected_span",
+      "movable": false,
+      "ordinal": 8,
+      "paragraph_id": "P008-d6740cd957ef",
+      "protected_ids": [
+        "F00001-P01057",
+        "F00001-P01058",
+        "F00001-P01059",
+        "F00001-P01060",
+        "F00001-P01061",
+        "F00001-P01062",
+        "F00001-P01063",
+        "F00001-P01064"
+      ],
+      "responsibility": "EXPOSITION",
+      "sha256": "d6740cd957ef8dd786ba38c0919262a32507f672c0259bfee9024bb644e25bd6"
+    },
+    {
+      "author_chars": 83,
+      "lock_reason": "contains_immovable_protected_span",
+      "movable": false,
+      "ordinal": 9,
+      "paragraph_id": "P009-41e73327caa0",
+      "protected_ids": [
+        "F00001-P01065",
+        "F00001-P01066",
+        "F00001-P01067",
+        "F00001-P01068"
+      ],
+      "responsibility": "EXPOSITION",
+      "sha256": "41e73327caa0fd973cffb40f586410642f4f72e2141a994a6b1a4c6fd6c61711"
+    },
+    {
+      "author_chars": 63,
+      "lock_reason": "fixed_paragraph_responsibility",
+      "movable": false,
+      "ordinal": 10,
+      "paragraph_id": "P010-e233a2da3911",
+      "protected_ids": [
+        "F00001-P01069",
+        "F00001-P01070",
+        "F00001-P01071",
+        "F00001-P01072",
+        "F00001-P01073",
+        "F00001-P01074",
+        "F00001-P01075",
+        "F00001-P01076"
+      ],
+      "responsibility": "CONDITION",
+      "sha256": "e233a2da39114102199077ce959796afe27d6f49293291bb5fd325c2b3f2b11a"
+    },
+    {
+      "author_chars": 64,
+      "lock_reason": "",
+      "movable": true,
+      "ordinal": 11,
+      "paragraph_id": "P011-4a56862b5147",
+      "protected_ids": [
+        "F00001-P01077"
+      ],
+      "responsibility": "EXPOSITION",
+      "sha256": "4a56862b51474f4db36c03efcf5f3de930c036a908cef60414e7b8d15602bb20"
+    }
+  ],
+  "structural_plan_schema": "humanize-structural-plan/v1",
+  "structural_plan_status": "NOT_RUN",
+  "structural_scope": "UNIT",
+  "structural_title_lock": true,
+  "style_validation": "NOT_RUN",
+  "unit_id": "U-e4771b5f9a2b",
+  "voice_default_disclosure": true,
+  "voice_profile_binding_scene": "GENERAL",
+  "voice_profile_confidence": "DEFAULT",
+  "voice_profile_id": "scene-default-general",
+  "voice_profile_kind": "DEFAULT",
+  "voice_profile_revision": 1,
+  "voice_profile_sha256": "3b4eeeaeb3af397378ead360550371ff4632cbce6fceca8923479c53de23a112",
+  "voice_profile_source": "SCENE_DEFAULT"
+}

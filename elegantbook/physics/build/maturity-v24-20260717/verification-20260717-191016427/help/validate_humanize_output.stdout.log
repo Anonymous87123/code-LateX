@@ -1,0 +1,48 @@
+usage: validate_humanize_output.py [-h] [--mode {REWRITE,DRAFT}]
+                                   [--scene {ALL,AUTO,GENERAL,COURSE,MODELING,RESEARCH}]
+                                   [--format {json,text}]
+                                   [--keep-reason SIGNAL_ID[@LINE:COLUMN]=具体理由]
+                                   [--strict-speech-acts] [--fragment]
+                                   [--report-scope REPORT_SCOPE]
+                                   [--accept-warning CODE=具体理由]
+                                   [--propose-warning-resolution WARNING_FINGERPRINT=具体处理建议]
+                                   [--warning-review-request-sha256 SHA256]
+                                   [--warning-reviewer-kind {HUMAN}]
+                                   [--warning-reviewer-id WARNING_REVIEWER_ID]
+                                   [--term TERM]
+                                   before after
+
+验证纯文风改写或 supplied-content 草稿的可机械边界。
+
+positional arguments:
+  before                改写前 UTF-8 Markdown/TeX
+  after                 改写后 UTF-8 Markdown/TeX
+
+options:
+  -h, --help            show this help message and exit
+  --mode {REWRITE,DRAFT}
+                        REWRITE 比较改前/改后；DRAFT 把第一个文件视为 supplied
+                        content，并保留语义来源 NOT_EVALUATED
+  --scene {ALL,AUTO,GENERAL,COURSE,MODELING,RESEARCH}
+  --format {json,text}
+  --keep-reason SIGNAL_ID[@LINE:COLUMN]=具体理由
+                        为唯一高风险命中登记理由；多命中时必须绑定位置或 finding hash；可重复
+  --strict-speech-acts  把否定、模态、定义、报告状态等变化升级为硬错误
+  --fragment            Validate a REWRITE fragment: unchanged TeX boundary
+                        imbalance is allowed, but structural drift still fails
+  --report-scope REPORT_SCOPE
+                        Bind a REPORT_INFORMED REWRITE to extractor PASS/0
+                        JSON and reject changes outside its UNIQUE source
+                        ranges
+  --accept-warning CODE=具体理由
+                        已停用；任何非空值都会报错，调用方声明不得清除 warning
+  --propose-warning-resolution WARNING_FINGERPRINT=具体处理建议
+                        对当前 review request 中的 warning 提交处理建议；只记录，不清除 REVIEW
+  --warning-review-request-sha256 SHA256
+                        首次 REVIEW 输出的 request_sha256；绑定 artifact、warning、配置与
+                        policy
+  --warning-reviewer-kind {HUMAN}
+                        处理建议的声明审阅者类型；仅记录 HUMAN 声明，不验证身份也不授予 clearance
+  --warning-reviewer-id WARNING_REVIEWER_ID
+                        调用方提供的人工审阅者标签；输出只保存 SHA-256，不保存原标签，也不构成身份认证
+  --term TERM           精确保护方法名、材料名或术语；可重复，未提供时不声称已自动校验

@@ -1,0 +1,221 @@
+{
+  "author_chars": 553,
+  "chunk_binding_sha256": "872e2cfd87e2a8231e74e39d65371a7aa8eb02fa37a7b18b5c8ff17ae0821b9d",
+  "context_after_unit": "U-4684ed88c3ff",
+  "context_before_unit": "U-d05c6129adcc",
+  "diff_path": "",
+  "end": 55288,
+  "end_line": 1358,
+  "file_id": "F00001",
+  "hash_after": "",
+  "hash_before": "0247a752a278443b4cd691f0a6176d905b903e3ef68cf9fb9af402af9876a5a4",
+  "heading_path": "中文学术纯文风 Humanize Skill：生产化交付与红队报告 / 18. v12：Voice Profile 从说明文档变成可重建工件 / 18.13 v13：全文 Voice 与跨 unit 模板不再是假字段 / 18.13.2 跨 unit 门执行真实语料负例，不建立通用术语 n-gram 误杀器",
+  "intensity": "STRUCTURAL",
+  "line_count": 47,
+  "masked_text": "[[PROTECTED:F00001-P00872:820f37a3bb9a]]\n这一门的第一版没有拍脑袋扫描任意高频专业词。它只执行两类已有依据的 detector：\n\n1. [[PROTECTED:F00001-P00873:70a69668c8c7]] 中的 [[PROTECTED:F00001-P00874:b31eae91ea43]]，覆盖“这里真正需要、这里只看/保留/讨论/比较、\n   其余情形沿用、不再展开/赘述”等 Humanize 修复句壳；\n2. [[PROTECTED:F00001-P00875:6c3a35342116]] 中来源仍可读、action profile 状态为 [[PROTECTED:F00001-P00876:144d42912eb1]]、场景为 [[PROTECTED:F00001-P00877:1116cd247946]]\n   或当前场景的 [[PROTECTED:F00001-P00878:2779b3d1b3c8]]。其中 [[PROTECTED:F00001-P00879:477d0d90b1bc]] 来自 GPT 生成 CET6 TeX 的人工\n   负例阅读，检测自动未来桥接和跨段重复[[PROTECTED:F00001-P00880:c6758d3bb232]]；MODELING 与 GENERAL 还有\n   README 壳、施工计划腔、治理验收腔、期刊过拟合、宣传 claim 堆叠、OCR 问答和 API 导航等\n   已登记 guard。\n\n[[PROTECTED:F00001-P00881:21f54e88a578]] 不会被执行为 detector。它仍只说明抽象组织动作有来源锚，不能把正向语料\n变成句子扫描器。若适用的 negative guard 因源文件乱码、缺失或行范围漂移变为 UNAVAILABLE，\n全局门只能 REVIEW，不能静默跳过后写 PASS。\n\n匹配视图先删除保护占位符内部内容，再执行 NFKC、删除零宽字符和汉字之间的普通/Unicode\n空格；因此[[PROTECTED:F00001-P00882:757c7a3365bf]]与[[PROTECTED:F00001-P00883:7e594cc05ca7]]不能绕过。它不跨空段、标题、列表、TeX\n结构行、公式、引语或代码边界拼接，也不做通用连续汉字 n-gram，所以[[PROTECTED:F00001-P00884:fba4d905cb91]][[PROTECTED:F00001-P00885:396a42d202d3]]\n等必要术语跨章节重复不会仅因词频被判模板。\n\n门按 unit 计算 before/after 多重集，再按逻辑文档聚合。必须同时满足：\n\n- after 达到 detector 自身阈值；\n- 命中覆盖至少两个不同 unit；\n- 至少一个 unit 的 after occurrence 数大于该 unit 的 before。\n\n原文已经跨 unit 重复、候选没有增加时进入 [[PROTECTED:F00001-P00886:62acd34f96f4]]，不阻断 NO_CHANGE。命中新增\n重复时，只有拥有新增 occurrence 的 unit 从临时接受集回退为 [[PROTECTED:F00001-P00887:dff1687d2c3d]]；继承 occurrence\n所在 unit 不受连坐。回退同时清空 [[PROTECTED:F00001-P00888:0297203bbc1b]]、从 [[PROTECTED:F00001-P00889:019771e42424]] 移除候选，并用\n冻结原文组装 [[PROTECTED:F00001-P00890:6396cb327368]]。这修复了“元数据写 REVIEW，但 coverage ledger 仍为 DONE、\ndiff 仍发布”的假闭环。\n\n证据保存在 [[PROTECTED:F00001-P00891:d0c6e3885cb6]]，包括：\n\n- FULL/PARTIAL scope、unit inventory hash、before/candidate 逻辑文档 hash；\n- lexical policy、action catalog、action profile 与全部 active detector definition hash；\n- finding fingerprint、before/after occurrence、before/after unit、introduced unit；\n- inherited findings、blocking unit 集合和 normalization policy。\n\n两个 TeX unit 的真实集成 fixture 分别把[[PROTECTED:F00001-P00892:ffae70b16cef]][[PROTECTED:F00001-P00893:7c88f65caea1]]改成“这里只比较\n峰值”[[PROTECTED:F00001-P00894:6b64091e4bb7]]。两个 fragment validator 单独均 PASS；全文门识别同一家族跨 unit\n新增，两个 unit 均回退为 UNRESOLVED，发布的 partial 中没有[[PROTECTED:F00001-P00895:15033204fd6f]]。相反，原文已经包含\n两个该类句壳且两个 bundle 都是 NO_CHANGE 时，门记录 inherited 并 PASS。另一个 fixture 把\n两个[[PROTECTED:F00001-P00896:c6758d3bb232]]分别放在两个 unit，实际命中 CET6 负例锚定的\n[[PROTECTED:F00001-P00897:477d0d90b1bc]]。\n\n",
+  "mode": "REWRITE",
+  "notes": "",
+  "owner_chunk": "U-6f798e2f9e82",
+  "part": 1,
+  "protected_hashes_ok": "NOT_RUN",
+  "protected_ids": [
+    "F00001-P00872",
+    "F00001-P00873",
+    "F00001-P00874",
+    "F00001-P00875",
+    "F00001-P00876",
+    "F00001-P00877",
+    "F00001-P00878",
+    "F00001-P00879",
+    "F00001-P00880",
+    "F00001-P00881",
+    "F00001-P00882",
+    "F00001-P00883",
+    "F00001-P00884",
+    "F00001-P00885",
+    "F00001-P00886",
+    "F00001-P00887",
+    "F00001-P00888",
+    "F00001-P00889",
+    "F00001-P00890",
+    "F00001-P00891",
+    "F00001-P00892",
+    "F00001-P00893",
+    "F00001-P00894",
+    "F00001-P00895",
+    "F00001-P00896",
+    "F00001-P00897"
+  ],
+  "protected_spans": 26,
+  "read_only_context_after": "[[PROTECTED:F00001-P00898:ffeb86608c30]]\nv13 重新 prepare 微信 [[PROTECTED:F00001-P00899:4fb904fb5092]]：输入仍为 54834 字节、同一 SHA-256 和 snapshot ID，仍得到\n36 个 unit（28 PENDING、8 SKIPPED_PROTECTED）。由于 extractor policy 成为 Profile hash 的\n一部分，v12h 的 bundle 不能直接重放；复核只把旧 fresh agent 的原始 [[PROTECTED:F00001-P00900:7b2a7cd7088a]] 绑定到\n新的 chunk/Voice hash，正文一字未修。这是历史输出重绑定回归，不冒充新的 fresh forward。",
+  "read_only_context_before": "直接单测使用 6 个[[PROTECTED:F00001-P00866:1df940c070c1]]段落：NO_CHANGE 时 feature 支持为 [[PROTECTED:F00001-P00867:69b71218e28a]] 并 PASS；把 6 个\n段落全部改成未注册的[[PROTECTED:F00001-P00868:7c1af8dd2c2a]]后，支持从 [[PROTECTED:F00001-P00869:69b71218e28a]] 降到 [[PROTECTED:F00001-P00870:d463a6d83c53]]，门返回 REVIEW。只有 2 个\n目标块时，即使字面完全不变也返回 [[PROTECTED:F00001-P00871:a44769ad6189]]，避免短片段冒充全文拟声。",
+  "scene": "GENERAL",
+  "scene_document_prior": "",
+  "scene_requested": "GENERAL",
+  "scene_routing_ambiguous_scenes": [],
+  "scene_routing_decision": "EXPLICIT",
+  "scene_routing_evidence": [],
+  "scene_routing_margin": 0,
+  "scene_routing_policy_revision": 2,
+  "scene_routing_policy_sha256": "8d0f916d91b5753fd94d358c4b32e9a6c02b1f30120f43b4cbb2165dc1684450",
+  "scene_routing_scores": {
+    "COURSE": 0,
+    "MODELING": 0,
+    "RESEARCH": 0
+  },
+  "scene_routing_top_score": 0,
+  "start": 53405,
+  "start_line": 1312,
+  "status": "PENDING",
+  "structural_cross_unit_moves_allowed": false,
+  "structural_inventory_sha256": "6c937a5b97e26cb0ab09ff8fb944c6edca5c9d49fce3dd162a63b32e47956579",
+  "structural_paragraphs": [
+    {
+      "author_chars": 32,
+      "lock_reason": "contains_immovable_protected_span",
+      "movable": false,
+      "ordinal": 1,
+      "paragraph_id": "P001-a033a6ea8e24",
+      "protected_ids": [
+        "F00001-P00872"
+      ],
+      "responsibility": "EXPOSITION",
+      "sha256": "a033a6ea8e24b81a9626546f775f7f2f1c173476b25c20dd178fe7f08a10d26a"
+    },
+    {
+      "author_chars": 113,
+      "lock_reason": "contains_immovable_protected_span",
+      "movable": false,
+      "ordinal": 2,
+      "paragraph_id": "P002-dc8a25119545",
+      "protected_ids": [
+        "F00001-P00873",
+        "F00001-P00874",
+        "F00001-P00875",
+        "F00001-P00876",
+        "F00001-P00877",
+        "F00001-P00878",
+        "F00001-P00879",
+        "F00001-P00880"
+      ],
+      "responsibility": "EXPOSITION",
+      "sha256": "dc8a25119545f68f9dfeada01c7094e28dcc492adb7eaba288879ed20efb23d2"
+    },
+    {
+      "author_chars": 68,
+      "lock_reason": "",
+      "movable": true,
+      "ordinal": 3,
+      "paragraph_id": "P003-a2a09522a24c",
+      "protected_ids": [
+        "F00001-P00881"
+      ],
+      "responsibility": "EXPOSITION",
+      "sha256": "a2a09522a24ca37fd3e4837124accdadb9c384d88dd60202d5eadd7eaf3cee07"
+    },
+    {
+      "author_chars": 96,
+      "lock_reason": "contains_immovable_protected_span",
+      "movable": false,
+      "ordinal": 4,
+      "paragraph_id": "P004-7f4f711ab763",
+      "protected_ids": [
+        "F00001-P00882",
+        "F00001-P00883",
+        "F00001-P00884",
+        "F00001-P00885"
+      ],
+      "responsibility": "EXPOSITION",
+      "sha256": "7f4f711ab76387049fe5cbd414de3aa9201124f21330a92e54aa84ae31fa3fc3"
+    },
+    {
+      "author_chars": 21,
+      "lock_reason": "introduces_following_block",
+      "movable": false,
+      "ordinal": 5,
+      "paragraph_id": "P005-061a0048dd31",
+      "protected_ids": [],
+      "responsibility": "EXPOSITION",
+      "sha256": "061a0048dd31b6869a66763e306ed13d933916f881e4fcd95328c77b3c5cb06b"
+    },
+    {
+      "author_chars": 26,
+      "lock_reason": "contains_markdown_structure",
+      "movable": false,
+      "ordinal": 6,
+      "paragraph_id": "P006-45ffd08edc20",
+      "protected_ids": [],
+      "responsibility": "EXPOSITION",
+      "sha256": "45ffd08edc20cc0e446134f26d59b39678bab359149846f6dc36b1f33722204a"
+    },
+    {
+      "author_chars": 87,
+      "lock_reason": "",
+      "movable": true,
+      "ordinal": 7,
+      "paragraph_id": "P007-df7c7ad62ed1",
+      "protected_ids": [
+        "F00001-P00886",
+        "F00001-P00887",
+        "F00001-P00888",
+        "F00001-P00889",
+        "F00001-P00890"
+      ],
+      "responsibility": "EXPOSITION",
+      "sha256": "df7c7ad62ed1ffc52c848b1f67b7b8cc411c3dec77a30ade7a86e8b2295c823f"
+    },
+    {
+      "author_chars": 7,
+      "lock_reason": "insufficient_author_prose",
+      "movable": false,
+      "ordinal": 8,
+      "paragraph_id": "P008-9b87d60d865e",
+      "protected_ids": [
+        "F00001-P00891"
+      ],
+      "responsibility": "EXPOSITION",
+      "sha256": "9b87d60d865ee0a72d4c3fd460c11f89aa3a2d05c7115b1594916d4cbf7ec9e5"
+    },
+    {
+      "author_chars": 10,
+      "lock_reason": "contains_markdown_structure",
+      "movable": false,
+      "ordinal": 9,
+      "paragraph_id": "P009-b203eac42b35",
+      "protected_ids": [],
+      "responsibility": "EXPOSITION",
+      "sha256": "b203eac42b35b2436f0f21e36a411c964c0800baba87e0daaa6824257fc9f619"
+    },
+    {
+      "author_chars": 93,
+      "lock_reason": "contains_immovable_protected_span",
+      "movable": false,
+      "ordinal": 10,
+      "paragraph_id": "P010-a8bae23fd6ae",
+      "protected_ids": [
+        "F00001-P00892",
+        "F00001-P00893",
+        "F00001-P00894",
+        "F00001-P00895",
+        "F00001-P00896",
+        "F00001-P00897"
+      ],
+      "responsibility": "EXPOSITION",
+      "sha256": "a8bae23fd6ae43456802d27d04cbae2a74b0a15df76d2b65686974e780d71414"
+    }
+  ],
+  "structural_plan_schema": "humanize-structural-plan/v1",
+  "structural_plan_status": "NOT_RUN",
+  "structural_scope": "UNIT",
+  "structural_title_lock": true,
+  "style_validation": "NOT_RUN",
+  "unit_id": "U-6f798e2f9e82",
+  "voice_default_disclosure": true,
+  "voice_profile_binding_scene": "GENERAL",
+  "voice_profile_confidence": "DEFAULT",
+  "voice_profile_id": "scene-default-general",
+  "voice_profile_kind": "DEFAULT",
+  "voice_profile_revision": 1,
+  "voice_profile_sha256": "3b4eeeaeb3af397378ead360550371ff4632cbce6fceca8923479c53de23a112",
+  "voice_profile_source": "SCENE_DEFAULT"
+}

@@ -1,0 +1,113 @@
+{
+  "author_chars": 369,
+  "chunk_binding_sha256": "0f0cf37f13462158911841a7788ea18cc79dce2ade36db86c1ffd3ccba5ead4a",
+  "context_after_unit": "U-483454c16c3c",
+  "context_before_unit": "U-659a6355c363",
+  "diff_path": "",
+  "end": 20211,
+  "end_line": 554,
+  "file_id": "F00001",
+  "hash_after": "",
+  "hash_before": "e246fa638c5a9c129452b6b39ffff11da645b554a40924c86241019ccdd34fa2",
+  "heading_path": "中文学术纯文风 Humanize Skill：生产化交付与红队报告 / 14. 第四轮极端实践红队 / 14.6 长文发布链的七个 P1",
+  "intensity": "STRUCTURAL",
+  "line_count": 16,
+  "masked_text": "[[PROTECTED:F00001-P00309:7ac858394a9d]]\n长文黑盒复测后来发现一个 P0：finalize 曾信任可篡改的 [[PROTECTED:F00001-P00310:2fc9a39ea7bd]] 终态，可在无 rewrites 时伪造全文完成；现已用 [[PROTECTED:F00001-P00311:723799ca5885]] 修复，并加入篡改、chunk 篡改和清单缺失回归。另有此前记录的七个会破坏完成账本可信度的 P1：\n\n| 漏洞 | 修复前错误行为 | 当前行为 |\n|---|---|---|\n| 快照后删除源文件或把文件换成目录 | 直接跳过，[[PROTECTED:F00001-P00312:3fd0f86c9093]]，可 full | 记录 source change，阻断 full |\n| [[PROTECTED:F00001-P00313:a4282634a7c4]] 等宏路径 | 静默漏收 include，仍可 full | manifest 写 [[PROTECTED:F00001-P00314:77619c96310d]]，prepare/finalize 均 [[PROTECTED:F00001-P00315:c25fbd6c2b27]] |\n| UTF-16LE 被误按 GB18030 解码 | 含大量 NUL 的文本仍标 READY | UTF-16、NUL、控制字符标 [[PROTECTED:F00001-P00316:7fb1ad4fa7e1]] |\n| 把只读相邻段复制进 owner | 相邻段在最终稿重复两次仍 PASS | 拒绝复制四字符以上的规范化只读上下文 |\n| 保留占位符同时再粘贴一份裸标题/题干 | 保护内容次数增加仍 PASS | 规范化 CRLF/LF 后核对保护 span 次数与顺序 |\n| 第二批 partial 只提交新单元 | 第一批已接受改写被快照原文覆盖 | rewrites 必须累计；回退尝试 FAIL 并保留旧 partial |\n| 非幂等 full 重跑 | 旧正文保留，但 diff/ledger/manifest 被新失败尝试覆盖 | 已发布证据原子保留；失败候选不替换正式证据 |\n\n这些修复带来两个明确兼容性要求。第一，manifest 消费方必须识别 [[PROTECTED:F00001-P00317:77619c96310d]]；第二，已有 partial 后续提交必须包含此前已接受且仍有效的 rewrites。两者都是有意收紧：宁可拒绝不完整的增量输入，也不能悄悄丢失已验收修改。\n\n",
+  "mode": "REWRITE",
+  "notes": "",
+  "owner_chunk": "U-b93e65883e87",
+  "part": 1,
+  "protected_hashes_ok": "NOT_RUN",
+  "protected_ids": [
+    "F00001-P00309",
+    "F00001-P00310",
+    "F00001-P00311",
+    "F00001-P00312",
+    "F00001-P00313",
+    "F00001-P00314",
+    "F00001-P00315",
+    "F00001-P00316",
+    "F00001-P00317"
+  ],
+  "protected_spans": 9,
+  "read_only_context_after": "[[PROTECTED:F00001-P00318:1886fa49dd36]]\n- Humanize、来源候选门、长文、generator projection、资格审计、public-case 采集链、场景路由和退休门：[[PROTECTED:F00001-P00319:dbe397903eb9]]；\n- 工作区全量：[[PROTECTED:F00001-P00320:9786558c9bec]]（1 项文件 symlink 环境测试因 Windows 权限跳过，根 junction 测试已执行）；\n- [[PROTECTED:F00001-P00321:0262fc49d5f2]] 通过官方 [[PROTECTED:F00001-P00322:4a4a3bba9da6]]；\n- 13 个脚本均通过 [[PROTECTED:F00001-P00323:90040d20d3df]] 与 [[PROTECTED:F00001-P00324:c1e791124798]]；\n- [[PROTECTED:F00001-P00325:8ec8455fe1e6]] 原 v2 目录重跑仍为 snapshot [[PROTECTED:F00001-P00326:9ee613d8be27]]、60 units、51 [[PROTECTED:F00001-P00327:44f7581337b5]]、9 [[PROTECTED:F00001-P00328:794059da6599]]、[[PROTECTED:F00001-P00329:bd036b668dc6]]、[[PROTECTED:F00001-P00330:8ad50c4e7825]]、[[PROTECTED:F00001-P00331:776b36f060c6]]。",
+  "read_only_context_before": "[[PROTECTED:F00001-P00301:fd91a678cb69]]\n| 合同漏洞 | 风险 | 修复 |\n|---|---|---|\n| 改写范例凭空补出资源、捕食、扰动、状态方程等对象 | 低优先级示例会正常化事实补造 | 删除补造对象，改为只重排输入已经给出的成分 |\n| 范例把 [[PROTECTED:F00001-P00302:5d44a1a8b639]] 改成 [[PROTECTED:F00001-P00303:d44bf5e1e395]] | 数学对象表面相近但含义可能变化 | 改后保持原函数记号 |\n| [[PROTECTED:F00001-P00304:bafb33969073]] 与 [[PROTECTED:F00001-P00305:be06aec534b6]] 两套枚举并存 | 不同 reference 会给出不同模式名 | 统一为 [[PROTECTED:F00001-P00306:8f7d9da16235]]，操作合同是唯一 schema 来源 |\n| Diagnose 有五字段、七字段和八字段版本 | 输出无法稳定验收 | 固定字段并由合同测试精确断言 |\n| 4 处 provenance 指向错误规则号 | 命中后会加载无关章节 | 修正目标并校验具体 section/rule，不再只查字符串在文件某处出现 |\n| Voice 模板缺结果报告、观察归属、公式/图表引入等字段 | Profile 保存再加载会丢言语行为 | 补齐字段并增加 round-trip 契约测试 |\n| 旧 AIGC Skill 与纯文风 Skill 同时抢[[PROTECTED:F00001-P00307:48ebff3b7c0c]] | 路由不唯一，且旧规则含检测操纵与虚构风险 | 安全报告定位能力并入本 Skill，危险规则拒绝迁移；旧目录删除 |\n| [[PROTECTED:F00001-P00308:dff1687d2c3d]] 一处允许全文完成、一处禁止 | 人工可挑宽松条款夸大完成范围 | 统一为任何未决/乱码/快照变化都只能 partial |",
+  "scene": "GENERAL",
+  "scene_document_prior": "",
+  "scene_requested": "GENERAL",
+  "scene_routing_ambiguous_scenes": [],
+  "scene_routing_decision": "EXPLICIT",
+  "scene_routing_evidence": [],
+  "scene_routing_margin": 0,
+  "scene_routing_policy_revision": 2,
+  "scene_routing_policy_sha256": "8d0f916d91b5753fd94d358c4b32e9a6c02b1f30120f43b4cbb2165dc1684450",
+  "scene_routing_scores": {
+    "COURSE": 0,
+    "MODELING": 0,
+    "RESEARCH": 0
+  },
+  "scene_routing_top_score": 0,
+  "start": 19258,
+  "start_line": 539,
+  "status": "PENDING",
+  "structural_cross_unit_moves_allowed": false,
+  "structural_inventory_sha256": "59da4286ba715c16ad9449ecd0f56f16995297e897d17c7554effebf8d23a5df",
+  "structural_paragraphs": [
+    {
+      "author_chars": 70,
+      "lock_reason": "contains_immovable_protected_span",
+      "movable": false,
+      "ordinal": 1,
+      "paragraph_id": "P001-671d32e73187",
+      "protected_ids": [
+        "F00001-P00309",
+        "F00001-P00310",
+        "F00001-P00311"
+      ],
+      "responsibility": "EXPOSITION",
+      "sha256": "671d32e73187dfb3ca1ed916de56bf4ccee036f31621ab48c5c461cf6e0226d5"
+    },
+    {
+      "author_chars": 221,
+      "lock_reason": "contains_markdown_structure",
+      "movable": false,
+      "ordinal": 2,
+      "paragraph_id": "P002-4a1e2679c94a",
+      "protected_ids": [
+        "F00001-P00312",
+        "F00001-P00313",
+        "F00001-P00314",
+        "F00001-P00315",
+        "F00001-P00316"
+      ],
+      "responsibility": "EXPOSITION",
+      "sha256": "4a1e2679c94a1662aa1d4158a243015df0f41d2d89d5f2f7ebecda9b34e09d1d"
+    },
+    {
+      "author_chars": 78,
+      "lock_reason": "",
+      "movable": true,
+      "ordinal": 3,
+      "paragraph_id": "P003-c5721d36cee2",
+      "protected_ids": [
+        "F00001-P00317"
+      ],
+      "responsibility": "EXPOSITION",
+      "sha256": "c5721d36cee282c6a6d2a340d0f2c933721c439d8b655445dedf75e2d0576513"
+    }
+  ],
+  "structural_plan_schema": "humanize-structural-plan/v1",
+  "structural_plan_status": "NOT_RUN",
+  "structural_scope": "UNIT",
+  "structural_title_lock": true,
+  "style_validation": "NOT_RUN",
+  "unit_id": "U-b93e65883e87",
+  "voice_default_disclosure": true,
+  "voice_profile_binding_scene": "GENERAL",
+  "voice_profile_confidence": "DEFAULT",
+  "voice_profile_id": "scene-default-general",
+  "voice_profile_kind": "DEFAULT",
+  "voice_profile_revision": 1,
+  "voice_profile_sha256": "3b4eeeaeb3af397378ead360550371ff4632cbce6fceca8923479c53de23a112",
+  "voice_profile_source": "SCENE_DEFAULT"
+}

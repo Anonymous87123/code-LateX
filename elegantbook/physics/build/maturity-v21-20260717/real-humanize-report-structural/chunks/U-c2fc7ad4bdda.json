@@ -1,0 +1,135 @@
+{
+  "author_chars": 263,
+  "chunk_binding_sha256": "78ef90e8edff4e323370411e0a34eece1c6c6c8a7e25f98e0ca8e5221daa287e",
+  "context_after_unit": "U-636812235b1c",
+  "context_before_unit": "U-4e0a96e1312b",
+  "diff_path": "",
+  "end": 71257,
+  "end_line": 1713,
+  "file_id": "F00001",
+  "hash_after": "",
+  "hash_before": "527d1994021dbc7c3961b12e6e628d09af8454cb97e4ef27edc853a5a72270ca",
+  "heading_path": "中文学术纯文风 Humanize Skill：生产化交付与红队报告 / 19. 第十五轮：来源纠偏、AUTO 真路由与 fresh Voice 闭环 / 19.5 fresh second pass 现在能看到 Voice",
+  "intensity": "STRUCTURAL",
+  "line_count": 30,
+  "masked_text": "[[PROTECTED:F00001-P01115:768b5d438581]]\nv14 的 second pass 虽然在最终阶段比较 Voice hash，但 fresh generator 的 sealed case 只有 chunk；\nPERSONAL Profile 的特征并未进入生成上下文。模型在看不到声线的情况下决定 REWRITE/NO_CHANGE，\n机械收尾却声称沿用同一 Voice，这是实用性 false assurance。\n\nv15 将 plan 升为 [[PROTECTED:F00001-P01116:89b69ceec2f8]]。每个 sealed input 都是严格对象：\n\n[[PROTECTED:F00001-P01117:2b865f7ade49]]\n实际对象包含完整已验证 Profile；这里的示意省略字段。PERSONAL Profile 只带抽象 features、负控、\npolicy binding 与 false claims，不带作者原始样本文本。plan 同时绑定 [[PROTECTED:F00001-P01118:aabf6bb2c517]]、\n[[PROTECTED:F00001-P01119:8cfaa55512c5]]、[[PROTECTED:F00001-P01120:e8231f83e1ec]]、public manifest 和 seal。verifier 从第二遍冻结 Profile\n重建 generation input，逐字节比较，不信任 plan 自述。\n\n第二个工程修复是分块漂移：第一遍合法压缩可能让两个相邻 GENERAL unit 在第二遍合成一个。\n旧 verifier 要求 unit 数和 ordinal 一一相等，会把预算布局变化误判成 Voice 漂移。现在按文件比较\n相邻的 [[PROTECTED:F00001-P01121:6d0419049071]] 运行段：同场景纯拆分/合并\n允许，跨场景次序、policy 或 Voice 变化仍硬失败。\n\n第三个修复是 include seed：second prepare 仍校验第一遍全部 rendered manifest，但只把原\n[[PROTECTED:F00001-P01122:e56da08b9101]] 的文件交给 prepare，子文件由 [[PROTECTED:F00001-P01123:556b8941f791]] 重新发现。多文件 AUTO\n的逻辑 prior 因而能跨两遍保持。\n\n",
+  "mode": "REWRITE",
+  "notes": "",
+  "owner_chunk": "U-c2fc7ad4bdda",
+  "part": 1,
+  "protected_hashes_ok": "NOT_RUN",
+  "protected_ids": [
+    "F00001-P01115",
+    "F00001-P01116",
+    "F00001-P01117",
+    "F00001-P01118",
+    "F00001-P01119",
+    "F00001-P01120",
+    "F00001-P01121",
+    "F00001-P01122",
+    "F00001-P01123"
+  ],
+  "protected_spans": 9,
+  "read_only_context_after": "[[PROTECTED:F00001-P01124:5b3f79c94552]]\n本轮新增七个不可缩水原子：",
+  "read_only_context_before": "本地 Profile 的能力声明仍被限制：它只证明当前 supplied bytes 的机械绑定。即使样本、spec、\nmanifest、Profile 和全部本地哈希被一起替换，[[PROTECTED:F00001-P01114:4f8025261476]] 仍必须是 false；只有未来接入\n代理无法访问私钥的外部签名信任根，才可能证明历史来源身份。",
+  "scene": "GENERAL",
+  "scene_document_prior": "",
+  "scene_requested": "GENERAL",
+  "scene_routing_ambiguous_scenes": [],
+  "scene_routing_decision": "EXPLICIT",
+  "scene_routing_evidence": [],
+  "scene_routing_margin": 0,
+  "scene_routing_policy_revision": 2,
+  "scene_routing_policy_sha256": "8d0f916d91b5753fd94d358c4b32e9a6c02b1f30120f43b4cbb2165dc1684450",
+  "scene_routing_scores": {
+    "COURSE": 0,
+    "MODELING": 0,
+    "RESEARCH": 0
+  },
+  "scene_routing_top_score": 0,
+  "start": 70081,
+  "start_line": 1684,
+  "status": "PENDING",
+  "structural_cross_unit_moves_allowed": false,
+  "structural_inventory_sha256": "ab43f40595a6e2a066f16d0e7111de3f533593355921e30c2ed915d298c7a533",
+  "structural_paragraphs": [
+    {
+      "author_chars": 56,
+      "lock_reason": "contains_immovable_protected_span",
+      "movable": false,
+      "ordinal": 1,
+      "paragraph_id": "P001-1d8b03715e49",
+      "protected_ids": [
+        "F00001-P01115"
+      ],
+      "responsibility": "EXPOSITION",
+      "sha256": "1d8b03715e49b805f0ee059f07286b487cd78e15ab5f50bc4d4c1854f0c882c0"
+    },
+    {
+      "author_chars": 11,
+      "lock_reason": "introduces_following_block",
+      "movable": false,
+      "ordinal": 2,
+      "paragraph_id": "P002-4a9ed4089ce3",
+      "protected_ids": [
+        "F00001-P01116"
+      ],
+      "responsibility": "EXPOSITION",
+      "sha256": "4a9ed4089ce31a38a54c6d581fb6f5720aefb1969d994b61d284d4e0557a69ae"
+    },
+    {
+      "author_chars": 60,
+      "lock_reason": "contains_immovable_protected_span",
+      "movable": false,
+      "ordinal": 3,
+      "paragraph_id": "P003-8e36fb1f6929",
+      "protected_ids": [
+        "F00001-P01117",
+        "F00001-P01118",
+        "F00001-P01119",
+        "F00001-P01120"
+      ],
+      "responsibility": "EXPOSITION",
+      "sha256": "8e36fb1f6929f07e8f5adc6be6a94095c9dd19cfb0ebf64a42914908722b5c22"
+    },
+    {
+      "author_chars": 91,
+      "lock_reason": "",
+      "movable": true,
+      "ordinal": 4,
+      "paragraph_id": "P004-1bdd4e129c38",
+      "protected_ids": [
+        "F00001-P01121"
+      ],
+      "responsibility": "EXPOSITION",
+      "sha256": "1bdd4e129c38f543c067511bd7b427d956cf86e179ef92e67853fa9dd096cea1"
+    },
+    {
+      "author_chars": 45,
+      "lock_reason": "",
+      "movable": true,
+      "ordinal": 5,
+      "paragraph_id": "P005-35de0a785962",
+      "protected_ids": [
+        "F00001-P01122",
+        "F00001-P01123"
+      ],
+      "responsibility": "EXPOSITION",
+      "sha256": "35de0a785962309fabc9b7be0678626bce1d4eef3209ad617cadde7289788879"
+    }
+  ],
+  "structural_plan_schema": "humanize-structural-plan/v1",
+  "structural_plan_status": "NOT_RUN",
+  "structural_scope": "UNIT",
+  "structural_title_lock": true,
+  "style_validation": "NOT_RUN",
+  "unit_id": "U-c2fc7ad4bdda",
+  "voice_default_disclosure": true,
+  "voice_profile_binding_scene": "GENERAL",
+  "voice_profile_confidence": "DEFAULT",
+  "voice_profile_id": "scene-default-general",
+  "voice_profile_kind": "DEFAULT",
+  "voice_profile_revision": 1,
+  "voice_profile_sha256": "3b4eeeaeb3af397378ead360550371ff4632cbce6fceca8923479c53de23a112",
+  "voice_profile_source": "SCENE_DEFAULT"
+}

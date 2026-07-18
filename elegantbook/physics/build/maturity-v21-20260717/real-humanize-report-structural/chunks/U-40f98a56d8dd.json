@@ -1,0 +1,172 @@
+{
+  "author_chars": 280,
+  "chunk_binding_sha256": "c9eb7c299f95454a81eeeb3289ca46ff3470ba593559249a32ef9a299061a954",
+  "context_after_unit": "U-2b92df5e84cb",
+  "context_before_unit": "U-ba1b39429a49",
+  "diff_path": "",
+  "end": 39983,
+  "end_line": 1013,
+  "file_id": "F00001",
+  "hash_after": "",
+  "hash_before": "eeb3a3f8dfbb3b9fd721ecf0835bd36c43249791d5719ed6b625db3aba8e2728",
+  "heading_path": "中文学术纯文风 Humanize Skill：生产化交付与红队报告 / 18. v12：Voice Profile 从说明文档变成可重建工件 / 18.2 新增的生产入口",
+  "intensity": "STRUCTURAL",
+  "line_count": 25,
+  "masked_text": "[[PROTECTED:F00001-P00629:cbc45e7821a8]]\n新增两个正式脚本：\n\n- [[PROTECTED:F00001-P00630:a7964609cd7d]]：从 sample spec 构建 manifest 与 Profile；\n- [[PROTECTED:F00001-P00631:f3a6de9115bf]]：独立检查 schema、自哈希、manifest 绑定，并可从原样本重建证据。\n\nbuilder 固定输出：\n\n- [[PROTECTED:F00001-P00632:5c8837732e51]]，其中 canonical sample-spec hash 与样本来源声明一起进入自哈希；\n- [[PROTECTED:F00001-P00633:441e7b063408]]；\n- canonical UTF-8 JSON；\n- 64 位小写 SHA-256 自哈希；\n- 不含整段样本原文的 feature evidence；\n- 不含作者身份、能力或内容正确性推断的 claims。\n\nvalidator 现在有两种层级：\n\n- 只给 Profile：校验 strict JSON、schema、字段集合和自哈希，但 PERSONAL 顶层生产准入保持 [[PROTECTED:F00001-P00634:bd036b668dc6]]；\n- 同时给 manifest、sample spec、allowed root 与 [[PROTECTED:F00001-P00635:5b78c6e22db0]]：重新读取源字节、重建角色图、保护区、去重簇、计数、feature 和 Profile，要求结果逐字段相同。\n\n后者堵住了[[PROTECTED:F00001-P00636:b0d7f6476a3e]]的漏洞。PERSONAL Profile 进入 prepare 时必须经过当场重建，metadata 固定写 [[PROTECTED:F00001-P00637:a54d18199b03]]；只有自哈希、没有 manifest/spec 的 PERSONAL 工件直接失败。\n\n真实 builder 消费测试又发现 DEFAULT 不能只分成[[PROTECTED:F00001-P00638:4a93f0b04415]]两类：不足 300 字或全部来源被排除时，builder 会生成带真实 manifest hash 的证据绑定 DEFAULT。它不是代码注册表里的零样本 DEFAULT，不能丢弃 manifest，也不能被后者的精确对象比较误拒。修复后，证据绑定 DEFAULT 同样要求 manifest/spec/root 当场重建，状态为 [[PROTECTED:F00001-P00639:8a3166509a14]]；只有确定性零样本 DEFAULT 使用 [[PROTECTED:F00001-P00640:fc4f47002eba]]。\n\n",
+  "mode": "REWRITE",
+  "notes": "",
+  "owner_chunk": "U-40f98a56d8dd",
+  "part": 1,
+  "protected_hashes_ok": "NOT_RUN",
+  "protected_ids": [
+    "F00001-P00629",
+    "F00001-P00630",
+    "F00001-P00631",
+    "F00001-P00632",
+    "F00001-P00633",
+    "F00001-P00634",
+    "F00001-P00635",
+    "F00001-P00636",
+    "F00001-P00637",
+    "F00001-P00638",
+    "F00001-P00639",
+    "F00001-P00640"
+  ],
+  "protected_spans": 12,
+  "read_only_context_after": "[[PROTECTED:F00001-P00641:a949fbc8be10]]\nsample spec 的路径只能相对 [[PROTECTED:F00001-P00642:cb89034958ab]]。每个样本必须声明：",
+  "read_only_context_before": "这里不能把[[PROTECTED:F00001-P00623:b03c6980982f]]写成[[PROTECTED:F00001-P00624:8105ccaedd57]]。hash 只能证明版本身份，不能证明模型真正遵循了句长、标点、第一人称或收尾习惯。因此 v12 只把 [[PROTECTED:F00001-P00625:f221ebb6bfb3]] 从固定未评估升级成真实的 [[PROTECTED:F00001-P00626:d117c014ce6b]]；[[PROTECTED:F00001-P00627:eeb486c1293c]] 仍保持 [[PROTECTED:F00001-P00628:b267cecfa13a]]。",
+  "scene": "GENERAL",
+  "scene_document_prior": "",
+  "scene_requested": "GENERAL",
+  "scene_routing_ambiguous_scenes": [],
+  "scene_routing_decision": "EXPLICIT",
+  "scene_routing_evidence": [],
+  "scene_routing_margin": 0,
+  "scene_routing_policy_revision": 2,
+  "scene_routing_policy_sha256": "8d0f916d91b5753fd94d358c4b32e9a6c02b1f30120f43b4cbb2165dc1684450",
+  "scene_routing_scores": {
+    "COURSE": 0,
+    "MODELING": 0,
+    "RESEARCH": 0
+  },
+  "scene_routing_top_score": 0,
+  "start": 38898,
+  "start_line": 989,
+  "status": "PENDING",
+  "structural_cross_unit_moves_allowed": false,
+  "structural_inventory_sha256": "ae062d2dc13735d82b701ded04bb5c89138589d7e2393b27f195ed2f76c5eecc",
+  "structural_paragraphs": [
+    {
+      "author_chars": 8,
+      "lock_reason": "contains_immovable_protected_span",
+      "movable": false,
+      "ordinal": 1,
+      "paragraph_id": "P001-2c3c4ceee229",
+      "protected_ids": [
+        "F00001-P00629"
+      ],
+      "responsibility": "EXPOSITION",
+      "sha256": "2c3c4ceee22961002390dc24a0b390065be2156ed498960e407313d43bda946d"
+    },
+    {
+      "author_chars": 23,
+      "lock_reason": "contains_markdown_structure",
+      "movable": false,
+      "ordinal": 2,
+      "paragraph_id": "P002-4e4daa8a81be",
+      "protected_ids": [
+        "F00001-P00630",
+        "F00001-P00631"
+      ],
+      "responsibility": "EXPOSITION",
+      "sha256": "4e4daa8a81be4fa2842a0f823b74d9572050ef7f42e9190088bf5012e75a4b16"
+    },
+    {
+      "author_chars": 4,
+      "lock_reason": "insufficient_author_prose",
+      "movable": false,
+      "ordinal": 3,
+      "paragraph_id": "P003-be6675a4f4c0",
+      "protected_ids": [],
+      "responsibility": "EXPOSITION",
+      "sha256": "be6675a4f4c09b4392aaeae88d1544cbe11929f6c8521540e4154483248d2726"
+    },
+    {
+      "author_chars": 48,
+      "lock_reason": "contains_markdown_structure",
+      "movable": false,
+      "ordinal": 4,
+      "paragraph_id": "P004-229948884441",
+      "protected_ids": [
+        "F00001-P00632",
+        "F00001-P00633"
+      ],
+      "responsibility": "EXPOSITION",
+      "sha256": "22994888444139e637e8f078dcdb2416f7d8e8c1302f7e4abd44cfb1752df233"
+    },
+    {
+      "author_chars": 7,
+      "lock_reason": "insufficient_author_prose",
+      "movable": false,
+      "ordinal": 5,
+      "paragraph_id": "P005-4dce78c92e33",
+      "protected_ids": [],
+      "responsibility": "EXPOSITION",
+      "sha256": "4dce78c92e33ccf3af3efeae429e02528edd71fe35304d2892bceb1d3680528c"
+    },
+    {
+      "author_chars": 55,
+      "lock_reason": "contains_markdown_structure",
+      "movable": false,
+      "ordinal": 6,
+      "paragraph_id": "P006-0cbdcccbfe47",
+      "protected_ids": [
+        "F00001-P00634",
+        "F00001-P00635"
+      ],
+      "responsibility": "EXPOSITION",
+      "sha256": "0cbdcccbfe470513341f8ee8442ade2f5ec09cbfbb337694d7c5c914082fad36"
+    },
+    {
+      "author_chars": 36,
+      "lock_reason": "contains_immovable_protected_span",
+      "movable": false,
+      "ordinal": 7,
+      "paragraph_id": "P007-d56ef2600ba6",
+      "protected_ids": [
+        "F00001-P00636",
+        "F00001-P00637"
+      ],
+      "responsibility": "EXPOSITION",
+      "sha256": "d56ef2600ba63552b2f0802c1336bbf5a97bfc801d2c6c8b7e4e04a182f3a456"
+    },
+    {
+      "author_chars": 99,
+      "lock_reason": "contains_immovable_protected_span",
+      "movable": false,
+      "ordinal": 8,
+      "paragraph_id": "P008-300586c071aa",
+      "protected_ids": [
+        "F00001-P00638",
+        "F00001-P00639",
+        "F00001-P00640"
+      ],
+      "responsibility": "EXPOSITION",
+      "sha256": "300586c071aa3c986c4782f49317a8271e5b3e87c2c0c03b783601fae405eb31"
+    }
+  ],
+  "structural_plan_schema": "humanize-structural-plan/v1",
+  "structural_plan_status": "NOT_RUN",
+  "structural_scope": "UNIT",
+  "structural_title_lock": true,
+  "style_validation": "NOT_RUN",
+  "unit_id": "U-40f98a56d8dd",
+  "voice_default_disclosure": true,
+  "voice_profile_binding_scene": "GENERAL",
+  "voice_profile_confidence": "DEFAULT",
+  "voice_profile_id": "scene-default-general",
+  "voice_profile_kind": "DEFAULT",
+  "voice_profile_revision": 1,
+  "voice_profile_sha256": "3b4eeeaeb3af397378ead360550371ff4632cbce6fceca8923479c53de23a112",
+  "voice_profile_source": "SCENE_DEFAULT"
+}

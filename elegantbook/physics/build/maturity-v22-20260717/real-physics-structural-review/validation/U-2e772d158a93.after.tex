@@ -1,0 +1,99 @@
+
+\section{熵}
+
+\begin{definition}[熵，熵变]
+    两状态 \(I\) 和 \(II\) 之间，熵变定义为\[
+\Delta S=S_{II}-S_I=\int_I^{II}\frac{\delta Q}{T}
+\]微分形式是\[\mathrm dS=\frac{\delta Q}{T}\implies T\mathrm dS=\delta Q=\mathrm dU+p\mathrm dV\]熵是态函数；
+初态和末态一旦确定，熵变就确定；所以计算熵变时，可以假设任意一条方便的可逆路径。
+\begin{enumerate}
+\item 如果题目给的是温度和体积条件：\begin{align*}
+    \mathrm dS&=\frac{\delta Q_{\mathrm{rev}}}{T}=\frac{\mathrm dU+p\mathrm dV}{T}=\frac{\nu C_{V,m}\mathrm dT+p\mathrm dV}{T}\\
+    &=\frac{\nu C_{V,m}\mathrm dT}{T}+\frac{\nu RT}{V}\frac{\mathrm dV}{T}=\nu C_{V,m}\frac{\mathrm dT}{T}+\nu R\frac{\mathrm dV}{V}\\
+    \Delta S&=\nu C_{V,m}\ln\frac{T_2}{T_1}+\nu R\ln\frac{V_2}{V_1}
+\end{align*}
+等体过程：\[\ln\frac{V_2}{V_1}=0\implies\Delta S_V=\nu C_{V,m}\ln\frac{T_2}{T_1}\]
+\item 如果题目给的是温度和压强条件：\begin{align*}
+\mathrm dS&=\frac{\delta Q_{\mathrm{rev}}}{T}=\frac{\mathrm dU+p\mathrm dV}{T}=\frac{\nu C_{V,m}\mathrm dT+p\mathrm dV}{T}=\frac{\nu C_{V,m}\mathrm dT}{T}+\frac{p\mathrm dV}{T}\\
+&=\frac{\nu C_{V,m}\mathrm dT}{T}+\frac{\nu R\mathrm dT-V\mathrm dp}{T}=\frac{\nu C_{p,m}\mathrm dT}{T}-\frac{V\mathrm dp}{\frac{pV}{\nu R}}=\nu C_{p,m}\frac{\mathrm dT}{T}-\nu R\frac{\mathrm dp}{p}\\
+\Delta S&=\nu C_{p,m}\ln\frac{T_2}{T_1}-\nu R\ln\frac{p_2}{p_1}
+\end{align*}
+等压过程：\[\ln\frac{p_2}{p_1}=0\implies\Delta S_P=\nu C_{P,m}\ln\frac{T_2}{T_1}\]
+\item 等温过程：由\[\Delta S=\nu C_{V,m}\ln\frac{T_2}{T_1}+\nu R\ln\frac{V_2}{V_1}=\nu R\ln\frac{V_2}{V_1},~\Delta S=\nu C_{p,m}\ln\frac{T_2}{T_1}-\nu R\ln\frac{p_2}{p_1}=-\nu R\ln\frac{p_2}{p_1}\]
+\item 准静态绝热过程：绝热的定义就是\(\delta Q=0\)，所以\(\mathrm dS=\frac{\delta Q_{\mathrm{rev}}}{T}=0\)，因此\(\Delta S=0\)
+\item 理想气体绝热自由膨胀：因为是向真空膨胀：不做外功，所以 \(A=0\)；不吸热，所以 \(Q=0\)；由第一定律得 \(\Delta U=0\)；理想气体 \(U\) 只与 \(T\) 有关，所以 \(\Delta T=0\)。但熵并不为零。由于初末温度相同，可以假设一条可逆等温路径来算：\[\Delta S=\int_I^{II}\frac{\delta Q}{T}=\int_{V_1}^{V_2}\nu R\frac{\mathrm dV}{V}=\nu R\ln\frac{V_2}{V_1}\]
+\end{enumerate}
+\end{definition}
+
+\begin{exercise}[等压升温的熵变]
+1 mol 单原子理想气体在恒压下从 \(\SI{300}{K}\) 加热到 \(\SI{400}{K}\)。求该气体的熵变。
+\end{exercise}
+
+\begin{solution}
+\[\Delta S=\int_{T_1}^{T_2}\frac{\delta Q_{\mathrm{rev}}}{T} =\int_{T_1}^{T_2}\frac{nC_{P,m}\,\dd T}{T} =nC_{P,m}\ln\frac{T_2}{T_1} \implies \Delta S=\frac{5}{2}R\ln\frac{400}{300}\approx \SI{5.977}{J/K}.\]
+\end{solution}
+
+\begin{exercise}[2012级期末：理想气体等温膨胀到四倍体积的熵变]
+\(4\,\si{mol}\) 理想气体在 \(T=\SI{400}{K}\) 的状态下作等温膨胀，体积由 \(V\) 变为 \(4V\)，求气体的熵变。
+\end{exercise}
+
+\begin{solution}
+ \[\Delta S =\nu R\ln\frac{V_2}{V_1}=4\times 8.31\times \ln4 =4\times 8.31\times 1.386 \approx \SI{46.1}{J/K}.\]
+\end{solution}
+
+\begin{exercise}
+    1 mol 理想气体从 \((T_1,V_1)\) 到 \((2T_1,2V_1)\)，求气体的熵变。
+\end{exercise}
+\begin{solution}
+\[
+\Delta S=\nu C_{V,m}\ln\frac{2T_1}{T_1}+\nu R\ln\frac{2V_1}{V_1}=\Delta S=\nu C_{V,m}\ln 2+\nu R\ln 2=\frac32R\ln2+R\ln2=\frac52R\ln2
+\]
+\end{solution}
+
+\begin{theorem}[熵增加原理——热传导]
+把系统分成 A、B 两部分，短时间 \(\Delta t\) 内从 A 传到 B 的热量是 \(Q\)。
+那么：\[
+\Delta S_A=-\frac{Q}{T_A},\qquad
+\Delta S_B=\frac{Q}{T_B}
+\]
+总熵变：\[
+\Delta S=\Delta S_A+\Delta S_B
+=-\frac{Q}{T_A}+\frac{Q}{T_B}
+\]
+因为 \(T_A>T_B\)，所以\[
+\Delta S>0
+\]
+这就是热从高温到低温的自发性：总熵增加。孤立系统中，熵永不减少，\(\Delta S\ge 0\)；可逆过程，\(\Delta S=0\)；不可逆过程，\(\Delta S>0\)；熵达到最大时，自发过程停止，系统达到平衡态。
+\end{theorem}
+
+\begin{definition}[统计熵公式，熵和熵变的可叠加性]
+    玻尔兹曼把熵写成
+ \[S=k\ln\Omega \implies \Delta S=S'-S=k\ln\Omega'-k\ln\Omega =k\ln\frac{\Omega'}{\Omega}\ge 0.\]
+其中 \(\Omega\) 表示某个宏观态所对应的微观态数。微观态数越大，系统可实现的方式越多，熵也越大。
+对彼此独立、可以单独记状态的子系统，熵和内能、物质量一样，都具有“总量等于各部分相加”的可加性
+ \[S=S_1+S_2+\cdots+S_n \implies \Delta S=\Delta S_1+\Delta S_2+\cdots+\Delta S_n.\]
+若进一步想追这条规则从哪来，再把总系统的微观态数账也并上去：
+ \[\Omega=\Omega_1\Omega_2\cdots\Omega_n.\]
+\end{definition}
+
+\begin{exercise}[熵变计算综合：有限温差传热 + 混合]
+两杯水，质量均为 \(m=\SI{1}{kg}\)，比热容 \(c=\SI{4200}{J/(kg.K)}\)。一杯初温 \(T_1=\SI{360}{K}\)，另一杯 \(T_2=\SI{300}{K}\)。在绝热容器中混合达到热平衡后，求系统总熵变。
+\end{exercise}
+\begin{solution}
+绝热容器中两杯水热容相同，由能量守恒得末态温度 \(T_f=(T_1+T_2)/2=\SI{330}{K}\)。熵是状态量，可让两杯水各自沿可逆等压路径计算：
+\[
+\begin{aligned}
+\Delta S_1&=mc\ln\frac{T_f}{T_1}
+=1\times4200\times\ln\frac{330}{360}
+\approx\SI{-364}{J/K},\\
+\Delta S_2&=mc\ln\frac{T_f}{T_2}
+=4200\ln\frac{330}{300}
+\approx\SI{+400}{J/K},\\
+\Delta S&=\Delta S_1+\Delta S_2
+\approx\SI{+36}{J/K}>0.
+\end{aligned}
+\]
+结果为正，符合熵增原理：有限温差传热是不可逆过程。注意热水熵减的绝对值小于冷水熵增——这正是”同样热量在低温下贡献更大熵变”的体现。
+\end{solution}
+
+\end{document}

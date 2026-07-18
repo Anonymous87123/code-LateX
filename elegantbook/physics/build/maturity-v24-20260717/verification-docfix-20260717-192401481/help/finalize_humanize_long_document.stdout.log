@@ -1,0 +1,17 @@
+usage: finalize_humanize_long_document.py [-h] --run-dir RUN_DIR
+                                          --rewrites REWRITES
+                                          [--check-command CHECK_COMMAND]
+                                          [--second-pass-receipt SECOND_PASS_RECEIPT]
+
+验证长文单元改写、恢复保护区、生成逐节 diff 与派生稿；从不覆盖源文件。
+
+options:
+  -h, --help            show this help message and exit
+  --run-dir RUN_DIR     prepare 命令的输出目录
+  --rewrites REWRITES   按 unit_id 命名的 .json/.txt，或绑定 STX inventory 的
+                        transaction bundle 目录
+  --check-command CHECK_COMMAND
+                        可选项目编译/格式命令，在 staging 根目录执行
+  --second-pass-receipt SECOND_PASS_RECEIPT
+                        verify_humanize_second_pass.py 产生的当前 rendered 绑定
+                        receipt

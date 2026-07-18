@@ -1,0 +1,200 @@
+\section{惯性与惯性系}
+
+\begin{theorem}[牛顿第一定律]\label{thm:newton-first}
+若质点不受外力作用，或者所受合外力为零，则它将保持静止状态或匀速直线运动状态。
+\end{theorem}
+
+\begin{definition}[惯性参考系]\label{def:inertial-frame}
+在其中牛顿第一定律成立的参考系，称为\textbf{惯性系}。
+\end{definition}
+
+\begin{theorem}[牛顿第二定律]\label{thm:newton-second}
+在惯性系中，质点所受合外力等于质点动量对时间的变化率，即
+ \(\vb*{F}=\dv{\vb*{p}}{t},\qquad m=\text{常量时 } \vb*{F}=m\vb*{a}.\) 
+其中动量 \(\vb*{p}=m\vb*{v}\)。在直角坐标系中，
+\[
+\begin{aligned}
+\vb*{F}&=F_x\vb*{i}+F_y\vb*{j}+F_z\vb*{k},\qquad
+\vb*{a}=a_x\vb*{i}+a_y\vb*{j}+a_z\vb*{k},\\
+&\implies F_x=ma_x,\qquad F_y=ma_y,\qquad F_z=ma_z.
+\end{aligned}
+\]
+\end{theorem}
+
+\begin{definition}[流体阻力]
+ 流体（液体或气体的总称）对在其中运动的物体产生的摩擦阻力，称为\textbf{流体阻力}。\\
+ 方向：总是在减速方向，即\textbf{阻碍物体与流体间的相对运动}。若物体相对流体的速度为 $\vec{v}$，则流体阻力 $\vec{f}$ 的方向与 $\vec{v}$ 相反。\\
+ 影响因素：流体阻力的大小是一个复杂的多元函数，它高度依赖于：
+ \begin{itemize}
+ \item 物体自身的几何特征（大小、形状）。
+ \item 物体的运动状态（相对速率 $v$）。
+ \item 流体自身的物理性质（密度 $\rho$、粘滞性 $\eta$）。
+ \end{itemize}
+\end{definition}
+
+当物体在流体中相对速率 $v$ \textbf{较小}时，流体内部的层流起主导作用，流体阻力大小与相对速率成\textbf{正比}： \(\vec{f}_v = -\gamma \vec{v}\) 其中 $\gamma$ 称为\textbf{阻力系数}。如对于一个在黏性流体中运动、半径为 $r$ 的完美小球，其阻力系数 $\gamma$ 可严格表示为
+： \(\gamma = 6\pi r \eta \implies f_v = 6\pi \eta r v\) 
+式中 $\eta$ 为流体的\textbf{粘度 (Viscosity)}。
+
+当物体在流体中相对速率 $v$ \textbf{较大}时，物体后方会形成涡流，流体阻力大小转而与相对速率的\textbf{平方}成\textbf{正比}：
+ \(f_d = \frac{1}{2} \rho S C_d v^2\) 
+\begin{itemize}
+ \item $\rho$：流体的质量密度。
+ \item $S$：物体在运动方向上的横截面积（迎风面积）。
+ \item $C_d$：\textbf{曳力系数 (Drag Coefficient)}，主要依赖于物体的形状以及流体的黏性。
+\end{itemize}
+若半径为 $r$、密度为 $\rho_{\text{物}}$ 的小球在密度为 $\rho_{\text{流}}$ 的黏性流体中从静止下落（假设速率较小，适用低速模型）：考虑重力、浮力与斯托克斯阻力的平衡：
+ \(F_g - F_{\text{浮}} = f_v\) 
+\[
+\rho_{\text{物}} \left(\frac{4}{3}\pi r^3\right)g - \rho_{\text{流}} \left(\frac{4}{3}\pi r^3\right)g = 6\pi \eta r v_t
+\]
+由此可以解得该小球的\textbf{终极速率 $v_t$} 为：
+ \(v_t = \frac{2r^2(\rho_{\text{物}} - \rho_{\text{流}})g}{9\eta}\) 
+
+\begin{exercise}
+长为 $l$ 的轻绳，一端系质量为 $m$ 的小球，另一端系于定点 $O$。$t = 0$ 时小球位于最低位置，并具有水平初速度 $\vec{v}_0$。求小球在任意位置（由张角 $\theta$ 描述）的速率 $v$ 及绳的张力 $F_{\text{T}}$。
+\end{exercise}
+\begin{solution}
+小球主要受到两个力的作用：绳子的张力 $\vec{F}_{\text{T}}$（沿法向反方向，即 $-\vec{e}_{\text{n}}$）以及重力 $m\vec{g}$。将重力沿切向和法向进行正交分解，根据牛顿第二定律 $\vec{F} = m\vec{a}$，结合自然坐标系下的加速度公式 $\vec{a} = \dfrac{\mathrm{d}v}{\mathrm{d}t}\vec{e}_{\text{t}} + \dfrac{v^2}{l}\vec{e}_{\text{n}}$，可得动力学方程组：
+$$\begin{cases}
+\text{法向：} & F_{\text{T}} - mg\cos\theta = ma_{\text{n}} = m \dfrac{v^2}{l} \\
+\text{切向：} & -mg\sin\theta = ma_{\text{t}} = m \dfrac{\mathrm{d}v}{\mathrm{d}t}\implies\dfrac{\mathrm{d}v}{\mathrm{d}t} = -g\sin\theta
+\end{cases}$$
+由于方程左边是对时间 $t$ 求导，右边是关于角度 $\theta$ 的函数，无法直接积分。由于小球沿圆周运动，其角速度 $\omega = \dfrac{\mathrm{d}\theta}{\mathrm{d}t} = \dfrac{v}{l}$，我们可以利用导数的链式法则将时间元 $\mathrm{d}t$ 转换为角度元 $\mathrm{d}\theta$： \(\frac{\mathrm{d}v}{\mathrm{d}t} = \frac{\mathrm{d}v}{\mathrm{d}\theta} \frac{\mathrm{d}\theta}{\mathrm{d}t} = \frac{\mathrm{d}v}{\mathrm{d}\theta} \cdot \frac{v}{l} = \frac{v}{l}\frac{\mathrm{d}v}{\mathrm{d}\theta}\) 
+将此换元结果代回切向方程，进行分离变量：
+ \(\frac{v}{l}\frac{\mathrm{d}v}{\mathrm{d}\theta} = -g\sin\theta \implies v\mathrm{d}v = -gl\sin\theta\mathrm{d}\theta\) 结合初始条件（$t=0$ 时，$\theta = 0, v = v_0$），两边同时积分：$$\int_{v_0}^{v} v\mathrm{d}v = -gl\int_{0}^{\theta} \sin\theta\mathrm{d}\theta\Rightarrow\frac{1}{2}v^2 - \frac{1}{2}v_0^2 = -gl \left( -\cos\theta \Big|_0^\theta \right) = gl(\cos\theta - 1)\Rightarrow v = \sqrt{v_0^2 + 2gl(\cos\theta - 1)}$$
+将求得的速率 $v^2 = v_0^2 + 2gl(\cos\theta - 1)$ 代回：$$F_{\text{T}} = mg\cos\theta + \frac{m}{l}\left[ v_0^2 + 2gl(\cos\theta - 1) \right]= m\left( \frac{v_0^2}{l} - 2g + 3g\cos\theta \right)$$
+\end{solution}
+
+\begin{exercise}
+设空气对抛体的阻力与抛体的速度成正比，即 $\vec{F}_{\text{r}} = -k\vec{v}$，其中 $k$ 为阻力系数。抛体的质量为 $m$、初速度为 $\vec{v}_0$、抛射角为 $\alpha$。求抛体运动的轨迹方程。
+\end{exercise}
+\begin{solution}
+以抛出点为原点 $O$，建立直角坐标系 $Oxy$。物体在任意位置 $A$ 时，受到重力（向下）和空气阻力 $\vec{F}_{\text{r}} = -k\vec{v}$ 的作用。将牛顿第二定律 $\vec{F} = m\vec{a}$ 在 $x, y$ 轴上正交分解，得到微分方程组：
+\[\begin{cases}
+\text{$x$ 轴：} & -kv_x = m \dfrac{\mathrm{d}v_x}{\mathrm{d}t} \implies\dfrac{\mathrm{d}v_x}{v_x} = -\dfrac{k}{m}\mathrm{d}t\\
+\text{$y$ 轴：} & -mg - kv_y = m \dfrac{\mathrm{d}v_y}{\mathrm{d}t}\implies \dfrac{k\mathrm{d}v_y}{mg + kv_y} = -\dfrac{k}{m}\mathrm{d}t
+\end{cases}\]
+初始条件（$t=0$ 时）：$v_{0x} = v_0\cos\alpha,v_{0y} = v_0\sin\alpha$，对 $x$ 方向方程两边积分：
+\[\int_{v_0\cos\alpha}^{v_x} \frac{\mathrm{d}v_x}{v_x} = -\frac{k}{m}\int_{0}^{t}\mathrm{d}t \implies \ln\left(\frac{v_x}{v_0\cos\alpha}\right) = -\frac{k}{m}t\implies v_x(t) = v_0\cos\alpha \mathrm{e}^{-\frac{k}{m}t}\]
+对 $y$ 方向方程两边积分（注意左边运用凑微分法 $\mathrm{d}(mg+kv_y) = k\mathrm{d}v_y$）：
+$$\int_{v_0\sin\alpha}^{v_y} \frac{k\mathrm{d}v_y}{mg + kv_y} = -\frac{k}{m}\int_{0}^{t}\mathrm{d}t \implies \ln\left(\frac{mg + kv_y}{mg + kv_0\sin\alpha}\right) = -\frac{k}{m}t$$解得： \(v_y(t) = \left(v_0\sin\alpha + \frac{mg}{k}\right)\mathrm{e}^{-\frac{k}{m}t} - \frac{mg}{k}\) 
+利用 $v_x = \dfrac{\mathrm{d}x}{\mathrm{d}t}, v_y = \dfrac{\mathrm{d}y}{\mathrm{d}t}$ 再次分离变量，并带入初始条件（$t=0$ 时，$x_0=0, y_0=0$）进行积分：
+$$x(t) = \int_{0}^{t} v_0\cos\alpha \mathrm{e}^{-\frac{k}{m}t} \mathrm{d}t = v_0\cos\alpha \left[ -\frac{m}{k}\mathrm{e}^{-\frac{k}{m}t} \right]_0^t = \frac{m}{k}v_0\cos\alpha\left(1 - \mathrm{e}^{-\frac{k}{m}t}\right)$$
+$$y(t) = \int_{0}^{t} \left[\left(v_0\sin\alpha + \frac{mg}{k}\right)\mathrm{e}^{-\frac{k}{m}t} - \frac{mg}{k}\right] \mathrm{d}t = \frac{m}{k}\left(v_0\sin\alpha + \frac{mg}{k}\right)\left(1 - \mathrm{e}^{-\frac{k}{m}t}\right) - \frac{mg}{k}t$$
+消去时间 $t$ 求解轨迹方程，由
+$$1 - \mathrm{e}^{-\frac{k}{m}t} = \frac{kx}{mv_0\cos\alpha} \implies \mathrm{e}^{-\frac{k}{m}t} = 1 - \frac{kx}{mv_0\cos\alpha}$$对两边取对数可反解出时间 $t$： \(t = -\frac{m}{k}\ln\left(1 - \frac{kx}{mv_0\cos\alpha}\right)\) 将上述两项直接代入 $y(t)$ 的方程中：$$y = \frac{m}{k}\left(v_0\sin\alpha + \frac{mg}{k}\right)\left(\frac{kx}{mv_0\cos\alpha}\right) - \frac{mg}{k}\left[-\frac{m}{k}\ln\left(1 - \frac{kx}{mv_0\cos\alpha}\right)\right]$$化简后即可得到最终的轨迹方程：$$y = \left(\tan\alpha + \frac{mg}{kv_0\cos\alpha}\right)x + \frac{m^2g}{k^2}\ln\left(1 - \frac{k}{mv_0\cos\alpha}x\right)$$
+\end{solution}
+
+\begin{example}
+一个由轻质定滑轮、轻绳和两个质量分别为 $m_1$ 和 $m_2$ 的物体组成的连接体装置被固定在电梯顶部。当电梯以加速度 $\vec{a}$ 相对地面匀加速向上运动时，求两物体相对电梯的加速度 $\vec{a}_{\text{r}}$ 的大小和绳子的张力 $F_{\text{T}}$。（设 $m_1 > m_2$）
+\end{example}
+\begin{solution}
+以地面为惯性参考系。当系统运动时，$m_1$ 相对电梯向下加速，$m_2$ 相对电梯向上加速，设该相对加速度的大小为 $a_{\text{r}}$。根据伽利略加速度合成定理 $\vec{a}_{\text{物地}} = \vec{a}_{\text{物梯}} + \vec{a}_{\text{梯地}}$，我们将各物体的矢量加速度投影到各自的运动轴上，求出它们对地的绝对加速度：
+\begin{itemize}
+\item 对于 $m_1$（取向下为正方向）：由于电梯向上加速 $a$，物体相对电梯向下加速 $a_{\text{r}}$，故对地绝对加速度为：$a_1 = a_{\text{r}} - a$
+\item 对于 $m_2$（取向上为正方向）：由于电梯向上加速 $a$，物体相对电梯也向上加速 $a_{\text{r}}$，故对地绝对加速度为：$a_2 = a_{\text{r}} + a$
+\end{itemize}
+分别对 $m_1$（以向下为正）和 $m_2$（以向上为正）应用牛顿第二定律 $\vec{F} = m\vec{a}$：$$\begin{cases}
+m_1g - F_{\text{T}} = m_1a_1 = m_1(a_{\text{r}} - a) \\
+F_{\text{T}} - m_2g = m_2a_2 = m_2(a_{\text{r}} + a)
+\end{cases}$$
+解得相对加速度 $a_{\text{r}}$： \(a_{\text{r}} = \frac{m_1 - m_2}{m_1 + m_2}(g + a)\) 将 $a_{\text{r}}$ 代回：$$F_{\text{T}} = m_1(g + a) - m_1 \cdot \frac{m_1 - m_2}{m_1 + m_2}(g + a) = m_1(g + a) \left( 1 - \frac{m_1 - m_2}{m_1 + m_2} \right)$$化简通分后得到绳子张力 $F_{\text{T}}$： \(F_{\text{T}} = \frac{2m_1m_2}{m_1 + m_2}(g + a)\) 
+\end{solution}
+
+
+\begin{example}
+一个质量为 $m$、半径为 $r$ 的球体在水中由静止释放并下沉。已知水对球体的流体阻力满足斯托克斯黏滞公式 $\vec{F}_{\text{r}} = -6\pi r \eta \vec{v}$（其中 $\eta$ 为粘滞系数），水的浮力为 $F_{\text{B}}$。
+\begin{enumerate}
+\item 求球体下沉速度随时间的变化关系 $v(t)$；
+\item 若球体在水面上具有竖直向下的初速率 $v_0$，且球体的密度恰好与水相同（即 $F_{\text{B}} = P$），求此时球体的速度 $v(t)$。
+\end{enumerate}
+\end{example}
+\begin{solution}
+情况一：由静止释放下沉（$v_0 = 0$）：以向下为 $y$ 轴正方向，球体在下沉过程中受到三个力的作用：重力 $\vec{P}$（向下）、浮力 $\vec{F}_{\text{B}}$（向上）以及流体阻力 $\vec{F}_{\text{r}}$（向上）。根据牛顿第二定律 $\vec{F} = m\vec{a}$，在 $y$ 轴上列出动力学方程：
+ \(mg - F_{\text{B}} - 6\pi \eta r v = m\frac{\mathrm{d}v}{\mathrm{d}t}\) 
+为了使方程形式更简洁，我们令$F_0 = mg - F_{\text{B}}$，阻力常数 $b = 6\pi \eta r$，则方程化为：
+$$F_0 - bv = m\frac{\mathrm{d}v}{\mathrm{d}t}\implies\frac{\mathrm{d}v}{\mathrm{d}t} = -\frac{b}{m}\left(v - \frac{F_0}{b}\right) \implies \frac{\mathrm{d}v}{v - \dfrac{F_0}{b}} = -\frac{b}{m}\mathrm{d}t$$
+结合初始条件（$t=0$ 时，$v=0$），对两边进行定积分：
+$$\int_{0}^{v} \frac{\mathrm{d}v}{v - \dfrac{F_0}{b}} = -\frac{b}{m}\int_{0}^{t}\mathrm{d}t\implies\ln\left( \frac{v - \dfrac{F_0}{b}}{-\dfrac{F_0}{b}} \right) = -\frac{b}{m}t \implies 1 - \frac{bv}{F_0} = \mathrm{e}^{-\frac{b}{m}t}$$
+解得速度随时间的变化关系：$v(t) = \frac{F_0}{b}\left(1 - \mathrm{e}^{-\frac{b}{m}t}\right)$，当时间 $t \to \infty$ 时，指数项 $\mathrm{e}^{-\frac{b}{m}t} \to 0$，球体的速度趋于一个恒定值$v_{\text{L}} = \dfrac{F_0}{b} = \frac{mg - F_{\text{B}}}{6\pi \eta r}$.
+
+情况二：若球体进入水里时已经具有竖直向下的初速率 $v_0$，且球体的质量密度与水完全一样，此时重力与浮力完美抵消（$F_0 = mg - F_{\text{B}} = 0$）。球体在水中仅受到向上的流体阻力作用：$$m\frac{\mathrm{d}v}{\mathrm{d}t} = -bv \implies \frac{\mathrm{d}v}{v} = -\frac{b}{m}\mathrm{d}t\implies\int_{v_0}^{v} \frac{\mathrm{d}v}{v} = -\frac{b}{m}\int_{0}^{t}\mathrm{d}t \implies \ln\left(\frac{v}{v_0}\right) = -\frac{b}{m}t$$解得速度随时间的变化关系： \(v(t) = v_0\mathrm{e}^{-\frac{b}{m}t}\) 
+\end{solution}
+
+
+\begin{exercise}[2004级期末：由非线性阻力方程求速度]
+某物体的运动规律为$\dv{v}{t}=-kv^2t$，其中 \(k>0\) 为常量。若 \(t=0\) 时初速为 \(v_0\)，求速度 \(v\) 与时间 \(t\) 的函数关系。
+\end{exercise}
+\begin{solution}
+ \(\frac{\dd v}{v^2}=-kt\,\dd t.\implies \int_{v_0}^{v}\frac{\dd v}{v^2} =-k\int_0^t t\,\dd t. \implies -\frac{1}{v}+\frac{1}{v_0} =-\frac12kt^2.\) 
+整理得
+ \(v(t)=\frac{1}{v_0^{-1}+\frac12kt^2}\) 
+\end{solution}
+
+\begin{exercise}[2008级期末：由随时间变化的合外力求速度]
+一物体质量 \(M=\SI{2}{kg}\)，在合外力
+ \(\vb*{F}=(3+2t)\vb*{i}\quad(\mathrm{SI})\) 
+作用下从静止开始运动。求 \(t=\SI{1}{s}\) 时物体速度。
+\end{exercise}
+\begin{solution}
+力随时间变化，先由牛顿第二定律得到加速度，再对时间积分。初速度为零，所以积分常数直接确定。
+ \(\vb*{a}(t)=\frac{\vb*{F}}{M} =\frac{3+2t}{2}\vb*{i}\implies \vb*{v}(t)=\int_0^t \frac{3+2\tau}{2}\,\dd\tau\,\vb*{i} =\left(\frac32t+\frac12t^2\right)\vb*{i}.\) 
+当 \(t=1\,\si{s}\) 时，
+ \(\vb*{v}_1=2\vb*{i}\,\si{m/s}.\) 
+\end{solution}
+
+
+\begin{exercise}[2006级期末：斜拉力使粗糙水平面上物体加速度最大]
+水平地面上放一物体 \(A\)，它与地面间的滑动摩擦系数为 \(\mu\)。现加一恒力 \(\vb*{F}\)，方向与水平方向夹角为 \(\theta\)，如图所示。若要使物体 \(A\) 的加速度最大，求 \(\theta\) 应满足的条件。
+\end{exercise}
+\begin{solution}
+拉力越向上，水平分量 \(F\cos\theta\) 会变小，但支持力也会减小，从而摩擦力 \(\mu N\) 变小。最大加速度来自这两种效果的折中，所以要把水平合力写成 \(\theta\) 的函数再求极值。竖直方向无加速度，
+ \(N+F\sin\theta-mg=0 \implies N=mg-F\sin\theta.\) 
+水平方向合力为
+ \(F_{\text{合},x}=F\cos\theta-\mu N =F\cos\theta-\mu(mg-F\sin\theta).\) 
+因此
+ \(a(\theta)=\frac{F(\cos\theta+\mu\sin\theta)-\mu mg}{m}.\) 
+令 \(a(\theta)\) 对 \(\theta\) 取极值：
+ \(\dv{}{\theta}(\cos\theta+\mu\sin\theta) =-\sin\theta+\mu\cos\theta=0.\) 
+于是
+ \(\tan\theta=\mu.\) 
+\end{solution}
+
+\begin{exercise}[2007级期末：用恒力代替阿特伍德机一侧重物]
+如图，轻绳跨过无摩擦定滑轮，两端系有质量 \(m_1,m_2\) 的重物，且 \(m_1>m_2\)。滑轮质量和轴上摩擦忽略时，重物加速度大小为 \(a\)。若用竖直向下的恒力 \(F=m_1g\) 代替质量为 \(m_1\) 的物体，质量 \(m_2\) 的重物加速度大小为 \(a'\)。比较 \(a'\) 与 \(a\)。
+\end{exercise}
+\begin{solution}
+ 原来的 \(m_1\) 不是单纯给绳子一个 \(m_1g\) 的拉力，它自己也要被加速，所以绳中张力小于 \(m_1g\)。改成外加恒力后，绳端拉力直接等于 \(m_1g\)，效果会更强。轻滑轮两侧张力相等，设 \(m_1\) 向下、\(m_2\) 向上为正，
+ \(m_1g-T=m_1a, T-m_2g=m_2a\implies a=\frac{m_1-m_2}{m_1+m_2}g.\) 
+绳端受恒力 \(F=m_1g\)，轻绳中张力为$T'=F=m_1g$，对 \(m_2\)：
+ \(T'-m_2g=m_2a' \implies a'=\frac{m_1-m_2}{m_2}g.\) 
+比较得
+ \(\frac{a'}{a} =\frac{(m_1-m_2)g/m_2}{(m_1-m_2)g/(m_1+m_2)} =\frac{m_1+m_2}{m_2}>1.\) 
+\end{solution}
+
+
+\begin{exercise}[2009级期末：圆锥摆半周内重力的冲量]
+圆锥摆的摆球质量为 \(m\)，速率为 \(v\)，圆周轨道半径为 \(R\)。当摆球在轨道上运动半周时，求摆球所受重力和合力冲量的大小。
+\end{exercise}
+\begin{solution}
+题目问的是\textbf{重力}的冲量，不是合力冲量。重力大小和方向都恒定，所以只需要把运动半周所用的时间乘进去。
+ \(I_g=\int_0^{\Delta t} mg\,\dd t=mg\,\Delta t=mg\frac{\pi R}{v}\) 根据动量定理，合力的冲量等于摆球动量的改变量： \(\vec{I}_{\text{合}} = \Delta \vec{p} = m\vec{v}_2 - m\vec{v}_1\) 运动半周后，摆球到达圆周的对称点，其速度方向刚好反向，变为沿 $x$ 轴负方向，即 $\vec{v}_2 = -v\vec{i}$。代入动量定理可得合力冲量矢量为：$\vec{I}_{\text{合}} = m(-v\vec{i}) - mv\vec{i} = -2mv\vec{i}$因此，摆球运动半周内所受合力冲量的大小为：$I_{\text{合}} = 2mv$
+\end{solution}
+
+
+\begin{exercise}[2010级期末：受余弦外力的质点位移函数]
+质量为 \(m\) 的质点沿 \(x\) 轴作直线运动，受到外力
+ \(\vb*{F}=F_0\cos\omega t\,\vb*{i}\quad(\mathrm{SI}).\) 
+已知 \(t=0\) 时质点位置为 \(x_0\)，初速度为 \(v_0=0\)。求质点位置 \(x\) 与时间 \(t\) 的关系。
+\end{exercise}
+\begin{solution}
+根据牛顿第二定律，
+ \(m\dv{v}{t}=F_0\cos\omega t,\qquad v(0)=0.\) 
+先对速度积分：
+ \(\int_0^v \dd v =\frac{F_0}{m}\int_0^t \cos\omega t'\,\dd t' \implies v(t)=\frac{F_0}{m\omega}\sin\omega t.\) 
+再由 \(\dd x=v\,\dd t\) 和 \(x(0)=x_0\)，
+ \(x-x_0 =\frac{F_0}{m\omega}\int_0^t \sin\omega t'\,\dd t' =\frac{F_0}{m\omega^2}(1-\cos\omega t).\) 
+故质点位置与时间的关系为
+ \(x=x_0+\frac{F_0}{m\omega^2}(1-\cos\omega t).\) 
+\end{solution}

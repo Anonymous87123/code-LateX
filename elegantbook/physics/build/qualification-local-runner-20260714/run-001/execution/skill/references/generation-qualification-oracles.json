@@ -1,0 +1,392 @@
+{
+  "schema_version": "humanize-generation-oracle-catalog/v1",
+  "catalog_version": "1.0.0",
+  "grader_engine_version": "1",
+  "contract_binding": {
+    "version": "2026-07-14",
+    "sha256": "f1d9da16e594e7362bfaf43455463eba1759ef59e0e4e0a2c03da1fc56195e3a"
+  },
+  "requirements_binding": {
+    "version": "1.1.0",
+    "sha256": "f6c13daa534b48fecf1197b494ea18afd1066aea7e9e4b220fce94a5ee53f010"
+  },
+  "policy": {
+    "unknown_fields": "REJECT",
+    "text_encoding": "UTF-8",
+    "unicode_normalization": "NONE"
+  },
+  "fixture_provenance": {
+    "MODE-02/basic-rewrite/v1": {
+      "sources": [
+        {
+          "path": "tests/fixtures/humanize_forward_v6/blind_research_input.md",
+          "sha256": "348026b7b26c646e67e809285ea11881865a3d35193a4131ff850813582c4d71"
+        }
+      ],
+      "derivation": "INPUT_COPIED_FROM_EXISTING_FORWARD_FIXTURE; PROMPT_ABSTRACTS_ITS_REWRITE_TASK; NO_EXPECTED_PROSE_COPIED"
+    },
+    "ROLE-02/quoted-span/v1": {
+      "sources": [
+        {
+          "path": "tests/fixtures/humanize_legacy_retirement/cases.json",
+          "sha256": "64ceec5650c81b40420dbe07499fb6be3f2f9a4a6de1dc8fe06fe252d0dfdf68"
+        }
+      ],
+      "derivation": "INPUT_AND_PROMPT_COPIED_FROM_RET-REPORT-02; CHECK_BINDS_ONLY_PROTECTED_LITERAL_AND_NOT_AN_EXPECTED_REWRITE"
+    },
+    "PATH-05/positive/v1": {
+      "sources": [
+        {
+          "path": "tests/fixtures/humanize_forward_v6/blind_diagnose_input.md",
+          "sha256": "759749460ceba9f5d21e178a72636fca39047ed2f8734516320d605e781835ce"
+        },
+        {
+          "path": "references/evaluation-contract.md",
+          "sha256": "f1d9da16e594e7362bfaf43455463eba1759ef59e0e4e0a2c03da1fc56195e3a"
+        }
+      ],
+      "derivation": "ABSTRACTED_EQUAL_WEIGHT_PATHOLOGY_FROM_EXISTING_DIAGNOSE_FIXTURE_AND_PATH-05_CONTRACT; NO_SOURCE_SENTENCE_IS_AN_EXPECTED_OUTPUT"
+    },
+    "LONG-01/include-manifest/v1": {
+      "sources": [
+        {
+          "path": "references/evaluation-contract.md",
+          "sha256": "f1d9da16e594e7362bfaf43455463eba1759ef59e0e4e0a2c03da1fc56195e3a"
+        },
+        {
+          "path": "references/corpus-action-sources.json",
+          "sha256": "46c92280eca27c32d126f94cdde5de6e6620eccebfd438c62c1a4a4916ce88ca"
+        }
+      ],
+      "derivation": "MINIMAL_INCLUDE_GRAPH_ABSTRACTED_FROM_LONG-01_AND_REGISTERED_TEX_WORKFLOWS; CHECKS_STRUCTURE_ONLY"
+    },
+    "PROTECTED/hash-zero/v1": {
+      "sources": [
+        {
+          "path": "tests/fixtures/humanize_legacy_retirement/cases.json",
+          "sha256": "64ceec5650c81b40420dbe07499fb6be3f2f9a4a6de1dc8fe06fe252d0dfdf68"
+        },
+        {
+          "path": "references/evaluation-contract.md",
+          "sha256": "f1d9da16e594e7362bfaf43455463eba1759ef59e0e4e0a2c03da1fc56195e3a"
+        }
+      ],
+      "derivation": "PROTECTED_QUOTE_SPAN_ABSTRACTED_FROM_EXISTING_RETIREMENT_FIXTURE_AND_ROLE_CONTRACT; BYTE_EQUALITY_ONLY"
+    }
+  },
+  "checks": [
+    {
+      "id": "validator/MODE-02/pass/v1",
+      "atom_id": "MODE-02",
+      "type": "replay_result",
+      "source": "validator",
+      "configuration": {
+        "tool_id": "validate_humanize_output",
+        "args": [
+          "${INPUT}",
+          "${OUTPUT}",
+          "--scene",
+          "RESEARCH",
+          "--format",
+          "json"
+        ],
+        "expected": {
+          "status": "PASS",
+          "delivery_gate_status": "PASS",
+          "exit_code": 0,
+          "academic_correctness": "NOT_EVALUATED"
+        }
+      }
+    },
+    {
+      "id": "text/MODE-02/no-audit-ledger/v1",
+      "atom_id": "MODE-02",
+      "type": "utf8_literal",
+      "source": "artifact:output",
+      "configuration": {
+        "artifact_role": "output",
+        "forbidden": [
+          {
+            "literal": "Severity | Location | Source role | Scene",
+            "maximum_occurrences": 0
+          },
+          {
+            "literal": "evidence_integrity_status",
+            "maximum_occurrences": 0
+          }
+        ]
+      }
+    },
+    {
+      "id": "json/MODE-02/public-context-bound/v1",
+      "atom_id": "MODE-02",
+      "type": "json_value",
+      "source": "artifact:context",
+      "configuration": {
+        "artifact_role": "context",
+        "path": ["public_context_sha256"],
+        "operator": "EQUALS",
+        "expected": "4c15ebb72a06e7fcaac708cb30ee896cc51b60916563bb9cdfc82d928027a0af"
+      }
+    },
+    {
+      "id": "json/ROLE-02/public-context-bound/v1",
+      "atom_id": "ROLE-02",
+      "type": "json_value",
+      "source": "artifact:context",
+      "configuration": {
+        "artifact_role": "context",
+        "path": ["public_context_sha256"],
+        "operator": "EQUALS",
+        "expected": "7f0119f0df0512472265af3fd99d2b99d77a4b9f5c1a5e0831e894c193d64c38"
+      }
+    },
+    {
+      "id": "relation/ROLE-02/quote-byte-preserved/v1",
+      "atom_id": "ROLE-02",
+      "type": "artifact_relation",
+      "source": "artifact:input-output",
+      "configuration": {
+        "operator": "LITERAL_OCCURRENCES_EQUAL",
+        "before_role": "input",
+        "after_role": "output",
+        "literal": "“我并不认为时间更短就一定更好”",
+        "minimum_occurrences": 1
+      }
+    },
+    {
+      "id": "structure/PATH-05/grid-changed/v1",
+      "atom_id": "PATH-05/positive",
+      "type": "structure_relation",
+      "source": "artifact:input-output",
+      "configuration": {
+        "operator": "PARAGRAPH_SENTENCE_GRID_CHANGED",
+        "input_role": "input",
+        "output_role": "output",
+        "minimum_paragraphs": 3
+      }
+    },
+    {
+      "id": "json/PATH-05/public-context-bound/v1",
+      "atom_id": "PATH-05/positive",
+      "type": "json_value",
+      "source": "artifact:context",
+      "configuration": {
+        "artifact_role": "context",
+        "path": ["public_context_sha256"],
+        "operator": "EQUALS",
+        "expected": "c5f3df3ee4ddb4051a922ce22d84e705d38b1b04148e7a3b9da3ff846d2a8e98"
+      }
+    },
+    {
+      "id": "json/LONG-01/include-manifest/v1",
+      "atom_id": "LONG-01",
+      "type": "json_value",
+      "source": "artifact:output",
+      "configuration": {
+        "artifact_role": "output",
+        "path": [
+          "included_files"
+        ],
+        "operator": "ARRAY_SET_EQUALS",
+        "expected": [
+          "chapter-a.tex",
+          "chapter-b.tex"
+        ]
+      }
+    },
+    {
+      "id": "json/LONG-01/completeness-claim/v1",
+      "atom_id": "LONG-01",
+      "type": "json_value",
+      "source": "artifact:output",
+      "configuration": {
+        "artifact_role": "output",
+        "path": [
+          "manifest_complete"
+        ],
+        "operator": "EQUALS",
+        "expected": true
+      }
+    },
+    {
+      "id": "json/LONG-01/public-context-bound/v1",
+      "atom_id": "LONG-01",
+      "type": "json_value",
+      "source": "artifact:context",
+      "configuration": {
+        "artifact_role": "context",
+        "path": ["public_context_sha256"],
+        "operator": "EQUALS",
+        "expected": "d54375f4e5821499dd9fbd22c5ffcea820dc277223c95f2e8e8e2c72715a3006"
+      }
+    },
+    {
+      "id": "measurement/PROTECTED/hash-zero/v1",
+      "atom_id": "PROTECTED/hash-zero",
+      "type": "measurement_result",
+      "source": "measurement:protected_hash",
+      "configuration": {
+        "measurement": "protected_hash",
+        "annotation_artifact": "protected_annotation",
+        "expected_status": "PASS"
+      }
+    }
+  ],
+  "review_rubrics": [
+    {
+      "id": "style/PATH-05/equal-weight/v1",
+      "atom_id": "PATH-05/positive",
+      "reviewer_kinds": [
+        "MODEL",
+        "HUMAN"
+      ],
+      "minimum_distinct_reviewers": 1,
+      "questions": [
+        {
+          "id": "paragraphs-not-equal-weight",
+          "answer_type": "PASS_FAIL"
+        },
+        {
+          "id": "scene-formality-preserved",
+          "answer_type": "PASS_FAIL"
+        }
+      ],
+      "aggregation": "ALL_PASS"
+    }
+  ],
+  "suites": [
+    {
+      "id": "MODE-02/basic-rewrite/v1",
+      "atom_id": "MODE-02",
+      "qualification_stage": "SHADOW",
+      "runner_compatible": false,
+      "fixture_bindings": {
+        "input": {
+          "path": "references/generation-qualification-fixtures/v1/mode-02-input.md",
+          "sha256": "348026b7b26c646e67e809285ea11881865a3d35193a4131ff850813582c4d71"
+        },
+        "prompt": {
+          "path": "references/generation-qualification-fixtures/v1/mode-02-prompt.txt",
+          "sha256": "ae3a19ba1a8bb1e2351dd6c65f6113cd64ad0da0521c37dddf9ad124e6b66ee7"
+        },
+        "public_context": {
+          "path": "references/generation-qualification-fixtures/v1/mode-02-context.json",
+          "sha256": "4c15ebb72a06e7fcaac708cb30ee896cc51b60916563bb9cdfc82d928027a0af"
+        }
+      },
+      "required_checks": [
+        "validator/MODE-02/pass/v1",
+        "text/MODE-02/no-audit-ledger/v1",
+        "json/MODE-02/public-context-bound/v1"
+      ],
+      "required_reviews": []
+    },
+    {
+      "id": "ROLE-02/quoted-span/v1",
+      "atom_id": "ROLE-02",
+      "qualification_stage": "SHADOW",
+      "runner_compatible": false,
+      "fixture_bindings": {
+        "input": {
+          "path": "references/generation-qualification-fixtures/v1/role-02-input.md",
+          "sha256": "8f071666580fb3c1d4cdd364f7d7ddf3cc7ba7300c630cd0cb856c1910edd314"
+        },
+        "prompt": {
+          "path": "references/generation-qualification-fixtures/v1/role-02-prompt.txt",
+          "sha256": "38e37cb99f1b5e1910c0420be6d948410422414827a3160f8cb4d29aa9e1ad25"
+        },
+        "public_context": {
+          "path": "references/generation-qualification-fixtures/v1/role-02-context.json",
+          "sha256": "7f0119f0df0512472265af3fd99d2b99d77a4b9f5c1a5e0831e894c193d64c38"
+        }
+      },
+      "required_checks": [
+        "relation/ROLE-02/quote-byte-preserved/v1",
+        "json/ROLE-02/public-context-bound/v1"
+      ],
+      "required_reviews": []
+    },
+    {
+      "id": "PATH-05/positive/v1",
+      "atom_id": "PATH-05/positive",
+      "qualification_stage": "SHADOW",
+      "runner_compatible": false,
+      "fixture_bindings": {
+        "input": {
+          "path": "references/generation-qualification-fixtures/v1/path-05-input.md",
+          "sha256": "20ed649b6f8dfa440ff999e9574e8d9068de23e368d6f8333ae797bccfcbc6c0"
+        },
+        "prompt": {
+          "path": "references/generation-qualification-fixtures/v1/path-05-prompt.txt",
+          "sha256": "5080caae12bf7c458de7d30f901259de5d1cbd27355aa443931bf6ff071178a8"
+        },
+        "public_context": {
+          "path": "references/generation-qualification-fixtures/v1/path-05-context.json",
+          "sha256": "c5f3df3ee4ddb4051a922ce22d84e705d38b1b04148e7a3b9da3ff846d2a8e98"
+        },
+        "review_bundle": {
+          "path": "references/generation-qualification-fixtures/v1/path-05-review-bundle.json",
+          "sha256": "6189f85c3f8c65af0f4dfac550fb9b6aa3808b9971a125ea5d16368f91a718a1"
+        }
+      },
+      "required_checks": [
+        "structure/PATH-05/grid-changed/v1",
+        "json/PATH-05/public-context-bound/v1"
+      ],
+      "required_reviews": [
+        "style/PATH-05/equal-weight/v1"
+      ]
+    },
+    {
+      "id": "LONG-01/include-manifest/v1",
+      "atom_id": "LONG-01",
+      "qualification_stage": "SHADOW",
+      "runner_compatible": false,
+      "fixture_bindings": {
+        "input": {
+          "path": "references/generation-qualification-fixtures/v1/long-01-input.tex",
+          "sha256": "4d276e9c018198579f6754363c29ca8ccd1f04525870ff68fa53851ea8569ae5"
+        },
+        "prompt": {
+          "path": "references/generation-qualification-fixtures/v1/long-01-prompt.txt",
+          "sha256": "fb0614088a77f3244d34bbaded17f6c3a019d0fa56fd6038d4e23cb8446aa0f8"
+        },
+        "public_context": {
+          "path": "references/generation-qualification-fixtures/v1/long-01-context.json",
+          "sha256": "d54375f4e5821499dd9fbd22c5ffcea820dc277223c95f2e8e8e2c72715a3006"
+        }
+      },
+      "required_checks": [
+        "json/LONG-01/include-manifest/v1",
+        "json/LONG-01/completeness-claim/v1",
+        "json/LONG-01/public-context-bound/v1"
+      ],
+      "required_reviews": []
+    },
+    {
+      "id": "PROTECTED/hash-zero/v1",
+      "atom_id": "PROTECTED/hash-zero",
+      "qualification_stage": "SHADOW",
+      "runner_compatible": false,
+      "fixture_bindings": {
+        "input": {
+          "path": "references/generation-qualification-fixtures/v1/protected-input.md",
+          "sha256": "8f20debf62e1ae3ba31fd9307c07ba8709cfa78b498bb6011b7b5676c8645414"
+        },
+        "output": {
+          "path": "references/generation-qualification-fixtures/v1/protected-output.md",
+          "sha256": "b21a23d5d64da262cc0ab0bec46928a8374fc0170a7260d8992e5b50743e8a59"
+        },
+        "protected_annotation": {
+          "path": "references/generation-qualification-fixtures/v1/protected-spans.json",
+          "sha256": "819caeb0744cd5989dedd8cc07bd3647f59334e2942575f9c63a3983894332d7"
+        }
+      },
+      "required_checks": [
+        "measurement/PROTECTED/hash-zero/v1"
+      ],
+      "required_reviews": []
+    }
+  ]
+}

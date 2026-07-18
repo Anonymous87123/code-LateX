@@ -1,0 +1,126 @@
+
+\section{刚体定轴转动的角动量定理与转动定律}
+
+这一节要解决的问题是：转动里的“牛顿第二定律”到底是什么，它和角动量定理是什么关系？
+
+这里还要先补一句定轴情形下的记号约定：既然我们始终围绕\textbf{同一固定转轴}讨论转动，\(\vb*{M}\) 和 \(\vb*{L}\) 都只会沿这条轴取正或取负，所以后面完全可以先约定一个正方向，再把它们记成代数量 \(M,L\)。
+
+\begin{theorem}[刚体定轴转动的角动量定理]\label{thm:rigid-body-angular-momentum-theorem}
+对选定转轴，作用在刚体上的合外力矩等于刚体对该轴角动量的时间变化率：
+ \(M=\dv{L}{t} \implies \int_{t_1}^{t_2} M\,\dd t=L_2-L_1,~~L=J\omega\) 定轴转动时，若转轴固定、质量分布相对转轴也不变，则 \(J\) 为常量，这时角动量才进一步压成
+ \(L=J\omega \implies M=\dv{L}{t} =\dv{(J\omega)}{t} =J\dv{\omega}{t} =J\alpha.\) 
+\end{theorem}
+
+
+\begin{exercise}[轻绳绕轮：怎样列出平动与转动方程]
+质量为 \(m\) 的重物由轻绳悬挂在半径为 \(R\)、转动惯量为 \(J\) 的轮边缘，绳不打滑，轮轴无摩擦。系统由静止释放，求重物加速度 \(a\)。
+\end{exercise}
+\begin{solution}
+先约定重物向下为正方向，轮子按绳放开的转向为正方向。对重物写平动方程、对轮子写转动方程，再补上绳不打滑的关联方程：
+\[
+\begin{aligned}
+mg-T&=ma,\\
+TR&=J\alpha,\\
+a&=\alpha R
+\end{aligned}
+\implies
+T=\frac{J\alpha}{R}=\frac{Ja}{R^2}
+\implies
+mg-\frac{Ja}{R^2}=ma
+\implies
+a=\frac{mg}{m+\dfrac{J}{R^2}}.
+\]
+\end{solution}
+
+\begin{exercise}
+已知两个相同的定滑轮质量均为 $m$，半径均为 $r$，它们绕各自中心轴的转动惯量均为 $J = \frac{1}{2}mr^2$。两个质量分别为 $m$ 和 $2m$ 的质点用一根跨过两滑轮的轻绳连接。系统由静止释放，设轻绳与滑轮间无相对滑动，各处转轴摩擦均忽略不计。求运动过程中两滑轮之间水平段轻绳的张力 $T$。
+\end{exercise}
+\begin{solution}
+由于右侧质点的质量（$2m$）大于左侧质点的质量（$m$），整个系统在释放后必然向右下倾斜运动。规定右侧质点 $2m$ 的运动方向正向向下，加速度大小记为 $a$。物体受到竖直向下的重力 $2mg$ 和右侧竖直绳子向上的张力 $T_2$。沿正方向（向下）有： \(2mg - T_2 = 2ma\) 
+左侧物体受到竖直向下的重力 $mg$ 和左侧竖直绳子向上的张力 $T_1$。沿正方向（向上）有： \(T_1 - mg = ma\) 
+滑轮角加速度大小记为 $\alpha=\dfrac{a}{r}$。左侧滑轮的转动方程：滑轮受到水平绳向右的拉力 $T$（力臂为 $r$，顺时针力矩）和竖直绳向下的拉力 $T_1$（力臂为 $r$，逆时针力矩）。根据刚体定轴转动定律 $M = J\alpha$：
+$$Tr - T_1r = J\alpha \implies Tr - T_1r = \frac{1}{2}mr^2\alpha\implies T - T_1 = \frac{1}{2}ma $$
+右侧滑轮的转动方程：滑轮受到竖直绳向下的拉力 $T_2$（力臂为 $r$，顺时针力矩）和水平绳向左的拉力 $T$（力臂为 $r$，逆时针力矩）。同样根据转动定律：$$T_2r - Tr = J\alpha \implies T_2r - Tr = \frac{1}{2}mr^2\alpha\implies T_2 - T = \frac{1}{2}ma$$四个方程全部相加：$$(2mg - T_2) + (T_1 - mg) + (T - T_1) + (T_2 - T) = 2ma + ma + \frac{1}{2}ma + \frac{1}{2}ma=4ma\implies a = \frac{1}{4}g$$
+将求得的 $a$ 分别代回质点方程中：由方程 (1) 得右侧绳张力：$T_2 = 2mg - 2ma = 2mg - 2m\left(\frac{1}{4}g\right) = \frac{3}{2}mg$由方程 (2) 得左侧绳张力：$T_1 = mg + ma = mg + m\left(\frac{1}{4}g\right) = \frac{5}{4}mg$最后，将 $T_2$（或 $T_1$）和加速度 $a$ 代入任意一个滑轮方程（例如右滑轮方程 (6)）中：$$T = T_2 - \frac{1}{2}ma = \frac{3}{2}mg - \frac{1}{2}m\left(\frac{1}{4}g\right) = \frac{3}{2}mg - \frac{1}{8}mg=\frac{11}{8}g$$
+\end{solution}
+
+
+\begin{exercise}
+已知一均匀细直杆质量为 $m$，长度为 $l$，可绕通过其一端的水平固定轴在竖直平面内自由转动，它对该转轴的转动惯量为 $J = \frac{1}{3}ml^2$。起初将细杆拉至水平位置并由静止释放。试求细杆下摆到与水平方向成任意夹角 $\theta$ 时，其瞬时角加速度 $\alpha$ 与角速度 $\omega$ 的大小。
+\end{exercise}
+\begin{solution}
+由于支持力的作用点死死锁定在转轴上，其对该转轴的位置矢量 $\vec{r} \equiv 0$。因此，轴支持力对转轴的力矩在整个运动过程中恒为零：$M_{\text{轴}} \equiv 0$，重力 $m\vec{g}$：对于均匀细直杆，其全部质量可以等效集中于其几何中心（质心 $C$）处。质心距离转轴的几何距离为 $r_C = \frac{l}{2}$。当细杆与水平方向成 $\theta$ 夹角时，促使细杆向下转动的重力矩大小为： \(M = mg \cdot \left(\frac{l}{2}\cos\theta\right) = \frac{mgl}{2}\cos\theta\) 由$M = J\alpha$，$J = \frac{1}{3}ml^2$ 代入： \(\frac{mgl}{2}\cos\theta = \left(\frac{1}{3}ml^2\right) \alpha\implies \alpha = \frac{3g}{2l}\cos\theta\) 由于角加速度 $\alpha(\theta)$ 是空间位置的函数，为了求得角速度，我们无法直接对时间 $t$ 积分。必须利用导数的链式法则，将时间微分转化为空间角度微分： \(\alpha = \frac{\mathrm{d}\omega}{\mathrm{d}t} = \frac{\mathrm{d}\omega}{\mathrm{d}\theta} \cdot \frac{\mathrm{d}\theta}{\mathrm{d}t} = \omega\frac{\mathrm{d}\omega}{\mathrm{d}\theta}= \frac{3g}{2l}\cos\theta\) 积分解得$\omega = \sqrt{\dfrac{3g}{l}\sin\theta}$。
+\end{solution}
+
+\begin{definition}[力矩做功与元功表达式]
+当外力作用于绕固定轴转动的刚体上时，刚体在力的驱动下发生旋转。为了计算变力矩在空间中积累的效应，我们采用微元分析法。设刚体绕固定的 $z$ 轴转动。在某一瞬间，刚体上距离转轴垂直距离为 $r$ 的点 $P$ 处受到外力 $\vec{F}$ 的作用。在极短的时间 $\mathrm{d}t$ 内，点 $P$ 随刚体转过了一个微小的角位移 $\mathrm{d}\theta$。此时点 $P$ 沿圆弧轨迹运动的元路程为：$\mathrm{d}s = r\mathrm{d}\theta$其对应的切向元位移记为 $\mathrm{d}\vec{r}$（大小为 $\mathrm{d}s$，方向严格沿圆周切线）。根据功的微积分原始定义，外力 $\vec{F}$ 在这段微元位移上所做的元功 $\mathrm{d}A$ 为力与位移的内积：$$\mathrm{d}A = \vec{F} \cdot \mathrm{d}\vec{r} = F_\tau \mathrm{d}s=F_\tau (r\mathrm{d}\theta) = (F_\tau r)\mathrm{d}\theta=M\mathrm{d}\theta$$其中 $F_\tau$ 是外力 $\vec{F}$ 沿圆周切线方向的分量（切向分力）。
+ \(\boxed{A = \int_{\theta_1}^{\theta_2} M\mathrm{d}\theta}\) 
+我们隔离出刚体内距离转轴垂直距离为 $r_i$ 的第 $i$ 个微小质元，将其质量记为 $\Delta m_i$。随着刚体以角速度 $\omega$ 旋转，该质元的瞬时线速度大小为：$v_i = r_i \omega$此时，第 $i$ 个质元的动能 $E_{\text{k}i}$ 为：$$E_{\text{k}i} = \frac{1}{2}\Delta m_i v_i^2 = \frac{1}{2}\Delta m_i (r_i \omega)^2 = \frac{1}{2}\Delta m_i r_i^2 \omega^2$$为了得到整个刚体的总转动动能 $E_{\text{k}}$，我们对刚体内所有的质元项进行无损的代数求和：$$E_{\text{k}} = \sum_i E_{\text{k}i} =\frac{1}{2}\Delta m_1 r_1^2 \omega^2 + \frac{1}{2}\Delta m_2 r_2^2 \omega^2 + \frac{1}{2}\Delta m_3 r_3^2 \omega^2 + \cdots =\frac{1}{2}\left( \sum_i \Delta m_i r_i^2 \right) \omega^2=\frac{1}{2}J\omega^2$$
+\end{definition}
+
+\begin{theorem}[刚体定轴转动的动能定理]
+已知刚体定轴转动的微分方程（转动定理）为 $M = J\alpha$。利用角加速度与角速度的微分关系 $\alpha = \frac{\mathrm{d}\omega}{\mathrm{d}t}$，将其代入元功公式 $\mathrm{d}A = M\mathrm{d}\theta$ 中： \(\mathrm{d}A = J \cdot \mathrm{d}\omega \cdot \frac{\mathrm{d}\theta}{\mathrm{d}t} = J\omega \mathrm{d}\omega\) 对上述微分关系两边加积分号。左边在角度空间 $[\theta_1, \theta_2]$ 上积分，右边对应的转动角速度从初状态 $\omega_1$ 演变到末状态 $\omega_2$：$$A = \int \mathrm{d}A = \int_{\theta_1}^{\theta_2} M\mathrm{d}\theta = \int_{\omega_1}^{\omega_2} J\omega \mathrm{d}\omega$$对右边的一维一阶幂函数直接执行一维定积分计算：$$A = \frac{1}{2}J\omega^2 \Big|_{\omega_1}^{\omega_2} = \frac{1}{2}J\omega_2^2 - \frac{1}{2}J\omega_1^2 = E_{\text{k}2} - E_{\text{k}1}$$这就是刚体定轴转动的动能定理。
+\end{theorem}
+
+\begin{exercise}
+一质量为 $m_0$、半径为 $R$ 的均匀实心圆盘，可绕通过盘心的水平固定轴自由转动。盘上绕有轻质细绳，绳的另一端挂有质量为 $m$ 的物体。系统最初处于静止状态。问物体由静止下落高度 $h$ 时，其瞬时速度为多大？
+\end{exercise}
+\begin{solution}
+由系统动能定理$$mgh = \left( \frac{1}{2}J\omega^2 + \frac{1}{2}mv^2 \right) - 0 ,~J = \frac{1}{2}m_0R^2,~ \omega = \frac{v}{R}\implies v = 2\sqrt{\frac{mgh}{m_0 + 2m}}$$
+\end{solution}
+
+\begin{exercise}
+留声机的转盘绕通过盘心且垂直于盘面的固定轴以恒定角速度 $\omega$ 作匀速转动。放上唱片后，唱片将在摩擦力矩的作用下被逐渐带动，最终随转盘一起转动。设唱片的半径为 $R$，质量为 $m$，它与转盘之间的滑动摩擦系数为 $\mu$。试求：\\
+1.唱片在过渡阶段所受到的滑动摩擦力矩 $M$ 大小；\\
+2.唱片从静止达到与转盘相同的角速度 $\omega$ 时，中间经历了多长时间 $t$；\\
+3.在这段非同步的时间内，转盘的驱动力矩总共做了多少功 $W$？
+\end{exercise}
+\begin{solution}
+（1）唱片刚放上转盘时，由于两者存在相对速度，唱片底面的每一个区域都在承受滑动摩擦力。我们在唱片上任取一个面元$\mathrm{d}s = \mathrm{d}r\mathrm{d}l= r\mathrm{d}r\mathrm{d}\phi$。唱片的面密度为：$\sigma = \frac{m}{\pi R^2}$该面元的微元质量为：$\mathrm{d}m = \sigma \mathrm{d}s = \frac{m}{\pi R^2} r\mathrm{d}r\mathrm{d}\phi$。
+$$\mathrm{d}f = \mu g\mathrm{d}m = \mu g \cdot \frac{m}{\pi R^2} r\mathrm{d}r\mathrm{d}\phi,~\mathrm{d}M = r \cdot \mathrm{d}f = \frac{\mu m g}{\pi R^2} r^2 \mathrm{d}r\mathrm{d}\phi$$积分得
+\[M =\int_0^{2\pi}\mathrm{d}\phi\int_0^R \frac{\mu m g}{\pi R^2} r^2\mathrm{d}r=\frac{2\mu m g}{R^2} \left[ \frac{1}{3}r^3 \right]_0^R = \frac{2\mu m g}{R^2} \cdot \frac{1}{3}R^3 = \frac{2}{3}\mu R m g\]
+（2）$$\frac{2}{3}\mu R m g = \left( \frac{1}{2}mR^2 \right) \alpha\implies \alpha = \frac{\frac{2}{3}\mu g}{\frac{1}{2}R} = \frac{4\mu g}{3R}\implies t = \frac{\omega}{\alpha} = \frac{\omega}{\frac{4\mu g}{3R}} = \frac{3\omega R}{4\mu g}$$
+（3）为了维持转盘的匀速转动，外界的电机必须实时输出一个与唱片反作用摩擦力矩完全相等的驱动力矩 $M_{\text{驱}} = M = \frac{2}{3}\mu R m g$。
+$$\theta_{\text{盘}} = \omega \cdot t = \omega \cdot \left( \frac{3\omega R}{4\mu g} \right) = \frac{3\omega^2 R}{4\mu g},~W = M_{\text{驱}} \cdot \theta_{\text{盘}} = \left( \frac{2}{3}\mu R m g \right) \cdot \left( \frac{3\omega^2 R}{4\mu g} \right)=\frac{1}{2}mR^2\omega^2$$
+\end{solution}
+
+\begin{theorem}[刚体定轴转动的角动量守恒定律]
+根据刚体定轴转动定理，刚体绕固定 $z$ 轴转动时，所受的合外力矩 $M$ 决定了其总角动量 $L$ 的瞬时时间变化率： \(M = \frac{\mathrm{d}(J\omega)}{\mathrm{d}t} = \frac{\mathrm{d}L}{\mathrm{d}t}\) 若系统满足极其严苛的力矩闭合条件，即作用于刚体上的合外力矩严格为零（$M = 0$），则其角动量对时间的导数必然归零。由此直接导出定轴转动下的守恒图像： \(L = J\omega = \text{恒量}\) 
+\end{theorem}
+
+\begin{example}
+一质量为 $m_1$、长度为 $l$ 的均匀细棒静止放在滑动摩擦系数为 $\mu$ 的水平桌面上，细棒可绕通过其一端的光滑固定竖直轴 $O$ 在桌面上自由旋转，其转动惯量为 $J = \frac{1}{3}m_1 l^2$。现有一质量为 $m_2$ 的小球以水平速度 $\vec{v}_1$ 严格垂直击中细棒的另一自由端，碰撞后小球以速度 $\vec{v}_2$ 沿原路反方向被弹回。试求：\\
+(1) 碰撞结束瞬间，细棒获得的瞬时角速度 $\omega$；\\
+(2) 细棒在桌面上由于摩擦阻力矩作用转动直到完全停止所需的时间 $t$。
+\end{example}
+\begin{solution}
+（1）选取细棒与小球共同组成一个封闭的研究系统，并以光滑定轴固定点 $O$ 为参考原点。在碰撞发生的极短时间 $\Delta t \to 0$ 内，支轴 $O$ 力的作用线过原点 $O$外力矩严格为零。碰撞的前后瞬间系统对转轴 $O$ 的总角动量守恒。我们规定小球的初速度 $\vec{v}_1$ 产生的转动方向（即俯视逆时针方向）为角动量的正方向：碰撞前系统总角动量 $L_1$：细棒静止，小球在距离转轴为 $l$ 的末端处运动。$L_1 = m_2 v_1 l$，碰撞后系统总角动量 $L_2$：小球以速率 $v_2$ 反向弹回，其角动量符号变负；细棒获得正方向的瞬时角速度 $\omega$。$L_2 = -m_2 v_2 l + J\omega$，根据角动量守恒定律 $L_1 = L_2$，列出系统状态方程：$$m_2 v_1 l = -m_2 v_2 l + J\omega ,~J = \frac{1}{3}m_1 l^2\implies m_2 (v_1 + v_2) l = \left( \frac{1}{3}m_1 l^2 \right) \omega\implies\omega = \frac{3m_2 (v_1 + v_2)}{m_1 l}$$
+（2）碰撞结束后细棒独自在摩擦桌面上旋转，受到桌面对其连续分布的滑动摩擦力矩 $M_r$ 。以转轴 $O$ 为原点，在距离转轴为 $x$ 处截取一段长度为 $\mathrm{d}x$ 的质量微元 $\mathrm{d}m$：细棒线密度 $\lambda = \frac{m_1}{l}$，故
+\[\mathrm{d}m = \frac{m_1}{l}\mathrm{d}x,~\mathrm{d}N = \mathrm{d}m \cdot g = \frac{m_1 g}{l}\mathrm{d}x,~\mathrm{d}f = \mu \mathrm{d}N = \mu \frac{m_1 g}{l}\mathrm{d}x,~\mathrm{d}M_r = -x \cdot \mathrm{d}f = -\mu \frac{m_1 g}{l} x \mathrm{d}x\]
+$$M_r = \int_{0}^{l} -\mu \frac{m_1 g}{l} x \mathrm{d}x = -\frac{\mu m_1 g}{l} \left[ \frac{1}{2}x^2 \right]_0^l = -\frac{\mu m_1 g}{l} \cdot \frac{1}{2}l^2 = -\mu m_1 g \frac{l}{2}$$
+该摩擦力矩在整个旋转减速过程中大小恒定不变，细棒从刚开始旋转的瞬时状态（角速度为 $\omega$）到完全停止（末角速度为 0），经历的时间为 $t$：
+$$\int_{0}^{t} M_r \mathrm{d}t = L_{\text{末}} - L_{\text{初}} \implies M_r \cdot t = 0 - J\omega,~J\omega = \frac{1}{3}m_1 l^2 \omega,~M_r=-\mu m_1 g \frac{l}{2}\implies t = \frac{2l\omega}{3\mu g}$$
+将第 (1) 问中求得的细棒初角速度 $\omega = \frac{3m_2 (v_1 + v_2)}{m_1 l}$代入：$$t = \frac{2l}{3\mu g} \cdot \left[ \frac{3m_2 (v_1 + v_2)}{m_1 l} \right] = \boxed{2m_2 \frac{v_1 + v_2}{\mu m_1 g}}$$
+\end{solution}
+
+
+\begin{example}
+一长度为 $l$、质量为 $m_0$ 的均匀细杆，其上端悬挂在光滑的水平支点 $O$ 上，可在竖直平面内自由摆动，其绕端点的转动惯量为 $J = \frac{1}{3}m_0 l^2$。现有一质量为 $m$ 的子弹以水平初速度 $\vec{v}$ 沿垂直于杆的方向，射入距离支点为 $a$ 的棒内并留在其中。若已知碰撞后细杆和子弹组成的总整体向右摆动的最大偏转角恰好为 $30^\circ$。求子弹射入细杆前的初速度 $v$ 的大小。
+\end{example}
+\begin{solution}
+根据角动量守恒定律 $L_1 = L_2$： \(m v a = \left( \frac{1}{3}m_0 l^2 + m a^2 \right) \omega\) 
+系统增加的总重力势能为：$$\Delta E_{\text{p}} = m_0 g \frac{l}{2}(1 - \cos 30^\circ) + m g a (1 - \cos 30^\circ) = g(1 - \cos 30^\circ) \left( \frac{1}{2}m_0 l + m a \right)$$根据机械能守恒定律 $E_{\text{k}} = \Delta E_{\text{p}}$：$$\frac{1}{2}\left( \frac{1}{3}m_0 l^2 + m a^2 \right)\omega^2 = \frac{g}{4}(2 - \sqrt{3})(m_0 l + 2ma)$$
+由方程 (1) 解得中间变量 $\omega$ 的表达式： \(\omega = \frac{m v a}{\frac{1}{3}m_0 l^2 + m a^2}\) 将其代入方程 (2) 之中：$$\frac{1}{2}\left( \frac{1}{3}m_0 l^2 + m a^2 \right) \cdot \left[ \frac{m^2 v^2 a^2}{\left(\frac{1}{3}m_0 l^2 + m a^2\right)^2} \right] = \frac{g}{4}(2 - \sqrt{3})(m_0 l + 2ma)$$子弹的初速度 $v$：$$\boxed{v = \frac{1}{ma}\sqrt{\frac{g}{6}(2 - \sqrt{3})(m_0 l + 2ma)(m_0 l^2 + 3ma^2)}}$$
+\end{solution}
+
+\begin{example}
+一长为 $l$ 的均匀细直杆 $OA$，质量为 $m_0$，一端悬挂于 $O$ 点铅直下垂。一单摆也悬于 $O$ 点，摆线长度同样为 $l$，摆球质量为 $m$。现将单摆拉到水平位置后由静止释放，摆球下落并在最低点 $A$ 处与细直杆进行完全弹性碰撞。已知碰撞后摆球竟然恰好瞬间静止。
+试求：\\
+(1) 细直杆的质量 $m_0$ 与单摆摆球质量 $m$ 之间的精确物理比例关系；\\
+(2) 碰撞后细直杆向左摆动所能达到的最大角度 $\theta$。
+\end{example}
+\begin{solution}
+（1）因为是完全弹性碰撞，在满足对转轴 $O$ 角动量守恒的同时，系统还必须严格满足机械能（动能）守恒。设碰撞前瞬间摆球的瞬时角速度为 $\omega_m$，碰撞后细杆获得的瞬时角速度为 $\omega_{m_0}$（已知碰撞后小球静止，末角速度为 0）。摆球绕 $O$ 点的转动惯量为：$J_m = ml^2$细直杆绕端点 $O$ 的转动惯量为：$J_{m_0} = \frac{1}{3}m_0 l^2$，根据角动量守恒定律（$L_{\text{初}} = L_{\text{末}}$）和完全弹性碰撞的动能守恒定律（$E_{\text{k}\text{初}} = E_{\text{k}\text{末}}$）：
+$$J_m \omega_m = J_{m_0} \omega_{m_0},~~\frac{1}{2}J_m \omega_m^2 = \frac{1}{2}J_{m_0} \omega_{m_0}^2 \implies J_m = J_{m_0}\implies ml^2 = \frac{1}{3}m_0 l^2\implies m_0=3m$$
+（2）能量守恒$$mgl = m_0 g \frac{l}{2}(1 - \cos\theta),~m_0=3m\implies\theta = \arccos\left(\frac{1}{3}\right) \approx 70.5^\circ$$
+\end{solution}

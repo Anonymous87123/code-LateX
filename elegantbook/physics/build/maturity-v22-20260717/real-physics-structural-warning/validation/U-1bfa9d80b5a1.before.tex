@@ -1,0 +1,57 @@
+
+\section{机械波的能量}
+
+当机械波在介质中向前推进时，它不仅带动各个质元在其平衡位置附近振动，同时也在强行拉伸或挤压介质：
+\begin{itemize}
+\item 振动动能：由于介质中的各质元都在围绕其平衡位置往复振动，因而每个质元都具有瞬时动能。
+\item 弹性势能：由于相邻质元之间存在弹性相互作用，波的传播使介质内部发生弹性形变（如伸缩形变、剪切形变或容积形变），因而形变的介质具有瞬时弹性势能。
+\end{itemize}
+
+\begin{definition}[体积元的振动动能]
+在直棒中建立一维空间坐标轴 $x$。设棒的横截面积为 $S$，介质的质量密度为 $\rho$。在未起振前，我们在棒中截取一段处于 $[x, x+\mathrm{d}x]$ 区间、长为 $\mathrm{d}x$ 的未形变质量微元。该微元的体积元为 $\mathrm{d}V = S\mathrm{d}x$，其对应的质量微元为：$$\mathrm{d}m = \rho \mathrm{d}V = \rho S \mathrm{d}x$$当一列沿 $x$ 轴正方向传播的平面简谐纵波通过该区域时，其波函数（位移方程）为：$$y = A \cos \omega \left( t - \frac{x}{u} \right)$$体积元内各质点沿 $x$ 方向运动的瞬时振动速度 $v$ 通过对时间 $t$ 求偏导数获得：$$v = \frac{\partial y}{\partial t} = -\omega A \sin \omega \left( t - \frac{x}{u} \right)$$根据经典动能公式，该体积元的瞬时振动动能 $\mathrm{d}E_{\text{k}}$ 为：$$\mathrm{d}E_{\text{k}} = \frac{1}{2}(\mathrm{d}m)v^2 = \frac{1}{2}(\rho \mathrm{d}V) \left[ -\omega A \sin \omega \left( t - \frac{x}{u} \right) \right]^2 = \frac{1}{2}\rho \mathrm{d}V A^2 \omega^2 \sin^2 \omega \left( t - \frac{x}{u} \right) $$
+\end{definition}
+
+\begin{definition}[体积元的弹性势能推导]
+固体介质根据受力方向不同，主要存在三种基本形变形态：杨氏模量对应的伸缩形变、切变模量对应的剪切形变以及容变模量对应的容积形变。由于纵波在固体棒中传播引发的是交替的疏密形变（拉伸与压缩），因此遵循胡克定律的固体线应变规律：
+\begin{itemize}
+\item 正应力 $\sigma$：单位横截面积上承受的内力 $\sigma = \frac{F}{S}$。
+\item 线应变 $\varepsilon$：单位原始长度对应的绝对伸长量 $\varepsilon = \frac{\Delta l}{l}$。
+\end{itemize}
+实验表明，在线弹性限度内，物体的线应变与正应力成正比，即 $\frac{F}{S} = Y \frac{\Delta l}{l}$（其中比例系数 $Y$ 称为材料的杨氏模量）。在机械弹簧模型中，当弹簧伸长 $\Delta l$ 时，弹性回复力为 $F = k\Delta l$，对应的累积弹性势能为 $E_{\text{p}} = \frac{1}{2}k(\Delta l)^2$。我们现将此分立模型推广至连续介质微元。在有波通过时，原 $[x, x+\mathrm{d}x]$ 处的体积元左端点发生了位移 $y(x,t)$，右端点发生了位移 $y(x+\mathrm{d}x, t) = y + \mathrm{d}y$。因此，该体积元在空间上的绝对形变量（净伸长量）为：$$\Delta l = (y + \mathrm{d}y) - y = \mathrm{d}y = \frac{\partial y}{\partial x}\mathrm{d}x$$根据胡克定律，弹性体内产生的应力满足 $\frac{F}{S} = Y \frac{\mathrm{d}y}{\mathrm{d}x}$。由此解得该体积元承受的瞬时内力 $F$ 为：$$F = Y S \frac{\partial y}{\partial x} = \underbrace{\left( \frac{YS}{\mathrm{d}x} \right)}_{k_{\text{等效}}} \mathrm{d}y = k \mathrm{d}y \implies k_{\text{等效}} = \frac{YS}{\mathrm{d}x}$$将等效劲度系数 $k$ 和形变量 $\mathrm{d}y$ 代入微元势能方程：$$\mathrm{d}E_{\text{p}} = \frac{1}{2} k_{\text{等效}} (\mathrm{d}y)^2 = \frac{1}{2} \left( \frac{YS}{\mathrm{d}x} \right) \left( \frac{\partial y}{\partial x} \mathrm{d}x \right)^2 = \frac{1}{2} Y S \mathrm{d}x \left( \frac{\partial y}{\partial x} \right)^2$$由于 $S\mathrm{d}x = \mathrm{d}V$，且固体棒中纵波的波速满足 $u = \sqrt{\frac{Y}{\rho}} \implies Y = \rho u^2$，上式可代换为：$$\mathrm{d}E_{\text{p}} = \frac{1}{2} \rho u^2 \mathrm{d}V \left( \frac{\partial y}{\partial x} \right)^2 $$我们对波函数 $y = A \cos \omega \left( t - \frac{x}{u} \right)$ 关于空间坐标 $x$ 求偏导数（即获取波形图上的瞬时切线斜率）：$$\frac{\partial y}{\partial x} = -A \left( -\frac{\omega}{u} \right) \sin \omega \left( t - \frac{x}{u} \right) = \frac{\omega}{u} A \sin \omega \left( t - \frac{x}{u} \right)$$将该空间应变斜率严格代回势能方程（2）中：$$\mathrm{d}E_{\text{p}} = \frac{1}{2} \rho u^2 \mathrm{d}V \left[ \frac{\omega}{u} A \sin \omega \left( t - \frac{x}{u} \right) \right]^2= \frac{1}{2} \rho \mathrm{d}V A^2 \omega^2 \sin^2 \omega \left( t - \frac{x}{u} \right)$$
+\end{definition}
+该体积元的总机械能 $\mathrm{d}E$：
+$$\mathrm{d}E = \mathrm{d}E_{\text{k}} + \mathrm{d}E_{\text{p}} = \frac{1}{2} \rho \mathrm{d}V A^2 \omega^2 \sin^2 \omega \left( t - \frac{x}{u} \right) + \frac{1}{2} \rho \mathrm{d}V A^2 \omega^2 \sin^2 \omega \left( t - \frac{x}{u} \right)= \rho \mathrm{d}V A^2 \omega^2 \sin^2 \omega \left( t - \frac{x}{u} \right)$$
+由于体积元的总机械能 $\mathrm{d}E$ 随着时间不断在 $0 \sim \rho \mathrm{d}V \omega^2 A^2$ 之间剧烈起伏，这揭示：在波动传播的介质中，任一体积元的机械能不再守恒。对比 $\mathrm{d}E_{\text{k}}$、\textbf{$\mathrm{d}E_{\text{p}}$} 与 $\mathrm{d}E$ 的函数结构，我们可以直接提炼出机械波能量最核心的两项决定性动力学特征：
+\begin{enumerate}
+\item 在波动传播的弹性介质中，任一体积元的动能、势能以及总机械能均随着空间坐标 $x$ 和时间时刻 $t$ 作同频率的周期性变化，且它们的物理变化是严格同相位的。比如当体积元运动到平衡位置时：
+\begin{itemize}
+\item 动能视角：质元的位移为零，但振动速度 $v = \frac{\partial y}{\partial t}$ 达到最大值，故动能达到最大值。
+\item 势能视角：虽然位移为零，但该处波形图的切线斜率 $\frac{\partial y}{\partial x}$ 绝对值达到最大值。这意味着相邻层面的质元之间发生了最剧烈的拉伸或压缩挤压，空间形变最严重，故弹性势能也同时达到最大值。
+\item 结论：体积元在平衡位置时，动能、势能和总机械能均达到最大值。
+\end{itemize}
+当体积元运动到最大位移处时：
+\begin{itemize}
+\item 动能视角：质元瞬时静止，振动速度为零，故动能为零。
+\item 势能视角：处于波峰或波谷处的波形图切线斜率 $\frac{\partial y}{\partial x} = 0$。这意味着相邻质元之间没有相对形变趋势，介质处于无形变松弛状态，故弹性势能也同时为零。
+\item 结论：体积元在最大位移处时，动能、势能和总机械能三者均为零。
+\end{itemize}
+\end{enumerate}
+
+\begin{definition}[能量密度与平均能量密度]
+能量密度 $w$：单位体积介质之中的波动机械能总量。$$w = \frac{\mathrm{d}E}{\mathrm{d}V} = \rho A^2 \omega^2 \sin^2 \omega \left( t - \frac{x}{u} \right)$$
+平均能量密度 $\bar{w}$：由于瞬时能量密度随时间快速起伏，工程上更关心其在一个完整时间周期 $T$ 内的平均表现（即时间积分平均值）：$$\bar{w} = \frac{1}{T} \int_{0}^{T} w \mathrm{d}t = \frac{1}{T} \int_{0}^{T} \rho A^2 \omega^2 \sin^2 \omega \left( t - \frac{x}{u} \right) \mathrm{d}t$$利用正弦平方项在一个周期内的积分平均值恒等于 $\frac{1}{2}$（即 $\overline{\sin^2\alpha} = \frac{1}{2}$），直接导出平均能量密度公式：$$\boxed{\bar{w} = \frac{1}{2} \rho \omega^2 A^2}$$
+\end{definition}
+
+\begin{definition}[能流和能流密度]
+能流的定义：单位时间内垂直通过介质中某一给定截面积 $S$ 的波动能量总量。在物理量纲上，它等价于通过该截面的瞬时能流量（功率 $P$）。\\
+我们考察一个横截面积为 $S$ 的管道空间。在时间 $t$ 内，波动在空间中沿垂直截面方向向前推进的几何距离为 $l = u t$（其中 $u$ 为相速度）。在这段时间内，穿过该面积的总能量，在量值上正好等于该体积柱体 $V = S \cdot l = S u t$ 内部积攒的全部波动能量：$$P = \frac{E}{t} = \frac{w \cdot V}{t} = \frac{w \cdot (S u t)}{t} = w u S$$定义一个周期内的平均通过功率为平均能流 $\bar{P}$：$$\boxed{\bar{P} = \bar{w} u S = \frac{1}{2} \rho \omega^2 A^2 u S}$$
+由于能流 $\bar{P}$ 的大小依然与截面积 $S$ 的大小绑定在一起，为了彻底剥离出空间任意格点处能量流动的特征强度，需要将其对面积进行归一化：能流密度（物理上称为波的强度 $I$）的定义：单位时间内垂直通过单位面积的平均能流（即单位面积上的平均波动功率）。$$I = \frac{\bar{P}}{S} = \bar{w} u$$我们将平均能量密度公式代入上式，锁定平均能流密度（波的强度）的终极解析式：$$\boxed{I = \frac{1}{2} \rho \omega^2 A^2 u}$$从上式可以清晰地看出，空间中某处的波的强度（能流密度）严格正比于介质质量密度 $\rho$、角频率平方 $\omega^2$、振幅平方 $A^2$ 以及波速 $u$。
+\end{definition}
+
+\begin{exercise}[2008级期末：行波中质元总能量与动能的关系]
+一平面简谐机械波在媒质中传播时，若某一媒质质元在 \(t\) 时刻的总机械能为 \(\SI{10}{J}\)，求在 \(t+T\) 时刻该质元的振动动能，其中 \(T\) 为波的周期。
+\end{exercise}
+
+\begin{solution}
+对行波中的一个质元，动能和弹性势能会随时间同步变化。平面简谐行波在同一瞬间满足 \(E=E_k+E_p,\ E_k=E_p\)，而经过一个周期后，质元位移、速度和形变状态都回到同一相位。题目给 \(t\) 时刻总机械能为 \(\SI{10}{J}\)，所以 \(t+T\) 时刻总机械能仍为 \(\SI{10}{J}\)，从而 \(E_k(t+T)=10/2=\SI{5}{J}\)。
+\end{solution}

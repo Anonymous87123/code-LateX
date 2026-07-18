@@ -1,0 +1,120 @@
+
+\section{回转运动与陀螺的进动}
+\begin{definition}[进动]
+当一个高速自转的陀螺仪受到一个试图使其“翻倒”的外力矩作用时，它并没有顺着力矩的方向倾倒，相反，它的自转轴会自发地在水平面内绕着另一条竖直轴作缓慢的旋转运动。这种高速物体的自转轴绕着另一轴线旋转的运动形式，称为进动（Precession）。
+\end{definition}
+我们利用质点的角动量定理： \(\vec{\tau} = \frac{\mathrm{d}\vec{L}}{\mathrm{d}t} \implies \vec{\tau}\mathrm{d}t = \mathrm{d}\vec{L}\) 设一个倒立在地面 $O$ 点的重力陀螺，其高速自转角速度为 $\vec{\omega}$，对应的固有角动量为 $\vec{L}$（沿自转轴斜向上）。此时，重力 $m\vec{g}$ 作用在质心上，对支点 $O$ 产生一个试图让其向下翻倒的重力矩 $\vec{\tau}$。根据力矩叉积定义： \(\vec{\tau} = \vec{r} \times m\vec{g}\) 利用右手螺旋定则，该重力矩 $\vec{\tau}$ 的方向严格垂直于 $\vec{r}$ 与重力构成的竖直平面（水平切向指向纸面内部）。因此，一个决定性的物理图像诞生了： \(\vec{\tau} \perp \vec{L}\) 因为重力矩 $\vec{\tau}$ 与总角动量 $\vec{L}$ 始终保持正交垂直，根据微分方程 $\mathrm{d}\vec{L} = \vec{\tau}\mathrm{d}t$，这意味着角动量的瞬时增量 $\mathrm{d}\vec{L}$ 的方向永远垂直于角动量 $\vec{L}$ 自身： \(\mathrm{d}\vec{L} \perp \vec{L}\) 标量与方向的解耦规律：大小保持不变：由于增量矢量与原矢量垂直，根据矢量加法的几何图像，角动量的模长（大小）在积分过程中绝对保持不变（即 $|\vec{L}| = \text{恒量}$）。方向发生改变：微元 $\mathrm{d}\vec{L}$ 的唯一物理效应，就是顽固地驱使总角动量 $\vec{L}$ 的尖端在水平面内画圆圈。由此导致了陀螺的自转轴不会向下倒塌，而是以恒定的倾角，绕着竖直轴以进动角速度 $\Omega$ 作缓慢的圆锥面回转运动。
+
+\begin{exercise}[2010模拟题：由下落距离和时间反推轮轴转动惯量]
+一质量为 \(m\) 的物体悬于轻绳一端，绳的另一端绕在轮轴上。轮轴水平且垂直于轮轴平面，半径为 \(r\)，整个装置架在光滑固定轴承上。物体由静止释放后，在时间 \(t\) 内下降距离 \(S\)。求整个轮轴对固定轴的转动惯量 \(J\)。
+\end{exercise}
+\begin{solution}
+先由运动学反推出物体的线加速度，再把线加速度通过绳不打滑关系接到轮轴角加速度上。
+ \(S=\frac12 at^2 \implies a=\frac{2S}{t^2}.\) 
+物体向下为正，轮轴放绳方向为正：
+ \(mg-T=ma,\qquad Tr=J\alpha,\qquad a=r\alpha\implies T=\frac{J\alpha}{r}=\frac{Ja}{r^2}.\) 
+代回物体方程：
+ \(mg-\frac{Ja}{r^2}=ma\implies J=r^2\left(\frac{mg}{a}-m\right) =mr^2\left(\frac{g}{a}-1\right)=mr^2\left(\frac{gt^2}{2S}-1\right).\) 
+\end{solution}
+
+
+\begin{exercise}[2004级期末：两个有转动惯量的轮系和绳中张力]
+质量为 \(M_1=\SI{24}{kg}\) 的圆轮可绕水平光滑固定轴转动，一轻绳缠绕于轮上，另一端通过质量为 \(M_2=\SI{5}{kg}\) 的圆盘形定滑轮悬有 \(m=\SI{10}{kg}\) 的物体。设绳与定滑轮间无相对滑动，圆轮和定滑轮对轴的转动惯量分别为
+\[
+J_1=\frac12 M_1R^2,\qquad J_2=\frac12 M_2r^2.
+\]
+求当重物由静止下降 \(h=\SI{0.5}{m}\) 时，物体的速度以及两段绳中的张力。
+\end{exercise}
+\begin{solution}
+两个轮都有转动惯量，所以同一根绳上的不同段张力一般不同。要分别对大圆轮、定滑轮和重物列方程，再用无滑动关系把线加速度和角加速度连起来。设重物向下加速度为 \(a\)，大轮侧张力为 \(T_1\)，重物侧张力为 \(T_2\)。则
+\[
+\begin{aligned}
+T_1R&=J_1\beta_1=\frac12M_1R^2\beta_1\implies T_1=\frac12M_1a\\
+T_2r-T_1r&=J_2\beta_2=\frac12M_2r^2\beta_2\implies T_2-T_1=\frac12M_2a\\
+mg-T_2&=ma,\\
+mg-\left(\frac12M_1a+\frac12M_2a\right)&=ma
+\implies
+a=\frac{mg}{m+\frac12(M_1+M_2)}\\
+&=\frac{10g}{10+\frac12(24+5)}
+\approx \SI{4.0}{m/s^2},\\
+a&=R\beta_1=r\beta_2.
+\end{aligned}
+\]
+重物由静止下降 \(h\)，故
+ \(v=\sqrt{2ah} =\sqrt{2\times4.0\times0.5} =\SI{2.0}{m/s}.\) 
+张力为
+ \(T_1=\frac12M_1a=48\,\mathrm{N},\qquad T_2=m(g-a)\approx 58\,\mathrm{N}.\) 
+\end{solution}
+
+\begin{exercise}[2006级期末：大小圆盘组合轮两侧挂重物]
+两个匀质圆盘一大一小，同轴地粘结在一起，构成一个组合轮。小圆盘半径为 \(r\)、质量为 \(m\)；大圆盘半径为 \(r'=2r\)、质量为 \(m'=2m\)。组合轮可绕通过中心且垂直于盘面的光滑水平固定轴 \(O\) 转动，对 \(O\) 轴的转动惯量为
+ \(J=\frac{9}{2}mr^2.\) 
+两圆盘边缘上分别绕有轻绳，绳下端各悬挂质量为 \(m\) 的物体 \(A,B\)，系统从静止开始运动，绳与盘无相对滑动，绳长不变。已知 \(r=\SI{10}{cm}\)。求：\\
+1. 组合轮角加速度 \(\beta\)；~~2. 当物体 \(A\) 上升 \(h=\SI{40}{cm}\) 时，组合轮角速度 \(\omega\)。
+\end{exercise}
+\begin{solution}
+两侧绳绕在不同半径上，所以两个重物的线加速度不同；同一组合轮只有一个角加速度 \(\beta\)。取 \(A\) 向上、\(B\) 向下为正，设两侧张力分别为 \(T,T'\)。由图中绕线方向，转动方程为
+\[
+T'(2r)-Tr=\frac{9}{2}mr^2\beta,~T-mg=ma,~mg-T'=ma',~a=r\beta,~a'=2r\beta.
+\]
+由平动方程得$T=mg+mr\beta,T'=mg-2mr\beta$，代入转动方程：
+ \((mg-2mr\beta)2r-(mg+mr\beta)r =\frac{9}{2}mr^2\beta \implies \beta=\frac{2g}{19r}=\frac{2\times9.8}{19\times0.10} \approx \SI{10.3}{rad/s^2}.\) 
+物体 \(A\) 绕在小圆盘上，故 \(A\) 上升 \(h\) 时组合轮转角
+ \(\theta=\frac{h}{r}.\) 
+从静止开始作匀角加速度转动，
+ \(\omega^2=2\beta\theta=2\beta\frac{h}{r}\implies \omega=\sqrt{\frac{2\beta h}{r}} =\sqrt{\frac{2\times10.3\times0.40}{0.10}} \approx \SI{9.08}{rad/s}.\) 
+\end{solution}
+
+\begin{exercise}[2007级期末：叠放物块与有转动惯量滑轮]
+物体 \(A\) 和 \(B\) 叠放在水平桌面上，由跨过定滑轮的轻质细绳相互连接，用大小为 \(F\) 的水平力拉 \(A\)。设 \(A,B\) 和滑轮的质量都为 \(m\)，滑轮半径为 \(R\)，对轴的转动惯量
+ \(J=\frac12mR^2.\) 
+\(AB\) 之间、\(A\) 与桌面之间、滑轮与轴之间的摩擦均忽略，绳与滑轮无相对滑动且不可伸长。已知 \(F=\SI{10}{N}\)、\(m=\SI{8.0}{kg}\)、\(R=\SI{0.050}{m}\)。求滑轮角加速度、\(A\) 与滑轮之间绳的张力、\(B\) 与滑轮之间绳的张力。
+\end{exercise}
+\begin{solution}
+两段绳拉着同一个有转动惯量的滑轮，所以两侧张力不相等。又因为绳不可伸长，\(A\) 和 \(B\) 的加速度大小相同，并由 \(a=R\beta\) 接到滑轮角加速度。
+ 取 \(A\) 向右、\(B\) 向左和滑轮对应转向为正。设 \(A\) 侧张力为 \(T\)，\(B\) 侧张力为 \(T'\)，则
+ \(F-T=ma,~ T'=ma,~ (T-T')R=J\beta=\frac12mR^2\beta,~ a=R\beta.\) 
+由前两式$T=F-ma, T'=ma$，代入转动方程：$F-2ma=\frac12m a$，因此
+ \(a=\frac{2F}{5m},\qquad \beta=\frac{a}{R}=\frac{2F}{5mR}=\frac{2\times10}{5\times8.0\times0.050} =\SI{10}{rad/s^2}.\) 
+张力为
+ \(T=F-ma=10-8.0\times\frac{2\times10}{5\times8.0} =\SI{6.0}{N},~~ T'=ma=8.0\times\frac{2\times10}{5\times8.0} =\SI{4.0}{N}.\) 
+\end{solution}
+
+
+\begin{exercise}[2013级期末：子弹穿过杆端后细杆角速度]
+一静止的均匀细杆，长为 \(L\)、质量为 \(m\)，可绕过端点 \(O\) 且垂直于杆长的光滑固定轴在水平面内转动，转动惯量为 \(J=\frac13mL^2\)。一质量也为 \(m\)、速率为 \(v\) 的子弹在水平面内沿与杆垂直的方向射入并穿出杆的自由端。若穿过杆后子弹速率为 \(\frac12v\)，求此时杆的角速度。
+\end{exercise}
+
+\begin{solution}
+子弹穿过杆端的时间很短，转轴支持力对 \(O\) 点力矩为零，可对 \(O\) 点用角动量守恒。碰前子弹角动量为 \(mvL\)，碰后子弹仍带走 \(m\frac{v}{2}L\)，细杆获得角动量 \(J\omega\)，因此
+ \(mvL=m\frac{v}{2}L+\frac13mL^2\omega.\) 
+于是 \(\frac12mvL=\frac13mL^2\omega\)，即 \(\omega=\frac{3v}{2L}\)。
+\end{solution}
+
+\begin{exercise}[2010级期末：细杆与滑块碰撞后受摩擦停转]
+质量为 \(m_1\)、长为 \(l\) 的均匀细杆静止平放在粗糙水平桌面上，可绕过一端 \(O\) 且与桌面垂直的固定光滑轴转动，滑动摩擦系数为 \(\mu\)。另一质量为 \(m_2\) 的小滑块从侧面垂直撞击细杆另一端 \(A\)，碰前速度大小为 \(v_1\)，碰后沿原路反向离开，速度大小为 \(v_2\)。碰后细杆开始转动，求它从开始转动到停止所需时间。已知细杆绕 \(O\) 的转动惯量 \(J=\frac13m_1l^2\)。
+\end{exercise}
+
+\begin{solution}
+碰撞瞬间桌面摩擦的冲量矩可忽略，先对 \(O\) 轴用角动量守恒。取碰前滑块速度方向对 \(O\) 的角动量为正，由于滑块碰后反向离开，细杆获得的角动量为
+\[
+J\omega_0=m_2v_1l+m_2v_2l=m_2l(v_1+v_2).
+\]
+碰后细杆上距 \(O\) 为 \(x\) 的微元质量 \(\dd m=\frac{m_1}{l}\dd x\)，受到的摩擦力 \(\dd f=\mu g\,\dd m\)。因此桌面对杆的阻力矩大小为
+ \(M_f=\int_0^l x\,\dd f =\int_0^l x\,\mu g\frac{m_1}{l}\dd x =\frac12\mu m_1gl.\) 
+停转阶段由角动量定理 \(M_ft=J\omega_0\)，而 \(J\omega_0=m_2l(v_1+v_2)\)，故
+ \(t=\frac{J\omega_0}{M_f} =\frac{m_2l(v_1+v_2)}{\frac12\mu m_1gl} =\frac{2m_2(v_1+v_2)}{\mu m_1g}.\) 
+\end{solution}
+
+\begin{exercise}[2014级期末：两小球同时粘到细杆两端后的停转时间]
+一根质量为 \(m\)、长度为 \(2L\) 的匀质细杆，可绕通过其中点 \(O\) 且垂直于杆的光滑固定轴转动。初始时细杆静止，两个质量均为 \(m\) 的小球分别以速率 \(v\) 同时垂直击中细杆两端并粘在杆上，二者对转轴的角动量方向相同。求：1. 碰后细杆与两小球共同转动的角速度 \(\omega_0\)；2. 若之后受到大小恒为 \(M\) 的阻力矩，系统从开始转动到停止所需时间。
+\end{exercise}
+
+\begin{solution}
+碰撞时间很短，先对 \(O\) 轴用角动量守恒。两个小球对 \(O\) 轴的初始角动量方向相同，大小为 \(2mvL\)。碰后系统的转动惯量为
+ \(J=\frac{1}{12}m(2L)^2+2mL^2 =\frac13mL^2+2mL^2 =\frac73mL^2.\) 
+于是
+ \(2mvL=J\omega_0 \implies \omega_0=\frac{2mvL}{\frac73mL^2} =\frac{6v}{7L}.\) 
+恒定阻力矩使角动量从 \(J\omega_0\) 减到零，故 \(Mt=J\omega_0\)。又 \(J\omega_0=2mvL\)，所以
+ \(t=\frac{2mvL}{M}.\) 
+\end{solution}

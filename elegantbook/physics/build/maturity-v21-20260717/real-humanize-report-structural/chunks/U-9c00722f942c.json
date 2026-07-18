@@ -1,0 +1,111 @@
+{
+  "author_chars": 204,
+  "chunk_binding_sha256": "04a4fbea23073fe812d08e90fd9f34d739baa1f922b19054b02870155c20f7cf",
+  "context_after_unit": "U-b3fb8d957234",
+  "context_before_unit": "U-9819bed24077",
+  "diff_path": "",
+  "end": 60373,
+  "end_line": 1471,
+  "file_id": "F00001",
+  "hash_after": "",
+  "hash_before": "2ce1e523b1e90cc906351c3977d41370e370cbe87eaa40a5ea24e447eab1233b",
+  "heading_path": "中文学术纯文风 Humanize Skill：生产化交付与红队报告 / 18. v12：Voice Profile 从说明文档变成可重建工件 / 18.14 v14：fresh second pass 从声明字段升级为活证据控制面 / 18.14.3 receipt 不再是可以手工重算的通行证",
+  "intensity": "STRUCTURAL",
+  "line_count": 17,
+  "masked_text": "[[PROTECTED:F00001-P00949:c0eff4d2ca21]]\n第一版草案只校验 receipt schema、自哈希、tree、Voice、scene 和若干 64 位十六进制字段。\n红队证明这仍可伪造：任何调用方都能填写假的 process hash 后重算 JSON 自哈希，或者在 receipt\n生成后删除全部 trials，而第一遍 finalizer 仍会 PASS。v14 将 receipt 扩展为活证据索引：\n\n- [[PROTECTED:F00001-P00950:6d55fb44b9c1]] 精确记录 first run、second run、cases、trials 和 rewrites；\n- [[PROTECTED:F00001-P00951:3e72e3196dd4]] 绑定 plan、collection、cases tree、trials tree 和 rewrites tree；\n- finalizer 当场从固定 Skill 路径重新加载 verifier，忽略 [[PROTECTED:F00001-P00952:5836d926d391]] 中同名注入模块；\n- verifier 重新计算每个 runner artifact、public artifact、projection manifest/tree 和 staged case；\n- 任何底层文件新增、删除、替换或跨版本重放都会让 live receipt 与提交 receipt 不同。\n\n这仍是本地 E2 完整性，不是外部签名。能同时改写 Skill、全部 trials 和所有哈希的同一主体仍\n可伪造整套本地历史；所以 claims 固定保留 [[PROTECTED:F00001-P00953:6f20e78dbd46]]、\n[[PROTECTED:F00001-P00954:18162d902d03]]、[[PROTECTED:F00001-P00955:69e481f0a777]] 与\n[[PROTECTED:F00001-P00956:ccc87f445959]]。它解决的是错误绑定和虚假闭环，不冒充不可抵赖证明。\n\n",
+  "mode": "REWRITE",
+  "notes": "",
+  "owner_chunk": "U-9c00722f942c",
+  "part": 1,
+  "protected_hashes_ok": "NOT_RUN",
+  "protected_ids": [
+    "F00001-P00949",
+    "F00001-P00950",
+    "F00001-P00951",
+    "F00001-P00952",
+    "F00001-P00953",
+    "F00001-P00954",
+    "F00001-P00955",
+    "F00001-P00956"
+  ],
+  "protected_spans": 8,
+  "read_only_context_after": "[[PROTECTED:F00001-P00957:014d8c6f0afa]]\n新增 [second-pass tests]([[PROTECTED:F00001-P00958:a860c07b50f5]]) 不是只检查文件能生成，而是实际攻击\n完成态：",
+  "read_only_context_before": "这一分级避免了两个相反错误：不能因为第二遍提出了合理修改就写[[PROTECTED:F00001-P00947:fc0f1a3a3cb1]]，也不能把外部\n服务暂时无输出误写成文稿硬损坏。[[PROTECTED:F00001-P00948:938c25f25bf8]] 意味着文风尚未稳定，应回到第一遍规则查冲突；\n证据错配则意味着审计链本身不可信，必须硬失败。",
+  "scene": "GENERAL",
+  "scene_document_prior": "",
+  "scene_requested": "GENERAL",
+  "scene_routing_ambiguous_scenes": [],
+  "scene_routing_decision": "EXPLICIT",
+  "scene_routing_evidence": [],
+  "scene_routing_margin": 0,
+  "scene_routing_policy_revision": 2,
+  "scene_routing_policy_sha256": "8d0f916d91b5753fd94d358c4b32e9a6c02b1f30120f43b4cbb2165dc1684450",
+  "scene_routing_scores": {
+    "COURSE": 0,
+    "MODELING": 0,
+    "RESEARCH": 0
+  },
+  "scene_routing_top_score": 0,
+  "start": 59537,
+  "start_line": 1455,
+  "status": "PENDING",
+  "structural_cross_unit_moves_allowed": false,
+  "structural_inventory_sha256": "d135ac001805ee094059339e351b038555b2f798cc8be47e2038745b5679138a",
+  "structural_paragraphs": [
+    {
+      "author_chars": 72,
+      "lock_reason": "contains_immovable_protected_span",
+      "movable": false,
+      "ordinal": 1,
+      "paragraph_id": "P001-afe4f0a8865c",
+      "protected_ids": [
+        "F00001-P00949"
+      ],
+      "responsibility": "EXPOSITION",
+      "sha256": "afe4f0a8865cefef996f1eb0369b715ea7c431510f94ac521161e2cc66c37ae5"
+    },
+    {
+      "author_chars": 61,
+      "lock_reason": "contains_markdown_structure",
+      "movable": false,
+      "ordinal": 2,
+      "paragraph_id": "P002-4796a54e8358",
+      "protected_ids": [
+        "F00001-P00950",
+        "F00001-P00951",
+        "F00001-P00952"
+      ],
+      "responsibility": "EXPOSITION",
+      "sha256": "4796a54e8358a328bc2a43c811f21a1d79d754edf173d968f1d6a92b26be0235"
+    },
+    {
+      "author_chars": 71,
+      "lock_reason": "",
+      "movable": true,
+      "ordinal": 3,
+      "paragraph_id": "P003-a030db57676b",
+      "protected_ids": [
+        "F00001-P00953",
+        "F00001-P00954",
+        "F00001-P00955",
+        "F00001-P00956"
+      ],
+      "responsibility": "EXPOSITION",
+      "sha256": "a030db57676bb0464c2fe5aa4602b9e0a21fb5c5eefc2ce8d87fce6a089f7577"
+    }
+  ],
+  "structural_plan_schema": "humanize-structural-plan/v1",
+  "structural_plan_status": "NOT_RUN",
+  "structural_scope": "UNIT",
+  "structural_title_lock": true,
+  "style_validation": "NOT_RUN",
+  "unit_id": "U-9c00722f942c",
+  "voice_default_disclosure": true,
+  "voice_profile_binding_scene": "GENERAL",
+  "voice_profile_confidence": "DEFAULT",
+  "voice_profile_id": "scene-default-general",
+  "voice_profile_kind": "DEFAULT",
+  "voice_profile_revision": 1,
+  "voice_profile_sha256": "3b4eeeaeb3af397378ead360550371ff4632cbce6fceca8923479c53de23a112",
+  "voice_profile_source": "SCENE_DEFAULT"
+}

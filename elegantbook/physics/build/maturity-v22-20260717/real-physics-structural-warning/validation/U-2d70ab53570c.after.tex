@@ -1,0 +1,225 @@
+
+\subsection{正循环与热机效率，逆循环与致冷系数，卡诺循环}
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.5\textwidth]{pdf-exercises/18.png}
+\caption{热机冷机示意图}
+\end{figure}
+
+\begin{definition}[热机效率与制冷系数]
+热机（如内燃机）是要对外做功的，从高温热源吸热 \(Q_1\)，向低温热源放热 \(|Q_2|\)，输出功 \(A\)。
+由于一个循环后 \(\Delta U=0\)，所以
+\[
+A=Q_1-|Q_2|>0.
+\]热机效率：
+\[
+\eta=\frac{A}{Q_1}
+=\frac{Q_1-|Q_2|}{Q_1}
+=1-\frac{|Q_2|}{Q_1}<1.
+\]
+逆循环对应制冷机。它从低温热源吸热 \(Q_2\)，向高温热源放热 \(|Q_1|\)，并且需要外界输入功 \(|A|\)。
+由于 \(\Delta U=0\)，所以
+\[
+|A|+Q_2=|Q_1|.
+\]制冷系数：
+\[
+\varepsilon=\frac{Q_2}{|A|}
+=\frac{Q_2}{|Q_1|-Q_2}.
+\] 这和热机效率不同，因为制冷机的“有用输出”不是功，而是从低温端搬走的热量。搬热量本身可以比输入功大很多，所以 \(\varepsilon>1\) 完全正常。卡诺热机有高温热源放热除以高温热源温度等于低温热源吸热除以低温热源温度
+\[\frac{Q_{\text{高温热源放出}}}{T_{\text{高温热源}}}=\frac{Q_{\text{低温热源吸收}}}{T_{\text{低温热源}}}\]
+\end{definition}
+
+\begin{center}
+\includegraphics[width=0.6\linewidth]{pdf-exercises/17.png}
+\end{center}
+
+\begin{theorem}[卡诺热机和卡诺制冷机的极限公式]
+对于$2\to3,4\to1\text{绝热过程}$有
+\[
+V_2^{\gamma-1}T_1=V_3^{\gamma-1}T_2,~V_1^{\gamma-1}T_1=V_4^{\gamma-1}T_2\implies
+\frac{V_2^{\gamma-1}T_1}{V_1^{\gamma-1}T_1}
+=\frac{V_3^{\gamma-1}T_2}{V_4^{\gamma-1}T_2}
+\implies
+\frac{V_2}{V_1}=\frac{V_3}{V_4}.
+\]接着写卡诺热机效率：
+\[
+\eta=1-\frac{|Q_2|}{Q_1}=1-\frac{\frac{m}{M}RT_2\ln(V_3/V_4)}{\frac{m}{M}RT_1\ln(V_2/V_1)}=1-
+\frac{T_2\ln(V_3/V_4)}{T_1\ln(V_2/V_1)}=1-\frac{T_2}{T_1}
+\]对于致冷机，低温热源温度为 \(T_2\)，高温热源温度为 \(T_1\)
+\[
+\varepsilon
+=
+\frac{Q_2}{|Q_1|-Q_2}
+=
+\frac{
+T_2\ln(V_3/V_4)
+}{
+T_1\ln(V_2/V_1)-T_2\ln(V_3/V_4)
+}
+=
+\frac{T_2}{T_1-T_2}.
+\]题目一旦出现“同温区间卡诺极限”或“最高效率/最大致冷系数”，就直接切到卡诺公式
+\end{theorem}
+
+\begin{exercise}[2007级期末：一摩尔理想气体在两热源间作卡诺循环]
+\(1\) mol 理想气体在 \(T_1=\SI{400}{K}\) 的高温热源与 \(T_2=\SI{300}{K}\) 的低温热源间作可逆卡诺循环。在 \(\SI{400}{K}\) 的等温线上，起始体积 \(V_1=\SI{0.001}{m^3}\)，终止体积 \(V_2=\SI{0.005}{m^3}\)。求每一循环中：1. 从高温热源吸收的热量 \(Q_1\)；2. 气体所作净功 \(W\)；3. 气体传给低温热源的热量 \(Q_2\)。
+\end{exercise}
+
+\begin{solution}
+卡诺循环由两段等温和两段绝热组成。高温等温膨胀段吸热，且理想气体等温过程 \(\Delta U=0\)，所以吸热等于等温膨胀功。
+把高温吸热、效率、净功和低温放热顺次列出：
+\[
+\begin{aligned}
+Q_1&=nRT_1\ln\frac{V_2}{V_1}
+=1\times8.31\times400\ln5
+\approx 5.35\times10^3\,\si{J},\\
+\eta&=1-\frac{T_2}{T_1}
+=1-\frac{300}{400}
+=0.25,\\
+W&=\eta Q_1
+\approx0.25\times5.35\times10^3
+\approx1.34\times10^3\,\si{J},\\
+Q_2&=Q_1-W
+\approx 5.35\times10^3-1.34\times10^3
+\approx4.01\times10^3\,\si{J}.
+\end{aligned}
+\]
+每循环从高温热源吸热约 \(5.35\times10^3\,\si{J}\)，净功约 \(1.34\times10^3\,\si{J}\)，传给低温热源的热量约 \(4.01\times10^3\,\si{J}\)。并且 \(Q_2/Q_1=T_2/T_1=0.75\)，与上面的数值比值一致。
+\end{solution}
+
+
+\begin{exercise}[电冰箱的输入功怎样由致冷系数反推]
+一台电冰箱放在室温为 \(\SI{20}{\celsius}\) 的房间里，冰箱储藏柜温度维持在 \(\SI{5}{\celsius}\)。若每天有 \(2.0\times10^7\) J 的热量自房间传入冰箱内，且该冰箱的制冷系数是同温区间卡诺致冷机制冷系数的 \(55\%\)，求外界每天需对冰箱做多少功。
+\end{exercise}
+
+\begin{solution}
+维持柜内温度不变时，冰箱从低温区移走的热量大小就是每天漏入柜内的热量$Q_2=2.0\times10^7$J，因此
+ \[\varepsilon=0.55\,\varepsilon_{\text{Carnot}}=0.55\frac{278}{293-278}\approx 10.2,~A_{\text{in}}=\frac{Q_2}{\varepsilon} \approx \frac{2.0\times10^7}{10.2} \approx 2.0\times10^6\ \si{J}.\]
+\end{solution}
+
+\begin{exercise}[1 mol 氦气矩形循环怎样逐段写出吸放热]
+1 mol 氦气经历矩形 \(p\)-\(V\) 循环，四个状态依次为
+\[
+1(p_1,V_1),\quad 2(p_2,V_1),\quad 3(p_2,V_4),\quad 4(p_1,V_4),
+\]
+其中 \(p_2=2p_1,\ V_4=2V_1\)，循环方向为 \(1\to2\to3\to4\to1\)。求各过程 \(1\to2,\ 2\to3,\ 3\to4,\ 4\to1\) 中气体吸收的热量，并求该热机效率。
+\end{exercise}
+
+\begin{solution}
+ \[T_2=\frac{p_2V_1}{R}=2T_1,\qquad T_3=\frac{p_2V_4}{R}=4T_1,\qquad T_4=\frac{p_1V_4}{R}=2T_1\]
+于是四段吸热量可压成
+\[
+\begin{aligned}
+Q_{12}&=C_{V,m}(T_2-T_1)=C_{V,m}T_1=\frac{3}{2}RT_1,\\
+Q_{23}&=C_{P,m}(T_3-T_2)=2C_{P,m}T_1=5RT_1,\\
+Q_{34}&=C_{V,m}(T_4-T_3)=-2C_{V,m}T_1=-3RT_1,\\
+Q_{41}&=C_{P,m}(T_1-T_4)=-C_{P,m}T_1=-\frac{5}{2}RT_1
+\end{aligned}
+\]
+总吸热只取正的两段，循环净功等于矩形面积：
+\[
+\begin{aligned}
+Q_1&=Q_{12}+Q_{23}=\frac{13}{2}RT_1,\\
+A&=(p_2-p_1)(V_4-V_1)=p_1V_1=RT_1,\\
+\eta&=\frac{A}{Q_1}=\frac{RT_1}{\frac{13}{2}RT_1}=\frac{2}{13}\approx 15.4\%.
+\end{aligned}
+\]
+\end{solution}
+
+
+\begin{exercise}[氧气作 \(ABCD\) 循环时效率为什么先看哪两段吸热]
+质量为 \(32\times10^{-3}\,\si{kg}\) 的氧气作 \(ABCD\) 循环，其中 \(A\to B\) 与 \(C\to D\) 为等温过程，\(T_1=\SI{300}{K}\)、\(T_2=\SI{200}{K}\)、\(V_2=2V_1\)。求该循环效率。
+\end{exercise}
+
+\begin{solution}
+氧气质量正好是 1 mol：
+\[
+Q_{AB}=RT_1\ln\frac{V_2}{V_1}>0,
+Q_{BC}=C_{V,m}(T_2-T_1)<0,
+Q_{CD}=RT_2\ln\frac{V_1}{V_2}<0,
+Q_{DA}=C_{V,m}(T_1-T_2)>0
+\]
+因此总吸热为
+ \(Q_1=Q_{AB}+Q_{DA} =RT_1\ln\frac{V_2}{V_1}+\frac{5}{2}R(T_1-T_2).\) 
+循环净功只来自两段等温过程之和：
+\[
+\begin{aligned}
+A=Q_{AB}+Q_{CD}=RT_1\ln\frac{V_2}{V_1}+RT_2\ln\frac{V_1}{V_2}=R(T_1-T_2)\ln\frac{V_2}{V_1}.
+\end{aligned}
+\]
+代入 \(T_1=300\,\si{K},\ T_2=200\,\si{K},\ V_2/V_1=2\) 得
+ \[\eta=\frac{100R\ln 2}{300R\ln 2+250R}\approx 15\%.\]
+\end{solution}
+
+\begin{exercise}[水蒸气 \(abcda\) 循环怎样逐段做能量账]
+气缸内有 \(\SI{36}{g}\) 水蒸气，视为刚性分子理想气体，经历如图所示 \(abcda\) 循环。其中 \(a\to b\)、\(c\to d\) 为等体过程，\(b\to c\) 为等温过程，\(d\to a\) 为等压过程。已知 \(p_a=p_d=2\,\mathrm{atm}\)、\(p_b=6\,\mathrm{atm}\)、\(V_a=V_b=\SI{25}{L}\)、\(V_c=V_d=\SI{50}{L}\)。求：1. \(d\to a\) 过程水蒸气做功；2. \(a\to b\) 内能增量；3. 循环净功；4. 循环效率。
+
+\begin{center}
+\includegraphics[width=0.34\linewidth]{pdf-exercises/pdf2003-q22-pv-cycle.png}
+\end{center}
+\end{exercise}
+
+\begin{solution}
+物质的量为$2$mol，自由度 \(i=6\)，故 \(U=\frac{i}{2}nRT=3nRT\)，也就是 \(\Delta U=\frac{i}{2}\Delta(pV)=3\Delta(pV)\)。\(d\to a\) 为等压压缩，
+\[
+W_{da}=p_a(V_a-V_d)
+=2\times1.013\times10^5\times(25-50)\times10^{-3}
+\approx -\SI{5.07e3}{J}.
+\]
+\(a\to b\) 为等体过程，
+\[
+\Delta U_{ab}=3V_a(p_b-p_a)
+=3\times25\times10^{-3}\times(6-2)\times1.013\times10^5
+\approx \SI{3.04e4}{J}.
+\]
+\(b\to c\) 为等温膨胀，且 \(p_bV_b=6\times25=p_cV_c\)，所以
+ \[W_{bc}=nRT_b\ln\frac{V_c}{V_b} =p_bV_b\ln2 =6\times1.013\times10^5\times25\times10^{-3}\ln2 \approx \SI{1.05e4}{J}.\]
+循环净功为
+ \[W=W_{bc}+W_{da}\approx \SI{5.47e3}{J}.\]
+吸热发生在 \(a\to b\) 与 \(b\to c\)，其中 \(Q_{ab}=\Delta U_{ab}\)，\(Q_{bc}=W_{bc}\)，故
+ \[Q_1=Q_{ab}+Q_{bc} \approx \SI{4.09e4}{J}.\]
+循环效率
+ \[\eta=\frac{W}{Q_1} \approx \frac{5.47\times10^3}{4.09\times10^4} \approx 0.13.\]
+\end{solution}
+
+\begin{exercise}[同压从状态 \(A\) 到状态 \(B\) 时哪个量必然改变]
+一定量理想气体由平衡态 \(A\) 变到平衡态 \(B\)，且 \(p_A=p_B\)、\(V_B>V_A\)。无论经历什么过程，判断系统哪一项一定成立：对外作正功、内能增加、从外界吸热、向外界放热。
+\end{exercise}
+
+\begin{solution}
+末态温度升高，内能一定增加。对外做功可正可负，因为可以从$A$开始等压压缩到接近0体积，然后等体降温到压强也接近0，然后等压膨胀到体积为$B$时的体积，然后再等体升温到$B$，这样气体对外做功很小，而外界对气体做功很大。气体可以对外做负功。热力学第一定律：\(\Delta U = Q - W\)，变形得 \(Q=\Delta U + W\)。\(\Delta U\) 一定为正，但$W$（气体对外做功）可正可负，所以不一定吸热或者放热。
+\end{solution}
+
+\begin{exercise}[标准状态理想气体两条路径到同一终态的吸热]
+一定量理想气体在标准状态下体积为 \(V_1=1.0\times10^{-2}\,\si{m^3}\)。求下列过程中气体吸收的热量：1. 等温膨胀到 \(V_2=2.0\times10^{-2}\,\si{m^3}\)；2. 先等体冷却，再等压膨胀到第 1 问的终态。已知 \(1\,\mathrm{atm}=1.013\times10^5\,\si{Pa}\)，并设气体 \(C_V=5R/2\)。
+\end{exercise}
+
+\begin{solution}
+先看等温膨胀。
+ \[Q_1=W_1=\int_{V_1}^{V_2}\frac{p_1V_1}{V}\,\dd V =p_1V_1\ln\frac{V_2}{V_1}=1.013\times10^5\times1.0\times10^{-2}\ln2 \approx \SI{7.02e2}{J}.\]
+再看等体冷却再等压膨胀。 终态与初态温度相同，且 \(V_2=2V_1\)，故终态压强\(p_2=\frac{p_1V_1}{V_2}=\frac12p_1.\)，全过程 \(\Delta U=0\)，等体段不做功，只有等压膨胀段做功：
+ \[Q_2=W_2=p_2(V_2-V_1) =\frac12p_1(V_2-V_1)=\frac12\times1.013\times10^5\times(2.0-1.0)\times10^{-2}
+\approx \SI{5.07e2}{J}.\]
+\end{solution}
+
+\begin{exercise}[奥托循环效率]
+奥托机循环由两段等体过程和两段绝热过程组成，其中 \(c\to d\)、\(e\to b\) 为等体过程，\(b\to c\)、\(d\to e\) 为绝热过程。设压缩比为 \(r=V/V_0\)。求循环效率。
+\end{exercise}
+
+\begin{solution}
+奥托循环的热交换只发生在两段等体过程中，所以先分别写吸热段和放热段的 \(Q\)，随后再用绝热关系把温度比改写成体积比。
+ \[\eta=1-\frac{Q_2}{Q_1},\qquad Q_1=C_{V,m}(T_d-T_c),\qquad Q_2=C_{V,m}(T_e-T_b).\]
+先写效率：
+ \[\eta=1-\frac{T_e-T_b}{T_d-T_c}.\]
+两段绝热过程分别满足
+ \[T_eV^{\gamma-1}=T_dV_0^{\gamma-1},\qquad T_bV^{\gamma-1}=T_cV_0^{\gamma-1}.\] 
+两式相减可得
+\[
+(T_e-T_b)V^{\gamma-1}=(T_d-T_c)V_0^{\gamma-1}
+\implies
+\frac{T_e-T_b}{T_d-T_c}=\left(\frac{V_0}{V}\right)^{\gamma-1}.
+\]
+于是
+ \[\eta=1-\left(\frac{V_0}{V}\right)^{\gamma-1} =1-\frac{1}{r^{\gamma-1}}.\]
+其中 \(r=V/V_0\)。压缩比越大，效率越高，这和“压缩得越狠，绝热升温越明显，循环更容易把热转成净功”的图景一致。
+\end{solution}

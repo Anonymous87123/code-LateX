@@ -1,0 +1,37 @@
+{
+  "feature_groups": {
+    "first_person": ["我先", "我会", "我已经", "我已", "我把", "我来"],
+    "second_person": ["你可以", "你需要", "你的", "如果你"],
+    "completion": ["已经", "已完成", "已修复", "已更新", "已处理", "完成了"],
+    "future_commitment": ["我会", "接下来", "下一步", "稍后", "随后"],
+    "state_scope": ["当前", "目前", "现在", "现有", "这一步"],
+    "recommendation": ["建议", "推荐", "优先", "可以直接"],
+    "invitation": ["如果你愿意", "如果需要", "我可以继续"],
+    "evidence": ["确认", "验证", "检查", "测试", "结果", "证据", "显示"],
+    "risk_constraint": ["避免", "确保", "风险", "边界", "约束", "回归", "兼容"],
+    "implementation": ["实现", "修改", "代码", "文件", "接口", "配置", "构建"],
+    "conclusion": ["结论", "核心", "关键", "本质上", "说明"],
+    "hedging": ["可能", "应该", "看起来", "大概率", "暂时"],
+    "contrast": ["但是", "不过", "但", "而是", "相反"],
+    "action": ["直接", "处理", "修复", "补充", "调整", "运行", "定位"]
+  },
+  "patterns": {
+    "stepwise": "先.{0,80}再",
+    "contrastive": "不是.{0,80}而是",
+    "risk_purpose": "为了(?:避免|确保).{0,100}",
+    "state_gap": "(?:当前|目前|现在).{0,100}(?:但|不过|但是).{0,100}",
+    "conclusion_evidence": "(?:结论|核心|关键).{0,100}(?:验证|测试|结果|确认)"
+  },
+  "task_rules": {
+    "implementation": ["实现", "开发", "新增", "功能", "改造", "重构", "feature", "implement", "refactor"],
+    "debugging": ["bug", "错误", "报错", "异常", "修复", "排查", "问题", "debug", "fix"],
+    "testing": ["测试", "test", "验证", "qa", "覆盖率", "回归"],
+    "review": ["审查", "review", "检查代码", "代码质量", "code review"],
+    "documentation": ["文档", "报告", "说明书", "markdown", "写作", "翻译", "readme"],
+    "research": ["解释", "分析", "调研", "研究", "为什么", "原理", "explain", "research"],
+    "operations": ["配置", "部署", "构建", "环境", "docker", "ci", "运维", "install"],
+    "design": ["界面", "ui", "ux", "设计", "样式", "前端", "css", "组件"]
+  },
+  "task_priority": ["debugging", "testing", "implementation", "review", "documentation", "design", "operations", "research"],
+  "ngram_stop_chars": "的是了在和与及对把被将一个这个那个我们你们他们以及由于如果可以需要进行相关问题内容工作已经目前"
+}

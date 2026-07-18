@@ -1,0 +1,34 @@
+
+\section{弦振动的简正模式}
+
+\begin{definition}[简正模式]
+对长度为 \(l\) 的两端固定弦，端点都必须是波节，所以弦长应恰好容纳整数个半波长：
+\[
+l=n\frac{\lambda_n}{2},\qquad n=1,2,3,\dots
+\]
+因此
+\[
+\lambda_n=\frac{2l}{n},\qquad f_n=\frac{u}{\lambda_n}=\frac{nu}{2l}.
+\]
+满足上述边界条件的稳定振动方式，称为\textbf{简正模式}。其中 \(n=1\) 为基频（基模），\(n=2,3,\dots\) 为高次谐波模式。
+
+若一端固定、一端自由，则边界条件变为一端波节、一端波腹，允许条件改为
+\[
+l=(2n-1)\frac{\lambda_n}{4},\qquad f_n=\frac{(2n-1)u}{4l}.
+\]
+\end{definition}
+
+
+\begin{exercise}[二胡弦的基频和谐频怎样由边界条件决定]
+一根二胡弦长 \(l=\SI{0.30}{m}\)，张力 \(T=\SI{9.4}{N}\)，线密度 \(\mu=3.8\times10^{-4}\,\si{kg/m}\)。求这根弦发声的基频与谐频。
+\end{exercise}
+
+\begin{solution}
+二胡弦两端都被固定，弦长中必须容纳整数个半波长，即 \(l=n\dfrac{\lambda_n}{2}\)。由边界条件和弦上波速公式可得
+ \(u=\sqrt{\frac{T}{\mu}},\qquad \lambda_n=\frac{2l}{n},\qquad f_n=\frac{u}{\lambda_n}=\frac{nu}{2l}.\) 
+弦上的波速为 \(u=\sqrt{\dfrac{9.4}{3.8\times10^{-4}}}\approx \SI{157.3}{m/s}\)。于是基频对应 \(n=1\)：
+ \(f_1=\frac{1}{2l}\sqrt{\frac{T}{\mu}} =\frac{157.3}{0.60} \approx \SI{262}{Hz}.\) 
+更高次谐频为
+ \(f_n=\frac{n}{2l}\sqrt{\frac{T}{\mu}} =n f_1 \approx 262n\ \si{Hz},\qquad n=2,3,\dots\) 
+基频约为 \(\SI{262}{Hz}\)，各次谐频满足 \(f_n\approx 262n\ \si{Hz}\)。谐频是基频的整数倍，是因为弦长里必须塞下整数个半波长。
+\end{solution}

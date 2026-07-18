@@ -1,0 +1,39 @@
+usage: prepare_humanize_long_document.py [-h] --output OUTPUT
+                                         [--scene {AUTO,GENERAL,COURSE,MODELING,RESEARCH}]
+                                         [--intensity {BALANCED,LIGHT,STRUCTURAL}]
+                                         [--structural-transaction-scope {ADJACENT_PAIR,NONE}]
+                                         [--max-author-chars MAX_AUTHOR_CHARS]
+                                         [--max-lines MAX_LINES]
+                                         [--min-author-chars MIN_AUTHOR_CHARS]
+                                         [--voice-profile VOICE_PROFILE]
+                                         [--voice-profile-sha256 VOICE_PROFILE_SHA256]
+                                         [--voice-manifest VOICE_MANIFEST]
+                                         [--voice-sample-spec VOICE_SAMPLE_SPEC]
+                                         [--voice-allowed-root VOICE_ALLOWED_ROOT]
+                                         [--editable-style-wrapper {emph,textbf,textit}]
+                                         inputs [inputs ...]
+
+冻结长 MD/TEX 输入并生成 manifest、保护占位块和初始覆盖账本；不修改源文。
+
+positional arguments:
+  inputs                一个或多个主文件或目录
+
+options:
+  -h, --help            show this help message and exit
+  --output OUTPUT       必须为空的新输出目录
+  --scene {AUTO,GENERAL,COURSE,MODELING,RESEARCH}
+  --intensity {BALANCED,LIGHT,STRUCTURAL}
+                        冻结本轮改写权限；STRUCTURAL 会生成逐段结构清单并要求结构映射包
+  --structural-transaction-scope {ADJACENT_PAIR,NONE}
+                        生成候选型跨 unit 事务清单；ADJACENT_PAIR 仅接受
+                        STRUCTURAL，且不授予执行或语义放行权限
+  --max-author-chars MAX_AUTHOR_CHARS
+  --max-lines MAX_LINES
+  --min-author-chars MIN_AUTHOR_CHARS
+  --voice-profile VOICE_PROFILE
+  --voice-profile-sha256 VOICE_PROFILE_SHA256
+  --voice-manifest VOICE_MANIFEST
+  --voice-sample-spec VOICE_SAMPLE_SPEC
+  --voice-allowed-root VOICE_ALLOWED_ROOT
+  --editable-style-wrapper {emph,textbf,textit}
+                        显式授权移除的非语义 TeX 样式包装命令；可重复，默认全部保护

@@ -1,0 +1,180 @@
+{
+  "author_chars": 706,
+  "chunk_binding_sha256": "4c0203cd4faa741a309154a9badc797a26e3e70cbed94a8d9bc9dcacaabaf7e5",
+  "context_after_unit": "U-9e0d4b28f99b",
+  "context_before_unit": "U-5ed02208cbeb",
+  "diff_path": "",
+  "end": 35887,
+  "end_line": 1192,
+  "file_id": "F00001",
+  "hash_after": "",
+  "hash_before": "24104b0b3c0927c131a12601deb666e70bf34e8cbec73b04ac0f729fca5bd621",
+  "heading_path": "GPT 中文语言风格全域重整报告：以 MD/TEX 学术成文为核心 / 板块二：模型学术写作语言风格库（核心） / 2.35 纯文风 Humanize 层：与学术质控彻底拆开",
+  "intensity": "STRUCTURAL",
+  "line_count": 36,
+  "masked_text": "[[PROTECTED:F00001-P00646:db7b96ba0457]]\n此前的场景 Skill 集群把正确性、来源、推导、实验和文风放在同一执行链中。它能避免把错误内容润色得更像论文，但不能被称为[[PROTECTED:F00001-P00647:92c2b1b497ad]]。本轮据此新增独立的 [[PROTECTED:F00001-P00648:0262fc49d5f2]]，旧质控集群保持不变。\n\n新 Skill 只处理：\n\n- 固定句首、万能过渡和虚假转折；\n- 固定段落流水线、等长段落和全文匀速；\n- 公文、汇报、审计、说教、教练和模板学术腔；\n- 抽象名词堆砌、创新表演和空洞升华；\n- 公式、图表和步骤的逐行解释；\n- 强制总结、强制展望和机器闭环；\n- 句式对称、统一化行文权重和作者取舍缺失。\n\n新 Skill 明确不处理：\n\n- 数学或推导对错；\n- 来源、引文和论据真假；\n- 数据、实验、模型精度和复现；\n- 创新真实性和科研质量；\n- AIGC 检测概率和作者身份。\n\n三场景的拟人目标也不再共用模板：\n\n| 场景 | 作者感从哪里产生 | 主要打破什么 |\n|---|---|---|\n| 课堂笔记 | 哪里慢讲、哪里快写、哪里回指 | 每个知识点都有定义、例子、陷阱、口诀和总结 |\n| 建模论文 | 哪个设计取舍和结果获得更多篇幅 | 五问同构、编辑指令、优点—局限—补强模板 |\n| 科研论文 | 哪个判断进入中心、哪个分支不展开 | 防御串、章节职责旁白、贡献/展望对称列表 |\n\n本轮最终形成 16 类通用病灶、109 条场景规则（课堂 34、建模 38、科研 37）、60 组纯文风改写模式，以及按模式拆分的 5 道诊断门、12 道 Rewrite/Draft 共同门、4 道场景门和长文门。详细规模、来源复读、规则映射、执行脚本、真实误报修复和前向测试见 [pure_academic_humanize_skill_report.md]([[PROTECTED:F00001-P00649:f0dadd764201]])。\n\n最重要的变化是，[[PROTECTED:F00001-P00650:edece68ab12f]]被限定为组织上的非均匀：段落不等长、解释密度不同、并列项不等量、次要内容允许省略、部分章节不总结。它不包括错别字、病句、随机拆句、伪造经历或降低专业性。\n\n最初三份前向输出只能证明场景路由发生了变化，不能证明生产质量。后续使用同一组课堂、建模、科研片段进行了三轮共 9 次无答案泄漏测试：第一轮存在高风险残留并虚报 PASS；第二轮停止虚报，但仍保留教练腔、营销词和基础句壳；第三轮全部诚实标记 [[PROTECTED:F00001-P00651:436d26f8f16d]]，建模稿明显改善，但课堂和科研仍出现同义规避。原始盲写没有一份被直接放行。三份人工校准输出曾在旧验证器下记录 [[PROTECTED:F00001-P00652:294046bb5908]]，但没有现行 request/artifact/policy 绑定和可验证审阅来源；它们现在只作 pre-provenance 归档证据，不能追认为当前生成资格 PASS。\n\n",
+  "mode": "REWRITE",
+  "notes": "",
+  "owner_chunk": "U-0ca523e08ba9",
+  "part": 1,
+  "protected_hashes_ok": "NOT_RUN",
+  "protected_ids": [
+    "F00001-P00646",
+    "F00001-P00647",
+    "F00001-P00648",
+    "F00001-P00649",
+    "F00001-P00650",
+    "F00001-P00651",
+    "F00001-P00652"
+  ],
+  "protected_spans": 7,
+  "read_only_context_after": "[[PROTECTED:F00001-P00653:8442bde40d9a]]\n前一版最大的问题不是规则少，而是[[PROTECTED:F00001-P00654:43d6307788b5]]与[[PROTECTED:F00001-P00655:036d8076a570]]之间没有机器可读的连接。当前纯文风层共有 12 个脚本，职责互不替代：",
+  "read_only_context_before": "因此，[[PROTECTED:F00001-P00645:a45e5fc97300]]不是按文件名选一个提示词，而是能改变审计对象、证据门和允许的写作负担。",
+  "scene": "GENERAL",
+  "scene_document_prior": "",
+  "scene_requested": "GENERAL",
+  "scene_routing_ambiguous_scenes": [],
+  "scene_routing_decision": "EXPLICIT",
+  "scene_routing_evidence": [],
+  "scene_routing_margin": 0,
+  "scene_routing_policy_revision": 2,
+  "scene_routing_policy_sha256": "8d0f916d91b5753fd94d358c4b32e9a6c02b1f30120f43b4cbb2165dc1684450",
+  "scene_routing_scores": {
+    "COURSE": 0,
+    "MODELING": 0,
+    "RESEARCH": 0
+  },
+  "scene_routing_top_score": 0,
+  "start": 34669,
+  "start_line": 1157,
+  "status": "PENDING",
+  "structural_cross_unit_moves_allowed": false,
+  "structural_inventory_sha256": "46fc0b5cb1852c103aca0ca433362ba9ec024ddfa51018b2bfbaa6c7fb2736ec",
+  "structural_paragraphs": [
+    {
+      "author_chars": 68,
+      "lock_reason": "fixed_paragraph_responsibility",
+      "movable": false,
+      "ordinal": 1,
+      "paragraph_id": "P001-23ba8ddf20cc",
+      "protected_ids": [
+        "F00001-P00646",
+        "F00001-P00647",
+        "F00001-P00648"
+      ],
+      "responsibility": "DEFINITION",
+      "sha256": "23ba8ddf20cc7fcd7bf1419ea8a7197535c798a50baaff9686511f93739ee1d3"
+    },
+    {
+      "author_chars": 4,
+      "lock_reason": "insufficient_author_prose",
+      "movable": false,
+      "ordinal": 2,
+      "paragraph_id": "P002-e2f7ab5494e7",
+      "protected_ids": [],
+      "responsibility": "EXPOSITION",
+      "sha256": "e2f7ab5494e7628845b0196a4ca01436f884685fa300ecd001216e4919b3c580"
+    },
+    {
+      "author_chars": 103,
+      "lock_reason": "contains_markdown_structure",
+      "movable": false,
+      "ordinal": 3,
+      "paragraph_id": "P003-2ae92f796e9b",
+      "protected_ids": [],
+      "responsibility": "EXPOSITION",
+      "sha256": "2ae92f796e9b3c0b974b8ae6c035db53ec64c4568400fd40d77742d98edd7a25"
+    },
+    {
+      "author_chars": 6,
+      "lock_reason": "insufficient_author_prose",
+      "movable": false,
+      "ordinal": 4,
+      "paragraph_id": "P004-82d060832581",
+      "protected_ids": [],
+      "responsibility": "EXPOSITION",
+      "sha256": "82d060832581822488b482ff7999bb5da2b52d32f79fb5aea5ab0905b45204a2"
+    },
+    {
+      "author_chars": 46,
+      "lock_reason": "contains_markdown_structure",
+      "movable": false,
+      "ordinal": 5,
+      "paragraph_id": "P005-3a5b99da92a6",
+      "protected_ids": [],
+      "responsibility": "EXPOSITION",
+      "sha256": "3a5b99da92a64ba9c3e97e568dbcb020338669224a391414f257ca4ae1158dfe"
+    },
+    {
+      "author_chars": 15,
+      "lock_reason": "introduces_following_block",
+      "movable": false,
+      "ordinal": 6,
+      "paragraph_id": "P006-72d6d1fa7c82",
+      "protected_ids": [],
+      "responsibility": "EXPOSITION",
+      "sha256": "72d6d1fa7c822282d57ae0ec16da689b013a192ed8d14242a67e11a58003968a"
+    },
+    {
+      "author_chars": 121,
+      "lock_reason": "contains_markdown_structure",
+      "movable": false,
+      "ordinal": 7,
+      "paragraph_id": "P007-7ca111e2d2f0",
+      "protected_ids": [],
+      "responsibility": "EXPOSITION",
+      "sha256": "7ca111e2d2f09ac92a5c6ea5f9500b0ca5f1e1768d4b5767a258a01d95fcc154"
+    },
+    {
+      "author_chars": 82,
+      "lock_reason": "",
+      "movable": true,
+      "ordinal": 8,
+      "paragraph_id": "P008-6e2e4f23fa4f",
+      "protected_ids": [
+        "F00001-P00649"
+      ],
+      "responsibility": "EXPOSITION",
+      "sha256": "6e2e4f23fa4f326b18a8d1e687a705169041a0c2493091dc552eb53b67b0a71e"
+    },
+    {
+      "author_chars": 73,
+      "lock_reason": "contains_immovable_protected_span",
+      "movable": false,
+      "ordinal": 9,
+      "paragraph_id": "P009-7732b7bfc1b8",
+      "protected_ids": [
+        "F00001-P00650"
+      ],
+      "responsibility": "EXPOSITION",
+      "sha256": "7732b7bfc1b8b61e840171de7e16619f3e334404856db87f6f0b0365c8401242"
+    },
+    {
+      "author_chars": 188,
+      "lock_reason": "",
+      "movable": true,
+      "ordinal": 10,
+      "paragraph_id": "P010-fefe93c4c42b",
+      "protected_ids": [
+        "F00001-P00651",
+        "F00001-P00652"
+      ],
+      "responsibility": "EXPOSITION",
+      "sha256": "fefe93c4c42ba2829522108be6444c7753af1670b869aa86cb3d74c445ec7d27"
+    }
+  ],
+  "structural_plan_schema": "humanize-structural-plan/v1",
+  "structural_plan_status": "NOT_RUN",
+  "structural_scope": "UNIT",
+  "structural_title_lock": true,
+  "style_validation": "NOT_RUN",
+  "unit_id": "U-0ca523e08ba9",
+  "voice_default_disclosure": true,
+  "voice_profile_binding_scene": "GENERAL",
+  "voice_profile_confidence": "DEFAULT",
+  "voice_profile_id": "scene-default-general",
+  "voice_profile_kind": "DEFAULT",
+  "voice_profile_revision": 1,
+  "voice_profile_sha256": "3b4eeeaeb3af397378ead360550371ff4632cbce6fceca8923479c53de23a112",
+  "voice_profile_source": "SCENE_DEFAULT"
+}

@@ -1,0 +1,447 @@
+import csv
+import importlib.util
+import io
+import json
+import os
+import subprocess
+import sys
+import tempfile
+import unittest
+from pathlib import Path
+
+
+SKILL = Path(
+    os.environ.get(
+        "HUMANIZE_SKILL_DIR",
+        Path.home() / ".codex" / "skills" / "humanize-academic-chinese",
+    )
+)
+LEXICON = SKILL / "references" / "lexical-signals.json"
+SCANNER = SKILL / "scripts" / "scan_humanize_chinese.py"
+FIXTURES = Path(__file__).parent / "fixtures" / "humanize_lexical"
+
+
+def load_scanner():
+    spec = importlib.util.spec_from_file_location("scan_humanize_chinese", SCANNER)
+    if spec is None or spec.loader is None:
+        raise RuntimeError("could not load scanner")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+scanner = load_scanner()
+
+
+class HumanizeLexicalSchemaTests(unittest.TestCase):
+    def test_schema_is_context_aware_and_actionable(self) -> None:
+        data = json.loads(LEXICON.read_text(encoding="utf-8"))
+        self.assertEqual("1.2.0", data["schema_version"])
+        self.assertGreaterEqual(len(data["signals"]), 28)
+        required = {
+            "id",
+            "variants",
+            "regex",
+            "scenes",
+            "severity",
+            "threshold",
+            "exclusions",
+            "action",
+            "rationale",
+            "positive_examples",
+            "negative_examples",
+            "provenance",
+        }
+        categories = set()
+        for signal in data["signals"]:
+            self.assertFalse(required - signal.keys(), signal["id"])
+            self.assertTrue(signal["variants"] or signal["regex"], signal["id"])
+            self.assertIn(signal["action"], {"KEEP", "DELETE", "REWRITE", "REVIEW"})
+            self.assertGreaterEqual(signal["threshold"]["min_occurrences"], 1)
+            self.assertIn(signal["threshold"]["window"], {"document", "paragraph", "sentence", "line"})
+            self.assertTrue(signal["positive_examples"], signal["id"])
+            self.assertTrue(signal["negative_examples"], signal["id"])
+            self.assertTrue(signal["provenance"], signal["id"])
+            categories.add(signal["category"])
+
+        expected_categories = {
+            "transition-density",
+            "outline-shell",
+            "management-voice",
+            "marketing-innovation-voice",
+            "coaching-voice",
+            "meta-writing",
+            "table-role-ambiguity",
+            "modal-hedge-density",
+            "repair-template-repetition",
+            "theory-opening-repetition",
+            "case-closing-repetition",
+            "passive-analysis-shell",
+            "problem-announcement-shell",
+            "vague-attribution-source",
+            "copula-avoidance-density",
+            "academic-packaging-density",
+            "three-part-enumeration-shell",
+            "dash-density",
+            "bold-emphasis-density",
+        }
+        self.assertFalse(expected_categories - categories)
+
+
+class HumanizeLexicalScannerTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.lexicon = scanner.load_lexicon(LEXICON)
+
+    def scan_fixture(self, name: str, **kwargs):
+        path = FIXTURES / name
+        return scanner.scan_file(path, lexicon=self.lexicon, **kwargs)
+
+    def test_positive_fixture_exposes_concrete_candidates(self) -> None:
+        findings = self.scan_fixture("positive.md", scene="ALL")
+        ids = {item["signal_id"] for item in findings}
+        expected = {
+            "LEX-TRANS-01",
+            "LEX-EMPH-01",
+            "LEX-OUTLINE-01",
+            "LEX-MGMT-01",
+            "LEX-MARKET-01",
+            "LEX-COACH-01",
+            "LEX-META-01",
+            "LEX-HEDGE-01",
+            "LEX-RESULT-01",
+            "LEX-FOUNDATION-01",
+            "LEX-FUTURE-01",
+            "LEX-REPAIR-01",
+        }
+        self.assertFalse(expected - ids)
+
+    def test_draft_editorial_requirement_left_in_prose_is_located(self) -> None:
+        findings = scanner.scan_text(
+            "因此，总量硬锚点校准与局地一致性检验需要分开报告。",
+            file="draft.md",
+            scene="RESEARCH",
+            lexicon=self.lexicon,
+        )
+
+        self.assertIn("LEX-META-01", {item["signal_id"] for item in findings})
+
+    def test_v19_abstract_closed_loop_and_path_shell_are_concrete_candidates(self) -> None:
+        research = scanner.scan_text(
+            "本问按参数设定、校准和反事实对照的实证闭环收紧。",
+            file="research.md",
+            scene="RESEARCH",
+            lexicon=self.lexicon,
+        )
+        modeling = scanner.scan_text(
+            "问题二的证据关系由禁渔和食源恢复出发，经通道与污染修正，最终落到种群变化。",
+            file="modeling.md",
+            scene="MODELING",
+            lexicon=self.lexicon,
+        )
+
+        for findings in (research, modeling):
+            hit = [item for item in findings if item["signal_id"] == "LEX-MGMT-01"]
+            self.assertTrue(hit)
+            self.assertTrue(all(item["severity"] == "high" for item in hit))
+            self.assertTrue(all(item["action"] == "REWRITE" for item in hit))
+
+    def test_table_role_is_reviewed_separately_from_editorial_directives(self) -> None:
+        findings = scanner.scan_text(
+            "表格的作用在于让读者看出每个参数来自哪条事实链。",
+            file="modeling.md",
+            scene="MODELING",
+            lexicon=self.lexicon,
+        )
+        ids = {item["signal_id"] for item in findings}
+
+        self.assertIn("LEX-TABLE-ROLE-01", ids)
+        self.assertNotIn("LEX-META-01", ids)
+        table_hit = next(item for item in findings if item["signal_id"] == "LEX-TABLE-ROLE-01")
+        self.assertEqual("REVIEW", table_hit["action"])
+        self.assertEqual("medium", table_hit["severity"])
+
+    def test_markdown_percentage_does_not_hide_the_rest_of_the_line_as_tex_comment(self) -> None:
+        findings = scanner.scan_text(
+            "相对误差为 16.47%。因此，两类结果需要分开报告。",
+            file="draft.md",
+            scene="RESEARCH",
+            lexicon=self.lexicon,
+        )
+
+        meta = [item for item in findings if item["signal_id"] == "LEX-META-01"]
+        self.assertEqual(1, len(meta))
+        self.assertFalse(meta[0]["protected"])
+        for finding in findings:
+            self.assertGreaterEqual(finding["line"], 1)
+            self.assertGreaterEqual(finding["column"], 1)
+            self.assertTrue(finding["matched"])
+            self.assertTrue(finding["context"])
+            self.assertGreaterEqual(finding["count"], 1)
+            self.assertIn(finding["action"], {"DELETE", "REWRITE", "REVIEW"})
+            self.assertTrue(finding["candidate"])
+
+    def test_technical_terms_and_real_proof_chain_are_not_candidates(self) -> None:
+        findings = self.scan_fixture("negative.tex", scene="ALL")
+        self.assertEqual([], findings)
+
+    def test_retired_rules_are_context_candidates_not_banned_words(self) -> None:
+        findings = self.scan_fixture("legacy_candidates.md", scene="ALL")
+        ids = {item["signal_id"] for item in findings}
+        expected = {
+            "LEX-THEORY-OPEN-01",
+            "LEX-CASE-CLOSE-01",
+            "LEX-PASSIVE-ANALYSIS-01",
+            "LEX-PROBLEM-SHELL-01",
+            "LEX-VAGUE-ATTRIBUTION-01",
+            "LEX-COPULA-AVOID-01",
+            "LEX-ACADEMIC-PACKAGE-01",
+            "LEX-ENUM-01",
+            "LEX-PUNCT-DASH-01",
+            "LEX-FORMAT-BOLD-01",
+        }
+        self.assertFalse(expected - ids)
+        self.assertTrue(all(item["action"] == "REVIEW" for item in findings if item["signal_id"] in expected))
+
+    def test_single_normal_uses_and_functional_exclusions_are_protected(self) -> None:
+        findings = self.scan_fixture("legacy_safe.md", scene="ALL")
+        self.assertEqual([], findings)
+
+        audit = self.scan_fixture("legacy_safe.md", scene="ALL", include_excluded=True)
+        excluded_ids = {item["signal_id"] for item in audit if item["excluded"]}
+        self.assertIn("LEX-VAGUE-ATTRIBUTION-01", excluded_ids)
+        self.assertIn("LEX-ENUM-01", excluded_ids)
+        self.assertTrue(all(item["action"] == "KEEP" for item in audit))
+
+    def test_retired_closure_and_packaging_variants_are_located(self) -> None:
+        text = (
+            "总体而言，需要说明的是，该领域未来可期、前景广阔、意义深远，"
+            "可为相关研究提供新思路并开辟新方向。"
+            "本文系统梳理材料并综合运用多种方法。"
+        )
+        findings = scanner.scan_text(text, lexicon=self.lexicon, scene="ALL")
+        ids = {item["signal_id"] for item in findings}
+        self.assertIn("LEX-CONCLUDE-01", ids)
+        self.assertIn("LEX-EMPH-01", ids)
+        self.assertIn("LEX-MARKET-01", ids)
+        self.assertIn("LEX-ACADEMIC-PACKAGE-01", ids)
+
+    def test_proof_exclusions_are_visible_on_request(self) -> None:
+        findings = self.scan_fixture("negative.tex", scene="ALL", include_excluded=True)
+        proof_hits = [item for item in findings if item["signal_id"] == "LEX-TRANS-01"]
+        self.assertEqual(3, len(proof_hits))
+        self.assertTrue(all(item["action"] == "KEEP" for item in proof_hits))
+        self.assertTrue(all(item["excluded"] for item in proof_hits))
+        self.assertTrue(all("因果链" in item["exclusion"] for item in proof_hits))
+
+    def test_code_math_comments_and_quotes_are_protected(self) -> None:
+        findings = self.scan_fixture("negative.tex", scene="ALL", include_protected=True)
+        protected = [item for item in findings if item["protected"]]
+        protections = " ".join(item["protection"] for item in protected)
+        self.assertIn("chinese-double-quote", protections)
+        self.assertIn("inline-code", protections)
+        self.assertIn("latex-comment", protections)
+        self.assertTrue(
+            "latex-verbatim-or-math-environment" in protections or "display-math" in protections
+        )
+        self.assertIn("markdown-fence", protections)
+        self.assertTrue(all(item["action"] == "KEEP" for item in protected))
+        self.assertTrue(all(not item["candidate"] for item in protected))
+
+    def test_tex_exam_statements_and_tex_quotes_are_protected(self) -> None:
+        text = (
+            "\\begin{exercise}\n必须牢记，并形成完整闭环。\n\\end{exercise}\n"
+            "\\begin{theorem}\n综上所述，命题成立。\n\\end{theorem}\n"
+            "作者记录道：``必须牢记这一条件。''\n"
+            "作者又写道：\\enquote{必须牢记 \\textbf{边界条件}。}\n"
+        )
+        self.assertEqual([], scanner.scan_text(text, lexicon=self.lexicon, scene="AUTO"))
+        findings = scanner.scan_text(
+            text,
+            lexicon=self.lexicon,
+            scene="AUTO",
+            include_protected=True,
+        )
+        reasons = " ".join(item["protection"] for item in findings)
+        self.assertIn("latex-exam-or-formal-statement-environment", reasons)
+        self.assertIn("latex-quote", reasons)
+        self.assertTrue(all(item["action"] == "KEEP" for item in findings))
+
+    def test_commonmark_longer_closing_fence_is_protected(self) -> None:
+        text = "```text\n必须牢记并形成完整闭环。\n````\n"
+        self.assertEqual([], scanner.scan_text(text, lexicon=self.lexicon, scene="AUTO"))
+        protected = scanner.scan_text(
+            text,
+            lexicon=self.lexicon,
+            scene="AUTO",
+            include_protected=True,
+        )
+        self.assertTrue(protected)
+        self.assertTrue(all(item["protection"] == "markdown-fence" for item in protected))
+
+    def test_sentence_exclusion_only_applies_when_it_overlaps_the_finding(self) -> None:
+        text = "闭环控制用于调节，该报告形成完整闭环。"
+        findings = scanner.scan_text(
+            text,
+            lexicon=self.lexicon,
+            scene="AUTO",
+            include_excluded=True,
+        )
+        shell = [
+            item
+            for item in findings
+            if item["signal_id"] == "LEX-MGMT-01" and item["matched"] == "形成完整闭环"
+        ]
+        self.assertEqual(1, len(shell))
+        self.assertTrue(shell[0]["candidate"])
+        self.assertFalse(shell[0]["excluded"])
+
+    def test_repair_templates_trigger_only_when_repeated(self) -> None:
+        single = "这里只比较峰值，其余情形沿用前式。"
+        repeated = "这里只比较峰值。\n\n这里只看误差，其余情形沿用前式。"
+        single_findings = scanner.scan_text(single, lexicon=self.lexicon)
+        repeated_findings = scanner.scan_text(repeated, lexicon=self.lexicon)
+        self.assertFalse([item for item in single_findings if item["signal_id"] == "LEX-REPAIR-01"])
+        repair = [item for item in repeated_findings if item["signal_id"] == "LEX-REPAIR-01"]
+        self.assertGreaterEqual(len(repair), 2)
+        self.assertTrue(all(item["count"] >= 2 for item in repair))
+
+    def test_boundaries_do_not_split_unrelated_words(self) -> None:
+        text = (
+            "先验分布用于预测，再生水用于冲洗。显示屏位于闭环控制器旁，边界条件保持不变。"
+            "柔软链条从小孔下落，三块碎片同时落地，落地点分别为 A、B、C。"
+        )
+        findings = scanner.scan_text(text, lexicon=self.lexicon, include_excluded=True)
+        candidates = [item for item in findings if item["candidate"]]
+        self.assertEqual([], candidates)
+
+    def test_scene_filter(self) -> None:
+        text = "这张救命表必须牢记，可以秒杀同类题。"
+        course = scanner.scan_text(text, lexicon=self.lexicon, scene="COURSE")
+        research = scanner.scan_text(text, lexicon=self.lexicon, scene="RESEARCH")
+        general = scanner.scan_text(text, lexicon=self.lexicon, scene="GENERAL")
+        auto = scanner.scan_text(text, lexicon=self.lexicon, scene="AUTO")
+        self.assertTrue([item for item in course if item["signal_id"] == "LEX-COACH-01"])
+        self.assertFalse([item for item in research if item["signal_id"] == "LEX-COACH-01"])
+        self.assertFalse([item for item in general if item["signal_id"] == "LEX-COACH-01"])
+        self.assertTrue([item for item in auto if item["signal_id"] == "LEX-COACH-01"])
+
+    def test_high_risk_bridge_and_long_closure_variants_are_located(self) -> None:
+        text = (
+            "该模型形成了从数据到决策的完整闭环，为工程应用提供有力支撑。"
+            "本题也为后续研究极值问题打下了基础，这条判断链也是后续讨论的基础，必须记住。"
+            "该结论深入揭示该机制，后续可将其拓展至更多应用场景。"
+            "现有结果为后续检验界面重排的作用提供了线索，也是后续研究的出发点。"
+        )
+        findings = scanner.scan_text(text, lexicon=self.lexicon, scene="AUTO")
+        ids = {item["signal_id"] for item in findings}
+        self.assertIn("LEX-MGMT-01", ids)
+        self.assertIn("LEX-MARKET-01", ids)
+        self.assertIn("LEX-FOUNDATION-01", ids)
+        self.assertIn("LEX-COACH-01", ids)
+        self.assertIn("LEX-FUTURE-01", ids)
+
+    def test_foundation_synonym_repair_to_research_starting_point_is_located(self) -> None:
+        text = "这一结果不仅揭示了控制机制，而且是后续研究的出发点。"
+        findings = scanner.scan_text(text, lexicon=self.lexicon, scene="RESEARCH")
+        foundation = [item for item in findings if item["signal_id"] == "LEX-FOUNDATION-01"]
+
+        self.assertEqual(1, len(foundation))
+        self.assertEqual("high", foundation[0]["severity"])
+        self.assertEqual("是后续研究的出发点", foundation[0]["matched"])
+
+    def test_course_coaching_and_empty_conclusion_synonym_repairs_are_located(self) -> None:
+        text = "遇到这类题，必须注意，不要直接套公式。由此可以得出结论。"
+        findings = scanner.scan_text(text, lexicon=self.lexicon, scene="COURSE")
+        ids = {item["signal_id"] for item in findings}
+
+        self.assertIn("LEX-COACH-01", ids)
+        self.assertIn("LEX-CONCLUDE-01", ids)
+
+    def test_v7_course_coaching_synonym_and_label_stripped_outlook_are_located(self) -> None:
+        course = scanner.scan_text("遇到这类题目，公式必须记清楚。", lexicon=self.lexicon, scene="COURSE")
+        modeling = scanner.scan_text(
+            "传感器漂移可能影响模型。应用场景可以进一步拓展。",
+            lexicon=self.lexicon,
+            scene="MODELING",
+        )
+
+        self.assertIn("LEX-COACH-01", {item["signal_id"] for item in course})
+        future = [item for item in modeling if item["signal_id"] == "LEX-FUTURE-01"]
+        self.assertEqual(1, len(future))
+        self.assertEqual("high", future[0]["severity"])
+
+    def test_v8_course_memory_synonym_and_surviving_editor_note_are_located(self) -> None:
+        course = scanner.scan_text("遇到这类题，公式需要记住。", lexicon=self.lexicon, scene="COURSE")
+        modeling = scanner.scan_text(
+            "20 ℃、25 ℃ 和 30 ℃ 三组数据仍需在正文中保留。",
+            lexicon=self.lexicon,
+            scene="MODELING",
+        )
+
+        self.assertIn("LEX-COACH-01", {item["signal_id"] for item in course})
+        self.assertIn("LEX-META-01", {item["signal_id"] for item in modeling})
+
+    def test_json_csv_and_text_outputs_have_location_contract(self) -> None:
+        findings = scanner.scan_text("值得注意的是，结果并不均匀。", file="sample.md", lexicon=self.lexicon)
+        notice = self.lexicon["output_policy"]
+
+        json_payload = json.loads(scanner.render_output(findings, output_format="json", notice=notice))
+        self.assertEqual(1, json_payload["candidate_count"])
+        self.assertEqual("sample.md", json_payload["findings"][0]["file"])
+        self.assertNotIn("score", json_payload)
+
+        csv_text = scanner.render_output(findings, output_format="csv", notice=notice)
+        csv_rows = list(csv.DictReader(io.StringIO(csv_text)))
+        self.assertEqual("1", csv_rows[0]["line"])
+        self.assertEqual("1", csv_rows[0]["column"])
+        self.assertEqual("值得注意的是", csv_rows[0]["matched"])
+
+        text_output = scanner.render_output(findings, output_format="text", notice=notice)
+        self.assertIn("sample.md:1:1", text_output)
+        self.assertIn("LEX-EMPH-01", text_output)
+
+    def test_cli_writes_machine_readable_json(self) -> None:
+        completed = subprocess.run(
+            [
+                sys.executable,
+                str(SCANNER),
+                str(FIXTURES / "positive.md"),
+                "--scene",
+                "auto",
+                "--format",
+                "json",
+            ],
+            check=True,
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+        )
+        payload = json.loads(completed.stdout)
+        self.assertGreater(payload["candidate_count"], 0)
+        first = payload["findings"][0]
+        self.assertFalse({"file", "line", "column", "matched", "context", "count", "action"} - first.keys())
+        self.assertTrue(all(item["scene"] == "AUTO" for item in payload["findings"]))
+        self.assertEqual("PASS", payload["coverage"]["status"])
+        self.assertEqual(1, payload["coverage"]["scanned_count"])
+
+    def test_cli_reports_invalid_utf8_in_json_and_returns_review(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            invalid = Path(temp_dir) / "invalid.md"
+            invalid.write_bytes(b"\xff\xfe\xfa")
+            completed = subprocess.run(
+                [sys.executable, str(SCANNER), str(invalid), "--format", "json"],
+                check=False,
+                capture_output=True,
+                text=True,
+                encoding="utf-8",
+            )
+        self.assertEqual(2, completed.returncode)
+        payload = json.loads(completed.stdout)
+        self.assertEqual("REVIEW", payload["coverage"]["status"])
+        self.assertEqual(1, payload["coverage"]["skipped_count"])
+        self.assertEqual([str(invalid.resolve())], payload["coverage"]["skipped_files"])
+
+
+if __name__ == "__main__":
+    unittest.main()

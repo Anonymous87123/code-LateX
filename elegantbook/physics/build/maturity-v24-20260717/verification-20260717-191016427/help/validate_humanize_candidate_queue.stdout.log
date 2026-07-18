@@ -1,0 +1,27 @@
+usage: validate_humanize_candidate_queue.py [-h] [--catalog CATALOG]
+                                            [--queue-dir QUEUE_DIR]
+                                            [--allowed-root ALLOWED_ROOT]
+                                            [--format {json,text}]
+                                            candidate
+
+Validate a source-action-bound rewrite candidate without exporting corpus
+prose. This is a publication gate for a *candidate package*, not a text
+generator and not an academic-correctness checker. It proves only mechanical
+facts: the selected action cards are available for the declared scene,
+declared anchors survive in the candidate, existing invariant/style gates
+pass, and the rewrite does not copy a long Chinese run from the action-card
+source ranges or retain a known automatic template. Claims, evidence roles,
+and causal explanations remain explicitly outside automatic verification.
+
+positional arguments:
+  candidate             candidate package JSON
+
+options:
+  -h, --help            show this help message and exit
+  --catalog CATALOG
+  --queue-dir QUEUE_DIR
+                        write candidate/result into accepted or rejected
+  --allowed-root ALLOWED_ROOT
+                        optional root containing candidate, before, and after
+                        files
+  --format {json,text}

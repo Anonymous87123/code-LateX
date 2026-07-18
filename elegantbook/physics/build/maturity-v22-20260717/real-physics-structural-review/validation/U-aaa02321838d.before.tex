@@ -1,0 +1,173 @@
+
+\section{角动量与角动量守恒}
+
+\begin{definition}[质点对定点的角动量和力矩]\label{def:angular-momentum}
+设在惯性参考系中，一质量为 $m$ 的质点以速度 $\vec{v}$（动量 $\vec{p} = m\vec{v}$）运动。相对于给定的固定参考原点 $O$，该质点的位置矢量为 $\vec{r}$。质点对固定点 $O$ 的\textbf{角动量（Angular Momentum）} $\vec{L}$ 定义为位置矢量与动量的矢积（叉积）：
+ \(\vec{L} = \vec{r} \times \vec{p} = \vec{r} \times (m\vec{v})\) 
+\begin{itemize}
+\item \textbf{大小}：$L = rp\sin\theta = rmv\sin\theta$，其中 $\theta$ 为位置矢量 $\vec{r}$ 与动量 $\vec{p}$ 方向之间的夹角。
+\item \textbf{方向}：严格遵循\textbf{右手螺旋定则}（右手四指从 $\vec{r}$ 经小于 $180^\circ$ 的夹角转向 $\vec{v}$，大拇指的指向即为 $\vec{L}$ 的方向，它始终垂直于 $\vec{r}$ 与 $\vec{v}$ 构成的瞬时运动平面）。
+\item \textbf{特例（圆周运动）}：当质点在半径为 $R$ 的圆周上运动时，位置矢量与速度方向始终正交垂直（$\theta = \pi/2$）。由于线速度与角速度满足 $v = \omega R$，此时角动量的大小可极大化简为：
+ \(L = mvR = m\omega R^2\) 
+\end{itemize}
+为了衡量外力对质点产生转动加速度的累积效应，定义外力 $\vec{F}$ 对同一参考点 $O$ 的\textbf{力矩（Torque）} $\vec{M}$ 为：
+ \(\vec{M} = \vec{r} \times \vec{F}\) 
+\textbf{大小}：$M = rF\sin\alpha = r_0 F$，其中 $\alpha$ 为 $\vec{r}$ 与 $\vec{F}$ 的夹角，$r_0 = r\sin\alpha$ 代表从原点 $O$ 到力的作用线的垂直距离（即\textbf{力臂}）。
+\end{definition}
+现在，我们尝试对质点的瞬时角动量表达式 $\vec{L} = \vec{r} \times \vec{p}$ 两边关于时间 $t$ 求一阶导数，应用微分的乘积法则展开：
+\[
+\frac{\mathrm{d}\vec{L}}{\mathrm{d}t} = \frac{\mathrm{d}(\vec{r} \times \vec{p})}{\mathrm{d}t} = \frac{\mathrm{d}\vec{r}}{\mathrm{d}t} \times \vec{p} + \vec{r} \times \frac{\mathrm{d}\vec{p}}{\mathrm{d}t}= \vec{v} \times (m\vec{v})+ \vec{r} \times \vec{F} = \vec{r} \times \vec{F}=\vec{M}
+\]
+这就是\textbf{质点的角动量定理（微分形式）}：质点对某一固定参考点的角动量随时间的变化率，严格等于质点所受的合外力对同一参考点的力矩。
+\textbf{积分形式}：在时间区间 $t_1 \to t_2$ 内两边施加定积分，可得角动量定理的冲量矩形式 \(\vec{L}_2 - \vec{L}_1 = \int_{t_1}^{t_2} \vec{M}\mathrm{d}t\) 
+当面对由 $n$ 个质点组成的系统时，整个质点系的总角动量定义为各个质点角动量的矢量和：
+\[
+\vec{L} = \sum_{i=1}^{n} \vec{L}_i = \sum_{i=1}^{n} (\vec{r}_i \times \vec{p}_i)
+\]
+对上式关于时间 $t$ 求导，并代入每个个体的受力分析。第 $i$ 个质点受到的力可以分为系统外力 $\vec{F}_i$ 与系统内力 $\vec{f}_{\text{内}i}$。利用单质点推导结果：
+\[
+\frac{\mathrm{d}\vec{L}}{\mathrm{d}t} = \sum_{i=1}^{n} \left( \vec{r}_i \times \frac{\mathrm{d}\vec{p}_i}{\mathrm{d}t} \right) = \sum_{i=1}^{n} \vec{r}_i \times (\vec{F}_i + \vec{f}_{\text{内}i}) = \sum_{i=1}^{n} \vec{r}_i \times \vec{F}_i + \sum_{i=1}^{n} \vec{r}_i \times \vec{f}_{\text{内}i}
+\]
+\begin{note}
+以系统内任意两个质点 $m_1$ 和 $m_2$ 组成的配对为例。它们之间的相互作用力分别为 $\vec{f}_1$（$m_2$ 对 $m_1$ 的力）和 $\vec{f}_2$（$m_1$ 对 $m_2$ 的力），这对内力大小相等、方向相反，且共线（沿两质点的连线方向），即 $\vec{f}_1 = -\vec{f}_2$。这两力对原点 $O$ 构成的成对内力矩之和为：
+\[
+\vec{M}_{\text{内对}} = \vec{r}_1 \times \vec{f}_1 + \vec{r}_2 \times \vec{f}_2 = \vec{r}_1 \times (-\vec{f}_2) + \vec{r}_2 \times \vec{f}_2 = (\vec{r}_2 - \vec{r}_1) \times \vec{f}_2
+\]
+定义 $\vec{r}_{21} = \vec{r}_2 - \vec{r}_1$ 为 $m_2$ 相对 $m_1$ 的相对位置矢量。则成对内力矩化为：
+ \(\vec{M}_{\text{内对}} = \vec{r}_{21} \times \vec{f}_2\) 
+内力 $\vec{f}_2$ 的作用线严格沿着两质点的连线方向，内力矢量 $\vec{f}_2$ 与相对位矢 $\vec{r}_{21}$ 平行。平行向量的叉积必然为零：
+\[
+\vec{r}_{21} \times \vec{f}_2 \equiv 0 \implies \sum_{i=1}^{n} \vec{r}_i \times \vec{f}_{\text{内}i} = 0
+\]
+\end{note}
+质点系的角动量微分方程为：
+ \(\frac{\mathrm{d}\vec{L}}{\mathrm{d}t} = \sum_{i=1}^{n} \vec{r}_i \times \vec{F}_i = \vec{M}_{\text{外}}\) 
+
+\begin{theorem}[质点系角动量定理与角动量守恒]
+ 质点系对某一固定参考点的总角动量随时间的变化率，严格等于系统所受的所有\textbf{合外力矩}的矢量和。当系统所受合外力对某一固定参考点的力矩之矢量和始终为零时，质点或质点系对该参考点的总角动量将保持恒定不变。
+\[
+\text{当 } \vec{M}_{\text{外}} = \sum_{i=1}^{n} \vec{r}_i \times \vec{F}_i = 0 \text{ 时，} \vec{L} = \text{恒矢量}
+\]
+\begin{itemize}
+\item \textbf{角动量守恒与动量守恒的独立性}：合外力为零（动量守恒）不代表合外力矩为零；反之，合外力矩为零（角动量守恒）也不代表合外力为零。典型的例子如有心力场（如天体万有引力）：卫星受到的引力不为零（动量不守恒），但由于引力线始终穿过心体原点，力臂 $r_0=0$ 导致引力矩 $\vec{M} \equiv 0$，因此行星绕恒星运动时角动量严格守恒。
+\item \textbf{分量守恒性}：若系统受到的总外力矩不为零，但在某个特定轴向（如 $z$ 轴）上的分量 $M_{z} = 0$，则系统在该特定轴向上的角动量分量 $L_z$ 依然守恒。这在处理固定轴旋转的刚体或陀螺问题时具有决定性的应用价值。
+\end{itemize}
+\end{theorem}
+
+\begin{exercise}
+在光滑的水平桌面上有了一小孔 $O$，一细绳穿过小孔，其一端系一质量为 $m$ 的小球放在桌面上，另一端用手缓慢下拉细绳。开始时小球绕孔做圆周运动，轨道半径为 $r_1$，速率为 $v_1$。当通过拉绳使小球的运动半径变为 $r_2$ 时，求此时小球的速率 $v_2$。
+\end{exercise}
+\begin{solution}
+根据力矩的矢量定义式 $\vec{M} = \vec{r} \times \vec{F}$，由于两矢量共线（夹角 $\alpha = 180^\circ$），其叉积恒为零：
+ \(\vec{M}_{\text{外}} = \vec{r} \times \vec{f}_{\text{拉}} \equiv 0\) 根据质点的角动量定理，由于小球对参考点 $O$ 所受的合外力矩始终为零，小球在绕孔运动的全过程中，对小孔 $O$ 的角动量严格守恒。根据初末状态角动量大小相等（$L_2 = L_1$），直接列出状态方程：
+ \(r_1 m v_1 = r_2 m v_2 \implies \boxed{v_2 = \frac{r_1}{r_2} v_1}\) 
+\end{solution}
+
+\begin{exercise}
+一半径为 $R$ 的光滑圆环置于竖直平面内，一质量为 $m$ 的小球穿在圆环上，并可在圆环上滑动。小球开始时静止于圆环上的点 $A$（该点在通过环心 $O$ 的水平面上），然后从 $A$ 点开始下滑。设小球与圆环间的摩擦力略去不计，试运用\textbf{角动量定理}求小球滑到点 $B$ 时（此时其位置矢量与水平方向的夹角为 $\theta$）对环心 $O$ 的角动量和角速度。
+\end{exercise}
+\begin{solution}
+由于圆环光滑，支持力方向严格沿着半径方向指向圆心（或背离圆心）。因此，支持力与小球的位置矢量 $\vec{r}$ 始终共线。根据力矩定义，支持力对圆心 $O$ 的力矩恒为零：$\vec{M}_{F_{\text{N}}} = \vec{r} \times \vec{F}_{\text{N}} \equiv 0$，根据右手螺旋定则，重力企图使小球绕圆心 $O$ 顺时针旋转，其重力矩的方向垂直纸面向里（标量上记为正方向，以配合角位移的顺时针累积）。重力矩的大小为：
+ \(M = mgR\sin(90^\circ - \theta) = mgR\cos\theta\) 根据质点的角动量定理，系统所受的合外力矩等于角动量的时间变化率：
+ \(M = \frac{\mathrm{d}L}{\mathrm{d}t} \implies mgR\cos\theta = \frac{\mathrm{d}L}{\mathrm{d}t}\) 
+由于方程中自变量为时间 $t$，而力矩是角度 $\theta$ 的函数，无法直接积分。我们将对时间 $t$ 的微分变换为对角度 $\theta$ 的微分：
+ \(\frac{\mathrm{d}L}{\mathrm{d}t} = \frac{\mathrm{d}L}{\mathrm{d}\theta} \frac{\mathrm{d}\theta}{\mathrm{d}t} = \omega \frac{\mathrm{d}L}{\mathrm{d}\theta}\) 
+（其中 $\omega = \frac{\mathrm{d}\theta}{\mathrm{d}t}$ 为小球绕圆心转动的瞬时角速度）。同时，小球在半径为 $R$ 的圆周上运动满足：$L = mR^2\omega \implies \omega = \frac{L}{mR^2}$。代入：
+\[
+mgR\cos\theta = \frac{L}{mR^2} \frac{\mathrm{d}L}{\mathrm{d}\theta} \implies m^2gR^3\cos\theta\mathrm{d}\theta = L\mathrm{d}L
+\]小球初始在水平点 $A$ 处静止释放，即初状态 $\theta = 0$ 时，初角动量 $L = 0$。当小球滑到点 $B$ 时，角位置为 $\theta$，角动量增至 $L$。两边加上积分号进行定积分：
+\[
+\int_{0}^{\theta} m^2gR^3\cos\theta' \mathrm{d}\theta' = \int_{0}^{L} L'\mathrm{d}L'
+\]
+\[
+m^2gR^3\sin\theta' \Big|_0^\theta = \frac{1}{2}L'^2 \Big|_0^L \implies m^2gR^3\sin\theta = \frac{1}{2}L^2
+\]
+由此反解出小球在点 $B$ 处的**瞬时角动量大小 $L= m\sqrt{2gR^3\sin\theta}$，接着，利用角动量与角速度的线性映射关系 $\omega = \frac{L}{mR^2}$：
+\[
+\omega = \frac{m\sqrt{2gR^3\sin\theta}}{mR^2} = \sqrt{\frac{2gR^3\sin\theta}{R^4}} = \boxed{\sqrt{\frac{2g\sin\theta}{R}}}
+\]
+\end{solution}
+
+\begin{exercise}[2010级期末：地球绕太阳圆周运动的轨道角动量]
+地球质量为 \(m\)，太阳质量为 \(M\)，地心与日心距离为 \(R\)，引力常量为 \(G\)。把地球绕太阳的运动近似看作圆周运动，求地球相对太阳中心的轨道角动量大小 \(L\)。
+\end{exercise}
+\begin{solution}
+ \(\frac{GMm}{R^2}=\frac{mv^2}{R} \implies v=\sqrt{\frac{GM}{R}},~~L=mR\sqrt{\frac{GM}{R}} =m\sqrt{GMR}.\) 
+\end{solution}
+
+
+\begin{exercise}[2003级期末：光滑球面下滑时的加速度]
+质量为 \(m\) 的质点置于固定光滑球面的顶点 \(A\)，由静止开始下滑。到达球面上 \(B\) 点时，半径 \(OB\) 与竖直方向夹角为 \(\theta\)。求此时质点加速度的大小。
+\end{exercise}
+
+\begin{solution}
+曲面运动的加速度要拆成切向和法向两部分。切向加速度由重力沿切线方向的分量给出；法向加速度由此时速率决定，速率则由机械能守恒求出。
+ \(a_\tau=g\sin\theta,~a_n=\frac{v^2}{R}.\) 
+从顶点滑到 \(B\) 点，下降高度为
+ \(h=R(1-\cos\theta).\) 
+由机械能守恒，
+ \(\frac12 mv^2=mgR(1-\cos\theta) \implies v^2=2gR(1-\cos\theta).\) 
+于是
+ \(a_n=\frac{v^2}{R}=2g(1-\cos\theta).\) 
+切向与法向互相垂直，所以总加速度大小为
+ \(a=\sqrt{a_\tau^2+a_n^2} =\sqrt{g^2\sin^2\theta+4g^2(1-\cos\theta)^2}.\) 
+\end{solution}
+
+
+\begin{exercise}[2003级期末：拉绳缩短半径后的角速度]
+质量为 \(\SI{0.05}{kg}\) 的小块置于光滑水平桌面上，细绳一端连小块，另一端穿过桌面中心小孔。小块原来以 \(\SI{3}{rad/s}\) 的角速度在半径 \(\SI{0.2}{m}\) 的圆周上转动；现将绳从小孔缓慢下拉，使半径减为 \(\SI{0.1}{m}\)。求新的角速度。
+\end{exercise}
+\begin{solution}
+拉力始终沿半径方向，通过小孔，对小孔的力矩为零，所以绕小孔的角动量守恒。注意这里守恒的是 \(L=mr^2\omega\)，不是 \(r\omega\)。
+\[
+mr_1^2\omega_1=mr_2^2\omega_2,~~\omega_2=\omega_1\left(\frac{r_1}{r_2}\right)^2
+=3\left(\frac{0.2}{0.1}\right)^2
+=\SI{12}{rad/s}.
+\]
+\end{solution}
+
+\begin{exercise}[2004级期末：两钢球缩短转动半径后的角速度]
+质量相等的钢球 \(A,B\) 被绳牵着，以 \(\omega_0=\SI{4}{rad/s}\) 的角速度绕竖直轴转动，二球与轴的距离均为 \(r_1=\SI{15}{cm}\)。现把轴上环 \(C\) 下移，使两球离轴距离缩减为 \(r_2=\SI{5}{cm}\)。求钢球新的角速度。
+\end{exercise}
+\begin{solution}
+对竖直轴而言，绳的拉力通过轴线或成对对称，系统外力矩可忽略，所以两球绕竖直轴的总角动量守恒。
+ \(2mr_1^2\omega_0=2mr_2^2\omega,~~~ \omega=\omega_0\left(\frac{r_1}{r_2}\right)^2 =4\left(\frac{15}{5}\right)^2 =\SI{36}{rad/s}.\) 
+\end{solution}
+
+\begin{exercise}[2004级期末：椭圆轨道远近点的角动量和动能]
+人造地球卫星到地球中心 \(O\) 的最大距离和最小距离分别为 \(R_A\) 和 \(R_B\)。设卫星在远地点 \(A\) 与近地点 \(B\) 的角动量分别为 \(L_A,L_B\)，动能分别为 \(E_{KA},E_{KB}\)。判断二者大小关系。
+\end{exercise}
+
+\begin{solution}
+卫星只受地球引力，引力始终指向 \(O\)，对 \(O\) 点力矩为零，所以绕 \(O\) 的角动量守恒。动能大小则要结合总机械能守恒和引力势能随距离的变化判断。
+ \(\sum M_O=0\implies L_A=L_B.\) 
+万有引力势能为$U=-\frac{GMm}{r}$，近地点 \(B\) 的 \(r\) 更小，所以$U_B<U_A$，同一条椭圆轨道上机械能 \(E=K+U\) 守恒，因此势能在近地点更低时，动能必须更大：$E_{KB}>E_{KA}$。
+\end{solution}
+
+
+\begin{exercise}[2005级期末：圆周路径上位置相关力做功]
+一质点坐标平面内作圆周运动，有一力
+ \(\vb*{F}=F_0(x\vb*{i}+y\vb*{j})\) 
+作用在质点上。质点从坐标原点 \(O\) 运动到 \((0,2R)\) 的过程中，求该力所做的功。
+\end{exercise}
+\begin{solution}
+力场\(\vb*{F}=F_0(x\vb*{i}+y\vb*{j})\) 恰好是一个梯度型力场。做功可直接写成线积分，并且只与初末两点的 \(x^2+y^2\) 有关。
+\[
+W=\int_C \vb*{F}\cdot\dd\vb*{r}
+=F_0\int_C (x\,\dd x+y\,\dd y)=\frac{F_0}{2}\left[(x^2+y^2)_{\text{末}}-(x^2+y^2)_{\text{初}}\right].
+\]
+初态为 \((0,0)\)，末态为 \((0,2R)\)，于是
+ \(W=\frac{F_0}{2}\left(4R^2-0\right)=2F_0R^2.\) 
+\end{solution}
+
+\begin{exercise}[2005级期末：万有引力做功只看距离变化]
+质量分别为 \(m_1,m_2\) 的两质点从相距 \(a\) 变到相距 \(b\)。求二者间万有引力所做的功。
+\end{exercise}
+\begin{solution}
+万有引力是保守力，所以做功可由引力势能变化给出。
+\[
+U(r)=-\frac{Gm_1m_2}{r},\qquad
+W_g=-\Delta U=-\left[-\frac{Gm_1m_2}{b}+\frac{Gm_1m_2}{a}\right]
+=Gm_1m_2\left(\frac1b-\frac1a\right).
+\]
+\end{solution}

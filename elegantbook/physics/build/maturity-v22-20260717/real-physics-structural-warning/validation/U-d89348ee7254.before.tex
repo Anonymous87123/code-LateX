@@ -1,0 +1,93 @@
+
+\section{薄膜干涉公式与附加光程差}
+
+\begin{center}
+\includegraphics[width=0.5\linewidth]{pdf-exercises/5.png}
+\end{center}
+
+\begin{theorem}[薄膜干涉公式]
+\textbf{物理模型：}平行薄膜厚度为 \(d\)，折射率为 \(n_2\)，置于折射率分别为 \(n_1,n_3\) 的两种介质之间；入射光在上表面的入射角为 \(i\)，在膜内的折射角为 \(\gamma\)。对反射光，先看由几何路程和介质折算出的光程差，再看反射时是否有半波损失。两束参与反射干涉的主光线可记为 \(b_1,b_2\)
+\begin{align*}
+\delta_1&=n_2\frac{2d}{\cos\gamma}-n_1\left(2d\frac{\sin\gamma}{\cos\gamma}\sin i\right)=n_2\frac{2d}{\cos\gamma}-2dn_2\frac{\sin^2\gamma}{\cos\gamma}=2dn_2\cos\gamma=2dn_2\sqrt{1-\sin^2\gamma}.\\
+&=2dn_2\sqrt{1-\left(\frac{n_1}{n_2}\sin i\right)^2}=2d\sqrt{n_2^2-n_1^2\sin^2 i}
+\end{align*}
+附加光程差 \(\delta_2\) 只由两次反射是否翻相决定：
+\begin{itemize}
+    \item 若 \(n_1<n_2<n_3\) 或 \(n_1>n_2>n_3\)，两束光在反射时经历的半波损失次数相同，\(\delta_2=0\)；
+    \item 若 \(n_1<n_2>n_3\) 或 \(n_1>n_2<n_3\)，两束光中恰有一束发生半波损失，\(\delta_2=\lambda/2\)。
+\end{itemize}
+因此，反射光的总光程差为
+\[
+\delta=2d\sqrt{n_2^2-n_1^2\sin^2 i}+\delta_2.
+\]
+若题目问反射光的明暗条件，则当$\delta_2=0$时，亮纹$k$从$0$开始：
+\[
+\delta=k\lambda\quad(\text{亮纹}),\qquad
+\delta=\left(k+\frac12\right)\lambda\quad(\text{暗纹}).
+\]
+若题目问透射光，则透射光与反射光刚好相反：反射光加强时，透射光减弱；反射光减弱时，透射光加强。\[|\delta_{\text{反射光}} - \delta_{\text{透射光}}| = \frac{\lambda}{2}\] 反射光程差与透射光程差相差 $\lambda/2$（或 $\pi$）。
+\end{theorem}
+
+\begin{exercise}[2008级期末：空气中透明薄膜反射加强的最小厚度]
+一束波长为 \(\lambda\) 的单色光由空气垂直入射到折射率为 \(n\) 的透明薄膜上，透明薄膜放在空气中。要使反射光得到干涉加强，求薄膜的最小非零厚度。
+\end{exercise}
+
+\begin{solution}
+结构是“空气--薄膜--空气”。上表面反射从低折射率到高折射率，有半波损失；下表面反射从高折射率到低折射率，没有半波损失。因此两束反射光之间有一次半波损失。正入射时几何光程差为 \(2nd\)。若把一次半波损失写成附加光程 \(\lambda/2\)，反射加强条件为
+ \[2nd+\frac{\lambda}{2}=k\lambda,\qquad k=1 \implies d_{\min}=\frac{\lambda}{4n}.\] 
+\end{solution}
+
+\begin{definition}[增透膜与增反膜]
+    “增透膜”目标是让\textbf{反射光尽量相消}，从而把更多光送进透射方向。若希望某一目标波长的反射尽量弱，就让反射光相消。例如：若某一薄膜用于目标波长 \(\lambda\) 的增透设计，且两束主要反射光的反射相位突变相同，求薄膜折射率为 \(n\) 时的最小非零厚度。要让反射方向相消，最小非零厚度满足 \(2nd=\frac{\lambda}{2}\implies d_{\min}=\frac{\lambda}{4n}.\) 
+\end{definition}
+
+
+\begin{exercise}[油膜上下观察时为什么会看到不同颜色]
+一层折射率 \(n_1=1.20\) 的油膜浮在海水表面，海水折射率 \(n_2=1.30\)。若太阳在头顶正上方，某处油膜厚度 \(d=\SI{460}{nm}\)。问从空中向下看时呈什么颜色；若潜水员从水下向上看，又会看到什么主颜色。
+\end{exercise}
+\begin{solution}
+先算
+ \(2n_1d=2\times1.20\times460\,\si{nm}=1104\,\si{nm}.\) 
+空气--油膜和油膜--海水两次反射都发生在低折射率到高折射率界面，两束反射光没有相对半波损失。从空中看反射增强时
+ \(2n_1d=k\lambda \implies \lambda=\frac{1104}{k}\,\si{nm}.\) 
+试可见光范围，最显著的可见解为
+ \(k=2\Rightarrow \lambda=552\,\si{nm},\) 
+对应绿光。
+
+从水下看的是透射光，强弱与反射光互补。透射增强可写成
+ \(2n_1d+\frac{\lambda}{2}=k\lambda \implies \lambda=\frac{1104}{k-\frac12}\,\si{nm}.\) 
+试可见光范围得
+ \(k=2\Rightarrow \lambda=736\,\si{nm},\qquad k=3\Rightarrow \lambda=441.6\,\si{nm}.\) 
+其中主显著可见颜色可取红光。
+
+所以从空中向下看主呈绿色，从水下向上看主呈红色。最容易错的是把上下观察都按反射题处理；先问眼睛接收到的是哪一路光，明暗条件才不会套反。
+\end{solution}
+
+\begin{definition}[等厚干涉]
+当干涉条纹的形状取决于“薄膜上厚度相同的点的轨迹”时，得到的就是\textbf{等厚干涉}。
+若入射角保持不变，则薄膜干涉中的光程差主要由厚度 \(d\) 决定。于是：
+\begin{itemize}
+ \item 厚度相同的点，光程差相同；
+ \item 光程差相同的点，会落在同一条明纹或暗纹上。
+\end{itemize}
+这就是为什么“等厚线长成什么样，条纹就长成什么样”。若等厚线是直线，条纹就是直线；若等厚线是圆，条纹就是圆环。
+\end{definition}
+
+\begin{exercise}[圆形油膜条纹为什么会一圈圈向中心数]
+在平面玻璃片上放一油滴并展开成圆形油膜。已知单色光波长 \(\lambda=\SI{600}{nm}\)，玻璃折射率 \(n_1=1.50\)，油膜折射率 \(n_2=1.20\)，油膜中心最高点厚度 \(h=8.0\times10^2\,\si{nm}\)。问：反射观察时条纹如何分布，可见明纹有几条，各明纹处膜厚各是多少；若油膜继续展开，条纹怎样变化？
+\end{exercise}
+
+\begin{solution}
+由油膜厚度从中心向边缘单调减小可知，\textbf{相同厚度对应同心圆}，条纹自然是一圈圈的圆环。反射明纹条件为 \(2n_2d=k\lambda\)，所以明纹对应的膜厚为
+ \(d_k=\frac{k\times 600}{2\times1.20}\,\si{nm}=250k\,\si{nm}.\) 
+于是
+\[
+d_0=0,\quad d_1=\SI{250}{nm},\quad d_2=\SI{500}{nm},\quad d_3=\SI{750}{nm},\quad d_4=\SI{1000}{nm}.
+\]
+由于油膜中心最高厚度只有
+ \(h=\SI{800}{nm},\) 
+所以能实际出现的明纹厚度只能满足 \(d_k\le h\)。因此可见明纹共有
+ \(k=0,1,2,3\) 
+这 \(4\) 条。对应膜厚分别为
+ \(0,\ \SI{250}{nm},\ \SI{500}{nm},\ \SI{750}{nm}.\) 
+\end{solution}

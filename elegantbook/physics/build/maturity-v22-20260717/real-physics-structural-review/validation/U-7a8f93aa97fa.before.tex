@@ -1,0 +1,107 @@
+
+\section{相位突变与半波损失}
+\begin{note}
+固定端反射通常对应波节，自由端反射通常对应波腹。
+\end{note}
+\begin{definition}[反射点为波节还是波腹？半波损失]
+当波从\textbf{波疏介质}垂直入射到\textbf{波密介质}，再反射回波疏介质时，反射点形成波节。此时入射波与反射波在边界处总是反相，所以反射波相当于多了一个\(\pi \iff \frac{\lambda}{2}\)。也就是说，相位突变 \(\pi\) 等效于附加了 \(\lambda/2\) 的波程差，这就叫\textbf{半波损失}。反过来，当波从\textbf{波密介质}垂直入射到\textbf{波疏介质}并被反射回去时，反射点形成波腹，入射波和反射波在边界处同相，因此\textbf{不发生相位突变}，也就没有半波损失。
+\end{definition}
+
+\begin{exercise}[反射后再与另一列波相遇时怎样先记半波损失]
+两列相干波 \(A,B\) 的波长都为 \(\lambda\)。波 \(A\) 经过 \(O_1\) 后在点 \(m\) 处反射，再传播到点 \(P\)；波 \(B\) 从 \(O_2\) 直接传播到 \(P\)。已知 \(O_1m+mP=8\lambda\)、\(O_2P=3\lambda\)，反射处有半波损失，两源在 \(O_1,O_2\) 处的振动都为 \(y=A\cos \pi t\)。求两列波在 \(P\) 点的振动方程以及 \(P\) 点合振动。
+\end{exercise}
+\begin{solution}
+对波 \(A\)，总传播路程为 \(8\lambda\)，且反射时多出一项 \(\pi\)；对波 \(B\)，传播路程为 \(3\lambda\)，无额外相位突变。于是
+\[
+\begin{aligned}
+y_A(P,t)&=A\cos(\pi t-16\pi+\pi)=-A\cos\pi t,\\
+y_B(P,t)&=A\cos(\pi t-6\pi)=A\cos\pi t,\\
+y_P&=y_A+y_B=-A\cos\pi t+A\cos\pi t=0.
+\end{aligned}
+\]
+两列波在 \(P\) 点分别为 \(y_A=-A\cos\pi t\)、\(y_B=A\cos\pi t\)，合振动恒为 \(0\)。若漏掉半波损失，本题会被误判为同相加强；反射题要先判断这次反射是否翻相，再合并传播路程。
+\end{solution}
+
+\begin{exercise}[已知一列行波时怎样补出形成驻波的反向波]
+弦线上有一简谐波
+\[
+y_1=2.0\times10^{-2}\cos\!\left[2\pi\left(\frac{t}{0.02}-\frac{x}{20}\right)+\frac{\pi}{3}\right]\ (\si{SI}).
+\]
+若要在这条弦上形成驻波，并要求 \(x=0\) 处为波节，求还应叠加哪一列简谐波。
+\end{exercise}
+
+\begin{solution}
+设所求反向波为
+\[
+y_2=2.0\times10^{-2}\cos\!\left[2\pi\left(\frac{t}{0.02}+\frac{x}{20}\right)+\varphi\right].
+\]
+在 \(x=0\) 处，已知波的相位为 \(2\pi t/0.02+\pi/3\)，补充波的相位为 \(2\pi t/0.02+\varphi\)。端点为波节要求两者任意时刻相互抵消，因此两相位相差 \(\pi\)：
+ \(\varphi-\frac{\pi}{3}=\pi \implies \varphi=\frac{4\pi}{3}\pmod{2\pi}.\) 
+所求简谐波可写为
+\[
+y_2=2.0\times10^{-2}\cos\!\left[2\pi\left(\frac{t}{0.02}+\frac{x}{20}\right)+\frac{4\pi}{3}\right].
+\]
+\end{solution}
+
+\begin{exercise}[2005级期末：补出使 \(x=0\) 为波腹的反向波]
+弦线上有一简谐波
+\[
+y_1=2.0\times10^{-2}\cos\!\left[100\pi\left(t+\frac{x}{20}\right)-\frac{4\pi}{3}\right]\ (\si{SI}).
+\]
+为了在此弦线上形成驻波，并且在 \(x=0\) 处为波腹，还应叠加哪一列简谐波？
+\end{exercise}
+
+\begin{solution}
+设补充波为
+ \(y_2=2.0\times10^{-2}\cos\!\left[100\pi\left(t-\frac{x}{20}\right)+\varphi\right].\) 
+在 \(x=0\) 处，已知波相位为 \(100\pi t-\dfrac{4\pi}{3}\)。要形成波腹，补充波在 \(x=0\) 处应与它同相，因此 \(\varphi=-\dfrac{4\pi}{3}\)。所求波可写为
+\[
+y_2=2.0\times10^{-2}\cos\!\left[100\pi\left(t-\frac{x}{20}\right)-\frac{4\pi}{3}\right]\ (\si{SI}).
+\]
+\end{solution}
+
+\begin{exercise}[波阻更大时反射波为什么要先带一个 \(\pi\)]
+一列沿 \(x\) 轴正向传播的简谐波为
+\[
+y_1=10^{-3}\cos\!\left[200\pi\left(t-\frac{x}{200}\right)\right]\ (\si{m}).
+\]
+设介质 \(1\) 与介质 \(2\) 的分界点为 \(A\)，且 \(OA=L=\SI{2.25}{m}\)。已知介质 \(2\) 的波阻大于介质 \(1\)，反射波与入射波振幅相等。求：1. 反射波方程；2. 驻波方程；3. \(OA\) 之间波节与波腹的位置坐标。
+\end{exercise}
+
+\begin{solution}
+波阻更大时，\(A\) 点相当于波节，故反射波在 \(x=L\) 处反相。设
+\[
+y_2=10^{-3}\cos\!\left[200\pi\left(t+\frac{x}{200}\right)+\varphi_0\right].
+\]
+由 \(y_1(L,t)+y_2(L,t)=0\) 得 \(\varphi_0=\pi-2kL=\frac{\pi}{2}\)（\(k=\pi\)），故
+\[
+y_2=10^{-3}\cos\!\left[200\pi\left(t+\frac{x}{200}\right)+\frac{\pi}{2}\right]\ (\si{m}),
+y=2\times10^{-3}\cos\!\left(200\pi t+\frac{\pi}{4}\right)\cos\!\left(\pi x+\frac{\pi}{4}\right).
+\]
+其振幅为
+\[
+A(x)=2\times10^{-3}\left|\cos\!\left(\pi x+\frac{\pi}{4}\right)\right|.
+\]
+令 \(A(x)=0\)，得 \(\cos\!\left(\pi x+\frac{\pi}{4}\right)=0\Rightarrow x=n+\frac14\)，为波节；
+令 \(A(x)\) 取最大值，得 \(\left|\cos\!\left(\pi x+\frac{\pi}{4}\right)\right|=1\Rightarrow x=n-\frac14\)，为波腹。
+故 \(0\le x\le2.25\) 内，波节为 \(x=\SI{0.25}{m},\SI{1.25}{m},\SI{2.25}{m}\)，波腹为 \(x=\SI{0.75}{m},\SI{1.75}{m}\)。
+\end{solution}
+
+\begin{exercise}[2008级期末：固定端反射形成驻波表达式]
+在绳上传播的入射波为
+ \(y_1=A\cos\left(\omega t+\frac{2\pi x}{\lambda}\right),\) 
+入射波在 \(x=0\) 处反射，反射端为固定端。设反射波不衰减，求驻波表达式。
+\end{exercise}
+\begin{solution}
+入射波在 \(x=0\) 处引起的振动为 \(y_1(0,t)=A\cos\omega t\)，固定端反射要求反射波在端点处为 \(y_2(0,t)=A\cos(\omega t+\pi)\)。
+反射波沿 \(+x\) 方向传播，因此可写成
+ \(y_2=A\cos\left(\omega t-\frac{2\pi x}{\lambda}+\pi\right).\) 
+两列波叠加后
+\[
+\begin{aligned}
+y=y_1+y_2=A\cos\left(\omega t+\frac{2\pi x}{\lambda}\right)
++A\cos\left(\omega t-\frac{2\pi x}{\lambda}+\pi\right)=2A\cos\left(\omega t+\frac{\pi}{2}\right)
+\cos\left(\frac{2\pi x}{\lambda}-\frac{\pi}{2}\right).
+\end{aligned}
+\]
+\end{solution}

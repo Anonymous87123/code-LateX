@@ -1,0 +1,81 @@
+
+
+\section{波的叠加，干涉}
+
+\begin{definition}[波的叠加原理]
+在几列波相遇的区域内，任一点的振动位移，等于各列波单独存在时在该点所引起位移的矢量和。
+\begin{itemize}
+ \item 相遇时，位移可以直接相加；
+ \item 相遇之后，各列波仍保持原来的频率、波长、振幅和传播方向继续前进，好像没有彼此永久“缠住”一样。
+\end{itemize}
+\end{definition}
+
+\begin{definition}[波的干涉]
+频率相同、振动方向平行、相位相同或相位差恒定的两列波相遇时，使某些地方振动始终加强，而使另一些地方振动始终减弱的现象。并不是任意相遇的两列波都能产生稳定的干涉图像。要使空间中的振动呈现稳定的强弱不均匀分布，两个波源必须严格满足以下三项相干条件：
+\begin{enumerate}
+\item 波的频率严格相等 ($\omega_1 = \omega_2$)；
+\item 波的振动方向严格相同（具有相同的偏振各向同性）；
+\item 具有恒定不变的初始相位差 ($\phi_2 - \phi_1 = \text{常数}$)。
+\end{enumerate}
+两列波单独传到点 $P$ 时引起的分振动方程分别改写为：$$y_{1P} = A_1 \cos\left(\omega t + \phi_1 - 2\pi \frac{r_1}{\lambda}\right),~y_{2P} = A_2 \cos\left(\omega t + \phi_2 - 2\pi \frac{r_2}{\lambda}\right)$$
+决定点 $P$ 运动剧烈程度的合振幅公式为：$$\boxed{A = \sqrt{A_1^2 + A_2^2 + 2A_1 A_2 \cos\Delta\phi}}$$ $\Delta\phi$，代表了两列波传到点 $P$ 时的瞬时相位差$$\Delta\phi = (\phi_2 - \phi_1) - \frac{2\pi}{\lambda}(r_2 - r_1)= \frac{2\pi}{\lambda}(r_2 - r_1) + (\phi_1 - \phi_2)$$
+\begin{enumerate}
+    \item 若传到点 $P$ 的相位差满足全圆周的整数倍，即两波的步调完全一致，波峰与波峰、波谷与波谷在空间完美重叠：$$\Delta\phi = \pm 2k\pi \qquad (k = 0,1,2,\cdots)$$此时 $\cos\Delta\phi = 1$，合振幅达到理论最大极限值：$$\boxed{A = A_1 + A_2}$$
+    \item 若传到点 $P$ 的相位差满足半圆周的奇数倍，即两波的步调完全相反，一列波的波峰恰好撞上另一列波的波谷：$$\Delta\phi = \pm (2k + 1)\pi \qquad (k = 0,1,2,\cdots)$$此时 $\cos\Delta\phi = -1$，合振幅被削减到理论最小极限值：$$\boxed{A = |A_1 - A_2|}$$
+\end{enumerate}
+初相位完全相同 ($\phi_1 = \phi_2$)时，定义 $\delta = r_2 - r_1$ 为两列波传到点 $P$ 的波程差（Path Difference）：$$\Delta\phi = -2\pi \frac{\delta}{\lambda}$$
+ \begin{enumerate}
+    \item 若波程差严格等于波长的整数倍（或者是半波长的偶数倍）：$$\boxed{\delta = \pm k\lambda = \pm 2k \frac{\lambda}{2} \qquad (k = 0,1,2,\cdots)}$$则点 $P$ 处的振动始终加强，合振幅为 $A = A_1 + A_2$。在光学中表现为明亮的相长干涉条纹。
+    \item 若波程差严格等于半波长的奇数倍：$$\boxed{\delta = \pm (2k + 1)\frac{\lambda}{2} \qquad (k = 0,1,2,\cdots)}$$则点 $P$ 处的振动始终减弱，合振幅被极限淡化为 $A = |A_1 - A_2|$。若此时两个波源强度刚好相等 ($A_1 = A_2$)，则点 $P$ 处的质元将完全静止不动，在光学中表现为绝对黑暗的相消干涉条纹。
+\end{enumerate}
+\end{definition}
+
+\begin{exercise}[两相干波源在点 \(P\) 处为什么会完全相消]
+同一介质中有两相干波源 \(A,B\)，振幅都为 \(\SI{5}{cm}\)，频率都为 \(\SI{100}{Hz}\)，波速为 \(\SI{10}{m/s}\)。已知 \(AP=\SI{15}{m}\)、\(BP=\SI{25}{m}\)，且当 \(A\) 为波峰时 \(B\) 恰为波谷。求点 \(P\) 的干涉结果。
+\end{exercise}
+
+\begin{solution}
+由题目给出的初始反相和两条传播路程，可把初相差和传播相位差放在同一个相位差里：
+\[
+\lambda=\frac{u}{\nu},\qquad
+\lambda=\frac{10}{100}=\SI{0.10}{m},\qquad
+\Delta\varphi_P=\Delta\varphi_0-\frac{2\pi}{\lambda}(AP-BP).
+\]
+这里 \(\Delta\varphi_0=\pi\)，且 \(AP-BP=15-25=-\SI{10}{m}=-100\lambda\)，所以
+\[
+\Delta\varphi_P
+=\pi-\frac{2\pi}{\lambda}(-10)
+=\pi+200\pi
+=201\pi.
+\]
+这仍然是奇数个 \(\pi\)，两列波在 \(P\) 点始终反相。又因为两源振幅相等，故 \(A_P=\abs{A_1-A_2}=0\)。
+点 \(P\) 处始终相消，合振幅为 \(0\)，质点保持静止。路程差虽然很大，但恰好是整数个波长，只在相位中贡献整数个 \(2\pi\)；本题真正改变干涉结果的是两源初始反相。
+\end{solution}
+
+\begin{exercise}[两相干波源连线上哪些位置始终加强]
+两相干波源 \(s_1,s_2\) 相距 \(l=\SI{10}{m}\)，振幅都为 \(\SI{0.02}{m}\)，频率为 \(\SI{5}{Hz}\)，波速为 \(\SI{10}{m/s}\)，初相相同。求两源连线上振动加强的位置及其合振幅，并判断右侧延长线上合振动怎样。
+\end{exercise}
+
+\begin{solution}
+两源初相相同，振动加强就对应波程差为整数个波长。由波速和频率得 \(\lambda=\dfrac{10}{5}=\SI{2}{m}\)。
+设连线上一点距 \(s_1\) 为 \(x\)，则
+\[
+r_1=x,\qquad r_2=l-x=10-x,\qquad
+\abs{x-(10-x)}=2k
+\implies \abs{2x-10}=2k
+\implies x=5\pm k.
+\]
+再结合 \(0\le x\le 10\)，得
+ \(k=0,1,2,3,4,5 \implies x=0,1,2,3,4,5,6,7,8,9,10\ \si{m}.\) 
+由于两列波振幅相等且同相加强，这些位置的合振幅都为 \(A=2A_1=\SI{0.04}{m}\)。
+对右侧延长线上的任一点，两源到该点的路程差不随点的位置改变，而是恒为源间距 \(r_1-r_2=l=\SI{10}{m}=5\lambda\)，所以始终满足加强条件。两源连线上从 \(x=0\) 到 \(x=\SI{10}{m}\) 的整数米位置都振动加强，合振幅为 \(\SI{0.04}{m}\)；右侧延长线上也始终加强。
+\end{solution}
+
+\begin{exercise}[两相干波源有初相差时为什么左右延长线不一样]
+两相干波源 \(s_1,s_2\) 振幅相同，\(s_1\) 在左、\(s_2\) 在右，且 \(s_2\) 比 \(s_1\) 的初相超前 \(\pi/2\)。已知两源间距 \(l=\lambda/4\)。讨论两源连线左侧延长线与右侧延长线上的干涉情况。
+\end{exercise}
+\begin{solution}
+ \(\Delta\varphi=(\varphi_2-\varphi_1)-\frac{2\pi}{\lambda}(r_2-r_1).\) 
+在左侧延长线上，点 \(P\) 到右侧波源更远，\(r_2-r_1=l=\dfrac{\lambda}{4}\)，于是 \(\Delta\varphi=\dfrac{\pi}{2}-\dfrac{2\pi}{\lambda}\cdot\dfrac{\lambda}{4}=0\)，对应相长干涉，合振幅为 \(A=2A_1\)。在右侧延长线上，路程差符号反过来，\(r_2-r_1=-l=-\dfrac{\lambda}{4}\)，因此 \(\Delta\varphi=\dfrac{\pi}{2}-\dfrac{2\pi}{\lambda}\cdot\left(-\dfrac{\lambda}{4}\right)=\pi\)，对应相消干涉，合振幅为 \(A=0\)。
+所以左侧延长线上始终加强，右侧延长线上始终减弱到完全相消。
+\end{solution}

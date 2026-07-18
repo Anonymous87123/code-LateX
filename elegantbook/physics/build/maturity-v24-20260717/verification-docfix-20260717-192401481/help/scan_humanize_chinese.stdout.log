@@ -1,0 +1,21 @@
+usage: scan_humanize_chinese.py [-h]
+                                [--scene {ALL,AUTO,GENERAL,COURSE,MODELING,RESEARCH}]
+                                [--format {json,csv,text}] [--output OUTPUT]
+                                [--lexicon LEXICON] [--include-protected]
+                                [--include-excluded]
+                                paths [paths ...]
+
+定位中文学术文本中的模板词和句壳候选；不判断作者身份。
+
+positional arguments:
+  paths                 UTF-8 文本文件或目录
+
+options:
+  -h, --help            show this help message and exit
+  --scene {ALL,AUTO,GENERAL,COURSE,MODELING,RESEARCH}
+                        大小写不敏感；AUTO 扫描全部场景信号，GENERAL 只扫描通用信号
+  --format {json,csv,text}
+  --output OUTPUT       输出文件；省略时写到标准输出
+  --lexicon LEXICON     lexical-signals.json 路径
+  --include-protected   显示代码、数学、注释和引文中的受保护命中
+  --include-excluded    显示因技术上下文而豁免的命中

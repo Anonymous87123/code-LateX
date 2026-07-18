@@ -1,0 +1,123 @@
+
+\section{平面简谐波的波函数}
+在波动学中，如果一列波在传播过程中，介质中的各个质元均作同频率、同振幅的简谐运动，且其波阵面（波面）是彼此平行的平面，则称这列波为平面简谐波。为了描述连续介质中各个不同质元在不同时刻的整体运动图像，我们必须构建一个二元函数 $y = y(x,t)$，这被称为波函数（Wave Function），或称为波动方程。
+\begin{itemize}
+\item $y$ (因变量)：表示波线上任意质点在任一时刻 $t$ 相对其自身平衡位置的瞬时位移。
+\item $x$ (空间自变量)：表示波线上各个质点平衡位置的坐标（空间定位）。
+\item $t$ (时间自变量)：表示运动演入的瞬时时刻。
+\end{itemize}
+
+\begin{theorem}[相位差与波程差转换公式]
+波程差 $\Delta x$ 占整个波长 $\lambda$ 的比例有多大，其对应的相位差 $\Delta \phi$ 就占整个全圆周周角 $2\pi$ 弧度的多大比例。$$\frac{\Delta \phi}{2\pi}=\frac{\Delta x}{\lambda}\implies\boxed{\Delta \phi = 2\pi \frac{\Delta x}{\lambda}}$$值得记忆的还有$$\frac{\omega}{u} = \frac{2\pi \nu}{\lambda \nu} = \frac{2\pi}{\lambda}$$
+\end{theorem}
+
+\begin{exercise}[2007级期末：由相位落后量反推两点距离]
+\(A,B\) 是同一简谐波波线上相距小于波长的两点。已知 \(B\) 点振动相位比 \(A\) 点落后 \(\pi/3\)，波长 \(\lambda=\SI{3}{m}\)。求 \(A,B\) 两点间距离。
+\end{exercise}
+
+\begin{solution}
+相位差 \(\pi/3\) 是一个波长相位 \(2\pi\) 的 \(1/6\)，距离也就是 \(\lambda/6=\SI{0.5}{m}\)。若题目没有“小于波长”，还要考虑相差整数个波长的可能。
+\end{solution}
+
+\begin{theorem}[平面简谐波函数推导]
+已知参考点 $x_0$ 处的振动方程为：$y_0 = A \cos(\omega t + \phi)$。现求其右侧任意点 $P$ ($x > x_0$) 的振动方程。
+因为波向右传，右侧的点 $P$ 属于“下游”，这里有两种落后方式（落后多少多少时间之后才开始振动），计算的方法是相关点法，也就是最后一定是要代入参考点处的方程。要把在$x$处的时间还原为传到$P$处的时间再代入$P$处振动方程。
+\begin{itemize}
+\item 落后的相位大小 $\Delta \phi = \frac{2\pi}{\lambda}(x - x_0)$\[y_P = A \cos \left[ \omega t - \frac{2\pi}{\lambda}(x - x_0) + \phi \right]\]
+\item 落后的时间大小 $\Delta t = \frac{x - x_0}{u}$，所以\[y_P = A \cos \left[ \omega \left( t - \frac{x - x_0}{u} \right) + \phi \right]\]
+\item 落后的周期倍数（或波长比例）为 $\frac{x - x_0}{\lambda}$，因为每隔一个波长 $\lambda$，相位就滞后一个完整的 $2\pi$。所以：$$\boxed{y_P = A \cos \left[ 2\pi \left( \frac{t}{T} - \frac{x-x_0}{\lambda} \right) + \phi \right]}$$
+\end{itemize}
+如果参考点是原点有$$y_P = A \cos \left[ \omega t - \frac{2\pi}{\lambda}x + \phi \right]= A \cos \left[ \omega \left( t - \frac{x}{u} \right) + \phi_0 \right]=A \cos \left[ 2\pi \left( \frac{t}{T} - \frac{x}{\lambda} \right) + \phi_0 \right]$$
+\end{theorem}
+波函数 $y(x,t)$ 是一个典型的二元函数，其包含了空间与时间的双重解耦特征。我们可以通过控制变量法将其赋予以下三种明确的物理图像：
+\begin{enumerate}
+    \item 固定空间位置 $x = x_0$（质元的振动方程）$$y(x_0, t) = A \cos \left( \omega t - \frac{2\pi}{\lambda}x_0 + \phi_0 \right) = A \cos (\omega t + \Phi)$$
+    \item 固定瞬时时刻 $t = t_0$（特定时刻的波形图）$$y(x, t_0) = A \cos \left( \omega t_0 - \frac{2\pi}{\lambda}x + \phi_0 \right) = A \cos \left( -\frac{2\pi}{\lambda}x + \Phi' \right)$$这在几何上描绘了一条空间余弦曲线。它表明，在某一特定的瞬时时刻，介质中所有质点在空间轴上的位移分布轮廓，即通常所说的“波形图（Wave Profile）”。
+    \item 如果时间 $t$ 与空间 $x$ 同时变化，由于余弦函数的周期性，我们去追踪某一个特定的振动相位（例如波峰状态）。为了让该物理状态保持恒定，必须要求其余弦括号内部的整体相位保持恒定：$$\omega t - \frac{2\pi}{\lambda}x + \phi_0 = \text{常数}$$对上式两边关于时间 $t$ 求一阶微分导数：$$\omega - \frac{2\pi}{\lambda} \frac{\mathrm{d}x}{\mathrm{d}t} = 0 \implies \frac{\mathrm{d}x}{\mathrm{d}t} = \frac{\omega \lambda}{2\pi} = \nu \lambda = u$$因为 $\frac{\mathrm{d}x}{\mathrm{d}t}$ 代表了特定相位（等相面）在空间中推进的运动速度，因此波速 $u$ 在本质上也被称作相速度（Phase Velocity）。
+\end{enumerate}
+
+\begin{exercise}[2003级期末：由 \(P\) 点振动写负向传播波]
+一平面简谐波沿 \(Ox\) 轴负方向传播，波速大小为 \(u\)。点 \(P\) 位于 \(O\) 左侧，且 \(PO=L\)。若
+ \(y_P=A\cos(\omega t+\phi),\) 
+求：1. \(O\) 处质点的振动方程；2. 波动表达式；3. 与 \(P\) 处质点振动状态相同的点的位置。
+\end{exercise}
+
+\begin{solution}
+波沿 \(-x\) 方向传播，\(O\) 在 \(P\) 的右侧，所以同一振动状态先到达 \(O\)，再经过时间 \(L/u\) 到达 \(P\)。因此 \(O\) 点振动应比 \(P\) 点超前。由时间超前关系，\(O\) 点振动方程为 \(y_O=A\cos\left[\omega\left(t+\dfrac{L}{u}\right)+\phi\right]\)。
+取 \(O\) 为坐标原点，沿 \(-x\) 传播的波可写成
+\[
+y(x,t)=A\cos\left[\omega\left(t+\frac{x}{u}+\frac{L}{u}\right)+\phi\right]
+=A\cos\left[\omega\left(t+\frac{x+L}{u}\right)+\phi\right].
+\]
+代入 \(x=-L\) 即回到 \(y_P=A\cos(\omega t+\phi)\)。与 \(P\) 点同相需满足 \(\dfrac{\omega}{u}(x+L)=2k\pi\)。由于 \(\lambda=2\pi u/\omega\)，得到 \(x=-L+k\lambda=-L+k\dfrac{2\pi u}{\omega}\)，其中 \(k=0,\pm1,\pm2,\dots\)。
+沿 \(-x\) 传播的标准相位应含 \(+x/u\)，这和沿 \(+x\) 传播时的 \(-x/u\) 正好相反；只要抓住谁更早进入同一振动状态，\(L/u\) 的号就不容易写反。
+\end{solution}
+
+\begin{exercise}[2007级期末：声波进入另一介质时频率不变]
+一声波在空气中的波长为 \(\SI{0.25}{m}\)，传播速度为 \(\SI{340}{m/s}\)。当它进入另一介质时，波长变为 \(\SI{0.37}{m}\)。求它在该介质中的传播速度。
+\end{exercise}
+
+\begin{solution}
+波从一种介质进入另一种介质时，频率由波源决定，保持不变；改变的是波速和波长。因此由空气中的 \(v,\lambda\) 求出频率，再乘新波长。
+\[
+f=\frac{v}{\lambda}=\frac{340}{0.25}=\SI{1360}{Hz},\qquad
+v'=1360\times0.37=\SI{503.2}{m/s}\approx\SI{503}{m/s}.
+\]
+介质改变不会让波源振动频率改变。若直接把新介质波长代回空气波速，就等于把“波源节拍”和“传播介质”混在一起了。
+\end{solution}
+
+\begin{exercise}[2009级期末：由原点振动方程写沿正向传播的波函数]
+一平面简谐波的周期为 \(T=\SI{2}{s}\)，振幅为 \(A=\SI{0.06}{m}\)。已知 \(t=0\) 时原点处质点位于负的最大位移处。写出原点处质点的振动方程。若该波沿 \(x\) 轴正方向传播，波速为 \(u=\SI{2}{m/s}\)，再写出波函数并求波长。
+\end{exercise}
+\begin{solution}
+旋转矢量，原点振动方程为 \(y_0=0.06\cos(\pi t+\pi)\)。波沿 \(+x\) 方向传播，位置 \(x\) 处比原点滞后 \(x/u\)，也就是把原点振动中的 \(t\) 换成 \(t-x/u\)。于是
+ \(y(x,t)=0.06\cos\left[\pi\left(t-\frac{x}{2}\right)+\pi\right], \qquad \lambda=uT=2\times2=\SI{4}{m}.\) 
+验算：代入 \(x=0\) 后，波函数退回原点振动方程；这个检查也说明这里应使用 \(t-x/u\)。
+\end{solution}
+
+\begin{exercise}[2005级期末：由 \(t=0\) 波形图写波函数和 \(P\) 点振动]
+图示为一平面简谐波在 \(t=0\) 时刻的波形图，波沿 \(+x\) 方向传播，波速 \(u=\SI{0.08}{m/s}\)。由图读出振幅 \(A=\SI{0.04}{m}\)、波长 \(\lambda=\SI{0.40}{m}\)，原点 \(O\) 此刻位于平衡位置且随后向 \(+y\) 方向运动，点 \(P\) 位于 \(x_P=\SI{0.20}{m}\) 处。求：1. 该波的波动表达式；2. \(P\) 处质点的振动方程。
+\begin{center}
+\includegraphics[width=0.34\linewidth]{pdf-exercises/pdf2005-q23-wave.png}
+\end{center}
+\end{exercise}
+
+\begin{solution}
+\(A=\SI{0.04}{m},\ \lambda=\SI{0.40}{m},\ T=\dfrac{\lambda}{u}=\dfrac{0.40}{0.08}=\SI{5}{s}\)。
+波沿 \(+x\) 方向传播，因此可待定
+ \[y=A\cos\left[2\pi\left(\frac{t}{T}-\frac{x}{\lambda}\right)+\varphi_0\right].\]
+\(t=0,x=0\) 时，图中 \(O\) 点位移为零，且因波形向右传播，\(O\) 点此刻速度向 \(+y\) 方向，所以
+ \[\cos\varphi_0=0,\qquad -A\frac{2\pi}{T}\sin\varphi_0>0 \implies \varphi_0=-\frac{\pi}{2}.\]
+于是波函数为
+\[
+y=0.04\cos\left[2\pi\left(\frac{t}{5}-\frac{x}{0.40}\right)-\frac{\pi}{2}\right]\quad(\si{SI}).
+\]
+\(P\) 点坐标为 \(x_P=\SI{0.20}{m}\)，代入得
+\[
+\begin{aligned}
+y_P
+&=0.04\cos\left[2\pi\left(\frac{t}{5}-\frac{0.20}{0.40}\right)-\frac{\pi}{2}\right]\\
+&=0.04\cos\left(0.4\pi t-\frac{3\pi}{2}\right)\quad(\si{SI}).
+\end{aligned}
+\]
+沿 \(+x\) 传播时相位中应是 \(-x/\lambda\)。初相不能只由 \(O\) 点位移为零决定，还要结合传播方向判断 \(O\) 点此刻速度方向。
+\end{solution}
+
+\begin{definition}[一维波动微分方程与三维简谐波动力学方程]
+对一维简谐波
+ \(y=A\cos\omega\left(t-\frac{x}{u}\right),\) 
+分别对 \(t\) 和 \(x\) 求两次偏导，可得
+\begin{align*}
+\frac{\partial^2 y}{\partial t^2}
+=-\omega^2 A\cos\omega\left(t-\frac{x}{u}\right),~\frac{\partial^2 y}{\partial x^2}
+=-\frac{\omega^2}{u^2}A\cos\omega\left(t-\frac{x}{u}\right)
+=\frac{1}{u^2}\frac{\partial^2 y}{\partial t^2}.
+\end{align*}
+波形在空间中的弯曲程度，与它在时间上的加速变化直接相关，所以它常被称为波动的动力学方程。若把一维推广到三维，设介质扰动量为 \(\xi=\xi(x,y,z,t)\)，则
+\begin{align*}
+\nabla^2\xi&=\frac{1}{u^2}\frac{\partial^2 \xi}{\partial t^2},~\nabla^2=\frac{\partial^2}{\partial x^2}
++\frac{\partial^2}{\partial y^2}
++\frac{\partial^2}{\partial z^2},
+\end{align*}
+其中 \(\nabla^2\) 叫做拉普拉斯算符。
+\end{definition}

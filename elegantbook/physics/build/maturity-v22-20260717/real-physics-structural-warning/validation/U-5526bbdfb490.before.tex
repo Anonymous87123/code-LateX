@@ -1,0 +1,138 @@
+
+\section{刚体与定轴转动}
+
+\begin{definition}[刚体]\label{def:rigid-body}
+在受力过程中，物体内部任意两点之间距离始终保持不变的理想模型称为\textbf{刚体}。刚体的重力势能，等于把全部质量集中在质心处时的重力势能。
+\end{definition}
+为了精确量化定轴转动，我们引入以下三个一维标量运动学量：
+\begin{itemize}
+\item 角位移 $\Delta \theta$：描述转过的角度变化。
+\item 角速度 $\omega$：角度对时间的一阶导数，即 $\omega = \frac{\mathrm{d}\theta}{\mathrm{d}t}$。
+\item 角加速度 $\alpha$：角速度对时间的一阶导数，即 $\alpha = \frac{\mathrm{d}\omega}{\mathrm{d}t} = \frac{\mathrm{d}^2\theta}{\mathrm{d}t^2}$。
+\end{itemize}
+对于刚体内距离转轴垂直距离为 $r_i$ 的第 $i$ 个质点（质元 $\Delta m_i$），其绕轴运动的瞬时切向线速度大小为：
+ \(v_i = r_i \omega,~~\vec{v}_i = \vec{\omega} \times \vec{r}_i\) 
+整个质点系的总角动量是所有个体角动量的矢量叠加。对于绕固定 $z$ 轴转动的刚体，由于各质点的瞬时线速度方向总是在其转动圆周的切线上，质元 $P$ 对 $z$ 轴的瞬时角动量大小为： \(L_i = \Delta m_i v_i r_i\) 将线速度分量 $v_i = r_i \omega$ 代入上式中，消除线速度： \(L_i = \Delta m_i r_i^2 \omega\) 将整个刚体内所有质元的角动量进行标量求和，即可得到刚体绕定轴转动的总角动量 $L$：$$L = \sum_i L_i = \sum_i \Delta m_i r_i^2 \omega = \left( \sum_i \Delta m_i r_i^2 \right) \omega$$
+我们单独将括号内部定义为转动惯量（Moment of Inertia），记为 $J$： \(\boxed{L = J\omega}\) 
+\begin{definition}
+质量为 \(m\)、半径为 \(R\) 的质点绕圆心转动，其转动惯量为 \(J=mR^2\)。若刚体是由若干个彼此分离的、质量分布明确的离散质点组合而成，则直接套用代数求和公式：$$J = \sum_i \Delta m_i r_i^2 = m_1 r_1^2 + m_2 r_2^2 + m_3 r_3^2 + \cdots$$式中的 $r_i$ 必须严格理解为第 $i$ 个质点到给定转轴之间的垂直距离，而不是到坐标原点的距离。
+若研究对象是宏观连续分布的实体物质，则随着质元质量趋近于无穷小（$\Delta m_i \to \mathrm{d}m$），求和号 $\sum$ 完美过渡为对整个物体空间质量的定积分 $\int$： \(\mathrm{d}J = r^2 \mathrm{d}m \implies \boxed{J = \int r^2 \mathrm{d}m}\) 为了完整闭合求解，在此需要配合前面学过的质心公式 $\vec{r}_C = \frac{\int \vec{r} \mathrm{d}m}{m}$ 进行空间分布比对。
+
+如何把 \(\dd m\) 写成可积分的形式？关键是引入密度：
+\begin{itemize}
+\item 一维细杆：线密度 \(\lambda\)，则 \(\dd m=\lambda\,\dd l\)（\(\dd l\) 为长度元）；
+\item 二维薄板/壳：面密度 \(\sigma\)，则 \(\dd m=\sigma\,\dd S\)（\(\dd S\) 为面积元）；
+\item 三维实体：体密度 \(\rho\)，则 \(\dd m=\rho\,\dd V\)（\(\dd V\) 为体积元）。
+\end{itemize}
+对均匀物体，密度为常数，可以提到积分号外面。例如均匀细杆 \(\lambda=m/L\)，均匀圆盘 \(\sigma=m/(\pi R^2)\)。设置好 \(\dd m\) 后，\(J=\int r^2\,\dd m\) 就变成了关于几何坐标的普通定积分。
+\end{definition}
+
+\begin{theorem}[平行轴定理]
+质量为 $m$ 的刚体，如果对通过其质心（Center of Mass）的转轴的转动惯量为 $J_C$，则对任意一个与该质心轴平行、且相距为 $d$ 的新转轴的转动惯量 $J_O$ 满足： \(\boxed{J_O = J_C + md^2}\) 这条定理只适用于\textbf{两条互相平行的轴}。一旦换轴但不平行，就不能直接套它。
+\end{theorem}
+
+\begin{exercise}
+一长为 $l$、质量为 $m$ 的均匀细木棒。求细棒绕通过其一端且与棒垂直的固定轴的转动惯量。
+\end{exercise}
+\begin{solution}
+以细棒的左端点为坐标原点 $O$，以沿细棒向右的方向为 $x$ 轴。此时，垂直于纸面穿过原点 $O$ 的直线即为转轴（$z$ 轴）。在细棒上任意距离原点为 $x$ 处，截取一段无限短的微元，其几何长度为 $\mathrm{d}x$。该微元到转轴的垂直距离平方为：$r^2 = x^2$，由于细棒质量分布均匀，我们引入线密度 $\rho = \frac{m}{l}$。则这一小节微元所具有的微元质量 $\mathrm{d}m$ 可以表示为： \(\mathrm{d}m = \rho \mathrm{d}x = \frac{m}{l}\mathrm{d}x\) 
+在区间 $x \in [0, l]$ 上。将微元成分代入定积分公式中：$$J_O = \int r^2 \mathrm{d}m = \int_{0}^{l} x^2 \cdot \left(\frac{m}{l}\mathrm{d}x\right)$$将常数项 $\frac{m}{l}$ 提取到积分号外部，对幂函数求积：$$J_O = \frac{m}{l} \int_{0}^{l} x^2 \mathrm{d}x = \frac{m}{l} \cdot \left[ \frac{1}{3}x^3 \right]_0^l = \frac{m}{l} \cdot \frac{1}{3}l^3 = \frac{1}{3}ml^2$$
+\end{solution}
+
+
+\begin{exercise}[均匀细杆绕中心的转动惯量]
+求质量为 \(m\)、长度为 \(\ell\) 的均匀细杆，绕通过中点且垂直于杆的轴的转动惯量。
+\end{exercise}
+\begin{solution}
+把细杆放在 \(x\) 轴上，中点取为原点，转轴垂直于杆并过中点，则
+\[
+\begin{aligned}
+\lambda&=\frac{m}{\ell},\qquad \dd m=\lambda\,\dd x,\qquad r=\abs{x},\qquad
+\dd J=r^2\,\dd m=x^2\lambda\,\dd x,\\
+J_C&=\int_{-\ell/2}^{\ell/2}x^2\lambda\,\dd x
+=\frac{m}{\ell}\int_{-\ell/2}^{\ell/2}x^2\,\dd x
+=\frac{m}{\ell}\left[\frac{x^3}{3}\right]_{-\ell/2}^{\ell/2}
+=\frac{1}{12}m\ell^2.
+\end{aligned}
+\]
+\end{solution}
+
+\begin{exercise}
+一质量为 $m$、半径为 $R$ 的均匀薄圆环。求通过其圆心且垂直于环面的固定轴的转动惯量。
+\end{exercise}
+\begin{solution}
+在圆环上任意截取一段微元线段，其质量记为 $\mathrm{d}m$。由于薄圆环的几何特点，整个圆环上所有的质量微元到穿过圆心的中心轴的垂直距离全都严格相等，均等于圆环的半径 $R$（即 $r \equiv R$）。根据转动惯量的积分定义，直接将恒定常数 $R^2$ 提取到积分号外面：$$J = \int r^2 \mathrm{d}m = \int R^2 \mathrm{d}m = R^2 \int \mathrm{d}m=mR^2$$
+\end{solution}
+
+\begin{exercise}
+ 一质量为 $m$、半径为 $R$ 的均匀薄圆盘。求通过盘中心 $O$ 且与盘面垂直的转轴的转动惯量。
+\end{exercise}
+\begin{solution}
+将圆盘看作是由无数个半径为 $r$、宽度为 $\mathrm{d}r$ 的同心薄圆环嵌套组合而成。设圆盘的面密度为 $\sigma = \frac{m}{\pi R^2}$。对于半径为 $r$ 的微元圆环，其展开后的几何面积为 $\mathrm{d}S=\pi((r+\mathrm{d}r)^2-r^2) = 2\pi r \mathrm{d}r$，故该圆环包含的微元质量 $\mathrm{d}m$ 为： \(\mathrm{d}m = \sigma \mathrm{d}S = \sigma \cdot 2\pi r \mathrm{d}r\) 
+这个半径为 $r$ 的微元圆环对轴的转动惯量为 $\mathrm{d}J = r^2 \mathrm{d}m$。我们将整个圆盘在半径区间 $r \in [0, R]$ 上进行标量累加：$$J = \int_{0}^{R} r^2 \cdot (2\pi \sigma r \mathrm{d}r) = 2\pi \sigma \int_{0}^{R} r^3 \mathrm{d}r= 2\pi \sigma \cdot \left[ \frac{1}{4}r^4 \right]_0^R = \frac{1}{2}\sigma \pi R^4 = \frac{1}{2} \cdot \left(\frac{m}{\pi R^2}\right) \cdot \pi R^4 = \frac{1}{2}mR^2$$
+\end{solution}
+
+\begin{exercise}
+一质量为 $M$、半径为 $R$ 的均匀薄球壳。求通过其球心的任一固定对称轴的转动惯量。
+\end{exercise}
+\begin{solution}
+我们以通过球心的竖直对称轴为 $z$ 轴。可以把球壳看作是由无数个水平方向切开的薄圆环带上下堆叠而成。设某一微元圆环带与球心的连线与竖直轴成 $\theta$ 角，其对应的弧宽为 $R\mathrm{d}\theta$。该微元圆环的实际物理半径为：$r = R\sin\theta$，该微元圆环展开后近似为一个长方形，表面积为：\[\mathrm{d}S = 2\pi r \cdot R\mathrm{d}\theta = 2\pi (R\sin\theta) \cdot R\mathrm{d}\theta = 2\pi R^2\sin\theta\mathrm{d}\theta\]
+薄球壳的表面积为 $4\pi R^2$，其面密度为 $\sigma = \frac{M}{4\pi R^2}$。则该圆环带的质量 $\mathrm{d}m$ 为：
+$$\mathrm{d}m = \sigma \mathrm{d}S = \frac{M}{4\pi R^2} \cdot 2\pi R^2\sin\theta\mathrm{d}\theta = \frac{1}{2}M\sin\theta\mathrm{d}\theta$$
+由于该圆环微元到 $z$ 轴的垂直距离均为 $r = R\sin\theta$，其元转动惯量为 $\mathrm{d}I = r^2\mathrm{d}m = (R\sin\theta)^2\mathrm{d}m$。在整球角度区间 $\theta \in [0, \pi]$ 上进行定积分：$$I = \int_{0}^{\pi} R^2\sin^2\theta \cdot \left(\frac{1}{2}M\sin\theta\mathrm{d}\theta\right) = \frac{1}{2}MR^2 \int_{0}^{\pi} \sin^3\theta \mathrm{d}\theta= \frac{1}{2}MR^2 \cdot \frac{4}{3} = \frac{2}{3}MR^2$$
+\end{solution}
+
+\begin{exercise}
+一质量为 $M$、半径为 $R$ 的均匀实心球体。求通过其球心的任一固定轴的转动惯量。
+\end{exercise}
+\begin{solution}
+我们可以把实心球体看作是由无数个半径为 $r$、厚度为 $\mathrm{d}r$ 的薄球壳从内到外一层层嵌套包裹而成。均匀实心球体的体积为 $\frac{4}{3}\pi R^3$，其体密度为 $\rho = \frac{M}{\frac{4}{3}\pi R^3} = \frac{3M}{4\pi R^3}$。对于内部半径为 $r$ 的微元球壳，利用表面积乘以厚度算得微元体积为 $\mathrm{d}V = 4\pi r^2 \mathrm{d}r$，对应的质量微元 $\mathrm{d}m$ 为：$$\mathrm{d}m = \rho \mathrm{d}V = \frac{3M}{4\pi R^3} \cdot 4\pi r^2 \mathrm{d}r = \frac{3M}{R^3}r^2\mathrm{d}r$$利用刚才求得的薄球壳结论，质量为 $\mathrm{d}m$、半径为 $r$ 的薄球壳对轴的转动惯量为 $\mathrm{d}I = \frac{2}{3}\mathrm{d}m \cdot r^2$。对整个实心球在半径区间 $r \in [0, R]$ 上进行累加积分：$$I = \int_{0}^{R} \frac{2}{3}r^2 \cdot \left(\frac{3M}{R^3}r^2\mathrm{d}r\right) = \frac{2M}{R^3} \int_{0}^{R} r^4 \mathrm{d}r = \frac{2M}{R^3} \cdot \left[ \frac{1}{5}r^5 \right]_0^R = \frac{2M}{R^3} \cdot \frac{1}{5}R^5 = \frac{2}{5}MR^2$$
+\end{solution}
+
+\begin{example}
+ 一质量为 $M$、长度为 $L$ 的均匀空心厚壁圆筒，其内半径为 $R_1$，外半径为 $R_2$。求该圆筒绕其中心几何对称轴的转动惯量。
+\end{example}
+\begin{solution}
+ 截面积为一个环形，即 $S = \pi R_2^2 - \pi R_1^2 = \pi(R_2^2 - R_1^2)$。总体积为 $V = S \cdot L = \pi(R_2^2 - R_1^2)L$。体密度 $\rho$： \(\rho = \frac{M}{V} = \frac{M}{\pi(R_2^2 - R_1^2)L}\) 
+ 从圆筒内部，以 $z$ 轴为中心，轴向跨度为 $L$，圈定一个半径为 $r$（其中 $R_1 \le r \le R_2$）、厚度为 $\mathrm{d}r$ 的无限薄空心薄壁圆筒壳。该微元薄筒壳展开后，其表面积为 $2\pi r \cdot L$，厚度为 $\mathrm{d}r$，因此其微元体积为 $\mathrm{d}V = 2\pi r L \mathrm{d}r$。对应地，该微元筒壳内所包裹的微元质量 $\mathrm{d}m$ 满足： \(\mathrm{d}m = \rho \mathrm{d}V = \rho \cdot 2\pi r L \mathrm{d}r\) 
+ 该薄筒壳上的所有质量距离转轴的垂直距离均为 $r\in [R_1, R_2]$
+ $$J = \int r^2 \mathrm{d}m = \int_{R_1}^{R_2} r^2 \cdot \left( \rho \cdot 2\pi r L \mathrm{d}r \right)= 2\pi \rho L \int_{R_1}^{R_2} r^3 \mathrm{d}r= 2\pi \rho L \cdot \left[ \frac{1}{4}r^4 \right]_{R_1}^{R_2} = \frac{1}{2}\pi \rho L (R_2^4 - R_1^4)$$
+ 将$\rho = \frac{M}{\pi(R_2^2 - R_1^2)L}$ 代入：
+ $$J = \frac{1}{2}\pi \cdot \left[ \frac{M}{\pi(R_2^2 - R_1^2)L} \right] \cdot L \cdot (R_2^4 - R_1^4)= \frac{1}{2}M \cdot \frac{(R_2^2 - R_1^2)(R_2^2 + R_1^2)}{R_2^2 - R_1^2} = \frac{1}{2}M(R_2^2 + R_1^2)$$
+\end{solution}
+
+\begin{example}
+一质量为 $M$、半径为 $R$ 的均匀薄圆环。试求该圆环绕其平面内任意一条对称直径轴的转动惯量。
+\end{example}
+\begin{solution}
+ 我们将这个均匀薄圆环平铺在平面直角坐标系 $Oxy$ 的平面内，并令圆环的圆心与坐标原点 $O$ 严格重合。此时：$x$ 轴落在圆环平面内，恰好对应一条对称直径。$y$ 轴也落在圆环平面内，且与 $x$ 轴正交垂直，恰好对应另一条与之垂直的对称直径。$z$ 轴垂直于圆环平面穿过圆心，即为圆环的中心几何轴。根据正交轴定理，对于任何质量完全分布在 $xy$ 平面内的均匀薄板状刚体，其对垂直于平面的 $z$ 轴的转动惯量 $J_z$，严格等于平面内两个相互正交的轴向转动惯量 $J_x$ 与 $J_y$ 的标量代数之和： \(J_z = J_x + J_y\) 因为该刚体是一个完美的均匀薄圆环，所以它绕平面内 $x$ 轴直径旋转时的质量分布情况，与它绕平面内 $y$ 轴直径旋转时的质量分布情况是完完全全、没有任何物理和几何区别的。这就锁定了两个分量在数值上必定严格相等，即： \(J_x = J_y = J_{\text{直径}}\) 将其代回正交轴定理的通式之中，方程转化为： \(J_z = J_{\text{直径}} + J_{\text{直径}} = 2J_{\text{直径}}\) 由于薄圆环绕其垂直中心几何轴（即这里的 $z$ 轴）的转动惯量大小为 $J_z = MR^2$。我们将其直接带入上述对称方程中： \(MR^2 = 2J_{\text{直径}}\) 两边同时除以标量系数 2，便直接、严密地反解出薄圆环绕其直径轴的转动惯量： \(J_{\text{直径}} = \frac{1}{2}MR^2\) 
+\end{solution}
+
+\begin{example}
+一质量为 $M$、半径为 $R$ 的均匀薄圆盘。试求该圆盘绕其自身盘面内任意一条直径轴的转动惯量。
+\end{example}
+\begin{solution}
+ 将此薄圆盘严格放置在平面直角坐标系 $Oxy$ 内，圆盘中心置于原点 $O$。设 $x$ 轴为盘面内的一条直径轴，其对应的转动惯量记为 $J_x$。设 $y$ 轴为盘面内垂直于 $x$ 轴的另一条直径轴，其对应的转动惯量记为 $J_y$。设 $z$ 轴为通过盘心垂直于盘面的几何轴，其对应的转动惯量记为 $J_z$。由于薄圆盘在平面内关于圆心具有各向同性的几何对称性，其绕 $x$ 轴直径旋转的惯性与绕 $y$ 轴直径旋转的惯性绝对恒等，因此有： \(J_x = J_y = J_{\text{直径}}\) 根据薄板刚体正交轴定理的约束： \(J_z = J_x + J_y \implies J_z = 2J_{\text{直径}}\) 在讲义的前期推导中，我们已经通过同心圆环累加积分法，非常严谨地求得了均匀薄圆盘绕通过盘心且垂直于盘面的中心轴（即 $z$ 轴）的转动惯量为 $J_z = \frac{1}{2}MR^2$。我们把这一现成的状态量代入到对称方程中： \(\frac{1}{2}MR^2 = 2J_{\text{直径}}\) 两边同时除以 2，即可极其顺畅地求得均匀圆盘绕直径轴的转动惯量公式： \(J_{\text{直径}} = \frac{1}{4}MR^2\) 
+\end{solution}
+
+\begin{example}
+一质量为 $M$、长度为 $L$、宽度为 $N$ 的均匀薄长方形平板。求通过长方形几何中心且严格垂直于平板表面的固定轴的转动惯量。
+\end{example}
+\begin{solution}
+ 我们建立平面直角坐标系 $Oxy$，使长方形平板的几何中心（即质心）与原点 $O$ 重合。令平板的长度方向沿 $x$ 轴延伸，其几何边界区间为 $x \in \left[-\frac{L}{2}, \frac{L}{2}\right]$。令平板的宽度方向沿 $y$ 轴延伸，其几何边界区间为 $y \in \left[-\frac{N}{2}, \frac{N}{2}\right]$。通过几何中心且垂直于板面的固定轴即为 $z$ 轴。我们要求的就是 $J_z$。根据转动惯量的原始微积分定义，平板上任意一个坐标为 $(x, y)$ 的微元 $\mathrm{d}m$，它到垂直转轴（$z$ 轴）的距离的平方，根据勾股定理严格满足：$r^2 = x^2 + y^2$。因此，总转动惯量的二维曲面积分表达式为：$$J_z = \int_{\text{平板}} r^2 \mathrm{d}m = \int_{\text{平板}} (x^2 + y^2) \mathrm{d}m= \int_{\text{平板}} x^2 \mathrm{d}m + \int_{\text{平板}} y^2 \mathrm{d}m$$
+ \begin{itemize}
+ \item 第一项 $\int x^2 \mathrm{d}m$：该项积分中只有 $x^2$ 参与权重计算，而与微元在 $y$ 方向（宽度方向）的坐标分布完全无关。在数学上，这完完全全等效于将长方形板沿 $y$ 方向垂直压缩、凝聚为一根长度为 $L$、质量为 $M$、横跨在 $x$ 轴上的均匀细棒绕其中点轴的转动惯量。根据已经严密证明的细棒中点轴公式，该项的结果直接为： \(\int_{\text{平板}} x^2 \mathrm{d}m = \frac{1}{12}ML^2\) 
+ \item 第二项 $\int y^2 \mathrm{d}m$：同理，该项积分只关乎 $y^2$ 的空间权重，与 $x$ 方向的几何形态无关。这在数学上完全等效于将平板沿 $x$ 方向横向压缩、凝聚为一根长度为 $N$、质量为 $M$、横跨在 $y$ 轴上的均匀细棒绕其中点轴的转动惯量。其代数结果直接为： \(\int_{\text{平板}} y^2 \mathrm{d}m = \frac{1}{12}MN^2\) 
+ \end{itemize}
+ 将两项合并，并提取公因式 $\frac{1}{12}M$：$$J_z = \frac{1}{12}ML^2 + \frac{1}{12}MN^2 = \frac{1}{12}M(L^2 + N^2)$$
+\end{solution}
+
+
+\begin{example}
+ 一质量为 $M$、外半径为 $R$、总长度为 $L$ 的均匀实心长圆柱体。试求通过圆柱体几何中心（质心）且与圆柱体纵向几何轴线严格垂直的固定横向轴的转动惯量。
+\end{example}
+\begin{solution}
+ 我们建立空间直角坐标系，以圆柱体的几何中心（质心）为坐标原点 $O$。令圆柱体的纵向几何中心轴线与 $x$ 轴重合，则整个圆柱体在长度方向上横跨的空间几何区间为 $x \in \left[-\frac{L}{2}, \frac{L}{2}\right]$。
+ 要求的固定对称横轴即为 $y$ 轴（或者是与之等价的 $z$ 轴）。我们现在沿 $x$ 轴方向，在任意位置 $x$ 处，垂直于轴线横向切下一片无限薄的均匀圆盘薄片作为我们的研究微元。该微元薄片的几何厚度为 $\mathrm{d}x$。由于整个圆柱体长为 $L$ 且质量均匀分布，该微元薄片的质量 $\mathrm{d}m$ 占总质量的比重刚好等于厚度占总长度的比重，即： \(\mathrm{d}m = \frac{M}{L}\mathrm{d}x\) 该圆盘存在自身通过其圆心的一条条直径轴，刚好与转轴平行。均匀圆盘绕自身直径轴的转动惯量为 $\mathrm{d}J_C = \frac{1}{4}\mathrm{d}m \cdot R^2$。该圆盘微片对总转轴的总体转动惯量贡献 $\mathrm{d}J$ 应该等于其绕自身直径的转动惯量加上质量乘以距离平方：$$\mathrm{d}J = \mathrm{d}J_C + \mathrm{d}m \cdot d^2 = \frac{1}{4}R^2\mathrm{d}m + x^2\mathrm{d}m = \left( \frac{1}{4}R^2 + x^2 \right)\mathrm{d}m$$为了得到整个实心圆柱体的总转动惯量，我们将所有切片的贡献在整个长度区间 $\left[-\frac{L}{2}, \frac{L}{2}\right]$ 上作一维定积分。代入 $\mathrm{d}m = \frac{M}{L}\mathrm{d}x$：
+ $$J = \int_{-\frac{L}{2}}^{\frac{L}{2}} \left( \frac{1}{4}R^2 + x^2 \right) \cdot \left( \frac{M}{L}\mathrm{d}x \right)= \frac{M}{L} \cdot \frac{1}{4}R^2 \int_{-\frac{L}{2}}^{\frac{L}{2}} \mathrm{d}x + \frac{M}{L} \int_{-\frac{L}{2}}^{\frac{L}{2}} x^2 \mathrm{d}x = \frac{1}{4}MR^2 + \frac{1}{12}ML^2$$
+\end{solution}

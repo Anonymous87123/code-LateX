@@ -1,0 +1,95 @@
+
+\section{气体的热容与摩尔热容}
+
+\begin{definition}[热容]
+    热容定义\[C=\frac{\delta Q}{\mathrm dT},~\delta Q=\mathrm dU+p\mathrm dV\]
+    摩尔热容\[C_m=\frac{C}{\nu}=\frac{M}{m}C=\frac{\delta Q}{(m/M)\mathrm dT}\]
+    定体摩尔热容（体积不变，$\delta Q=\mathrm dU+p\mathrm dV=\mathrm dU$）：\[C_{V,m}=\frac{(\delta Q)_V}{\nu\mathrm dT}=\frac{\mathrm dU}{\nu\mathrm dT}=\frac{\frac{i}{2}\nu R\mathrm dT}{\nu\mathrm dT}=\frac{i}{2}R\]
+    并有恒定体积（无做功）情况下$Q_V$的计算方式\[Q_V=\nu C_{V,m}(T_2-T_1).\]但是内能的定义式是恒成立的，和等容无关\[U=\nu\frac{i}{2}RT=\nu C_{V,m}T\]
+    定压摩尔热容（$pV=\nu RT\implies p\mathrm dV+V\mathrm dp=p\mathrm dV=\nu R\mathrm dT$，）
+    \[C_{p,m}=\frac{(\delta Q)_p}{\nu\mathrm dT}=\frac{\mathrm dU+P\mathrm dV}{\nu\mathrm dT}=\frac{\nu\frac{i}{2}R\mathrm dT+\nu R\mathrm dT}{\nu\mathrm dT}=\left(\frac{i}{2}+1\right)R=C_{V,m}+R\]
+    不要误以为一直是$\frac{3}{2}R$或$\frac{5}{2}R$，要看分子类型，顺便定义\[\gamma=\frac{C_{P,m}}{C_{V,m}}=\frac{i+2}{i}\]
+    等温过程\(\mathrm dU=0\implies(\delta Q)_T=\delta A=p\mathrm dV=\nu RT\frac{\mathrm{d}V}{V}.\)
+    \[Q_T=A=\int_{V_1}^{V_2}P\mathrm dV=\int_{V_1}^{V_2}\nu RT\frac{\mathrm{d}V}{V}=\nu RT\ln\frac{V_2}{V_1}=\nu RT\ln\frac{P_1}{P_2}\]
+\end{definition} 
+
+\begin{exercise}[多段过程综合：先逐段认过程，再汇总 \(Q,A,\Delta U\)]
+质量为 \(2.8\times10^{-3}\,\si{kg}\) 的氮气，初态压强为 \(1\,\si{atm}\)，温度为 \(\SI{27}{\celsius}\)。它先经历等体过程使压强升到 \(3\,\si{atm}\)，再经历等温膨胀使压强降回 \(1\,\si{atm}\)，最后在等压过程中把体积压缩到前一状态的一半。求全部过程的内能变化、系统对外所做的总功以及总吸热量。
+\end{exercise}
+\begin{solution}
+\[V_1=\frac{mRT_1}{Mp_1}=\frac{2.8\times 8.31\times 300}{28\times 1.013\times 10^5}=2.46\times10^{-3}\,\text{m}^3\]
+\(1\to2\) 等容：
+\[
+A_1=0,~ Q_1=\Delta U_1=\nu\frac{5}{2}R(T_2-T_1)=0.1\times 2.5\times 8.31\times (900-300)=1246.5\,\text{J}
+\]
+\(2\to3\) 等温：
+\[
+\Delta U_2=0,\qquad Q_2=A_2=\nu RT_2\ln\frac{V_3}{V_2}=0.1\times 8.31\times 900\times \ln3=821.65\,\text{J}.
+\]
+\(3\to4\) 等压：
+\[A_3=p_3(V_4-V_3)=1.013\times 10^5\times \left(-\frac32\frac{2.8\times 8.31\times 300}{28\times 1.013\times 10^5}\right)=-373.95\,\text{J}.\]
+\[\Delta U_3=\nu\frac{5}{2}R(T_4-T_3)=0.1\times\frac52\times 8.31\times(-450)=-934.875\,\text{J},~~Q_3=A_3+\Delta U_3=-1308.825\,\text{J}\]
+总计：
+\[
+A=A_1+A_2+A_3=0+821.65-373.95=447.7\,\text{J},
+\]\[
+Q=Q_1+Q_2+Q_3=1246.5+821.65-1308.825=759.325\,\text{J},
+\]\[
+\Delta U=Q-A=759.325-447.7=311.625\,\text{J}.
+\]
+\end{solution}
+
+\begin{definition}[绝热过程]
+    与外界无热量交换的过程\(Q=0,\qquad A+\Delta U=0\)，从
+\[\begin{cases}\delta Q=0\implies \delta A=p\mathrm dV=-\mathrm dU=-\nu \frac{i}{2}R\mathrm dT\\
+pV=\nu RT\end{cases}\implies \frac{\mathrm dV}{V}=-\frac{C_{V,m}}{R}\frac{\mathrm dT}{T}
+=-\frac{1}{\gamma-1}\frac{\mathrm dT}{T}\]积分后得到绝热方程：
+\[
+V^{\gamma-1}T=\text{常量},~ pV^\gamma=\text{常量},~p^{\gamma-1}T^{-\gamma}=\text{常量},~A=\nu C_{V,m}(T_1-T_2)=\frac{p_1V_1-p_2V_2}{\gamma-1}
+\]
+绝热线比等温线更“陡”。同一点附近，绝热膨胀时压强下降更快，因为气体不仅在变大，还在降温。
+\end{definition}
+
+
+
+
+
+\begin{exercise}[2013级期末：氧气从 300K 加热到 400K 的等压与等体比较]
+压强 \(p_1=1.013\times10^5\,\si{Pa}\)、体积 \(V_1=1.0\times10^{-3}\,\si{m^3}\) 的氧气，从 \(T_1=\SI{300}{K}\) 加热到 \(T_2=\SI{400}{K}\)。把氧气视为刚性双原子分子理想气体，求：1. 等压过程需要的热量；2. 等体过程需要的热量；3. 两种过程中气体对外所作的功。
+\end{exercise}
+
+\begin{solution}
+初态物质的量满足
+ \[nR=\frac{p_1V_1}{T_1} =\frac{1.013\times10^5\times10^{-3}}{300} \approx \SI{0.3377}{J/K}.\]
+等压过程有
+ \[Q_p=nC_{P,m}\Delta T =\frac72 nR(400-300) \approx \frac72\times0.3377\times100 \approx \SI{118}{J}.\]
+等压功为
+ \[A_p=nR\Delta T \approx 0.3377\times100 \approx \SI{33.8}{J}.\]
+等体过程有
+ \[Q_V=nC_{V,m}\Delta T =\frac52 nR(400-300) \approx \SI{84.4}{J}, \qquad A_V=0.\]
+所以 \(Q_p\approx\SI{118}{J}\)、\(Q_V\approx\SI{84.4}{J}\)，两种过程中的功分别为 \(A_p\approx\SI{33.8}{J}\)、\(A_V=0\)。同样升温 \(\SI{100}{K}\)，等压过程还要膨胀对外做功，所以需要的热量比等体过程多，差值正好是 \(nR\Delta T\)。
+\end{solution}
+
+
+\begin{exercise}[把 \(5\) mol 氢气压到原体积的 \(1/10\) 时等温和绝热为何功差这么大]
+设有 \(5\) mol 的氢气，初态压强为 \(p_1=\SI{1.013e5}{Pa}\)，温度为 \(\SI{20}{\celsius}\)。求把它压缩到原体积的 \(1/10\) 时，在下列过程中外界需做的功：1. 等温过程；2. 准静态绝热过程。
+\end{exercise}
+
+\begin{solution}
+先看等温压缩。
+ \[A_{\text{气,iso}}=\nu RT\ln\frac{1}{10} =5\times 8.31\times 293\times \ln 0.1 \approx \SI{-2.80e4}{J}.\]
+故外界需做功大小为
+ \(A_{\text{外,iso}}=\SI{2.80e4}{J}.\) 
+
+再看准静态绝热压缩。对氢气取
+\[
+\gamma=\frac75,\qquad C_{V,m}=\frac52 R.
+\]
+由绝热方程
+ \(T_2=T_1\left(\frac{V_1}{V_2}\right)^{\gamma-1} =293\times 10^{0.4}\approx \SI{736}{K}.\) 
+于是
+\[
+A_{\text{气,adi}}=-nC_{V,m}(T_2-T_1)=-5\times \frac52\times 8.31\times (736-293)\approx \SI{-4.60e4}{J}.
+\]
+因此绝热压缩需要的外功更大。等温压缩时气体能把部分能量放给外界，所以更“省力”；绝热压缩时热量出不去，外界所做的功更多地堆进内能，因此更费功。计算中要始终分清系统对外做功的符号和外界需做功的大小。
+\end{solution}

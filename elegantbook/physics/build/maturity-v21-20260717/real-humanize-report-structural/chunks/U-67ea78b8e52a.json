@@ -1,0 +1,143 @@
+{
+  "author_chars": 208,
+  "chunk_binding_sha256": "2401b015cc22d757f564acb1b760ddbd0ee7372d8703f562414c68bf5fe3162c",
+  "context_after_unit": "U-c95376c37203",
+  "context_before_unit": "U-c4afaef4899a",
+  "diff_path": "",
+  "end": 63469,
+  "end_line": 1539,
+  "file_id": "F00001",
+  "hash_after": "",
+  "hash_before": "f2ee97ff05338c51ce740a469d1ea7f604b9eba14632e6815155e73cefecff78",
+  "heading_path": "中文学术纯文风 Humanize Skill：生产化交付与红队报告 / 18. v12：Voice Profile 从说明文档变成可重建工件 / 18.14 v14：fresh second pass 从声明字段升级为活证据控制面 / 18.14.6 真实 fresh campaign 与进程树修复",
+  "intensity": "STRUCTURAL",
+  "line_count": 23,
+  "masked_text": "[[PROTECTED:F00001-P00984:13e25e91e917]]\n真实试跑使用现有 [[PROTECTED:F00001-P00985:4447f3d314d9]]，第一遍 1 个 unit、111 个作者汉字、\n1 个保护 span，完整 NO_CHANGE 发布后各局部门均 PASS。second prepare 生成新的 chunk binding 和\n无答案 sealed case。\n\n首次真实 [[PROTECTED:F00001-P00986:629346d6e364]] 暴露 runner 的进程管理缺陷：内部 timeout 为 120 秒，但旧代码只终止\n父进程；node/codex 后代继续持有 stdout 管道，外层 184 秒后才强制结束，并留下 3 个本次新\n进程。它们按 PID 与启动时间精确终止，没有误杀已有 VS Code/Codex 会话。\n\n修复后，Windows runner 使用新进程组并在 timeout 时执行整棵进程树终止；POSIX 使用独立\nsession/process group。真实孙进程测试由约 8.06 秒等待自然退出缩短为约 1.38 秒收口。随后\n以 45 秒 timeout 重试，46.3 秒内得到正式 [[PROTECTED:F00001-P00987:865d050ca8eb]] receipt：\n\n- [[PROTECTED:F00001-P00988:5651f7fd662f]]、[[PROTECTED:F00001-P00989:10827c934d6c]]、[[PROTECTED:F00001-P00990:9706e65cacdd]]；\n- projection 后验为 [[PROTECTED:F00001-P00991:7ebceef296df]]；\n- filesystem isolation 为 false、oracle unreachable 为 UNVERIFIED；\n- retry 后没有遗留新 Python/node/codex 进程。\n\n下游状态严格保持：collect [[PROTECTED:F00001-P00992:69a44b961a9b]]，第二遍 finalizer [[PROTECTED:F00001-P00993:bd036b668dc6]] 且 1 个 PENDING，verifier\n[[PROTECTED:F00001-P00994:bd036b668dc6]]，receipt 不生成，第一遍 [[PROTECTED:F00001-P00995:59e2a16989a1]]、Humanize\ncompletion false。完整审计见 [real second-pass audit]([[PROTECTED:F00001-P00996:27814ae99f11]])。\n\n",
+  "mode": "REWRITE",
+  "notes": "",
+  "owner_chunk": "U-67ea78b8e52a",
+  "part": 1,
+  "protected_hashes_ok": "NOT_RUN",
+  "protected_ids": [
+    "F00001-P00984",
+    "F00001-P00985",
+    "F00001-P00986",
+    "F00001-P00987",
+    "F00001-P00988",
+    "F00001-P00989",
+    "F00001-P00990",
+    "F00001-P00991",
+    "F00001-P00992",
+    "F00001-P00993",
+    "F00001-P00994",
+    "F00001-P00995",
+    "F00001-P00996"
+  ],
+  "protected_spans": 13,
+  "read_only_context_after": "[[PROTECTED:F00001-P00997:6ed6b2c545a0]]\n- 全量 unittest：[[PROTECTED:F00001-P00998:ede32ef5280a]]，[[PROTECTED:F00001-P00999:6ef7ecf94c7e]]；\n- 17 个 Skill 脚本：[[PROTECTED:F00001-P01000:7de84e53db72]]，全部 [[PROTECTED:F00001-P01001:f704197edf36]]；\n- [[PROTECTED:F00001-P01002:4a4a3bba9da6]] 首轮因 Windows GBK 读取 UTF-8 抛 [[PROTECTED:F00001-P01003:ee7b5ad64758]]；按既定乱码策略以\n  [[PROTECTED:F00001-P01004:a6297b6c7c3c]] 重试后输出 [[PROTECTED:F00001-P01005:cca8b097f996]]；\n- contract：[[PROTECTED:F00001-P01006:826e5fe9c707]]，SHA-256\n  [[PROTECTED:F00001-P01007:e8a3c3dd8bc9]]；\n- requirements：[[PROTECTED:F00001-P01008:21a88d0cf496]]，SHA-256\n  [[PROTECTED:F00001-P01009:930323678f16]]；\n- oracle：[[PROTECTED:F00001-P01010:952e2427bb2d]]，SHA-256\n  [[PROTECTED:F00001-P01011:b4b190e19926]]；\n- qualification：[[PROTECTED:F00001-P01012:bbeaee51fa74]]，exit 2；\n- action profile：[[PROTECTED:F00001-P01013:b81778c85031]]，23 个可读来源、50 available、0 unavailable；GENERAL 仍为\n  [[PROTECTED:F00001-P01014:4ff8d92a448c]]；\n- generator projection：28 文件，两次重建 manifest/tree 相同，证据封顶 E2。",
+  "read_only_context_before": "两次独立重建得到完全相同的 manifest SHA-256\n[[PROTECTED:F00001-P00980:fe14d702afe0]] 和 tree\n[[PROTECTED:F00001-P00981:0ec168743989]]。capability source 为\n[[PROTECTED:F00001-P00982:7f2e9fd10974]]；policy canonical hash 为\n[[PROTECTED:F00001-P00983:35c93adacc85]]。",
+  "scene": "GENERAL",
+  "scene_document_prior": "",
+  "scene_requested": "GENERAL",
+  "scene_routing_ambiguous_scenes": [],
+  "scene_routing_decision": "EXPLICIT",
+  "scene_routing_evidence": [],
+  "scene_routing_margin": 0,
+  "scene_routing_policy_revision": 2,
+  "scene_routing_policy_sha256": "8d0f916d91b5753fd94d358c4b32e9a6c02b1f30120f43b4cbb2165dc1684450",
+  "scene_routing_scores": {
+    "COURSE": 0,
+    "MODELING": 0,
+    "RESEARCH": 0
+  },
+  "scene_routing_top_score": 0,
+  "start": 62454,
+  "start_line": 1517,
+  "status": "PENDING",
+  "structural_cross_unit_moves_allowed": false,
+  "structural_inventory_sha256": "292cf894c4831420cc583c2b0a5f914535f09518c72d1717deb45ab0a6cd6c6a",
+  "structural_paragraphs": [
+    {
+      "author_chars": 38,
+      "lock_reason": "contains_immovable_protected_span",
+      "movable": false,
+      "ordinal": 1,
+      "paragraph_id": "P001-cd490b8b64ba",
+      "protected_ids": [
+        "F00001-P00984",
+        "F00001-P00985"
+      ],
+      "responsibility": "EXPOSITION",
+      "sha256": "cd490b8b64bab242993440f8d4bfcf5bebf682bd14fbed5722f12d6b0f872553"
+    },
+    {
+      "author_chars": 73,
+      "lock_reason": "",
+      "movable": true,
+      "ordinal": 2,
+      "paragraph_id": "P002-3e3c003471f4",
+      "protected_ids": [
+        "F00001-P00986"
+      ],
+      "responsibility": "EXPOSITION",
+      "sha256": "3e3c003471f41625e45bfd92c2b37a075d9b4f11f83603abc7ab13271425b42c"
+    },
+    {
+      "author_chars": 60,
+      "lock_reason": "introduces_following_block",
+      "movable": false,
+      "ordinal": 3,
+      "paragraph_id": "P003-777ef530d77a",
+      "protected_ids": [
+        "F00001-P00987"
+      ],
+      "responsibility": "EXPOSITION",
+      "sha256": "777ef530d77a170326019e4562c733144cd920ef92033a43db661d0fcc50d8d0"
+    },
+    {
+      "author_chars": 13,
+      "lock_reason": "contains_markdown_structure",
+      "movable": false,
+      "ordinal": 4,
+      "paragraph_id": "P004-e0cf1baae7e9",
+      "protected_ids": [
+        "F00001-P00988",
+        "F00001-P00989",
+        "F00001-P00990",
+        "F00001-P00991"
+      ],
+      "responsibility": "EXPOSITION",
+      "sha256": "e0cf1baae7e935e5d18409f8a4608cc14a161e95cf4d334b2433f385fe81db19"
+    },
+    {
+      "author_chars": 24,
+      "lock_reason": "",
+      "movable": true,
+      "ordinal": 5,
+      "paragraph_id": "P005-5546b2021c36",
+      "protected_ids": [
+        "F00001-P00992",
+        "F00001-P00993",
+        "F00001-P00994",
+        "F00001-P00995",
+        "F00001-P00996"
+      ],
+      "responsibility": "EXPOSITION",
+      "sha256": "5546b2021c364db39140a957af921f7c8355286d923fc712818674a5e51ef7d3"
+    }
+  ],
+  "structural_plan_schema": "humanize-structural-plan/v1",
+  "structural_plan_status": "NOT_RUN",
+  "structural_scope": "UNIT",
+  "structural_title_lock": true,
+  "style_validation": "NOT_RUN",
+  "unit_id": "U-67ea78b8e52a",
+  "voice_default_disclosure": true,
+  "voice_profile_binding_scene": "GENERAL",
+  "voice_profile_confidence": "DEFAULT",
+  "voice_profile_id": "scene-default-general",
+  "voice_profile_kind": "DEFAULT",
+  "voice_profile_revision": 1,
+  "voice_profile_sha256": "3b4eeeaeb3af397378ead360550371ff4632cbce6fceca8923479c53de23a112",
+  "voice_profile_source": "SCENE_DEFAULT"
+}

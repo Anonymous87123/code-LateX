@@ -1,0 +1,84 @@
+
+\section{驻波}
+
+\begin{definition}[驻波]
+振幅相同、频率相同、传播速度也相同的两列相干波，在同一直线上沿相反方向传播时，彼此发生叠加而形成的一种特殊干涉现象。
+\begin{itemize}
+\item 行波（Travelling Wave）：机械波或电磁波的连续振动状态、运动相位以及能量沿着波线不断向前输运和传播。
+\item 驻波（Standing Wave）：在空间宏观上看不到波形的向前传播，只能观察到整个弹性介质（如弦线、管内空气柱）呈现分段振动的特征。在驻波状态下，没有运动相位的传播，也没有能量的定向输运。
+\end{itemize}
+\end{definition}
+
+\begin{note}
+我们很难直接设置两个相向对喷的独立相干波源。通常的做法是：让一列行波垂直入射到两种不同介质的终止分界界面上。行波在边界上遭遇阻抗不匹配，从而发生剧烈反射。此时，向右传播的入射波与向左传播的反射波在空间中交织。因为它们来源于同一个波源，所以频率和振幅自然严格相等，方向刚好相反。它们在空间中发生相干干涉，最终在线路上撑开形成稳定的驻波。
+\end{note}
+
+\begin{theorem}[驻波方程]
+我们建立一维 $x$ 轴。设有一列沿 $x$ 轴正方向（正向）传播的行波 $y_1$，与另一列沿 $x$ 轴负方向（负向）传播的行波 $y_2$。假设两者的振幅均为 $A$，初相均为零，其分波动方程分别写作：$$y_1 = A \cos \left( \omega t - 2\pi \frac{x}{\lambda} \right),~~y_2 = A \cos \left( \omega t + 2\pi \frac{x}{\lambda} \right)$$
+$$y = y_1 + y_2 = A \cos \left( \omega t - 2\pi \frac{x}{\lambda} \right) + A \cos \left( \omega t + 2\pi \frac{x}{\lambda} \right) = \left( 2A \cos 2\pi \frac{x}{\lambda} \right) \cos \omega t$$
+其中 \(k=\dfrac{2\pi}{\lambda}\) 为波数，\(\omega=2\pi\nu\) 为角频率，所以也可写成 \(y=(2A\cos kx)\cos\omega t\)，并有 \(u=\dfrac{\omega}{k}=\lambda\nu\)。
+驻波方程中，空间自变量 $x$ 与时间自变量 $t$ 实现了完完全全的代数分离（乘积形式）。这正是“看不到波形传播”的数学总根源。$A \cos 2\pi \frac{x}{\lambda}$说明驻波的振幅与位置有关，$\cos\omega t$说明各质点都在作同频率的简谐运动。
+\end{theorem}
+
+\begin{exercise}[2006级期末：由驻波表达式求两行波波速]
+一弦上的驻波表达式为
+\[
+y=2.0\times10^{-2}\cos 15x\cos1500t\quad(\si{SI}).
+\]
+求形成该驻波的两个反向传播行波的波速。
+\end{exercise}
+
+\begin{solution}
+由驻波方程直接读出 \(k=15\,\si{rad/m}\)、\(\omega=1500\,\si{rad/s}\)，所以
+\[
+u=\frac{\omega}{k}=\frac{1500}{15}=\SI{100}{m/s}.
+\]
+振幅不影响波速。
+\end{solution}
+
+\begin{exercise}[2010级期末：由驻波方程判断两点振动相位差]
+一驻波表达式为
+ \(y=A\cos 2\pi x\cos 100\pi t\quad(\mathrm{SI}).\) 
+求位于 \(x_1=\frac18\,\si{m}\) 的质元 \(P_1\) 与位于 \(x_2=\frac38\,\si{m}\) 的质元 \(P_2\) 的振动相位差。
+\end{exercise}
+
+\begin{solution}
+驻波中每个固定位置的质元都作简谐振动，但空间因子 \(\cos 2\pi x\) 的正负会决定该点与公共时间因子是同相还是反相。
+把空间因子代入可得
+ \(\cos(2\pi x_1)=\cos\frac{\pi}{4}>0,\qquad \cos(2\pi x_2)=\cos\frac{3\pi}{4}<0.\) 
+两点的空间因子一正一负，时间振动相差一个负号，所以 \(\Delta\varphi=\pi\)。驻波题看的是空间因子符号，不能把两点间距直接当成行波的波程差。
+\end{solution}
+
+\begin{definition}[波节，波腹]
+定义该空间点质元的视在合振幅 $A'(x)$：$A'(x) = \left| 2A \cos 2\pi \frac{x}{\lambda} \right|$
+振幅随位置 $x$ 的不同而不同，但对于某一个确定的位置，其最大振幅与时间无关。
+\begin{enumerate}
+\item 波节（Node）：若空间位置 $x$ 恰好让其余弦值为零：$$\left| \cos 2\pi \frac{x}{\lambda} \right| = 0 \implies 2\pi \frac{x}{\lambda} = \pm (2k + 1)\frac{\pi}{2} \qquad (k = 0,1,2,\cdots)$$解得波节的空间坐标位置满足：$$\boxed{x = \pm \left( k + \frac{1}{2} \right) \frac{\lambda}{2} \qquad (k = 0,1,2,\cdots)}$$这些特殊位置的质元受到的两列相向分波的回复力在任何瞬时时刻都抵消，波节处的质元振幅恒等于零（$A_{\text{min}} = 0$），保持静止。
+\item 波腹（Antinode）：若空间位置 $x$ 恰好能让其余弦模长项达到极限最大值：$$\left| \cos 2\pi \frac{x}{\lambda} \right| = 1 \implies 2\pi \frac{x}{\lambda} = \pm k\pi \qquad (k = 0,1,2,\cdots)$$解得波腹的空间坐标位置满足：$$\boxed{x = \pm k \frac{\lambda}{2} \qquad (k = 0,1,2,\cdots)}$$这些位置的质元具有整个线路上最剧烈的往复振动形变规模，其最大振幅达到两倍的分振幅：$A_{\text{max}} = 2A$。
+\end{enumerate}
+\end{definition}
+
+\begin{exercise}[2006级期末：不等振幅反向波的合振幅最大和最小位置]
+在均匀介质中，有两列余弦波沿 \(Ox\) 轴传播：
+ \(y_1=A\cos\left[2\pi\left(\nu t-\frac{x}{\lambda}\right)\right], \qquad y_2=2A\cos\left[2\pi\left(\nu t+\frac{x}{\lambda}\right)\right].\) 
+求 \(Ox\) 轴上合振幅最大与合振幅最小的点的位置。
+\end{exercise}
+
+\begin{solution}
+两列波同频、反向传播，但振幅不相等。固定 \(x\) 看时，它们是两个同频简谐振动的合成，合振幅由相位差决定。
+
+两波在位置 \(x\) 处的相位差为 \(\Delta\varphi=2\pi\left(\nu t+\dfrac{x}{\lambda}\right)-2\pi\left(\nu t-\dfrac{x}{\lambda}\right)=\dfrac{4\pi x}{\lambda}\)。
+合振幅满足
+ \(A_{\text{合}}^2=A^2+(2A)^2+2\cdot A\cdot2A\cos\Delta\varphi.\) 
+
+合振幅最大： 当 \(\cos\Delta\varphi=1\) 时最大，
+ \(\frac{4\pi x}{\lambda}=2k\pi \implies x=\frac{k\lambda}{2}, \qquad k=0,\pm1,\pm2,\dots\) 
+
+合振幅最小： 当 \(\cos\Delta\varphi=-1\) 时最小，
+ \(\frac{4\pi x}{\lambda}=(2k+1)\pi \implies x=\frac{(2k+1)\lambda}{4}, \qquad k=0,\pm1,\pm2,\dots\) 
+所以 \(x=k\lambda/2\) 处合振幅最大，\(x=(2k+1)\lambda/4\) 处合振幅最小，\(k\in\mathbb{Z}\)。振幅不相等时，“最小”不是零，而是 \(2A-A=A\)，这些点不是波节，只是合振幅的极小位置。
+\end{solution}
+
+\begin{definition}[简正模式]
+驻波可以看成被波节分隔成一段一段的固定振动单元。每一段内部的质元在任意时刻都保持同相振动；跨过一个波节，振动方向整体相反。于是驻波的空间结构不是连续推进的波形，而是由若干个稳定的振动区段拼成的模式，这种稳定的分段振动就叫\textbf{简正模式}。
+\end{definition}

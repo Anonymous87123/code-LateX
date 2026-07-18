@@ -1,0 +1,121 @@
+
+\section{单缝的夫琅禾费衍射}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.6\textwidth]{pdf-exercises/8.png}
+\caption{单缝的夫琅禾费衍射示意图}
+\end{figure}
+
+\begin{theorem}[单缝衍射的光强分布]
+设单缝宽度为 \(a\)，缝上每个微小面元都发出同频同相的次级波。观察方向与中央方向夹角为 \(\theta\)。缝上相距 \(y\) 的两点，到观察方向的光程差约为$y\sin\theta$，对应相位差为
+\[
+\varphi=\frac{2\pi}{\lambda}y\sin\theta
+\]
+所以来自宽度元 \(dy\) 的振动可以写成
+\[
+dE=C e^{i\frac{2\pi}{\lambda}y\sin\theta}\,dy
+\]总振幅就是把整个单缝从 \(-a/2\) 到 \(a/2\) 积分：
+\[
+E_\theta=C\int_{-a/2}^{a/2}e^{i\frac{2\pi}{\lambda}y\sin\theta}\mathrm dy=C\frac{2\sin\left(\frac{\pi a\sin\theta}{\lambda}\right)}
+{\frac{2\pi\sin\theta}{\lambda}}
+\]令$\alpha=\frac{\pi a\sin\theta}{\lambda}$（总相位差的一半，整个缝宽对应的总相位差是$\Delta\varphi=\frac{2\pi}{\lambda}a\sin\theta=2\alpha$）就得到$E_\theta=Ca\frac{\sin\alpha}{\alpha}$，中央方向 \(\theta=0\) 时，全缝同相叠加，振幅为$E_0=Ca$，所以由光强正比于振幅平方：
+\[
+\frac{E_\theta}{E_0}=\frac{\sin\alpha}{\alpha}\implies
+I_\theta=I_0\left(\frac{\sin\alpha}{\alpha}\right)^2
+\]当 \(\theta=0\) 时，单缝上所有点到屏幕中心 \(O\) 的光程都相同。此时$a\sin\theta=0$，所有子波同相叠加，所以中心处光强最大。这就是中央明纹中心，也叫主极大，亮度\(I_P=I_0\)。
+\end{theorem} 
+
+\begin{theorem}[第 \(k\) 级明纹的光强]
+对于第 \(k\) 级明纹，对该处光强的贡献只有 \(AB\) 波阵面平行光的 \(1/(2k+1)\)。事实上，当某个方向对应
+\[
+a\sin\theta=\pm(2k+1)\frac{\lambda}{2}
+\]时，整个单缝可以被分成 \(2k+1\) 个半波带。前 \(2k\) 个半波带两两抵消；最后剩下 1 个半波带没有配对；所以这个方向仍然是明纹，但只剩一小部分贡献。因此级数越高，半波带数越多，能留下来的有效贡献越小，明纹就越暗。
+\end{theorem}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.6\textwidth]{pdf-exercises/10.png}
+\caption{明暗纹位置与宽度辅助图}
+\end{figure}
+
+\begin{theorem}[暗纹的位置与宽度，中央明纹的半角/半线宽度，中央明纹宽度]
+第 \(k\) 级暗纹
+\[a\sin\theta\approx a\theta_k=k\lambda\implies \theta_k=\frac{k\lambda}{a},~k=1,2,3...\]第一级暗纹对应$\theta_1=\frac{\lambda}{a}$，中央明纹的半角宽度：$\theta_1=\frac{\lambda}{a}$，又
+\[
+x_k=f\tan\theta_k=f\sin\theta_k=f\frac{k\lambda}{a}
+\]也就是说：级次越高，离中心越远；波长越长，条纹越散；焦距越大，屏上图样越放大；缝宽越小，衍射越明显，条纹越分散。中央明纹中心到第一级暗纹的距离设为 \(x_1\)，则$x_1=f\theta_1=f\sin\theta_1=f\frac{\lambda}{a}$就是中央明纹的半线宽度。中央明纹总宽度是左右两个 \(x_1\)：
+\[
+\Delta x_0=2x_1=2f\frac{\lambda}{a}
+\]告诉我们中央明纹宽度与缝宽成反比，缝越窄，中央明纹越宽。除了中央明纹外，其它明纹宽度是中央明纹宽度的一半。相邻两个暗纹之间的距离为
+\[
+\Delta x=x_{k+1}-x_k=\frac{(k+1)\lambda f}{a}-\frac{k\lambda f}{a}=\frac{\lambda f}{a}=\frac12\Delta x_0.
+\]缝宽 \(a\) 变小；
+第一级暗纹角度 \(\theta_1\) 变大；
+中央明纹宽度 \(\Delta x_0\) 变大；
+整个衍射图样展开得更明显。
+\end{theorem}
+
+\begin{theorem}[单缝衍射的动态变化]
+\begin{enumerate}
+\item 单缝上下移动：衍射图不变。如果只把单缝 \(R\) 上下移动，而透镜 \(L\) 和观察屏 \(P\) 不动，那么屏上的衍射图样不发生平移，中央明纹仍然在透镜光轴上。单缝上移，零级明纹仍在透镜光轴上。（单缝位置变了；但透镜仍把同一衍射角 \(\theta\) 的平行光汇聚到焦平面上的同一位置；所以衍射角分布没有变；屏上强度分布也不变。）第 \(k\) 级暗纹与中心的距离仍为
+\[
+x_k=\theta_k f=\frac{k\lambda}{a}f.
+\]只要缝宽 \(a\)、波长 \(\lambda\)、焦距 \(f\) 不变，这个距离就不变。
+\item 如果透镜向上移动，它的光轴也向上移动，那么零级明纹跟着光轴移动；整个衍射图样一起平移；但各级暗纹相对中心的距离不变。也就是说，透镜移动改变的是图样在屏上的整体位置，不改变图样内部结构。所以仍有
+\[
+x_k=\frac{k\lambda f}{a}.
+\]这里的 \(x_k\) 是相对于新的中心位置测量的。
+\end{enumerate}    
+\end{theorem}
+
+
+\begin{exercise}[单缝衍射：由明纹位置判断级次]
+在单缝夫琅禾费衍射实验中，单缝宽度 \(a=\SI{0.10}{mm}\)，透镜焦距 \(f=\SI{100}{mm}\)，入射光波长 \(\lambda=\SI{500}{nm}\)。屏上距中央明纹中心 \(x=\SI{1.75}{mm}\) 的 \(P\) 点为明纹。设衍射角很小，求：
+\begin{enumerate}
+\item \(P\) 点的明纹级次；
+\item 对应于 \(P\) 点，单缝可分成多少个半波带；
+\item 若缝宽增加一倍而 \(P\) 点位置不变，\(P\) 点变成什么条纹。
+\end{enumerate}
+\end{exercise}
+
+\begin{solution}
+小角近似下，
+\[
+\sin\theta\approx\tan\theta=\frac{x}{f}.
+\]
+先把 \(P\) 点对应的最大光程差写成波长的倍数：
+\[
+\frac{a\sin\theta}{\lambda}\approx\frac{ax}{f\lambda}
+=\frac{0.10\times1.75}{100\times 5.00\times10^{-4}}=3.5,
+\]
+其中 \(\lambda=\SI{500}{nm}=5.00\times10^{-4}\,\si{mm}\)。单缝明纹近似条件为
+\[
+a\sin\theta=(2k+1)\frac{\lambda}{2}\implies\frac{2k+1}{2}=3.5\implies k=3.
+\]
+所以 \(P\) 点是第 \(3\) 级明纹。此时$a\sin\theta=\frac{7\lambda}{2}$，每个半波带对应光程差 \(\lambda/2\)，故单缝可分成 \(7\) 个半波带。若缝宽增加一倍，观察点 \(P\) 不动，则 \(\theta\) 不变，而
+\[
+a'\sin\theta=2a\sin\theta=7\lambda.
+\]
+这满足单缝暗纹条件 \(a'\sin\theta=K\lambda\)，且 \(K=7\)，所以 \(P\) 点变为第 \(7\) 级暗纹。
+\end{solution}
+
+
+\begin{exercise}[2008级期末：由钠黄光中央明纹宽度推蓝紫光宽度]
+在单缝夫琅禾费衍射实验中，设第一级暗纹的衍射角很小。若钠黄光 \(\lambda_1\approx\SI{589}{nm}\) 的中央明纹宽度为 \(\SI{4.0}{mm}\)，求 \(\lambda_2=\SI{442}{nm}\) 的蓝紫色光的中央明纹宽度。
+\end{exercise}
+
+\begin{solution}
+同一装置中，单缝宽度 \(a\) 和透镜焦距 \(f\) 不变，中央明纹宽度只随波长成正比：
+ \(\Delta x_0=\frac{2f\lambda}{a} \implies \frac{\Delta x_2}{\Delta x_1}=\frac{\lambda_2}{\lambda_1},\qquad \Delta x_2 =4.0\,\si{mm}\times\frac{442}{589} \approx \SI{3.0}{mm}.\) 
+蓝紫光波长比钠黄光短，算出的中央明纹也更窄，这和衍射图样随波长缩小的判断一致。
+\end{solution}
+
+\begin{exercise}[2012级期末：由两侧第三级暗纹距离反推单缝波长]
+平行单色光垂直入射到缝宽 \(a=\SI{0.15}{mm}\) 的单缝上。缝后有焦距 \(f=\SI{400}{mm}\) 的凸透镜，在其焦平面上放置观察屏。若屏幕中央明纹两侧的两个第三级暗纹之间的距离为 \(\SI{8}{mm}\)，设衍射角很小，求入射光波长。
+\end{exercise}
+\begin{solution}
+ \[a\sin\theta_k=k\lambda,\qquad x_k\approx f\tan\theta_k\approx f\sin\theta_k\approx\frac{kf\lambda}{a}\] 
+题目给的是两侧第三级暗纹之间的全距离，故单侧 \(x_3=\SI{4}{mm}\)，于是
+ \[\lambda=\frac{a x_3}{3f} =\frac{0.15\,\si{mm}\times 4\,\si{mm}}{3\times 400\,\si{mm}} =5.0\times10^{-4}\,\si{mm} =\SI{500}{nm}\]
+\end{solution}

@@ -1,0 +1,162 @@
+
+\section{切向加速度/法向加速度}
+
+在自然坐标系中，速度 $\vec{v}$ 的方向永远沿着轨道切线方向。因此，速度矢量可以写为大小（速率 $v$）与方向（切向单位矢量 $\vec{\tau}$）的乘积：$\vec{v} = v\vec{\tau}$，其中 $\vec{\tau}$ 是关于时间 $t$ 的函数（由于质点曲线运动时，切向单位矢量 $\vec{\tau}$ 的方向一直在改变）。乘积求导法则： \(\vec{a} = \frac{\mathrm{d}\vec{v}}{\mathrm{d}t} = \frac{\mathrm{d}(v\vec{\tau})}{\mathrm{d}t} = \frac{\mathrm{d}v}{\mathrm{d}t}\vec{\tau} + v\frac{\mathrm{d}\vec{\tau}}{\mathrm{d}t}\) 
+这一步非常直观地把加速度分成了两部分：
+\begin{itemize}
+\item 第一项 $\frac{\mathrm{d}v}{\mathrm{d}t}\vec{\tau}$：速度大小随时间的变化率，方向沿切向。
+\item 第二项 $v\frac{\mathrm{d}\vec{\tau}}{\mathrm{d}t}$：速度方向随时间的变化率，接下来我们需要求出 $\frac{\mathrm{d}\vec{\tau}}{\mathrm{d}t}$ 具体等于什么。
+\end{itemize}
+为了看清 $\mathrm{d}\vec{\tau}$ 的几何本质，我们引入路程微元 $\mathrm{d}s$ 进行链式展开，提取出速率 $v$：
+ \(\frac{\mathrm{d}\vec{\tau}}{\mathrm{d}t} = \frac{\mathrm{d}\vec{\tau}}{\mathrm{d}s} \cdot \frac{\mathrm{d}s}{\mathrm{d}t} = \frac{\mathrm{d}\vec{\tau}}{\mathrm{d}s} v\) 
+设质点在 $\mathrm{d}t$ 时间内走过了弧长 $\mathrm{d}s$。对应的切向单位矢量从 $\vec{\tau}$ 变到了 $\vec{\tau}'$。由于它们都是单位矢量，模长保持不变：$|\vec{\tau}| = |\vec{\tau}'| = 1$，将 $\vec{\tau}$ 和 $\vec{\tau}'$ 移到同一起点，它们之间的夹角为 $\mathrm{d}\theta$（即轨道切线转过的角度）。
+\begin{itemize}
+\item 方向：当 $\mathrm{d}\theta \to 0$ 时，矢量差 $\mathrm{d}\vec{\tau} = \vec{\tau}' - \vec{\tau}$ 将垂直于 $\vec{\tau}$，严格指向曲线内凹的一侧，也就是法向单位矢量 $\vec{n}$ 的方向。
+\item 大小：由大圆弧或三角形小角近似关系，当 $\mathrm{d}\theta$ 极小时，两单位矢量终点连线的长度（即 $|\mathrm{d}\vec{\tau}|$）等于弧长： \(|\mathrm{d}\vec{\tau}| = |\vec{\tau}| \cdot \mathrm{d}\theta = 1 \cdot \mathrm{d}\theta = \mathrm{d}\theta\) 
+\end{itemize}
+根据数学上对轨道曲率半径 $\rho$ 的定义，弧长 $\mathrm{d}s$、转角 $\mathrm{d}\theta$ 与半径 $\rho$ 满足：
+ \(\mathrm{d}s = \rho \mathrm{d}\theta \implies \mathrm{d}\theta = \frac{\mathrm{d}s}{\rho}\) 
+代入前面的大小公式，得到： \(|\mathrm{d}\vec{\tau}| = \frac{\mathrm{d}s}{\rho}\) 
+综合上面的方向（$\vec{n}$）和大小（$\frac{\mathrm{d}s}{\rho}$），我们可以写出 $\mathrm{d}\vec{\tau}$ 的严格矢量表达式： \(\mathrm{d}\vec{\tau} = \frac{\mathrm{d}s}{\rho}\vec{n} \implies \frac{\mathrm{d}\vec{\tau}}{\mathrm{d}s} = \frac{1}{\rho}\vec{n}\) 
+现在，把 $\frac{\mathrm{d}\vec{\tau}}{\mathrm{d}s} = \frac{1}{\rho}\vec{n}$ 代回前面的链式法则中： \(\frac{\mathrm{d}\vec{\tau}}{\mathrm{d}t} = \frac{\mathrm{d}\vec{\tau}}{\mathrm{d}s} v = \left(\frac{1}{\rho}\vec{n}\right) v = \frac{v}{\rho}\vec{n}\) 最后，将这个结果填入最初的加速度展开式里：
+\begin{definition}[切向加速度/法向加速度]
+$$\vec{a} = \frac{\mathrm{d}\vec{v}}{\mathrm{d}t} = \frac{\mathrm{d}(v\vec{\tau})}{\mathrm{d}t} = \frac{\mathrm{d}v}{\mathrm{d}t}\vec{\tau} + v\frac{\mathrm{d}\vec{\tau}}{\mathrm{d}t} = \frac{\mathrm{d}v}{\mathrm{d}t}\vec{\tau} + v\left(\frac{v}{\rho}\vec{n}\right)= \frac{\mathrm{d}v}{\mathrm{d}t}\vec{\tau} + \frac{v^2}{\rho}\vec{n}$$
+\begin{itemize}
+\item $\vec{a}$: \textbf{加速度矢量（Total Acceleration Vector）}。质点在空间运动时的总瞬时加速度。
+\item $\vec{v}$: \textbf{速度矢量（Velocity Vector）}。其方向永远指向质点运动轨迹的切线方向。
+\item $v$: \textbf{瞬时速率（Speed）}。是一个标量，代表速度矢量 $\vec{v}$ 的模长（即 $v = |\vec{v}| = \frac{\mathrm{d}s}{\mathrm{d}t}$），反映质点运动的快慢。
+\item $\vec{\tau}$: \textbf{切向单位矢量（Unit Tangent Vector）}。是一个沿轨道切线、指向质点前进方向的单位矢量（满足 $|\vec{\tau}| = 1$），负责指示速度的方向。
+\item $\vec{n}$: \textbf{法向单位矢量（Unit Normal Vector）}。是一个垂直于切线、严格指向轨道内凹一侧（曲率中心）的单位矢量（满足 $|\vec{n}| = 1$）。
+\item $\rho$: \textbf{曲率半径（Radius of Curvature）}。轨迹在该点处局部近似圆弧的半径。轨迹越弯曲，$\rho$ 越小；直线运动时 $\rho \to \infty$。
+\item $\frac{\mathrm{d}v}{\mathrm{d}t}\vec{\tau}$: \textbf{切向加速度矢量（Tangential Acceleration）}。通常记作 $\vec{a}_\tau$。其大小 $a_\tau = \frac{\mathrm{d}v}{\mathrm{d}t}$ 反映了速度\textbf{大小（速率）}随时间的变化率。
+\item $\frac{v^2}{\rho}\vec{n}$: \textbf{法向加速度矢量（Normal / Centripetal Acceleration）}。通常记作 $\vec{a}_n$。其大小 $a_n = \frac{v^2}{\rho}$ 反映了速度\textbf{方向}随时间的变化率（即向心加速度）。
+\end{itemize}
+\end{definition}
+
+\begin{exercise}[2010模拟题：由运动学方程判断是否匀加速]
+某质点作直线运动，运动学方程为
+ \(x=3t-5t^3+6\quad(\mathrm{SI}).\) 
+判断该质点是匀加速还是变加速运动，并说明加速度方向。
+\end{exercise}
+\begin{solution}
+对 \(x\) 求导。速度是一阶导数，加速度是二阶导数。$v=3-15t^2,~ a=-30t$，加速度随时间 \(t\) 改变，因此不是匀加速运动；当 \(t>0\) 时，\(a<0\)，加速度沿 \(x\) 轴负方向。
+\end{solution}
+
+\begin{exercise}[2011级期末：收绳拉船靠岸为什么是变加速运动]
+湖中有一小船，有人用绕过岸上定滑轮的绳拉船靠岸。设岸上滑轮高出船头的距离为 \(h\)，人以恒定速率 \(v_0\) 收绳，绳不可伸长且湖水静止。判断小船靠岸过程中的运动性质。
+\end{exercise}
+\begin{solution}
+勾股定理：$l^2=x^2+h^2,~~-\dv{l}{t}=v_0$，对几何约束求导：$l\dv{l}{t}=x\dv{x}{t}$，
+船向岸的速率为
+ \(u=-\dv{x}{t} =v_0\frac{l}{x} =v_0\sqrt{1+\frac{h^2}{x^2}}.\) 
+\end{solution}
+
+\begin{exercise}
+一辆汽车从静止出发，以加速度 \(a=\SI{2}{m/s^2}\) 做匀加速直线运动，求 \(5\) 秒后的速度和位移。
+\end{exercise}
+
+\begin{solution}
+已知初速度 \(v_0=0\)、加速度 \(a=\SI{2}{m/s^2}\)、时间 \(t=\SI{5}{s}\)。
+由匀变速公式
+\[
+\begin{aligned}
+v&=v_0+at=0+2\times 5=\SI{10}{m/s},\\
+x-x_0&=v_0t+\frac{1}{2}at^2=0+\frac{1}{2}\times 2\times 5^2=\SI{25}{m}.
+\end{aligned}
+\]
+所以 \(5\) 秒后，汽车速度为 \(\SI{10}{m/s}\)，位移为 \(\SI{25}{m}\)。
+\end{solution}
+
+\begin{exercise}[由角位移函数顺着读出角速度、角加速度和线量]
+某飞轮半径为 \(R=\SI{0.20}{m}\)，其转角满足
+ \(\theta(t)=-t^2+4t.\) 
+求 \(t=\SI{1}{s}\) 时的角速度、角加速度、线速度、切向加速度和法向加速度。
+\end{exercise}
+\begin{solution}
+\[
+\begin{aligned}
+\omega(t)&=\dv{}{t}(-t^2+4t)=-2t+4
+\implies \omega(1)=\SI{2}{rad/s},\\
+\alpha(t)&=\dv{\omega}{t}=-2
+\implies \alpha(1)=\SI{-2}{rad/s^2},\\
+v&=R\omega=0.20\times 2=\SI{0.40}{m/s},\\
+a_\tau&=R\alpha=0.20\times(-2)=\SI{-0.40}{m/s^2},\\
+a_n&=R\omega^2=0.20\times 2^2=\SI{0.80}{m/s^2}.
+\end{aligned}
+\]
+\end{solution}
+
+\begin{exercise}[已知弧长函数时怎样分出切向与法向加速度]
+一质点沿半径为 \(R\) 的圆周运动，其弧长满足
+ \(s=bt-\frac12 ct^2,\) 
+其中 \(b,c\) 均为正常数。求任意时刻的切向加速度、法向加速度，并求在尚未反向前二者大小相等的时刻。
+\end{exercise}
+\begin{solution}
+\[
+\begin{aligned}
+v&=\dv{}{t}\left(bt-\frac12 ct^2\right)=b-ct,~~a_\tau=\dv{v}{t}=-c,~~a_n=\frac{(b-ct)^2}{R}.
+\end{aligned}
+\]
+若要求尚未反向前二者大小相等，则先用
+ \(0<t<\frac{b}{c},\qquad |a_\tau|=a_n.\) 
+于是
+ \(c=\frac{(b-ct)^2}{R} \implies b-ct=\sqrt{cR} \implies t=\frac{b-\sqrt{cR}}{c}.\) 
+\end{solution}
+
+\begin{exercise}[2004级期末：圆周运动方程中的速度和速率变化率]
+质点的运动方程为
+\[
+\vb*{r}=R\cos\omega t\,\vb*{i}+R\sin\omega t\,\vb*{j},
+\]
+其中 \(R,\omega\) 为常量。求质点的速度矢量 \(\vb*{v}\)，以及速率 \(v\) 对时间的导数 \(\dv{v}{t}\)。
+\end{exercise}
+
+\begin{solution}
+题目给的是位置矢量函数，所以速度矢量直接对时间求导；但第二个量写的是速率 \(v\) 的导数，不是加速度矢量，这一点要先分清。
+ \(\vb*{v} =-\omega R\sin\omega t\,\vb*{i} +\omega R\cos\omega t\,\vb*{j}.\) 
+于是
+ \(v=\sqrt{\omega^2R^2\sin^2\omega t+\omega^2R^2\cos^2\omega t} =\omega R,\) 
+为常量，所以
+ \(\dv{v}{t}=0.\) 
+\end{solution}
+
+\begin{exercise}[2010级期末：变速圆周运动的加速度大小]
+一质点沿半径为 \(R\) 的圆周作变速运动，某时刻速率为 \(v\)，且速率变化率为 \(\dv{v}{t}\)。求该时刻质点加速度的大小。
+\end{exercise}
+\begin{solution}
+总加速度大小为
+ \(a=\sqrt{a_\tau^2+a_n^2} =\sqrt{\left(\dv{v}{t}\right)^2+\left(\frac{v^2}{R}\right)^2}.\) 
+\end{solution}
+
+\begin{exercise}[]
+一个质点做半径为 \(R\) 的匀速圆周运动，周期为 \(T\)。求其速度大小和法向加速度大小。
+\end{exercise}
+
+\begin{solution}
+一周路程为 \(2\pi R\)，周期为 \(T\)，于是
+ \(v=\frac{2\pi R}{T},\qquad a_n=\frac{v^2}{R} =\frac{1}{R}\left(\frac{2\pi R}{T}\right)^2 =\frac{4\pi^2R}{T^2}.\) 
+速度大小为 \(v=\frac{2\pi R}{T}\)，法向加速度大小为 \(a_n=\frac{4\pi^2R}{T^2}\)。量纲也对：\(\frac{R}{T}\) 是速度量纲，\(\frac{R}{T^2}\) 是加速度量纲。
+\end{solution}
+
+\begin{exercise}[2005级期末：在一条船上看另一条船的速度]
+在相对地面静止的坐标系中，\(A,B\) 两船都以 \(\SI{2}{m/s}\) 的速率匀速行驶，\(A\) 船沿 \(x\) 轴正向，\(B\) 船沿 \(y\) 轴正向。在 \(A\) 船上设置与地面坐标系方向相同的坐标系，求在 \(A\) 船坐标系中 \(B\) 船的速度。
+\end{exercise}
+
+\begin{solution}
+这是相对速度题，不需要重新建立运动方程。\(A\) 船坐标系相对地面以 \(\vb*{v}_A\) 平动，所以在 \(A\) 系中看 \(B\)，就是用 \(B\) 的地面速度减去 \(A\) 的地面速度。
+ \(\vb*{v}_A=2\vb*{i},\qquad \vb*{v}_B=2\vb*{j} \implies \vb*{v}_{B/A}=-2\vb*{i}+2\vb*{j}.\) 
+\end{solution}
+
+
+\begin{exercise}[2005级期末：旋转探照灯在岸边扫过的速度]
+距直线河岸 \(\SI{500}{m}\) 处有一艘静止的船，船上的探照灯以转速 \(n=\SI{1}{r/min}\) 转动。当光束与岸边成 \(60^\circ\) 角时，求光束在岸边光点沿岸移动的速度。
+\end{exercise}
+
+\begin{solution}
+设船到岸的垂直距离为 \(d=\SI{500}{m}\)，光束与岸边夹角为 \(\theta\)，则沿岸距离$x=d\cot\theta$，探照灯角速度为
+ \(\omega=2\pi n=\frac{2\pi}{60}\,\si{rad/s}=\frac{\pi}{30}\,\si{rad/s}.\) 
+ \(\abs{v}=\abs{\dv{x}{t}} =d\csc^2\theta\,\omega.\) 
+当 \(\theta=60^\circ\) 时，
+ \(v=500\times \frac{4}{3}\times\frac{\pi}{30}\ \si{m/s} \approx \SI{69.8}{m/s}.\) 
+因此光点沿岸移动的速度约为 \(\SI{69.8}{m/s}\)。光点速度可以远大于船上灯头边缘的线速度，因为它是远处交点的几何扫掠速度；这里不能把 \(\omega r\) 里的 \(r\) 直接取为 \(\SI{500}{m}\)，而要先写清光线与岸的交点位置。
+\end{solution}

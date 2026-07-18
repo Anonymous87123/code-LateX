@@ -1,0 +1,54 @@
+
+\section{阻尼振动}
+\begin{definition}[阻尼振动]
+    阻尼振动（Damped Oscillations）是指振幅（或能量）随时间逐渐减小的振动。原因：
+    \begin{itemize}
+    \item 摩擦阻尼（摩擦或介质阻力）的存在：系统在介质中运动时，由于摩擦和碰撞将机械能转化为内能。
+    \item 辐射阻尼：振动质点引起邻近质点振动，以波的形式向周围空间传播和辐射能量。
+    \end{itemize}
+    以受到线性阻力的水平弹簧振子模型为例，当物体运动速度不太大时，所受的阻力 $\vec{f}_\gamma$ 与瞬时速度 $\vec{v}$ 成正比，方向相反：
+    $$\vec{f}_\gamma = -\gamma \vec{v} \qquad (\gamma \text{ 为常数})$$
+    根据牛顿第二定律，系统同时受弹性回复力 $\vec{F} = -k\vec{x}$ 与阻力 $\vec{f}_\gamma$ 的作用：$$m \frac{\mathrm{d}^2x}{\mathrm{d}t^2} = -kx - \gamma v = -kx - \gamma \frac{\mathrm{d}x}{\mathrm{d}t}$$移项整理得到阻尼振动的标准运动微分方程：$$\frac{\mathrm{d}^2x}{\mathrm{d}t^2} + \frac{\gamma}{m} \frac{\mathrm{d}x}{\mathrm{d}t} + \frac{k}{m} x = 0$$引入两个独立的物理特征常数：
+    \begin{itemize}
+    \item 阻尼常数（表征阻尼的强弱）：$\beta = \frac{\gamma}{2m} \implies 2\beta = \frac{\gamma}{m}$
+    \item 无阻尼固有角频率：$\omega_0^2 = \frac{k}{m}$
+    \end{itemize}
+    微分方程统一写作：\[\boxed{\frac{\mathrm{d}^2x}{\mathrm{d}t^2} + 2\beta \frac{\mathrm{d}x}{\mathrm{d}t} + \omega_0^2 x = 0}\]根据阻尼因子 $\beta$ 与系统固有角频率 $\omega_0$ 的量值相对大小，微分方程的特征根呈现三种完全不同的运动形态：
+    \begin{enumerate}
+    \item 过阻尼（$\beta^2 > \omega_0^2$）
+    \item 临界阻尼（$\beta^2 = \omega_0^2$）
+    \item 弱阻尼（$\beta^2 < \omega_0^2$）
+    \end{enumerate}
+\end{definition}
+
+\begin{definition}[弱阻尼]
+阻尼系数较小时，系统作减幅振动。此时方程的通解为：$$\boxed{x = A e^{-\beta t} \cos(\omega t + \phi)}$$
+    \begin{itemize}
+    \item 缓变包络振幅：系统的振幅项 $A(t) = A e^{-\beta t}$ 随时间按指数规律迅速减小。阻尼越大，减幅越迅速。
+    \item 角频率：弱阻尼状态下的减幅振动角频率 $\omega$ 小于自由振动的固有角频率 $\omega_0$：$$\omega = \sqrt{\omega_0^2 - \beta^2}$$
+    \item 阻尼振动的周期 $T$：$$T = \frac{2\pi}{\omega} = \frac{2\pi}{\sqrt{\omega_0^2 - \beta^2}} > \frac{2\pi}{\omega_0}$$阻尼越大，振动周期 $T$ 越明显地大于自由振动周期。
+    \end{itemize}
+\end{definition}
+\begin{definition}[强阻尼]
+过阻尼（$\beta^2 > \omega_0^2$）当介质阻力极大时，根号内部变为虚数。质点失去往复振荡的动力学条件，运动表现为非周期性的缓变松弛过程，即从最大位移处极为缓慢地回到平衡位置，不再作往复运动。
+\end{definition}
+\begin{definition}[临界阻尼]
+当 $\beta^2 = \omega_0^2$ 时，系统处于“临界阻尼”情况。这是质点不作往复运动的一个极限边界条件。在所有非周期的松弛运动中，临界阻尼能让质点以最快的速度返回平衡位置而不发生发生越位振荡。
+\end{definition}
+
+
+\begin{exercise}
+一个弹簧振子，\(m=\SI{0.2}{kg}\)，\(k=\SI{50}{N/m}\)，阻尼系数 \(\gamma=\SI{0.4}{kg/s}\)。求：(1) 固有角频率；(2) 阻尼振动角频率；(3) 振幅衰减到初始值 \(1/\mathrm{e}\) 所需时间。
+\end{exercise}
+\begin{solution}
+阻尼很弱，先算无阻尼固有角频率和衰减系数：
+\[
+\begin{aligned}
+\omega_0&=\sqrt{\frac{k}{m}}=\sqrt{\frac{50}{0.2}}=\SI{15.8}{rad/s},\\
+\beta&=\frac{\gamma}{2m}=\frac{0.4}{2\times0.2}=\SI{1.0}{s^{-1}},\\
+\omega_d&=\sqrt{\omega_0^2-\beta^2}
+=\sqrt{15.8^2-1^2}\approx\SI{15.8}{rad/s}.
+\end{aligned}
+\]
+弱阻尼下 \(\omega_d\approx\omega_0\)，振动频率几乎不变。振幅 \(\propto\mathrm{e}^{-\beta t}\)，衰减到 \(1/\mathrm{e}\) 时 \(\beta t=1\)，即 \(t=1/\beta=\SI{1.0}{s}\)。
+\end{solution}

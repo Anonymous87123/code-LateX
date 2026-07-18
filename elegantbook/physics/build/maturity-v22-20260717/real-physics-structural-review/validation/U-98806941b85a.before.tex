@@ -1,0 +1,138 @@
+
+\section{循环过程}
+
+\begin{definition}[热力学循环过程]
+系统经过一系列状态变化后，又回到原来状态的过程，称为\textbf{热力学循环过程}。循环的最根本特征是：初态和末态相同，因此
+ \(\Delta U=0 \implies Q_{\text{净}}=A_{\text{净}}.\) 
+若图像是 \(p\)-\(V\) 图，则循环曲线所围成的面积在数值上就等于系统所做的净功。正循环对应顺时针方向，此时 \(A_{\text{净}}>0\)；逆循环对应逆时针方向，此时 \(A_{\text{净}}<0\)。由转向先判断净功符号，再谈热机还是制冷机，循环题的角色就清楚了。
+\end{definition}
+
+\begin{exercise}[2006级期末：绝热膨胀后等体升温再等温压缩的循环符号]
+一定量理想气体从初态 \((V_0,T_0)\) 开始，先经绝热膨胀使体积增大一倍，再经等体升温回复到初态温度 \(T_0\)，最后经等温过程使体积回复为 \(V_0\)。判断该循环中气体对外所作净功的符号，并说明总吸热的符号。
+\end{exercise}
+
+\begin{solution}
+逆时针循环，该循环中气体对外作的净功为负（也就是外界对气体做功为正），由于内能不变，所以对外放热。
+\end{solution}
+
+
+\begin{exercise}[2009级期末：\(T\)-\(V\) 图上单原子气体循环的热量与效率]
+\SI{1}{mol} 单原子理想气体经历如图所示循环 \(a\to b\to c\to a\)。已知 \(T_c=\SI{600}{K}\)，图中 \(a,b\) 在过原点的直线上，\(b,c\) 体积相同，\(c,a\) 温度相同，且 \(V_a=2V_c,\ V_b=V_c\)。求各过程吸收的热量、循环净功以及热机效率。
+
+\begin{center}
+\includegraphics[width=0.32\linewidth]{pdf-exercises/pdf2009-q22-tv-cycle.png}
+\end{center}
+\end{exercise}
+
+\begin{solution}
+等压压缩段
+ \[Q_{ab}=nC_{p,m}(T_b-T_a) =\frac52\times 8.31(300-600) \approx \SI{-6232.5}{J}.\]
+等体升温段
+ \[Q_{bc}=nC_{V,m}(T_c-T_b) =\frac32\times 8.31(600-300) \approx \SI{3739.5}{J}.\]
+等温膨胀段
+ \[Q_{ca}=A_{ca}=\nu RT_c\ln\frac{V_a}{V_c} =8.31\cdot600\ln2 \approx \SI{3455.7966}{J}.\] 
+循环净功与效率： 一周后 \(\Delta U_{\text{cycle}}=0\)，热机吸热发生在 \(b\to c\) 和 \(c\to a\) 两段，所以
+ \[A_{\text{net}}=Q_{ab}+Q_{bc}+Q_{ca} \approx \SI{962.7966}{J},~\eta=\frac{A_{\text{net}}}{Q_{bc}+Q_{ca}} \approx \frac{0.97}{3.74+3.46} \approx 13.38\%\] 
+\end{solution}
+
+\begin{exercise}[2015-2016期末：单原子气体沿抛物线回到初态的循环效率]
+\SI{1}{mol} 单原子分子理想气体经历 \(a\to b\to c\to a\) 循环。状态 \(a\) 的温度为 \(T_0\)，且
+\[
+a(V_0,p_0),\qquad b(V_0,9p_0),\qquad c(3V_0,9p_0).
+\]
+其中 \(a\to b\) 为等体升压，\(b\to c\) 为等压膨胀，\(c\to a\) 沿曲线
+ \(p=\frac{p_0V^2}{V_0^2}\) 
+返回。试用 \(R,T_0\) 表示三段过程中气体吸收的热量，并求该循环的效率。
+\end{exercise}
+
+\begin{solution}
+先用 \(pV=RT\) 求三个状态温度，再逐段使用第一定律。单原子理想气体有 \(C_{V,m}=\frac32R,\ C_{p,m}=\frac52R\)，且 \(p_0V_0=RT_0\)，因此
+ \[T_a=T_0,\qquad T_b=\frac{9p_0V_0}{R}=9T_0,\qquad T_c=\frac{9p_0\cdot3V_0}{R}=27T_0.\]
+等体段 \(a\to b\) 不做体积功，等压段 \(b\to c\) 可直接用 \(Q=nC_p\Delta T\)；曲线段 \(c\to a\) 要先算功，再和内能变化合成热量：
+\[
+\begin{aligned}
+Q_{ab}&=\Delta U_{ab}
+=\frac32R(9T_0-T_0)
+=12RT_0,\\
+Q_{bc}&=\frac52R(27T_0-9T_0)
+=45RT_0,\\
+A_{ca}=\int_{3V_0}^{V_0}\frac{p_0V^2}{V_0^2}\,\dd V
+&=\frac{p_0}{V_0^2}\left.\frac{V^3}{3}\right|_{3V_0}^{V_0}
+=-\frac{26}{3}p_0V_0
+=-\frac{26}{3}RT_0,\\
+\Delta U_{ca}&=\frac32R(T_a-T_c)
+=\frac32R(T_0-27T_0)
+=-39RT_0,\\
+Q_{ca}&=\Delta U_{ca}+A_{ca}
+=-39RT_0-\frac{26}{3}RT_0
+=-\frac{143}{3}RT_0.
+\end{aligned}
+\]
+循环净功可由三段功相加得到，效率分母只取正吸热量：
+\[
+\begin{aligned}
+A_{\text{net}}=A_{ab}+A_{bc}+A_{ca}
+&=0+9p_0(3V_0-V_0)-\frac{26}{3}p_0V_0=18RT_0-\frac{26}{3}RT_0
+=\frac{28}{3}RT_0,\\
+Q_{\text{in}}&=Q_{ab}+Q_{bc}=57RT_0,\\
+\eta&=\frac{A_{\text{net}}}{Q_{\text{in}}}
+=\frac{\frac{28}{3}}{57}
+=\frac{28}{171}
+\approx16.4\%.
+\end{aligned}
+\]
+\end{solution}
+
+
+\begin{exercise}[2014级期末：刚性双原子气体三角形循环的温度、功和热量]
+一定量刚性双原子分子理想气体经历如图所示的 \(abca\) 循环。已知
+ \(a( V=\SI{2}{m^3},p=\SI{400}{Pa}),\quad b( V=\SI{6}{m^3},p=\SI{100}{Pa}),\quad c( V=\SI{2}{m^3},p=\SI{100}{Pa}),\) 
+且 \(T_a=\SI{300}{K}\)。求：1. \(b,c\) 两态温度；2. \(a\to b\) 过程中气体对外做功；3. \(b\to c\) 过程气体吸收的热量；4. \(c\to a\) 过程气体吸收的热量。
+
+\begin{center}
+\begin{tikzpicture}[scale=0.78,>=stealth]
+ \draw[->] (0,0) -- (7.2,0) node[right] {\(V(\si{m^3})\)};
+ \draw[->] (0,0) -- (0,4.8) node[above] {\(p(\si{Pa})\)};
+ \foreach \x/\lab in {2/2,6/6} {
+ \draw (\x,0.08) -- (\x,-0.08) node[below] {\(\lab\)};
+ }
+ \foreach \y/\lab in {1/100,4/400} {
+ \draw (0.08,\y) -- (-0.08,\y) node[left] {\(\lab\)};
+ }
+ \coordinate (a) at (2,4);
+ \coordinate (b) at (6,1);
+ \coordinate (c) at (2,1);
+ \draw[thick,->] (a) -- (b);
+ \draw[thick,->] (b) -- (c);
+ \draw[thick,->] (c) -- (a);
+ \fill (a) circle (1.6pt) node[above left] {\(a\)};
+ \fill (b) circle (1.6pt) node[right] {\(b\)};
+ \fill (c) circle (1.6pt) node[below left] {\(c\)};
+\end{tikzpicture}
+\end{center}
+\end{exercise}
+
+\begin{solution}
+ \[T_c=T_a\frac{p_cV_c}{p_aV_a} =300\times\frac{100\times2}{400\times2} =\SI{75}{K},\qquad T_b=T_a\frac{p_bV_b}{p_aV_a} =300\times\frac{100\times6}{400\times2} =\SI{225}{K}.\] 
+\[A_{ab}=\frac{p_a+p_b}{2}(V_b-V_a) =\frac{400+100}{2}(6-2) =\SI{1000}{J}\]
+\[Q_{bc}=\nu C_{p,m}(T_c-T_b)=\frac{7}{2}\nu R(T_c-T_b)=\frac72(p_cV_c-p_bV_b)=\frac72\times (-400)=\SI{-1400}{J}\]\
+\[Q_{ca}=\nu C_{V,m}(T_a-T_c)=\frac52\nu R(T_a-T_c)=\frac52(p_aV_a-p_cV_c)=\frac52(600)=\SI{1500}{J}\]
+\end{solution}
+
+\begin{exercise}[2010级期末：氮气三段过程的总功和内能变化]
+\SI{1}{mol} 温度为 \(\SI{27}{^\circ C}\)、压强为 \(\SI{1}{atm}\) 的氮气，视为刚性双原子分子理想气体。先在等压下膨胀到原来体积的两倍，再等体升压使压强变为 \(\SI{2}{atm}\)，最后作等温膨胀到压强重新变为 \(\SI{1}{atm}\)。求气体在全部过程中对外作的总功和内能变化。取气体常量 \(R=8.31\,\mathrm{J/(mol\cdot K)}\)。
+\end{exercise}
+
+\begin{solution}
+先把三个状态温度读清楚。设初态为 \(p_0,V_0,T_0\)，等压膨胀到 \(2V_0\) 时温度变为 \(T_1=2T_0.\) 
+第二步等体升压到 \(2p_0\)，此时体积仍为 \(2V_0\)，所以 \(T_2=\frac{(2p_0)(2V_0)}{R}=4T_0.\) 
+第三步等温膨胀，温度保持 \(T_2=4T_0\)，直到压强回到 \(p_0\)，于是终态体积为 \(4V_0\)。
+逐段作功。等压段
+ \[A_1=p_0(2V_0-V_0)=p_0V_0=RT_0.\]
+等体段 \(A_2=0.\) ，等温段
+ \[A_3=nRT_2\ln\frac{V_f}{V_i} =R(4T_0)\ln\frac{4V_0}{2V_0} =4RT_0\ln2.\]
+故总功为
+ \[A=A_1+A_2+A_3 =RT_0(1+4\ln2)=8.31\times300(1+4\ln2) \approx \SI{9.41e3}{J}.\]
+内能变化由温度决定。理想气体内能只由温度决定：
+ \[\Delta U=nC_{V,m}(T_f-T_0) =\frac52R(4T_0-T_0) =\frac{15}{2}RT_0=\frac{15}{2}\times8.31\times300 \approx \SI{1.87e4}{J}.\] 
+\end{solution}

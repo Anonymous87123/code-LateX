@@ -1,0 +1,16 @@
+
+\subsection{同频率相互垂直简谐运动的合成}
+
+设两个方向的振动方程分别为：\[x = A_1 \cos(\omega t + \phi_1) \implies \cos(\omega t + \phi_1) = \frac{x}{A_1},~y = A_2 \cos\big[ (\omega t + \phi_1) + (\phi_2 - \phi_1) \big]\]
+令核心中间变量 $\theta = \omega t + \phi_1$，相位差 $\Delta \phi = \phi_2 - \phi_1$:
+$$\frac{y}{A_2} = \cos(\theta + \Delta \phi)= \cos\theta \cos\Delta \phi - \sin\theta \sin\Delta \phi $$
+已知 $\cos\theta = \frac{x}{A_1}$。将其直接代入，并平方消去正弦：
+$$\frac{y}{A_2} = \frac{x}{A_1} \cos\Delta \phi - \sin\theta \sin\Delta \phi\implies\sin^2\theta \sin^2\Delta \phi = \left( \frac{x}{A_1} \cos\Delta \phi - \frac{y}{A_2} \right)^2$$
+将左侧的 $\sin^2\theta$ 替换为 $1 - \cos^2\theta$：
+$$(1 - \cos^2\theta) \sin^2\Delta \phi = \frac{x^2}{A_1^2} \cos^2\Delta \phi + \frac{y^2}{A_2^2} - \frac{2xy}{A_1 A_2} \cos\Delta \phi$$再次将已知的 $\cos^2\theta = \frac{x^2}{A_1^2}$ 代入左侧：$$\left( 1 - \frac{x^2}{A_1^2} \right) \sin^2\Delta \phi = \frac{x^2}{A_1^2} \cos^2\Delta \phi + \frac{y^2}{A_2^2} - \frac{2xy}{A_1 A_2} \cos\Delta \phi$$整理：$$\sin^2\Delta \phi = \frac{x^2}{A_1^2} \underbrace{\left( \cos^2\Delta \phi + \sin^2\Delta \phi \right)}_{=1} + \frac{y^2}{A_2^2} - \frac{2xy}{A_1 A_2} \cos\Delta \phi$$也就是$$\boxed{\frac{x^2}{A_1^2} + \frac{y^2}{A_2^2} - \frac{2xy}{A_1 A_2} \cos(\phi_2 - \phi_1) = \sin^2(\phi_2 - \phi_1)}$$
+该方程的几何图形取决于两分振动的初始相位差 $\Delta \phi = \phi_2 - \phi_1$。以下为三种典型边界情况的代数讨论：
+\begin{enumerate}
+    \item 相位差 $\Delta \phi = 0$ 或 $2k\pi$：将 $\cos(0) = 1, \sin(0) = 0$ 代入：$$\frac{x^2}{A_1^2} + \frac{y^2}{A_2^2} - \frac{2xy}{A_1 A_2} = 0 \implies \left( \frac{x}{A_1} - \frac{y}{A_2} \right)^2 = 0\implies y = \frac{A_2}{A_1} x$$此时合运动的位移大小为 $S = \sqrt{x^2 + y^2} = \sqrt{A_1^2 + A_2^2} \cos(\omega t + \phi_1)$，合运动仍为同频率简谐运动。
+    \item 相位差 $\Delta \phi = \pi$ 或 $(2k+1)\pi$：将 $\cos(\pi) = -1, \sin(\pi) = 0$ 代入方程：$$\frac{x^2}{A_1^2} + \frac{y^2}{A_2^2} + \frac{2xy}{A_1 A_2} = 0 \implies \left( \frac{x}{A_1} + \frac{y}{A_2} \right)^2 = 0$$化简得到另一条斜率为负的直线方程：$$y = -\frac{A_2}{A_1} x$$
+    \item 相位差 $\Delta \phi = \pm \frac{\pi}{2}$：将 $\cos\left(\pm\frac{\pi}{2}\right) = 0, \sin\left(\pm\frac{\pi}{2}\right) = 1$ 代入方程（5），交叉项消除，退化为标准椭圆方程：$$\frac{x^2}{A_1^2} + \frac{y^2}{A_2^2} = 1$$若分振幅相等（$A_1 = A_2 = A$），该轨迹退化为圆方程：$x^2 + y^2 = A^2$。质点在椭圆面上的旋转方向（顺时针或逆时针）由相位差的正负号唯一决定。
+\end{enumerate}

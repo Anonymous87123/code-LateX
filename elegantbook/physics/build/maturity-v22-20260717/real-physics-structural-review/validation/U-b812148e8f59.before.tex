@@ -1,0 +1,69 @@
+
+\section{自由度}
+
+\begin{definition}[刚体的自由度，气体分子的自由度]
+\begin{enumerate}
+    \item 刚体的运动分解为质心的平动和绕通过质心的轴的转动。平动自由度是 \(3\)，方向余弦满足\[\cos^2\alpha+\cos^2\beta+\cos^2\gamma=1\]三个角并不独立，只需要两个独立参数就能确定转轴方向。所以转轴方位需要\(2\)个独立参数，所以转轴自由度是 \(2\)。再用一个独立坐标$\phi$表示绕轴的旋转角度，所以总自由度是 \(3+2+1=6\)。
+    \item 总自由度为平动自由度加转动自由度
+    \begin{itemize}
+    \item 单原子分子：可以看成质点，只需要三个坐标确定位置，没有转动自由度。
+    \item 双原子和直线型多原子分子：平动3个自由度，转动 \(2\) 个自由度，总自由度 \(3+2=5\)。
+    \item 非直线型多原子分子：与刚体类似，自由度为6。
+    \end{itemize}
+\end{enumerate}
+\end{definition}
+
+\begin{theorem}[能量按自由度均分原理]
+\[p=nkT=nm\frac{\overline{v^2}}{3}\implies \overline{\varepsilon_t}=\frac12m\overline{v^2}=\frac32kT\implies\frac12m\overline{v_x^2}=\frac13\left(\frac12m\overline{v^2}\right)=\frac13\left(\frac32kT\right)=\frac12kT\]每一个自由度，包括平动、转动、振动，就有对应的一份平均能量 \(\frac12kT\)。对于刚性理想气体分子，令自由度为$i$，平均动能为\[\overline{\varepsilon_k}=\frac{i}{2}kT\]这不影响平均平动动能为$\frac32kT$
+\end{theorem}
+
+\begin{definition}[理想气体的热力学能，内能]
+    质量为 \(m_0\)、摩尔质量为 \(M\) 的理想气体，物质的量为\(\nu=\frac{m_0}{M}\)，所以\[U=\frac{i}{2}\nu RT=\frac{m_0}{M}\frac{i}{2}RT,~~\Delta U=\frac{m_0}{M}\frac{i}{2}R\Delta T\]只要状态确定，内能就确定；内能变化只取决于初末状态，不取决于过程路径。（巧记：内能的单位和$pV$一致都是J，所以是\(\nu RT\)）
+\end{definition}
+
+
+
+\begin{exercise}[由骤停温升反推刚性双原子气体摩尔质量]
+储有某种刚性双原子分子理想气体的容器以 \(v=\SI{100}{m/s}\) 运动。容器突然停止后，气体全部定向平动动能转化为分子热运动动能，测得温度上升 \(\Delta T=\SI{6.74}{K}\)。求该气体的摩尔质量。取 \(R=\SI{8.31}{J/(mol.K)}\)。
+\end{exercise}
+
+\begin{solution}
+设气体总质量$M$\[\Delta U=\frac52 nR\Delta T\implies\frac12 Mv^2=\frac52\frac{M}{M_{\mathrm{mol}}}R\Delta T\]
+ \[M_{\mathrm{mol}} =\frac{5R\Delta T}{v^2} =\frac{5\times 8.31\times 6.74}{100^2}\ \si{kg/mol} \approx \SI{2.80e-2}{kg/mol}\]
+\end{solution}
+
+\begin{exercise}[水蒸气分解为同温氢气和氧气时内能增加多少]
+水蒸气分解为同温度的氢气和氧气，不计振动自由度和化学能，求内能增加的百分比。
+\end{exercise}
+
+\begin{solution}
+水蒸气分子取 \(i=6\)，氢气和氧气取 \(i=5\)。设初态有 \(1\) mol 水蒸气， \(1\) mol 水蒸气分解后生成 \(1\) mol \(\mathrm{H_2}\) 和 \(0.5\) mol \(\mathrm{O_2}\)。由 \(U=\frac{i}{2}nRT\)，
+ \[U_1=\frac{6}{2}\cdot1RT=3RT,~ U_2=\frac{5}{2}(1+0.5)RT=\frac{15}{4}RT,~\frac{U_2-U_1}{U_1} =\frac{3.75RT-3RT}{3RT} =0.25.\] 
+\end{solution}
+
+\begin{exercise}[容器骤停后温升为什么先看整体平动动能去哪了]
+储有氧气的容器以速度 \(v=\SI{100}{m/s}\) 运动。若容器突然停止，问容器内氧气的温度上升多少。
+\end{exercise}
+
+\begin{solution}
+平动能转化为内能增加。因此设气体质量为$M$，由能量守恒写出
+ \[\Delta U=\frac12 Mv^2=\frac52 \frac{M}{M_{\mathrm{mol}}}R\Delta T. \implies \Delta T=\frac{M_{\mathrm{mol}}v^2}{5R}=\frac{32\times10^{-3}\times 100^2}{5\times 8.31}\approx \SI{7.7}{K}\]
+\end{solution}
+
+
+\begin{exercise}[2013级期末：同压氦气和氧气的单位体积内能比较]
+有容积不同的 \(A,B\) 两个容器，\(A\) 中装有氦气，\(B\) 中装有氧气。若两种气体的压强相同，比较二者单位体积内能 \((U/V)_A\) 与 \((U/V)_B\) 的大小。
+\end{exercise}
+
+\begin{solution}
+ \[\frac{U}{V}=\frac{i}{2}\frac{nRT}{V}=\frac{i}{2}p,\qquad \left(\frac{U}{V}\right)_{\mathrm{He}}=\frac32p,\qquad \left(\frac{U}{V}\right)_{\mathrm{O_2}}=\frac52p.\]
+\end{solution}
+
+\begin{exercise}[2009级期末：标准态氧气和氦气的内能之比]
+在标准状态下，氧气视为刚性双原子分子理想气体，氦气视为单原子理想气体。若氧气和氦气的体积比为
+ \(\frac{V_{\mathrm{O_2}}}{V_{\mathrm{He}}}=\frac12,\) 
+求二者内能之比 \(U_{\mathrm{O_2}}/U_{\mathrm{He}}\)。
+\end{exercise}
+\begin{solution}
+ \[U=\frac{i}{2}\nu RT=\frac{i}{2}pV \implies \frac{U_{\mathrm{O_2}}}{U_{\mathrm{He}}}=\frac{5V_{\mathrm{O_2}}}{3V_{\mathrm{He}}} =\frac56\]
+\end{solution}
