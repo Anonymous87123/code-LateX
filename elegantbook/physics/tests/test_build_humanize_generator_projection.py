@@ -67,11 +67,171 @@ class HumanizeGeneratorProjectionTests(unittest.TestCase):
         )
         expected = sorted([*builder.EXPECTED_INCLUDE, *builder.EXPECTED_TRANSFORM])
         self.assertEqual(expected, files)
-        self.assertEqual(30, len(files))
+        self.assertEqual(38, len(files))
         self.assertIn("references/structural-rewrite-contract.md", files)
         self.assertFalse((output / manifest.name).exists())
         self.assertEqual("PASS", result["audits"]["skill_quick_validate"])
         self.assertFalse(result["audits"]["read_only_marking_is_isolation_proof"])
+
+    def test_v34_source_conflict_and_draft_unitization_contract_reach_projection(self) -> None:
+        _result, output, _manifest = self.build()
+        projected_skill = (output / "SKILL.md").read_text(encoding="utf-8")
+        projected_workflow = (output / "references" / "workflow.md").read_text(
+            encoding="utf-8"
+        )
+        projected_checker = (
+            output / "scripts" / "check_humanize_invariants.py"
+        ).read_text(encoding="utf-8")
+
+        self.assertIn("源文内部冲突不属于纯文风层的裁决权限", projected_skill)
+        self.assertIn("classification_counts=OMITTED_UNUNITIZED", projected_skill)
+        self.assertIn("unit_id + source_span + category", projected_workflow)
+        self.assertIn(
+            "SPEECH_ACT_SOURCE_POLARITY_TENSION_SELECTED",
+            projected_checker,
+        )
+
+    def test_v35_short_patch_tools_and_contract_reach_projection(self) -> None:
+        _result, output, _manifest = self.build()
+        for relative in (
+            "references/short-patch-workflow.md",
+            "scripts/build_humanize_short_patch.py",
+            "scripts/apply_humanize_short_patch.py",
+            "scripts/verify_humanize_short_patch.py",
+            "scripts/scaffold_humanize_short_patch.py",
+        ):
+            self.assertTrue((output / relative).is_file(), relative)
+        projected_skill = (output / "SKILL.md").read_text(encoding="utf-8")
+        projected_contract = (
+            output / "references" / "short-patch-workflow.md"
+        ).read_text(encoding="utf-8")
+        self.assertIn("short-patch-workflow.md", projected_skill)
+        self.assertIn("humanize-short-patch/v1", projected_contract)
+        self.assertIn("DELIVERY REVIEW exit=2", projected_contract)
+
+    def test_v40_focus_authoring_reaches_projection_without_claim_authority(self) -> None:
+        _result, output, _manifest = self.build()
+        scaffold = (
+            output / "scripts" / "scaffold_humanize_short_patch.py"
+        ).read_text(encoding="utf-8")
+        workflow = (output / "references" / "short-patch-workflow.md").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("humanize-short-patch-selection-authoring/v3", scaffold)
+        self.assertIn("humanize-short-patch-focus/v1", scaffold)
+        self.assertIn("ADVISORY_NON_HIGH_SIGNAL", scaffold)
+        self.assertIn("focus_spans", scaffold)
+        self.assertIn("CALLER_CONTROLLED_SELF_CONSISTENCY_ONLY", scaffold)
+        self.assertIn("--focus-spec", workflow)
+        self.assertIn("finding_ids=[]", workflow)
+        self.assertIn("SUPPRESSED", workflow)
+        self.assertNotIn("focus_authority=true", workflow)
+        self.assertNotIn("user_authorized=true", workflow)
+        self.assertNotIn("authoring_integrity_scope=EXTERNALLY_ANCHORED", workflow)
+
+    def test_v43_auto_scene_prefreeze_reaches_projection_fail_closed(self) -> None:
+        result, output, _manifest = self.build()
+        scaffold = (
+            output / "scripts" / "scaffold_humanize_short_patch.py"
+        ).read_text(encoding="utf-8")
+        router = (output / "scripts" / "route_humanize_scene.py").read_text(
+            encoding="utf-8"
+        )
+        workflow = (output / "references" / "short-patch-workflow.md").read_text(
+            encoding="utf-8"
+        )
+
+        self.assertEqual("1.23.0", result["projection_policy"]["version"])
+        self.assertIn("humanize-short-patch-selection-authoring/v4", scaffold)
+        self.assertIn("humanize-short-patch-scene-route/v1", scaffold)
+        self.assertIn("requested_scene", scaffold)
+        self.assertIn("resolved_scene", scaffold)
+        self.assertIn("SCENE_ROUTE_DRIFT", scaffold)
+        self.assertIn("SCENE_ROUTE_AMBIGUOUS", scaffold)
+        self.assertIn("ROUTE_REVIEW", workflow)
+        self.assertIn("competing_positive_scene", router)
+        self.assertIn("second_score == 0", router)
+        self.assertNotIn("matched_text", scaffold)
+
+    def test_v44_long_authoring_contract_is_reachable_across_projected_modules(self) -> None:
+        result, output, _manifest = self.build()
+        projected_scaffold = (
+            output / "scripts" / "scaffold_humanize_rewrites.py"
+        ).read_text(encoding="utf-8")
+        projected_finalizer = (
+            output / "scripts" / "finalize_humanize_long_document.py"
+        ).read_text(encoding="utf-8")
+        projected_workflow = (
+            output / "references" / "long-document-workflow.md"
+        ).read_text(encoding="utf-8")
+
+        self.assertEqual("1.23.0", result["projection_policy"]["version"])
+        self.assertIn("humanize-rewrite-scaffold/v5", projected_scaffold)
+        self.assertIn(".humanize-scaffold-committed", projected_scaffold)
+        self.assertIn("humanize-unit-rewrite-bundle/v3", projected_finalizer)
+        self.assertIn("humanize-long-authoring-binding/v1", projected_finalizer)
+        self.assertIn(
+            "DELIVERY <status> exit=<code> publish=<state>",
+            projected_workflow,
+        )
+
+        scripts = output / "scripts"
+        probe = (
+            "import sys;"
+            f"sys.path.insert(0, {str(scripts)!r});"
+            "import scaffold_humanize_rewrites as s;"
+            "import finalize_humanize_long_document as f;"
+            "print('|'.join((s.SCAFFOLD_SCHEMA, "
+            "f.UNIT_REWRITE_BUNDLE_SCHEMA, f.LONG_AUTHORING_BINDING_SCHEMA)))"
+        )
+        completed = subprocess.run(
+            [sys.executable, "-I", "-c", probe],
+            cwd=output,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+            check=False,
+        )
+        self.assertEqual(0, completed.returncode, completed.stderr)
+        self.assertEqual(
+            "humanize-rewrite-scaffold/v5|"
+            "humanize-unit-rewrite-bundle/v3|"
+            "humanize-long-authoring-binding/v1",
+            completed.stdout.strip(),
+        )
+
+    def test_v46_formula_caption_relation_guard_reaches_projection(self) -> None:
+        result, output, _manifest = self.build()
+        checker = (
+            output / "scripts" / "check_humanize_invariants.py"
+        ).read_text(encoding="utf-8")
+        course = (output / "references" / "course-notes.md").read_text(
+            encoding="utf-8"
+        )
+        contract = (
+            output / "references" / "system-prompt-contract.md"
+        ).read_text(encoding="utf-8")
+
+        self.assertEqual("1.23.0", result["projection_policy"]["version"])
+        self.assertIn('"logical_relation": (', checker)
+        self.assertIn("LOGICAL_RELATION_ROUTE_SHELL_RE", checker)
+        self.assertIn("scanner candidate 不得直接映射为 `DELETE_STYLE_SHELL`", course)
+        self.assertIn("只让公式相邻不算保留关系", contract)
+
+    def test_v39_authoring_span_suggestions_reach_projection_without_claim_authority(self) -> None:
+        _result, output, _manifest = self.build()
+        scaffold = (
+            output / "scripts" / "scaffold_humanize_short_patch.py"
+        ).read_text(encoding="utf-8")
+        workflow = (output / "references" / "short-patch-workflow.md").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("humanize-short-patch-selection-authoring/v3", scaffold)
+        self.assertIn("SENTENCE_AND_PARAGRAPH", scaffold)
+        self.assertIn("CALLER_CONTROLLED_SELF_CONSISTENCY_ONLY", scaffold)
+        self.assertIn("decision_authority", scaffold)
+        self.assertIn("SUPPRESSED", workflow)
+        self.assertNotIn("authoring_integrity_scope=EXTERNALLY_ANCHORED", workflow)
 
     def test_rebuild_is_byte_deterministic(self) -> None:
         first, _first_output, first_manifest = self.build()
@@ -158,7 +318,7 @@ class HumanizeGeneratorProjectionTests(unittest.TestCase):
         self.assertNotIn("## 生成资格采集边界", text)
         self.assertNotIn("## 来源锚定的改写候选", text)
         self.assertIn("## 来源信任边界", text)
-        self.assertIn("| 长 MD/TEX |", text)
+        self.assertIn("| 长 MD/TEX/TXT |", text)
         self.assertNotIn("validate_humanize_candidate_queue.py", text)
 
     def test_long_workflow_transform_removes_convergence_answer_surface(self) -> None:
@@ -335,7 +495,7 @@ class HumanizeGeneratorProjectionTests(unittest.TestCase):
             path.read_text(encoding="utf-8") + "\n执行 PATH-05。\n",
             encoding="utf-8",
         )
-        with self.assertRaisesRegex(builder.ProjectionError, "hidden catalog identifier leaked"):
+        with self.assertRaisesRegex(builder.ProjectionError, "qualification control ID leaked"):
             self.build()
 
     def test_non_numeric_global_control_id_leak_is_rejected(self) -> None:
@@ -344,7 +504,7 @@ class HumanizeGeneratorProjectionTests(unittest.TestCase):
             path.read_text(encoding="utf-8") + "\n执行 PROTECTED/hash-zero。\n",
             encoding="utf-8",
         )
-        with self.assertRaisesRegex(builder.ProjectionError, "control ID leaked"):
+        with self.assertRaisesRegex(builder.ProjectionError, "hidden catalog identifier leaked"):
             self.build()
 
     def test_benign_capability_content_drift_requires_policy_approval(self) -> None:
@@ -463,8 +623,13 @@ class HumanizeGeneratorProjectionTests(unittest.TestCase):
     def test_projection_verifier_rejects_unexpected_empty_directory(self) -> None:
         result, output, _manifest = self.build()
         (output / "unexpected-empty").mkdir()
+        manifest = {
+            key: value
+            for key, value in result.items()
+            if key not in {"manifest_sha256", "projection_root", "manifest_path"}
+        }
         with self.assertRaisesRegex(builder.ProjectionError, "unexpected directory"):
-            builder.verify_projection(output, result)
+            builder.verify_projection(output, manifest)
 
     def test_projection_verifier_rejects_root_symlink_or_junction(self) -> None:
         result, output, _manifest = self.build()

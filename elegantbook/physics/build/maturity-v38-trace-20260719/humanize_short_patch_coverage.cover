@@ -1,0 +1,912 @@
+       #!/usr/bin/env python3
+    1: """Build and replay the mechanically enumerable short PATCH coverage layer."""
+       
+    1: from __future__ import annotations
+       
+    1: import hashlib
+    1: import json
+    1: import os
+    1: import re
+    1: import sys
+    1: import unicodedata
+    1: from collections import Counter
+    1: from pathlib import Path
+    1: from typing import Any, Mapping, Sequence
+       
+       
+    1: SCRIPT_DIR = Path(__file__).resolve().parent
+    1: if str(SCRIPT_DIR) not in sys.path:
+>>>>>>     sys.path.insert(0, str(SCRIPT_DIR))
+       
+    1: import scan_humanize_chinese as lexical  # noqa: E402
+       
+       
+    1: COVERAGE_SCHEMA_V1 = "humanize-short-patch-coverage/v1"
+    1: COVERAGE_SCHEMA = "humanize-short-patch-coverage/v2"
+    1: COVERAGE_SPEC_FIELDS = {
+           "source_kind",
+           "lexical_keeps",
+           "selected_spans",
+           "explicit_conflicts",
+       }
+    1: LEXICAL_KEEP_FIELDS = {"signal_id", "source_text", "start_byte", "reason"}
+    1: SELECTED_SPAN_FIELDS = {
+           "selection_id",
+           "source_text",
+           "start_byte",
+           "decision",
+           "hunk_id",
+           "reason",
+       }
+    1: CONFLICT_FIELDS = {
+           "conflict_id",
+           "rule_code",
+           "left_hunk_id",
+           "right_hunk_id",
+           "reason",
+       }
+    1: SOURCE_KINDS = {"DOCUMENT", "INLINE_TEXT", "INLINE_SELECTION"}
+    1: SELECTION_DECISIONS = {"HUNK", "KEEP"}
+    1: ID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_.-]{0,63}$")
+    1: SIGNAL_RE = re.compile(r"^[A-Z0-9][A-Z0-9_.-]{0,63}$")
+    1: GENERIC_REASONS = {"todo", "待定", "保持原样", "无需修改", "已经自然", "没有问题"}
+    1: COVERAGE_FIELDS = {
+           "schema_version",
+           "source",
+           "policy_hashes",
+           "declarations",
+           "declarations_sha256",
+           "inventories",
+           "summary",
+           "coverage_basis",
+           "coverage_limitations",
+           "mechanical_coverage_status",
+           "coverage_completion_claim_allowed",
+           "coverage_claim_scope",
+           "semantic_completeness_claim_allowed",
+           "humanize_quality_claim_allowed",
+           "academic_correctness",
+           "coverage_sha256",
+       }
+    1: SOURCE_FIELDS = {
+           "sha256",
+           "size_bytes",
+           "encoding",
+           "offset_unit",
+           "document_format",
+           "scene",
+           "scan_scene",
+           "source_kind",
+       }
+    2: RESOLVED_KEEP_FIELDS = LEXICAL_KEEP_FIELDS | {
+    1:     "end_byte",
+    1:     "source_text_sha256",
+       }
+    2: RESOLVED_SELECTION_FIELDS = SELECTED_SPAN_FIELDS | {
+    1:     "end_byte",
+    1:     "source_text_sha256",
+       }
+    1: INVENTORY_FIELDS = {"lexical_high", "selected_spans", "explicit_conflicts"}
+    1: LEXICAL_INVENTORY_FIELDS = {
+           "finding_id",
+           "signal_id",
+           "severity",
+           "role",
+           "start_byte",
+           "end_byte",
+           "source_text",
+           "source_text_sha256",
+           "disposition",
+       }
+    1: DISPOSITION_FIELDS = {"decision", "hunk_id", "reason"}
+    1: SELECTION_INVENTORY_FIELDS = RESOLVED_SELECTION_FIELDS | {"disposition"}
+    1: CONFLICT_INVENTORY_FIELDS = CONFLICT_FIELDS | {
+           "left",
+           "right",
+           "disposition",
+       }
+    1: HUNK_SPAN_FIELDS = {
+           "hunk_id",
+           "decision",
+           "start_byte",
+           "end_byte",
+           "source_text_sha256",
+       }
+    1: SUMMARY_FIELDS = {
+           "lexical_high_total",
+           "lexical_candidate_total",
+           "lexical_disposition_counts",
+           "selected_spans_total",
+           "explicit_conflicts_total",
+       }
+    1: COVERAGE_BASIS = [
+           "CURRENT_SCANNER_HIGH_AUDIT_VIEW",
+           "CALLER_BOUND_SELECTED_SPANS",
+           "CALLER_DECLARED_CONFLICT_PAIRS",
+       ]
+    1: COVERAGE_LIMITATIONS = [
+           "NO_COMPLETE_NATURAL_LANGUAGE_SEMANTIC_DISCOVERY",
+           "CONFLICT_INVENTORY_IS_CALLER_DECLARED_ONLY",
+           "KEEP_REASONS_ARE_NOT_EXTERNAL_QUALITY_CLEARANCE",
+           "SELF_CONSISTENCY_ONLY_WITHOUT_EXTERNAL_REQUEST_ANCHOR",
+       ]
+       
+       
+    2: class CoverageError(ValueError):
+    1:     pass
+       
+       
+    1: def _canonical_json(value: Any) -> bytes:
+  387:     return json.dumps(
+  129:         value, ensure_ascii=False, sort_keys=True, separators=(",", ":")
+  129:     ).encode("utf-8")
+       
+       
+    1: def _sha256(raw: bytes) -> str:
+  412:     return hashlib.sha256(raw).hexdigest()
+       
+       
+    1: def _exact_fields(value: Mapping[str, Any], expected: set[str], label: str) -> None:
+  125:     actual = set(value)
+  125:     if actual != expected:
+>>>>>>         raise CoverageError(
+>>>>>>             f"{label} fields drifted; missing={sorted(expected - actual)}, "
+>>>>>>             f"unknown={sorted(actual - expected)}"
+               )
+       
+       
+    1: def _required_string(value: Any, label: str) -> str:
+   88:     if not isinstance(value, str) or not value:
+>>>>>>         raise CoverageError(f"{label} must be a non-empty string")
+   88:     return value
+       
+       
+    1: def _specific_reason(value: Any, label: str) -> str:
+   12:     reason = _required_string(value, label).strip()
+   12:     if reason.casefold() in GENERIC_REASONS:
+>>>>>>         raise CoverageError(f"{label} is generic or unfinished")
+   12:     return reason
+       
+       
+    1: def _identifier(value: Any, label: str, *, signal: bool = False) -> str:
+   24:     identifier = _required_string(value, label)
+   24:     pattern = SIGNAL_RE if signal else ID_RE
+   24:     if not pattern.fullmatch(identifier):
+>>>>>>         raise CoverageError(f"{label} is invalid")
+   24:     return identifier
+       
+       
+    1: def _integer(value: Any, label: str) -> int:
+   12:     if isinstance(value, bool) or not isinstance(value, int) or value < 0:
+>>>>>>         raise CoverageError(f"{label} must be an integer >= 0")
+   12:     return value
+       
+       
+    1: def _locate(source: bytes, text: str, start_byte: Any, label: str) -> tuple[int, int]:
+   12:     needle = _required_string(text, f"{label}.source_text").encode("utf-8")
+   12:     if start_byte is None:
+>>>>>>         positions: list[int] = []
+>>>>>>         cursor = 0
+>>>>>>         while True:
+>>>>>>             found = source.find(needle, cursor)
+>>>>>>             if found < 0:
+>>>>>>                 break
+>>>>>>             positions.append(found)
+>>>>>>             cursor = found + 1
+>>>>>>         if len(positions) != 1:
+>>>>>>             raise CoverageError(
+>>>>>>                 f"{label}.source_text is missing or ambiguous; "
+>>>>>>                 f"candidate_start_bytes={positions}"
+                   )
+>>>>>>         start = positions[0]
+           else:
+   12:         start = _integer(start_byte, f"{label}.start_byte")
+   12:         if source[start : start + len(needle)] != needle:
+>>>>>>             raise CoverageError(f"{label}.start_byte does not match source_text")
+   12:     return start, start + len(needle)
+       
+       
+    1: def _char_to_byte_offsets(text: str, offsets: set[int]) -> dict[int, int]:
+   26:     result: dict[int, int] = {}
+   26:     byte_offset = 0
+ 1040:     for index, character in enumerate(text):
+ 1014:         if index in offsets:
+  104:             result[index] = byte_offset
+ 1014:         byte_offset += len(character.encode("utf-8"))
+   26:     if len(text) in offsets:
+>>>>>>         result[len(text)] = byte_offset
+   26:     if set(result) != offsets:
+>>>>>>         raise CoverageError("scanner returned an invalid character offset")
+   26:     return result
+       
+       
+    1: def current_policy_hashes() -> dict[str, str]:
+   45:     runtime = {
+   45:         "implementation": sys.implementation.name,
+   45:         "cache_tag": sys.implementation.cache_tag,
+   45:         "python_version": list(sys.version_info[:3]),
+   45:         "unicode_version": unicodedata.unidata_version,
+   45:         "os_name": os.name,
+           }
+   45:     return {
+   45:         "coverage_builder_sha256": _sha256(Path(__file__).resolve().read_bytes()),
+   45:         "scanner_sha256": _sha256(Path(lexical.__file__).resolve().read_bytes()),
+   45:         "lexicon_sha256": _sha256(Path(lexical.DEFAULT_LEXICON).resolve().read_bytes()),
+   45:         "runtime_contract_sha256": _sha256(_canonical_json(runtime)),
+           }
+       
+       
+    1: def _normalized_declarations(source: bytes, spec: Mapping[str, Any]) -> dict[str, Any]:
+   16:     _exact_fields(spec, COVERAGE_SPEC_FIELDS, "coverage spec")
+   16:     source_kind = _required_string(spec.get("source_kind"), "coverage.source_kind")
+   16:     if source_kind not in SOURCE_KINDS:
+>>>>>>         raise CoverageError("coverage.source_kind is invalid")
+       
+   16:     keeps_raw = spec.get("lexical_keeps")
+   16:     if not isinstance(keeps_raw, list):
+>>>>>>         raise CoverageError("coverage.lexical_keeps must be an array")
+   16:     keeps: list[dict[str, Any]] = []
+   16:     keep_keys: set[tuple[str, int, int]] = set()
+   16:     for index, item in enumerate(keeps_raw):
+>>>>>>         label = f"coverage.lexical_keeps[{index}]"
+>>>>>>         if not isinstance(item, dict):
+>>>>>>             raise CoverageError(f"{label} must be an object")
+>>>>>>         _exact_fields(item, LEXICAL_KEEP_FIELDS, label)
+>>>>>>         signal_id = _identifier(item.get("signal_id"), f"{label}.signal_id", signal=True)
+>>>>>>         text = _required_string(item.get("source_text"), f"{label}.source_text")
+>>>>>>         start, end = _locate(source, text, item.get("start_byte"), label)
+>>>>>>         key = (signal_id, start, end)
+>>>>>>         if key in keep_keys:
+>>>>>>             raise CoverageError("coverage.lexical_keeps contains a duplicate anchor")
+>>>>>>         keep_keys.add(key)
+>>>>>>         keeps.append(
+>>>>>>             {
+>>>>>>                 "signal_id": signal_id,
+>>>>>>                 "source_text": text,
+>>>>>>                 "start_byte": start,
+>>>>>>                 "end_byte": end,
+>>>>>>                 "source_text_sha256": _sha256(source[start:end]),
+>>>>>>                 "reason": _specific_reason(item.get("reason"), f"{label}.reason"),
+                   }
+               )
+       
+   16:     selections_raw = spec.get("selected_spans")
+   16:     if not isinstance(selections_raw, list):
+>>>>>>         raise CoverageError("coverage.selected_spans must be an array")
+   16:     selections: list[dict[str, Any]] = []
+   16:     selection_ids: set[str] = set()
+   16:     selection_spans: set[tuple[int, int]] = set()
+   28:     for index, item in enumerate(selections_raw):
+   12:         label = f"coverage.selected_spans[{index}]"
+   12:         if not isinstance(item, dict):
+>>>>>>             raise CoverageError(f"{label} must be an object")
+   12:         _exact_fields(item, SELECTED_SPAN_FIELDS, label)
+   12:         selection_id = _identifier(item.get("selection_id"), f"{label}.selection_id")
+   12:         if selection_id in selection_ids:
+>>>>>>             raise CoverageError("coverage.selected_spans contains a duplicate selection_id")
+   12:         selection_ids.add(selection_id)
+   12:         text = _required_string(item.get("source_text"), f"{label}.source_text")
+   12:         start, end = _locate(source, text, item.get("start_byte"), label)
+   12:         if (start, end) in selection_spans:
+>>>>>>             raise CoverageError("coverage.selected_spans contains a duplicate span")
+   12:         selection_spans.add((start, end))
+   12:         decision = _required_string(item.get("decision"), f"{label}.decision")
+   12:         if decision not in SELECTION_DECISIONS:
+>>>>>>             raise CoverageError(f"{label}.decision is invalid")
+   12:         hunk_id = item.get("hunk_id")
+   12:         if decision == "HUNK":
+   12:             hunk_id = _identifier(hunk_id, f"{label}.hunk_id")
+>>>>>>         elif hunk_id is not None:
+>>>>>>             raise CoverageError(f"{label}.hunk_id must be null for KEEP")
+   24:         selections.append(
+   12:             {
+   12:                 "selection_id": selection_id,
+   12:                 "source_text": text,
+   12:                 "start_byte": start,
+   12:                 "end_byte": end,
+   12:                 "source_text_sha256": _sha256(source[start:end]),
+   12:                 "decision": decision,
+   12:                 "hunk_id": hunk_id,
+   12:                 "reason": _specific_reason(item.get("reason"), f"{label}.reason"),
+                   }
+               )
+   16:     if source_kind == "INLINE_SELECTION" and not selections:
+>>>>>>         raise CoverageError("BOUND_SELECTION_REQUIRED")
+       
+   16:     conflicts_raw = spec.get("explicit_conflicts")
+   16:     if not isinstance(conflicts_raw, list):
+>>>>>>         raise CoverageError("coverage.explicit_conflicts must be an array")
+   16:     conflicts: list[dict[str, Any]] = []
+   16:     conflict_ids: set[str] = set()
+   16:     conflict_members: set[str] = set()
+   16:     for index, item in enumerate(conflicts_raw):
+>>>>>>         label = f"coverage.explicit_conflicts[{index}]"
+>>>>>>         if not isinstance(item, dict):
+>>>>>>             raise CoverageError(f"{label} must be an object")
+>>>>>>         _exact_fields(item, CONFLICT_FIELDS, label)
+>>>>>>         conflict_id = _identifier(item.get("conflict_id"), f"{label}.conflict_id")
+>>>>>>         if conflict_id in conflict_ids:
+>>>>>>             raise CoverageError("coverage.explicit_conflicts contains a duplicate conflict_id")
+>>>>>>         conflict_ids.add(conflict_id)
+>>>>>>         left = _identifier(item.get("left_hunk_id"), f"{label}.left_hunk_id")
+>>>>>>         right = _identifier(item.get("right_hunk_id"), f"{label}.right_hunk_id")
+>>>>>>         if left == right or left in conflict_members or right in conflict_members:
+>>>>>>             raise CoverageError("explicit conflict members must be distinct and non-reused")
+>>>>>>         conflict_members.update((left, right))
+>>>>>>         conflicts.append(
+>>>>>>             {
+>>>>>>                 "conflict_id": conflict_id,
+>>>>>>                 "rule_code": _identifier(
+>>>>>>                     item.get("rule_code"), f"{label}.rule_code", signal=True
+                       ),
+>>>>>>                 "left_hunk_id": left,
+>>>>>>                 "right_hunk_id": right,
+>>>>>>                 "reason": _specific_reason(item.get("reason"), f"{label}.reason"),
+                   }
+               )
+   16:     return {
+   16:         "source_kind": source_kind,
+   16:         "lexical_keeps": keeps,
+   16:         "selected_spans": selections,
+   16:         "explicit_conflicts": conflicts,
+           }
+       
+       
+    1: def _resolved_declarations(spec: Mapping[str, Any]) -> dict[str, Any]:
+   12:     expected = {
+               "source_kind",
+               "lexical_keeps",
+               "selected_spans",
+               "explicit_conflicts",
+           }
+   12:     _exact_fields(spec, expected, "coverage declarations")
+   12:     for index, item in enumerate(spec.get("lexical_keeps", [])):
+>>>>>>         if not isinstance(item, dict):
+>>>>>>             raise CoverageError(f"coverage declarations.lexical_keeps[{index}] must be an object")
+>>>>>>         _exact_fields(item, RESOLVED_KEEP_FIELDS, f"coverage declarations.lexical_keeps[{index}]")
+   21:     for index, item in enumerate(spec.get("selected_spans", [])):
+    9:         if not isinstance(item, dict):
+>>>>>>             raise CoverageError(f"coverage declarations.selected_spans[{index}] must be an object")
+    9:         _exact_fields(item, RESOLVED_SELECTION_FIELDS, f"coverage declarations.selected_spans[{index}]")
+   12:     for index, item in enumerate(spec.get("explicit_conflicts", [])):
+>>>>>>         if not isinstance(item, dict):
+>>>>>>             raise CoverageError(f"coverage declarations.explicit_conflicts[{index}] must be an object")
+>>>>>>         _exact_fields(item, CONFLICT_FIELDS, f"coverage declarations.explicit_conflicts[{index}]")
+           # Reuse the normalizer after converting resolved anchors back to its input view.
+   12:     raw = {
+   12:         "source_kind": spec["source_kind"],
+   24:         "lexical_keeps": [
+>>>>>>             {
+>>>>>>                 "signal_id": item["signal_id"],
+>>>>>>                 "source_text": item["source_text"],
+>>>>>>                 "start_byte": item["start_byte"],
+>>>>>>                 "reason": item["reason"],
+                   }
+   24:             for item in spec["lexical_keeps"]
+               ],
+   24:         "selected_spans": [
+    9:             {
+    9:                 "selection_id": item["selection_id"],
+    9:                 "source_text": item["source_text"],
+    9:                 "start_byte": item["start_byte"],
+    9:                 "decision": item["decision"],
+    9:                 "hunk_id": item["hunk_id"],
+    9:                 "reason": item["reason"],
+                   }
+   33:             for item in spec["selected_spans"]
+               ],
+   12:         "explicit_conflicts": [dict(item) for item in spec["explicit_conflicts"]],
+           }
+   12:     return raw
+       
+       
+    1: def _hunk_span(hunk: Mapping[str, Any]) -> dict[str, Any]:
+>>>>>>     return {
+>>>>>>         "hunk_id": hunk["hunk_id"],
+>>>>>>         "decision": hunk["decision"],
+>>>>>>         "start_byte": hunk["start_byte"],
+>>>>>>         "end_byte": hunk["end_byte"],
+>>>>>>         "source_text_sha256": hunk["source_text_sha256"],
+           }
+       
+       
+    1: def scan_high_findings(source: bytes, *, document_format: str) -> list[dict[str, Any]]:
+           """Return the exact AUTO high inventory shared by authoring and coverage."""
+   26:     if document_format not in {"markdown", "tex"}:
+>>>>>>         raise CoverageError("coverage document_format is invalid")
+   26:     try:
+   26:         text = source.decode("utf-8")
+>>>>>>     except UnicodeError as error:
+>>>>>>         raise CoverageError("coverage source is not strict UTF-8") from error
+   26:     scan_file = "source.tex" if document_format == "tex" else "source.md"
+   52:     raw_findings = [
+   52:         item
+  130:         for item in lexical.scan_text_with_offsets(
+   26:             text,
+   26:             file=scan_file,
+   26:             scene="AUTO",
+   26:             include_protected=True,
+   26:             include_excluded=True,
+               )
+   52:         if item["severity"] == "high"
+           ]
+   52:     offsets = {
+  156:         offset
+  104:         for item in raw_findings
+  156:         for offset in (int(item["start_char"]), int(item["end_char"]))
+           }
+   26:     byte_offsets = _char_to_byte_offsets(text, offsets)
+   26:     findings: list[dict[str, Any]] = []
+   78:     for item in raw_findings:
+   52:         start = byte_offsets[int(item["start_char"])]
+   52:         end = byte_offsets[int(item["end_char"])]
+   52:         role = (
+>>>>>>             "PROTECTED"
+   52:             if item["protected"]
+>>>>>>             else "EXCLUDED"
+   52:             if item["excluded"]
+   52:             else "CANDIDATE"
+               )
+   52:         anchor = {
+   52:             "signal_id": item["signal_id"],
+   52:             "start_byte": start,
+   52:             "end_byte": end,
+   52:             "source_text_sha256": _sha256(source[start:end]),
+   52:             "role": role,
+               }
+  104:         findings.append(
+   52:             {
+   52:                 "finding_id": "LF-" + _sha256(_canonical_json(anchor))[:24],
+   52:                 "signal_id": item["signal_id"],
+   52:                 "severity": "high",
+   52:                 "role": role,
+   52:                 "start_byte": start,
+   52:                 "end_byte": end,
+   52:                 "source_text": source[start:end].decode("utf-8"),
+   52:                 "source_text_sha256": _sha256(source[start:end]),
+                       "automatic_reason": (
+>>>>>>                     item["protection"]
+   52:                     if role == "PROTECTED"
+>>>>>>                     else item["exclusion"]
+   52:                     if role == "EXCLUDED"
+   52:                     else None
+                       ),
+                   }
+               )
+   26:     return findings
+       
+       
+    8: def build_coverage(
+    1:     source: bytes,
+           *,
+    1:     scene: str,
+    1:     document_format: str,
+    1:     hunks: Sequence[Mapping[str, Any]],
+    1:     coverage_spec: Mapping[str, Any],
+    2:     resolved_spec: bool = False,
+    1: ) -> dict[str, Any]:
+    8:     declarations_input = (
+    8:         _resolved_declarations(coverage_spec) if resolved_spec else coverage_spec
+           )
+    8:     declarations = _normalized_declarations(source, declarations_input)
+   24:     hunk_by_id = {str(item["hunk_id"]): item for item in hunks}
+       
+    8:     findings = scan_high_findings(source, document_format=document_format)
+   16:     keep_by_key = {
+>>>>>>         (item["signal_id"], item["start_byte"], item["end_byte"]): item
+   16:         for item in declarations["lexical_keeps"]
+           }
+    8:     used_keeps: set[tuple[str, int, int]] = set()
+    8:     lexical_inventory: list[dict[str, Any]] = []
+    8:     uncovered: list[str] = []
+   24:     for finding in findings:
+   16:         start = int(finding["start_byte"])
+   16:         end = int(finding["end_byte"])
+   16:         role = str(finding["role"])
+   16:         if role == "PROTECTED":
+>>>>>>             if any(
+>>>>>>                 int(hunk["start_byte"]) < end and int(hunk["end_byte"]) > start
+>>>>>>                 for hunk in hunks
+                   ):
+>>>>>>                 raise CoverageError("NON_EDITABLE_HIGH_OVERLAPS_HUNK")
+>>>>>>             disposition = {
+>>>>>>                 "decision": "PROTECTED",
+>>>>>>                 "hunk_id": None,
+>>>>>>                 "reason": finding["automatic_reason"],
+                   }
+   16:         elif role == "EXCLUDED":
+>>>>>>             if any(
+>>>>>>                 int(hunk["start_byte"]) < end and int(hunk["end_byte"]) > start
+>>>>>>                 for hunk in hunks
+                   ):
+>>>>>>                 raise CoverageError("NON_EDITABLE_HIGH_OVERLAPS_HUNK")
+>>>>>>             disposition = {
+>>>>>>                 "decision": "EXCLUDED",
+>>>>>>                 "hunk_id": None,
+>>>>>>                 "reason": finding["automatic_reason"],
+                   }
+               else:
+   32:             covering = [
+   56:                 hunk
+   64:                 for hunk in hunks
+   56:                 if int(hunk["start_byte"]) <= start and int(hunk["end_byte"]) >= end
+                   ]
+   16:             if len(covering) > 1:
+>>>>>>                 raise CoverageError("lexical high finding maps to multiple hunks")
+   16:             if covering:
+   16:                 hunk = covering[0]
+   16:                 disposition = {
+   16:                     "decision": hunk["decision"],
+   16:                     "hunk_id": hunk["hunk_id"],
+   16:                     "reason": hunk["reason"],
+                       }
+                   else:
+>>>>>>                 keep_key = (finding["signal_id"], start, end)
+>>>>>>                 keep = keep_by_key.get(keep_key)
+>>>>>>                 if keep is None:
+>>>>>>                     uncovered.append(f"{finding['signal_id']}@{start}:{end}")
+>>>>>>                     disposition = None
+                       else:
+>>>>>>                     used_keeps.add(keep_key)
+>>>>>>                     disposition = {
+>>>>>>                         "decision": "KEEP",
+>>>>>>                         "hunk_id": None,
+>>>>>>                         "reason": keep["reason"],
+                           }
+   32:         lexical_inventory.append(
+   16:             {
+   16:                 "finding_id": finding["finding_id"],
+   16:                 "signal_id": finding["signal_id"],
+   16:                 "severity": "high",
+   16:                 "role": role,
+   16:                 "start_byte": start,
+   16:                 "end_byte": end,
+   16:                 "source_text": finding["source_text"],
+   16:                 "source_text_sha256": finding["source_text_sha256"],
+   16:                 "disposition": disposition,
+                   }
+               )
+    8:     unknown_keeps = set(keep_by_key) - used_keeps
+    8:     if unknown_keeps:
+>>>>>>         raise CoverageError("UNKNOWN_LEXICAL_KEEP")
+    8:     if uncovered:
+>>>>>>         raise CoverageError("UNCOVERED_LEXICAL_HIGH: " + ",".join(uncovered))
+       
+    8:     selection_inventory: list[dict[str, Any]] = []
+   14:     for selection in declarations["selected_spans"]:
+    6:         hunk_id = selection["hunk_id"]
+    6:         if selection["decision"] == "HUNK":
+    6:             hunk = hunk_by_id.get(str(hunk_id))
+    6:             if hunk is None or (
+    6:                 int(hunk["start_byte"]) != selection["start_byte"]
+    6:                 or int(hunk["end_byte"]) != selection["end_byte"]
+                   ):
+>>>>>>                 raise CoverageError("SELECTION_HUNK_MISMATCH")
+    6:             disposition = {
+    6:                 "decision": hunk["decision"],
+    6:                 "hunk_id": hunk["hunk_id"],
+    6:                 "reason": selection["reason"],
+                   }
+               else:
+>>>>>>             if any(
+>>>>>>                 int(hunk["start_byte"]) < selection["end_byte"]
+>>>>>>                 and int(hunk["end_byte"]) > selection["start_byte"]
+>>>>>>                 for hunk in hunks
+                   ):
+>>>>>>                 raise CoverageError("SELECTION_KEEP_OVERLAPS_HUNK")
+>>>>>>             disposition = {
+>>>>>>                 "decision": "KEEP",
+>>>>>>                 "hunk_id": None,
+>>>>>>                 "reason": selection["reason"],
+                   }
+    6:         selection_inventory.append({**selection, "disposition": disposition})
+       
+    8:     conflict_inventory: list[dict[str, Any]] = []
+    8:     for conflict in declarations["explicit_conflicts"]:
+>>>>>>         left = hunk_by_id.get(conflict["left_hunk_id"])
+>>>>>>         right = hunk_by_id.get(conflict["right_hunk_id"])
+>>>>>>         if left is None or right is None or left["decision"] != "UNRESOLVED" or right["decision"] != "UNRESOLVED":
+>>>>>>             raise CoverageError("CONFLICT_REQUIRES_UNRESOLVED")
+>>>>>>         conflict_inventory.append(
+>>>>>>             {
+>>>>>>                 **conflict,
+>>>>>>                 "left": _hunk_span(left),
+>>>>>>                 "right": _hunk_span(right),
+>>>>>>                 "disposition": "UNRESOLVED_PAIR",
+                   }
+               )
+       
+   24:     counts = Counter(
+   32:         str(item["disposition"]["decision"]) for item in lexical_inventory
+           )
+  136:     payload: dict[str, Any] = {
+    8:         "schema_version": COVERAGE_SCHEMA,
+   16:         "source": {
+    8:             "sha256": _sha256(source),
+    8:             "size_bytes": len(source),
+    8:             "encoding": "utf-8",
+    8:             "offset_unit": "UTF8_BYTES",
+    8:             "document_format": document_format,
+    8:             "scene": scene,
+    8:             "scan_scene": "AUTO",
+    8:             "source_kind": declarations["source_kind"],
+               },
+    8:         "policy_hashes": current_policy_hashes(),
+    8:         "declarations": declarations,
+    8:         "declarations_sha256": _sha256(_canonical_json(declarations)),
+   16:         "inventories": {
+    8:             "lexical_high": lexical_inventory,
+    8:             "selected_spans": selection_inventory,
+    8:             "explicit_conflicts": conflict_inventory,
+               },
+   16:         "summary": {
+    8:             "lexical_high_total": len(lexical_inventory),
+   32:             "lexical_candidate_total": sum(item["role"] == "CANDIDATE" for item in lexical_inventory),
+    8:             "lexical_disposition_counts": dict(sorted(counts.items())),
+    8:             "selected_spans_total": len(selection_inventory),
+    8:             "explicit_conflicts_total": len(conflict_inventory),
+               },
+    8:         "coverage_basis": list(COVERAGE_BASIS),
+    8:         "coverage_limitations": list(COVERAGE_LIMITATIONS),
+    8:         "mechanical_coverage_status": "PASS",
+    8:         "coverage_completion_claim_allowed": True,
+    8:         "coverage_claim_scope": "ENUMERATED_HIGH_AND_BOUND_DECLARATIONS_ONLY",
+    8:         "semantic_completeness_claim_allowed": False,
+    8:         "humanize_quality_claim_allowed": False,
+    8:         "academic_correctness": "NOT_EVALUATED",
+    8:         "coverage_sha256": "",
+           }
+    8:     unsigned = dict(payload)
+    8:     unsigned.pop("coverage_sha256")
+    8:     payload["coverage_sha256"] = _sha256(_canonical_json(unsigned))
+    8:     return payload
+       
+       
+    5: def validate_record_integrity(
+    1:     source: bytes,
+    1:     recorded: Mapping[str, Any],
+           *,
+    2:     hunks: Sequence[Mapping[str, Any]] | None = None,
+    1: ) -> dict[str, Any]:
+    8:     if not isinstance(recorded, dict):
+>>>>>>         raise CoverageError("coverage record must be an object")
+    8:     _exact_fields(recorded, COVERAGE_FIELDS, "coverage record")
+    8:     schema = recorded.get("schema_version")
+    8:     if schema not in {COVERAGE_SCHEMA_V1, COVERAGE_SCHEMA}:
+>>>>>>         raise CoverageError("coverage record schema_version is invalid")
+    8:     unsigned = dict(recorded)
+    8:     unsigned.pop("coverage_sha256")
+    8:     if recorded.get("coverage_sha256") != _sha256(_canonical_json(unsigned)):
+>>>>>>         raise CoverageError("coverage_sha256 mismatch")
+       
+    8:     source_record = recorded.get("source")
+    8:     if not isinstance(source_record, dict):
+>>>>>>         raise CoverageError("coverage source must be an object")
+   16:     _exact_fields(
+    8:         source_record,
+    8:         SOURCE_FIELDS if schema == COVERAGE_SCHEMA else SOURCE_FIELDS - {"scan_scene"},
+    8:         "coverage source",
+           )
+    8:     if source_record.get("sha256") != _sha256(source):
+>>>>>>         raise CoverageError("coverage source sha256 mismatch")
+    8:     if source_record.get("size_bytes") != len(source):
+>>>>>>         raise CoverageError("coverage source size mismatch")
+    8:     if source_record.get("encoding") != "utf-8" or source_record.get("offset_unit") != "UTF8_BYTES":
+>>>>>>         raise CoverageError("coverage source encoding contract is invalid")
+    8:     if source_record.get("document_format") not in {"markdown", "tex"}:
+>>>>>>         raise CoverageError("coverage source document_format is invalid")
+    8:     if schema == COVERAGE_SCHEMA and source_record.get("scan_scene") != "AUTO":
+>>>>>>         raise CoverageError("coverage source scan_scene is invalid")
+    8:     if source_record.get("source_kind") not in SOURCE_KINDS:
+>>>>>>         raise CoverageError("coverage source_kind is invalid")
+       
+    8:     policy = recorded.get("policy_hashes")
+    8:     if not isinstance(policy, dict) or not policy:
+>>>>>>         raise CoverageError("coverage policy_hashes fields are invalid")
+   24:     if any(
+  128:         not isinstance(key, str)
+   32:         or not re.fullmatch(r"[a-z][a-z0-9_]*_sha256", key)
+   32:         or not isinstance(value, str)
+   32:         or not re.fullmatch(r"[0-9a-f]{64}", value)
+   48:         for key, value in policy.items()
+           ):
+>>>>>>         raise CoverageError("coverage policy_hashes values are invalid")
+       
+    8:     declarations = recorded.get("declarations")
+    8:     if not isinstance(declarations, dict):
+>>>>>>         raise CoverageError("coverage declarations must be an object")
+    8:     normalized = _normalized_declarations(source, _resolved_declarations(declarations))
+    8:     if normalized != declarations:
+>>>>>>         raise CoverageError("coverage declarations are not canonical")
+    8:     if recorded.get("declarations_sha256") != _sha256(_canonical_json(declarations)):
+>>>>>>         raise CoverageError("coverage declarations_sha256 mismatch")
+   24:     hunk_by_id = {str(item.get("hunk_id")): item for item in (hunks or [])}
+       
+    8:     inventories = recorded.get("inventories")
+    8:     if not isinstance(inventories, dict):
+>>>>>>         raise CoverageError("coverage inventories must be an object")
+    8:     _exact_fields(inventories, INVENTORY_FIELDS, "coverage inventories")
+   32:     for name in sorted(INVENTORY_FIELDS):
+   24:         if not isinstance(inventories.get(name), list):
+>>>>>>             raise CoverageError(f"coverage inventories.{name} must be an array")
+   24:     for index, item in enumerate(inventories["lexical_high"]):
+   16:         if not isinstance(item, dict):
+>>>>>>             raise CoverageError(f"coverage lexical_high[{index}] must be an object")
+   16:         _exact_fields(item, LEXICAL_INVENTORY_FIELDS, f"coverage lexical_high[{index}]")
+   16:         role = item.get("role")
+   16:         if not isinstance(role, str) or role not in {
+                   "CANDIDATE",
+                   "PROTECTED",
+                   "EXCLUDED",
+               }:
+>>>>>>             raise CoverageError("coverage lexical role is invalid")
+   16:         if item.get("severity") != "high":
+>>>>>>             raise CoverageError("coverage lexical severity is invalid")
+   32:         if not isinstance(item.get("finding_id"), str) or not re.fullmatch(
+   16:             r"LF-[0-9a-f]{24}", item["finding_id"]
+               ):
+>>>>>>             raise CoverageError("coverage lexical finding_id is invalid")
+   32:         if not isinstance(item.get("signal_id"), str) or not SIGNAL_RE.fullmatch(
+   16:             item["signal_id"]
+               ):
+>>>>>>             raise CoverageError("coverage lexical signal_id is invalid")
+   16:         start = item.get("start_byte")
+   16:         end = item.get("end_byte")
+               if (
+   16:             isinstance(start, bool)
+   16:             or not isinstance(start, int)
+   16:             or isinstance(end, bool)
+   16:             or not isinstance(end, int)
+   16:             or start < 0
+   16:             or end <= start
+   16:             or end > len(source)
+               ):
+>>>>>>             raise CoverageError("coverage lexical span is invalid")
+   16:         raw_span = source[start:end]
+   16:         try:
+   16:             span_text = raw_span.decode("utf-8")
+>>>>>>         except UnicodeError as error:
+>>>>>>             raise CoverageError("coverage lexical span is not UTF-8") from error
+   16:         if item.get("source_text") != span_text or item.get("source_text_sha256") != _sha256(raw_span):
+>>>>>>             raise CoverageError("coverage lexical source binding mismatch")
+   16:         disposition = item.get("disposition")
+   16:         if not isinstance(disposition, dict):
+>>>>>>             raise CoverageError(f"coverage lexical_high[{index}].disposition must be an object")
+   16:         _exact_fields(disposition, DISPOSITION_FIELDS, f"coverage lexical_high[{index}].disposition")
+   16:         decision = disposition.get("decision")
+   16:         hunk_id = disposition.get("hunk_id")
+   16:         if not isinstance(disposition.get("reason"), str) or not disposition["reason"]:
+>>>>>>             raise CoverageError("coverage lexical disposition reason is invalid")
+   16:         if role == "PROTECTED" and (decision != "PROTECTED" or hunk_id is not None):
+>>>>>>             raise CoverageError("coverage protected disposition is invalid")
+   16:         if role == "EXCLUDED" and (decision != "EXCLUDED" or hunk_id is not None):
+>>>>>>             raise CoverageError("coverage excluded disposition is invalid")
+   16:         if role == "CANDIDATE" and decision not in {
+                   "KEEP",
+                   "DELETE_STYLE_SHELL",
+                   "REWRITE",
+                   "UNRESOLVED",
+               }:
+>>>>>>             raise CoverageError("coverage candidate disposition is invalid")
+   16:         if role == "CANDIDATE" and decision == "KEEP" and hunk_id is not None:
+>>>>>>             raise CoverageError("coverage candidate KEEP hunk_id is invalid")
+   16:         if role == "CANDIDATE" and decision != "KEEP":
+   16:             if not isinstance(hunk_id, str) or not ID_RE.fullmatch(hunk_id):
+>>>>>>                 raise CoverageError("coverage candidate disposition hunk_id is invalid")
+   16:             if hunk_by_id:
+   16:                 hunk = hunk_by_id.get(hunk_id)
+                       if (
+   16:                     hunk is None
+   16:                     or hunk.get("decision") != decision
+   16:                     or int(hunk["start_byte"]) > start
+   16:                     or int(hunk["end_byte"]) < end
+                       ):
+>>>>>>                     raise CoverageError("coverage candidate disposition does not match hunk")
+   16:     selection_by_id = {
+   22:         item["selection_id"]: item for item in declarations["selected_spans"]
+           }
+   14:     for index, item in enumerate(inventories["selected_spans"]):
+    6:         if not isinstance(item, dict):
+>>>>>>             raise CoverageError(f"coverage selected_spans[{index}] must be an object")
+    6:         _exact_fields(item, SELECTION_INVENTORY_FIELDS, f"coverage selected_spans[{index}]")
+    6:         disposition = item.get("disposition")
+    6:         if not isinstance(disposition, dict):
+>>>>>>             raise CoverageError(f"coverage selected_spans[{index}].disposition must be an object")
+    6:         _exact_fields(disposition, DISPOSITION_FIELDS, f"coverage selected_spans[{index}].disposition")
+    6:         selection_id = item.get("selection_id")
+    6:         declared = selection_by_id.get(selection_id)
+   12:         inventory_declaration = {
+   66:             key: value for key, value in item.items() if key != "disposition"
+               }
+    6:         if declared is None or inventory_declaration != declared:
+>>>>>>             raise CoverageError("coverage selected inventory does not match declarations")
+    6:         if declared["decision"] == "KEEP":
+>>>>>>             expected_disposition = {
+>>>>>>                 "decision": "KEEP",
+>>>>>>                 "hunk_id": None,
+>>>>>>                 "reason": declared["reason"],
+                   }
+               else:
+    6:             hunk = hunk_by_id.get(str(declared["hunk_id"])) if hunk_by_id else None
+    6:             expected_disposition = {
+    6:                 "decision": hunk["decision"] if hunk is not None else disposition.get("decision"),
+    6:                 "hunk_id": declared["hunk_id"],
+    6:                 "reason": declared["reason"],
+                   }
+    6:         if disposition != expected_disposition:
+>>>>>>             raise CoverageError("coverage selected inventory does not match declarations")
+    8:     for index, item in enumerate(inventories["explicit_conflicts"]):
+>>>>>>         if not isinstance(item, dict):
+>>>>>>             raise CoverageError(f"coverage explicit_conflicts[{index}] must be an object")
+>>>>>>         _exact_fields(item, CONFLICT_INVENTORY_FIELDS, f"coverage explicit_conflicts[{index}]")
+>>>>>>         for side in ("left", "right"):
+>>>>>>             if not isinstance(item.get(side), dict):
+>>>>>>                 raise CoverageError(f"coverage explicit_conflicts[{index}].{side} must be an object")
+>>>>>>             _exact_fields(item[side], HUNK_SPAN_FIELDS, f"coverage explicit_conflicts[{index}].{side}")
+       
+    8:     summary = recorded.get("summary")
+    8:     if not isinstance(summary, dict):
+>>>>>>         raise CoverageError("coverage summary must be an object")
+    8:     _exact_fields(summary, SUMMARY_FIELDS, "coverage summary")
+    8:     if summary.get("lexical_high_total") != len(inventories["lexical_high"]):
+>>>>>>         raise CoverageError("coverage lexical_high_total mismatch")
+    8:     if summary.get("selected_spans_total") != len(inventories["selected_spans"]):
+>>>>>>         raise CoverageError("coverage selected_spans_total mismatch")
+    8:     if summary.get("explicit_conflicts_total") != len(inventories["explicit_conflicts"]):
+>>>>>>         raise CoverageError("coverage explicit_conflicts_total mismatch")
+   24:     expected_candidate_total = sum(
+   32:         item.get("role") == "CANDIDATE" for item in inventories["lexical_high"]
+           )
+    8:     if summary.get("lexical_candidate_total") != expected_candidate_total:
+>>>>>>         raise CoverageError("coverage lexical_candidate_total mismatch")
+   16:     expected_dispositions = dict(
+   16:         sorted(
+   24:             Counter(
+   16:                 str(item["disposition"].get("decision"))
+   32:                 for item in inventories["lexical_high"]
+    8:             ).items()
+               )
+           )
+    8:     if summary.get("lexical_disposition_counts") != expected_dispositions:
+>>>>>>         raise CoverageError("coverage lexical_disposition_counts mismatch")
+    8:     if recorded.get("coverage_basis") != COVERAGE_BASIS:
+>>>>>>         raise CoverageError("coverage basis is invalid")
+    8:     if recorded.get("coverage_limitations") != COVERAGE_LIMITATIONS:
+>>>>>>         raise CoverageError("coverage limitations are invalid")
+           if (
+    8:         recorded.get("mechanical_coverage_status") != "PASS"
+    8:         or recorded.get("coverage_completion_claim_allowed") is not True
+    8:         or recorded.get("coverage_claim_scope") != "ENUMERATED_HIGH_AND_BOUND_DECLARATIONS_ONLY"
+    8:         or recorded.get("semantic_completeness_claim_allowed") is not False
+    8:         or recorded.get("humanize_quality_claim_allowed") is not False
+    8:         or recorded.get("academic_correctness") != "NOT_EVALUATED"
+           ):
+>>>>>>         raise CoverageError("coverage claim fields are invalid")
+    8:     return dict(recorded)
+       
+       
+    5: def replay_coverage(
+    1:     source: bytes,
+           *,
+    1:     hunks: Sequence[Mapping[str, Any]],
+    1:     recorded: Mapping[str, Any],
+    1: ) -> tuple[dict[str, Any] | None, str]:
+    4:     validate_record_integrity(source, recorded, hunks=hunks)
+    4:     policy = recorded.get("policy_hashes")
+    4:     if not isinstance(policy, dict) or policy != current_policy_hashes():
+>>>>>>         return None, "DRIFT"
+    4:     source_record = recorded.get("source")
+    4:     declarations = recorded.get("declarations")
+    4:     if not isinstance(source_record, dict) or not isinstance(declarations, dict):
+>>>>>>         raise CoverageError("coverage record is missing source or declarations")
+    8:     replayed = build_coverage(
+    4:         source,
+    4:         scene=str(source_record.get("scene", "")),
+    4:         document_format=str(source_record.get("document_format", "")),
+    4:         hunks=hunks,
+    4:         coverage_spec=declarations,
+    4:         resolved_spec=True,
+           )
+    4:     if replayed != recorded:
+>>>>>>         raise CoverageError("COVERAGE_REPLAY_MISMATCH")
+    4:     return replayed, "PASS"

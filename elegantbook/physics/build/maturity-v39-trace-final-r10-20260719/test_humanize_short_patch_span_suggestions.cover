@@ -1,0 +1,724 @@
+    1: import importlib.util
+    1: import json
+    1: import os
+    1: import subprocess
+    1: import sys
+    1: import tempfile
+    1: import unittest
+    1: from pathlib import Path
+       
+       
+    2: SKILL = Path(
+    2:     os.environ.get(
+    1:         "HUMANIZE_SKILL_DIR",
+    1:         Path.home() / ".codex" / "skills" / "humanize-academic-chinese",
+           )
+       )
+    1: AUTHORING_PATH = SKILL / "scripts" / "scaffold_humanize_short_patch.py"
+       
+       
+    1: def load_module(name: str, path: Path):
+    1:     spec = importlib.util.spec_from_file_location(name, path)
+    1:     assert spec is not None and spec.loader is not None
+    1:     module = importlib.util.module_from_spec(spec)
+    1:     sys.modules[name] = module
+    1:     spec.loader.exec_module(module)
+    1:     return module
+       
+       
+    1: authoring = load_module("short_patch_span_suggestion_test", AUTHORING_PATH)
+       
+       
+    2: class HumanizeShortPatchSpanSuggestionTests(unittest.TestCase):
+    1:     def setUp(self) -> None:
+   21:         self.temp = tempfile.TemporaryDirectory()
+   21:         self.root = Path(self.temp.name)
+       
+    1:     def tearDown(self) -> None:
+   21:         self.temp.cleanup()
+       
+    6:     def create(
+               self,
+    1:         text: str,
+               *,
+    2:         mode: str = "SENTENCE",
+    2:         suffix: str = ".md",
+    2:         newline: str | None = None,
+    1:     ) -> tuple[Path, Path, dict]:
+   18:         source = self.root / f"source{suffix}"
+   18:         if newline is None:
+   17:             source.write_text(text, encoding="utf-8", newline="")
+               else:
+    1:             source.write_text(text, encoding="utf-8", newline=newline)
+   18:         output = self.root / f"selection-{mode.lower()}.authoring.json"
+   36:         payload = authoring.create_scaffold(
+   18:             source,
+   18:             output,
+   18:             requested_output="PATCH",
+   18:             scene="GENERAL",
+   18:             intensity="BALANCED",
+   18:             source_kind="DOCUMENT",
+   18:             protected_terms=[],
+   18:             span_suggestion_mode=mode,
+               )
+   18:         return source, output, payload
+       
+    2:     @staticmethod
+    2:     def available(payload: dict, kind: str | None = None) -> list[dict]:
+   58:         return [
+  154:             item
+  153:             for item in payload["span_suggestions"]
+   95:             if item["status"] == "AVAILABLE"
+   59:             and (kind is None or item["kind"] == kind)
+               ]
+       
+    2:     @staticmethod
+    2:     def suppressed(payload: dict, kind: str | None = None) -> list[dict]:
+   36:         return [
+  118:             item
+   95:             for item in payload["span_suggestions"]
+   59:             if item["status"] == "SUPPRESSED"
+   59:             and (kind is None or item["kind"] == kind)
+               ]
+       
+    2:     @staticmethod
+    2:     def write_payload(path: Path, payload: dict) -> None:
+   14:         path.write_text(
+    7:             json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
+    7:             encoding="utf-8",
+               )
+       
+    1:     def test_create_v2_offers_one_source_bound_sentence_for_multiple_highs(self) -> None:
+    1:         sentence = (
+    1:             "值得注意的是，本文系统梳理了相关现象，"
+                   "这个结论具有重要意义，为后续研究奠定基础。"
+               )
+    1:         source, path, payload = self.create(sentence + "\n")
+       
+    2:         self.assertEqual(
+    1:             "humanize-short-patch-selection-authoring/v2",
+    1:             payload["schema_version"],
+               )
+    1:         self.assertEqual("SENTENCE", payload["configuration"]["span_suggestion_mode"])
+    1:         self.assertIn("authoring_tool_sha256", payload["policy_hashes"])
+    1:         sentence_suggestions = self.available(payload, "SENTENCE")
+    1:         self.assertEqual(1, len(sentence_suggestions))
+    1:         suggestion = sentence_suggestions[0]
+    2:         candidate_ids = {
+    3:             item["finding_id"]
+    5:             for item in payload["high_findings"]
+    3:             if item["role"] == "CANDIDATE"
+               }
+    1:         self.assertEqual(candidate_ids, set(suggestion["finding_ids"]))
+    3:         span = next(
+    5:             item for item in payload["spans"] if item["span_id"] == suggestion["span_id"]
+               )
+    1:         self.assertEqual([], span["finding_ids"])
+    1:         self.assertEqual(sentence, span["source_text"])
+    1:         raw = source.read_bytes()
+    2:         self.assertEqual(
+    1:             sentence.encode("utf-8"),
+    1:             raw[suggestion["start_byte"] : suggestion["end_byte"]],
+               )
+    1:         serialized = path.read_text(encoding="utf-8")
+    1:         self.assertEqual(1, serialized.count(sentence))
+       
+    1:     def test_suggestions_never_author_decisions_or_claim_authority(self) -> None:
+    1:         _source, _path, payload = self.create("值得注意的是，先核对条件。\n")
+    1:         self.assertEqual([], payload["hunks"])
+    1:         self.assertEqual([], payload["selected_spans"])
+    1:         self.assertEqual([], payload["explicit_conflicts"])
+    2:         self.assertTrue(
+    3:             all(item["decision"] == "PENDING" for item in payload["lexical_resolutions"])
+               )
+    1:         forbidden = {
+                   "replacement",
+                   "reason",
+                   "decision",
+                   "hunk_id",
+                   "selection_id",
+                   "conflict_id",
+                   "authorized",
+               }
+    2:         for suggestion in payload["span_suggestions"]:
+    1:             self.assertTrue(forbidden.isdisjoint(suggestion))
+    1:         self.assertFalse(payload["span_suggestion_policy"]["decision_authority"])
+    2:         self.assertEqual(
+    1:             "CALLER_CONTROLLED_SELF_CONSISTENCY_ONLY",
+    1:             payload["authoring_integrity_scope"],
+               )
+    1:         self.assertFalse(payload["completion_claim_allowed"])
+    1:         self.assertFalse(payload["humanize_quality_claim_allowed"])
+       
+    1:     def test_sentence_and_paragraph_overlapping_protected_content_are_suppressed(self) -> None:
+    1:         text = "值得注意的是，结果写为 $E=mc^2$，并保留“原始引语”。\n"
+    2:         _source, _path, payload = self.create(
+    1:             text, mode="SENTENCE_AND_PARAGRAPH", suffix=".tex"
+               )
+    2:         candidate_ids = {
+    1:             item["finding_id"]
+    3:             for item in payload["high_findings"]
+    1:             if item["role"] == "CANDIDATE"
+               }
+    1:         self.assertTrue(candidate_ids)
+    1:         self.assertEqual([], self.available(payload))
+    1:         suppressed = self.suppressed(payload)
+    3:         self.assertEqual({"SENTENCE", "PARAGRAPH"}, {item["kind"] for item in suppressed})
+    2:         self.assertTrue(
+    4:             all("PROTECTED_SPAN_OVERLAP" in item["reason_codes"] for item in suppressed)
+               )
+    2:         suggestion_span_ids = {
+    4:             item["span_id"] for item in payload["span_suggestions"] if item["span_id"]
+               }
+    1:         self.assertFalse(suggestion_span_ids)
+       
+    1:     def test_non_candidate_protected_high_never_receives_suggestion(self) -> None:
+    1:         _source, _path, payload = self.create("“值得注意的是”是被锁定的引语。\n")
+    2:         protected_ids = {
+    1:             item["finding_id"]
+    3:             for item in payload["high_findings"]
+    1:             if item["role"] == "PROTECTED"
+               }
+    1:         self.assertTrue(protected_ids)
+    2:         suggested_ids = {
+>>>>>>             finding_id
+    2:             for item in payload["span_suggestions"]
+>>>>>>             for finding_id in item["finding_ids"]
+               }
+    1:         self.assertTrue(protected_ids.isdisjoint(suggested_ids))
+       
+    1:     def test_crlf_suggestion_offsets_preserve_exact_source_bytes(self) -> None:
+    2:         source, _path, payload = self.create(
+    1:             "第一行。\n值得注意的是，先核对条件。\n第三行。\n",
+    1:             newline="\r\n",
+               )
+    1:         raw = source.read_bytes()
+    1:         suggestion = self.available(payload, "SENTENCE")[0]
+    3:         span = next(
+    3:             item for item in payload["spans"] if item["span_id"] == suggestion["span_id"]
+               )
+    1:         selected = raw[suggestion["start_byte"] : suggestion["end_byte"]]
+    1:         self.assertEqual(span["source_text"].encode("utf-8"), selected)
+    2:         self.assertFalse(
+    1:             suggestion["start_byte"] > 0
+    2:             and raw[suggestion["start_byte"] - 1 : suggestion["start_byte"] + 1]
+    1:             == b"\r\n"
+               )
+    2:         self.assertFalse(
+    1:             suggestion["end_byte"] < len(raw)
+    2:             and raw[suggestion["end_byte"] - 1 : suggestion["end_byte"] + 1]
+    1:             == b"\r\n"
+               )
+       
+    1:     def test_finalize_accepts_explicit_hunk_reference_to_suggested_sentence(self) -> None:
+    1:         source, draft, payload = self.create("值得注意的是，先核对条件。\n")
+    1:         suggestion = self.available(payload, "SENTENCE")[0]
+    2:         candidate_ids = [
+    1:             item["finding_id"]
+    3:             for item in payload["high_findings"]
+    1:             if item["role"] == "CANDIDATE"
+               ]
+    1:         payload["hunks"] = [
+    1:             {
+    1:                 "hunk_id": "H001",
+    1:                 "span_id": suggestion["span_id"],
+    1:                 "decision": "REWRITE",
+    1:                 "replacement": "先核对条件。",
+    1:                 "reason": "删除空重点提示壳，同时保留原句已有的核对动作。",
+                   }
+               ]
+    2:         for resolution in payload["lexical_resolutions"]:
+    1:             self.assertIn(resolution["finding_id"], candidate_ids)
+    1:             resolution.update({"decision": "HUNK", "hunk_id": "H001", "reason": None})
+    1:         payload["selected_spans"] = [
+    1:             {
+    1:                 "selection_id": "S001",
+    1:                 "span_id": suggestion["span_id"],
+    1:                 "decision": "HUNK",
+    1:                 "hunk_id": "H001",
+    1:                 "reason": "调用方明确把该建议句界选入本次最小 PATCH。",
+                   }
+               ]
+    1:         self.write_payload(draft, payload)
+    2:         selection = authoring.finalize_scaffold(
+    1:             source, draft, self.root / "selection.v2.json"
+               )
+    1:         self.assertEqual("值得注意的是，先核对条件。", selection["hunks"][0]["source_text"])
+    2:         self.assertEqual(
+    1:             selection["hunks"][0]["source_text"],
+    1:             selection["coverage"]["selected_spans"][0]["source_text"],
+               )
+       
+    1:     def test_finalize_rejects_tampered_suggestion_or_missing_registry_span(self) -> None:
+    1:         source, draft, payload = self.create("值得注意的是，先核对条件。\n")
+    1:         payload["span_suggestions"][0]["start_byte"] += 1
+    1:         self.write_payload(draft, payload)
+    2:         with self.assertRaisesRegex(authoring.AuthoringError, "SPAN_SUGGESTION_DRIFT"):
+    2:             authoring.finalize_scaffold(
+    1:                 source, draft, self.root / "tampered-selection.json"
+                   )
+       
+    2:         source, draft, payload = self.create(
+    1:             "值得注意的是，先核对条件。\n", mode="PARAGRAPH"
+               )
+    1:         suggestion = self.available(payload, "PARAGRAPH")[0]
+    2:         payload["spans"] = [
+    4:             item for item in payload["spans"] if item["span_id"] != suggestion["span_id"]
+               ]
+    1:         self.write_payload(draft, payload)
+    2:         with self.assertRaisesRegex(authoring.AuthoringError, "SUGGESTION_SPAN_MISSING"):
+    2:             authoring.finalize_scaffold(
+    1:                 source, draft, self.root / "missing-selection.json"
+                   )
+       
+    1:     def test_none_mode_produces_no_suggestions_and_cli_defaults_to_sentence(self) -> None:
+    2:         _source, _draft, payload = self.create(
+    1:             "值得注意的是，先核对条件。\n", mode="NONE"
+               )
+    1:         self.assertEqual([], payload["span_suggestions"])
+    1:         self.assertEqual("NONE", payload["span_suggestion_policy"]["mode"])
+       
+    1:         source = self.root / "cli.md"
+    1:         source.write_text("值得注意的是，先核对条件。\n", encoding="utf-8")
+    1:         output = self.root / "cli.authoring.json"
+    2:         process = subprocess.run(
+    1:             [
+    1:                 sys.executable,
+    1:                 str(AUTHORING_PATH),
+    1:                 "create",
+    1:                 str(source),
+    1:                 "--scene",
+    1:                 "GENERAL",
+    1:                 "--source-kind",
+    1:                 "DOCUMENT",
+    1:                 "--output",
+    1:                 str(output),
+    1:                 "--format",
+    1:                 "json",
+                   ],
+    1:             capture_output=True,
+    1:             text=True,
+    1:             encoding="utf-8",
+    1:             check=False,
+               )
+    1:         self.assertEqual(0, process.returncode, process.stdout + process.stderr)
+    1:         cli_payload = json.loads(output.read_text(encoding="utf-8"))
+    2:         self.assertEqual(
+    1:             "CLAUSE_AND_SENTENCE",
+    1:             cli_payload["configuration"]["span_suggestion_mode"],
+               )
+    1:         self.assertGreaterEqual(len(self.available(cli_payload, "CLAUSE")), 1)
+    1:         self.assertGreaterEqual(len(self.available(cli_payload, "SENTENCE")), 1)
+       
+    1:     def test_default_mode_offers_clause_and_full_sentence_for_real_research_shell(self) -> None:
+    1:         text = (
+    1:             "值得注意的是，本文系统梳理了相关现象，并深入探讨了可能原因，"
+                   "为后续研究奠定基础。\n"
+               )
+    1:         source = self.root / "default-research.md"
+    1:         source.write_text(text, encoding="utf-8")
+    2:         payload = authoring.create_scaffold(
+    1:             source,
+    1:             self.root / "default-research.authoring.json",
+    1:             requested_output="PATCH",
+    1:             scene="RESEARCH",
+    1:             intensity="BALANCED",
+    1:             source_kind="DOCUMENT",
+    1:             protected_terms=[],
+               )
+    2:         self.assertEqual(
+    1:             "CLAUSE_AND_SENTENCE",
+    1:             payload["configuration"]["span_suggestion_mode"],
+               )
+    6:         spans = {item["span_id"]: item["source_text"] for item in payload["spans"]}
+    2:         offered = {
+    5:             spans[item["span_id"]]
+    7:             for item in self.available(payload)
+               }
+    2:         self.assertEqual(
+    1:             {"CLAUSE", "SENTENCE"},
+    6:             {item["kind"] for item in self.available(payload)},
+               )
+    1:         self.assertIn("值得注意的是，", offered)
+    1:         self.assertIn(text.strip(), offered)
+       
+    1:     def test_available_suggestions_fully_cover_every_bound_finding(self) -> None:
+    2:         _source, _path, payload = self.create(
+    1:             "形成证据；分析闭环。\n", mode="CLAUSE_AND_SENTENCE"
+               )
+    2:         findings = {
+    1:             item["finding_id"]: item
+    3:             for item in payload["high_findings"]
+    1:             if item["role"] == "CANDIDATE"
+               }
+    1:         self.assertTrue(findings)
+    1:         self.assertEqual([], self.available(payload))
+    1:         suppressed = self.suppressed(payload)
+    4:         self.assertEqual({"CLAUSE", "SENTENCE"}, {item["kind"] for item in suppressed})
+    4:         for suggestion in suppressed:
+    3:             self.assertIn("FINDING_NOT_FULLY_COVERED", suggestion["reason_codes"])
+    1:         for suggestion in self.available(payload):
+>>>>>>             for finding_id in suggestion["finding_ids"]:
+>>>>>>                 finding = findings[finding_id]
+>>>>>>                 self.assertLessEqual(suggestion["start_byte"], finding["start_byte"])
+>>>>>>                 self.assertGreaterEqual(suggestion["end_byte"], finding["end_byte"])
+       
+    1:     def test_tex_command_arguments_suppress_all_overlapping_suggestions(self) -> None:
+    1:         cases = [
+                   "\\textbf{标签，值得注意的是，结论}。\n",
+                   "\\cmd[标签，值得注意的是]{结论}。\n",
+                   "\\outer{\\inner{标签，值得注意的是，结论}}。\n",
+               ]
+    1:         case_number = 0
+    3:         for suffix in (".tex", ".md"):
+    8:             for text in cases:
+    6:                 case_number += 1
+   12:                 with self.subTest(suffix=suffix, text=text):
+    6:                     source = self.root / f"tex-command-{case_number}{suffix}"
+    6:                     source.write_text(text, encoding="utf-8")
+    6:                     output = self.root / f"tex-command-{case_number}.authoring.json"
+   12:                     payload = authoring.create_scaffold(
+    6:                         source,
+    6:                         output,
+    6:                         requested_output="PATCH",
+    6:                         scene="GENERAL",
+    6:                         intensity="BALANCED",
+    6:                         source_kind="DOCUMENT",
+    6:                         protected_terms=[],
+    6:                         span_suggestion_mode="CLAUSE_AND_SENTENCE",
+                           )
+   12:                     self.assertTrue(
+   18:                         any(
+    6:                             item["role"] == "CANDIDATE"
+   12:                             for item in payload["high_findings"]
+                               )
+                           )
+    6:                     self.assertEqual([], self.available(payload))
+    6:                     self.assertTrue(self.suppressed(payload))
+   12:                     self.assertTrue(
+   18:                         all(
+   22:                             "TEX_CONTROL_SEQUENCE_OVERLAP" in item["reason_codes"]
+   34:                             for item in self.suppressed(payload)
+                               )
+                           )
+       
+    1:     def test_tex_comment_between_command_and_argument_preserves_protection(self) -> None:
+    2:         _source, _path, payload = self.create(
+    1:             "\\textbf% keep\n{标签，值得注意的是，结论}。\n",
+    1:             mode="CLAUSE_AND_SENTENCE",
+    1:             suffix=".tex",
+               )
+    1:         self.assertEqual([], self.available(payload))
+    1:         self.assertTrue(self.suppressed(payload))
+    2:         self.assertTrue(
+    3:             all(
+    4:                 "TEX_CONTROL_SEQUENCE_OVERLAP" in item["reason_codes"]
+    6:                 for item in self.suppressed(payload)
+                   )
+               )
+       
+    1:     def test_finalize_rejects_manual_hunk_inside_tex_command_argument(self) -> None:
+    2:         source, draft, payload = self.create(
+    1:             "\\textbf% keep\n{标签，值得注意的是，结论}。\n",
+    1:             mode="NONE",
+    1:             suffix=".tex",
+               )
+    3:         finding = next(
+    2:             item for item in payload["high_findings"] if item["role"] == "CANDIDATE"
+               )
+    3:         span = next(
+    1:             item
+    2:             for item in payload["spans"]
+    1:             if finding["finding_id"] in item["finding_ids"]
+               )
+    1:         payload["hunks"] = [
+    1:             {
+    1:                 "hunk_id": "H001",
+    1:                 "span_id": span["span_id"],
+    1:                 "decision": "DELETE_STYLE_SHELL",
+    1:                 "replacement": "",
+    1:                 "reason": "尝试删除 TeX 命令参数中的空重点提示壳。",
+                   }
+               ]
+    2:         payload["lexical_resolutions"][0].update(
+    1:             {"decision": "HUNK", "hunk_id": "H001", "reason": None}
+               )
+    1:         payload["selected_spans"] = [
+    1:             {
+    1:                 "selection_id": "S001",
+    1:                 "span_id": span["span_id"],
+    1:                 "decision": "HUNK",
+    1:                 "hunk_id": "H001",
+    1:                 "reason": "调用方将该参数内跨度列入最小 PATCH。",
+                   }
+               ]
+    1:         self.write_payload(draft, payload)
+    3:         with self.assertRaisesRegex(
+    1:             authoring.AuthoringError, "HUNK_OVERLAPS_PROTECTED_SPAN"
+               ):
+    2:             authoring.finalize_scaffold(
+    1:                 source, draft, self.root / "tex-command-argument.selection.json"
+                   )
+       
+    1:     def test_default_deduplicates_identical_ranges_across_views(self) -> None:
+    2:         _source, _path, payload = self.create(
+    1:             "值得注意的是；\n", mode="CLAUSE_AND_SENTENCE"
+               )
+    2:         ranges = [
+    2:             (item["start_byte"], item["end_byte"])
+    4:             for item in self.available(payload)
+               ]
+    1:         self.assertEqual(len(ranges), len(set(ranges)))
+       
+    1:     def test_finalize_rejects_overlapping_selected_boundaries(self) -> None:
+    2:         source, draft, payload = self.create(
+    1:             "值得注意的是，先核对条件。这个结论具有重要意义。\n",
+    1:             mode="ALL",
+               )
+    8:         spans = {item["span_id"]: item for item in payload["spans"]}
+    3:         clause = next(
+    2:             item
+    3:             for item in self.available(payload, "CLAUSE")
+    2:             if spans[item["span_id"]]["source_text"] == "值得注意的是，"
+               )
+    3:         sentence = next(
+    1:             item
+    2:             for item in self.available(payload, "SENTENCE")
+    1:             if spans[item["span_id"]]["source_text"] == "值得注意的是，先核对条件。"
+               )
+    3:         target_finding = next(
+    4:             item
+    3:             for item in payload["high_findings"]
+    4:             if item["role"] == "CANDIDATE" and item["source_text"] == "具有重要意义"
+               )
+    3:         target_span = next(
+    2:             item
+    3:             for item in payload["spans"]
+    2:             if target_finding["finding_id"] in item["finding_ids"]
+               )
+    1:         payload["hunks"] = [
+    1:             {
+    1:                 "hunk_id": "H001",
+    1:                 "span_id": target_span["span_id"],
+    1:                 "decision": "DELETE_STYLE_SHELL",
+    1:                 "replacement": "",
+    1:                 "reason": "删除没有具体对象或后果支撑的泛化意义判断。",
+                   }
+               ]
+    3:         for resolution in payload["lexical_resolutions"]:
+    2:             if resolution["finding_id"] == target_finding["finding_id"]:
+    2:                 resolution.update(
+    1:                     {"decision": "HUNK", "hunk_id": "H001", "reason": None}
+                       )
+                   else:
+    2:                 resolution.update(
+    1:                     {
+    1:                         "decision": "KEEP",
+    1:                         "hunk_id": None,
+    1:                         "reason": "该教学提醒明确要求先核对条件，本次保留其约束作用。",
+                           }
+                       )
+    1:         payload["selected_spans"] = [
+    1:             {
+    1:                 "selection_id": "S001",
+    1:                 "span_id": clause["span_id"],
+    1:                 "decision": "KEEP",
+    1:                 "hunk_id": None,
+    1:                 "reason": "调用方把局部提示壳边界列入复核并决定保留。",
+                   },
+    1:             {
+    1:                 "selection_id": "S002",
+    1:                 "span_id": sentence["span_id"],
+    1:                 "decision": "KEEP",
+    1:                 "hunk_id": None,
+    1:                 "reason": "调用方又把包含前一边界的整句列入复核。",
+                   },
+               ]
+    1:         self.write_payload(draft, payload)
+    2:         with self.assertRaisesRegex(authoring.AuthoringError, "SELECTED_SPANS_OVERLAP"):
+    2:             authoring.finalize_scaffold(
+    1:                 source, draft, self.root / "overlapping-selected.selection.json"
+                   )
+       
+    1:     def test_api_auto_format_is_consistent_across_create_finalize_and_build(self) -> None:
+    1:         source = self.root / "api-auto.md"
+    1:         source.write_text("值得注意的是，先核对条件。\n", encoding="utf-8")
+    1:         draft = self.root / "api-auto.authoring.json"
+    2:         payload = authoring.create_scaffold(
+    1:             source,
+    1:             draft,
+    1:             requested_output="PATCH",
+    1:             scene="GENERAL",
+    1:             intensity="BALANCED",
+    1:             source_kind="DOCUMENT",
+    1:             protected_terms=[],
+    1:             document_format="AUTO",
+               )
+    1:         self.assertEqual("markdown", payload["source"]["document_format"])
+    3:         suggestion = next(
+    2:             item
+    3:             for item in self.available(payload, "CLAUSE")
+    2:             if item["boundary_variant"] == "RIGHT_DELIMITER"
+               )
+    1:         payload["hunks"] = [
+    1:             {
+    1:                 "hunk_id": "H001",
+    1:                 "span_id": suggestion["span_id"],
+    1:                 "decision": "DELETE_STYLE_SHELL",
+    1:                 "replacement": "",
+    1:                 "reason": "删除空重点提示壳并保留核对条件的动作。",
+                   }
+               ]
+    2:         for resolution in payload["lexical_resolutions"]:
+    2:             resolution.update(
+    1:                 {"decision": "HUNK", "hunk_id": "H001", "reason": None}
+                   )
+    1:         payload["selected_spans"] = [
+    1:             {
+    1:                 "selection_id": "S001",
+    1:                 "span_id": suggestion["span_id"],
+    1:                 "decision": "HUNK",
+    1:                 "hunk_id": "H001",
+    1:                 "reason": "调用方把该提示壳边界列入本次 PATCH。",
+                   }
+               ]
+    1:         self.write_payload(draft, payload)
+    1:         selection_path = self.root / "api-auto.selection.json"
+    2:         selection = authoring.finalize_scaffold(
+    1:             source, draft, selection_path, document_format="auto"
+               )
+    2:         self.assertEqual(
+    1:             "humanize-short-patch-selection/v2", selection["schema_version"]
+               )
+    2:         bundle = authoring.short_patch.build_bundle(
+    1:             source,
+    1:             selection_path,
+    1:             self.root / "api-auto.bundle.json",
+    1:             document_format="AUTO",
+               )
+    1:         self.assertEqual("markdown", bundle["document_format"])
+       
+    1:     def test_clause_suggestions_cover_real_research_shell_boundaries(self) -> None:
+    1:         text = (
+    1:             "这个结果说明参数变化会影响系统表现，也具有重要意义。"
+                   "值得注意的是，本文系统梳理了相关现象，并深入探讨了可能原因，"
+                   "为后续研究奠定基础。\n"
+               )
+    1:         _source, _path, payload = self.create(text, mode="CLAUSE")
+    8:         spans = {item["span_id"]: item["source_text"] for item in payload["spans"]}
+    2:         offered = {
+    6:             spans[item["span_id"]]
+    8:             for item in self.available(payload, "CLAUSE")
+               }
+    1:         self.assertIn("，也具有重要意义", offered)
+    1:         self.assertIn("值得注意的是，", offered)
+    1:         self.assertIn("，为后续研究奠定基础", offered)
+    2:         self.assertTrue(
+    3:             all(
+   12:                 item["boundary_variant"]
+    6:                 in {"CORE", "LEFT_DELIMITER", "RIGHT_DELIMITER"}
+    8:                 for item in self.available(payload, "CLAUSE")
+                   )
+               )
+       
+    1:     def test_txt_can_explicitly_use_tex_protection_grammar(self) -> None:
+    1:         source = self.root / "source.txt"
+    2:         source.write_text(
+    1:             "% 值得注意的是，注释。\n值得注意的是，正文。\n",
+    1:             encoding="utf-8",
+               )
+    1:         output = self.root / "tex-in-txt.authoring.json"
+    2:         payload = authoring.create_scaffold(
+    1:             source,
+    1:             output,
+    1:             requested_output="PATCH",
+    1:             scene="GENERAL",
+    1:             intensity="BALANCED",
+    1:             source_kind="DOCUMENT",
+    1:             protected_terms=[],
+    1:             span_suggestion_mode="CLAUSE",
+    1:             document_format="tex",
+               )
+    1:         self.assertEqual("tex", payload["source"]["document_format"])
+    1:         self.assertTrue(payload["high_findings"])
+    2:         self.assertEqual(
+    1:             {"PROTECTED", "CANDIDATE"},
+    3:             {item["role"] for item in payload["high_findings"]},
+               )
+    3:         suggestion = next(
+    2:             item
+    3:             for item in self.available(payload, "CLAUSE")
+    2:             if item["boundary_variant"] == "RIGHT_DELIMITER"
+               )
+    1:         payload["hunks"] = [
+    1:             {
+    1:                 "hunk_id": "H001",
+    1:                 "span_id": suggestion["span_id"],
+    1:                 "decision": "DELETE_STYLE_SHELL",
+    1:                 "replacement": "",
+    1:                 "reason": "删除作者正文中的空重点提示壳，不触碰上一行 TeX 注释。",
+                   }
+               ]
+    2:         for resolution in payload["lexical_resolutions"]:
+    2:             resolution.update(
+    1:                 {"decision": "HUNK", "hunk_id": "H001", "reason": None}
+                   )
+    1:         payload["selected_spans"] = [
+    1:             {
+    1:                 "selection_id": "S001",
+    1:                 "span_id": suggestion["span_id"],
+    1:                 "decision": "HUNK",
+    1:                 "hunk_id": "H001",
+    1:                 "reason": "调用方把作者正文中的提示壳列入本次 PATCH。",
+                   }
+               ]
+    1:         self.write_payload(output, payload)
+    1:         selection_path = self.root / "tex-in-txt.selection.json"
+    2:         authoring.finalize_scaffold(
+    1:             source,
+    1:             output,
+    1:             selection_path,
+    1:             document_format="tex",
+               )
+    2:         bundle = authoring.short_patch.build_bundle(
+    1:             source,
+    1:             selection_path,
+    1:             self.root / "tex-in-txt.bundle.json",
+    1:             document_format="tex",
+               )
+    1:         self.assertEqual("tex", bundle["coverage"]["source"]["document_format"])
+       
+    1:     def test_all_mode_emits_clause_sentence_and_paragraph_views(self) -> None:
+    2:         _source, _path, payload = self.create(
+    1:             "值得注意的是，先核对条件。第二句保留原样。\n", mode="ALL"
+               )
+    5:         kinds = {item["kind"] for item in self.available(payload)}
+    1:         self.assertEqual({"CLAUSE", "SENTENCE", "PARAGRAPH"}, kinds)
+    2:         ranges = [
+    4:             (item["start_byte"], item["end_byte"])
+    6:             for item in self.available(payload)
+               ]
+    1:         self.assertEqual(len(ranges), len(set(ranges)))
+       
+    1:     def test_oversize_sentence_is_audited_as_suppressed(self) -> None:
+    1:         text = "值得注意的是，" + ("甲" * 1300) + "。\n"
+    1:         _source, _path, payload = self.create(text, mode="SENTENCE")
+    1:         self.assertEqual([], self.available(payload, "SENTENCE"))
+    1:         suppressed = self.suppressed(payload, "SENTENCE")
+    1:         self.assertEqual(1, len(suppressed))
+    1:         self.assertIn("SPAN_TOO_LARGE", suppressed[0]["reason_codes"])
+       
+    1:     def test_tex_control_sequence_suppresses_broad_sentence_suggestion(self) -> None:
+    2:         _source, _path, payload = self.create(
+    1:             "值得注意的是，\\textbf{先核对条件}。\n",
+    1:             mode="SENTENCE",
+    1:             suffix=".tex",
+               )
+    1:         self.assertEqual([], self.available(payload, "SENTENCE"))
+    1:         suppressed = self.suppressed(payload, "SENTENCE")
+    1:         self.assertEqual(1, len(suppressed))
+    1:         self.assertIn("TEX_CONTROL_SEQUENCE_OVERLAP", suppressed[0]["reason_codes"])
+       
+       
+    1: if __name__ == "__main__":
+>>>>>>     unittest.main()

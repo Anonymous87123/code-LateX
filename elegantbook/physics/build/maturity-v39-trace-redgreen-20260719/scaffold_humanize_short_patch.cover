@@ -1,0 +1,1165 @@
+       #!/usr/bin/env python3
+    2: """Create and finalize a source-bound authoring scaffold for short PATCH v2."""
+       
+    2: from __future__ import annotations
+       
+    2: import argparse
+    2: import json
+    2: import re
+    2: import sys
+    2: from pathlib import Path
+    2: from typing import Any, Mapping, Sequence
+       
+       
+    2: SCRIPT_DIR = Path(__file__).resolve().parent
+    2: if str(SCRIPT_DIR) not in sys.path:
+>>>>>>     sys.path.insert(0, str(SCRIPT_DIR))
+       
+    2: import build_humanize_short_patch as short_patch  # noqa: E402
+       
+       
+    2: coverage_layer = short_patch.coverage_layer
+    2: AUTHORING_SCHEMA_V1 = "humanize-short-patch-selection-authoring/v1"
+    2: AUTHORING_SCHEMA = "humanize-short-patch-selection-authoring/v2"
+    2: SELECTION_SCHEMA = short_patch.SELECTION_SCHEMA_V2
+    2: HEX64_RE = re.compile(r"^[0-9a-f]{64}$")
+    2: AUTHORING_FIELDS_V1 = {
+           "schema_version",
+           "source",
+           "configuration",
+           "policy_hashes",
+           "high_findings",
+           "inventory_sha256",
+           "spans",
+           "hunks",
+           "lexical_resolutions",
+           "selected_spans",
+           "explicit_conflicts",
+           "completion_claim_allowed",
+           "humanize_quality_claim_allowed",
+       }
+    2: AUTHORING_FIELDS = AUTHORING_FIELDS_V1 | {
+           "span_suggestion_policy",
+           "span_suggestions",
+           "authoring_integrity_scope",
+       }
+    2: SOURCE_FIELDS = {
+           "sha256",
+           "size_bytes",
+           "encoding",
+           "offset_unit",
+           "document_format",
+           "scan_scene",
+       }
+    2: CONFIGURATION_FIELDS_V1 = {
+           "requested_output",
+           "mode",
+           "scene",
+           "intensity",
+           "source_kind",
+           "protected_terms",
+       }
+    2: CONFIGURATION_FIELDS = CONFIGURATION_FIELDS_V1 | {"span_suggestion_mode"}
+    2: HIGH_FINDING_FIELDS = {
+           "finding_id",
+           "signal_id",
+           "severity",
+           "role",
+           "start_byte",
+           "end_byte",
+           "source_text",
+           "source_text_sha256",
+           "automatic_reason",
+       }
+    2: SPAN_FIELDS = {"span_id", "finding_ids", "source_text", "start_byte"}
+    2: HUNK_FIELDS = {"hunk_id", "span_id", "decision", "replacement", "reason"}
+    2: RESOLUTION_FIELDS = {"finding_id", "decision", "hunk_id", "reason"}
+    2: SELECTED_FIELDS = {"selection_id", "span_id", "decision", "hunk_id", "reason"}
+    2: CONFLICT_FIELDS = set(coverage_layer.CONFLICT_FIELDS)
+    2: RESOLUTION_DECISIONS = {"PENDING", "HUNK", "KEEP"}
+    2: SPAN_SUGGESTION_SCHEMA = "humanize-short-patch-span-suggestion/v1"
+    2: SPAN_SUGGESTION_MODES = {
+           "NONE",
+           "CLAUSE",
+           "SENTENCE",
+           "PARAGRAPH",
+           "SENTENCE_AND_PARAGRAPH",
+           "ALL",
+       }
+    2: SPAN_SUGGESTION_POLICY_FIELDS = {
+           "schema_version",
+           "mode",
+           "candidate_roles",
+           "protected_overlap_policy",
+           "trim_policy",
+           "max_clause_bytes",
+           "max_sentence_bytes",
+           "max_paragraph_bytes",
+           "decision_authority",
+       }
+    2: SPAN_SUGGESTION_FIELDS = {
+           "suggestion_id",
+           "kind",
+           "boundary_variant",
+           "status",
+           "span_id",
+           "finding_ids",
+           "start_byte",
+           "end_byte",
+           "source_text_sha256",
+           "reason_codes",
+       }
+    2: MAX_CLAUSE_SUGGESTION_BYTES = 600
+    2: MAX_SENTENCE_SUGGESTION_BYTES = 1200
+    2: MAX_PARAGRAPH_SUGGESTION_BYTES = 4000
+       
+       
+    4: class AuthoringError(ValueError):
+    2:     """Raised when an authoring scaffold cannot be safely finalized."""
+       
+       
+    4: class _StrictArgumentParser(argparse.ArgumentParser):
+    2:     def error(self, _message: str) -> None:
+    1:         raise AuthoringError("INVALID_ARGUMENTS")
+       
+       
+    2: def current_policy_hashes() -> dict[str, str]:
+  237:     return {
+   79:         **coverage_layer.current_policy_hashes(),
+   79:         "authoring_tool_sha256": short_patch.sha256(Path(__file__).resolve().read_bytes()),
+           }
+       
+       
+    2: def _policy_hashes_for_schema(schema_version: str) -> dict[str, str]:
+   26:     if schema_version == AUTHORING_SCHEMA_V1:
+    2:         return coverage_layer.current_policy_hashes()
+   24:     return current_policy_hashes()
+       
+       
+    2: def _exact_fields(value: Mapping[str, Any], expected: set[str], label: str) -> None:
+  193:     actual = set(value)
+  193:     if actual != expected:
+>>>>>>         raise AuthoringError(
+>>>>>>             f"{label} fields drifted; missing={sorted(expected - actual)}, "
+>>>>>>             f"unknown={sorted(actual - expected)}"
+               )
+       
+       
+    2: def _identifier(value: Any, label: str) -> str:
+  111:     identifier = short_patch._required_string(value, label)
+  111:     if not short_patch.HUNK_ID_RE.fullmatch(identifier):
+>>>>>>         raise AuthoringError(f"{label} is invalid")
+  111:     return identifier
+       
+       
+    2: def _document_format(path: Path, requested: str | None = None) -> str:
+   47:     if requested is not None:
+    1:         normalized = requested.casefold()
+    1:         if normalized not in {"markdown", "tex"}:
+>>>>>>             raise AuthoringError("document_format is invalid")
+    1:         return normalized
+   46:     return "tex" if path.suffix.casefold() in {".tex", ".ltx"} else "markdown"
+       
+       
+    2: def _source_record(source: bytes, document_format: str) -> dict[str, Any]:
+   47:     return {
+   47:         "sha256": short_patch.sha256(source),
+   47:         "size_bytes": len(source),
+   47:         "encoding": "utf-8",
+   47:         "offset_unit": short_patch.OFFSET_UNIT,
+   47:         "document_format": document_format,
+   47:         "scan_scene": "AUTO",
+           }
+       
+       
+   16: def _inventory_hash(
+    2:     source: Mapping[str, Any],
+    2:     configuration: Mapping[str, Any],
+    2:     policy_hashes: Mapping[str, str],
+    2:     findings: Sequence[Mapping[str, Any]],
+           *,
+    4:     span_suggestion_policy: Mapping[str, Any] | None = None,
+    4:     span_suggestions: Sequence[Mapping[str, Any]] | None = None,
+    2: ) -> str:
+   45:     payload: dict[str, Any] = {
+   45:         "source": dict(source),
+   45:         "configuration": dict(configuration),
+   45:         "policy_hashes": dict(policy_hashes),
+  122:         "high_findings": [dict(item) for item in findings],
+           }
+   45:     if span_suggestion_policy is not None or span_suggestions is not None:
+   43:         payload["span_suggestion_policy"] = dict(span_suggestion_policy or {})
+   67:         payload["span_suggestions"] = [dict(item) for item in span_suggestions or []]
+   90:     return short_patch.sha256(
+   45:         short_patch.canonical_json(payload)
+           )
+       
+       
+    2: def _group_finding_spans(findings: Sequence[Mapping[str, Any]]) -> list[dict[str, Any]]:
+   44:     grouped: dict[tuple[int, int, str], list[str]] = {}
+  118:     for finding in findings:
+   74:         key = (
+   74:             int(finding["start_byte"]),
+   74:             int(finding["end_byte"]),
+   74:             str(finding["source_text"]),
+               )
+   74:         grouped.setdefault(key, []).append(str(finding["finding_id"]))
+   44:     spans: list[dict[str, Any]] = []
+  162:     for index, ((start, _end, text), finding_ids) in enumerate(
+  118:         sorted(grouped.items(), key=lambda item: (item[0][0], item[0][1], item[0][2])),
+   44:         start=1,
+           ):
+  148:         spans.append(
+   74:             {
+   74:                 "span_id": f"A{index:03d}",
+   74:                 "finding_ids": finding_ids,
+   74:                 "source_text": text,
+   74:                 "start_byte": start,
+                   }
+               )
+   44:     return spans
+       
+       
+    2: def _suggestion_policy(mode: str) -> dict[str, Any]:
+   44:     return {
+   44:         "schema_version": SPAN_SUGGESTION_SCHEMA,
+   44:         "mode": mode,
+   44:         "candidate_roles": ["CANDIDATE"],
+   44:         "protected_overlap_policy": "SUPPRESS_ANY_OVERLAP",
+   44:         "trim_policy": "EDGE_WHITESPACE_ONLY_PRESERVE_INTERNAL_BYTES",
+   44:         "max_clause_bytes": MAX_CLAUSE_SUGGESTION_BYTES,
+   44:         "max_sentence_bytes": MAX_SENTENCE_SUGGESTION_BYTES,
+   44:         "max_paragraph_bytes": MAX_PARAGRAPH_SUGGESTION_BYTES,
+   44:         "decision_authority": False,
+           }
+       
+       
+    2: def _suggestion_kinds(mode: str) -> tuple[str, ...]:
+   44:     if mode == "NONE":
+   28:         return ()
+   16:     if mode == "CLAUSE":
+    3:         return ("CLAUSE",)
+   13:     if mode == "SENTENCE":
+   10:         return ("SENTENCE",)
+    3:     if mode == "PARAGRAPH":
+    2:         return ("PARAGRAPH",)
+    1:     if mode == "SENTENCE_AND_PARAGRAPH":
+    1:         return ("SENTENCE", "PARAGRAPH")
+>>>>>>     if mode == "ALL":
+>>>>>>         return ("CLAUSE", "SENTENCE", "PARAGRAPH")
+>>>>>>     raise AuthoringError("span_suggestion_mode is invalid")
+       
+       
+    2: def _trim_char_span(text: str, start: int, end: int) -> tuple[int, int]:
+   22:     while start < end and text[start].isspace():
+>>>>>>         start += 1
+   25:     while end > start and text[end - 1].isspace():
+    3:         end -= 1
+   22:     return start, end
+       
+       
+    2: def _clause_spans(text: str, offset: int) -> list[tuple[int, int, str]]:
+    7:     clause_delimiters = "，,；;：:"
+    7:     all_delimiters = clause_delimiters + coverage_layer.lexical.SENTENCE_BREAKS
+  105:     left_positions = [text.rfind(char, 0, offset) for char in all_delimiters]
+    7:     left = max(left_positions, default=-1)
+  105:     right_positions = [text.find(char, offset) for char in all_delimiters]
+  105:     right_positions = [position for position in right_positions if position >= 0]
+    7:     right = min(right_positions) if right_positions else len(text)
+    7:     core_start, core_end = _trim_char_span(text, left + 1, right)
+    7:     candidates = [(core_start, core_end, "CORE")]
+    7:     if left >= 0 and text[left] in clause_delimiters:
+    2:         candidates.append((left, core_end, "LEFT_DELIMITER"))
+    7:     if right < len(text) and text[right] in clause_delimiters:
+    3:         candidates.append((core_start, right + 1, "RIGHT_DELIMITER"))
+    7:     unique: dict[tuple[int, int], tuple[int, int, str]] = {}
+   19:     for start, end, variant in candidates:
+   12:         unique.setdefault((start, end), (start, end, variant))
+    7:     return list(unique.values())
+       
+       
+    2: def _byte_to_char_offsets(text: str, byte_offsets: set[int]) -> dict[int, int]:
+   16:     result: dict[int, int] = {}
+   16:     byte_offset = 0
+  429:     for char_offset, character in enumerate(text):
+  413:         if byte_offset in byte_offsets:
+   42:             result[byte_offset] = char_offset
+  413:         byte_offset += len(character.encode("utf-8"))
+   16:     if byte_offset in byte_offsets:
+>>>>>>         result[byte_offset] = len(text)
+   16:     if set(result) != byte_offsets:
+>>>>>>         raise AuthoringError("high finding byte offset is not a UTF-8 boundary")
+   16:     return result
+       
+       
+   10: def _span_overlaps(
+    6:     start: int, end: int, spans: Sequence[tuple[int, int, str]]
+    2: ) -> bool:
+   54:     return any(protected_start < end and protected_end > start for protected_start, protected_end, _ in spans)
+       
+       
+    2: def _tex_control_overlap(text: str, start: int, end: int, document_format: str) -> bool:
+   27:     if document_format != "tex":
+   17:         return False
+   10:     return re.search(r"\\(?:[A-Za-z@]+|.)", text[start:end]) is not None
+       
+       
+   12: def _build_span_suggestions(
+    2:     source: bytes,
+           *,
+    2:     document_format: str,
+    2:     findings: Sequence[Mapping[str, Any]],
+    2:     mode: str,
+    2: ) -> tuple[dict[str, Any], list[dict[str, Any]], list[dict[str, Any]]]:
+   44:     policy = _suggestion_policy(mode)
+   44:     kinds = _suggestion_kinds(mode)
+   44:     base_spans = _group_finding_spans(findings)
+   44:     if not kinds:
+   28:         return policy, [], base_spans
+   16:     text = source.decode("utf-8")
+   39:     candidate_findings = [item for item in findings if item["role"] == "CANDIDATE"]
+   32:     byte_offsets = {
+   63:         int(offset)
+   53:         for finding in candidate_findings
+   63:         for offset in (finding["start_byte"], finding["end_byte"])
+           }
+   16:     char_offsets = _byte_to_char_offsets(text, byte_offsets)
+   48:     protected_spans = coverage_layer.lexical.ProtectedIndex(
+   16:         text, document_format=document_format
+   16:     ).spans
+   16:     records: dict[tuple[str, str, int, int, str], dict[str, Any]] = {}
+   37:     for finding in candidate_findings:
+   21:         finding_start = char_offsets[int(finding["start_byte"])]
+   43:         for kind in kinds:
+   22:             if kind == "CLAUSE":
+    7:                 ranges = _clause_spans(text, finding_start)
+    7:                 maximum = MAX_CLAUSE_SUGGESTION_BYTES
+   15:             elif kind == "SENTENCE":
+   24:                 start, end = coverage_layer.lexical._scope_span(
+   12:                     text, finding_start, "sentence"
+                       )
+   12:                 ranges = [(*_trim_char_span(text, start, end), "FULL")]
+   12:                 maximum = MAX_SENTENCE_SUGGESTION_BYTES
+                   else:
+    3:                 start, end = coverage_layer.lexical._paragraph_span(text, finding_start)
+    3:                 ranges = [(*_trim_char_span(text, start, end), "FULL")]
+    3:                 maximum = MAX_PARAGRAPH_SUGGESTION_BYTES
+   49:             for start, end, boundary_variant in ranges:
+   27:                 start_byte = len(text[:start].encode("utf-8"))
+   27:                 end_byte = len(text[:end].encode("utf-8"))
+   27:                 reason_codes: list[str] = []
+   27:                 if start >= end:
+>>>>>>                     reason_codes.append("EMPTY_AFTER_TRIM")
+   27:                 if end_byte - start_byte > maximum:
+>>>>>>                     reason_codes.append("SPAN_TOO_LARGE")
+   27:                 if _span_overlaps(start, end, protected_spans):
+    2:                     reason_codes.append("PROTECTED_SPAN_OVERLAP")
+   27:                 if _tex_control_overlap(text, start, end, document_format):
+>>>>>>                     reason_codes.append("TEX_CONTROL_SEQUENCE_OVERLAP")
+   27:                 status = "SUPPRESSED" if reason_codes else "AVAILABLE"
+   27:                 key = (kind, boundary_variant, start_byte, end_byte, status)
+   54:                 record = records.setdefault(
+   27:                     key,
+   27:                     {
+   27:                         "kind": kind,
+   27:                         "boundary_variant": boundary_variant,
+   27:                         "status": status,
+   27:                         "finding_ids": [],
+   27:                         "start_byte": start_byte,
+   27:                         "end_byte": end_byte,
+   54:                         "source_text_sha256": short_patch.sha256(
+   27:                             source[start_byte:end_byte]
+                               ),
+   27:                         "reason_codes": reason_codes
+   25:                         or ["CALLER_DECISION_REQUIRED"],
+                           },
+                       )
+   27:                 record["finding_ids"].append(str(finding["finding_id"]))
+       
+   16:     order = {"CLAUSE": 0, "SENTENCE": 1, "PARAGRAPH": 2}
+   32:     ordered = sorted(
+   16:         records.values(),
+   41:         key=lambda item: (
+   25:             int(item["start_byte"]),
+   25:             order[str(item["kind"])],
+   25:             str(item["boundary_variant"]),
+   25:             int(item["end_byte"]),
+   25:             str(item["status"]),
+               ),
+           )
+   16:     span_by_range: dict[tuple[int, int], str] = {}
+   39:     for span in base_spans:
+   23:         start = int(span["start_byte"])
+   23:         end = start + len(str(span["source_text"]).encode("utf-8"))
+   23:         span_by_range[(start, end)] = str(span["span_id"])
+   16:     suggestions: list[dict[str, Any]] = []
+   41:     for index, record in enumerate(ordered, start=1):
+   25:         start_byte = int(record["start_byte"])
+   25:         end_byte = int(record["end_byte"])
+   25:         span_id: str | None = None
+   25:         if record["status"] == "AVAILABLE":
+   23:             span_id = span_by_range.get((start_byte, end_byte))
+   23:             if span_id is None:
+   19:                 span_id = f"A{len(base_spans) + 1:03d}"
+   38:                 base_spans.append(
+   19:                     {
+   19:                         "span_id": span_id,
+   19:                         "finding_ids": [],
+   19:                         "source_text": source[start_byte:end_byte].decode("utf-8"),
+   19:                         "start_byte": start_byte,
+                           }
+                       )
+   19:                 span_by_range[(start_byte, end_byte)] = span_id
+   50:         suggestions.append(
+   25:             {
+   25:                 "suggestion_id": f"SG{index:03d}",
+   25:                 "kind": record["kind"],
+   25:                 "boundary_variant": record["boundary_variant"],
+   25:                 "status": record["status"],
+   25:                 "span_id": span_id,
+   25:                 "finding_ids": sorted(set(record["finding_ids"])),
+   25:                 "start_byte": start_byte,
+   25:                 "end_byte": end_byte,
+   25:                 "source_text_sha256": record["source_text_sha256"],
+   25:                 "reason_codes": record["reason_codes"],
+                   }
+               )
+   16:     return policy, suggestions, base_spans
+       
+       
+   22: def create_scaffold(
+    2:     source_path: Path,
+    2:     output_path: Path,
+           *,
+    2:     requested_output: str,
+    2:     scene: str,
+    2:     intensity: str,
+    2:     source_kind: str,
+    2:     protected_terms: Sequence[str],
+    4:     span_suggestion_mode: str = "CLAUSE",
+    4:     document_format: str | None = None,
+    2: ) -> dict[str, Any]:
+   27:     source_path = short_patch.safe_input_path(source_path, "source")
+   27:     output_path = short_patch.safe_output_path(output_path)
+   27:     source = short_patch.read_source(source_path)
+   27:     if requested_output not in short_patch.ALLOWED_REQUESTED_OUTPUTS:
+>>>>>>         raise AuthoringError("requested_output is invalid")
+   27:     if scene not in short_patch.ALLOWED_SCENES:
+>>>>>>         raise AuthoringError("scene is invalid")
+   27:     if intensity not in short_patch.ALLOWED_INTENSITIES:
+>>>>>>         raise AuthoringError("intensity is invalid")
+   27:     if source_kind not in coverage_layer.SOURCE_KINDS:
+>>>>>>         raise AuthoringError("source_kind is invalid")
+   27:     if span_suggestion_mode not in SPAN_SUGGESTION_MODES:
+>>>>>>         raise AuthoringError("span_suggestion_mode is invalid")
+   27:     terms = short_patch._protected_terms(list(protected_terms), "protected_terms")
+   27:     document_format = _document_format(source_path, document_format)
+   27:     policy_before = current_policy_hashes()
+   54:     findings = coverage_layer.scan_high_findings(
+   27:         source, document_format=document_format
+           )
+   27:     source_record = _source_record(source, document_format)
+   27:     configuration = {
+   27:         "requested_output": requested_output,
+   27:         "mode": "REWRITE",
+   27:         "scene": scene,
+   27:         "intensity": intensity,
+   27:         "source_kind": source_kind,
+   27:         "protected_terms": terms,
+   27:         "span_suggestion_mode": span_suggestion_mode,
+           }
+   54:     suggestion_policy, suggestions, spans = _build_span_suggestions(
+   27:         source,
+   27:         document_format=document_format,
+   27:         findings=findings,
+   27:         mode=span_suggestion_mode,
+           )
+  459:     payload: dict[str, Any] = {
+   27:         "schema_version": AUTHORING_SCHEMA,
+   27:         "source": source_record,
+   27:         "configuration": configuration,
+   27:         "policy_hashes": policy_before,
+   27:         "high_findings": findings,
+   54:         "inventory_sha256": _inventory_hash(
+   27:             source_record,
+   27:             configuration,
+   27:             policy_before,
+   27:             findings,
+   27:             span_suggestion_policy=suggestion_policy,
+   27:             span_suggestions=suggestions,
+               ),
+   27:         "span_suggestion_policy": suggestion_policy,
+   27:         "span_suggestions": suggestions,
+   27:         "authoring_integrity_scope": "CALLER_CONTROLLED_SELF_CONSISTENCY_ONLY",
+   27:         "spans": spans,
+   27:         "hunks": [],
+   81:         "lexical_resolutions": [
+   88:             {
+   43:                 "finding_id": item["finding_id"],
+   43:                 "decision": "PENDING",
+   43:                 "hunk_id": None,
+   43:                 "reason": None,
+                   }
+   99:             for item in findings
+   45:             if item["role"] == "CANDIDATE"
+               ],
+   27:         "selected_spans": [],
+   27:         "explicit_conflicts": [],
+   27:         "completion_claim_allowed": False,
+   27:         "humanize_quality_claim_allowed": False,
+           }
+   27:     encoded = (
+   54:         json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True).encode("utf-8")
+   27:         + b"\n"
+           )
+   27:     if len(encoded) > short_patch.MAX_JSON_BYTES:
+    1:         raise AuthoringError("AUTHORING_OUTPUT_EXCEEDS_LIMIT")
+   26:     if short_patch.read_source(source_path) != source:
+>>>>>>         raise AuthoringError("SOURCE_CHANGED_DURING_CREATE")
+   26:     if current_policy_hashes() != policy_before:
+>>>>>>         raise AuthoringError("POLICY_CHANGED_DURING_CREATE")
+   26:     short_patch._atomic_write_new(output_path, encoded)
+   26:     return payload
+       
+       
+   10: def _validate_source_record(
+    6:     recorded: Any, source: bytes, document_format: str
+    2: ) -> dict[str, Any]:
+   20:     if not isinstance(recorded, dict):
+>>>>>>         raise AuthoringError("source record must be an object")
+   20:     _exact_fields(recorded, SOURCE_FIELDS, "source record")
+   20:     if recorded != _source_record(source, document_format):
+    1:         raise AuthoringError("SOURCE_DRIFT")
+   19:     return dict(recorded)
+       
+       
+    2: def _validate_configuration(value: Any, schema_version: str) -> dict[str, Any]:
+   19:     if not isinstance(value, dict):
+>>>>>>         raise AuthoringError("configuration must be an object")
+   19:     expected = CONFIGURATION_FIELDS_V1 if schema_version == AUTHORING_SCHEMA_V1 else CONFIGURATION_FIELDS
+   19:     _exact_fields(value, expected, "configuration")
+   19:     if value.get("requested_output") not in short_patch.ALLOWED_REQUESTED_OUTPUTS:
+>>>>>>         raise AuthoringError("configuration.requested_output is invalid")
+   19:     if value.get("mode") != "REWRITE":
+>>>>>>         raise AuthoringError("configuration.mode must be REWRITE")
+   19:     if value.get("scene") not in short_patch.ALLOWED_SCENES:
+>>>>>>         raise AuthoringError("configuration.scene is invalid")
+   19:     if value.get("intensity") not in short_patch.ALLOWED_INTENSITIES:
+>>>>>>         raise AuthoringError("configuration.intensity is invalid")
+   19:     if value.get("source_kind") not in coverage_layer.SOURCE_KINDS:
+>>>>>>         raise AuthoringError("configuration.source_kind is invalid")
+   19:     value = dict(value)
+   38:     value["protected_terms"] = short_patch._protected_terms(
+   19:         value.get("protected_terms"), "configuration.protected_terms"
+           )
+   19:     if schema_version != AUTHORING_SCHEMA_V1:
+   18:         if value.get("span_suggestion_mode") not in SPAN_SUGGESTION_MODES:
+>>>>>>             raise AuthoringError("configuration.span_suggestion_mode is invalid")
+   19:     return value
+       
+       
+   12: def _validate_span_suggestion_records(
+    2:     recorded_policy: Any,
+    2:     recorded_suggestions: Any,
+    2:     expected_policy: Mapping[str, Any],
+    2:     expected_suggestions: Sequence[Mapping[str, Any]],
+    2: ) -> None:
+   17:     if not isinstance(recorded_policy, dict):
+>>>>>>         raise AuthoringError("span_suggestion_policy must be an object")
+   34:     _exact_fields(
+   17:         recorded_policy, SPAN_SUGGESTION_POLICY_FIELDS, "span_suggestion_policy"
+           )
+   17:     if not isinstance(recorded_suggestions, list):
+>>>>>>         raise AuthoringError("span_suggestions must be an array")
+   23:     for index, item in enumerate(recorded_suggestions):
+    6:         if not isinstance(item, dict):
+>>>>>>             raise AuthoringError(f"span_suggestions[{index}] must be an object")
+    6:         _exact_fields(item, SPAN_SUGGESTION_FIELDS, f"span_suggestions[{index}]")
+   17:     if recorded_policy != dict(expected_policy) or recorded_suggestions != list(expected_suggestions):
+    1:         raise AuthoringError("SPAN_SUGGESTION_DRIFT")
+       
+       
+    8: def _validate_suggestion_span_registry(
+    2:     suggestions: Sequence[Mapping[str, Any]],
+    2:     spans: Mapping[str, Mapping[str, Any]],
+    2: ) -> None:
+   18:     for suggestion in suggestions:
+    5:         span_id = suggestion.get("span_id")
+    5:         if suggestion.get("status") == "SUPPRESSED":
+>>>>>>             if span_id is not None:
+>>>>>>                 raise AuthoringError("SUPPRESSED_SUGGESTION_HAS_SPAN")
+>>>>>>             continue
+    5:         if not isinstance(span_id, str) or span_id.casefold() not in spans:
+    1:             raise AuthoringError("SUGGESTION_SPAN_MISSING")
+    4:         span = spans[span_id.casefold()]
+               if (
+    4:             int(span["start_byte"]) != int(suggestion["start_byte"])
+    4:             or int(span["end_byte"]) != int(suggestion["end_byte"])
+    8:             or short_patch.sha256(str(span["source_text"]).encode("utf-8"))
+    4:             != suggestion["source_text_sha256"]
+               ):
+>>>>>>             raise AuthoringError("SUGGESTION_SPAN_DRIFT")
+       
+       
+    2: def _validate_policy(value: Any, current: Mapping[str, str]) -> dict[str, str]:
+   19:     if not isinstance(value, dict) or not value:
+>>>>>>         raise AuthoringError("policy_hashes must be an object")
+   19:     if set(value) != set(current):
+>>>>>>         raise AuthoringError("SCAFFOLD_POLICY_DRIFT")
+  113:     for key, digest in value.items():
+   94:         if not isinstance(key, str) or not key or not isinstance(digest, str) or not HEX64_RE.fullmatch(digest):
+>>>>>>             raise AuthoringError("policy_hashes are invalid")
+   19:     if value != current:
+    1:         raise AuthoringError("SCAFFOLD_POLICY_DRIFT")
+   18:     return dict(value)
+       
+       
+    8: def _validate_high_findings(
+    2:     recorded: Any,
+    2:     current: Sequence[Mapping[str, Any]],
+    2: ) -> list[dict[str, Any]]:
+   18:     if not isinstance(recorded, list):
+>>>>>>         raise AuthoringError("high_findings must be an array")
+   49:     for index, item in enumerate(recorded):
+   31:         if not isinstance(item, dict):
+>>>>>>             raise AuthoringError(f"high_findings[{index}] must be an object")
+   31:         _exact_fields(item, HIGH_FINDING_FIELDS, f"high_findings[{index}]")
+   18:     if recorded != list(current):
+>>>>>>         raise AuthoringError("HIGH_INVENTORY_DRIFT")
+   49:     return [dict(item) for item in recorded]
+       
+       
+   10: def _resolve_spans(
+    2:     source: bytes,
+    2:     raw_spans: Any,
+    2:     findings: Sequence[Mapping[str, Any]],
+    2: ) -> dict[str, dict[str, Any]]:
+   17:     if not isinstance(raw_spans, list) or not raw_spans:
+>>>>>>         raise AuthoringError("spans must be a non-empty array")
+   47:     finding_by_id = {str(item["finding_id"]): item for item in findings}
+   17:     finding_membership: dict[str, str] = {}
+   17:     spans: dict[str, dict[str, Any]] = {}
+   17:     span_ranges: set[tuple[int, int]] = set()
+   49:     for index, item in enumerate(raw_spans):
+   34:         label = f"spans[{index}]"
+   34:         if not isinstance(item, dict):
+>>>>>>             raise AuthoringError(f"{label} must be an object")
+   34:         _exact_fields(item, SPAN_FIELDS, label)
+   34:         span_id = _identifier(item.get("span_id"), f"{label}.span_id")
+   34:         key = span_id.casefold()
+   34:         if key in spans:
+    1:             raise AuthoringError("duplicate span_id")
+   33:         text = short_patch._required_string(item.get("source_text"), f"{label}.source_text")
+   33:         try:
+   66:             start, end = short_patch._locate(
+   33:                 source, text, item.get("start_byte"), label
+                   )
+   33:             short_patch._validate_source_boundaries(source, start, end, label)
+>>>>>>         except short_patch.ShortPatchError as error:
+>>>>>>             raise AuthoringError(str(error)) from error
+   33:         if (start, end) in span_ranges:
+>>>>>>             raise AuthoringError("duplicate source span")
+   33:         span_ranges.add((start, end))
+   33:         ids = item.get("finding_ids")
+               if (
+   33:             not isinstance(ids, list)
+   94:             or any(not isinstance(finding_id, str) for finding_id in ids)
+   32:             or len(ids) != len(set(ids))
+               ):
+    1:             raise AuthoringError(f"{label}.finding_ids is invalid")
+   60:         for finding_id in ids:
+   28:             if not isinstance(finding_id, str) or finding_id not in finding_by_id:
+>>>>>>                 raise AuthoringError(f"{label}.finding_ids contains an unknown finding")
+   28:             if finding_id in finding_membership:
+>>>>>>                 raise AuthoringError("finding_id is bound by multiple spans")
+   28:             finding = finding_by_id[finding_id]
+   28:             if start != finding["start_byte"] or end != finding["end_byte"]:
+>>>>>>                 raise AuthoringError("finding span binding drifted")
+   28:             finding_membership[finding_id] = span_id
+   32:         spans[key] = {
+   32:             "span_id": span_id,
+   32:             "source_text": text,
+   32:             "start_byte": start,
+   32:             "end_byte": end,
+               }
+   15:     if set(finding_membership) != set(finding_by_id):
+>>>>>>         raise AuthoringError("high finding span registry is incomplete")
+   15:     return spans
+       
+       
+    8: def _compile_hunks(
+    4:     raw_hunks: Any, spans: Mapping[str, Mapping[str, Any]]
+    2: ) -> tuple[list[dict[str, Any]], dict[str, dict[str, Any]]]:
+   13:     if not isinstance(raw_hunks, list) or not raw_hunks or len(raw_hunks) > short_patch.MAX_HUNKS:
+>>>>>>         raise AuthoringError("hunks must be a non-empty bounded array")
+   13:     hunks: list[dict[str, Any]] = []
+   13:     by_id: dict[str, dict[str, Any]] = {}
+   32:     for index, item in enumerate(raw_hunks):
+   21:         label = f"hunks[{index}]"
+   21:         if not isinstance(item, dict):
+>>>>>>             raise AuthoringError(f"{label} must be an object")
+   21:         _exact_fields(item, HUNK_FIELDS, label)
+   21:         hunk_id = _identifier(item.get("hunk_id"), f"{label}.hunk_id")
+   21:         hunk_key = hunk_id.casefold()
+   21:         if hunk_key in by_id:
+>>>>>>             raise AuthoringError("duplicate hunk_id")
+   21:         span_id = _identifier(item.get("span_id"), f"{label}.span_id")
+   21:         span = spans.get(span_id.casefold())
+   21:         if span is None:
+    1:             raise AuthoringError(f"{label}.span_id is unknown")
+   20:         decision = short_patch._required_string(item.get("decision"), f"{label}.decision")
+   40:         replacement = short_patch._required_string(
+   20:             item.get("replacement"), f"{label}.replacement", allow_empty=True
+               )
+   20:         try:
+   40:             reason = short_patch._specific_reason(
+   20:                 item.get("reason"), f"{label}.reason"
+                   )
+   38:             short_patch._validate_decision(
+   19:                 decision, str(span["source_text"]), replacement, label
+                   )
+   38:             short_patch._validate_replacement_controls(
+   19:                 str(span["source_text"]), replacement, label
+                   )
+    1:         except short_patch.ShortPatchError as error:
+    1:             raise AuthoringError(str(error)) from error
+   19:         compiled = {
+   19:             "hunk_id": hunk_id,
+   19:             "decision": decision,
+   19:             "source_text": span["source_text"],
+   19:             "start_byte": span["start_byte"],
+   19:             "replacement": replacement,
+   19:             "reason": reason,
+               }
+   19:         hunks.append(compiled)
+   19:         by_id[hunk_key] = {**compiled, "end_byte": span["end_byte"], "span_id": span_id}
+   11:     return hunks, by_id
+       
+       
+   10: def _compile_resolutions(
+    2:     raw: Any,
+    2:     findings: Sequence[Mapping[str, Any]],
+    2:     hunks: Mapping[str, Mapping[str, Any]],
+    2: ) -> list[dict[str, Any]]:
+   10:     if not isinstance(raw, list):
+>>>>>>         raise AuthoringError("lexical_resolutions must be an array")
+   20:     candidate_by_id = {
+   19:         str(item["finding_id"]): item
+   39:         for item in findings
+   19:         if item["role"] == "CANDIDATE"
+           }
+   10:     seen: set[str] = set()
+   10:     keeps: list[dict[str, Any]] = []
+   29:     for index, item in enumerate(raw):
+   19:         label = f"lexical_resolutions[{index}]"
+   19:         if not isinstance(item, dict):
+>>>>>>             raise AuthoringError(f"{label} must be an object")
+   19:         _exact_fields(item, RESOLUTION_FIELDS, label)
+   19:         finding_id = short_patch._required_string(item.get("finding_id"), f"{label}.finding_id")
+   19:         if finding_id not in candidate_by_id or finding_id in seen:
+>>>>>>             raise AuthoringError("lexical_resolutions has an unknown or duplicate finding_id")
+   19:         seen.add(finding_id)
+   19:         decision = short_patch._required_string(item.get("decision"), f"{label}.decision")
+   19:         if decision not in RESOLUTION_DECISIONS:
+>>>>>>             raise AuthoringError(f"{label}.decision is invalid")
+   19:         if decision == "PENDING":
+>>>>>>             raise AuthoringError("PENDING_LEXICAL_RESOLUTION")
+   19:         finding = candidate_by_id[finding_id]
+   19:         if decision == "HUNK":
+   18:             hunk_id = _identifier(item.get("hunk_id"), f"{label}.hunk_id")
+   18:             hunk = hunks.get(hunk_id.casefold())
+   18:             if hunk is None or not (
+   18:                 int(hunk["start_byte"]) <= int(finding["start_byte"])
+   18:                 and int(hunk["end_byte"]) >= int(finding["end_byte"])
+                   ):
+>>>>>>                 raise AuthoringError("LEXICAL_HUNK_MISMATCH")
+   18:             if hunk["hunk_id"] != hunk_id:
+>>>>>>                 raise AuthoringError("REFERENCE_ID_CASE_MISMATCH")
+   18:             if item.get("reason") is not None:
+>>>>>>                 raise AuthoringError(f"{label}.reason must be null for HUNK")
+               else:
+    1:             if item.get("hunk_id") is not None:
+>>>>>>                 raise AuthoringError(f"{label}.hunk_id must be null for KEEP")
+    1:             reason = short_patch._specific_reason(item.get("reason"), f"{label}.reason")
+    2:             keeps.append(
+    1:                 {
+    1:                     "signal_id": finding["signal_id"],
+    1:                     "source_text": finding["source_text"],
+    1:                     "start_byte": finding["start_byte"],
+    1:                     "reason": reason,
+                       }
+                   )
+   10:     if seen != set(candidate_by_id):
+>>>>>>         raise AuthoringError("lexical_resolutions does not cover every candidate high")
+   10:     return keeps
+       
+       
+   10: def _compile_selected(
+    2:     raw: Any,
+    2:     spans: Mapping[str, Mapping[str, Any]],
+    2:     hunks: Mapping[str, Mapping[str, Any]],
+    2: ) -> list[dict[str, Any]]:
+   10:     if not isinstance(raw, list):
+>>>>>>         raise AuthoringError("selected_spans must be an array")
+   10:     selected: list[dict[str, Any]] = []
+   10:     selection_ids: set[str] = set()
+   14:     for index, item in enumerate(raw):
+    6:         label = f"selected_spans[{index}]"
+    6:         if not isinstance(item, dict):
+>>>>>>             raise AuthoringError(f"{label} must be an object")
+    6:         _exact_fields(item, SELECTED_FIELDS, label)
+    6:         selection_id = _identifier(item.get("selection_id"), f"{label}.selection_id")
+    6:         selection_key = selection_id.casefold()
+    6:         if selection_key in selection_ids:
+>>>>>>             raise AuthoringError("duplicate selection_id")
+    6:         selection_ids.add(selection_key)
+    6:         span_id = _identifier(item.get("span_id"), f"{label}.span_id")
+    6:         span = spans.get(span_id.casefold())
+    6:         if span is None:
+>>>>>>             raise AuthoringError(f"{label}.span_id is unknown")
+    6:         decision = short_patch._required_string(item.get("decision"), f"{label}.decision")
+    6:         reason = short_patch._specific_reason(item.get("reason"), f"{label}.reason")
+    6:         if decision == "HUNK":
+    5:             hunk_id = _identifier(item.get("hunk_id"), f"{label}.hunk_id")
+    5:             hunk = hunks.get(hunk_id.casefold())
+    5:             if hunk is None or hunk["span_id"].casefold() != span_id.casefold():
+    1:                 raise AuthoringError("SELECTION_HUNK_MISMATCH")
+    4:             if hunk["hunk_id"] != hunk_id or hunk["span_id"] != span_id:
+    1:                 raise AuthoringError("REFERENCE_ID_CASE_MISMATCH")
+    1:         elif decision == "KEEP":
+    1:             if item.get("hunk_id") is not None:
+>>>>>>                 raise AuthoringError(f"{label}.hunk_id must be null for KEEP")
+    1:             hunk_id = None
+               else:
+>>>>>>             raise AuthoringError(f"{label}.decision is invalid")
+    8:         selected.append(
+    4:             {
+    4:                 "selection_id": selection_id,
+    4:                 "source_text": span["source_text"],
+    4:                 "start_byte": span["start_byte"],
+    4:                 "decision": decision,
+    4:                 "hunk_id": hunk_id,
+    4:                 "reason": reason,
+                   }
+               )
+    8:     return selected
+       
+       
+    2: def _compile_conflicts(raw: Any) -> list[dict[str, Any]]:
+    8:     if not isinstance(raw, list):
+>>>>>>         raise AuthoringError("explicit_conflicts must be an array")
+    8:     conflicts: list[dict[str, Any]] = []
+    8:     conflict_ids: set[str] = set()
+    8:     for index, item in enumerate(raw):
+>>>>>>         label = f"explicit_conflicts[{index}]"
+>>>>>>         if not isinstance(item, dict):
+>>>>>>             raise AuthoringError(f"{label} must be an object")
+>>>>>>         _exact_fields(item, CONFLICT_FIELDS, label)
+>>>>>>         conflict_id = _identifier(item.get("conflict_id"), f"{label}.conflict_id")
+>>>>>>         conflict_key = conflict_id.casefold()
+>>>>>>         if conflict_key in conflict_ids:
+>>>>>>             raise AuthoringError("duplicate conflict_id")
+>>>>>>         conflict_ids.add(conflict_key)
+>>>>>>         conflicts.append(dict(item))
+    8:     return conflicts
+       
+       
+    8: def _protected_byte_spans(
+    4:     source: bytes, document_format: str
+    2: ) -> list[tuple[int, int, str]]:
+   11:     text = source.decode("utf-8")
+   33:     protected = coverage_layer.lexical.ProtectedIndex(
+   11:         text, document_format=document_format
+   11:     ).spans
+   14:     boundaries = {offset for start, end, _reason in protected for offset in (start, end)}
+   11:     byte_by_char: dict[int, int] = {}
+   11:     byte_offset = 0
+  402:     for char_offset, character in enumerate(text):
+  391:         if char_offset in boundaries:
+    1:             byte_by_char[char_offset] = byte_offset
+  391:         byte_offset += len(character.encode("utf-8"))
+   11:     if len(text) in boundaries:
+    1:         byte_by_char[len(text)] = byte_offset
+   22:     return [
+    1:         (byte_by_char[start], byte_by_char[end], reason)
+   23:         for start, end, reason in protected
+           ]
+       
+       
+   10: def _validate_hunks_against_protected_spans(
+    2:     source: bytes,
+    2:     document_format: str,
+    2:     hunks: Mapping[str, Mapping[str, Any]],
+    2: ) -> None:
+   11:     protected = _protected_byte_spans(source, document_format)
+   29:     for hunk in hunks.values():
+   19:         if hunk["decision"] == "UNRESOLVED":
+>>>>>>             continue
+   57:         if any(
+    1:             start < int(hunk["end_byte"]) and end > int(hunk["start_byte"])
+   38:             for start, end, _reason in protected
+               ):
+    1:             raise AuthoringError("HUNK_OVERLAPS_PROTECTED_SPAN")
+       
+       
+   12: def finalize_scaffold(
+    2:     source_path: Path,
+    2:     authoring_path: Path,
+    2:     output_path: Path,
+           *,
+    4:     document_format: str | None = None,
+    2: ) -> dict[str, Any]:
+   20:     source_path = short_patch.safe_input_path(source_path, "source")
+   20:     authoring_path = short_patch.safe_input_path(authoring_path, "authoring scaffold")
+   20:     output_path = short_patch.safe_output_path(output_path)
+   20:     source = short_patch.read_source(source_path)
+   40:     authoring_raw = short_patch._regular_input(
+   20:         authoring_path, "authoring scaffold", short_patch.MAX_JSON_BYTES
+           )
+   20:     payload = short_patch.strict_json_bytes(authoring_raw, "authoring scaffold")
+   20:     if not isinstance(payload, dict):
+>>>>>>         raise AuthoringError("authoring scaffold must be an object")
+   20:     schema_version = payload.get("schema_version")
+   20:     if schema_version not in {AUTHORING_SCHEMA_V1, AUTHORING_SCHEMA}:
+>>>>>>         raise AuthoringError("authoring scaffold schema_version is invalid")
+   40:     _exact_fields(
+   20:         payload,
+   20:         AUTHORING_FIELDS_V1 if schema_version == AUTHORING_SCHEMA_V1 else AUTHORING_FIELDS,
+   20:         "authoring scaffold",
+           )
+   20:     if payload.get("completion_claim_allowed") is not False or payload.get("humanize_quality_claim_allowed") is not False:
+>>>>>>         raise AuthoringError("authoring scaffold claim flags are invalid")
+           if (
+   20:         schema_version != AUTHORING_SCHEMA_V1
+   38:         and payload.get("authoring_integrity_scope")
+   19:         != "CALLER_CONTROLLED_SELF_CONSISTENCY_ONLY"
+           ):
+>>>>>>         raise AuthoringError("authoring_integrity_scope is invalid")
+   20:     document_format = _document_format(source_path, document_format)
+   20:     source_record = _validate_source_record(payload.get("source"), source, document_format)
+   19:     configuration = _validate_configuration(payload.get("configuration"), schema_version)
+   19:     policy_before = _policy_hashes_for_schema(schema_version)
+   19:     policy = _validate_policy(payload.get("policy_hashes"), policy_before)
+   36:     current_findings = coverage_layer.scan_high_findings(
+   18:         source, document_format=document_format
+           )
+   18:     findings = _validate_high_findings(payload.get("high_findings"), current_findings)
+   18:     suggestions: list[dict[str, Any]] = []
+   18:     suggestion_policy: dict[str, Any] | None = None
+   18:     if schema_version != AUTHORING_SCHEMA_V1:
+   34:         suggestion_policy, suggestions, _auto_spans = _build_span_suggestions(
+   17:             source,
+   17:             document_format=document_format,
+   17:             findings=findings,
+   17:             mode=configuration["span_suggestion_mode"],
+               )
+   34:         _validate_span_suggestion_records(
+   17:             payload.get("span_suggestion_policy"),
+   17:             payload.get("span_suggestions"),
+   17:             suggestion_policy,
+   17:             suggestions,
+               )
+   34:     expected_inventory_hash = _inventory_hash(
+   17:         source_record,
+   17:         configuration,
+   17:         policy,
+   17:         findings,
+   17:         span_suggestion_policy=suggestion_policy,
+   17:         span_suggestions=suggestions if suggestion_policy is not None else None,
+           )
+   17:     if payload.get("inventory_sha256") != expected_inventory_hash:
+>>>>>>         raise AuthoringError("inventory_sha256 mismatch")
+   17:     spans = _resolve_spans(source, payload.get("spans"), findings)
+   15:     if schema_version != AUTHORING_SCHEMA_V1:
+   14:         _validate_suggestion_span_registry(suggestions, spans)
+   14:     raw_resolutions = payload.get("lexical_resolutions")
+   42:     if isinstance(raw_resolutions, list) and any(
+   24:         isinstance(item, dict) and item.get("decision") == "PENDING"
+   51:         for item in raw_resolutions
+           ):
+    1:         raise AuthoringError("PENDING_LEXICAL_RESOLUTION")
+   13:     hunks, hunk_by_id = _compile_hunks(payload.get("hunks"), spans)
+   11:     _validate_hunks_against_protected_spans(source, document_format, hunk_by_id)
+   20:     lexical_keeps = _compile_resolutions(
+   10:         raw_resolutions, findings, hunk_by_id
+           )
+   10:     selected = _compile_selected(payload.get("selected_spans"), spans, hunk_by_id)
+    8:     conflicts = _compile_conflicts(payload.get("explicit_conflicts"))
+    8:     if configuration["source_kind"] == "INLINE_SELECTION" and not selected:
+    1:         raise AuthoringError("BOUND_SELECTION_REQUIRED")
+    7:     selection: dict[str, Any] = {
+    7:         "schema_version": SELECTION_SCHEMA,
+    7:         "requested_output": configuration["requested_output"],
+    7:         "mode": "REWRITE",
+    7:         "scene": configuration["scene"],
+    7:         "intensity": configuration["intensity"],
+    7:         "protected_terms": configuration["protected_terms"],
+    7:         "hunks": hunks,
+    7:         "coverage": {
+    7:             "source_kind": configuration["source_kind"],
+    7:             "lexical_keeps": lexical_keeps,
+    7:             "selected_spans": selected,
+    7:             "explicit_conflicts": conflicts,
+               },
+           }
+    7:     encoded = (
+   14:         json.dumps(selection, ensure_ascii=False, indent=2, sort_keys=True).encode("utf-8")
+    7:         + b"\n"
+           )
+    7:     try:
+   14:         short_patch._build_payload(
+    7:             source,
+    7:             encoded,
+    7:             selection,
+    7:             document_format=document_format,
+               )
+>>>>>>     except (short_patch.ShortPatchError, coverage_layer.CoverageError) as error:
+>>>>>>         raise AuthoringError(str(error)) from error
+    7:     if short_patch.read_source(source_path) != source:
+>>>>>>         raise AuthoringError("SOURCE_CHANGED_DURING_FINALIZE")
+   21:     if short_patch._regular_input(
+    7:         authoring_path, "authoring scaffold", short_patch.MAX_JSON_BYTES
+    7:     ) != authoring_raw:
+>>>>>>         raise AuthoringError("AUTHORING_CHANGED_DURING_FINALIZE")
+    7:     if _policy_hashes_for_schema(schema_version) != policy_before:
+    1:         raise AuthoringError("POLICY_CHANGED_DURING_FINALIZE")
+    6:     short_patch._atomic_write_new(output_path, encoded)
+    6:     return selection
+       
+       
+    2: def build_parser() -> argparse.ArgumentParser:
+    6:     parser = _StrictArgumentParser(
+    3:         description="Create or finalize a source-bound short PATCH authoring scaffold."
+           )
+    6:     subparsers = parser.add_subparsers(
+    3:         dest="command", required=True, parser_class=_StrictArgumentParser
+           )
+    3:     create = subparsers.add_parser("create")
+    3:     create.add_argument("source", type=Path)
+    3:     create.add_argument("--requested-output", choices=("CLEAN", "PATCH"), default="PATCH")
+    3:     create.add_argument("--scene", choices=tuple(sorted(short_patch.ALLOWED_SCENES)), required=True)
+    3:     create.add_argument("--intensity", choices=tuple(sorted(short_patch.ALLOWED_INTENSITIES)), default="BALANCED")
+    3:     create.add_argument("--source-kind", choices=tuple(sorted(coverage_layer.SOURCE_KINDS)), required=True)
+    3:     create.add_argument("--term", action="append", default=[])
+    6:     create.add_argument(
+    3:         "--suggest-spans",
+    3:         choices=tuple(sorted(SPAN_SUGGESTION_MODES)),
+    3:         default="CLAUSE",
+           )
+    6:     create.add_argument(
+    3:         "--document-format", choices=("AUTO", "MARKDOWN", "TEX"), default="AUTO"
+           )
+    3:     create.add_argument("--output", required=True, type=Path)
+    3:     create.add_argument("--format", choices=("json", "text"), default="text")
+    3:     finalize = subparsers.add_parser("finalize")
+    3:     finalize.add_argument("source", type=Path)
+    3:     finalize.add_argument("--authoring", required=True, type=Path)
+    3:     finalize.add_argument("--output", required=True, type=Path)
+    6:     finalize.add_argument(
+    3:         "--document-format", choices=("AUTO", "MARKDOWN", "TEX"), default="AUTO"
+           )
+    3:     finalize.add_argument("--format", choices=("json", "text"), default="text")
+    3:     return parser
+       
+       
+    2: def _requested_format(argv: Sequence[str]) -> str:
+   25:     for index, value in enumerate(argv):
+   23:         if value == "--format" and index + 1 < len(argv):
+>>>>>>             return "json" if argv[index + 1] == "json" else "text"
+   23:         if value == "--format=json":
+    1:             return "json"
+    2:     return "text"
+       
+       
+    2: def main(argv: Sequence[str] | None = None) -> int:
+    3:     if hasattr(sys.stdout, "reconfigure"):
+>>>>>>         sys.stdout.reconfigure(encoding="utf-8")
+    3:     if hasattr(sys.stderr, "reconfigure"):
+    3:         sys.stderr.reconfigure(encoding="utf-8")
+    3:     raw_argv = list(sys.argv[1:] if argv is None else argv)
+    3:     output_format = _requested_format(raw_argv)
+    3:     try:
+    3:         args = build_parser().parse_args(raw_argv)
+    2:         if args.command == "create":
+    2:             payload = create_scaffold(
+    1:                 args.source,
+    1:                 args.output,
+    1:                 requested_output=args.requested_output,
+    1:                 scene=args.scene,
+    1:                 intensity=args.intensity,
+    1:                 source_kind=args.source_kind,
+    1:                 protected_terms=args.term,
+    1:                 span_suggestion_mode=args.suggest_spans,
+                       document_format=(
+    1:                     None if args.document_format == "AUTO" else args.document_format
+                       ),
+                   )
+    1:             result = {
+    1:                 "schema_version": AUTHORING_SCHEMA,
+    1:                 "status": "PENDING",
+    1:                 "high_findings_total": len(payload["high_findings"]),
+    1:                 "pending_resolutions_total": len(payload["lexical_resolutions"]),
+    3:                 "span_suggestions_available": sum(
+    3:                     item["status"] == "AVAILABLE"
+    5:                     for item in payload.get("span_suggestions", [])
+                       ),
+    3:                 "span_suggestions_suppressed": sum(
+    3:                     item["status"] == "SUPPRESSED"
+    5:                     for item in payload.get("span_suggestions", [])
+                       ),
+    1:                 "completion_claim_allowed": False,
+    1:                 "humanize_quality_claim_allowed": False,
+                   }
+               else:
+    2:             selection = finalize_scaffold(
+    1:                 args.source,
+    1:                 args.authoring,
+    1:                 args.output,
+                       document_format=(
+    1:                     None if args.document_format == "AUTO" else args.document_format
+                       ),
+                   )
+    1:             result = {
+    1:                 "schema_version": selection["schema_version"],
+    1:                 "status": "FINALIZED",
+    1:                 "hunks_total": len(selection["hunks"]),
+    1:                 "selected_spans_total": len(selection["coverage"]["selected_spans"]),
+    1:                 "explicit_conflicts_total": len(selection["coverage"]["explicit_conflicts"]),
+    1:                 "completion_claim_allowed": False,
+    1:                 "humanize_quality_claim_allowed": False,
+                   }
+    1:     except (OSError, AuthoringError, short_patch.ShortPatchError) as error:
+    1:         failure = {
+    1:             "schema_version": AUTHORING_SCHEMA,
+    1:             "status": "FAIL",
+    1:             "error": str(error),
+    1:             "completion_claim_allowed": False,
+    1:             "humanize_quality_claim_allowed": False,
+               }
+    2:         print(
+    1:             json.dumps(failure, ensure_ascii=False, sort_keys=True)
+    1:             if output_format == "json"
+>>>>>>             else f"FAIL: {error}"
+               )
+    1:         return 1
+    2:     if args.format == "json":
+>>>>>>         print(json.dumps(result, ensure_ascii=False, sort_keys=True))
+    2:     elif result["status"] == "PENDING":
+    2:         print(
+    2:             f"PENDING high={result['high_findings_total']} "
+    1:             f"resolutions={result['pending_resolutions_total']} "
+    1:             f"suggestions={result['span_suggestions_available']} "
+    1:             f"suppressed={result['span_suggestions_suppressed']}"
+               )
+    1:         print("completion_claim_allowed=false; edit the scaffold, then run finalize")
+           else:
+    2:         print(
+    2:             f"FINALIZED hunks={result['hunks_total']} "
+    1:             f"selected={result['selected_spans_total']}"
+               )
+    1:         print("completion_claim_allowed=false; run build_humanize_short_patch.py")
+    2:     return 0
+       
+       
+    2: if __name__ == "__main__":
+>>>>>>     raise SystemExit(main())

@@ -227,6 +227,12 @@ class HumanizeGenerationTrialRunnerTests(unittest.TestCase):
     def test_event_stream_must_be_strict_jsonl(self) -> None:
         with self.assertRaisesRegex(runner.RunnerError, "event 2 is invalid"):
             runner._event_ids(b'{"request_id":"req-1"}\nnot-json\n')
+        with self.assertRaisesRegex(runner.RunnerError, "duplicate JSON key"):
+            runner._event_ids(
+                b'{"request_id":"req-1","request_id":"req-2"}\n'
+            )
+        with self.assertRaisesRegex(runner.RunnerError, "non-finite JSON number"):
+            runner._event_observation_summary(b'{"type":"turn.started","value":NaN}\n')
 
     def test_event_observation_distinguishes_reconnect_from_item_warning(self) -> None:
         raw = (

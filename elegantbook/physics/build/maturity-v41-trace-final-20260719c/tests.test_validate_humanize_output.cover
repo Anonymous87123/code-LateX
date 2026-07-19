@@ -1,0 +1,1717 @@
+    1: import importlib.util
+    1: import html
+    1: import json
+    1: import os
+    1: import subprocess
+    1: import sys
+    1: import tempfile
+    1: import unittest
+    1: from pathlib import Path
+    1: from unittest import mock
+       
+       
+    1: ROOT = Path(__file__).resolve().parents[1]
+    2: SKILL = Path(
+    2:     os.environ.get(
+    1:         "HUMANIZE_SKILL_DIR",
+    1:         Path.home() / ".codex" / "skills" / "humanize-academic-chinese",
+           )
+       )
+    1: SCRIPT = SKILL / "scripts" / "validate_humanize_output.py"
+    1: FORWARD_FIXTURES = Path(__file__).parent / "fixtures" / "humanize_forward_v3"
+    1: FORWARD_V4_FIXTURES = Path(__file__).parent / "fixtures" / "humanize_forward_v4"
+    1: GOLD_FIXTURES = Path(__file__).parent / "fixtures" / "humanize_gold"
+    1: FORWARD_V5_FIXTURES = Path(__file__).parent / "fixtures" / "humanize_forward_v5"
+    1: FORWARD_V10_FIXTURES = Path(__file__).parent / "fixtures" / "humanize_forward_v10"
+    1: SPEC = importlib.util.spec_from_file_location("validate_humanize_output", SCRIPT)
+    1: assert SPEC is not None and SPEC.loader is not None
+    1: validator = importlib.util.module_from_spec(SPEC)
+    1: sys.modules[SPEC.name] = validator
+    1: SPEC.loader.exec_module(validator)
+       
+       
+    2: class HumanizeOutputValidatorTests(unittest.TestCase):
+    1:     def setUp(self) -> None:
+   74:         self.temp_dir = tempfile.TemporaryDirectory()
+   74:         self.root = Path(self.temp_dir.name)
+       
+    1:     def tearDown(self) -> None:
+   74:         self.temp_dir.cleanup()
+       
+    1:     def pair(self, before: str, after: str, suffix: str = ".md") -> tuple[Path, Path]:
+   83:         before_path = self.root / f"before{suffix}"
+   83:         after_path = self.root / f"after{suffix}"
+   83:         before_path.write_text(before, encoding="utf-8")
+   83:         after_path.write_text(after, encoding="utf-8")
+   83:         return before_path, after_path
+       
+    1:     def report_scope(self, source: Path, selections: list[str]) -> Path:
+    4:         source_text = source.read_bytes().decode("utf-8-sig")
+    9:         for selection in selections:
+    5:             self.assertEqual(1, source_text.count(selection))
+    4:         report = self.root / "report.html"
+    8:         report.write_text(
+   12:             '<!doctype html><html><meta charset="utf-8"><body>'
+   13:             + "".join(f"<mark>{html.escape(selection)}</mark>" for selection in selections)
+    4:             + "</body></html>",
+    4:             encoding="utf-8",
+               )
+    4:         payload = validator.detector_scope.analyze_report(report, source)
+    4:         self.assertEqual("PASS", payload["status"])
+    4:         path = self.root / "report-scope.json"
+    4:         path.write_text(json.dumps(payload, ensure_ascii=False), encoding="utf-8")
+    4:         return path
+       
+    5:     def assert_paired_quality_review(
+               self,
+    1:         payload: dict,
+               *,
+    1:         decision: str,
+    2:         changes: int | None = None,
+    1:     ) -> dict:
+   13:         self.assertEqual("REVIEW", payload["status"])
+   13:         self.assertEqual(2, payload["exit_code"])
+   13:         self.assertEqual("PASS", payload["candidate_assembly_status"])
+   13:         self.assertEqual("PASS", payload["mechanical_validation_status"])
+   13:         self.assertEqual("REVIEW", payload["delivery_gate_status"])
+   13:         self.assertEqual("PENDING_EXTERNAL_REVIEW", payload["paired_quality_review_status"])
+   13:         self.assertFalse(payload["paired_quality_clearance_granted"])
+   13:         self.assertFalse(payload["humanize_quality_claim_allowed"])
+   13:         self.assertIn("paired_quality_not_evaluated", payload["review_reasons"])
+   13:         request = payload["paired_quality_review_request"]
+   13:         self.assertEqual("humanize-paired-quality-review-request/v1", request["schema"])
+   13:         self.assertEqual(decision, request["validation_context"]["decision"])
+   13:         self.assertRegex(request["request_sha256"], r"^[0-9a-f]{64}$")
+   13:         if changes is not None:
+   11:             self.assertEqual(changes, len(request["changes"]))
+   13:         return request
+       
+    1:     def test_safe_rewrite_passes_with_hash_evidence(self) -> None:
+    1:         before, after = self.pair("值得注意的是，峰值出现在高温组。", "峰值出现在高温组。")
+    1:         payload = validator.validate(before, after, scene="RESEARCH")
+    1:         self.assert_paired_quality_review(payload, decision="REWRITE", changes=1)
+    1:         self.assertEqual("PASS", payload["hard_invariant_layer_status"])
+    1:         self.assertEqual("PASS", payload["speech_act_layer_status"])
+    1:         self.assertEqual("PASS", payload["style_signal_layer_status"])
+    1:         self.assertEqual("NOT_EVALUATED", payload["academic_correctness"])
+    1:         self.assertTrue(payload["evidence"]["checker_executed"])
+    1:         self.assertRegex(payload["evidence"]["before_sha256"], r"^[0-9a-f]{64}$")
+    1:         self.assertEqual("NOT_PROVIDED", payload["evidence"]["protected_terms"]["status"])
+    1:         self.assertEqual("DOCUMENT", payload["evidence"]["document_scope"])
+       
+    1:     def test_v24_unseen_collocation_cannot_receive_false_delivery_pass(self) -> None:
+    2:         before, after = self.pair(
+    1:             "这类题看上去在测长度，其实真正要写的是厚度怎样增长。",
+    1:             "这类题测的是长度，但求解先要确定厚度怎样增长。",
+               )
+       
+    1:         payload = validator.validate(before, after, scene="COURSE")
+    2:         request = self.assert_paired_quality_review(
+    1:             payload, decision="REWRITE", changes=1
+               )
+       
+    1:         self.assertEqual("PASS", payload["hard_invariant_layer_status"])
+    1:         self.assertEqual("PASS", payload["speech_act_layer_status"])
+    1:         self.assertEqual("PASS", payload["style_signal_layer_status"])
+    1:         self.assertEqual(1, len(request["changes"]))
+    2:         self.assertFalse(
+    1:             request["review_contract"]["validator_pass_is_quality_clearance"]
+               )
+       
+    1:     def test_no_change_is_bound_for_external_quality_review(self) -> None:
+    1:         before, after = self.pair("该段表面自然，但仍可能存在未识别病灶。", "该段表面自然，但仍可能存在未识别病灶。")
+       
+    1:         first = validator.validate(before, after, scene="GENERAL")
+    1:         second = validator.validate(before, after, scene="GENERAL")
+    2:         first_request = self.assert_paired_quality_review(
+    1:             first, decision="NO_CHANGE", changes=0
+               )
+    2:         second_request = self.assert_paired_quality_review(
+    1:             second, decision="NO_CHANGE", changes=0
+               )
+       
+    2:         self.assertEqual(
+    1:             first_request["request_sha256"], second_request["request_sha256"]
+               )
+    2:         self.assertIn(
+    1:             "no_change_is_best_available_decision",
+    1:             first_request["review_contract"]["required_dimensions"],
+               )
+       
+    1:     def test_paired_quality_hunks_preserve_eol_only_changes(self) -> None:
+    1:         before, after = self.pair("第一行。\r\n第二行。\r\n", "第一行。\n第二行。\n")
+    1:         before.write_bytes("第一行。\r\n第二行。\r\n".encode("utf-8"))
+    1:         after.write_bytes("第一行。\n第二行。\n".encode("utf-8"))
+       
+    1:         payload = validator.validate(before, after, scene="GENERAL")
+    2:         request = self.assert_paired_quality_review(
+    1:             payload, decision="REWRITE", changes=1
+               )
+       
+    1:         change = request["changes"][0]
+    1:         self.assertEqual("REPLACE", change["operation"])
+    2:         self.assertNotEqual(
+    1:             change["before"]["sha256"], change["after"]["sha256"]
+               )
+       
+    1:     def test_paired_quality_hunks_preserve_bom_only_changes(self) -> None:
+    1:         before, after = self.pair("同一正文。", "同一正文。")
+    1:         before.write_bytes(b"\xef\xbb\xbf" + "同一正文。".encode("utf-8"))
+    1:         after.write_bytes("同一正文。".encode("utf-8"))
+       
+    1:         payload = validator.validate(before, after, scene="GENERAL")
+    2:         request = self.assert_paired_quality_review(
+    1:             payload, decision="REWRITE", changes=1
+               )
+       
+    2:         self.assertNotEqual(
+    1:             request["artifact"]["before_sha256"],
+    1:             request["artifact"]["after_sha256"],
+               )
+       
+    1:     def test_paired_quality_hunks_preserve_trailing_newline_changes(self) -> None:
+    1:         before, after = self.pair("同一正文。\n", "同一正文。")
+    1:         before.write_bytes("同一正文。\n".encode("utf-8"))
+    1:         after.write_bytes("同一正文。".encode("utf-8"))
+       
+    1:         payload = validator.validate(before, after, scene="GENERAL")
+    2:         request = self.assert_paired_quality_review(
+    1:             payload, decision="REWRITE", changes=1
+               )
+       
+    1:         self.assertEqual("REPLACE", request["changes"][0]["operation"])
+       
+    1:     def test_paired_quality_request_binds_policy_hashes(self) -> None:
+    1:         before, after = self.pair("原句表述稍长。", "原句较长。")
+    1:         baseline = validator.validate(before, after, scene="GENERAL")
+    1:         baseline_request = baseline["paired_quality_review_request"]
+    3:         with mock.patch.object(
+    1:             validator,
+    1:             "_policy_hashes",
+    1:             return_value={
+    1:                 "validator_sha256": "1" * 64,
+    1:                 "invariant_checker_sha256": "2" * 64,
+    1:                 "scanner_sha256": "3" * 64,
+    1:                 "lexicon_sha256": "4" * 64,
+                   },
+               ):
+    1:             drifted = validator.validate(before, after, scene="GENERAL")
+       
+    2:         self.assertNotEqual(
+    1:             baseline_request["request_sha256"],
+    1:             drifted["paired_quality_review_request"]["request_sha256"],
+               )
+       
+    1:     def test_mechanical_failure_blocks_quality_review_instead_of_masking_failure(self) -> None:
+    1:         before, after = self.pair("公式为 $x=1$。", "公式为 $x=2$。", suffix=".tex")
+       
+    1:         payload = validator.validate(before, after, scene="GENERAL")
+       
+    1:         self.assertEqual("FAIL", payload["status"])
+    1:         self.assertEqual("FAIL", payload["mechanical_validation_status"])
+    1:         self.assertEqual("BLOCKED_BY_MECHANICAL_GATE", payload["paired_quality_review_status"])
+    2:         self.assertEqual(
+    1:             "BLOCKED_BY_MECHANICAL_GATE",
+    1:             payload["paired_quality_review_request"]["status"],
+               )
+       
+    1:     def test_fragment_scope_is_explicit_and_does_not_hide_structure_drift(self) -> None:
+    2:         before, after = self.pair(
+    1:             "\\begin{document}\n值得注意的是，结论保持不变。\n",
+    1:             "\\begin{document}\n结论保持不变。\n",
+    1:             suffix=".tex",
+               )
+    2:         payload = validator.validate(
+    1:             before,
+    1:             after,
+    1:             scene="RESEARCH",
+    1:             fragment_mode=True,
+               )
+    1:         self.assert_paired_quality_review(payload, decision="REWRITE", changes=1)
+    1:         self.assertEqual("FRAGMENT", payload["evidence"]["document_scope"])
+    1:         self.assertEqual("FRAGMENT", payload["invariants"]["evidence"]["document_scope"])
+       
+    1:         after.write_text("结论保持不变。\n", encoding="utf-8")
+    2:         drifted = validator.validate(
+    1:             before,
+    1:             after,
+    1:             scene="RESEARCH",
+    1:             fragment_mode=True,
+               )
+    1:         self.assertEqual("FAIL", drifted["status"])
+    1:         self.assertEqual("FAIL", drifted["hard_invariant_layer_status"])
+       
+    2:         with self.assertRaisesRegex(ValueError, "only valid for REWRITE"):
+    1:             validator.validate(before, after, mode="DRAFT", fragment_mode=True)
+       
+    1:     def test_draft_mode_uses_supply_surface_gate_and_never_claims_semantic_pass(self) -> None:
+    2:         supplied, draft = self.pair(
+    1:             "# 写作要点\n\n- 2025 年共三组数据。\n- 材料没有提供原因。\n",
+    1:             "2025 年共三组数据。\n",
+               )
+       
+    1:         payload = validator.validate(supplied, draft, mode="DRAFT", scene="GENERAL")
+       
+    1:         self.assertEqual("DRAFT", payload["mode"])
+    1:         self.assertEqual("PASS", payload["hard_invariant_layer_status"])
+    1:         self.assertEqual("PASS", payload["draft_surface_source_check"]["status"])
+    1:         self.assertEqual("NOT_EVALUATED", payload["semantic_source_check"])
+    1:         self.assertEqual("REVIEW", payload["status"])
+    1:         self.assertIn("semantic_source_not_evaluated", payload["review_reasons"])
+    2:         self.assertFalse(
+    3:             any(
+>>>>>>                 item["code"] == "SPEECH_ACT_NEGATION_CHANGED"
+    2:                 for item in payload["unaccepted_warnings"]
+                   )
+               )
+       
+    1:     def test_draft_copy_only_never_allows_humanize_quality_claim(self) -> None:
+    2:         supplied, draft = self.pair(
+    1:             "供稿内容保持原样。",
+    1:             "供稿内容保持原样。",
+               )
+       
+    1:         payload = validator.validate(supplied, draft, mode="DRAFT", scene="GENERAL")
+       
+    1:         self.assertEqual("PASS", payload["status"])
+    1:         self.assertEqual("PASS_COPY_ONLY", payload["semantic_source_check"])
+    1:         self.assertFalse(payload["humanize_quality_claim_allowed"])
+       
+    1:     def test_draft_mode_rejects_number_not_present_in_supplied_content(self) -> None:
+    2:         supplied, draft = self.pair(
+    1:             "材料记录了三组数据，共 3 组。\n",
+    1:             "材料记录了四组数据，共 4 组。\n",
+               )
+       
+    1:         payload = validator.validate(supplied, draft, mode="DRAFT", scene="GENERAL")
+       
+    1:         self.assertEqual("FAIL", payload["status"])
+    1:         self.assertEqual("FAIL", payload["hard_invariant_layer_status"])
+    1:         self.assertEqual("FAIL", payload["draft_surface_source_check"]["status"])
+    2:         self.assertIn(
+    1:             "DRAFT_NUMBER_OR_UNIT_NOT_SUPPLIED",
+    2:             {item["code"] for item in payload["invariants"]["errors"]},
+               )
+       
+    1:     def test_draft_mode_rejects_new_attribution_shell(self) -> None:
+    2:         supplied, draft = self.pair(
+    1:             "材料记录了三组数据，共 3 组。\n",
+    1:             "已有研究表明，材料记录了三组数据，共 3 组。\n",
+               )
+       
+    1:         payload = validator.validate(supplied, draft, mode="DRAFT", scene="GENERAL")
+       
+    1:         self.assertEqual("FAIL", payload["status"])
+    2:         self.assertIn(
+    1:             "DRAFT_ATTRIBUTION_NOT_SUPPLIED",
+    2:             {item["code"] for item in payload["invariants"]["errors"]},
+               )
+       
+    1:     def test_draft_mode_reuses_supplied_surface_values_without_occurrence_budget(self) -> None:
+    1:         cases = (
+                   ("code", "材料给出 `alpha()`。", "先运行 `alpha()`，再核对 `alpha()`。", ".md", ()),
+                   ("math", r"材料给出 \(x=y\)。", r"先使用 \(x=y\)，再由 \(x=y\) 展开。", ".tex", ()),
+                   (
+                       "formal",
+                       "\\begin{theorem}\n命题甲成立。\n\\end{theorem}\n",
+                       "\\begin{theorem}\n命题甲成立。\n\\end{theorem}\n\n"
+                       "\\begin{theorem}\n命题甲成立。\n\\end{theorem}\n",
+                       ".tex",
+                       (),
+                   ),
+                   (
+                       "command",
+                       r"材料引用 \cite{sourceA}。",
+                       r"依据 \cite{sourceA}，并参见 \cite{sourceA}。",
+                       ".tex",
+                       (),
+                   ),
+                   (
+                       "quotation",
+                       "材料原句为“边界保持不变”。",
+                       "“边界保持不变”；换言之，仍是“边界保持不变”。",
+                       ".md",
+                       (),
+                   ),
+                   ("garbled", "OCR： �字 。", "记录为 �字 。再次记录为 �字 。", ".md", ()),
+                   (
+                       "term",
+                       "本文采用有限元法。",
+                       "有限元法用于求解；有限元法保持不变。",
+                       ".md",
+                       ("有限元法", "谱方法"),
+                   ),
+               )
+    8:         for name, supplied_text, draft_text, suffix, terms in cases:
+   14:             with self.subTest(name=name):
+    7:                 supplied, draft = self.pair(supplied_text, draft_text, suffix=suffix)
+   14:                 payload = validator.validate(
+    7:                     supplied,
+    7:                     draft,
+    7:                     mode="DRAFT",
+    7:                     scene="GENERAL",
+    7:                     protected_terms=terms,
+                       )
+    7:                 self.assertEqual("PASS", payload["draft_surface_source_check"]["status"])
+    7:                 self.assertEqual("PASS", payload["hard_invariant_layer_status"])
+    7:                 self.assertEqual("NOT_EVALUATED", payload["semantic_source_check"])
+    7:                 self.assertEqual("REVIEW", payload["status"])
+    7:                 self.assertEqual(2, payload["exit_code"])
+       
+    1:     def test_draft_mode_still_rejects_new_surface_values(self) -> None:
+    1:         cases = (
+                   ("code", "材料给出 `alpha()`。", "材料给出 `beta()`。", ".md", (), "DRAFT_CODE_NOT_SUPPLIED"),
+                   ("math", r"材料给出 \(x=y\)。", r"材料给出 \(x=z\)。", ".tex", (), "DRAFT_MATH_NOT_SUPPLIED"),
+                   (
+                       "formal",
+                       "\\begin{theorem}\n命题甲成立。\n\\end{theorem}\n",
+                       "\\begin{theorem}\n命题乙成立。\n\\end{theorem}\n",
+                       ".tex",
+                       (),
+                       "DRAFT_FORMAL_STATEMENT_NOT_SUPPLIED",
+                   ),
+                   (
+                       "command",
+                       r"材料引用 \cite{sourceA}。",
+                       r"材料引用 \cite{sourceB}。",
+                       ".tex",
+                       (),
+                       "DRAFT_CRITICAL_COMMAND_NOT_SUPPLIED",
+                   ),
+                   (
+                       "quotation",
+                       "材料原句为“边界保持不变”。",
+                       "材料原句为“边界已经改变”。",
+                       ".md",
+                       (),
+                       "DRAFT_QUOTATION_NOT_SUPPLIED",
+                   ),
+                   ("garbled", "OCR： �字 。", "记录为 �词 。", ".md", (), "DRAFT_GARBLED_TEXT_NOT_SUPPLIED"),
+                   (
+                       "term",
+                       "本文采用有限元法。",
+                       "本文采用谱方法。",
+                       ".md",
+                       ("有限元法", "谱方法"),
+                       "DRAFT_PROTECTED_TERM_NOT_SUPPLIED",
+                   ),
+               )
+    8:         for name, supplied_text, draft_text, suffix, terms, error_code in cases:
+   14:             with self.subTest(name=name):
+    7:                 supplied, draft = self.pair(supplied_text, draft_text, suffix=suffix)
+   14:                 payload = validator.validate(
+    7:                     supplied,
+    7:                     draft,
+    7:                     mode="DRAFT",
+    7:                     scene="GENERAL",
+    7:                     protected_terms=terms,
+                       )
+    7:                 self.assertEqual("FAIL", payload["status"])
+    7:                 self.assertEqual(1, payload["exit_code"])
+   14:                 self.assertIn(error_code, {item["code"] for item in payload["invariants"]["errors"]})
+       
+    1:     def test_draft_mode_realistic_result_and_discussion_can_reuse_math(self) -> None:
+    2:         supplied, draft = self.pair(
+    1:             "将人工放流项置为 \\(R_S=0\\) 时，长江鲟末值为 0.519。\n",
+    1:             "将人工放流项置为 \\(R_S=0\\) 时，长江鲟末值为 0.519。\n\n"
+                   "讨论中，\\(R_S=0\\) 对照用于拆分人工放流补偿效应。\n",
+    1:             suffix=".tex",
+               )
+    1:         payload = validator.validate(supplied, draft, mode="DRAFT", scene="MODELING")
+    1:         self.assertEqual("PASS", payload["draft_surface_source_check"]["status"])
+    1:         self.assertEqual("REVIEW", payload["status"])
+    2:         self.assertNotIn(
+    1:             "DRAFT_MATH_NOT_SUPPLIED",
+    1:             {item["code"] for item in payload["invariants"]["errors"]},
+               )
+       
+    1:     def test_rewrite_math_occurrence_protection_is_unchanged(self) -> None:
+    2:         before, after = self.pair(
+    1:             "模型使用 \\(x=y\\)。",
+    1:             "模型使用 \\(x=y\\)，并再次使用 \\(x=y\\)。",
+    1:             suffix=".tex",
+               )
+    1:         payload = validator.validate(before, after, mode="REWRITE", scene="GENERAL")
+    1:         self.assertEqual("FAIL", payload["status"])
+    2:         self.assertIn(
+    1:             "PROTECTED_MATH_CHANGED",
+    2:             {item["code"] for item in payload["invariants"]["errors"]},
+               )
+       
+    1:     def test_report_scope_binds_rewrite_to_unique_selection_ranges(self) -> None:
+    2:         before, after = self.pair(
+    1:             "开头保持。\n\n标注一表述生硬。\n\n中间保持。\n\n标注二表述冗长。\n\n结尾保持。\n",
+    1:             "开头保持。\n\n标注一表述自然。\n\n中间保持。\n\n标注二更加简洁。\n\n结尾保持。\n",
+               )
+    1:         scope = self.report_scope(before, ["标注一表述生硬。", "标注二表述冗长。"])
+    1:         payload = validator.validate(before, after, scene="GENERAL", report_scope_path=scope)
+    1:         self.assert_paired_quality_review(payload, decision="REWRITE", changes=2)
+    1:         self.assertEqual("PASS", payload["report_scope_check"]["status"])
+    1:         self.assertTrue(payload["report_scope_check"]["outside_selection_unchanged"])
+    1:         self.assertTrue(payload["report_scope_check"]["extractor_replay_match"])
+    1:         self.assertEqual(2, payload["report_scope_check"]["editable_range_count"])
+    1:         self.assertEqual("REPORT_SELECTION", payload["evidence"]["document_scope"])
+       
+    1:     def test_report_scope_rejects_change_outside_selection_even_when_other_gates_pass(self) -> None:
+    2:         before, after = self.pair(
+    1:             "开头保持。\n\n标注段表述生硬。\n\n结尾保持。\n",
+    1:             "开头内容改变。\n\n标注段表述自然。\n\n结尾保持。\n",
+               )
+    1:         scope = self.report_scope(before, ["标注段表述生硬。"])
+    1:         payload = validator.validate(before, after, scene="GENERAL", report_scope_path=scope)
+    1:         self.assertEqual("FAIL", payload["status"])
+    1:         self.assertEqual("FAIL", payload["report_scope_check"]["status"])
+    1:         self.assertFalse(payload["report_scope_check"]["outside_selection_unchanged"])
+    2:         self.assertIn(
+    1:             "REPORT_SCOPE_OUTSIDE_SELECTION_CHANGED",
+    2:             {item["code"] for item in payload["invariants"]["errors"]},
+               )
+       
+    1:     def test_report_scope_rejects_stale_source_hash(self) -> None:
+    1:         before, after = self.pair("标注段需要改写。", "标注段改得自然。")
+    1:         scope = self.report_scope(before, ["标注段需要改写。"])
+    1:         scope_payload = json.loads(scope.read_text(encoding="utf-8"))
+    1:         scope_payload["source_sha256"] = "0" * 64
+    1:         scope.write_text(json.dumps(scope_payload), encoding="utf-8")
+    2:         with self.assertRaisesRegex(ValueError, "source_sha256"):
+    1:             validator.validate(before, after, scene="GENERAL", report_scope_path=scope)
+       
+    1:     def test_report_scope_rejects_forged_ranges_that_do_not_replay_from_report(self) -> None:
+    2:         before, after = self.pair(
+    1:             "开头保持。\n\n标注段表述生硬。\n\n结尾保持。\n",
+    1:             "开头保持。\n\n标注段表述自然。\n\n结尾保持。\n",
+               )
+    1:         scope = self.report_scope(before, ["标注段表述生硬。"])
+    1:         scope_payload = json.loads(scope.read_text(encoding="utf-8"))
+    1:         scope_payload["fragments"][0]["source_start"] = 0
+    1:         scope_payload["fragments"][0]["source_end"] = len(before.read_text(encoding="utf-8"))
+    1:         scope.write_text(json.dumps(scope_payload, ensure_ascii=False), encoding="utf-8")
+    2:         with self.assertRaisesRegex(ValueError, "extractor replay"):
+    1:             validator.validate(before, after, scene="GENERAL", report_scope_path=scope)
+       
+    1:     def test_unexplained_high_signal_requires_review(self) -> None:
+    1:         before, after = self.pair("这张表必须牢记。", "这张表必须牢记。")
+    1:         payload = validator.validate(before, after, scene="COURSE")
+    1:         self.assertEqual("REVIEW", payload["status"])
+    1:         self.assertEqual(2, payload["exit_code"])
+    1:         self.assertEqual("PASS", payload["hard_invariant_layer_status"])
+    1:         self.assertEqual("PASS", payload["speech_act_layer_status"])
+    1:         self.assertEqual("REVIEW", payload["style_signal_layer_status"])
+    1:         self.assertEqual("REVIEW", payload["delivery_gate_status"])
+    1:         self.assertEqual(1, payload["lexical_summary"]["unexplained_high_candidates"])
+       
+    1:     def test_v19_closed_loop_and_abstract_path_shell_cannot_silently_pass(self) -> None:
+    1:         cases = (
+                   (
+                       "本问按参数设定、校准和反事实对照的实证闭环收紧。",
+                       "RESEARCH",
+                   ),
+                   (
+                       "问题二的证据关系由禁渔和食源恢复出发，经通道与污染修正，最终落到种群变化。",
+                       "MODELING",
+                   ),
+               )
+    3:         for text, scene in cases:
+    4:             with self.subTest(scene=scene):
+    2:                 before, after = self.pair(text, text)
+    2:                 payload = validator.validate(before, after, scene=scene)
+    4:                 ids = {item["signal_id"] for item in payload["unexplained_high_findings"]}
+    2:                 self.assertEqual("REVIEW", payload["delivery_gate_status"])
+    2:                 self.assertEqual(2, payload["delivery_gate_exit_code"])
+    2:                 self.assertIn("LEX-MGMT-01", ids)
+       
+    1:     def test_explicit_keep_reason_can_clear_a_surface_hit(self) -> None:
+    1:         before, after = self.pair("这张表必须牢记。", "这张表必须牢记。")
+    2:         payload = validator.validate(
+    1:             before,
+    1:             after,
+    1:             scene="COURSE",
+    1:             keep_reasons={"LEX-COACH-01": "用户锁定的课程原句"},
+               )
+    1:         self.assert_paired_quality_review(payload, decision="NO_CHANGE", changes=0)
+    1:         self.assertEqual(1, len(payload["accepted_findings"]))
+    1:         self.assertRegex(payload["accepted_findings"][0]["finding_hash"], r"^[0-9a-f]{64}$")
+       
+    1:     def test_introduced_repair_template_requires_review(self) -> None:
+    2:         before, after = self.pair(
+    1:             "峰值用于比较。误差用于比较。",
+    1:             "这里只看峰值。这里只比较误差。",
+               )
+    1:         payload = validator.validate(before, after, scene="GENERAL")
+    3:         ids = {item["signal_id"] for item in payload["introduced_findings"]}
+    1:         self.assertEqual("REVIEW", payload["status"])
+    1:         self.assertIn("LEX-REPAIR-01", ids)
+       
+    1:     def test_speech_act_warning_requires_review(self) -> None:
+    1:         before, after = self.pair("结果可能变化。", "结果发生变化。")
+    1:         payload = validator.validate(before, after, scene="GENERAL")
+    1:         self.assertEqual("REVIEW", payload["status"])
+    1:         self.assertEqual("PASS", payload["hard_invariant_layer_status"])
+    1:         self.assertEqual("REVIEW", payload["speech_act_layer_status"])
+    1:         self.assertEqual("PASS", payload["style_signal_layer_status"])
+    1:         self.assertEqual("REVIEW", payload["delivery_gate_status"])
+    1:         self.assertIn("speech_act_warning", payload["review_reasons"])
+    1:         request = payload["warning_review_request"]
+    1:         self.assertIsNotNone(request)
+    1:         self.assertRegex(request["request_sha256"], r"^[0-9a-f]{64}$")
+    1:         self.assertEqual(1, len(request["warnings"]))
+    2:         self.assertRegex(
+    1:             request["warnings"][0]["warning_fingerprint"],
+    1:             r"^[0-9a-f]{64}$",
+               )
+    1:         self.assertEqual(payload["evidence"]["before_sha256"], request["artifact"]["before_sha256"])
+    1:         self.assertEqual(payload["evidence"]["after_sha256"], request["artifact"]["after_sha256"])
+    1:         self.assertEqual("GENERAL", request["validation_context"]["scene"])
+    1:         self.assertEqual("markdown", request["validation_context"]["document_format"])
+    2:         self.assertEqual(
+    1:             payload["evidence"]["protected_terms"],
+    1:             request["validation_context"]["protected_terms"],
+               )
+    2:         self.assertEqual(
+    1:             {
+                       "validator_sha256",
+                       "invariant_checker_sha256",
+                       "scanner_sha256",
+                       "lexicon_sha256",
+                       "report_extractor_sha256",
+                       "runtime_contract_sha256",
+                       "paired_quality_verifier_sha256",
+                       "paired_quality_contract_sha256",
+                   },
+    1:             set(request["policy_hashes"]),
+               )
+    9:         for policy_hash in request["policy_hashes"].values():
+    8:             self.assertRegex(policy_hash, r"^[0-9a-f]{64}$")
+       
+    1:     def test_v19_focus_scope_loss_requires_review(self) -> None:
+    2:         before, after = self.pair(
+    1:             "本问的重点不是比较两个物种的绝对值，而是考察政策收益的保留程度。",
+    1:             "本问不比较两个物种的绝对值，而是考察政策收益的保留程度。",
+               )
+    1:         payload = validator.validate(before, after, scene="MODELING")
+       
+    1:         self.assertEqual("REVIEW", payload["delivery_gate_status"])
+    2:         self.assertIn(
+    1:             "SPEECH_ACT_FOCUS_SCOPE_CHANGED",
+    2:             {item["code"] for item in payload["unaccepted_warnings"]},
+               )
+       
+    1:     def test_v7_modeling_false_pass_is_blocked_by_transition_and_outlook_gates(self) -> None:
+    2:         before, after = self.pair(
+    1:             "本文构建模型。表格的作用在于统一实验口径，正文里要保留 20 ℃、25 ℃ 和 30 ℃ 三组数据。"
+                   "该模型形成了从数据到决策的完整闭环，为工程应用提供有力支撑。"
+                   "模型可能在一定程度上或许仍会受到传感器漂移影响，因此后续工作可以进一步拓展应用场景。",
+    1:             "本文构建模型。表格列出 20 ℃、25 ℃ 和 30 ℃ 三组数据，以统一实验口径。"
+                   "该模型将参数扫描结果用于工程决策，为工程应用提供依据。"
+                   "传感器漂移可能影响模型，影响程度或许有限。应用场景可以进一步拓展。",
+               )
+    1:         payload = validator.validate(before, after, scene="MODELING")
+    5:         warning_codes = {item["code"] for item in payload["unaccepted_warnings"]}
+       
+    1:         self.assertEqual("REVIEW", payload["delivery_gate_status"])
+    1:         self.assertIn("SPEECH_ACT_DIRECTIVE_TO_COMPLETION", warning_codes)
+    1:         self.assertIn("SPEECH_ACT_SUPPORT_TO_ACTUAL_USE", warning_codes)
+    1:         self.assertIn("SPEECH_ACT_MODALITY_TO_DEGREE", warning_codes)
+    2:         self.assertIn(
+    1:             "LEX-FUTURE-01",
+    2:             {item["signal_id"] for item in payload["introduced_findings"]},
+               )
+       
+    1:     def test_v7_course_coaching_synonym_cannot_pass(self) -> None:
+    2:         before, after = self.pair(
+    1:             "遇到这类题目时必须牢记公式。",
+    1:             "遇到这类题目，公式必须记清楚。",
+               )
+    1:         payload = validator.validate(before, after, scene="COURSE")
+       
+    1:         self.assertEqual("REVIEW", payload["delivery_gate_status"])
+    2:         self.assertIn(
+    1:             "LEX-COACH-01",
+    2:             {item["signal_id"] for item in payload["unexplained_high_findings"]},
+               )
+       
+    1:     def test_v8_memory_synonym_and_editor_note_cannot_pass(self) -> None:
+    2:         course_before, course_after = self.pair(
+    1:             "遇到这类题目时必须牢记公式。",
+    1:             "遇到这类题，公式需要记住。",
+               )
+    1:         course = validator.validate(course_before, course_after, scene="COURSE")
+    1:         self.assertEqual("REVIEW", course["delivery_gate_status"])
+    2:         self.assertIn(
+    1:             "LEX-COACH-01",
+    2:             {item["signal_id"] for item in course["unexplained_high_findings"]},
+               )
+       
+    2:         modeling_before, modeling_after = self.pair(
+    1:             "正文里要保留 20 ℃、25 ℃ 和 30 ℃ 三组数据。",
+    1:             "20 ℃、25 ℃ 和 30 ℃ 三组数据仍需在正文中保留。",
+               )
+    1:         modeling = validator.validate(modeling_before, modeling_after, scene="MODELING")
+    1:         self.assertEqual("REVIEW", modeling["delivery_gate_status"])
+    2:         self.assertIn(
+    1:             "LEX-META-01",
+    2:             {item["signal_id"] for item in modeling["unexplained_high_findings"]},
+               )
+       
+    1:     def test_v10_course_real_forward_deletes_coaching_shell_without_false_pass(self) -> None:
+    2:         payload = validator.validate(
+    1:             FORWARD_V10_FIXTURES / "course_before.tex",
+    1:             FORWARD_V10_FIXTURES / "course_after.tex",
+    1:             scene="COURSE",
+               )
+    1:         self.assertEqual("REVIEW", payload["delivery_gate_status"])
+    1:         self.assertEqual("PASS", payload["hard_invariant_layer_status"])
+    1:         self.assertEqual("PASS", payload["style_signal_layer_status"])
+    1:         self.assertEqual(0, payload["lexical_summary"]["after_candidates"])
+    2:         self.assertIn(
+    1:             "SPEECH_ACT_MODALITY_SCOPE_CHANGED",
+    2:             {item["code"] for item in payload["unaccepted_warnings"]},
+               )
+       
+    1:     def test_v10_modeling_real_forward_recovers_payload_without_predicate_upgrade(self) -> None:
+    2:         payload = validator.validate(
+    1:             FORWARD_V10_FIXTURES / "modeling_before.md",
+    1:             FORWARD_V10_FIXTURES / "modeling_after.md",
+    1:             scene="MODELING",
+               )
+    2:         warning_codes = {item["code"] for item in payload["unaccepted_warnings"]}
+    1:         self.assertEqual("REVIEW", payload["delivery_gate_status"])
+    1:         self.assertEqual("PASS", payload["hard_invariant_layer_status"])
+    1:         self.assertEqual("PASS", payload["style_signal_layer_status"])
+    1:         self.assertEqual(0, payload["lexical_summary"]["after_candidates"])
+    1:         self.assertIn("SPEECH_ACT_MODALITY_SCOPE_CHANGED", warning_codes)
+    2:         self.assertFalse(
+    2:             {
+                       "SPEECH_ACT_DIRECTIVE_TO_COMPLETION",
+                       "SPEECH_ACT_SUPPORT_TO_ACTUAL_USE",
+                       "SPEECH_ACT_MODALITY_TO_DEGREE",
+                   }
+    1:             & warning_codes
+               )
+       
+    1:     def test_v10_research_real_forward_passes_all_three_layers(self) -> None:
+    2:         payload = validator.validate(
+    1:             FORWARD_V10_FIXTURES / "research_before.md",
+    1:             FORWARD_V10_FIXTURES / "research_after.md",
+    1:             scene="RESEARCH",
+               )
+    1:         self.assert_paired_quality_review(payload, decision="REWRITE")
+    1:         self.assertEqual("PASS", payload["hard_invariant_layer_status"])
+    1:         self.assertEqual("PASS", payload["speech_act_layer_status"])
+    1:         self.assertEqual("PASS", payload["style_signal_layer_status"])
+    1:         self.assertEqual(0, payload["lexical_summary"]["after_candidates"])
+       
+    1:     def test_warning_review_request_and_fingerprints_are_deterministic(self) -> None:
+    1:         before, after = self.pair("结果可能变化。", "结果发生变化。")
+    1:         first = validator.validate(before, after, scene="GENERAL", protected_terms=["结果"])
+    1:         second = validator.validate(before, after, scene="GENERAL", protected_terms=["结果"])
+       
+    2:         self.assertEqual(
+    1:             first["warning_review_request"]["request_sha256"],
+    1:             second["warning_review_request"]["request_sha256"],
+               )
+    2:         self.assertEqual(
+    1:             first["warning_review_request"]["warnings"],
+    1:             second["warning_review_request"]["warnings"],
+               )
+       
+    1:     def test_v33_warning_request_carries_occurrence_and_residual_diagnostics(self) -> None:
+    2:         before, after = self.pair(
+    1:             "甲可能成立。乙成立。",
+    1:             "甲成立。乙可能成立。",
+               )
+    1:         payload = validator.validate(before, after, scene="GENERAL")
+    3:         warning = next(
+    1:             item
+    2:             for item in payload["warning_review_request"]["warnings"]
+    1:             if item["code"] == "SPEECH_ACT_MODALITY_SCOPE_CHANGED"
+               )
+       
+    1:         self.assertTrue(warning["details"]["before_occurrences"])
+    1:         self.assertTrue(warning["details"]["after_occurrences"])
+    1:         self.assertEqual({}, warning["details"]["raw_delta"]["removed"])
+    1:         self.assertEqual(2, len(warning["details"]["residual_delta"]))
+    1:         self.assertEqual("REVIEW", payload["speech_act_layer_status"])
+       
+    1:     def test_v33_inherited_tension_is_exposed_without_changing_layer_status(self) -> None:
+    2:         before, after = self.pair(
+    1:             "该结果可能证明机制成立。",
+    1:             "该结果可能证明机制成立。",
+               )
+    1:         payload = validator.validate(before, after, scene="RESEARCH")
+       
+    1:         self.assertEqual("PASS", payload["speech_act_layer_status"])
+    1:         self.assertEqual(1, len(payload["speech_act_diagnostics"]))
+    2:         self.assertEqual(
+    1:             "SPEECH_ACT_INHERITED_CLAIM_STRENGTH_TENSION",
+    1:             payload["speech_act_diagnostics"][0]["code"],
+               )
+    1:         self.assertNotIn("speech_act_warning", payload["review_reasons"])
+       
+    1:     def test_attribution_source_upgrade_cannot_silently_pass(self) -> None:
+    2:         before, after = self.pair(
+    1:             "专家认为，该方法在低频组更稳定。",
+    1:             "本文证实，该方法在低频组更稳定。",
+               )
+    1:         payload = validator.validate(before, after, scene="RESEARCH")
+    2:         warning_codes = {item["code"] for item in payload["unaccepted_warnings"]}
+    1:         self.assertEqual("REVIEW", payload["status"])
+    1:         self.assertEqual(2, payload["exit_code"])
+    1:         self.assertIn("SPEECH_ACT_ATTRIBUTION_SOURCE_CHANGED", warning_codes)
+       
+    1:     def test_new_literature_background_cannot_silently_pass(self) -> None:
+    2:         before, after = self.pair(
+    1:             "本文结合问题背景和实验现象讨论可能机制。",
+    1:             "本文结合问题背景、实验现象和已有研究讨论可能机制。",
+               )
+    1:         payload = validator.validate(before, after, scene="RESEARCH")
+    2:         warning_codes = {item["code"] for item in payload["unaccepted_warnings"]}
+       
+    1:         self.assertEqual("REVIEW", payload["status"])
+    1:         self.assertEqual(2, payload["exit_code"])
+    1:         self.assertIn("SPEECH_ACT_ATTRIBUTION_SOURCE_CHANGED", warning_codes)
+       
+    1:     def test_unverified_caller_proposal_never_clears_warning(self) -> None:
+    1:         before, after = self.pair("结果可能变化。", "结果发生变化。")
+    1:         first = validator.validate(before, after, scene="GENERAL")
+    1:         request = first["warning_review_request"]
+    1:         fingerprint = request["warnings"][0]["warning_fingerprint"]
+    2:         payload = validator.validate(
+    1:             before,
+    1:             after,
+    1:             scene="GENERAL",
+    1:             warning_resolutions={
+    1:                 fingerprint: "调用方建议恢复原句中的模态范围以保留结论强度",
+                   },
+    1:             warning_review_request_sha256=request["request_sha256"],
+               )
+    1:         self.assertEqual("REVIEW", payload["status"])
+    1:         self.assertEqual(2, payload["exit_code"])
+    1:         self.assertEqual("REVIEW", payload["speech_act_layer_status"])
+    1:         self.assertEqual([], payload["accepted_warnings"])
+    1:         self.assertEqual(1, len(payload["unaccepted_warnings"]))
+    1:         self.assertEqual(1, len(payload["proposed_warning_resolutions"]))
+    1:         self.assertEqual(1, len(payload["pending_warnings"]))
+    1:         self.assertEqual([], payload["warnings_without_resolution_proposal"])
+    1:         self.assertFalse(payload["proposed_warning_resolutions"][0]["review_clearance_granted"])
+    1:         proposal = payload["warning_proposal_state"]
+    1:         self.assertEqual("UNVERIFIED_CALLER_PROPOSAL", proposal["proposal_source"])
+    1:         self.assertFalse(proposal["reviewer_identifier_collected"])
+    1:         self.assertFalse(proposal["identity_verified"])
+    1:         self.assertFalse(proposal["review_clearance_granted"])
+    2:         self.assertEqual(
+    1:             "NOT_APPLICABLE",
+    1:             proposal["attestation_status"],
+               )
+    1:         self.assertNotIn("warning_review", payload)
+       
+    1:     def test_retired_accepted_warnings_are_explicitly_rejected(self) -> None:
+    1:         before, after = self.pair("结果可能变化。", "结果发生变化。")
+    2:         with self.assertRaisesRegex(ValueError, "accepted_warnings/--accept-warning is retired"):
+    2:             validator.validate(
+    1:                 before,
+    1:                 after,
+    1:                 accepted_warnings={
+    1:                     "SPEECH_ACT_MODALITY_SCOPE_CHANGED": "人工确认该模态变化不影响原句表达功能",
+                       },
+    1:                 warning_reviewer_kind="HUMAN",
+    1:                 warning_reviewer_id="external-reviewer",
+                   )
+       
+    1:     def test_reviewer_identity_metadata_is_retired(self) -> None:
+    1:         before, after = self.pair("结果可能变化。", "结果发生变化。")
+    1:         first = validator.validate(before, after)
+    1:         request = first["warning_review_request"]
+    1:         fingerprint = request["warnings"][0]["warning_fingerprint"]
+    2:         with self.assertRaisesRegex(ValueError, "identity metadata is retired"):
+    2:             validator.validate(
+    1:                 before,
+    1:                 after,
+    1:                 warning_resolutions={
+    1:                     fingerprint: "模型建议恢复原句中的模态范围以保留表达功能",
+                       },
+    1:                 warning_review_request_sha256=request["request_sha256"],
+    1:                 warning_reviewer_kind="AGENT",
+    1:                 warning_reviewer_id="forward-agent",
+                   )
+       
+    1:     def test_retired_identity_or_request_without_proposal_is_rejected(self) -> None:
+    1:         before, after = self.pair("结果保持稳定。", "结果保持稳定。")
+    2:         with self.assertRaisesRegex(ValueError, "identity metadata is retired"):
+    2:             validator.validate(
+    1:                 before,
+    1:                 after,
+    1:                 warning_reviewer_kind="HUMAN",
+    1:                 warning_reviewer_id="external-reviewer",
+                   )
+    2:         with self.assertRaisesRegex(ValueError, "hash is only valid with warning_resolutions"):
+    2:             validator.validate(
+    1:                 before,
+    1:                 after,
+    1:                 warning_review_request_sha256="0" * 64,
+                   )
+       
+    1:     def test_all_warning_reviewer_labels_are_rejected_without_inspection(self) -> None:
+    1:         before, after = self.pair("结果可能变化。", "结果发生变化。")
+    1:         first = validator.validate(before, after)
+    1:         request = first["warning_review_request"]
+    1:         fingerprint = request["warnings"][0]["warning_fingerprint"]
+    4:         for reviewer_id in ("ab", "x" * 129, "human\nreviewer"):
+    6:             with self.subTest(reviewer_id=repr(reviewer_id)):
+    6:                 with self.assertRaisesRegex(ValueError, "identity metadata is retired"):
+    6:                     validator.validate(
+    3:                         before,
+    3:                         after,
+    3:                         warning_resolutions={
+    3:                             fingerprint: "人工建议恢复原句中的模态范围以保留表达功能",
+                               },
+    3:                         warning_review_request_sha256=request["request_sha256"],
+    3:                         warning_reviewer_kind="HUMAN",
+    3:                         warning_reviewer_id=reviewer_id,
+                           )
+       
+    1:     def test_cli_proposal_preserves_review_and_real_exit_code(self) -> None:
+    1:         before, after = self.pair("结果可能变化。", "结果发生变化。")
+    2:         first = subprocess.run(
+    1:             [
+    1:                 sys.executable,
+    1:                 str(SCRIPT),
+    1:                 str(before),
+    1:                 str(after),
+    1:                 "--format",
+    1:                 "json",
+                   ],
+    1:             check=False,
+    1:             capture_output=True,
+    1:             text=True,
+    1:             encoding="utf-8",
+    1:             env={**os.environ, "PYTHONUTF8": "1"},
+               )
+    1:         self.assertEqual(2, first.returncode, first.stderr)
+    1:         initial = json.loads(first.stdout)
+    1:         request = initial["warning_review_request"]
+    1:         fingerprint = request["warnings"][0]["warning_fingerprint"]
+    1:         command = [
+    1:             sys.executable,
+    1:             str(SCRIPT),
+    1:             str(before),
+    1:             str(after),
+    1:             "--format",
+    1:             "json",
+    1:             "--propose-warning-resolution",
+    1:             f"{fingerprint}=人工建议恢复原句中的模态范围以保留表达功能",
+    1:             "--warning-review-request-sha256",
+    1:             request["request_sha256"],
+               ]
+       
+    2:         proposed = subprocess.run(
+    1:             command,
+    1:             check=False,
+    1:             capture_output=True,
+    1:             text=True,
+    1:             encoding="utf-8",
+    1:             env={**os.environ, "PYTHONUTF8": "1"},
+               )
+    1:         self.assertEqual(2, proposed.returncode, proposed.stderr)
+    1:         payload = json.loads(proposed.stdout)
+    1:         self.assertEqual("REVIEW", payload["delivery_gate_status"])
+    1:         proposal = payload["warning_proposal_state"]
+    1:         self.assertEqual("UNVERIFIED_CALLER_PROPOSAL", proposal["proposal_source"])
+    1:         self.assertFalse(proposal["reviewer_identifier_collected"])
+    1:         self.assertFalse(proposal["identity_verified"])
+    1:         self.assertFalse(proposal["review_clearance_granted"])
+       
+    2:         retired = subprocess.run(
+    1:             command + [
+                       "--warning-reviewer-kind",
+                       "HUMAN",
+                       "--warning-reviewer-id",
+                       "external-reviewer-label",
+                   ],
+    1:             check=False,
+    1:             capture_output=True,
+    1:             text=True,
+    1:             encoding="utf-8",
+    1:             env={**os.environ, "PYTHONUTF8": "1"},
+               )
+    1:         self.assertEqual(2, retired.returncode)
+    1:         self.assertIn("identity metadata is retired", retired.stderr)
+    1:         self.assertNotIn("external-reviewer-label", retired.stderr)
+       
+    1:     def test_cli_retired_accept_warning_is_rejected_even_with_human_label(self) -> None:
+    1:         before, after = self.pair("结果可能变化。", "结果发生变化。")
+    2:         completed = subprocess.run(
+    1:             [
+    1:                 sys.executable,
+    1:                 str(SCRIPT),
+    1:                 str(before),
+    1:                 str(after),
+    1:                 "--format",
+    1:                 "json",
+    1:                 "--accept-warning",
+    1:                 "SPEECH_ACT_MODALITY_SCOPE_CHANGED=人工确认该模态变化不影响原句表达功能",
+    1:                 "--warning-reviewer-kind",
+    1:                 "HUMAN",
+    1:                 "--warning-reviewer-id",
+    1:                 "external-reviewer-label",
+                   ],
+    1:             check=False,
+    1:             capture_output=True,
+    1:             text=True,
+    1:             encoding="utf-8",
+    1:             env={**os.environ, "PYTHONUTF8": "1"},
+               )
+    1:         self.assertEqual(2, completed.returncode)
+    1:         self.assertIn("--accept-warning is retired", completed.stderr)
+       
+    1:     def test_unknown_or_vague_warning_resolution_is_rejected(self) -> None:
+    2:         with self.assertRaises(ValueError):
+    2:             validator._parse_reason_pairs(
+    1:                 ["SPEECH_ACT_MODALITY_SCOPE_CHANGED=接受"],
+    1:                 "--propose-warning-resolution",
+                   )
+    2:         with self.assertRaises(ValueError):
+    2:             validator._parse_reason_pairs(
+    1:                 ["SPEECH_ACT_MODALITY_SCOPE_CHANGED=人工确认"],
+    1:                 "--propose-warning-resolution",
+                   )
+    2:         with self.assertRaises(ValueError):
+    2:             validator._parse_reason_pairs(
+    1:                 ["SPEECH_ACT_MODALITY_SCOPE_CHANGED=这是一个具体理由"],
+    1:                 "--propose-warning-resolution",
+                   )
+    2:         with self.assertRaisesRegex(ValueError, "重复提交 CODE"):
+    2:             validator._parse_reason_pairs(
+    1:                 [
+    1:                     "f" * 64 + "=人工建议恢复原句模态以保留表达功能",
+    1:                     "f" * 64 + "=人工建议保留原句模态所限定的结论范围",
+                       ],
+    1:                 "--propose-warning-resolution",
+                   )
+       
+    1:     def test_review_request_cannot_be_replayed_across_artifacts(self) -> None:
+    1:         before, after = self.pair("结果可能变化。", "结果发生变化。")
+    1:         first = validator.validate(before, after, scene="GENERAL")
+    1:         request = first["warning_review_request"]
+    1:         fingerprint = request["warnings"][0]["warning_fingerprint"]
+    1:         after.write_text("结果发生改变。", encoding="utf-8")
+       
+    2:         with self.assertRaisesRegex(ValueError, "does not match the current artifact"):
+    2:             validator.validate(
+    1:                 before,
+    1:                 after,
+    1:                 scene="GENERAL",
+    1:                 warning_resolutions={
+    1:                     fingerprint: "人工建议恢复原句中的模态范围以保留表达功能",
+                       },
+    1:                 warning_review_request_sha256=request["request_sha256"],
+                   )
+       
+    1:     def test_review_request_rejects_policy_hash_drift(self) -> None:
+    1:         before, after = self.pair("结果可能变化。", "结果发生变化。")
+    1:         first = validator.validate(before, after, scene="GENERAL")
+    1:         request = first["warning_review_request"]
+    1:         fingerprint = request["warnings"][0]["warning_fingerprint"]
+    1:         changed_policy = dict(request["policy_hashes"])
+    1:         changed_policy["validator_sha256"] = "0" * 64
+       
+    2:         with mock.patch.object(validator, "_policy_hashes", return_value=changed_policy):
+    2:             with self.assertRaisesRegex(ValueError, "policy hashes"):
+    2:                 validator.validate(
+    1:                     before,
+    1:                     after,
+    1:                     scene="GENERAL",
+    1:                     warning_resolutions={
+    1:                         fingerprint: "人工建议恢复原句中的模态范围以保留表达功能",
+                           },
+    1:                     warning_review_request_sha256=request["request_sha256"],
+                       )
+       
+    1:     def test_review_request_cannot_be_replayed_across_validation_context(self) -> None:
+    1:         before, after = self.pair("结果可能变化。", "结果发生变化。")
+    1:         first = validator.validate(before, after, scene="GENERAL")
+    1:         request = first["warning_review_request"]
+    1:         fingerprint = request["warnings"][0]["warning_fingerprint"]
+       
+    3:         for changed_context in (
+    1:             {"scene": "RESEARCH"},
+    1:             {"scene": "GENERAL", "protected_terms": ["结果"]},
+               ):
+    4:             with self.subTest(changed_context=changed_context):
+    4:                 with self.assertRaisesRegex(ValueError, "does not match the current artifact"):
+    8:                     validator.validate(
+    2:                         before,
+    2:                         after,
+    2:                         warning_resolutions={
+    2:                             fingerprint: "人工建议恢复原句中的模态范围以保留表达功能",
+                               },
+    2:                         warning_review_request_sha256=request["request_sha256"],
+    2:                         **changed_context,
+                           )
+       
+    1:     def test_resolution_fingerprint_must_exist_in_current_request(self) -> None:
+    1:         before, after = self.pair("结果可能变化。", "结果发生变化。")
+    1:         first = validator.validate(before, after, scene="GENERAL")
+    1:         request = first["warning_review_request"]
+       
+    2:         with self.assertRaisesRegex(ValueError, "fingerprint not present"):
+    2:             validator.validate(
+    1:                 before,
+    1:                 after,
+    1:                 scene="GENERAL",
+    1:                 warning_resolutions={
+    1:                     "f" * 64: "人工建议恢复原句中的模态范围以保留表达功能",
+                       },
+    1:                 warning_review_request_sha256=request["request_sha256"],
+                   )
+       
+    1:     def test_pass_requires_revised_draft_to_eliminate_warning(self) -> None:
+    1:         before, warned = self.pair("结果可能变化。", "结果发生变化。")
+    1:         first = validator.validate(before, warned, scene="GENERAL")
+    1:         self.assertEqual("REVIEW", first["status"])
+    1:         warned.write_text("结果可能发生变化。", encoding="utf-8")
+       
+    1:         revised = validator.validate(before, warned, scene="GENERAL")
+    1:         self.assert_paired_quality_review(revised, decision="REWRITE")
+    1:         self.assertEqual([], revised["unaccepted_warnings"])
+    1:         self.assertIsNone(revised["warning_review_request"])
+    2:         self.assertEqual(
+    1:             "NOT_PROVIDED",
+    1:             revised["warning_proposal_state"]["attestation_status"],
+               )
+       
+    1:     def test_hard_invariant_change_fails(self) -> None:
+    1:         before, after = self.pair("公式为 $x=1$。", "公式为 $x=2$。", suffix=".tex")
+    1:         payload = validator.validate(before, after, scene="GENERAL")
+    1:         self.assertEqual("FAIL", payload["status"])
+    1:         self.assertEqual(1, payload["exit_code"])
+    1:         self.assertEqual("FAIL", payload["hard_invariant_layer_status"])
+    1:         self.assertEqual("FAIL", payload["delivery_gate_status"])
+    1:         self.assertTrue(payload["invariants"]["hard_failure"])
+       
+    1:     def test_text_output_names_layer_statuses_and_non_evaluated_scope(self) -> None:
+    1:         before, after = self.pair("结果可能变化。", "结果发生变化。")
+    1:         payload = validator.validate(before, after, scene="GENERAL")
+    1:         rendered = validator._text_output(payload)
+       
+    1:         self.assertIn("delivery_gate_status: REVIEW", rendered)
+    1:         self.assertIn("hard_invariant_layer_status: PASS", rendered)
+    1:         self.assertIn("speech_act_layer_status: REVIEW", rendered)
+    1:         self.assertIn("style_signal_layer_status: PASS", rendered)
+    1:         self.assertIn("academic_correctness: NOT_EVALUATED", rendered)
+    1:         self.assertIn("warning_proposal_attestation_status: NOT_PROVIDED", rendered)
+    1:         self.assertIn("warning_proposal_identity_verified: FALSE", rendered)
+    1:         self.assertIn("warning_proposal_clearance_granted: FALSE", rendered)
+    1:         self.assertIn("warning_reviewer_identifier_collected: FALSE", rendered)
+    1:         self.assertNotIn("reviewer_id_sha256", rendered)
+    1:         self.assertRegex(rendered, r"warning_review_request_sha256: [0-9a-f]{64}")
+    2:         self.assertIn(
+    1:             "warning: SPEECH_ACT_MODALITY_SCOPE_CHANGED [warning]",
+    1:             rendered,
+               )
+       
+    1:     def test_extended_protected_content_and_garbled_text_fail(self) -> None:
+    1:         cases = (
+                   (
+                       "\\begin{alignat}{2}\nx &= y\n\\end{alignat}\n",
+                       "\\begin{alignat}{2}\nx &= z\n\\end{alignat}\n",
+                       ".tex",
+                   ),
+                   (
+                       "\\begin{exercise}\n求函数的极值。\n\\end{exercise}\n",
+                       "\\begin{exercise}\n计算函数的极值。\n\\end{exercise}\n",
+                       ".tex",
+                   ),
+                   ("```text\ntoken=alpha\n````\n", "```text\ntoken=beta\n````\n", ".md"),
+                   ("样本分为三组。", "样本分为四组。", ".md"),
+                   ("OCR：\ufffd字。", "OCR：清字。", ".md"),
+               )
+    6:         for before_text, after_text, suffix in cases:
+   10:             with self.subTest(before=before_text):
+    5:                 before, after = self.pair(before_text, after_text, suffix=suffix)
+    5:                 payload = validator.validate(before, after)
+    5:                 self.assertEqual("FAIL", payload["status"])
+    5:                 self.assertEqual(1, payload["exit_code"])
+       
+    1:     def test_repeated_term_cli_hard_fails_and_records_glossary_evidence(self) -> None:
+    2:         before, after = self.pair(
+    1:             "采用有限元法求解，材料为 Q235钢。",
+    1:             "采用谱方法求解，材料为 Q345钢。",
+               )
+    2:         completed = subprocess.run(
+    1:             [
+    1:                 sys.executable,
+    1:                 str(SCRIPT),
+    1:                 str(before),
+    1:                 str(after),
+    1:                 "--format",
+    1:                 "json",
+    1:                 "--term",
+    1:                 "有限元法",
+    1:                 "--term",
+    1:                 "Q235钢",
+                   ],
+    1:             check=False,
+    1:             capture_output=True,
+    1:             text=True,
+    1:             encoding="utf-8",
+               )
+    1:         self.assertEqual(1, completed.returncode, completed.stderr)
+    1:         payload = json.loads(completed.stdout)
+    1:         self.assertEqual("FAIL", payload["status"])
+    1:         self.assertEqual("CHECKED", payload["evidence"]["protected_terms"]["status"])
+    1:         self.assertEqual(2, payload["evidence"]["protected_terms"]["count"])
+    1:         self.assertRegex(payload["evidence"]["protected_terms"]["sha256"], r"^[0-9a-f]{64}$")
+    2:         error_codes = {item["code"] for item in payload["invariants"]["errors"]}
+    1:         self.assertIn("PROTECTED_TERM_CHANGED", error_codes)
+       
+    1:     def test_cli_json_status_and_exit_code(self) -> None:
+    1:         before, after = self.pair("这张表必须牢记。", "这张表必须牢记。")
+    2:         completed = subprocess.run(
+    1:             [
+    1:                 sys.executable,
+    1:                 str(SCRIPT),
+    1:                 str(before),
+    1:                 str(after),
+    1:                 "--scene",
+    1:                 "course",
+    1:                 "--format",
+    1:                 "json",
+                   ],
+    1:             check=False,
+    1:             capture_output=True,
+    1:             text=True,
+    1:             encoding="utf-8",
+               )
+    1:         self.assertEqual(2, completed.returncode, completed.stderr)
+    1:         payload = json.loads(completed.stdout)
+    1:         self.assertEqual("REVIEW", payload["status"])
+    1:         self.assertRegex(payload["evidence"]["after_sha256"], r"^[0-9a-f]{64}$")
+    1:         self.assertNotIn("score", payload)
+       
+    1:     def test_cli_evidence_dir_persists_result_request_and_manifest_atomically(self) -> None:
+    1:         before, after = self.pair("值得注意的是，结果为 1。", "结果为 1。")
+    1:         evidence_dir = self.root / "direct-evidence"
+    2:         completed = subprocess.run(
+    1:             [
+    1:                 sys.executable,
+    1:                 str(SCRIPT),
+    1:                 str(before),
+    1:                 str(after),
+    1:                 "--format",
+    1:                 "json",
+    1:                 "--evidence-dir",
+    1:                 str(evidence_dir),
+                   ],
+    1:             check=False,
+    1:             capture_output=True,
+    1:             text=True,
+    1:             encoding="utf-8",
+    1:             env={**os.environ, "PYTHONUTF8": "1"},
+               )
+    1:         self.assertEqual(2, completed.returncode, completed.stderr)
+    1:         payload = json.loads(completed.stdout)
+    1:         self.assertEqual("PERSISTED", payload["evidence_bundle"]["status"])
+    1:         result_path = evidence_dir / "validation-result.json"
+    1:         request_path = evidence_dir / "paired-quality-review-request.json"
+    1:         invocation_path = evidence_dir / "invocation-request.json"
+    1:         execution_path = evidence_dir / "execution-record.json"
+    1:         stdout_path = evidence_dir / "rendered-output.txt"
+    1:         stderr_path = evidence_dir / "stderr.txt"
+    1:         manifest_path = evidence_dir / "evidence-manifest.json"
+    1:         before_archive = evidence_dir / "inputs" / "before.bin"
+    1:         after_archive = evidence_dir / "inputs" / "after.bin"
+    1:         self.assertTrue(result_path.is_file())
+    1:         self.assertTrue(request_path.is_file())
+    1:         self.assertTrue(invocation_path.is_file())
+    1:         self.assertTrue(execution_path.is_file())
+    1:         self.assertTrue(stdout_path.is_file())
+    1:         self.assertTrue(stderr_path.is_file())
+    1:         self.assertTrue(manifest_path.is_file())
+    1:         self.assertEqual(before.read_bytes(), before_archive.read_bytes())
+    1:         self.assertEqual(after.read_bytes(), after_archive.read_bytes())
+    1:         self.assertEqual(completed.stdout.encode("utf-8"), stdout_path.read_bytes())
+    1:         self.assertEqual(b"", stderr_path.read_bytes())
+    1:         self.assertEqual(payload, json.loads(result_path.read_text(encoding="utf-8")))
+    2:         self.assertEqual(
+    1:             payload["paired_quality_review_request"],
+    1:             json.loads(request_path.read_text(encoding="utf-8")),
+               )
+    1:         manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    1:         self.assertEqual("humanize-direct-validation-evidence/v3", manifest["schema"])
+    1:         self.assertEqual("SELF_CONSISTENCY_ONLY", manifest["integrity_scope"])
+    1:         self.assertEqual(payload["evidence_bundle"]["run_id"], manifest["run_id"])
+    1:         invocation = json.loads(invocation_path.read_text(encoding="utf-8"))
+    1:         self.assertEqual(manifest["run_id"], invocation["run_id"])
+    1:         self.assertEqual("SUPPORTED", invocation["reexecution"]["status"])
+    1:         self.assertFalse(invocation["privacy"]["reviewer_identifier_collected"])
+    1:         self.assertFalse(invocation["privacy"]["stable_reviewer_pseudonym_archived"])
+    1:         self.assertFalse(invocation["privacy"]["source_locator_archived"])
+    1:         self.assertEqual(payload["exit_code"], manifest["exit_code"])
+    2:         self.assertEqual(
+    1:             payload["paired_quality_review_request"]["request_sha256"],
+    1:             manifest["paired_quality_review_request_sha256"],
+               )
+    1:         manifest_hash = manifest.pop("manifest_sha256")
+    2:         self.assertEqual(
+    1:             validator._sha256(validator._canonical_json_bytes(manifest)),
+    1:             manifest_hash,
+               )
+    1:         before_hash = validator._sha256(before.read_bytes())
+    1:         self.assertEqual(before_hash, manifest["source_bindings"]["before"]["sha256"])
+       
+    2:         rerun = subprocess.run(
+    1:             [
+    1:                 sys.executable,
+    1:                 str(SCRIPT),
+    1:                 str(before),
+    1:                 str(after),
+    1:                 "--format",
+    1:                 "json",
+    1:                 "--evidence-dir",
+    1:                 str(evidence_dir),
+                   ],
+    1:             check=False,
+    1:             capture_output=True,
+    1:             text=True,
+    1:             encoding="utf-8",
+    1:             env={**os.environ, "PYTHONUTF8": "1"},
+               )
+    1:         self.assertEqual(2, rerun.returncode)
+    1:         rerun_payload = json.loads(rerun.stdout)
+    1:         self.assertEqual(payload, rerun_payload)
+    1:         self.assertEqual(manifest_hash, json.loads(manifest_path.read_text(encoding="utf-8"))["manifest_sha256"])
+       
+    1:     def test_evidence_bundle_failure_leaves_no_staging_or_published_directory(self) -> None:
+    1:         before, after = self.pair("值得注意的是，结果为 1。", "结果为 1。")
+    1:         payload = validator.validate(before, after)
+    1:         payload["evidence_bundle"] = validator._evidence_bundle_record(payload)
+    1:         evidence_dir = self.root / "atomic-evidence"
+    1:         original = validator._write_exclusive
+    1:         calls = {"count": 0}
+       
+    1:         def fail_on_second(path: Path, raw: bytes) -> None:
+    2:             calls["count"] += 1
+    2:             if calls["count"] == 2:
+    1:                 raise OSError("injected evidence write failure")
+    1:             original(path, raw)
+       
+    2:         with mock.patch.object(validator, "_write_exclusive", side_effect=fail_on_second):
+    2:             with self.assertRaisesRegex(OSError, "injected evidence write failure"):
+    2:                 validator._persist_evidence_bundle(
+    1:                     payload,
+    1:                     before=before,
+    1:                     after=after,
+    1:                     output_dir=evidence_dir,
+                       )
+    1:         self.assertFalse(evidence_dir.exists())
+    1:         self.assertEqual([], list(self.root.glob(".atomic-evidence.staging-*")))
+       
+    1:     def test_evidence_bundle_every_write_failure_rolls_back_completely(self) -> None:
+    1:         before, after = self.pair("值得注意的是，结果为 1。", "结果为 1。")
+    1:         payload = validator.validate(before, after)
+    2:         invocation = validator._build_invocation_request(
+    1:             payload,
+    1:             before=before,
+    1:             after=after,
+               )
+    2:         payload["evidence_bundle"] = validator._evidence_bundle_record(
+    1:             payload,
+    1:             run_id=invocation["run_id"],
+               )
+    1:         rendered = validator._pretty_json_bytes(payload)
+    1:         baseline = self.root / "write-count-baseline"
+    2:         validator._persist_evidence_bundle(
+    1:             payload,
+    1:             before=before,
+    1:             after=after,
+    1:             output_dir=baseline,
+    1:             invocation_request=invocation,
+    1:             rendered_output=rendered,
+               )
+    4:         write_count = len(json.loads(
+    1:             (baseline / "evidence-manifest.json").read_text(encoding="utf-8")
+    2:         )["artifacts"]) + 1
+       
+    1:         original = validator._write_exclusive
+   10:         for fail_at in range(1, write_count + 1):
+   18:             with self.subTest(fail_at=fail_at):
+    9:                 target = self.root / f"write-failure-{fail_at}"
+    9:                 calls = {"count": 0}
+       
+    9:                 def fail_selected(path: Path, raw: bytes) -> None:
+   45:                     calls["count"] += 1
+   45:                     if calls["count"] == fail_at:
+    9:                         raise OSError(f"injected write failure {fail_at}")
+   36:                     original(path, raw)
+       
+   27:                 with mock.patch.object(
+    9:                     validator,
+    9:                     "_write_exclusive",
+    9:                     side_effect=fail_selected,
+                       ):
+   18:                     with self.assertRaisesRegex(OSError, "injected write failure"):
+   18:                         validator._persist_evidence_bundle(
+    9:                             payload,
+    9:                             before=before,
+    9:                             after=after,
+    9:                             output_dir=target,
+    9:                             invocation_request=invocation,
+    9:                             rendered_output=rendered,
+                               )
+    9:                 self.assertFalse(target.exists())
+   18:                 self.assertEqual(
+    9:                     [],
+    9:                     list(self.root.glob(f".{target.name}.staging-*")),
+                       )
+   18:                 self.assertFalse(
+    9:                     target.with_name(f".{target.name}.publish.lock").exists()
+                       )
+       
+    1:     def test_evidence_rename_failure_and_late_source_drift_roll_back(self) -> None:
+    1:         before, after = self.pair("值得注意的是，结果为 1。", "结果为 1。")
+    1:         payload = validator.validate(before, after)
+    2:         invocation = validator._build_invocation_request(
+    1:             payload,
+    1:             before=before,
+    1:             after=after,
+               )
+    2:         payload["evidence_bundle"] = validator._evidence_bundle_record(
+    1:             payload,
+    1:             run_id=invocation["run_id"],
+               )
+    1:         rendered = validator._pretty_json_bytes(payload)
+    1:         rename_target = self.root / "rename-failure"
+    2:         with mock.patch.object(Path, "rename", side_effect=OSError("rename failed")):
+    2:             with self.assertRaisesRegex(OSError, "rename failed"):
+    2:                 validator._persist_evidence_bundle(
+    1:                     payload,
+    1:                     before=before,
+    1:                     after=after,
+    1:                     output_dir=rename_target,
+    1:                     invocation_request=invocation,
+    1:                     rendered_output=rendered,
+                       )
+    1:         self.assertFalse(rename_target.exists())
+    1:         self.assertEqual([], list(self.root.glob(".rename-failure.staging-*")))
+    1:         self.assertFalse((self.root / ".rename-failure.publish.lock").exists())
+       
+    1:         drift_target = self.root / "source-drift"
+    1:         original_write = validator._write_exclusive
+       
+    1:         def drift_after_manifest(path: Path, raw: bytes) -> None:
+    9:             original_write(path, raw)
+    9:             if path.name == "evidence-manifest.json":
+    1:                 before.write_text("来源在提交前被替换。", encoding="utf-8")
+       
+    3:         with mock.patch.object(
+    1:             validator,
+    1:             "_write_exclusive",
+    1:             side_effect=drift_after_manifest,
+               ):
+    2:             with self.assertRaisesRegex(ValueError, "changed before evidence publication"):
+    2:                 validator._persist_evidence_bundle(
+    1:                     payload,
+    1:                     before=before,
+    1:                     after=after,
+    1:                     output_dir=drift_target,
+    1:                     invocation_request=invocation,
+    1:                     rendered_output=rendered,
+                       )
+    1:         self.assertFalse(drift_target.exists())
+    1:         self.assertEqual([], list(self.root.glob(".source-drift.staging-*")))
+    1:         self.assertFalse((self.root / ".source-drift.publish.lock").exists())
+       
+    1:     def test_keep_reason_requires_specific_chinese_reason(self) -> None:
+    1:         valid = {"LEX-COACH-01"}
+    2:         with self.assertRaises(ValueError):
+    1:             validator._parse_keep_reasons(["LEX-COACH-01=保留"], valid)
+    2:         with self.assertRaises(ValueError):
+    1:             validator._parse_keep_reasons(["LEX-COACH-01=确认保留"], valid)
+    2:         with self.assertRaises(ValueError):
+    1:             validator._parse_keep_reasons(["LEX-COACH-01=这是一个具体理由"], valid)
+    1:         before, after = self.pair("这张表必须牢记。", "这张表必须牢记。")
+    2:         with self.assertRaises(ValueError):
+    2:             validator.validate(
+    1:                 before,
+    1:                 after,
+    1:                 scene="COURSE",
+    1:                 keep_reasons={"LEX-COACH-01": "保留"},
+                   )
+    2:         with self.assertRaises(ValueError):
+    2:             validator.validate(
+    1:                 before,
+    1:                 after,
+    1:                 scene="COURSE",
+    1:                 keep_reasons={"NOT_A_SIGNAL": "这是一个不存在的信号"},
+                   )
+       
+    1:     def test_multiple_keep_findings_require_location_and_emit_acceptance_ledger(self) -> None:
+    1:         before, after = self.pair("必须牢记。\n必须牢记。", "必须牢记。\n必须牢记。")
+    2:         with self.assertRaises(ValueError):
+    2:             validator.validate(
+    1:                 before,
+    1:                 after,
+    1:                 scene="COURSE",
+    1:                 keep_reasons={"LEX-COACH-01": "用户明确锁定这处课程原句"},
+                   )
+    2:         partial = validator.validate(
+    1:             before,
+    1:             after,
+    1:             scene="COURSE",
+    1:             keep_reasons={"LEX-COACH-01@1:1": "首处是用户明确锁定的课程原句"},
+               )
+    1:         self.assertEqual("REVIEW", partial["status"])
+    1:         self.assertEqual(1, len(partial["accepted_findings"]))
+    1:         self.assertEqual(1, partial["accepted_findings"][0]["line"])
+    2:         complete = validator.validate(
+    1:             before,
+    1:             after,
+    1:             scene="COURSE",
+    1:             keep_reasons={
+    1:                 "LEX-COACH-01@1:1": "首处是用户明确锁定的课程原句",
+    1:                 "LEX-COACH-01@2:1": "次处是题面要求保留的课程原句",
+                   },
+               )
+    1:         self.assert_paired_quality_review(complete, decision="NO_CHANGE", changes=0)
+    1:         self.assertEqual(2, len(complete["accepted_findings"]))
+       
+    1:     def test_blind_forward_failures_are_machine_detectable(self) -> None:
+    1:         expected = {
+    1:             "course": "LEX-COACH-01",
+    1:             "modeling": "LEX-MARKET-01",
+    1:             "research": "LEX-FOUNDATION-01",
+               }
+    1:         scenes = {"course": "COURSE", "modeling": "MODELING", "research": "RESEARCH"}
+    4:         for name, signal_id in expected.items():
+    6:             with self.subTest(scene=name):
+    6:                 payload = validator.validate(
+    3:                     FORWARD_FIXTURES / f"{name}_before.md",
+    3:                     FORWARD_FIXTURES / f"{name}_after.md",
+    3:                     scene=scenes[name],
+                       )
+    9:                 ids = {item["signal_id"] for item in payload["unexplained_high_findings"]}
+    3:                 self.assertEqual("REVIEW", payload["status"])
+    3:                 self.assertIn(signal_id, ids)
+       
+    1:     def test_second_blind_pass_exposes_residual_and_synonym_dodges(self) -> None:
+    1:         expected = {
+    1:             "course": {"LEX-COACH-01", "LEX-FOUNDATION-01"},
+    1:             "modeling": {"LEX-MGMT-01", "LEX-MARKET-01"},
+    1:             "research": {"LEX-MARKET-01", "LEX-FOUNDATION-01"},
+               }
+    1:         scenes = {"course": "COURSE", "modeling": "MODELING", "research": "RESEARCH"}
+    4:         for name, expected_ids in expected.items():
+    6:             with self.subTest(scene=name):
+    6:                 payload = validator.validate(
+    3:                     FORWARD_FIXTURES / f"{name}_before.md",
+    3:                     FORWARD_V4_FIXTURES / f"{name}_after.md",
+    3:                     scene=scenes[name],
+                       )
+   11:                 ids = {item["signal_id"] for item in payload["unexplained_high_findings"]}
+    3:                 self.assertEqual("REVIEW", payload["status"])
+    3:                 self.assertFalse(expected_ids - ids)
+       
+    1:     def test_caller_asserted_proposals_cannot_close_gold_scenes(self) -> None:
+    1:         scenes = {"course": "COURSE", "modeling": "MODELING", "research": "RESEARCH"}
+    4:         for name, scene in scenes.items():
+    6:             with self.subTest(scene=name):
+    6:                 first = validator.validate(
+    3:                     FORWARD_FIXTURES / f"{name}_before.md",
+    3:                     GOLD_FIXTURES / f"{name}_after.md",
+    3:                     scene=scene,
+                       )
+    3:                 self.assertFalse(first["invariants"]["hard_failure"])
+    3:                 self.assertEqual(0, first["lexical_summary"]["unexplained_high_candidates"])
+    3:                 self.assertEqual(0, first["lexical_summary"]["introduced_candidates"])
+    3:                 request = first["warning_review_request"]
+    6:                 resolutions = {
+   14:                     item["warning_fingerprint"]: (
+    7:                         "人工建议恢复相应模态或写作命令以保留原句表达功能"
+                           )
+   13:                     for item in request["warnings"]
+                       }
+    6:                 second = validator.validate(
+    3:                     FORWARD_FIXTURES / f"{name}_before.md",
+    3:                     GOLD_FIXTURES / f"{name}_after.md",
+    3:                     scene=scene,
+    3:                     warning_resolutions=resolutions,
+    3:                     warning_review_request_sha256=request["request_sha256"],
+                       )
+    3:                 self.assertEqual("REVIEW", second["status"])
+    3:                 self.assertEqual(2, second["exit_code"])
+    3:                 self.assertEqual([], second["accepted_warnings"])
+    6:                 self.assertFalse(
+    3:                     second["warning_proposal_state"]["review_clearance_granted"]
+                       )
+       
+    1:     def test_third_blind_pass_is_honest_but_still_requires_review(self) -> None:
+    1:         expected = {
+    1:             "course": "LEX-COACH-01",
+    1:             "modeling": "LEX-FUTURE-01",
+    1:             "research": "LEX-FOUNDATION-01",
+               }
+    1:         scenes = {"course": "COURSE", "modeling": "MODELING", "research": "RESEARCH"}
+    4:         for name, signal_id in expected.items():
+    6:             with self.subTest(scene=name):
+    6:                 payload = validator.validate(
+    3:                     FORWARD_FIXTURES / f"{name}_before.md",
+    3:                     FORWARD_V5_FIXTURES / f"{name}_after.md",
+    3:                     scene=scenes[name],
+                       )
+    7:                 high_ids = {item["signal_id"] for item in payload["unexplained_high_findings"]}
+    7:                 introduced_ids = {item["signal_id"] for item in payload["introduced_findings"]}
+    3:                 self.assertEqual("REVIEW", payload["status"])
+    3:                 self.assertIn(signal_id, high_ids | introduced_ids)
+       
+    1:     def test_usability_red_blue_research_bridge_is_detected(self) -> None:
+    1:         fixture_root = ROOT / "tests" / "fixtures" / "humanize_usability_red_blue"
+    2:         payload = validator.validate(
+    1:             fixture_root / "research_before.md",
+    1:             fixture_root / "research_blue_body.md",
+    1:             scene="RESEARCH",
+               )
+    2:         introduced_ids = {item["signal_id"] for item in payload["introduced_findings"]}
+    1:         self.assertEqual("REVIEW", payload["status"])
+    1:         self.assertIn("LEX-FOUNDATION-01", introduced_ids)
+       
+    1:     def test_fresh_forward_foundation_synonym_cannot_receive_false_pass(self) -> None:
+    2:         before, after = self.pair(
+    1:             "已有研究表明，参数 $\\alpha=0.35$ 时，该方法可能在一定程度上显著提升系统稳定性。"
+                   "值得注意的是，这一结果不仅深刻揭示了控制机制，而且为后续研究奠定了坚实基础。",
+    1:             "已有研究表明，参数 $\\alpha=0.35$ 时，该方法可能在一定程度上显著提升系统稳定性。"
+                   "这一结果不仅揭示了控制机制，而且是后续研究的出发点。",
+               )
+       
+    1:         payload = validator.validate(before, after, scene="RESEARCH")
+    2:         high_ids = {item["signal_id"] for item in payload["unexplained_high_findings"]}
+       
+    1:         self.assertEqual("REVIEW", payload["status"])
+    1:         self.assertEqual(2, payload["exit_code"])
+    1:         self.assertIn("LEX-FOUNDATION-01", high_ids)
+       
+    1:     def test_v33_forward_reliable_starting_point_cannot_receive_style_pass(self) -> None:
+    2:         before, after = self.pair(
+    1:             "现有数据并不能证明界面重排是唯一原因。"
+                   "本研究深刻揭示了该现象的内在机制，并为后续研究奠定了坚实基础。",
+    1:             "现有数据并不能证明界面重排是唯一原因。"
+                   "本研究由此阐明了该现象的内在机制，相关结果也为后续研究提供了可靠起点。",
+               )
+       
+    1:         payload = validator.validate(before, after, scene="RESEARCH")
+    2:         high_ids = {item["signal_id"] for item in payload["unexplained_high_findings"]}
+       
+    1:         self.assertEqual("REVIEW", payload["delivery_gate_status"])
+    1:         self.assertEqual("REVIEW", payload["style_signal_layer_status"])
+    1:         self.assertIn("LEX-FOUNDATION-01", high_ids)
+       
+    1:     def test_fresh_course_synonym_repairs_cannot_receive_false_pass(self) -> None:
+    2:         before, after = self.pair(
+    1:             "\\begin{solution}必须牢记，遇到这类题千万不要直接套公式。"
+                   "值得注意的是，当 $x>0$ 时，由 $f'(x)=2x$ 可知函数递增。"
+                   "因此，我们可以很容易地得出最终结论。\\end{solution}",
+    1:             "\\begin{solution}遇到这类题，必须注意，不要直接套公式。"
+                   "当 $x>0$ 时，由 $f'(x)=2x$ 可知函数递增，由此可以得出结论。\\end{solution}",
+    1:             suffix=".tex",
+               )
+       
+    1:         payload = validator.validate(before, after, scene="COURSE")
+    2:         high_ids = {item["signal_id"] for item in payload["unexplained_high_findings"]}
+    3:         introduced_ids = {item["signal_id"] for item in payload["introduced_findings"]}
+       
+    1:         self.assertEqual("REVIEW", payload["status"])
+    1:         self.assertEqual(2, payload["exit_code"])
+    1:         self.assertIn("LEX-COACH-01", high_ids)
+    1:         self.assertIn("LEX-CONCLUDE-01", introduced_ids)
+       
+    1:     def test_v34_course_source_conflict_selection_has_a_specific_review_reason(self) -> None:
+    2:         before, after = self.pair(
+    1:             "若已知速度随时间减小，就可以直接套用匀变速公式。\n"
+                   "先确认题目给出的量是否满足匀变速条件；若条件不满足，"
+                   "不能因为公式看起来相似就直接代入。",
+    1:             "看到速度随时间减小，不能据此直接套用匀变速公式。\n"
+                   "先确认题目给出的量是否满足匀变速条件；若条件不满足，"
+                   "即使公式形式相似，也不能直接代入。",
+    1:             suffix=".tex",
+               )
+       
+    1:         payload = validator.validate(before, after, scene="COURSE")
+    2:         warning_codes = {
+    6:             item["code"] for item in payload["unaccepted_warnings"]
+               }
+       
+    1:         self.assertEqual("REVIEW", payload["delivery_gate_status"])
+    1:         self.assertEqual("REVIEW", payload["speech_act_layer_status"])
+    1:         self.assertIn("speech_act_warning", payload["review_reasons"])
+    2:         self.assertIn(
+    1:             "SPEECH_ACT_SOURCE_POLARITY_TENSION_SELECTED",
+    1:             warning_codes,
+               )
+    2:         request_codes = {
+    6:             item["code"] for item in payload["warning_review_request"]["warnings"]
+               }
+    2:         self.assertIn(
+    1:             "SPEECH_ACT_SOURCE_POLARITY_TENSION_SELECTED",
+    1:             request_codes,
+               )
+       
+    1:     def test_v34_draft_derived_comparison_from_numbers_requires_review(self) -> None:
+    2:         before, after = self.pair(
+    1:             "甲的降幅为 20.5%，乙的降幅为 24.9%。"
+                   "污染情景下两者降幅为 45.0% 和 38.0%。"
+                   "这一情景用于比较污染叠加对基线收益的侵蚀。",
+    1:             "甲的降幅为 20.5%，乙的降幅为 24.9%，因此乙的降幅更大。"
+                   "污染情景下两者降幅为 45.0% 和 38.0%，均高于前一情景，"
+                   "反映出污染叠加对基线收益的进一步侵蚀。",
+               )
+       
+    1:         payload = validator.validate(before, after, mode="DRAFT", scene="MODELING")
+    2:         warnings = {
+    3:             item["code"]: item for item in payload["unaccepted_warnings"]
+               }
+       
+    1:         self.assertEqual("REVIEW", payload["delivery_gate_status"])
+    1:         self.assertEqual("REVIEW", payload["speech_act_layer_status"])
+    1:         self.assertIn("DRAFT_DERIVED_COMPARISON_NOT_SUPPLIED", warnings)
+    1:         details = warnings["DRAFT_DERIVED_COMPARISON_NOT_SUPPLIED"]["details"]
+    1:         self.assertEqual("NOT_EVALUATED", details["semantic_entailment"])
+    1:         self.assertEqual("PRESERVE_EXPLICIT_SUPPLIED_RELATIONS", details["required_action"])
+    1:         self.assertGreaterEqual(len(details["introduced_candidates"]), 2)
+    2:         self.assertIn(
+    1:             "derived_comparison_markers",
+    1:             payload["draft_surface_source_check"]["scope"],
+               )
+       
+    1:     def test_v34_explicitly_supplied_comparison_does_not_trigger_draft_warning(self) -> None:
+    2:         before, after = self.pair(
+    1:             "甲的降幅为 20.5%，乙的降幅为 24.9%，乙的降幅更大。",
+    1:             "乙的降幅更大：甲为 20.5%，乙为 24.9%。",
+               )
+       
+    1:         payload = validator.validate(before, after, mode="DRAFT", scene="MODELING")
+    2:         warning_codes = {
+    2:             item["code"] for item in payload["unaccepted_warnings"]
+               }
+    1:         self.assertNotIn("DRAFT_DERIVED_COMPARISON_NOT_SUPPLIED", warning_codes)
+       
+    1:     def test_v35_real_material_predicate_upgrade_reaches_delivery_review_request(self) -> None:
+    2:         before, after = self.pair(
+    1:             "综合健康指数是内部比较指标，不是外部生态健康验证。",
+    1:             "综合健康指数验证了实际生态健康状况。",
+               )
+    1:         payload = validator.validate(before, after, scene="MODELING")
+    3:         warning_codes = {item["code"] for item in payload["unaccepted_warnings"]}
+    2:         request_codes = {
+    4:             item["code"] for item in payload["warning_review_request"]["warnings"]
+               }
+       
+    1:         self.assertEqual("REVIEW", payload["delivery_gate_status"])
+    1:         self.assertEqual(2, payload["exit_code"])
+    1:         self.assertEqual("REVIEW", payload["speech_act_layer_status"])
+    1:         self.assertIn("SPEECH_ACT_INTERNAL_TO_EXTERNAL_VALIDATION", warning_codes)
+    1:         self.assertIn("SPEECH_ACT_INTERNAL_TO_EXTERNAL_VALIDATION", request_codes)
+    1:         self.assertFalse(payload["humanize_quality_claim_allowed"])
+       
+       
+    1: if __name__ == "__main__":
+>>>>>>     unittest.main()

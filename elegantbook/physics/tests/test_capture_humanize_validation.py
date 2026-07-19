@@ -44,6 +44,141 @@ class HumanizeValidationCaptureTests(unittest.TestCase):
     def tearDown(self) -> None:
         self.temp.cleanup()
 
+    def test_capture_help_is_a_real_cli_help_path(self) -> None:
+        completed = subprocess.run(
+            [sys.executable, str(CAPTURE_PATH), "--help"],
+            check=False,
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            env={**os.environ, "PYTHONUTF8": "1"},
+        )
+        self.assertEqual(0, completed.returncode)
+        self.assertIn("--output-root", completed.stdout)
+        self.assertIn("-- <validator-arguments>", completed.stdout)
+        self.assertIn("Required invocation form:", completed.stdout)
+        self.assertIn(
+            "python scripts/capture_humanize_validation.py",
+            completed.stdout,
+        )
+        self.assertIn("before.md after.md --scene GENERAL --format json", completed.stdout)
+        self.assertNotIn("MISSING_VALIDATOR_SEPARATOR", completed.stdout)
+
+    def test_validator_rejects_long_option_abbreviations(self) -> None:
+        cases = (
+            "--evidence-d=PRIVATE",
+            "--warning-reviewer-i=ALICE",
+            "--report-s=PRIVATE",
+            "--propose-warning-r=fp=SECRET",
+        )
+        for token in cases:
+            with self.subTest(token=token):
+                with self.assertRaises(SystemExit) as raised:
+                    validator.build_parser().parse_args(
+                        [str(self.before), str(self.after), token]
+                    )
+                self.assertEqual(2, raised.exception.code)
+
+    def test_capture_rejects_unknown_or_abbreviated_validator_options(self) -> None:
+        cases = (
+            [str(self.before), str(self.after), "--evidence-d=PRIVATE"],
+            [str(self.before), str(self.after), "--warning-reviewer-i", "ALICE"],
+            [str(self.before), str(self.after), "--report-s", "PRIVATE"],
+            [str(self.before), str(self.after), "--propose-warning-r=fp=SECRET"],
+            [str(self.before), str(self.after), "--unknown=SECRET"],
+            [str(self.before), str(self.after), "--unknown", "SECRET"],
+        )
+        for arguments in cases:
+            with self.subTest(arguments=arguments):
+                with self.assertRaises(capture.CaptureError) as raised:
+                    capture._argument_layout(arguments)
+                self.assertEqual("UNKNOWN_VALIDATOR_OPTION", raised.exception.code)
+                self.assertNotIn(arguments[-1], str(raised.exception))
+
+    def test_capture_rejects_unsafe_layout_before_creating_a_record(self) -> None:
+        cases = (
+            (
+                [str(self.before), str(self.after), "--warning-reviewer-i", "ALICE"],
+                "UNKNOWN_VALIDATOR_OPTION",
+                "ALICE",
+            ),
+            (
+                [str(self.before), str(self.after), "--report-s=PRIVATE_SCOPE"],
+                "UNKNOWN_VALIDATOR_OPTION",
+                "PRIVATE_SCOPE",
+            ),
+            (
+                [str(self.before), str(self.after), "PRIVATE_THIRD.md"],
+                "INVALID_VALIDATOR_POSITIONAL_COUNT",
+                "PRIVATE_THIRD.md",
+            ),
+            (
+                [str(self.before), "--term", "PRIVATE_AFTER.md"],
+                "INVALID_VALIDATOR_POSITIONAL_COUNT",
+                "PRIVATE_AFTER.md",
+            ),
+            (
+                [str(self.before), "--term=PRIVATE_AFTER_EQUALS.md"],
+                "INVALID_VALIDATOR_POSITIONAL_COUNT",
+                "PRIVATE_AFTER_EQUALS.md",
+            ),
+            (
+                ["--help"],
+                "INVALID_VALIDATOR_POSITIONAL_COUNT",
+                "--help",
+            ),
+            (
+                [
+                    str(self.before),
+                    str(self.after),
+                    "--term",
+                    "--warning-reviewer-id",
+                    "ALICE",
+                ],
+                "MISSING_VALIDATOR_OPTION_VALUE",
+                "ALICE",
+            ),
+        )
+        for index, (arguments, error_code, private_value) in enumerate(cases):
+            with self.subTest(arguments=arguments):
+                output = self.root / f"rejected-{index}-{private_value}"
+                _completed, payload = self.run_capture(
+                    arguments,
+                    expected_exit=1,
+                    output=output,
+                )
+                self.assertEqual(error_code, payload["error_code"])
+                self.assertNotIn(private_value, json.dumps(payload, ensure_ascii=False))
+                self.assertFalse(output.exists())
+
+    def test_exact_caller_evidence_directory_remains_specifically_rejected(self) -> None:
+        output = self.root / "caller-evidence-rejected"
+        _completed, payload = self.run_capture(
+            [
+                str(self.before),
+                str(self.after),
+                "--evidence-dir",
+                "PRIVATE_EVIDENCE",
+            ],
+            expected_exit=1,
+            output=output,
+        )
+        self.assertEqual("CALLER_EVIDENCE_DIR_REJECTED", payload["error_code"])
+        self.assertNotIn("PRIVATE_EVIDENCE", json.dumps(payload, ensure_ascii=False))
+        self.assertFalse(output.exists())
+
+    def test_capture_parent_parser_rejects_abbreviations(self) -> None:
+        cases = (
+            ["--output-r", str(self.output)],
+            ["--output-root", str(self.output), "--capture-f=text"],
+            ["--he"],
+        )
+        for arguments in cases:
+            with self.subTest(arguments=arguments):
+                with self.assertRaises(SystemExit) as raised:
+                    capture._capture_argument_parser().parse_args(arguments)
+                self.assertEqual(2, raised.exception.code)
+
     def run_capture(
         self,
         validator_args: list[str] | None = None,
@@ -184,17 +319,36 @@ class HumanizeValidationCaptureTests(unittest.TestCase):
         self.assertEqual("PASS", failed["capture_integrity_status"])
         self.assertEqual(1, failed["observed_os_exit_code"])
 
-    def test_argparse_exit_two_without_inner_record_is_capture_fail_one(self) -> None:
-        _completed, payload = self.run_capture([], expected_exit=1)
-        record = Path(payload["capture_record"])
-        observation = json.loads(
-            (record / "process-observation.json").read_text(encoding="utf-8")
-        )
-        self.assertEqual(2, payload["observed_os_exit_code"])
+    def test_missing_positionals_are_rejected_before_output_creation(self) -> None:
+        output = self.root / "missing-positionals"
+        _completed, payload = self.run_capture([], expected_exit=1, output=output)
         self.assertEqual("FAIL", payload["status"])
-        self.assertEqual("NOT_AVAILABLE", payload["validation_delivery_gate_status"])
-        self.assertEqual("ABSENT", observation["inner_record"]["record_status"])
-        self.assertFalse((record / "validation-record").exists())
+        self.assertEqual(
+            "INVALID_VALIDATOR_POSITIONAL_COUNT",
+            payload["error_code"],
+        )
+        self.assertFalse(output.exists())
+
+    def test_unexpected_io_errors_use_path_free_structured_messages(self) -> None:
+        private_root = r"C:\private-project\confidential"
+        private_name = "PRIVATE_SOURCE.tex"
+        cases = (
+            PermissionError(13, "Permission denied", f"{private_root}\\{private_name}"),
+            OSError(5, "Access is denied", f"{private_root}\\{private_name}"),
+        )
+        for error in cases:
+            with self.subTest(error_type=type(error).__name__):
+                payload = capture._error_payload(error)
+                serialized = json.dumps(payload, ensure_ascii=False)
+                self.assertEqual("CAPTURE_IO_ERROR", payload["error_code"])
+                self.assertEqual(
+                    "capture failed during a filesystem or process operation",
+                    payload["error"],
+                )
+                self.assertNotIn(private_root, serialized)
+                self.assertNotIn(private_name, serialized)
+                self.assertNotIn("Permission denied", serialized)
+                self.assertNotIn("Access is denied", serialized)
 
     def test_missing_and_invalid_utf8_inputs_are_captured_without_source_locator(self) -> None:
         cases: list[tuple[str, Path]] = []

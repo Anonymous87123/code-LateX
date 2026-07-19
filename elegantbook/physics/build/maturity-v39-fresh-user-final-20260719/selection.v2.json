@@ -1,0 +1,65 @@
+{
+  "coverage": {
+    "explicit_conflicts": [],
+    "lexical_keeps": [],
+    "selected_spans": [
+      {
+        "decision": "HUNK",
+        "hunk_id": "H001",
+        "reason": "连续阅读发现该影响主张涉及证据强度，纳入补丁并原样保留为语义未决。",
+        "selection_id": "S001",
+        "source_text": "这个结果说明参数变化会影响系统表现",
+        "start_byte": 142
+      },
+      {
+        "decision": "HUNK",
+        "hunk_id": "H002",
+        "reason": "用户要求覆盖全部 AUTO high；该 span 精确包含空泛价值宣告及其左分隔符。",
+        "selection_id": "S002",
+        "source_text": "，也具有重要意义",
+        "start_byte": 193
+      },
+      {
+        "decision": "HUNK",
+        "hunk_id": "H003",
+        "reason": "该整句同时覆盖两个 AUTO high 与相邻成束包装，按最小完整句义边界改写。",
+        "selection_id": "S003",
+        "source_text": "值得注意的是，本文系统梳理了相关现象，并深入探讨了可能原因，为后续研究奠定基础。",
+        "start_byte": 220
+      }
+    ],
+    "source_kind": "DOCUMENT"
+  },
+  "hunks": [
+    {
+      "decision": "UNRESOLVED",
+      "hunk_id": "H001",
+      "reason": "该影响主张的证据强度不能由纯文风层裁定；原样保留，不改成相关性描述或更强结论。",
+      "replacement": "这个结果说明参数变化会影响系统表现",
+      "source_text": "这个结果说明参数变化会影响系统表现",
+      "start_byte": 142
+    },
+    {
+      "decision": "DELETE_STYLE_SHELL",
+      "hunk_id": "H002",
+      "reason": "删除未提供具体对象、后果或范围的空泛价值宣告，同时保留前面的结果主张。",
+      "replacement": "",
+      "source_text": "，也具有重要意义",
+      "start_byte": 193
+    },
+    {
+      "decision": "REWRITE",
+      "hunk_id": "H003",
+      "reason": "保留梳理现象、讨论可能原因的作者动作与可能性模态，删除空重点壳、成束学术包装和无具体信息的后续桥接。",
+      "replacement": "本文梳理了相关现象，讨论了可能原因。",
+      "source_text": "值得注意的是，本文系统梳理了相关现象，并深入探讨了可能原因，为后续研究奠定基础。",
+      "start_byte": 220
+    }
+  ],
+  "intensity": "BALANCED",
+  "mode": "REWRITE",
+  "protected_terms": [],
+  "requested_output": "PATCH",
+  "scene": "RESEARCH",
+  "schema_version": "humanize-short-patch-selection/v2"
+}

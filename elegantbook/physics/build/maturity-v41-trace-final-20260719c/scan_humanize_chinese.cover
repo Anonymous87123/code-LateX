@@ -1,0 +1,640 @@
+       #!/usr/bin/env python3
+    1: """Locate reviewable Chinese academic-style signals without classifying authorship."""
+       
+    1: from __future__ import annotations
+       
+    1: import argparse
+    1: import csv
+    1: import io
+    1: import json
+    1: import re
+    1: import sys
+    1: from bisect import bisect_right
+    1: from pathlib import Path
+    1: from typing import Any, Iterable, Sequence
+       
+       
+    1: DEFAULT_LEXICON = Path(__file__).resolve().parents[1] / "references" / "lexical-signals.json"
+    1: DEFAULT_EXTENSIONS = {".md", ".markdown", ".tex", ".txt"}
+    1: SENTENCE_BREAKS = "。！？!?；;\n"
+    1: SCENE_CHOICES = ("ALL", "AUTO", "GENERAL", "COURSE", "MODELING", "RESEARCH")
+       
+       
+    1: def load_lexicon(path: str | Path = DEFAULT_LEXICON) -> dict[str, Any]:
+           """Load and minimally validate the lexical signal contract."""
+  308:     lexicon_path = Path(path)
+  616:     with lexicon_path.open("r", encoding="utf-8") as handle:
+  308:         data = json.load(handle)
+       
+  308:     if not isinstance(data.get("signals"), list) or not data["signals"]:
+>>>>>>         raise ValueError("lexicon must contain a non-empty signals list")
+       
+  308:     seen: set[str] = set()
+  308:     required = {
+               "id",
+               "category",
+               "label",
+               "variants",
+               "regex",
+               "scenes",
+               "severity",
+               "threshold",
+               "exclusions",
+               "action",
+               "rationale",
+               "positive_examples",
+               "negative_examples",
+               "provenance",
+           }
+ 9240:     for signal in data["signals"]:
+ 8932:         missing = required - signal.keys()
+ 8932:         if missing:
+>>>>>>             raise ValueError(f"{signal.get('id', '<unknown>')} missing fields: {sorted(missing)}")
+ 8932:         signal_id = signal["id"]
+ 8932:         if signal_id in seen:
+>>>>>>             raise ValueError(f"duplicate signal id: {signal_id}")
+ 8932:         seen.add(signal_id)
+ 8932:         if signal["action"] not in {"KEEP", "DELETE", "REWRITE", "REVIEW"}:
+>>>>>>             raise ValueError(f"invalid action for {signal_id}: {signal['action']}")
+ 8932:         threshold = signal["threshold"]
+ 8932:         if threshold.get("window") not in {"document", "paragraph", "sentence", "line"}:
+>>>>>>             raise ValueError(f"invalid threshold window for {signal_id}")
+ 8932:         if int(threshold.get("min_occurrences", 0)) < 1:
+>>>>>>             raise ValueError(f"invalid min_occurrences for {signal_id}")
+23716:         for pattern in signal["regex"]:
+14784:             re.compile(pattern, re.IGNORECASE | re.MULTILINE)
+17556:         for exclusion in signal["exclusions"]:
+ 8624:             if set(exclusion) != {"scope", "regex", "reason"}:
+>>>>>>                 raise ValueError(f"invalid exclusion contract for {signal_id}")
+ 8624:             re.compile(exclusion["regex"], re.IGNORECASE | re.MULTILINE)
+  308:     return data
+       
+       
+    1: def _markdown_fence_spans(text: str) -> list[tuple[int, int, str]]:
+  950:     opening_re = re.compile(
+  475:         r"(?m)^[ \t]{0,3}(?P<fence>`{3,}|~{3,})[^\n]*(?:\n|$)"
+           )
+  475:     spans: list[tuple[int, int, str]] = []
+  475:     cursor = 0
+  480:     while cursor < len(text):
+  475:         opening = opening_re.search(text, cursor)
+  475:         if opening is None:
+  470:             break
+    5:         fence = opening.group("fence")
+   10:         closing_re = re.compile(
+    5:             rf"(?m)^[ \t]{{0,3}}{re.escape(fence[0])}{{{len(fence)},}}[ \t]*(?:\n|$)"
+               )
+    5:         closing = closing_re.search(text, opening.end())
+    5:         end = closing.end() if closing is not None else len(text)
+    5:         spans.append((opening.start(), end, "markdown-fence"))
+    5:         cursor = end
+  475:     return spans
+       
+       
+    4: def _raw_protected_spans(
+    1:     text: str,
+    2:     document_format: str = "markdown",
+    1: ) -> list[tuple[int, int, str]]:
+  475:     if document_format not in {"markdown", "tex"}:
+>>>>>>         raise ValueError("document_format must be 'markdown' or 'tex'")
+  475:     patterns = [
+  475:         (
+  475:             "latex-verbatim-or-math-environment",
+  950:             re.compile(
+  475:                 r"(?is)\\begin\{(equation\*?|align\*?|alignat\*?|alignedat|gather\*?|multline\*?|"
+                       r"displaymath|math|verbatim\*?|lstlisting|minted)\}.*?\\end\{\1\}"
+                   ),
+               ),
+  475:         (
+  475:             "latex-exam-or-formal-statement-environment",
+  950:             re.compile(
+  475:                 r"(?is)\\begin\{(example\*?|exercise\*?|problem\*?|question\*?|"
+                       r"theorem\*?|lemma\*?|proposition\*?|corollary\*?|definition\*?)\}"
+                       r".*?\\end\{\1\}"
+                   ),
+               ),
+  475:         ("display-math", re.compile(r"(?s)(?<!\\)\$\$.*?(?<!\\)\$\$|\\\[.*?\\\]")),
+  475:         ("inline-math", re.compile(r"(?s)\\\(.*?\\\)|(?<!\\)\$(?!\$)(?:\\.|[^$\n])+?(?<!\\)\$")),
+  475:         ("inline-code", re.compile(r"(?<!`)`[^`\n]+`(?!`)")),
+  475:         ("markdown-quote", re.compile(r"(?m)^\s*>[^\n]*")),
+  475:         ("chinese-double-quote", re.compile(r"“[^”\n]*”|「[^」\n]*」|『[^』\n]*』")),
+  475:         ("chinese-single-quote", re.compile(r"‘[^’\n]*’")),
+  475:         (
+  475:             "latex-quote",
+  950:             re.compile(
+  475:                 r"``[^\n]*?''|\\(?:enquote|textquote)\{(?:[^{}\n]|\{[^{}\n]*\})*\}"
+                   ),
+               ),
+  475:         ("ascii-quote", re.compile(r'(?<!\\)"[^"\n]*?(?<!\\)"')),
+           ]
+  475:     if document_format == "tex":
+  159:         patterns.append(("latex-comment", re.compile(r"(?m)(?<!\\)%[^\n]*")))
+  475:     spans = _markdown_fence_spans(text)
+ 5384:     for reason, pattern in patterns:
+10045:         spans.extend((match.start(), match.end(), reason) for match in pattern.finditer(text))
+  475:     return spans
+       
+       
+    1: def _merge_spans(spans: Iterable[tuple[int, int, str]]) -> list[tuple[int, int, str]]:
+  475:     merged: list[list[Any]] = []
+  939:     for start, end, reason in sorted(spans, key=lambda item: (item[0], item[1])):
+  232:         if not merged or start >= merged[-1][1]:
+  232:             merged.append([start, end, {reason}])
+  232:             continue
+>>>>>>         merged[-1][1] = max(merged[-1][1], end)
+>>>>>>         merged[-1][2].add(reason)
+  707:     return [(start, end, "+".join(sorted(reasons))) for start, end, reasons in merged]
+       
+       
+    2: class ProtectedIndex:
+    1:     """Find whether an offset falls inside code, math, comments, or quotations."""
+       
+    1:     def __init__(self, text: str, document_format: str = "markdown") -> None:
+  475:         self.spans = _merge_spans(_raw_protected_spans(text, document_format))
+  707:         self.starts = [span[0] for span in self.spans]
+       
+    1:     def reason_at(self, offset: int) -> str | None:
+>>>>>>         index = bisect_right(self.starts, offset) - 1
+>>>>>>         if index >= 0:
+>>>>>>             start, end, reason = self.spans[index]
+>>>>>>             if start <= offset < end:
+>>>>>>                 return reason
+>>>>>>         return None
+       
+    1:     def reason_for_span(self, start: int, end: int) -> str | None:
+  764:         index = bisect_right(self.starts, start) - 1
+  764:         if index >= 0:
+  356:             protected_start, protected_end, reason = self.spans[index]
+  356:             if protected_start <= start and end <= protected_end:
+   12:                 return reason
+  752:         return None
+       
+       
+    1: def _signal_patterns(signal: dict[str, Any]) -> list[re.Pattern[str]]:
+11336:     patterns: list[re.Pattern[str]] = []
+11336:     if signal["variants"]:
+ 8024:         variants = sorted(set(signal["variants"]), key=len, reverse=True)
+90696:         patterns.append(re.compile("|".join(re.escape(item) for item in variants), re.IGNORECASE))
+34008:     patterns.extend(
+18434:         re.compile(pattern, re.IGNORECASE | re.MULTILINE)
+41106:         for pattern in signal["regex"]
+           )
+11336:     return patterns
+       
+       
+    1: def _deduplicate_matches(matches: Iterable[re.Match[str]]) -> list[tuple[int, int, str]]:
+22672:     raw = sorted(
+23469:         ((match.start(), match.end(), match.group(0)) for match in matches),
+12133:         key=lambda item: (item[0], -(item[1] - item[0])),
+           )
+11336:     kept: list[tuple[int, int, str]] = []
+12133:     for candidate in raw:
+  797:         start, end, _ = candidate
+ 1756:         if any(start < old_end and end > old_start for old_start, old_end, _ in kept):
+   33:             continue
+  764:         kept.append(candidate)
+11336:     return sorted(kept)
+       
+       
+    1: def _bounded_span(text: str, offset: int, separators: str) -> tuple[int, int]:
+ 6420:     left = max((text.rfind(char, 0, offset) for char in separators), default=-1) + 1
+ 5778:     right_candidates = [text.find(char, offset) for char in separators]
+ 5778:     right_candidates = [position for position in right_candidates if position >= 0]
+  642:     right = min(right_candidates) + 1 if right_candidates else len(text)
+  642:     return left, right
+       
+       
+    1: def _paragraph_span(text: str, offset: int) -> tuple[int, int]:
+  286:     separators = list(re.finditer(r"(?:\r?\n\s*){2,}", text))
+  286:     start = 0
+  286:     end = len(text)
+  445:     for separator in separators:
+  264:         if separator.end() <= offset:
+  159:             start = separator.end()
+  105:         elif separator.start() >= offset:
+  105:             end = separator.start()
+  105:             break
+  286:     return start, end
+       
+       
+    1: def _scope_span(text: str, offset: int, scope: str) -> tuple[int, int]:
+ 1393:     if scope == "document":
+  473:         return 0, len(text)
+  920:     if scope == "paragraph":
+  278:         return _paragraph_span(text, offset)
+  642:     if scope == "sentence":
+  642:         return _bounded_span(text, offset, SENTENCE_BREAKS)
+>>>>>>     if scope == "line":
+>>>>>>         return _bounded_span(text, offset, "\n")
+>>>>>>     raise ValueError(f"unsupported scope: {scope}")
+       
+       
+    1: def _scope_bounds(text: str, start: int, end: int, scope: str) -> tuple[int, int]:
+  596:     if scope == "match":
+>>>>>>         return start, end
+  596:     if scope == "context":
+>>>>>>         return max(0, start - 100), min(len(text), end + 100)
+  596:     return _scope_span(text, start, scope)
+       
+       
+    6: def _exclusion_reason(
+    1:     text: str,
+    1:     start: int,
+    1:     end: int,
+    1:     signal: dict[str, Any],
+    1: ) -> str | None:
+ 1347:     for exclusion in signal["exclusions"]:
+  596:         scope_start, scope_end = _scope_bounds(text, start, end, exclusion["scope"])
+  596:         scoped = text[scope_start:scope_end]
+  596:         for match in re.finditer(exclusion["regex"], scoped, re.IGNORECASE | re.MULTILINE):
+    1:             absolute_start = scope_start + match.start()
+    1:             absolute_end = scope_start + match.end()
+    1:             if absolute_start < end and absolute_end > start:
+    1:                 return exclusion["reason"]
+  751:     return None
+       
+       
+    1: def _line_column(text: str, offset: int) -> tuple[int, int]:
+  576:     line = text.count("\n", 0, offset) + 1
+  576:     last_break = text.rfind("\n", 0, offset)
+  576:     column = offset - last_break
+  576:     return line, column
+       
+       
+    1: def _context(text: str, start: int, end: int, radius: int = 70) -> str:
+  576:     snippet = text[max(0, start - radius):min(len(text), end + radius)]
+  576:     return re.sub(r"\s+", " ", snippet).strip()
+       
+       
+    1: def _window_key(text: str, offset: int, scope: str) -> tuple[int, int]:
+  755:     return _scope_span(text, offset, scope)
+       
+       
+    5: def _qualifying_counts(
+    1:     text: str,
+    1:     occurrences: Sequence[dict[str, Any]],
+    1:     threshold: dict[str, Any],
+    1: ) -> list[int]:
+11336:     scope = threshold["window"]
+11336:     max_chars = int(threshold.get("window_chars", 0) or 0)
+11336:     distinct_scope = threshold.get("count_distinct_by")
+11336:     if distinct_scope not in {None, "paragraph", "sentence", "line"}:
+>>>>>>         raise ValueError(f"unsupported count_distinct_by: {distinct_scope}")
+12087:     keys = [_window_key(text, item["start"], scope) for item in occurrences]
+11336:     counts: list[int] = []
+12087:     for index, occurrence in enumerate(occurrences):
+  751:         key = keys[index]
+ 1502:         neighbors = [
+ 2066:             item
+ 2551:             for other_index, item in enumerate(occurrences)
+ 1049:             if keys[other_index] == key
+ 1017:             and (not max_chars or abs(item["start"] - occurrence["start"]) <= max_chars)
+               ]
+  751:         if distinct_scope:
+    4:             counts.append(
+    6:                 len({_window_key(text, item["start"], distinct_scope) for item in neighbors})
+                   )
+               else:
+  749:             counts.append(len(neighbors))
+11336:     return counts
+       
+       
+   12: def _finding(
+           *,
+    1:     text: str,
+    1:     file: str,
+    1:     scene: str,
+    1:     signal: dict[str, Any],
+    1:     occurrence: dict[str, Any],
+    1:     count: int,
+    1:     protected: bool,
+    1:     protection: str | None,
+    2:     excluded: bool = False,
+    2:     exclusion: str | None = None,
+    1: ) -> dict[str, Any]:
+  576:     line, column = _line_column(text, occurrence["start"])
+10944:     return {
+  576:         "start_char": occurrence["start"],
+  576:         "end_char": occurrence["end"],
+  576:         "file": file,
+  576:         "line": line,
+  576:         "column": column,
+  576:         "matched": occurrence["matched"],
+  576:         "context": _context(text, occurrence["start"], occurrence["end"]),
+  576:         "count": count,
+  576:         "action": "KEEP" if protected or excluded else signal["action"],
+  576:         "signal_id": signal["id"],
+  576:         "category": signal["category"],
+  576:         "label": signal["label"],
+  576:         "scene": scene,
+  576:         "severity": signal["severity"],
+  576:         "candidate": not protected and not excluded,
+  576:         "protected": protected,
+  576:         "protection": protection,
+  576:         "excluded": excluded,
+  576:         "exclusion": exclusion,
+  576:         "rationale": signal["rationale"],
+           }
+       
+       
+    8: def scan_text_with_offsets(
+    1:     text: str,
+           *,
+    2:     file: str = "<memory>",
+    2:     scene: str = "ALL",
+    2:     lexicon: dict[str, Any] | None = None,
+    2:     include_protected: bool = False,
+    2:     include_excluded: bool = False,
+    1: ) -> list[dict[str, Any]]:
+           """Return candidates with exact internal character offsets."""
+  414:     scene = scene.upper()
+  414:     if scene not in SCENE_CHOICES:
+>>>>>>         raise ValueError(f"unsupported scene: {scene}")
+  414:     lexicon = lexicon or load_lexicon()
+  414:     suffix = Path(file).suffix.lower() if file and file != "<memory>" else ""
+  414:     document_format = "tex" if suffix in {".tex", ".ltx"} else "markdown"
+  414:     protected_index = ProtectedIndex(text, document_format=document_format)
+  414:     findings: list[dict[str, Any]] = []
+       
+12420:     for signal in lexicon["signals"]:
+               if (
+12006:             scene not in {"ALL", "AUTO"}
+ 5510:             and "ALL" not in signal["scenes"]
+  950:             and scene not in signal["scenes"]
+               ):
+  670:             continue
+11336:         raw_matches: list[re.Match[str]] = []
+37794:         for pattern in _signal_patterns(signal):
+26458:             raw_matches.extend(pattern.finditer(text))
+11336:         matches = _deduplicate_matches(raw_matches)
+       
+11336:         candidates: list[dict[str, Any]] = []
+11336:         protected_hits: list[tuple[dict[str, Any], str]] = []
+11336:         excluded_hits: list[tuple[dict[str, Any], str]] = []
+12100:         for start, end, matched in matches:
+  764:             occurrence = {"start": start, "end": end, "matched": matched}
+  764:             protection = protected_index.reason_for_span(start, end)
+  764:             if protection:
+   12:                 protected_hits.append((occurrence, protection))
+   12:                 continue
+  752:             exclusion = _exclusion_reason(text, start, end, signal)
+  752:             if exclusion:
+    1:                 excluded_hits.append((occurrence, exclusion))
+    1:                 continue
+  751:             candidates.append(occurrence)
+       
+11336:         counts = _qualifying_counts(text, candidates, signal["threshold"])
+11336:         minimum = int(signal["threshold"]["min_occurrences"])
+12087:         for occurrence, count in zip(candidates, counts):
+  751:             if count >= minimum:
+ 1132:                 findings.append(
+ 1132:                     _finding(
+  566:                         text=text,
+  566:                         file=file,
+  566:                         scene=scene,
+  566:                         signal=signal,
+  566:                         occurrence=occurrence,
+  566:                         count=count,
+  566:                         protected=False,
+  566:                         protection=None,
+                           )
+                       )
+11336:         if include_protected:
+ 4417:             for occurrence, protection in protected_hits:
+   18:                 findings.append(
+   18:                     _finding(
+    9:                         text=text,
+    9:                         file=file,
+    9:                         scene=scene,
+    9:                         signal=signal,
+    9:                         occurrence=occurrence,
+    9:                         count=1,
+    9:                         protected=True,
+    9:                         protection=protection,
+                           )
+                       )
+11336:         if include_excluded:
+ 4409:             for occurrence, exclusion in excluded_hits:
+    2:                 findings.append(
+    2:                     _finding(
+    1:                         text=text,
+    1:                         file=file,
+    1:                         scene=scene,
+    1:                         signal=signal,
+    1:                         occurrence=occurrence,
+    1:                         count=1,
+    1:                         protected=False,
+    1:                         protection=None,
+    1:                         excluded=True,
+    1:                         exclusion=exclusion,
+                           )
+                       )
+       
+  990:     return sorted(findings, key=lambda item: (item["file"], item["line"], item["column"], item["signal_id"]))
+       
+       
+    8: def scan_text(
+    1:     text: str,
+           *,
+    2:     file: str = "<memory>",
+    2:     scene: str = "ALL",
+    2:     lexicon: dict[str, Any] | None = None,
+    2:     include_protected: bool = False,
+    2:     include_excluded: bool = False,
+    1: ) -> list[dict[str, Any]]:
+           """Return the stable public finding view without internal offsets."""
+  444:     findings = scan_text_with_offsets(
+  222:         text,
+  222:         file=file,
+  222:         scene=scene,
+  222:         lexicon=lexicon,
+  222:         include_protected=include_protected,
+  222:         include_excluded=include_excluded,
+           )
+  444:     return [
+ 5985:         {key: value for key, value in finding.items() if key not in {"start_char", "end_char"}}
+  729:         for finding in findings
+           ]
+       
+       
+    7: def scan_file(
+    1:     path: str | Path,
+           *,
+    2:     scene: str = "ALL",
+    2:     lexicon: dict[str, Any] | None = None,
+    2:     include_protected: bool = False,
+    2:     include_excluded: bool = False,
+    1: ) -> list[dict[str, Any]]:
+>>>>>>     source = Path(path)
+>>>>>>     text = source.read_text(encoding="utf-8-sig")
+>>>>>>     return scan_text(
+>>>>>>         text,
+>>>>>>         file=str(source),
+>>>>>>         scene=scene,
+>>>>>>         lexicon=lexicon,
+>>>>>>         include_protected=include_protected,
+>>>>>>         include_excluded=include_excluded,
+           )
+       
+       
+    1: def collect_paths(paths: Sequence[str], extensions: set[str] | None = None) -> list[Path]:
+>>>>>>     extensions = extensions or DEFAULT_EXTENSIONS
+>>>>>>     collected: set[Path] = set()
+>>>>>>     for raw in paths:
+>>>>>>         path = Path(raw)
+>>>>>>         if path.is_file():
+>>>>>>             collected.add(path.resolve())
+>>>>>>         elif path.is_dir():
+>>>>>>             collected.update(
+>>>>>>                 item.resolve()
+>>>>>>                 for item in path.rglob("*")
+>>>>>>                 if item.is_file() and item.suffix.lower() in extensions
+                   )
+               else:
+>>>>>>             raise FileNotFoundError(raw)
+>>>>>>     return sorted(collected, key=lambda item: str(item).lower())
+       
+       
+    1: OUTPUT_FIELDS = (
+           "file",
+           "line",
+           "column",
+           "matched",
+           "context",
+           "count",
+           "action",
+           "signal_id",
+           "category",
+           "label",
+           "scene",
+           "severity",
+           "candidate",
+           "protected",
+           "protection",
+           "excluded",
+           "exclusion",
+           "rationale",
+       )
+       
+       
+    6: def render_output(
+    1:     findings: Sequence[dict[str, Any]],
+           *,
+    1:     output_format: str,
+    1:     notice: str,
+    2:     coverage: dict[str, Any] | None = None,
+    1: ) -> str:
+>>>>>>     if output_format == "json":
+>>>>>>         payload = {
+>>>>>>             "notice": notice,
+>>>>>>             "finding_count": len(findings),
+>>>>>>             "candidate_count": sum(bool(item["candidate"]) for item in findings),
+>>>>>>             "findings": list(findings),
+>>>>>>             "coverage": coverage
+>>>>>>             or {
+>>>>>>                 "status": "NOT_REPORTED",
+>>>>>>                 "requested_count": 0,
+>>>>>>                 "scanned_count": 0,
+>>>>>>                 "skipped_count": 0,
+>>>>>>                 "requested_files": [],
+>>>>>>                 "scanned_files": [],
+>>>>>>                 "skipped_files": [],
+                   },
+               }
+>>>>>>         return json.dumps(payload, ensure_ascii=False, indent=2) + "\n"
+>>>>>>     if output_format == "csv":
+>>>>>>         buffer = io.StringIO(newline="")
+>>>>>>         writer = csv.DictWriter(buffer, fieldnames=OUTPUT_FIELDS, extrasaction="ignore")
+>>>>>>         writer.writeheader()
+>>>>>>         writer.writerows(findings)
+>>>>>>         return buffer.getvalue()
+>>>>>>     if output_format == "text":
+>>>>>>         lines = [f"说明：{notice}"]
+>>>>>>         for item in findings:
+>>>>>>             state = "受保护" if item["protected"] else "已豁免" if item["excluded"] else "候选"
+>>>>>>             lines.append(
+>>>>>>                 f"{item['file']}:{item['line']}:{item['column']} "
+>>>>>>                 f"[{item['signal_id']}/{item['severity']}/{item['action']}/{state}] "
+>>>>>>                 f"{item['matched']} | count={item['count']} | {item['context']}"
+                   )
+>>>>>>         return "\n".join(lines) + "\n"
+>>>>>>     raise ValueError(f"unsupported output format: {output_format}")
+       
+       
+    1: def build_parser() -> argparse.ArgumentParser:
+>>>>>>     parser = argparse.ArgumentParser(
+>>>>>>         description="定位中文学术文本中的模板词和句壳候选；不判断作者身份。"
+           )
+>>>>>>     parser.add_argument("paths", nargs="+", help="UTF-8 文本文件或目录")
+>>>>>>     parser.add_argument(
+>>>>>>         "--scene",
+>>>>>>         type=str.upper,
+>>>>>>         choices=SCENE_CHOICES,
+>>>>>>         default="ALL",
+>>>>>>         help="大小写不敏感；AUTO 扫描全部场景信号，GENERAL 只扫描通用信号",
+           )
+>>>>>>     parser.add_argument("--format", choices=("json", "csv", "text"), default="text", dest="output_format")
+>>>>>>     parser.add_argument("--output", help="输出文件；省略时写到标准输出")
+>>>>>>     parser.add_argument("--lexicon", default=str(DEFAULT_LEXICON), help="lexical-signals.json 路径")
+>>>>>>     parser.add_argument("--include-protected", action="store_true", help="显示代码、数学、注释和引文中的受保护命中")
+>>>>>>     parser.add_argument("--include-excluded", action="store_true", help="显示因技术上下文而豁免的命中")
+>>>>>>     return parser
+       
+       
+    1: def main(argv: Sequence[str] | None = None) -> int:
+>>>>>>     if hasattr(sys.stdout, "reconfigure"):
+>>>>>>         sys.stdout.reconfigure(encoding="utf-8")
+>>>>>>     if hasattr(sys.stderr, "reconfigure"):
+>>>>>>         sys.stderr.reconfigure(encoding="utf-8")
+>>>>>>     parser = build_parser()
+>>>>>>     args = parser.parse_args(argv)
+>>>>>>     try:
+>>>>>>         lexicon = load_lexicon(args.lexicon)
+>>>>>>         paths = collect_paths(args.paths)
+>>>>>>     except (OSError, ValueError, json.JSONDecodeError) as error:
+>>>>>>         parser.error(str(error))
+       
+>>>>>>     findings: list[dict[str, Any]] = []
+>>>>>>     scanned: list[str] = []
+>>>>>>     skipped: list[str] = []
+>>>>>>     for path in paths:
+>>>>>>         try:
+>>>>>>             findings.extend(
+>>>>>>                 scan_file(
+>>>>>>                     path,
+>>>>>>                     scene=args.scene,
+>>>>>>                     lexicon=lexicon,
+>>>>>>                     include_protected=args.include_protected,
+>>>>>>                     include_excluded=args.include_excluded,
+                       )
+                   )
+>>>>>>             scanned.append(str(path))
+>>>>>>         except UnicodeDecodeError:
+>>>>>>             skipped.append(str(path))
+       
+>>>>>>     coverage = {
+>>>>>>         "status": "REVIEW" if skipped else "PASS",
+>>>>>>         "requested_count": len(paths),
+>>>>>>         "scanned_count": len(scanned),
+>>>>>>         "skipped_count": len(skipped),
+>>>>>>         "requested_files": [str(path) for path in paths],
+>>>>>>         "scanned_files": scanned,
+>>>>>>         "skipped_files": skipped,
+           }
+>>>>>>     rendered = render_output(
+>>>>>>         findings,
+>>>>>>         output_format=args.output_format,
+>>>>>>         notice=lexicon["output_policy"],
+>>>>>>         coverage=coverage,
+           )
+>>>>>>     if args.output:
+>>>>>>         Path(args.output).write_text(rendered, encoding="utf-8", newline="")
+           else:
+>>>>>>         sys.stdout.write(rendered)
+>>>>>>     for path in skipped:
+>>>>>>         print(f"跳过非 UTF-8 或乱码文件：{path}", file=sys.stderr)
+>>>>>>     return 2 if skipped else 0
+       
+       
+    1: if __name__ == "__main__":
+>>>>>>     raise SystemExit(main())

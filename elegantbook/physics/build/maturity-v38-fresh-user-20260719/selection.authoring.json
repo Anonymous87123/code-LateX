@@ -1,0 +1,247 @@
+{
+  "completion_claim_allowed": false,
+  "configuration": {
+    "intensity": "BALANCED",
+    "mode": "REWRITE",
+    "protected_terms": [],
+    "requested_output": "CLEAN",
+    "scene": "COURSE",
+    "source_kind": "DOCUMENT"
+  },
+  "explicit_conflicts": [
+    {
+      "conflict_id": "C001",
+      "rule_code": "OPPOSING_PERMISSION",
+      "left_hunk_id": "H003",
+      "right_hunk_id": "H005",
+      "reason": "前文允许直接套用匀变速公式，后文要求先核对条件并在条件不满足时禁止直接代入，纯文风层不能裁决两者。"
+    }
+  ],
+  "high_findings": [
+    {
+      "automatic_reason": null,
+      "end_byte": 42,
+      "finding_id": "LF-1215317658875f39acfe181e",
+      "role": "CANDIDATE",
+      "severity": "high",
+      "signal_id": "LEX-EMPH-01",
+      "source_text": "值得注意的是",
+      "source_text_sha256": "c4cf0064ca73c1645f714c256e16594c8a39299b8d0bbab63fb94a0857a99183",
+      "start_byte": 24
+    },
+    {
+      "automatic_reason": null,
+      "end_byte": 78,
+      "finding_id": "LF-1dce24aa27d3f68d6e4d9ac8",
+      "role": "CANDIDATE",
+      "severity": "high",
+      "signal_id": "LEX-COACH-01",
+      "source_text": "必须牢记",
+      "source_text_sha256": "ccf0f2a6e15194eb95b61839278755f20bf79a3778d1f0b6b384aef459d19c67",
+      "start_byte": 66
+    },
+    {
+      "automatic_reason": null,
+      "end_byte": 189,
+      "finding_id": "LF-5900485e4cff113e7bb133f2",
+      "role": "CANDIDATE",
+      "severity": "high",
+      "signal_id": "LEX-MARKET-01",
+      "source_text": "具有重要意义",
+      "source_text_sha256": "7648e5fdc7f26b7f40f885d52668233e67d665190d0293166b9879d4f1389315",
+      "start_byte": 171
+    },
+    {
+      "automatic_reason": null,
+      "end_byte": 225,
+      "finding_id": "LF-da16b28ff45619a3ab412970",
+      "role": "CANDIDATE",
+      "severity": "high",
+      "signal_id": "LEX-FOUNDATION-01",
+      "source_text": "为后续学习奠定基础",
+      "source_text_sha256": "e77b3f560af1e1b904a311b004ee8bac9590de086d2f0276ae9d70384d18d688",
+      "start_byte": 198
+    }
+  ],
+  "humanize_quality_claim_allowed": false,
+  "hunks": [
+    {
+      "hunk_id": "H001",
+      "span_id": "A005",
+      "decision": "DELETE_STYLE_SHELL",
+      "replacement": "",
+      "reason": "删除没有新增学习对象或判断条件的空重点提示壳。"
+    },
+    {
+      "hunk_id": "H002",
+      "span_id": "A006",
+      "decision": "REWRITE",
+      "replacement": "遇到这类题目时，先看公式的适用条件。",
+      "reason": "保留解题提醒，将无条件记忆口令改为原文后段已经给出的条件辨认动作。"
+    },
+    {
+      "hunk_id": "H003",
+      "span_id": "A007",
+      "decision": "UNRESOLVED",
+      "replacement": "若已知速度随时间减小，就可以直接套用匀变速公式。",
+      "reason": "该句给出直接套用公式的许可，与后文的条件限制形成来源内部张力，纯文风层不判断其正确性。"
+    },
+    {
+      "hunk_id": "H004",
+      "span_id": "A008",
+      "decision": "DELETE_STYLE_SHELL",
+      "replacement": "",
+      "reason": "整句仅作泛化价值拔高和自动后续桥接，删除不损失独立的物理条件或计算命题。"
+    },
+    {
+      "hunk_id": "H005",
+      "span_id": "A009",
+      "decision": "UNRESOLVED",
+      "replacement": "若条件不满足，不能因为公式看起来相似就直接代入。",
+      "reason": "该句禁止在条件不满足时直接代入，与前文的直接套用许可成对保留，等待学科或用户裁决。"
+    }
+  ],
+  "inventory_sha256": "9a8be6e268c07f338724e66b25807f600e6223fb8a65456801e3ae32bc85e8c2",
+  "lexical_resolutions": [
+    {
+      "decision": "HUNK",
+      "finding_id": "LF-1215317658875f39acfe181e",
+      "hunk_id": "H001",
+      "reason": null
+    },
+    {
+      "decision": "HUNK",
+      "finding_id": "LF-1dce24aa27d3f68d6e4d9ac8",
+      "hunk_id": "H002",
+      "reason": null
+    },
+    {
+      "decision": "HUNK",
+      "finding_id": "LF-5900485e4cff113e7bb133f2",
+      "hunk_id": "H004",
+      "reason": null
+    },
+    {
+      "decision": "HUNK",
+      "finding_id": "LF-da16b28ff45619a3ab412970",
+      "hunk_id": "H004",
+      "reason": null
+    }
+  ],
+  "policy_hashes": {
+    "coverage_builder_sha256": "9eae47369d14f624c50ed25e382d5f5ae98c8ed51364a139c9b998fcc14a3af0",
+    "lexicon_sha256": "52191aaa422515e03e14c9f5981f4e190320b1f6fa203e370041abb742e6937c",
+    "runtime_contract_sha256": "a5f10e87196bf5517f8da41649b663c7a3b6b070253c8fdb3bfa6aa8168c6fd6",
+    "scanner_sha256": "4237049cafe1c06e81afa33115ffaf00d9ba5d69c86baaada96b387d3c70c048"
+  },
+  "schema_version": "humanize-short-patch-selection-authoring/v1",
+  "selected_spans": [
+    {
+      "selection_id": "S001",
+      "span_id": "A005",
+      "decision": "HUNK",
+      "hunk_id": "H001",
+      "reason": "本次补丁显式处理段首空重点提示壳。"
+    },
+    {
+      "selection_id": "S002",
+      "span_id": "A006",
+      "decision": "HUNK",
+      "hunk_id": "H002",
+      "reason": "本次补丁显式处理无条件记忆公式的教练式命令。"
+    },
+    {
+      "selection_id": "S003",
+      "span_id": "A007",
+      "decision": "HUNK",
+      "hunk_id": "H003",
+      "reason": "本次补丁绑定允许直接套用公式的冲突一侧并保持原样未决。"
+    },
+    {
+      "selection_id": "S004",
+      "span_id": "A008",
+      "decision": "HUNK",
+      "hunk_id": "H004",
+      "reason": "本次补丁显式处理泛化意义和后续基础桥接句。"
+    },
+    {
+      "selection_id": "S005",
+      "span_id": "A009",
+      "decision": "HUNK",
+      "hunk_id": "H005",
+      "reason": "本次补丁绑定禁止条件不足时直接代入的冲突另一侧并保持原样未决。"
+    }
+  ],
+  "source": {
+    "document_format": "tex",
+    "encoding": "utf-8",
+    "offset_unit": "UTF8_BYTES",
+    "scan_scene": "AUTO",
+    "sha256": "9805eab8480836f942078c112dfcd4160c293cd18bfd79ae0e308c02db956b65",
+    "size_bytes": 487
+  },
+  "spans": [
+    {
+      "finding_ids": [
+        "LF-1215317658875f39acfe181e"
+      ],
+      "source_text": "值得注意的是",
+      "span_id": "A001",
+      "start_byte": 24
+    },
+    {
+      "finding_ids": [
+        "LF-1dce24aa27d3f68d6e4d9ac8"
+      ],
+      "source_text": "必须牢记",
+      "span_id": "A002",
+      "start_byte": 66
+    },
+    {
+      "finding_ids": [
+        "LF-5900485e4cff113e7bb133f2"
+      ],
+      "source_text": "具有重要意义",
+      "span_id": "A003",
+      "start_byte": 171
+    },
+    {
+      "finding_ids": [
+        "LF-da16b28ff45619a3ab412970"
+      ],
+      "source_text": "为后续学习奠定基础",
+      "span_id": "A004",
+      "start_byte": 198
+    },
+    {
+      "finding_ids": [],
+      "source_text": "值得注意的是，",
+      "span_id": "A005",
+      "start_byte": 24
+    },
+    {
+      "finding_ids": [],
+      "source_text": "遇到这类题目时必须牢记公式。",
+      "span_id": "A006",
+      "start_byte": 45
+    },
+    {
+      "finding_ids": [],
+      "source_text": "若已知速度随时间减小，就可以直接套用匀变速公式。",
+      "span_id": "A007",
+      "start_byte": 87
+    },
+    {
+      "finding_ids": [],
+      "source_text": "这个结论具有重要意义，能够为后续学习奠定基础。",
+      "span_id": "A008",
+      "start_byte": 159
+    },
+    {
+      "finding_ids": [],
+      "source_text": "若条件不满足，不能因为公式看起来相似就直接代入。",
+      "span_id": "A009",
+      "start_byte": 414
+    }
+  ]
+}

@@ -1,0 +1,649 @@
+    1: import importlib.util
+    1: import contextlib
+    1: import io
+    1: import json
+    1: import os
+    1: import subprocess
+    1: import sys
+    1: import tempfile
+    1: import unittest
+    1: from pathlib import Path
+    1: from unittest import mock
+       
+       
+    2: SKILL = Path(
+    2:     os.environ.get(
+    1:         "HUMANIZE_SKILL_DIR",
+    1:         Path.home() / ".codex" / "skills" / "humanize-academic-chinese",
+           )
+       )
+    1: AUTHORING_PATH = SKILL / "scripts" / "scaffold_humanize_short_patch.py"
+    1: BUILDER_PATH = SKILL / "scripts" / "build_humanize_short_patch.py"
+       
+       
+    1: def load_module(name: str, path: Path):
+    2:     spec = importlib.util.spec_from_file_location(name, path)
+    2:     assert spec is not None and spec.loader is not None
+    2:     module = importlib.util.module_from_spec(spec)
+    2:     sys.modules[name] = module
+    2:     spec.loader.exec_module(module)
+    2:     return module
+       
+       
+    1: builder = load_module("authoring_test_builder", BUILDER_PATH)
+    1: authoring = load_module("scaffold_humanize_short_patch", AUTHORING_PATH)
+       
+       
+    2: class HumanizeShortPatchAuthoringTests(unittest.TestCase):
+    1:     def setUp(self) -> None:
+   18:         self.temp = tempfile.TemporaryDirectory()
+   18:         self.root = Path(self.temp.name)
+   18:         self.source = self.root / "source.tex"
+   18:         self.source_text = (
+   18:             "值得注意的是，先读题。\n"
+                   "若条件冲突，保留原句。\n"
+                   "这个结论具有重要意义。\n"
+               )
+   18:         self.source.write_text(self.source_text, encoding="utf-8")
+       
+    1:     def tearDown(self) -> None:
+   18:         self.temp.cleanup()
+       
+    1:     def create(self, name: str = "selection.authoring.json") -> tuple[Path, dict]:
+   14:         output = self.root / name
+   28:         payload = authoring.create_scaffold(
+   14:             self.source,
+   14:             output,
+   14:             requested_output="PATCH",
+   14:             scene="COURSE",
+   14:             intensity="BALANCED",
+   14:             source_kind="DOCUMENT",
+   14:             protected_terms=[],
+   14:             span_suggestion_mode="NONE",
+               )
+   14:         return output, payload
+       
+    2:     @staticmethod
+    2:     def resolve_all_high_with_hunks(payload: dict) -> None:
+   22:         span_by_finding = {
+   48:             finding_id: span["span_id"]
+   48:             for span in payload["spans"]
+   48:             for finding_id in span["finding_ids"]
+               }
+   33:         for index, resolution in enumerate(payload["lexical_resolutions"], start=1):
+   22:             hunk_id = f"H{index:03d}"
+   44:             resolution.update(
+   22:                 {"decision": "HUNK", "hunk_id": hunk_id, "reason": None}
+                   )
+   44:             payload["hunks"].append(
+   22:                 {
+   22:                     "hunk_id": hunk_id,
+   22:                     "span_id": span_by_finding[resolution["finding_id"]],
+   22:                     "decision": "DELETE_STYLE_SHELL",
+   22:                     "replacement": "",
+   22:                     "reason": "删除该处未增加对象或判断条件的高风险句壳。",
+                       }
+                   )
+       
+    1:     def write_payload(self, path: Path, payload: dict) -> None:
+   34:         path.write_text(
+   17:             json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
+   17:             encoding="utf-8",
+               )
+       
+    1:     def test_create_scaffold_freezes_source_policy_and_all_auto_high(self) -> None:
+    1:         path, payload = self.create()
+    1:         self.assertEqual("humanize-short-patch-selection-authoring/v3", payload["schema_version"])
+    1:         self.assertEqual(builder.sha256(self.source.read_bytes()), payload["source"]["sha256"])
+    1:         self.assertEqual("tex", payload["source"]["document_format"])
+    1:         self.assertEqual("AUTO", payload["source"]["scan_scene"])
+    1:         self.assertEqual("COURSE", payload["configuration"]["scene"])
+    1:         self.assertEqual("DOCUMENT", payload["configuration"]["source_kind"])
+    1:         self.assertEqual(authoring.current_policy_hashes(), payload["policy_hashes"])
+    1:         self.assertEqual("NONE", payload["configuration"]["span_suggestion_mode"])
+    1:         self.assertEqual([], payload["span_suggestions"])
+    1:         self.assertGreaterEqual(len(payload["high_findings"]), 2)
+    2:         candidate_ids = {
+    2:             item["finding_id"]
+    4:             for item in payload["high_findings"]
+    2:             if item["role"] == "CANDIDATE"
+               }
+    2:         self.assertEqual(
+    1:             candidate_ids,
+    3:             {item["finding_id"] for item in payload["lexical_resolutions"]},
+               )
+    2:         self.assertTrue(
+    4:             all(item["decision"] == "PENDING" for item in payload["lexical_resolutions"])
+               )
+    2:         self.assertEqual(
+    1:             len(payload["high_findings"]),
+    4:             sum(len(span["finding_ids"]) for span in payload["spans"]),
+               )
+    1:         self.assertEqual(payload, json.loads(path.read_text(encoding="utf-8")))
+    1:         self.assertFalse(payload["completion_claim_allowed"])
+       
+    1:     def test_finalize_expands_single_span_registry_to_strict_v2_selection(self) -> None:
+    1:         draft_path, payload = self.create()
+    1:         self.resolve_all_high_with_hunks(payload)
+    1:         first_hunk = payload["hunks"][0]
+    2:         payload["selected_spans"].append(
+    1:             {
+    1:                 "selection_id": "S001",
+    1:                 "span_id": first_hunk["span_id"],
+    1:                 "decision": "HUNK",
+    1:                 "hunk_id": first_hunk["hunk_id"],
+    1:                 "reason": "用户把该精确 span 列入本次处理范围。",
+                   }
+               )
+    1:         self.write_payload(draft_path, payload)
+    1:         selection_path = self.root / "selection.v2.json"
+    2:         selection = authoring.finalize_scaffold(
+    1:             self.source, draft_path, selection_path
+               )
+       
+    1:         self.assertEqual("humanize-short-patch-selection/v2", selection["schema_version"])
+    1:         self.assertNotIn("spans", selection)
+    1:         self.assertNotIn("lexical_resolutions", selection)
+    2:         self.assertEqual(
+    1:             selection["hunks"][0]["source_text"],
+    1:             selection["coverage"]["selected_spans"][0]["source_text"],
+               )
+    2:         self.assertEqual(
+    1:             selection["hunks"][0]["start_byte"],
+    1:             selection["coverage"]["selected_spans"][0]["start_byte"],
+               )
+    2:         bundle = builder._build_payload(
+    1:             self.source.read_bytes(),
+    1:             selection_path.read_bytes(),
+    1:             selection,
+    1:             document_format="tex",
+               )
+    1:         self.assertEqual("humanize-short-patch/v2", bundle["schema_version"])
+    1:         self.assertEqual("PASS", bundle["coverage"]["mechanical_coverage_status"])
+       
+    1:     def test_finalize_rejects_pending_source_drift_and_policy_drift(self) -> None:
+    1:         draft_path, payload = self.create()
+    2:         with self.assertRaisesRegex(authoring.AuthoringError, "PENDING"):
+    2:             authoring.finalize_scaffold(
+    1:                 self.source, draft_path, self.root / "pending-selection.json"
+                   )
+       
+    1:         self.resolve_all_high_with_hunks(payload)
+    1:         payload["policy_hashes"]["scanner_sha256"] = "0" * 64
+    1:         self.write_payload(draft_path, payload)
+    2:         with self.assertRaisesRegex(authoring.AuthoringError, "POLICY_DRIFT"):
+    2:             authoring.finalize_scaffold(
+    1:                 self.source, draft_path, self.root / "drift-selection.json"
+                   )
+       
+    1:         payload["policy_hashes"] = authoring.current_policy_hashes()
+    1:         self.write_payload(draft_path, payload)
+    1:         self.source.write_text(self.source_text + "追加文本。\n", encoding="utf-8")
+    2:         with self.assertRaisesRegex(authoring.AuthoringError, "SOURCE_DRIFT"):
+    2:             authoring.finalize_scaffold(
+    1:                 self.source, draft_path, self.root / "source-drift-selection.json"
+                   )
+       
+    1:     def test_finalize_rejects_dangling_duplicate_and_mismatched_references(self) -> None:
+    1:         draft_path, payload = self.create()
+    1:         self.resolve_all_high_with_hunks(payload)
+    1:         payload["hunks"][0]["span_id"] = "MISSING"
+    1:         self.write_payload(draft_path, payload)
+    2:         with self.assertRaisesRegex(authoring.AuthoringError, "span_id"):
+    2:             authoring.finalize_scaffold(
+    1:                 self.source, draft_path, self.root / "dangling-selection.json"
+                   )
+       
+    1:         _new_path, payload = self.create("selection-duplicate.authoring.json")
+    1:         duplicate_path = self.root / "selection-duplicate.authoring.json"
+    1:         self.resolve_all_high_with_hunks(payload)
+    1:         payload["spans"].append(dict(payload["spans"][0]))
+    1:         self.write_payload(duplicate_path, payload)
+    2:         with self.assertRaisesRegex(authoring.AuthoringError, "duplicate span_id"):
+    2:             authoring.finalize_scaffold(
+    1:                 self.source, duplicate_path, self.root / "duplicate-selection.json"
+                   )
+       
+    1:         _mismatch_path, payload = self.create("selection-mismatch.authoring.json")
+    1:         mismatch_path = self.root / "selection-mismatch.authoring.json"
+    1:         self.resolve_all_high_with_hunks(payload)
+    2:         payload["selected_spans"].append(
+    1:             {
+    1:                 "selection_id": "S001",
+    1:                 "span_id": payload["hunks"][1]["span_id"],
+    1:                 "decision": "HUNK",
+    1:                 "hunk_id": payload["hunks"][0]["hunk_id"],
+    1:                 "reason": "错误地把另一 span 绑定到首个 hunk。",
+                   }
+               )
+    1:         self.write_payload(mismatch_path, payload)
+    2:         with self.assertRaisesRegex(authoring.AuthoringError, "SELECTION_HUNK_MISMATCH"):
+    2:             authoring.finalize_scaffold(
+    1:                 self.source, mismatch_path, self.root / "mismatch-selection.json"
+                   )
+       
+    1:     def test_cli_is_fail_closed_and_never_overwrites_outputs(self) -> None:
+    1:         draft = self.root / "cli.authoring.json"
+    2:         create = subprocess.run(
+    1:             [
+    1:                 sys.executable,
+    1:                 str(AUTHORING_PATH),
+    1:                 "create",
+    1:                 str(self.source),
+    1:                 "--scene",
+    1:                 "COURSE",
+    1:                 "--source-kind",
+    1:                 "DOCUMENT",
+    1:                 "--output",
+    1:                 str(draft),
+    1:                 "--format",
+    1:                 "json",
+                   ],
+    1:             capture_output=True,
+    1:             text=True,
+    1:             encoding="utf-8",
+    1:             check=False,
+               )
+    1:         self.assertEqual(0, create.returncode, create.stdout + create.stderr)
+    1:         self.assertEqual("PENDING", json.loads(create.stdout)["status"])
+    2:         repeated = subprocess.run(
+    1:             [
+    1:                 sys.executable,
+    1:                 str(AUTHORING_PATH),
+    1:                 "create",
+    1:                 str(self.source),
+    1:                 "--scene",
+    1:                 "COURSE",
+    1:                 "--source-kind",
+    1:                 "DOCUMENT",
+    1:                 "--output",
+    1:                 str(draft),
+    1:                 "--format",
+    1:                 "json",
+                   ],
+    1:             capture_output=True,
+    1:             text=True,
+    1:             encoding="utf-8",
+    1:             check=False,
+               )
+    1:         self.assertEqual(1, repeated.returncode)
+    1:         self.assertNotIn(str(self.root), repeated.stdout + repeated.stderr)
+    2:         finalize = subprocess.run(
+    1:             [
+    1:                 sys.executable,
+    1:                 str(AUTHORING_PATH),
+    1:                 "finalize",
+    1:                 str(self.source),
+    1:                 "--authoring",
+    1:                 str(draft),
+    1:                 "--output",
+    1:                 str(self.root / "cli-selection.json"),
+    1:                 "--format",
+    1:                 "json",
+                   ],
+    1:             capture_output=True,
+    1:             text=True,
+    1:             encoding="utf-8",
+    1:             check=False,
+               )
+    1:         self.assertEqual(1, finalize.returncode)
+    1:         self.assertIn("PENDING", finalize.stdout)
+       
+    1:     def test_finalize_detects_policy_change_during_execution(self) -> None:
+    1:         draft_path, payload = self.create()
+    1:         self.resolve_all_high_with_hunks(payload)
+    1:         self.write_payload(draft_path, payload)
+    1:         original = authoring.current_policy_hashes
+    1:         calls = 0
+       
+    1:         def drifting_policy() -> dict[str, str]:
+                   nonlocal calls
+    2:             calls += 1
+    2:             value = original()
+    2:             if calls > 1:
+    1:                 value["scanner_sha256"] = "f" * 64
+    2:             return value
+       
+    2:         with mock.patch.object(authoring, "current_policy_hashes", side_effect=drifting_policy):
+    2:             with self.assertRaisesRegex(authoring.AuthoringError, "POLICY_CHANGED_DURING_FINALIZE"):
+    2:                 authoring.finalize_scaffold(
+    1:                     self.source, draft_path, self.root / "policy-race-selection.json"
+                       )
+       
+    1:     def test_inline_selection_is_bound_at_finalize_not_blocked_at_create(self) -> None:
+    1:         draft = self.root / "inline.authoring.json"
+    2:         payload = authoring.create_scaffold(
+    1:             self.source,
+    1:             draft,
+    1:             requested_output="PATCH",
+    1:             scene="COURSE",
+    1:             intensity="BALANCED",
+    1:             source_kind="INLINE_SELECTION",
+    1:             protected_terms=[],
+    1:             span_suggestion_mode="NONE",
+               )
+    1:         self.resolve_all_high_with_hunks(payload)
+    1:         self.write_payload(draft, payload)
+    2:         with self.assertRaisesRegex(authoring.AuthoringError, "BOUND_SELECTION_REQUIRED"):
+    2:             authoring.finalize_scaffold(
+    1:                 self.source, draft, self.root / "inline-unbound-selection.json"
+                   )
+    1:         payload["selected_spans"] = [
+    1:             {
+    1:                 "selection_id": "S001",
+    1:                 "span_id": payload["hunks"][0]["span_id"],
+    1:                 "decision": "HUNK",
+    1:                 "hunk_id": payload["hunks"][0]["hunk_id"],
+    1:                 "reason": "该精确内联 span 是调用方声明的处理范围。",
+                   }
+               ]
+    1:         self.write_payload(draft, payload)
+    2:         selection = authoring.finalize_scaffold(
+    1:             self.source, draft, self.root / "inline-bound-selection.json"
+               )
+    1:         self.assertEqual("INLINE_SELECTION", selection["coverage"]["source_kind"])
+       
+    1:     def test_malformed_finding_ids_fails_as_structured_authoring_error(self) -> None:
+    1:         draft, payload = self.create()
+    1:         payload["spans"][0]["finding_ids"] = [{"not": "hashable"}]
+    1:         self.write_payload(draft, payload)
+    2:         with self.assertRaisesRegex(authoring.AuthoringError, "finding_ids is invalid"):
+    2:             authoring.finalize_scaffold(
+    1:                 self.source, draft, self.root / "malformed-finding-selection.json"
+                   )
+       
+    1:     def test_invalid_cli_arguments_honor_requested_json_failure_contract(self) -> None:
+    2:         process = subprocess.run(
+    1:             [
+    1:                 sys.executable,
+    1:                 str(AUTHORING_PATH),
+    1:                 "create",
+    1:                 str(self.source),
+    1:                 "--scene",
+    1:                 "INVALID",
+    1:                 "--source-kind",
+    1:                 "DOCUMENT",
+    1:                 "--output",
+    1:                 str(self.root / "invalid.authoring.json"),
+    1:                 "--format",
+    1:                 "json",
+                   ],
+    1:             capture_output=True,
+    1:             text=True,
+    1:             encoding="utf-8",
+    1:             check=False,
+               )
+    1:         self.assertEqual(1, process.returncode)
+    1:         self.assertEqual("", process.stderr)
+    1:         failure = json.loads(process.stdout)
+    1:         self.assertEqual("FAIL", failure["status"])
+    1:         self.assertEqual("INVALID_ARGUMENTS", failure["error"])
+       
+    1:     def test_in_process_cli_create_finalize_and_json_failure_paths(self) -> None:
+    1:         draft = self.root / "in-process.authoring.json"
+    1:         stdout = io.StringIO()
+    2:         with contextlib.redirect_stdout(stdout):
+    2:             exit_code = authoring.main(
+    1:                 [
+    1:                     "create",
+    1:                     str(self.source),
+    1:                     "--scene",
+    1:                     "COURSE",
+    1:                     "--source-kind",
+    1:                     "DOCUMENT",
+    1:                     "--output",
+    1:                     str(draft),
+                       ]
+                   )
+    1:         self.assertEqual(0, exit_code)
+    1:         self.assertIn("PENDING high=", stdout.getvalue())
+    1:         payload = json.loads(draft.read_text(encoding="utf-8"))
+    1:         self.resolve_all_high_with_hunks(payload)
+    1:         self.write_payload(draft, payload)
+    1:         selection = self.root / "in-process.selection.json"
+    1:         stdout = io.StringIO()
+    2:         with contextlib.redirect_stdout(stdout):
+    2:             exit_code = authoring.main(
+    1:                 [
+    1:                     "finalize",
+    1:                     str(self.source),
+    1:                     "--authoring",
+    1:                     str(draft),
+    1:                     "--output",
+    1:                     str(selection),
+                       ]
+                   )
+    1:         self.assertEqual(0, exit_code)
+    1:         self.assertIn("FINALIZED hunks=", stdout.getvalue())
+    1:         stdout = io.StringIO()
+    2:         with contextlib.redirect_stdout(stdout):
+    2:             exit_code = authoring.main(
+    1:                 [
+    1:                     "create",
+    1:                     str(self.source),
+    1:                     "--scene",
+    1:                     "INVALID",
+    1:                     "--source-kind",
+    1:                     "DOCUMENT",
+    1:                     "--output",
+    1:                     str(self.root / "never-written.json"),
+    1:                     "--format=json",
+                       ]
+                   )
+    1:         self.assertEqual(1, exit_code)
+    1:         self.assertEqual("FAIL", json.loads(stdout.getvalue())["status"])
+       
+    1:     def test_keep_resolutions_and_selected_keep_compile_without_duplicate_text(self) -> None:
+    1:         draft, payload = self.create("keep.authoring.json")
+    2:         span_by_finding = {
+    4:             finding_id: span["span_id"]
+    4:             for span in payload["spans"]
+    4:             for finding_id in span["finding_ids"]
+               }
+    1:         first, *remaining = payload["lexical_resolutions"]
+    2:         first.update(
+    1:             {
+    1:                 "decision": "KEEP",
+    1:                 "hunk_id": None,
+    1:                 "reason": "该处在本段真实承担对比重点，保留其提示功能。",
+                   }
+               )
+    1:         payload["hunks"] = []
+    2:         for index, resolution in enumerate(remaining, start=1):
+    1:             hunk_id = f"H{index:03d}"
+    2:             resolution.update(
+    1:                 {"decision": "HUNK", "hunk_id": hunk_id, "reason": None}
+                   )
+    2:             payload["hunks"].append(
+    1:                 {
+    1:                     "hunk_id": hunk_id,
+    1:                     "span_id": span_by_finding[resolution["finding_id"]],
+    1:                     "decision": "DELETE_STYLE_SHELL",
+    1:                     "replacement": "",
+    1:                     "reason": "删除没有新增对象或后果的泛化句壳。",
+                       }
+                   )
+    1:         payload["selected_spans"] = [
+    1:             {
+    1:                 "selection_id": "S001",
+    1:                 "span_id": span_by_finding[first["finding_id"]],
+    1:                 "decision": "KEEP",
+    1:                 "hunk_id": None,
+    1:                 "reason": "用户明确要求该精确 span 保持不变。",
+                   }
+               ]
+    1:         self.write_payload(draft, payload)
+    2:         selection = authoring.finalize_scaffold(
+    1:             self.source, draft, self.root / "keep.selection.json"
+               )
+    1:         self.assertEqual(1, len(selection["coverage"]["lexical_keeps"]))
+    1:         self.assertEqual("KEEP", selection["coverage"]["selected_spans"][0]["decision"])
+       
+    1:     def test_v1_authoring_remains_read_only_compatible(self) -> None:
+    1:         draft, payload = self.create("legacy.authoring.json")
+    1:         payload["schema_version"] = "humanize-short-patch-selection-authoring/v1"
+    1:         payload.pop("span_suggestion_policy")
+    1:         payload.pop("span_suggestions")
+    1:         payload.pop("authoring_integrity_scope")
+    1:         payload.pop("focus_spans")
+    1:         payload["configuration"].pop("span_suggestion_mode")
+    1:         payload["policy_hashes"].pop("authoring_tool_sha256")
+    2:         payload["inventory_sha256"] = authoring._inventory_hash(
+    1:             payload["source"],
+    1:             payload["configuration"],
+    1:             payload["policy_hashes"],
+    1:             payload["high_findings"],
+               )
+    1:         self.resolve_all_high_with_hunks(payload)
+    1:         self.write_payload(draft, payload)
+    2:         selection = authoring.finalize_scaffold(
+    1:             self.source, draft, self.root / "legacy.selection.json"
+               )
+    1:         self.assertEqual("humanize-short-patch-selection/v2", selection["schema_version"])
+       
+    1:     def test_v2_authoring_remains_read_only_compatible(self) -> None:
+    1:         draft, payload = self.create("legacy-v2.authoring.json")
+    1:         payload["schema_version"] = "humanize-short-patch-selection-authoring/v2"
+    1:         payload.pop("focus_spans")
+    2:         payload["inventory_sha256"] = authoring._inventory_hash(
+    1:             payload["source"],
+    1:             payload["configuration"],
+    1:             payload["policy_hashes"],
+    1:             payload["high_findings"],
+    1:             span_suggestion_policy=payload["span_suggestion_policy"],
+    1:             span_suggestions=payload["span_suggestions"],
+               )
+    1:         self.resolve_all_high_with_hunks(payload)
+    1:         self.write_payload(draft, payload)
+       
+    2:         selection = authoring.finalize_scaffold(
+    1:             self.source, draft, self.root / "legacy-v2.selection.json"
+               )
+       
+    1:         self.assertEqual("humanize-short-patch-selection/v2", selection["schema_version"])
+       
+    1:     def test_create_refuses_scaffold_larger_than_finalize_can_read(self) -> None:
+    1:         output = self.root / "oversize.authoring.json"
+    2:         with mock.patch.object(authoring.short_patch, "MAX_JSON_BYTES", 600):
+    2:             with self.assertRaisesRegex(authoring.AuthoringError, "AUTHORING_OUTPUT_EXCEEDS_LIMIT"):
+    2:                 authoring.create_scaffold(
+    1:                     self.source,
+    1:                     output,
+    1:                     requested_output="PATCH",
+    1:                     scene="COURSE",
+    1:                     intensity="BALANCED",
+    1:                     source_kind="DOCUMENT",
+    1:                     protected_terms=[],
+    1:                     span_suggestion_mode="SENTENCE",
+                       )
+    1:         self.assertFalse(output.exists())
+       
+    1:     def test_finalize_rejects_editing_any_protected_code_span_before_builder(self) -> None:
+    1:         self.source.write_text("```text\ncode_token\n```\n", encoding="utf-8")
+    1:         draft, payload = self.create("protected.authoring.json")
+    2:         payload["spans"].append(
+    1:             {
+    1:                 "span_id": "A900",
+    1:                 "finding_ids": [],
+    1:                 "source_text": "code_token",
+    1:                 "start_byte": None,
+                   }
+               )
+    1:         payload["hunks"] = [
+    1:             {
+    1:                 "hunk_id": "H001",
+    1:                 "span_id": "A900",
+    1:                 "decision": "REWRITE",
+    1:                 "replacement": "changed",
+    1:                 "reason": "尝试修改代码围栏中的受保护 token。",
+                   }
+               ]
+    1:         self.write_payload(draft, payload)
+    2:         with self.assertRaisesRegex(authoring.AuthoringError, "HUNK_OVERLAPS_PROTECTED_SPAN"):
+    2:             authoring.finalize_scaffold(
+    1:                 self.source, draft, self.root / "protected.selection.json"
+                   )
+       
+    1:     def test_reason_terminal_punctuation_does_not_bypass_unfinished_rejection(self) -> None:
+    1:         draft, payload = self.create("generic-reason.authoring.json")
+    1:         first_resolution = payload["lexical_resolutions"][0]
+    3:         span_id = next(
+    1:             span["span_id"]
+    2:             for span in payload["spans"]
+    1:             if first_resolution["finding_id"] in span["finding_ids"]
+               )
+    2:         first_resolution.update(
+    1:             {"decision": "HUNK", "hunk_id": "H001", "reason": None}
+               )
+    2:         for resolution in payload["lexical_resolutions"][1:]:
+    2:             resolution.update(
+    1:                 {
+    1:                     "decision": "KEEP",
+    1:                     "hunk_id": None,
+    1:                     "reason": "该处承担当前段的真实条件提醒，暂不删除其功能。",
+                       }
+                   )
+    1:         payload["hunks"] = [
+    1:             {
+    1:                 "hunk_id": "H001",
+    1:                 "span_id": span_id,
+    1:                 "decision": "DELETE_STYLE_SHELL",
+    1:                 "replacement": "",
+    1:                 "reason": "TODO。",
+                   }
+               ]
+    1:         self.write_payload(draft, payload)
+    2:         with self.assertRaisesRegex(authoring.AuthoringError, "generic or unfinished"):
+    2:             authoring.finalize_scaffold(
+    1:                 self.source, draft, self.root / "generic-reason.selection.json"
+                   )
+       
+    1:     def test_reference_ids_must_match_declared_case_exactly(self) -> None:
+    1:         draft, payload = self.create("case-reference.authoring.json")
+    1:         self.resolve_all_high_with_hunks(payload)
+    1:         payload["selected_spans"] = [
+    1:             {
+    1:                 "selection_id": "S001",
+    1:                 "span_id": payload["hunks"][0]["span_id"],
+    1:                 "decision": "HUNK",
+    1:                 "hunk_id": payload["hunks"][0]["hunk_id"].lower(),
+    1:                 "reason": "该精确 span 由调用方列入本次最小 PATCH。",
+                   }
+               ]
+    1:         self.write_payload(draft, payload)
+    2:         with self.assertRaisesRegex(authoring.AuthoringError, "REFERENCE_ID_CASE_MISMATCH"):
+    2:             authoring.finalize_scaffold(
+    1:                 self.source, draft, self.root / "case-reference.selection.json"
+                   )
+       
+    1:     def test_zero_high_create_reports_no_findings_and_finalize_requires_manual_hunk(self) -> None:
+    1:         self.source.write_text("普通句子。\n", encoding="utf-8")
+    1:         output = self.root / "zero-high.authoring.json"
+    1:         stdout = io.StringIO()
+    2:         with contextlib.redirect_stdout(stdout):
+    2:             exit_code = authoring.main(
+    1:                 [
+    1:                     "create",
+    1:                     str(self.source),
+    1:                     "--scene",
+    1:                     "GENERAL",
+    1:                     "--source-kind",
+    1:                     "DOCUMENT",
+    1:                     "--output",
+    1:                     str(output),
+    1:                     "--format",
+    1:                     "json",
+                       ]
+                   )
+    1:         self.assertEqual(0, exit_code)
+    1:         result = json.loads(stdout.getvalue())
+    1:         self.assertEqual("NO_HIGH_FINDINGS", result["status"])
+    1:         self.assertFalse(result["completion_claim_allowed"])
+    2:         with self.assertRaisesRegex(authoring.AuthoringError, "NO_PATCH_HUNKS"):
+    2:             authoring.finalize_scaffold(
+    1:                 self.source, output, self.root / "zero-high.selection.json"
+                   )
+       
+       
+    1: if __name__ == "__main__":
+>>>>>>     unittest.main()

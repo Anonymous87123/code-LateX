@@ -163,6 +163,52 @@ class CandidateRevisionPreparationTests(unittest.TestCase):
             )
         self.assertEqual("user content", output.read_text(encoding="utf-8"))
 
+    def test_candidate_and_supersedes_result_reject_duplicate_json_keys(self) -> None:
+        raw = self.candidate.read_text(encoding="utf-8")
+        self.candidate.write_text(
+            '{"candidate_id":"shadow",' + raw.lstrip()[1:],
+            encoding="utf-8",
+        )
+        with self.assertRaisesRegex(revision.RevisionError, "duplicate_json_key:candidate_id"):
+            revision.prepare_revision(self.candidate, self.after_one, self.root / "revision.json")
+
+        self.candidate.write_text(raw, encoding="utf-8")
+        previous = self.root / "previous.result.json"
+        previous.write_text(
+            '{"candidate_sha256":"' + "a" * 64 + '","candidate_sha256":"' + "b" * 64 + '"}',
+            encoding="utf-8",
+        )
+        with self.assertRaisesRegex(revision.RevisionError, "duplicate_json_key:candidate_sha256"):
+            revision.prepare_revision(
+                self.candidate,
+                self.after_one,
+                self.root / "revision.json",
+                supersedes_result_path=previous,
+            )
+
+    def test_candidate_and_supersedes_result_reject_non_finite_json_numbers(self) -> None:
+        raw = self.candidate.read_text(encoding="utf-8")
+        self.candidate.write_text(
+            raw.replace('"candidate_id": "general-001"', '"candidate_id": NaN'),
+            encoding="utf-8",
+        )
+        with self.assertRaisesRegex(revision.RevisionError, "non_finite_json_number:NaN"):
+            revision.prepare_revision(self.candidate, self.after_one, self.root / "revision.json")
+
+        self.candidate.write_text(raw, encoding="utf-8")
+        previous = self.root / "previous.result.json"
+        previous.write_text(
+            '{"candidate_sha256":"' + "a" * 64 + '","poison":Infinity}',
+            encoding="utf-8",
+        )
+        with self.assertRaisesRegex(revision.RevisionError, "non_finite_json_number:Infinity"):
+            revision.prepare_revision(
+                self.candidate,
+                self.after_one,
+                self.root / "revision.json",
+                supersedes_result_path=previous,
+            )
+
 
 if __name__ == "__main__":
     unittest.main()

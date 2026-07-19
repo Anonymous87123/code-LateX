@@ -34,9 +34,30 @@ scanner = load_scanner()
 
 
 class HumanizeLexicalSchemaTests(unittest.TestCase):
+    def test_duplicate_lexicon_keys_fail_closed(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            raw = LEXICON.read_text(encoding="utf-8")
+            path = Path(temp_dir) / "lexicon.json"
+            path.write_text('{"signals":[],' + raw.lstrip()[1:], encoding="utf-8")
+
+            with self.assertRaisesRegex(ValueError, "duplicate JSON key: signals"):
+                scanner.load_lexicon(path)
+
+    def test_non_finite_lexicon_numbers_fail_closed(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            raw = LEXICON.read_text(encoding="utf-8")
+            path = Path(temp_dir) / "lexicon.json"
+            path.write_text(
+                raw.replace('"min_occurrences": 1', '"min_occurrences": Infinity', 1),
+                encoding="utf-8",
+            )
+
+            with self.assertRaisesRegex(ValueError, "non-finite JSON number: Infinity"):
+                scanner.load_lexicon(path)
+
     def test_schema_is_context_aware_and_actionable(self) -> None:
         data = json.loads(LEXICON.read_text(encoding="utf-8"))
-        self.assertEqual("1.2.0", data["schema_version"])
+        self.assertEqual("1.2.2", data["schema_version"])
         self.assertGreaterEqual(len(data["signals"]), 28)
         required = {
             "id",
@@ -55,7 +76,10 @@ class HumanizeLexicalSchemaTests(unittest.TestCase):
         categories = set()
         for signal in data["signals"]:
             self.assertFalse(required - signal.keys(), signal["id"])
-            self.assertTrue(signal["variants"] or signal["regex"], signal["id"])
+            self.assertTrue(
+                signal["variants"] or signal["regex"] or signal.get("structural_matcher"),
+                signal["id"],
+            )
             self.assertIn(signal["action"], {"KEEP", "DELETE", "REWRITE", "REVIEW"})
             self.assertGreaterEqual(signal["threshold"]["min_occurrences"], 1)
             self.assertIn(signal["threshold"]["window"], {"document", "paragraph", "sentence", "line"})
@@ -84,6 +108,7 @@ class HumanizeLexicalSchemaTests(unittest.TestCase):
             "three-part-enumeration-shell",
             "dash-density",
             "bold-emphasis-density",
+            "formula-caption-run",
         }
         self.assertFalse(expected_categories - categories)
 
@@ -125,6 +150,17 @@ class HumanizeLexicalScannerTests(unittest.TestCase):
         )
 
         self.assertIn("LEX-META-01", {item["signal_id"] for item in findings})
+
+    def test_v30_combined_editorial_boundary_and_next_section_forecast_is_located(self) -> None:
+        findings = scanner.scan_text(
+            "该段只交代实验设置，不把它写成研究贡献，也不预告下一节。",
+            file="draft.md",
+            scene="RESEARCH",
+            lexicon=self.lexicon,
+        )
+        meta = [item for item in findings if item["signal_id"] == "LEX-META-01"]
+        self.assertTrue(meta)
+        self.assertTrue(any("不把" in item["matched"] or "不预告" in item["matched"] for item in meta))
 
     def test_v19_abstract_closed_loop_and_path_shell_are_concrete_candidates(self) -> None:
         research = scanner.scan_text(
@@ -326,6 +362,143 @@ class HumanizeLexicalScannerTests(unittest.TestCase):
         self.assertFalse([item for item in general if item["signal_id"] == "LEX-COACH-01"])
         self.assertTrue([item for item in auto if item["signal_id"] == "LEX-COACH-01"])
 
+    def test_course_consecutive_short_formula_captions_are_advisory_candidates(self) -> None:
+        text = (
+            "水平方向合力为\n"
+            " \\(F_x=F-\\mu N.\\)\n"
+            "因此\n"
+            " \\(a=F_x/m.\\)\n"
+            "令 \\(a\\) 取极值：\n"
+            " \\(a'=0.\\)\n"
+            "于是\n"
+            " \\(\\tan\\theta=\\mu.\\)\n"
+        )
+        findings = scanner.scan_text(
+            text,
+            file="course.tex",
+            lexicon=self.lexicon,
+            scene="COURSE",
+        )
+        captions = [
+            item
+            for item in findings
+            if item["signal_id"] == "LEX-COURSE-FORMULA-CAPTION-01"
+        ]
+
+        self.assertEqual(
+            ["水平方向合力为", "因此", "令 \\(a\\) 取极值：", "于是"],
+            [item["matched"] for item in captions],
+        )
+        self.assertTrue(all(item["candidate"] for item in captions))
+        self.assertTrue(all(item["action"] == "REVIEW" for item in captions))
+        self.assertTrue(all(item["severity"] == "medium" for item in captions))
+
+    def test_course_formula_caption_signal_requires_a_run(self) -> None:
+        text = (
+            "由受力关系可得：\n \\(F_x=F-\\mu N.\\)\n"
+            "整理得：\n \\(a=F_x/m.\\)\n"
+            "接着讨论边界条件。\n"
+        )
+        findings = scanner.scan_text(
+            text,
+            file="course.tex",
+            lexicon=self.lexicon,
+            scene="COURSE",
+        )
+
+        self.assertFalse(
+            [
+                item
+                for item in findings
+                if item["signal_id"] == "LEX-COURSE-FORMULA-CAPTION-01"
+            ]
+        )
+
+    def test_course_formula_caption_requires_formula_only_physical_lines(self) -> None:
+        text = (
+            "水平方向\n"
+            "\\(x=1\\) 解释 \\(y=2\\)\n"
+            "竖直方向\n"
+            "$$u=3$$ trailing\n"
+            "回到原式\n"
+            "\\[p=5\\] trailing\n"
+        )
+        findings = scanner.scan_text(
+            text,
+            file="course.tex",
+            lexicon=self.lexicon,
+            scene="COURSE",
+        )
+
+        self.assertFalse(
+            [
+                item
+                for item in findings
+                if item["signal_id"] == "LEX-COURSE-FORMULA-CAPTION-01"
+            ]
+        )
+
+    def test_course_formula_caption_supports_declared_formula_forms(self) -> None:
+        formula_blocks = (
+            "$x=1$",
+            "$$x=1$$",
+            "\\[x=1\\]",
+            "\\[\nx=1\n\\]",
+            "\\begin{equation}\nx=1\n\\end{equation}",
+        )
+        for formula in formula_blocks:
+            with self.subTest(formula=formula):
+                text = "".join(
+                    f"第{label}步\n{formula}\n"
+                    for label in ("一", "二", "三")
+                )
+                findings = scanner.scan_text(
+                    text,
+                    file="course.tex",
+                    lexicon=self.lexicon,
+                    scene="COURSE",
+                )
+                captions = [
+                    item
+                    for item in findings
+                    if item["signal_id"] == "LEX-COURSE-FORMULA-CAPTION-01"
+                ]
+                self.assertEqual(3, len(captions))
+                self.assertTrue(all(item["action"] == "REVIEW" for item in captions))
+                self.assertTrue(all(item["severity"] == "medium" for item in captions))
+
+    def test_course_formula_caption_signal_excludes_formal_labels_and_derivation(self) -> None:
+        texts = (
+            (
+                "定义：\n \\(f(x)=x^2.\\)\n"
+                "命题：\n \\(f(x)\\ge 0.\\)\n"
+                "定理：\n \\(f'(x)=2x.\\)\n"
+            ),
+            "由牛顿第二定律可得：\n\\[\nF=ma\n\\]\n\n整理得：\n\\[\na=F/m\n\\]\n",
+            (
+                "\\begin{definition}\n"
+                "能量关系：\n\\[\nE=mc^2\n\\]\n"
+                "动量关系：\n\\[\np=mv\n\\]\n"
+                "速度关系：\n\\[\nv=p/m\n\\]\n"
+                "\\end{definition}\n"
+            ),
+        )
+        for text in texts:
+            with self.subTest(text=text[:16]):
+                findings = scanner.scan_text(
+                    text,
+                    file="course.tex",
+                    lexicon=self.lexicon,
+                    scene="COURSE",
+                )
+                self.assertFalse(
+                    [
+                        item
+                        for item in findings
+                        if item["signal_id"] == "LEX-COURSE-FORMULA-CAPTION-01"
+                    ]
+                )
+
     def test_high_risk_bridge_and_long_closure_variants_are_located(self) -> None:
         text = (
             "该模型形成了从数据到决策的完整闭环，为工程应用提供有力支撑。"
@@ -349,6 +522,15 @@ class HumanizeLexicalScannerTests(unittest.TestCase):
         self.assertEqual(1, len(foundation))
         self.assertEqual("high", foundation[0]["severity"])
         self.assertEqual("是后续研究的出发点", foundation[0]["matched"])
+
+    def test_foundation_repair_to_reliable_starting_point_is_located(self) -> None:
+        text = "相关结果也为后续研究提供了可靠起点。"
+        findings = scanner.scan_text(text, lexicon=self.lexicon, scene="RESEARCH")
+        foundation = [item for item in findings if item["signal_id"] == "LEX-FOUNDATION-01"]
+
+        self.assertEqual(1, len(foundation))
+        self.assertEqual("high", foundation[0]["severity"])
+        self.assertEqual("为后续研究提供了可靠起点", foundation[0]["matched"])
 
     def test_course_coaching_and_empty_conclusion_synonym_repairs_are_located(self) -> None:
         text = "遇到这类题，必须注意，不要直接套公式。由此可以得出结论。"
@@ -400,6 +582,38 @@ class HumanizeLexicalScannerTests(unittest.TestCase):
         text_output = scanner.render_output(findings, output_format="text", notice=notice)
         self.assertIn("sample.md:1:1", text_output)
         self.assertIn("LEX-EMPH-01", text_output)
+
+    def test_internal_occurrence_view_preserves_exact_character_offsets(self) -> None:
+        text = "甲😀。值得注意的是，结果变化。"
+        findings = scanner.scan_text_with_offsets(
+            text,
+            file="sample.md",
+            lexicon=self.lexicon,
+            scene="AUTO",
+        )
+        target = next(item for item in findings if item["signal_id"] == "LEX-EMPH-01")
+        self.assertEqual("值得注意的是", text[target["start_char"] : target["end_char"]])
+        public = scanner.scan_text(
+            text,
+            file="sample.md",
+            lexicon=self.lexicon,
+            scene="AUTO",
+        )
+        self.assertNotIn("start_char", public[0])
+        self.assertNotIn("end_char", public[0])
+
+    def test_finding_must_be_fully_inside_protected_span_to_be_protected(self) -> None:
+        text = "“形成”研究闭环。"
+        findings = scanner.scan_text_with_offsets(
+            text,
+            file="sample.md",
+            lexicon=self.lexicon,
+            scene="AUTO",
+            include_protected=True,
+        )
+        target = next(item for item in findings if item["signal_id"] == "LEX-MGMT-01")
+        self.assertFalse(target["protected"])
+        self.assertTrue(target["candidate"])
 
     def test_cli_writes_machine_readable_json(self) -> None:
         completed = subprocess.run(

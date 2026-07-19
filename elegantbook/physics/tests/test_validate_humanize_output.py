@@ -99,6 +99,20 @@ class HumanizeOutputValidatorTests(unittest.TestCase):
         self.assertEqual("NOT_PROVIDED", payload["evidence"]["protected_terms"]["status"])
         self.assertEqual("DOCUMENT", payload["evidence"]["document_scope"])
 
+    def test_course_formula_caption_cleanup_preserves_inference_relations(self) -> None:
+        before, after = self.pair(
+            "因此\n \\(a=F/m.\\)\n于是\n \\(\\tan\\theta=\\mu.\\)",
+            " \\(a=F/m.\\)\n \\(\\tan\\theta=\\mu.\\)",
+            suffix=".tex",
+        )
+
+        payload = validator.validate(before, after, scene="COURSE")
+        warning_codes = {item["code"] for item in payload["unaccepted_warnings"]}
+
+        self.assertEqual("REVIEW", payload["delivery_gate_status"])
+        self.assertEqual("REVIEW", payload["speech_act_layer_status"])
+        self.assertIn("SPEECH_ACT_LOGICAL_RELATION_CHANGED", warning_codes)
+
     def test_v24_unseen_collocation_cannot_receive_false_delivery_pass(self) -> None:
         before, after = self.pair(
             "这类题看上去在测长度，其实真正要写的是厚度怎样增长。",
@@ -264,6 +278,18 @@ class HumanizeOutputValidatorTests(unittest.TestCase):
                 for item in payload["unaccepted_warnings"]
             )
         )
+
+    def test_draft_copy_only_never_allows_humanize_quality_claim(self) -> None:
+        supplied, draft = self.pair(
+            "供稿内容保持原样。",
+            "供稿内容保持原样。",
+        )
+
+        payload = validator.validate(supplied, draft, mode="DRAFT", scene="GENERAL")
+
+        self.assertEqual("PASS", payload["status"])
+        self.assertEqual("PASS_COPY_ONLY", payload["semantic_source_check"])
+        self.assertFalse(payload["humanize_quality_claim_allowed"])
 
     def test_draft_mode_rejects_number_not_present_in_supplied_content(self) -> None:
         supplied, draft = self.pair(
@@ -464,6 +490,27 @@ class HumanizeOutputValidatorTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "source_sha256"):
             validator.validate(before, after, scene="GENERAL", report_scope_path=scope)
 
+    def test_report_scope_rejects_duplicate_json_keys(self) -> None:
+        before, after = self.pair("标注段需要改写。", "标注段改得自然。")
+        scope = self.report_scope(before, ["标注段需要改写。"])
+        raw = scope.read_text(encoding="utf-8")
+        scope.write_text('{"status":"FAIL",' + raw.lstrip()[1:], encoding="utf-8")
+
+        with self.assertRaisesRegex(ValueError, "duplicate JSON key: status"):
+            validator.validate(before, after, scene="GENERAL", report_scope_path=scope)
+
+    def test_report_scope_rejects_non_finite_json_numbers(self) -> None:
+        before, after = self.pair("标注段需要改写。", "标注段改得自然。")
+        scope = self.report_scope(before, ["标注段需要改写。"])
+        raw = scope.read_text(encoding="utf-8")
+        scope.write_text(
+            raw.replace('"source_start": 0', '"source_start": NaN', 1),
+            encoding="utf-8",
+        )
+
+        with self.assertRaisesRegex(ValueError, "non-finite JSON number: NaN"):
+            validator.validate(before, after, scene="GENERAL", report_scope_path=scope)
+
     def test_report_scope_rejects_forged_ranges_that_do_not_replay_from_report(self) -> None:
         before, after = self.pair(
             "开头保持。\n\n标注段表述生硬。\n\n结尾保持。\n",
@@ -487,6 +534,25 @@ class HumanizeOutputValidatorTests(unittest.TestCase):
         self.assertEqual("REVIEW", payload["style_signal_layer_status"])
         self.assertEqual("REVIEW", payload["delivery_gate_status"])
         self.assertEqual(1, payload["lexical_summary"]["unexplained_high_candidates"])
+
+    def test_required_style_shell_deletions_do_not_deadlock_speech_act_gate(self) -> None:
+        cases = (
+            (
+                "需要指出的是，问卷结果可能受样本结构影响。",
+                "问卷结果可能受样本结构影响。",
+            ),
+            (
+                "本文梳理三类回答，从而为后续分析提供可靠起点。",
+                "本文梳理三类回答。",
+            ),
+        )
+        for before_text, after_text in cases:
+            with self.subTest(before=before_text):
+                before, after = self.pair(before_text, after_text)
+                payload = validator.validate(before, after, scene="GENERAL")
+                self.assertEqual("PASS", payload["speech_act_layer_status"])
+                self.assertEqual("PASS", payload["mechanical_validation_status"])
+                self.assertEqual("REVIEW", payload["delivery_gate_status"])
 
     def test_v19_closed_loop_and_abstract_path_shell_cannot_silently_pass(self) -> None:
         cases = (
@@ -563,6 +629,8 @@ class HumanizeOutputValidatorTests(unittest.TestCase):
                 "lexicon_sha256",
                 "report_extractor_sha256",
                 "runtime_contract_sha256",
+                "paired_quality_verifier_sha256",
+                "paired_quality_contract_sha256",
             },
             set(request["policy_hashes"]),
         )
@@ -700,6 +768,39 @@ class HumanizeOutputValidatorTests(unittest.TestCase):
             first["warning_review_request"]["warnings"],
             second["warning_review_request"]["warnings"],
         )
+
+    def test_v33_warning_request_carries_occurrence_and_residual_diagnostics(self) -> None:
+        before, after = self.pair(
+            "甲可能成立。乙成立。",
+            "甲成立。乙可能成立。",
+        )
+        payload = validator.validate(before, after, scene="GENERAL")
+        warning = next(
+            item
+            for item in payload["warning_review_request"]["warnings"]
+            if item["code"] == "SPEECH_ACT_MODALITY_SCOPE_CHANGED"
+        )
+
+        self.assertTrue(warning["details"]["before_occurrences"])
+        self.assertTrue(warning["details"]["after_occurrences"])
+        self.assertEqual({}, warning["details"]["raw_delta"]["removed"])
+        self.assertEqual(2, len(warning["details"]["residual_delta"]))
+        self.assertEqual("REVIEW", payload["speech_act_layer_status"])
+
+    def test_v33_inherited_tension_is_exposed_without_changing_layer_status(self) -> None:
+        before, after = self.pair(
+            "该结果可能证明机制成立。",
+            "该结果可能证明机制成立。",
+        )
+        payload = validator.validate(before, after, scene="RESEARCH")
+
+        self.assertEqual("PASS", payload["speech_act_layer_status"])
+        self.assertEqual(1, len(payload["speech_act_diagnostics"]))
+        self.assertEqual(
+            "SPEECH_ACT_INHERITED_CLAIM_STRENGTH_TENSION",
+            payload["speech_act_diagnostics"][0]["code"],
+        )
+        self.assertNotIn("speech_act_warning", payload["review_reasons"])
 
     def test_attribution_source_upgrade_cannot_silently_pass(self) -> None:
         before, after = self.pair(
@@ -1543,6 +1644,21 @@ class HumanizeOutputValidatorTests(unittest.TestCase):
         self.assertEqual(2, payload["exit_code"])
         self.assertIn("LEX-FOUNDATION-01", high_ids)
 
+    def test_v33_forward_reliable_starting_point_cannot_receive_style_pass(self) -> None:
+        before, after = self.pair(
+            "现有数据并不能证明界面重排是唯一原因。"
+            "本研究深刻揭示了该现象的内在机制，并为后续研究奠定了坚实基础。",
+            "现有数据并不能证明界面重排是唯一原因。"
+            "本研究由此阐明了该现象的内在机制，相关结果也为后续研究提供了可靠起点。",
+        )
+
+        payload = validator.validate(before, after, scene="RESEARCH")
+        high_ids = {item["signal_id"] for item in payload["unexplained_high_findings"]}
+
+        self.assertEqual("REVIEW", payload["delivery_gate_status"])
+        self.assertEqual("REVIEW", payload["style_signal_layer_status"])
+        self.assertIn("LEX-FOUNDATION-01", high_ids)
+
     def test_fresh_course_synonym_repairs_cannot_receive_false_pass(self) -> None:
         before, after = self.pair(
             "\\begin{solution}必须牢记，遇到这类题千万不要直接套公式。"
@@ -1561,6 +1677,94 @@ class HumanizeOutputValidatorTests(unittest.TestCase):
         self.assertEqual(2, payload["exit_code"])
         self.assertIn("LEX-COACH-01", high_ids)
         self.assertIn("LEX-CONCLUDE-01", introduced_ids)
+
+    def test_v34_course_source_conflict_selection_has_a_specific_review_reason(self) -> None:
+        before, after = self.pair(
+            "若已知速度随时间减小，就可以直接套用匀变速公式。\n"
+            "先确认题目给出的量是否满足匀变速条件；若条件不满足，"
+            "不能因为公式看起来相似就直接代入。",
+            "看到速度随时间减小，不能据此直接套用匀变速公式。\n"
+            "先确认题目给出的量是否满足匀变速条件；若条件不满足，"
+            "即使公式形式相似，也不能直接代入。",
+            suffix=".tex",
+        )
+
+        payload = validator.validate(before, after, scene="COURSE")
+        warning_codes = {
+            item["code"] for item in payload["unaccepted_warnings"]
+        }
+
+        self.assertEqual("REVIEW", payload["delivery_gate_status"])
+        self.assertEqual("REVIEW", payload["speech_act_layer_status"])
+        self.assertIn("speech_act_warning", payload["review_reasons"])
+        self.assertIn(
+            "SPEECH_ACT_SOURCE_POLARITY_TENSION_SELECTED",
+            warning_codes,
+        )
+        request_codes = {
+            item["code"] for item in payload["warning_review_request"]["warnings"]
+        }
+        self.assertIn(
+            "SPEECH_ACT_SOURCE_POLARITY_TENSION_SELECTED",
+            request_codes,
+        )
+
+    def test_v34_draft_derived_comparison_from_numbers_requires_review(self) -> None:
+        before, after = self.pair(
+            "甲的降幅为 20.5%，乙的降幅为 24.9%。"
+            "污染情景下两者降幅为 45.0% 和 38.0%。"
+            "这一情景用于比较污染叠加对基线收益的侵蚀。",
+            "甲的降幅为 20.5%，乙的降幅为 24.9%，因此乙的降幅更大。"
+            "污染情景下两者降幅为 45.0% 和 38.0%，均高于前一情景，"
+            "反映出污染叠加对基线收益的进一步侵蚀。",
+        )
+
+        payload = validator.validate(before, after, mode="DRAFT", scene="MODELING")
+        warnings = {
+            item["code"]: item for item in payload["unaccepted_warnings"]
+        }
+
+        self.assertEqual("REVIEW", payload["delivery_gate_status"])
+        self.assertEqual("REVIEW", payload["speech_act_layer_status"])
+        self.assertIn("DRAFT_DERIVED_COMPARISON_NOT_SUPPLIED", warnings)
+        details = warnings["DRAFT_DERIVED_COMPARISON_NOT_SUPPLIED"]["details"]
+        self.assertEqual("NOT_EVALUATED", details["semantic_entailment"])
+        self.assertEqual("PRESERVE_EXPLICIT_SUPPLIED_RELATIONS", details["required_action"])
+        self.assertGreaterEqual(len(details["introduced_candidates"]), 2)
+        self.assertIn(
+            "derived_comparison_markers",
+            payload["draft_surface_source_check"]["scope"],
+        )
+
+    def test_v34_explicitly_supplied_comparison_does_not_trigger_draft_warning(self) -> None:
+        before, after = self.pair(
+            "甲的降幅为 20.5%，乙的降幅为 24.9%，乙的降幅更大。",
+            "乙的降幅更大：甲为 20.5%，乙为 24.9%。",
+        )
+
+        payload = validator.validate(before, after, mode="DRAFT", scene="MODELING")
+        warning_codes = {
+            item["code"] for item in payload["unaccepted_warnings"]
+        }
+        self.assertNotIn("DRAFT_DERIVED_COMPARISON_NOT_SUPPLIED", warning_codes)
+
+    def test_v35_real_material_predicate_upgrade_reaches_delivery_review_request(self) -> None:
+        before, after = self.pair(
+            "综合健康指数是内部比较指标，不是外部生态健康验证。",
+            "综合健康指数验证了实际生态健康状况。",
+        )
+        payload = validator.validate(before, after, scene="MODELING")
+        warning_codes = {item["code"] for item in payload["unaccepted_warnings"]}
+        request_codes = {
+            item["code"] for item in payload["warning_review_request"]["warnings"]
+        }
+
+        self.assertEqual("REVIEW", payload["delivery_gate_status"])
+        self.assertEqual(2, payload["exit_code"])
+        self.assertEqual("REVIEW", payload["speech_act_layer_status"])
+        self.assertIn("SPEECH_ACT_INTERNAL_TO_EXTERNAL_VALIDATION", warning_codes)
+        self.assertIn("SPEECH_ACT_INTERNAL_TO_EXTERNAL_VALIDATION", request_codes)
+        self.assertFalse(payload["humanize_quality_claim_allowed"])
 
 
 if __name__ == "__main__":

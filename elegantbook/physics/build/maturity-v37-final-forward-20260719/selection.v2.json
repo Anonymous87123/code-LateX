@@ -1,0 +1,101 @@
+{
+  "schema_version": "humanize-short-patch-selection/v2",
+  "requested_output": "PATCH",
+  "mode": "REWRITE",
+  "scene": "COURSE",
+  "intensity": "BALANCED",
+  "protected_terms": [
+    "匀变速公式",
+    "匀变速条件",
+    "加速度方向"
+  ],
+  "hunks": [
+    {
+      "hunk_id": "H001",
+      "decision": "REWRITE",
+      "source_text": "值得注意的是，遇到这类题目时必须牢记公式。",
+      "start_byte": null,
+      "replacement": "遇到这类题目时，必须判断公式能否直接套用。",
+      "reason": "删除空重点提示，把无对象的记忆命令改为原文已有的公式适用性判断，同时保留必须的模态强度。"
+    },
+    {
+      "hunk_id": "H002",
+      "decision": "UNRESOLVED",
+      "source_text": "若已知速度随时间减小，就可以直接套用匀变速公式。",
+      "start_byte": null,
+      "replacement": "若已知速度随时间减小，就可以直接套用匀变速公式。",
+      "reason": "该句与后文关于直接代入的条件限制形成相对主张，纯文风层不判断哪一方正确。"
+    },
+    {
+      "hunk_id": "H003",
+      "decision": "DELETE_STYLE_SHELL",
+      "source_text": "这个结论具有重要意义，能够为后续学习奠定基础。",
+      "start_byte": null,
+      "replacement": "",
+      "reason": "泛化价值判断和后续铺垫没有给出具体学习对象、动作或后果，作为风格句壳整句删除。"
+    },
+    {
+      "hunk_id": "H004",
+      "decision": "UNRESOLVED",
+      "source_text": "先确认题目给出的量是否满足匀变速条件，再判断公式中的加速度方向；若条件不满足，不能因为公式看起来相似就直接代入。",
+      "start_byte": null,
+      "replacement": "先确认题目给出的量是否满足匀变速条件，再判断公式中的加速度方向；若条件不满足，不能因为公式看起来相似就直接代入。",
+      "reason": "该条件限制与前文允许直接套用的说法成对未决，必须原样保留并等待独立学科裁决。"
+    }
+  ],
+  "coverage": {
+    "source_kind": "DOCUMENT",
+    "lexical_keeps": [],
+    "selected_spans": [
+      {
+        "selection_id": "S001",
+        "source_text": "值得注意的是，遇到这类题目时必须牢记公式。",
+        "start_byte": null,
+        "decision": "HUNK",
+        "hunk_id": "H001",
+        "reason": "用户要求处理可明确定位的空重点和教练命令，该整句由保留模态强度的改写 hunk 处置。"
+      },
+      {
+        "selection_id": "S002",
+        "source_text": "若已知速度随时间减小，就可以直接套用匀变速公式。",
+        "start_byte": null,
+        "decision": "HUNK",
+        "hunk_id": "H002",
+        "reason": "直接套用的许可主张按用户要求绑定到原样未决 hunk。"
+      },
+      {
+        "selection_id": "S003",
+        "source_text": "这个结论具有重要意义，能够为后续学习奠定基础。",
+        "start_byte": null,
+        "decision": "HUNK",
+        "hunk_id": "H003",
+        "reason": "用户要求处理泛化意义和后续铺垫，该整句由删除 hunk 处置。"
+      },
+      {
+        "selection_id": "S004",
+        "source_text": "不要只看公式的形式。",
+        "start_byte": null,
+        "decision": "KEEP",
+        "hunk_id": null,
+        "reason": "该句指向随后明确展开的适用条件误读，具有具体课程纠偏功能，按 COURSE 规则原样保留。"
+      },
+      {
+        "selection_id": "S005",
+        "source_text": "先确认题目给出的量是否满足匀变速条件，再判断公式中的加速度方向；若条件不满足，不能因为公式看起来相似就直接代入。",
+        "start_byte": null,
+        "decision": "HUNK",
+        "hunk_id": "H004",
+        "reason": "条件限制主张按用户要求绑定到原样未决 hunk。"
+      }
+    ],
+    "explicit_conflicts": [
+      {
+        "conflict_id": "C001",
+        "rule_code": "OPPOSING_PERMISSION",
+        "left_hunk_id": "H002",
+        "right_hunk_id": "H004",
+        "reason": "一处允许直接套用，另一处要求先核条件并在条件不满足时禁止直接代入；纯文风层不裁决。"
+      }
+    ]
+  }
+}

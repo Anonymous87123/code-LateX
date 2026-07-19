@@ -1,0 +1,105 @@
+{
+  "coverage": {
+    "explicit_conflicts": [
+      {
+        "conflict_id": "C001",
+        "left_hunk_id": "H003",
+        "reason": "前文允许直接套用匀变速公式，后文要求先核对条件并在条件不满足时禁止直接代入，纯文风层不能裁决两者。",
+        "right_hunk_id": "H005",
+        "rule_code": "OPPOSING_PERMISSION"
+      }
+    ],
+    "lexical_keeps": [],
+    "selected_spans": [
+      {
+        "decision": "HUNK",
+        "hunk_id": "H001",
+        "reason": "本次补丁显式处理段首空重点提示壳。",
+        "selection_id": "S001",
+        "source_text": "值得注意的是，",
+        "start_byte": 24
+      },
+      {
+        "decision": "HUNK",
+        "hunk_id": "H002",
+        "reason": "本次补丁显式处理无条件记忆公式的教练式命令。",
+        "selection_id": "S002",
+        "source_text": "遇到这类题目时必须牢记公式。",
+        "start_byte": 45
+      },
+      {
+        "decision": "HUNK",
+        "hunk_id": "H003",
+        "reason": "本次补丁绑定允许直接套用公式的冲突一侧并保持原样未决。",
+        "selection_id": "S003",
+        "source_text": "若已知速度随时间减小，就可以直接套用匀变速公式。",
+        "start_byte": 87
+      },
+      {
+        "decision": "HUNK",
+        "hunk_id": "H004",
+        "reason": "本次补丁显式处理泛化意义和后续基础桥接句。",
+        "selection_id": "S004",
+        "source_text": "这个结论具有重要意义，能够为后续学习奠定基础。",
+        "start_byte": 159
+      },
+      {
+        "decision": "HUNK",
+        "hunk_id": "H005",
+        "reason": "本次补丁绑定禁止条件不足时直接代入的冲突另一侧并保持原样未决。",
+        "selection_id": "S005",
+        "source_text": "若条件不满足，不能因为公式看起来相似就直接代入。",
+        "start_byte": 414
+      }
+    ],
+    "source_kind": "DOCUMENT"
+  },
+  "hunks": [
+    {
+      "decision": "DELETE_STYLE_SHELL",
+      "hunk_id": "H001",
+      "reason": "删除没有新增学习对象或判断条件的空重点提示壳。",
+      "replacement": "",
+      "source_text": "值得注意的是，",
+      "start_byte": 24
+    },
+    {
+      "decision": "REWRITE",
+      "hunk_id": "H002",
+      "reason": "保留解题提醒，将无条件记忆口令改为原文后段已经给出的条件辨认动作。",
+      "replacement": "遇到这类题目时，先看公式的适用条件。",
+      "source_text": "遇到这类题目时必须牢记公式。",
+      "start_byte": 45
+    },
+    {
+      "decision": "UNRESOLVED",
+      "hunk_id": "H003",
+      "reason": "该句给出直接套用公式的许可，与后文的条件限制形成来源内部张力，纯文风层不判断其正确性。",
+      "replacement": "若已知速度随时间减小，就可以直接套用匀变速公式。",
+      "source_text": "若已知速度随时间减小，就可以直接套用匀变速公式。",
+      "start_byte": 87
+    },
+    {
+      "decision": "DELETE_STYLE_SHELL",
+      "hunk_id": "H004",
+      "reason": "整句仅作泛化价值拔高和自动后续桥接，删除不损失独立的物理条件或计算命题。",
+      "replacement": "",
+      "source_text": "这个结论具有重要意义，能够为后续学习奠定基础。",
+      "start_byte": 159
+    },
+    {
+      "decision": "UNRESOLVED",
+      "hunk_id": "H005",
+      "reason": "该句禁止在条件不满足时直接代入，与前文的直接套用许可成对保留，等待学科或用户裁决。",
+      "replacement": "若条件不满足，不能因为公式看起来相似就直接代入。",
+      "source_text": "若条件不满足，不能因为公式看起来相似就直接代入。",
+      "start_byte": 414
+    }
+  ],
+  "intensity": "BALANCED",
+  "mode": "REWRITE",
+  "protected_terms": [],
+  "requested_output": "CLEAN",
+  "scene": "COURSE",
+  "schema_version": "humanize-short-patch-selection/v2"
+}

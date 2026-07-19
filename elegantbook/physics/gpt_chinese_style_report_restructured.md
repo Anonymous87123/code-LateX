@@ -2327,3 +2327,21 @@ validator 通过。资格合同为 `2026-07-17.14 / 2.7.0 / 1.7.0`，新增 `LON
 [v24 详细章节](pure_academic_humanize_skill_report.md#28-v24候选处置闭集与真实-decline-前向验证)、
 [finalization metadata](build/maturity-v24-20260717/forward-real-pair/pair-run/finalization_metadata.json) 和
 [qualification](build/qualification-maturity-v24-20260717-no-manifest-final.json)。
+
+### 2.57 语言结论进入生产工具后的边界：2026-07-20 补充
+
+前述语料分析给出的“删主持壳、把范围落到对象、拒绝空泛完成态”等抓手，已经进入 `humanize-academic-chinese` 的词项、场景、长文和候选审计合同；GPT 生成或来源不明的 Markdown/TeX 仍只作负向语料，不作真人 Voice 正例。工具链也继续区分三件事：语言信号命中、候选工件机械自洽、外部质量与学术审查。三者不能相互冒充。
+
+本轮工程补充专门处理长文 finalizer 的编译子进程收容：Linux wrapper 使用 child subreaper 和信号清理，Popen 固定 `-I -S` 启动隔离，`/proc` fallback 在 wrapper 中途退出时 fail closed；Windows Job Object 的异常路径保证 handle 关闭，未入 Job 的进程采用有界直接 kill 重试。它们解决的是“异常时不能假装闭环”，不是新增语言风格结论。
+
+现行机器 checkpoint（2026-07-20）为 `164` 项 finalizer 测试通过、`43` 项 projection 测试通过、全量 `926` 项测试通过；分别有 `2/1/8` 项环境跳过。两份 38 文件 projection 逐路径、长度和 SHA-256 一致，projection policy 已升级到 `1.16.0`，capability/tree/manifest 分别为：
+
+```text
+10db5c1b9666164e06a9929bfb6ab15be821302e0538fe8ae6534f707bed8579
+cb595dfa5a2a17b098078b59b0cdc6f5370b3f398d63cdac5069c04d676cde7a
+78dca81b684bba29539fec607ff28a5164be3cc2d8bcc0927ba3ec06dd4f25c6
+```
+
+状态管道现在只接受恰好一条严格 `cleanup/command_exit` 记录，并绑定 wrapper 实际退出码；多记录、额外字段、退出码错配、超量或超时均降为 `FAIL`。无编译命令时 `timeout_seconds=null`，非法 timeout 在 finalize 入口统一拒绝；wrapper/Job 启动异常也会生成结构化 `compile_check=FAIL`，不再只抛出未审计异常。
+
+本机没有可运行的 Linux 发行版，真实 subreaper + detached `setsid()` 集成测试仍为 `SKIPPED`；不能把 Windows 回归和 Linux mock 测试写成跨平台实证。生成资格仍是 `NOT_EVALUATED`，证据上限仍为 E2，正常长文交付仍应停在可复核的 `REVIEW_CANDIDATE`。

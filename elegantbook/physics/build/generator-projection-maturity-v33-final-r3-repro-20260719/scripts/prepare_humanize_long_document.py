@@ -1,0 +1,1977 @@
+#!/usr/bin/env python3
+"""Prepare auditable Markdown/TeX units for long-document humanization.
+
+This command never edits the source document. It freezes readable bytes,
+discovers TeX includes, creates conservative units, masks protected spans, and
+initializes a coverage ledger whose entries are never falsely marked DONE.
+"""
+
+from __future__ import annotations
+
+import argparse
+import csv
+import hashlib
+import json
+import re
+import shutil
+import sys
+from collections import Counter, deque
+from datetime import datetime, timezone
+from pathlib import Path, PurePosixPath
+from typing import Any, Iterable, Sequence
+
+
+SCRIPT_DIR = Path(__file__).resolve().parent
+if str(SCRIPT_DIR) not in sys.path:
+    sys.path.insert(0, str(SCRIPT_DIR))
+
+import scan_humanize_chinese as lexical  # noqa: E402
+import build_humanize_voice_profile as voice_profiles  # noqa: E402
+import validate_humanize_voice_profile as voice_profile_validator  # noqa: E402
+import route_humanize_scene as scene_router  # noqa: E402
+import validate_humanize_output as output_validator  # noqa: E402
+
+
+# Plain text follows the Markdown-like paragraph/protection path: it has no
+# heading syntax, but still receives a frozen file/paragraph ledger.
+TEXT_SUFFIXES = {".tex", ".ltx", ".md", ".markdown", ".txt"}
+EXCLUDED_DIRS = {
+    ".git",
+    ".hg",
+    ".svn",
+    ".cache",
+    ".pytest_cache",
+    "__pycache__",
+    "build",
+    "dist",
+    "node_modules",
+}
+INCLUDE_RE = re.compile(r"\\(?P<kind>input|include|subfile)\s*\{(?P<path>[^{}]+)\}")
+TEX_HEADING_RE = re.compile(
+    r"(?m)^\s*\\(?P<level>part|chapter|section|subsection|subsubsection|paragraph)"
+    r"\*?\s*(?:\[[^\]\n]*\]\s*)?\{(?P<title>[^{}\n]*)\}[^\n]*"
+)
+MD_HEADING_RE = re.compile(r"(?m)^(?P<marks>#{1,6})[ \t]+(?P<title>[^\n]+?)\s*$")
+TEX_ENV_RE = re.compile(r"\\(?P<kind>begin|end)\s*\{(?P<name>[^{}\s]+)\}")
+CRITICAL_TEX_RE = re.compile(
+    r"\\(?:label|(?:auto|c|C|eq|page)?ref|"
+    r"cite(?:alp|alt|author|p|t|year|yearpar)?|"
+    r"(?:auto|foot|full|no|paren|smart|super|text)cite|"
+    r"url|path|verb|input|include|subfile|includegraphics)\*?"
+    r"(?:\s*\[[^\]\n]*\])*\s*\{[^{}\n]*\}"
+)
+TEX_COMMAND_TOKEN_RE = re.compile(r"\\[A-Za-z@]+\*?|\\[^A-Za-z\s]")
+PROTECTED_PLACEHOLDER_RE = re.compile(
+    r"\[\[PROTECTED:(?P<id>[^:\]\s]+):(?P<hash>[0-9a-f]{12})\]\]"
+)
+EDITABLE_STYLE_WRAPPERS = {"emph", "textbf", "textit"}
+REWRITE_INTENSITIES = {"LIGHT", "BALANCED", "STRUCTURAL"}
+STRUCTURAL_PLAN_SCHEMA = "humanize-structural-plan/v1"
+STRUCTURAL_TRANSACTION_SCOPES = {"NONE", "ADJACENT_PAIR"}
+STRUCTURAL_TRANSACTION_INVENTORY_SCHEMA = (
+    "humanize-structural-transaction-inventory/v1"
+)
+STRUCTURAL_TRANSACTION_SCHEMA = "humanize-structural-adjacent-pair-transaction/v1"
+STRUCTURAL_TRANSACTION_POLICY_REVISION = "1.0.0"
+STRUCTURAL_TRANSACTION_VOICE_FIELDS = (
+    "voice_profile_id",
+    "voice_profile_revision",
+    "voice_profile_confidence",
+    "voice_profile_kind",
+    "voice_profile_source",
+    "voice_profile_binding_scene",
+    "voice_profile_sha256",
+    "voice_default_disclosure",
+)
+STRUCTURAL_TRANSACTION_POLICY = {
+    "schema_version": "humanize-structural-transaction-eligibility-policy/v1",
+    "revision": STRUCTURAL_TRANSACTION_POLICY_REVISION,
+    "candidate_scope": "ADJACENT_PAIR",
+    "candidate_cardinality": 2,
+    "authority": "SCOPE_PERMISSION_AND_MECHANICAL_CANDIDATES_ONLY",
+    "execution_gate": "BOUND_TRANSACTION_BUNDLE_REQUIRED",
+    "overlap_policy": "OVERLAPPING_EDGES_ALLOWED_CONSUMER_MUST_REJECT_SHARED_UNIT",
+    "required_predicates": [
+        "BOTH_STRUCTURAL",
+        "BOTH_PENDING",
+        "SAME_FILE",
+        "CONSECUTIVE_FILE_UNIT_ORDINAL",
+        "PHYSICALLY_CONTIGUOUS_OFFSETS",
+        "MUTUAL_CONTEXT_LINKS",
+        "SAME_HEADING_PATH",
+        "CONSECUTIVE_HEADING_PART",
+        "SAME_SCENE",
+        "SAME_FULL_VOICE_PROJECTION",
+        "UNIT_SCOPE_REMAINS_LOCKED",
+    ],
+}
+PREPARE_INTEGRITY_SCHEMA_VERSION = 2
+POLICY_SNAPSHOT_SCHEMA = "humanize-long-document-policy-snapshot/v1"
+PREPARE_INTEGRITY_PURPOSE = (
+    "Strict integrity seal for prepare artifacts; finalize must verify and "
+    "independently rebuild state before trusting unit or transaction candidates."
+)
+YAML_FRONTMATTER_RE = re.compile(r"\A---\s*\n.*?\n---\s*(?:\n|\Z)", re.DOTALL)
+MD_LINK_TARGET_RE = re.compile(r"!?\[[^\]\n]*\]\((?P<target>[^)\n]+)\)")
+HAN_RE = re.compile(r"[\u3400-\u9fff]")
+IGNORED_CONTAINER_ENVS = {"document"}
+
+
+def utc_now() -> str:
+    return datetime.now(timezone.utc).isoformat(timespec="seconds")
+
+
+def sha256(raw: bytes) -> str:
+    return hashlib.sha256(raw).hexdigest()
+
+
+def canonical_sha256(value: Any) -> str:
+    return sha256(
+        json.dumps(
+            value,
+            ensure_ascii=False,
+            sort_keys=True,
+            separators=(",", ":"),
+        ).encode("utf-8")
+    )
+
+
+def build_policy_snapshot() -> dict[str, Any]:
+    """Freeze every executable/reference surface that finalize consumes."""
+    root = Path(__file__).resolve().parent.parent
+    implementation_paths = {
+        "prepare_script_sha256": Path(__file__).resolve(),
+        "finalize_script_sha256": root / "scripts" / "finalize_humanize_long_document.py",
+        "scene_router_sha256": Path(scene_router.__file__).resolve(),
+        "voice_profile_builder_sha256": Path(voice_profiles.__file__).resolve(),
+        "voice_profile_validator_sha256": Path(voice_profile_validator.__file__).resolve(),
+        "negative_guard_loader_sha256": root / "scripts" / "load_humanize_negative_guards.py",
+    }
+    implementation_hashes = {
+        name: sha256(path.read_bytes())
+        for name, path in sorted(implementation_paths.items())
+    }
+    return {
+        "schema_version": POLICY_SNAPSHOT_SCHEMA,
+        "validator_policy_hashes": output_validator._policy_hashes(),
+        "implementation_hashes": implementation_hashes,
+        "runtime": {
+            "python_implementation": sys.implementation.name,
+            "python_cache_tag": sys.implementation.cache_tag,
+            "python_version": list(sys.version_info[:3]),
+        },
+    }
+
+
+def policy_snapshot_sha256(snapshot: dict[str, Any]) -> str:
+    return canonical_sha256(snapshot)
+
+
+def validate_policy_snapshot(
+    snapshot: Any,
+    expected_sha256: Any,
+) -> None:
+    if not isinstance(snapshot, dict) or snapshot.get("schema_version") != POLICY_SNAPSHOT_SCHEMA:
+        raise ValueError("run policy snapshot schema mismatch")
+    if not isinstance(expected_sha256, str) or not re.fullmatch(r"[0-9a-f]{64}", expected_sha256):
+        raise ValueError("run policy snapshot hash is invalid")
+    if policy_snapshot_sha256(snapshot) != expected_sha256:
+        raise ValueError("run policy snapshot self-hash mismatch")
+    current = build_policy_snapshot()
+    if current != snapshot:
+        raise ValueError("run policy snapshot drift")
+
+
+def _prepare_artifact_paths(output: Path) -> list[Path]:
+    paths = [
+        output / "snapshot.json",
+        output / "file_manifest.csv",
+        output / "protected_spans.jsonl",
+        output / "units.jsonl",
+        output / "coverage_ledger.csv",
+        output / "run_metadata.json",
+        output / "scene_routing_policy.json",
+        output / "structural_transaction_inventory.json",
+    ]
+    paths.extend(
+        path
+        for path in (
+            output / "voice_profile.json",
+            output / "voice_profile_set.json",
+        )
+        if path.is_file()
+    )
+    profiles_dir = output / "voice_profiles"
+    if profiles_dir.is_dir():
+        paths.extend(profiles_dir.glob("*.json"))
+    paths.extend(
+        path
+        for path in (
+            output / "voice_sample_manifest.json",
+            output / "voice_sample_spec.json",
+        )
+        if path.is_file()
+    )
+    paths.extend((output / "chunks").glob("*.json"))
+    return sorted(
+        paths,
+        key=lambda path: str(path.relative_to(output)).replace("\\", "/"),
+    )
+
+
+def build_integrity_manifest(output: Path) -> dict[str, Any]:
+    """Fingerprint every prepare artifact that finalize must treat as a snapshot."""
+    artifacts: list[dict[str, Any]] = []
+    for path in _prepare_artifact_paths(output):
+        if not path.is_file():
+            raise FileNotFoundError(path)
+        artifacts.append({
+            "path": str(path.relative_to(output)).replace("\\", "/"),
+            "sha256": sha256(path.read_bytes()),
+            "bytes": path.stat().st_size,
+        })
+    return {
+        "schema_version": PREPARE_INTEGRITY_SCHEMA_VERSION,
+        "purpose": PREPARE_INTEGRITY_PURPOSE,
+        "artifacts": artifacts,
+    }
+
+
+def validate_integrity_manifest(output: Path, manifest: dict[str, Any]) -> None:
+    """Validate the exact v2 artifact contract before writing its self-seal."""
+    if not isinstance(manifest, dict) or set(manifest) != {
+        "schema_version",
+        "purpose",
+        "artifacts",
+    }:
+        raise ValueError("integrity manifest fields mismatch")
+    if manifest.get("schema_version") != PREPARE_INTEGRITY_SCHEMA_VERSION:
+        raise ValueError("integrity manifest schema mismatch")
+    if manifest.get("purpose") != PREPARE_INTEGRITY_PURPOSE:
+        raise ValueError("integrity manifest purpose mismatch")
+    artifacts = manifest.get("artifacts")
+    if not isinstance(artifacts, list) or not artifacts:
+        raise ValueError("integrity manifest has no artifacts")
+
+    paths: list[str] = []
+    for item in artifacts:
+        if not isinstance(item, dict) or set(item) != {"path", "sha256", "bytes"}:
+            raise ValueError("integrity artifact fields mismatch")
+        relative = item.get("path")
+        if not isinstance(relative, str):
+            raise ValueError("integrity artifact path invalid")
+        pure = PurePosixPath(relative)
+        if (
+            pure.is_absolute()
+            or pure.as_posix() != relative
+            or any(part in {"", ".", ".."} for part in pure.parts)
+        ):
+            raise ValueError("integrity artifact path invalid")
+        digest = item.get("sha256")
+        if not isinstance(digest, str) or not re.fullmatch(r"[0-9a-f]{64}", digest):
+            raise ValueError("integrity artifact sha256 invalid")
+        byte_count = item.get("bytes")
+        if (
+            not isinstance(byte_count, int)
+            or isinstance(byte_count, bool)
+            or byte_count < 0
+        ):
+            raise ValueError("integrity artifact bytes invalid")
+        paths.append(relative)
+
+    if paths != sorted(set(paths)):
+        raise ValueError("integrity artifact paths must be unique and sorted")
+    expected_paths = [
+        str(path.relative_to(output)).replace("\\", "/")
+        for path in _prepare_artifact_paths(output)
+    ]
+    if paths != expected_paths:
+        raise ValueError("integrity artifact set mismatch")
+    for item in artifacts:
+        path = output / item["path"]
+        if not path.is_file():
+            raise ValueError("integrity artifact missing: " + item["path"])
+        if path.stat().st_size != item["bytes"]:
+            raise ValueError("integrity artifact bytes mismatch: " + item["path"])
+        if sha256(path.read_bytes()) != item["sha256"]:
+            raise ValueError("integrity artifact sha256 mismatch: " + item["path"])
+
+
+def read_fixed_bytes(path: Path, length: int) -> bytes:
+    """Read no more than the byte length captured before the read began."""
+    with path.open("rb") as handle:
+        return handle.read(length)
+
+
+def decode_snapshot(raw: bytes) -> tuple[str | None, str | None, str | None]:
+    def control_problem(text: str) -> str | None:
+        disallowed = [
+            (index, ord(char))
+            for index, char in enumerate(text)
+            if (ord(char) < 32 and char not in "\t\n\r") or 0x7F <= ord(char) <= 0x9F
+        ]
+        if not disallowed:
+            return None
+        index, codepoint = disallowed[0]
+        return f"control_characters:{len(disallowed)}:first={index}:U+{codepoint:04X}"
+
+    if raw.startswith((b"\xff\xfe", b"\xfe\xff")):
+        return None, None, "unsupported_utf16_bom"
+    try:
+        encoding = "utf-8-sig" if raw.startswith(b"\xef\xbb\xbf") else "utf-8"
+        text = raw.decode("utf-8-sig")
+        problem = control_problem(text)
+        return (None, None, problem) if problem else (text, encoding, None)
+    except UnicodeDecodeError as utf8_error:
+        try:
+            text = raw.decode("gb18030")
+            problem = control_problem(text)
+            if problem:
+                return None, None, f"utf8_failed:{utf8_error.start};{problem}"
+            return text, "gb18030", f"utf8_failed:{utf8_error.start}"
+        except UnicodeDecodeError as local_error:
+            return None, None, f"utf8_failed:{utf8_error.start};gb18030_failed:{local_error.start}"
+
+
+def _strip_tex_comments(text: str) -> str:
+    output: list[str] = []
+    for line in text.splitlines(keepends=True):
+        cut = None
+        for index, char in enumerate(line):
+            if char != "%":
+                continue
+            backslashes = 0
+            cursor = index - 1
+            while cursor >= 0 and line[cursor] == "\\":
+                backslashes += 1
+                cursor -= 1
+            if backslashes % 2 == 0:
+                cut = index
+                break
+        if cut is None:
+            output.append(line)
+        else:
+            ending = "\n" if line.endswith("\n") else ""
+            output.append(line[:cut] + ending)
+    return "".join(output)
+
+
+def discover_tex_includes(path: Path, text: str) -> list[tuple[str, Path]]:
+    discovered: list[tuple[str, Path]] = []
+    for match in INCLUDE_RE.finditer(_strip_tex_comments(text)):
+        raw_target = match.group("path").strip()
+        if not raw_target or "\\" in raw_target or "#" in raw_target:
+            continue
+        target = Path(raw_target)
+        if not target.suffix:
+            target = target.with_suffix(".tex")
+        if not target.is_absolute():
+            target = path.parent / target
+        discovered.append((match.group("kind"), target.resolve()))
+    return discovered
+
+
+def discover_unresolved_tex_includes(text: str) -> list[tuple[str, str]]:
+    unresolved: list[tuple[str, str]] = []
+    for match in INCLUDE_RE.finditer(_strip_tex_comments(text)):
+        raw_target = match.group("path").strip()
+        if not raw_target or "\\" in raw_target or "#" in raw_target:
+            unresolved.append((match.group("kind"), raw_target))
+    return unresolved
+
+
+def _path_key(path: Path) -> str:
+    return str(path.resolve()).casefold()
+
+
+def _directory_inputs(root: Path) -> Iterable[Path]:
+    for path in root.rglob("*"):
+        if not path.is_file() or path.suffix.lower() not in TEXT_SUFFIXES:
+            continue
+        relative_parts = path.relative_to(root).parts[:-1]
+        if any(part.casefold() in EXCLUDED_DIRS for part in relative_parts):
+            continue
+        yield path.resolve()
+
+
+def collect_seed_paths(values: Sequence[Path]) -> list[Path]:
+    seeds: set[Path] = set()
+    for value in values:
+        path = value.resolve()
+        if path.is_file():
+            seeds.add(path)
+        elif path.is_dir():
+            seeds.update(_directory_inputs(path))
+        else:
+            raise FileNotFoundError(value)
+    return sorted(seeds, key=lambda item: str(item).casefold())
+
+
+def _line_starts(text: str) -> list[int]:
+    starts = [0]
+    starts.extend(match.end() for match in re.finditer(r"\n", text))
+    return starts
+
+
+def _offset_to_line(starts: Sequence[int], offset: int) -> int:
+    import bisect
+
+    return bisect.bisect_right(starts, offset)
+
+
+def _extra_protected_spans(
+    text: str,
+    suffix: str,
+    editable_style_wrappers: frozenset[str] = frozenset(),
+) -> list[tuple[int, int, str]]:
+    spans: list[tuple[int, int, str]] = []
+    if suffix in {".tex", ".ltx"}:
+        spans.extend((m.start(), m.end(), "critical-tex-command") for m in CRITICAL_TEX_RE.finditer(text))
+        spans.extend((m.start(), m.end(), "locked-heading") for m in TEX_HEADING_RE.finditer(text))
+        for match in TEX_COMMAND_TOKEN_RE.finditer(text):
+            command = match.group(0)
+            name_match = re.fullmatch(r"\\([A-Za-z@]+)\*?", command)
+            if name_match and name_match.group(1) in editable_style_wrappers:
+                continue
+            spans.append((match.start(), match.end(), "tex-command-token"))
+    else:
+        frontmatter = YAML_FRONTMATTER_RE.match(text)
+        if frontmatter:
+            spans.append((frontmatter.start(), frontmatter.end(), "yaml-frontmatter"))
+        for match in MD_LINK_TARGET_RE.finditer(text):
+            spans.append((match.start("target"), match.end("target"), "markdown-link-target"))
+        spans.extend((m.start(), m.end(), "locked-heading") for m in MD_HEADING_RE.finditer(text))
+    return spans
+
+
+def protected_spans(
+    text: str,
+    suffix: str,
+    file_id: str,
+    editable_style_wrappers: frozenset[str] = frozenset(),
+) -> list[dict[str, Any]]:
+    document_format = "tex" if suffix.lower() in {".tex", ".ltx"} else "markdown"
+    raw = lexical._raw_protected_spans(
+        text,
+        document_format=document_format,
+    )  # Reuse the scanner's tested protection grammar without treating Markdown % as TeX comments.
+    merged = lexical._merge_spans(
+        [*raw, *_extra_protected_spans(text, suffix, editable_style_wrappers)]
+    )
+    starts = _line_starts(text)
+    output: list[dict[str, Any]] = []
+    for index, (start, end, reason) in enumerate(merged, 1):
+        content = text[start:end]
+        output.append(
+            {
+                "protected_id": f"{file_id}-P{index:05d}",
+                "file_id": file_id,
+                "start": start,
+                "end": end,
+                "start_line": _offset_to_line(starts, start),
+                "end_line": _offset_to_line(starts, max(start, end - 1)),
+                "reason": reason,
+                "sha256": sha256(content.encode("utf-8")),
+                "content": content,
+            }
+        )
+    return output
+
+
+def _mask_text(text: str, start: int, end: int, spans: Sequence[dict[str, Any]]) -> tuple[str, list[str], bool]:
+    local: list[tuple[int, int, str, str]] = []
+    crossing = False
+    for span in spans:
+        if span["end"] <= start or span["start"] >= end:
+            continue
+        if span["start"] < start or span["end"] > end:
+            crossing = True
+            continue
+        placeholder = f"[[PROTECTED:{span['protected_id']}:{span['sha256'][:12]}]]"
+        local.append((span["start"] - start, span["end"] - start, placeholder, span["protected_id"]))
+    masked = text[start:end]
+    for local_start, local_end, placeholder, _ in reversed(local):
+        masked = masked[:local_start] + placeholder + masked[local_end:]
+    return masked, [item[3] for item in local], crossing
+
+
+def _visible_author_chars(masked: str, suffix: str) -> int:
+    without_placeholders = re.sub(r"\[\[PROTECTED:[^\]]+\]\]", "", masked)
+    if suffix in {".tex", ".ltx"}:
+        without_placeholders = TEX_COMMAND_TOKEN_RE.sub("", without_placeholders)
+        without_placeholders = re.sub(r"[{}\[\]$&_^~]", " ", without_placeholders)
+    else:
+        without_placeholders = re.sub(r"[#>*_`|~-]", " ", without_placeholders)
+    return len(HAN_RE.findall(without_placeholders))
+
+
+def _paragraph_responsibility(text: str) -> str:
+    """Classify only explicit rhetorical duties; leave ordinary exposition generic."""
+    visible = PROTECTED_PLACEHOLDER_RE.sub("", text)
+    visible = TEX_COMMAND_TOKEN_RE.sub("", visible)
+    visible = re.sub(r"\s+", "", visible)
+    if re.match(r"^(综上|总之|由此可见|可见|因此可以看出)", visible):
+        return "SUMMARY"
+    if re.match(r"^(例如|比如|以.+为例|举例来说)", visible):
+        return "EXAMPLE"
+    if re.match(r"^(这是因为|原因在于|其原因是)", visible):
+        return "EXPLANATION"
+    if re.match(r"^(设|令|取|给定)", visible):
+        return "SETUP"
+    if re.match(r"^(若|如果|当|对于|在.+(?:时|条件下))", visible):
+        return "CONDITION"
+    if re.match(r"^(根据|由|代入|联立|解得|可得|得到)", visible):
+        return "DERIVATION"
+    if re.match(
+        r"^(?:结果(?:为|是)|最终|可知|这(?:表明|说明)|上述.{0,12}(?:表明|说明)|"
+        r".{1,8}约为|.{1,12}满足)",
+        visible,
+    ):
+        return "RESULT"
+    if re.match(r"^(但是|然而|相比之下|与.+不同|区别在于)", visible):
+        return "CONTRAST"
+    if re.match(r"^(下面|接下来|随后|本节|本章)", visible):
+        return "TRANSITION"
+    if re.search(r"(?:称为|定义为|是指|所谓).{0,48}[。；]", visible):
+        return "DEFINITION"
+    if re.match(r"^(先|首先|第一步|然后|再|最后)", visible):
+        return "PROCEDURE"
+    return "EXPOSITION"
+
+
+def _structural_lock_reason(
+    text: str,
+    suffix: str,
+    author_chars: int,
+    responsibility: str,
+    protected_reasons: Sequence[str],
+) -> str:
+    if author_chars < 8:
+        return "insufficient_author_prose"
+    if responsibility in {
+        "CONDITION",
+        "CONTRAST",
+        "DEFINITION",
+        "DERIVATION",
+        "EXPLANATION",
+        "PROCEDURE",
+        "RESULT",
+        "SETUP",
+        "SUMMARY",
+        "TRANSITION",
+    }:
+        return "fixed_paragraph_responsibility"
+    if any(
+        marker in reason
+        for reason in protected_reasons
+        for marker in (
+            "locked-heading",
+            "display-math",
+            "latex-exam-or-formal-statement-environment",
+            "latex-verbatim-or-math-environment",
+            "chinese-double-quote",
+            "ascii-quote",
+            "critical-tex-command",
+            "latex-comment",
+        )
+    ):
+        return "contains_immovable_protected_span"
+    visible = PROTECTED_PLACEHOLDER_RE.sub("", text).strip()
+    if re.match(
+        r"^(?:其中|此时|代入|同理|上式|前式|由此|因此|所以|于是|若|如果|设|令)",
+        visible,
+    ):
+        return "context_dependent_opening"
+    if visible.endswith(("：", ":")):
+        return "introduces_following_block"
+    if suffix in {".tex", ".ltx"}:
+        if re.search(
+            r"(?m)^\s*\\(?:part|chapter|section|subsection|subsubsection|paragraph|"
+            r"subparagraph|begin|end|item|label|input|include)\b",
+            text,
+        ):
+            return "contains_tex_structure"
+    elif re.search(
+        r"(?m)^\s*(?:#{1,6}\s|>|[-+*]\s|\d+[.)]\s|```|~~~|\|)",
+        text,
+    ):
+        return "contains_markdown_structure"
+    return ""
+
+
+def structural_paragraph_blocks(masked_text: str) -> list[str]:
+    return [
+        item.strip("\r\n")
+        for item in re.split(r"(?:\r?\n)[ \t]*(?:\r?\n)+", masked_text)
+        if item.strip()
+    ]
+
+
+def structural_paragraph_inventory(
+    masked_text: str,
+    suffix: str,
+    protected_reason_by_id: dict[str, str] | None = None,
+) -> list[dict[str, Any]]:
+    """Build stable paragraph identities for an auditable STRUCTURAL rewrite."""
+    blocks = structural_paragraph_blocks(masked_text)
+    inventory: list[dict[str, Any]] = []
+    reason_by_id = protected_reason_by_id or {}
+    for ordinal, block in enumerate(blocks, 1):
+        digest = sha256(block.encode("utf-8"))
+        author_chars = _visible_author_chars(block, suffix)
+        protected_ids = [
+            match.group("id") for match in PROTECTED_PLACEHOLDER_RE.finditer(block)
+        ]
+        responsibility = _paragraph_responsibility(block)
+        lock_reason = _structural_lock_reason(
+            block,
+            suffix,
+            author_chars,
+            responsibility,
+            [reason_by_id.get(protected_id, "") for protected_id in protected_ids],
+        )
+        inventory.append(
+            {
+                "paragraph_id": f"P{ordinal:03d}-{digest[:12]}",
+                "ordinal": ordinal,
+                "sha256": digest,
+                "author_chars": author_chars,
+                "responsibility": responsibility,
+                "protected_ids": protected_ids,
+                "movable": not lock_reason,
+                "lock_reason": lock_reason,
+            }
+        )
+    return inventory
+
+
+def structural_inventory_sha256(inventory: Sequence[dict[str, Any]]) -> str:
+    return sha256(
+        json.dumps(
+            list(inventory),
+            ensure_ascii=False,
+            sort_keys=True,
+            separators=(",", ":"),
+        ).encode("utf-8")
+    )
+
+
+def _environment_problems(text: str, suffix: str) -> list[str]:
+    if suffix not in {".tex", ".ltx"}:
+        return []
+    stack: list[str] = []
+    problems: list[str] = []
+    for match in TEX_ENV_RE.finditer(_strip_tex_comments(text)):
+        name = match.group("name")
+        if name in IGNORED_CONTAINER_ENVS:
+            continue
+        if match.group("kind") == "begin":
+            stack.append(name)
+        elif not stack:
+            problems.append(f"end{{{name}}} without begin")
+        elif stack[-1] != name:
+            problems.append(f"end{{{name}}} closes begin{{{stack[-1]}}}")
+            stack.pop()
+        else:
+            stack.pop()
+    problems.extend(f"begin{{{name}}} without end" for name in reversed(stack))
+    return problems[:20]
+
+
+def _heading_regions(text: str, suffix: str) -> list[dict[str, Any]]:
+    pattern = TEX_HEADING_RE if suffix in {".tex", ".ltx"} else MD_HEADING_RE
+    matches = list(pattern.finditer(text))
+    boundaries = [0, *(match.start() for match in matches), len(text)]
+    boundaries = sorted(set(boundaries))
+    heading_by_start = {match.start(): match for match in matches}
+    hierarchy: list[str] = []
+    level_map = {
+        "part": 1,
+        "chapter": 2,
+        "section": 3,
+        "subsection": 4,
+        "subsubsection": 5,
+        "paragraph": 6,
+    }
+    regions: list[dict[str, Any]] = []
+    for start, end in zip(boundaries, boundaries[1:]):
+        match = heading_by_start.get(start)
+        if match:
+            if suffix in {".tex", ".ltx"}:
+                level = level_map[match.group("level")]
+            else:
+                level = len(match.group("marks"))
+            title = re.sub(r"\s+", " ", match.group("title")).strip()
+            hierarchy = hierarchy[: level - 1]
+            hierarchy.extend([""] * max(0, level - len(hierarchy) - 1))
+            hierarchy.append(title)
+            heading_path = " / ".join(item for item in hierarchy if item)
+        else:
+            heading_path = "(front-matter)"
+        if end > start:
+            regions.append({"start": start, "end": end, "heading_path": heading_path})
+    return regions
+
+
+def _safe_split_offsets(text: str, start: int, end: int, spans: Sequence[dict[str, Any]], suffix: str) -> list[int]:
+    protected_ranges = [(span["start"], span["end"]) for span in spans]
+
+    def inside_protected(offset: int) -> bool:
+        return any(a < offset < b for a, b in protected_ranges)
+
+    segment = text[start:end]
+    offsets: list[int] = []
+    depth = 0
+    cursor = start
+    for line in segment.splitlines(keepends=True):
+        clean = _strip_tex_comments(line) if suffix in {".tex", ".ltx"} else line
+        if suffix in {".tex", ".ltx"}:
+            for match in TEX_ENV_RE.finditer(clean):
+                name = match.group("name")
+                if name in IGNORED_CONTAINER_ENVS:
+                    continue
+                depth += 1 if match.group("kind") == "begin" else -1
+                depth = max(0, depth)
+        cursor += len(line)
+        if not clean.strip() and depth == 0 and not inside_protected(cursor):
+            offsets.append(cursor)
+    return sorted(set(offsets))
+
+
+def _split_region(
+    text: str,
+    region: dict[str, Any],
+    spans: Sequence[dict[str, Any]],
+    suffix: str,
+    max_author_chars: int,
+    max_lines: int,
+    min_author_chars: int,
+) -> list[tuple[int, int, bool]]:
+    start, end = region["start"], region["end"]
+    starts = _line_starts(text)
+    safe = _safe_split_offsets(text, start, end, spans, suffix)
+    chunks: list[tuple[int, int, bool]] = []
+    cursor = start
+    while cursor < end:
+        candidates = [value for value in safe if cursor < value < end]
+        chosen = None
+        exceeded = False
+        for boundary in [*candidates, end]:
+            masked, _, _ = _mask_text(text, cursor, boundary, spans)
+            author_chars = _visible_author_chars(masked, suffix)
+            line_count = _offset_to_line(starts, max(cursor, boundary - 1)) - _offset_to_line(starts, cursor) + 1
+            if author_chars > max_author_chars or line_count > max_lines:
+                exceeded = True
+                break
+            if author_chars >= min_author_chars or boundary == end:
+                chosen = boundary
+        if not exceeded:
+            chunks.append((cursor, end, False))
+            break
+        if chosen is not None and chosen > cursor:
+            chunks.append((cursor, chosen, False))
+            cursor = chosen
+            continue
+        next_safe = candidates[0] if candidates else end
+        chunks.append((cursor, next_safe, True))
+        cursor = next_safe
+    return chunks
+
+
+def build_units(
+    file_record: dict[str, Any],
+    text: str,
+    spans: Sequence[dict[str, Any]],
+    *,
+    requested_scene: str,
+    voice_bindings: dict[str, dict[str, Any]],
+    scene_policy_path: Path,
+    document_prior_scene: str,
+    intensity: str,
+    max_author_chars: int,
+    max_lines: int,
+    min_author_chars: int,
+) -> list[dict[str, Any]]:
+    suffix = Path(file_record["path"]).suffix.lower()
+    starts = _line_starts(text)
+    units: list[dict[str, Any]] = []
+    for region in _heading_regions(text, suffix):
+        parts = _split_region(
+            text,
+            region,
+            spans,
+            suffix,
+            max_author_chars,
+            max_lines,
+            min_author_chars,
+        )
+        for part_index, (start, end, over_limit) in enumerate(parts, 1):
+            raw = text[start:end]
+            masked, protected_ids, crossing = _mask_text(text, start, end, spans)
+            author_chars = _visible_author_chars(masked, suffix)
+            route = scene_router.route_scene(
+                region["heading_path"],
+                masked,
+                requested_scene=requested_scene,
+                document_prior_scene=document_prior_scene,
+                policy_path=scene_policy_path,
+            )
+            routed_scene = route["final_scene"]
+            voice_binding = voice_bindings[routed_scene]
+            structural_paragraphs = (
+                structural_paragraph_inventory(
+                    masked,
+                    suffix,
+                    {
+                        str(span["protected_id"]): str(span.get("reason", ""))
+                        for span in spans
+                    },
+                )
+                if intensity == "STRUCTURAL"
+                else []
+            )
+            problems = _environment_problems(raw, suffix)
+            start_line = _offset_to_line(starts, start)
+            end_line = _offset_to_line(starts, max(start, end - 1))
+            seed = f"{file_record['file_id']}:{start}:{end}:{region['heading_path']}"
+            unit_id = "U-" + hashlib.sha1(seed.encode("utf-8")).hexdigest()[:12]
+            if author_chars == 0:
+                status = "SKIPPED_PROTECTED"
+            elif crossing or problems or over_limit or route["status"] == "AMBIGUOUS":
+                status = "UNRESOLVED"
+            else:
+                status = "PENDING"
+            notes: list[str] = []
+            if crossing:
+                notes.append("protected_span_crosses_unit_boundary")
+            if problems:
+                notes.append("environment:" + " | ".join(problems))
+            if over_limit:
+                notes.append("no_safe_split_before_budget")
+            if route["status"] == "AMBIGUOUS" and author_chars > 0:
+                notes.append(
+                    "ambiguous_scene_route:" + ",".join(route["ambiguous_scenes"])
+                )
+            units.append(
+                {
+                    "unit_id": unit_id,
+                    "file_id": file_record["file_id"],
+                    "heading_path": region["heading_path"],
+                    "part": part_index,
+                    "start": start,
+                    "end": end,
+                    "start_line": start_line,
+                    "end_line": end_line,
+                    "line_count": end_line - start_line + 1,
+                    "scene": routed_scene,
+                    "scene_requested": requested_scene,
+                    "scene_document_prior": route["document_prior_scene"],
+                    "scene_routing_decision": route["status"],
+                    "scene_routing_policy_sha256": route["policy_sha256"],
+                    "scene_routing_policy_revision": route["policy_revision"],
+                    "scene_routing_scores": route["scores"],
+                    "scene_routing_top_score": route["top_score"],
+                    "scene_routing_margin": route["margin"],
+                    "scene_routing_ambiguous_scenes": route["ambiguous_scenes"],
+                    "scene_routing_evidence": route["evidence"],
+                    "voice_profile_id": voice_binding["voice_profile_id"],
+                    "voice_profile_revision": voice_binding["voice_profile_revision"],
+                    "voice_profile_confidence": voice_binding["voice_profile_confidence"],
+                    "voice_profile_kind": voice_binding["voice_profile_kind"],
+                    "voice_profile_source": voice_binding["profile_source"],
+                    "voice_profile_binding_scene": voice_binding["profile_binding_scene"],
+                    "voice_profile_sha256": voice_binding["voice_profile_sha256"],
+                    "voice_default_disclosure": voice_binding["voice_default_disclosure"],
+                    "mode": "REWRITE",
+                    "intensity": intensity,
+                    "structural_plan_schema": (
+                        STRUCTURAL_PLAN_SCHEMA if intensity == "STRUCTURAL" else ""
+                    ),
+                    "structural_scope": (
+                        "UNIT" if intensity == "STRUCTURAL" else "LOCKED"
+                    ),
+                    "structural_title_lock": True,
+                    "structural_cross_unit_moves_allowed": False,
+                    "structural_inventory_sha256": (
+                        structural_inventory_sha256(structural_paragraphs)
+                        if structural_paragraphs
+                        else ""
+                    ),
+                    "structural_paragraphs": structural_paragraphs,
+                    "structural_plan_status": "NOT_RUN",
+                    "owner_chunk": unit_id,
+                    "author_chars": author_chars,
+                    "protected_spans": len(protected_ids),
+                    "protected_ids": protected_ids,
+                    "status": status,
+                    "hash_before": sha256(raw.encode("utf-8")),
+                    "hash_after": "",
+                    "diff_path": "",
+                    "protected_hashes_ok": "NOT_RUN",
+                    "style_validation": "NOT_RUN",
+                    "notes": "; ".join(notes),
+                    "masked_text": masked,
+                }
+            )
+    return units
+
+
+def build_logical_document_priors(
+    file_records: Sequence[dict[str, Any]],
+    texts: dict[str, str],
+    spans_by_file: dict[str, Sequence[dict[str, Any]]],
+    *,
+    requested_scene: str,
+    scene_policy_path: Path,
+) -> dict[str, str]:
+    """Derive one conservative prior per include-root logical document."""
+    priors = {file_id: "" for file_id in texts}
+    if requested_scene != "AUTO":
+        return priors
+
+    by_id = {str(record["file_id"]): record for record in file_records}
+
+    def root_id(file_id: str) -> str:
+        current = file_id
+        visited: set[str] = set()
+        while current not in visited:
+            visited.add(current)
+            parent = str(by_id.get(current, {}).get("parent_file_id", ""))
+            if not parent or parent not in by_id:
+                return current
+            current = parent
+        return file_id
+
+    component_parts: dict[str, list[str]] = {}
+    component_members: dict[str, list[str]] = {}
+    for record in file_records:
+        file_id = str(record["file_id"])
+        text = texts.get(file_id)
+        if text is None:
+            continue
+        masked, _protected_ids, _crossing = _mask_text(
+            text,
+            0,
+            len(text),
+            spans_by_file.get(file_id, ()),
+        )
+        root = root_id(file_id)
+        component_parts.setdefault(root, []).append(masked)
+        component_members.setdefault(root, []).append(file_id)
+
+    for root, parts in component_parts.items():
+        route = scene_router.route_scene(
+            "",
+            "\n\n".join(parts),
+            requested_scene="AUTO",
+            policy_path=scene_policy_path,
+        )
+        prior = route["final_scene"] if route["status"] == "ROUTED" else ""
+        for file_id in component_members[root]:
+            priors[file_id] = prior
+    return priors
+
+
+def _write_json(path: Path, payload: Any) -> None:
+    path.write_text(json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+
+
+def _write_jsonl(path: Path, rows: Iterable[dict[str, Any]]) -> None:
+    with path.open("w", encoding="utf-8", newline="") as handle:
+        for row in rows:
+            handle.write(json.dumps(row, ensure_ascii=False, sort_keys=True) + "\n")
+
+
+def _write_csv(path: Path, rows: Sequence[dict[str, Any]], fields: Sequence[str]) -> None:
+    with path.open("w", encoding="utf-8-sig", newline="") as handle:
+        writer = csv.DictWriter(handle, fieldnames=fields, extrasaction="ignore")
+        writer.writeheader()
+        writer.writerows(rows)
+
+
+def chunk_binding_sha256(chunk: dict[str, Any]) -> str:
+    payload = dict(chunk)
+    payload.pop("chunk_binding_sha256", None)
+    canonical = json.dumps(
+        payload, ensure_ascii=False, sort_keys=True, separators=(",", ":")
+    ).encode("utf-8")
+    return sha256(canonical)
+
+
+def materialize_chunk_payload(unit: dict[str, Any]) -> dict[str, Any]:
+    payload = {
+        key: value
+        for key, value in unit.items()
+        if key
+        not in {
+            "masked_text",
+            "read_only_context_before",
+            "read_only_context_after",
+            "chunk_binding_sha256",
+        }
+    }
+    payload["masked_text"] = unit["masked_text"]
+    payload["read_only_context_before"] = unit["read_only_context_before"]
+    payload["read_only_context_after"] = unit["read_only_context_after"]
+    payload["chunk_binding_sha256"] = chunk_binding_sha256(payload)
+    return payload
+
+
+def _context_tail(masked_text: str, limit: int = 1200) -> str:
+    paragraphs = [item.strip() for item in re.split(r"(?:\r?\n\s*){2,}", masked_text) if item.strip()]
+    return (paragraphs[-1] if paragraphs else masked_text.strip())[-limit:]
+
+
+def _context_head(masked_text: str, limit: int = 1200) -> str:
+    paragraphs = [item.strip() for item in re.split(r"(?:\r?\n\s*){2,}", masked_text) if item.strip()]
+    return (paragraphs[0] if paragraphs else masked_text.strip())[:limit]
+
+
+def attach_read_only_context(units: Sequence[dict[str, Any]]) -> None:
+    by_file: dict[str, list[dict[str, Any]]] = {}
+    for unit in units:
+        by_file.setdefault(unit["file_id"], []).append(unit)
+    for file_units in by_file.values():
+        file_units.sort(key=lambda item: int(item["start"]))
+        for index, unit in enumerate(file_units):
+            previous = file_units[index - 1] if index else None
+            following = file_units[index + 1] if index + 1 < len(file_units) else None
+            unit["context_before_unit"] = previous["unit_id"] if previous else ""
+            unit["context_after_unit"] = following["unit_id"] if following else ""
+            unit["read_only_context_before"] = _context_tail(previous["masked_text"]) if previous else ""
+            unit["read_only_context_after"] = _context_head(following["masked_text"]) if following else ""
+
+
+def _transaction_voice_projection(unit: dict[str, Any]) -> dict[str, Any]:
+    return {
+        field: unit.get(field)
+        for field in STRUCTURAL_TRANSACTION_VOICE_FIELDS
+    }
+
+
+def _transaction_candidate_basis(units: Sequence[dict[str, Any]]) -> list[dict[str, Any]]:
+    ordered = sorted(
+        units,
+        key=lambda item: (
+            str(item.get("file_id", "")),
+            int(item.get("start", 0)),
+            int(item.get("end", 0)),
+            str(item.get("unit_id", "")),
+        ),
+    )
+    return [
+        {
+            "unit_id": unit.get("unit_id"),
+            "file_id": unit.get("file_id"),
+            "heading_path": unit.get("heading_path"),
+            "part": unit.get("part"),
+            "start": unit.get("start"),
+            "end": unit.get("end"),
+            "status": unit.get("status"),
+            "scene": unit.get("scene"),
+            "intensity": unit.get("intensity"),
+            "structural_scope": unit.get("structural_scope"),
+            "structural_cross_unit_moves_allowed": unit.get(
+                "structural_cross_unit_moves_allowed"
+            ),
+            "context_before_unit": unit.get("context_before_unit"),
+            "context_after_unit": unit.get("context_after_unit"),
+            "hash_before": unit.get("hash_before"),
+            "chunk_binding_sha256": unit.get("chunk_binding_sha256"),
+            "structural_inventory_sha256": unit.get(
+                "structural_inventory_sha256"
+            ),
+            "voice_binding": _transaction_voice_projection(unit),
+        }
+        for unit in ordered
+    ]
+
+
+def _eligible_adjacent_pair(left: dict[str, Any], right: dict[str, Any]) -> bool:
+    try:
+        left_end = int(left.get("end"))
+        right_start = int(right.get("start"))
+        left_part = int(left.get("part"))
+        right_part = int(right.get("part"))
+    except (TypeError, ValueError):
+        return False
+    if not (
+        str(left.get("intensity", "")).upper() == "STRUCTURAL"
+        and str(right.get("intensity", "")).upper() == "STRUCTURAL"
+        and left.get("status") == "PENDING"
+        and right.get("status") == "PENDING"
+        and left.get("file_id") == right.get("file_id")
+        and left_end == right_start
+        and left.get("context_after_unit") == right.get("unit_id")
+        and right.get("context_before_unit") == left.get("unit_id")
+        and left.get("heading_path") == right.get("heading_path")
+        and right_part == left_part + 1
+        and left.get("scene") == right.get("scene")
+        and _transaction_voice_projection(left)
+        == _transaction_voice_projection(right)
+        and left.get("structural_scope") == "UNIT"
+        and right.get("structural_scope") == "UNIT"
+        and left.get("structural_cross_unit_moves_allowed") is False
+        and right.get("structural_cross_unit_moves_allowed") is False
+    ):
+        return False
+    for unit in (left, right):
+        if not re.fullmatch(
+            r"[0-9a-f]{64}", str(unit.get("chunk_binding_sha256", ""))
+        ):
+            return False
+        if not re.fullmatch(
+            r"[0-9a-f]{64}", str(unit.get("structural_inventory_sha256", ""))
+        ):
+            return False
+    return True
+
+
+def _compound_ref(
+    unit: dict[str, Any],
+    *,
+    role: str,
+    file_unit_ordinal: int,
+) -> dict[str, Any]:
+    payload = {
+        "role": role,
+        "file_unit_ordinal": file_unit_ordinal,
+        "unit_id": unit["unit_id"],
+        "part": unit["part"],
+        "start": unit["start"],
+        "end": unit["end"],
+        "hash_before": unit["hash_before"],
+        "chunk_binding_sha256": unit["chunk_binding_sha256"],
+        "structural_inventory_sha256": unit["structural_inventory_sha256"],
+    }
+    return {**payload, "compound_ref_sha256": canonical_sha256(payload)}
+
+
+def build_structural_transaction_inventory(
+    units: Sequence[dict[str, Any]],
+    *,
+    snapshot_id: str,
+    snapshot_sha256: str,
+    file_sha256_by_id: dict[str, str],
+    intensity: str,
+    scope: str,
+) -> dict[str, Any]:
+    """Build candidate-only transactions for exact adjacent STRUCTURAL pairs."""
+    normalized_intensity = intensity.upper()
+    normalized_scope = scope.upper()
+    if normalized_scope not in STRUCTURAL_TRANSACTION_SCOPES:
+        raise ValueError(
+            "unsupported structural transaction scope: " + normalized_scope
+        )
+    if normalized_scope == "ADJACENT_PAIR" and normalized_intensity != "STRUCTURAL":
+        raise ValueError("ADJACENT_PAIR_requires_STRUCTURAL_intensity")
+    if not re.fullmatch(r"[0-9a-f]{16}", snapshot_id):
+        raise ValueError("structural transaction snapshot_id invalid")
+    if not re.fullmatch(r"[0-9a-f]{64}", snapshot_sha256):
+        raise ValueError("structural transaction snapshot_sha256 invalid")
+
+    policy_sha256 = canonical_sha256(STRUCTURAL_TRANSACTION_POLICY)
+    candidate_basis = _transaction_candidate_basis(units)
+    candidate_basis_sha256 = canonical_sha256(candidate_basis)
+    transactions: list[dict[str, Any]] = []
+    by_file: dict[str, list[dict[str, Any]]] = {}
+    for unit in units:
+        by_file.setdefault(str(unit.get("file_id", "")), []).append(unit)
+
+    if normalized_intensity == "STRUCTURAL" and normalized_scope == "ADJACENT_PAIR":
+        for file_id in sorted(by_file):
+            file_units = sorted(
+                by_file[file_id],
+                key=lambda item: (
+                    int(item.get("start", 0)),
+                    int(item.get("end", 0)),
+                    str(item.get("unit_id", "")),
+                ),
+            )
+            for index, (left, right) in enumerate(
+                zip(file_units, file_units[1:]),
+                1,
+            ):
+                if not _eligible_adjacent_pair(left, right):
+                    continue
+                source_file_sha256 = file_sha256_by_id.get(file_id, "")
+                if not re.fullmatch(r"[0-9a-f]{64}", source_file_sha256):
+                    raise ValueError(
+                        "structural transaction source file sha256 missing: "
+                        + file_id
+                    )
+                voice_binding = _transaction_voice_projection(left)
+                payload = {
+                    "schema_version": STRUCTURAL_TRANSACTION_SCHEMA,
+                    "snapshot_id": snapshot_id,
+                    "snapshot_sha256": snapshot_sha256,
+                    "candidate_scope": "ADJACENT_PAIR",
+                    "candidate_basis_sha256": candidate_basis_sha256,
+                    "eligibility_policy_sha256": policy_sha256,
+                    "participant_count": 2,
+                    "file_id": file_id,
+                    "source_file_sha256": source_file_sha256,
+                    "heading_path": left["heading_path"],
+                    "scene": left["scene"],
+                    "voice_binding": voice_binding,
+                    "voice_binding_sha256": canonical_sha256(voice_binding),
+                    "compound_refs": [
+                        _compound_ref(
+                            left,
+                            role="LEFT",
+                            file_unit_ordinal=index,
+                        ),
+                        _compound_ref(
+                            right,
+                            role="RIGHT",
+                            file_unit_ordinal=index + 1,
+                        ),
+                    ],
+                    "boundary": {
+                        "left_end": left["end"],
+                        "right_start": right["start"],
+                        "left_context_after_unit": left["context_after_unit"],
+                        "right_context_before_unit": right["context_before_unit"],
+                    },
+                    "constraints": {
+                        "candidate_only": True,
+                        "mechanical_scope_permission_granted": True,
+                        "candidate_inventory_is_execution_request": False,
+                        "inventory_alone_execution_authorized": False,
+                        "bound_transaction_bundle_required": True,
+                        "semantic_clearance_granted": False,
+                        "atomic_pair_required": True,
+                        "title_lock": True,
+                        "cross_file": False,
+                        "cross_heading": False,
+                        "participant_split_or_delete": False,
+                        "structural_semantic_mapping": "NOT_EVALUATED",
+                    },
+                }
+                binding_sha256 = canonical_sha256(payload)
+                transactions.append(
+                    {
+                        "transaction_id": "STX-" + binding_sha256[:24],
+                        "transaction_binding_sha256": binding_sha256,
+                        **payload,
+                    }
+                )
+
+    if normalized_intensity != "STRUCTURAL":
+        status = "NOT_APPLICABLE"
+    elif normalized_scope == "NONE":
+        status = "DISABLED"
+    elif transactions:
+        status = "READY"
+    else:
+        status = "EMPTY"
+    inventory = {
+        "schema_version": STRUCTURAL_TRANSACTION_INVENTORY_SCHEMA,
+        "snapshot_id": snapshot_id,
+        "snapshot_sha256": snapshot_sha256,
+        "intensity": normalized_intensity,
+        "status": status,
+        "candidate_scope": normalized_scope,
+        "candidate_cardinality": 2,
+        "eligibility_policy_revision": STRUCTURAL_TRANSACTION_POLICY_REVISION,
+        "eligibility_policy_sha256": policy_sha256,
+        "candidate_basis_units": len(candidate_basis),
+        "candidate_basis_sha256": candidate_basis_sha256,
+        "transactions": transactions,
+        "scope_authorization": {
+            "requested_scope": normalized_scope,
+            "mechanical_scope_permission_granted": (
+                normalized_intensity == "STRUCTURAL"
+                and normalized_scope == "ADJACENT_PAIR"
+            ),
+            "candidate_inventory_is_execution_request": False,
+            "bound_transaction_bundle_required": (
+                normalized_intensity == "STRUCTURAL"
+                and normalized_scope == "ADJACENT_PAIR"
+            ),
+            "semantic_clearance_granted": False,
+        },
+        "claims": {
+            "candidate_only": True,
+            "inventory_alone_execution_authorized": False,
+            "cross_unit_moves_allowed_without_bound_bundle": False,
+            "semantic_mapping": "NOT_EVALUATED",
+        },
+    }
+    inventory["inventory_sha256"] = canonical_sha256(inventory)
+    return inventory
+
+
+def _voice_binding_from_profile(
+    profile: dict[str, Any],
+    *,
+    requested_scene: str,
+    profile_source: str,
+    source_path: str,
+    evidence_status: str,
+) -> dict[str, Any]:
+    profile_scene = str(profile["binding_scene"]).upper()
+    defaults = profile.get("defaults", {})
+    return {
+        "profile_source": profile_source,
+        "source_path": source_path,
+        "binding_scene": profile_scene,
+        "profile_binding_scene": profile_scene,
+        "voice_profile_binding_scene": profile_scene,
+        "requested_scene": requested_scene,
+        "scene_binding_status": "UNIT_ROUTED" if requested_scene == "AUTO" else "BOUND",
+        "voice_profile_id": profile["profile_id"],
+        "voice_profile_revision": profile["revision"],
+        "voice_profile_confidence": profile["confidence"],
+        "voice_profile_kind": profile["profile_kind"],
+        "voice_profile_sha256": profile["profile_sha256"],
+        "voice_default_disclosure": bool(defaults.get("disclosure_required", False)),
+        "voice_evidence_status": evidence_status,
+    }
+
+
+def build_default_voice_profile_set() -> tuple[
+    dict[str, dict[str, Any]],
+    dict[str, dict[str, Any]],
+    dict[str, Any],
+]:
+    profiles = {
+        scene: voice_profiles.build_scene_default_profile(scene)
+        for scene in ("GENERAL", "COURSE", "MODELING", "RESEARCH")
+    }
+    bindings = {
+        scene: _voice_binding_from_profile(
+            profile,
+            requested_scene="AUTO",
+            profile_source="SCENE_DEFAULT",
+            source_path=f"voice_profiles/{scene.lower()}.json",
+            evidence_status="DETERMINISTIC_DEFAULT",
+        )
+        for scene, profile in profiles.items()
+    }
+    profile_set: dict[str, Any] = {
+        "schema_version": "humanize-voice-profile-set/v1",
+        "requested_scene": "AUTO",
+        "profile_source": "SCENE_DEFAULT_SET",
+        "profiles": {
+            scene: {
+                "path": f"voice_profiles/{scene.lower()}.json",
+                "profile_id": profile["profile_id"],
+                "revision": profile["revision"],
+                "profile_kind": profile["profile_kind"],
+                "binding_scene": profile["binding_scene"],
+                "profile_sha256": profile["profile_sha256"],
+            }
+            for scene, profile in sorted(profiles.items())
+        },
+        "claims": {
+            "personal_voice_claim_allowed": False,
+            "identity_verified": False,
+        },
+    }
+    profile_set["profile_set_sha256"] = sha256(
+        json.dumps(
+            profile_set,
+            ensure_ascii=False,
+            sort_keys=True,
+            separators=(",", ":"),
+        ).encode("utf-8")
+    )
+    return profiles, bindings, profile_set
+
+
+def resolve_voice_binding(
+    scene: str,
+    voice_profile: Path | None,
+    expected_sha256: str | None,
+    voice_manifest: Path | None = None,
+    voice_sample_spec: Path | None = None,
+    voice_allowed_root: Path | None = None,
+) -> tuple[dict[str, Any], dict[str, Any], dict[str, Any]]:
+    """Resolve one validated Voice Profile for an explicit scene."""
+    if (voice_profile is None) != (expected_sha256 is None):
+        raise ValueError("voice_profile_arguments_incomplete")
+    requested_scene = scene.upper()
+    if requested_scene == "AUTO":
+        raise ValueError("AUTO_requires_scene_specific_voice_profile_set")
+    binding_scene = requested_scene
+    if voice_profile is None:
+        if any(value is not None for value in (voice_manifest, voice_sample_spec, voice_allowed_root)):
+            raise ValueError("voice_profile_evidence_without_profile")
+        profile = voice_profiles.build_scene_default_profile(binding_scene)
+        profile_source = "SCENE_DEFAULT"
+        source_path = ""
+        evidence_artifacts: dict[str, Any] = {}
+        evidence_status = "DETERMINISTIC_DEFAULT"
+    else:
+        expected = str(expected_sha256).strip()
+        if not re.fullmatch(r"[0-9a-f]{64}", expected):
+            raise ValueError("voice_profile_sha256_invalid")
+        profile_path = Path(voice_profile).resolve()
+        profile = voice_profiles.load_and_validate_profile(profile_path)
+        if profile["profile_sha256"] != expected:
+            raise ValueError("voice_profile_sha256_mismatch")
+        if profile["validation_status"] != "PASS":
+            raise ValueError("voice_profile_status_not_pass")
+        if str(profile["binding_scene"]).upper() != binding_scene:
+            raise ValueError("voice_profile_scene_mismatch")
+        profile_source = "SUPPLIED"
+        source_path = str(profile_path)
+        evidence_artifacts = {}
+        registered_default = (
+            voice_profiles.build_scene_default_profile(str(profile["binding_scene"]))
+            if profile["profile_kind"] == "DEFAULT"
+            else None
+        )
+        evidence_bound = profile["profile_kind"] == "PERSONAL" or profile != registered_default
+        if evidence_bound:
+            if any(value is None for value in (voice_manifest, voice_sample_spec, voice_allowed_root)):
+                reason = (
+                    "personal_voice_profile_requires_rebuild_evidence"
+                    if profile["profile_kind"] == "PERSONAL"
+                    else "evidence_bound_default_requires_rebuild_evidence"
+                )
+                raise ValueError(reason)
+            manifest = voice_profile_validator.validate_manifest_object(
+                voice_profiles._load_json_strict(Path(voice_manifest))
+            )
+            voice_profile_validator.validate_profile_manifest_binding(profile, manifest)
+            voice_profile_validator.rebuild_profile_evidence(
+                profile,
+                manifest,
+                sample_spec=Path(voice_sample_spec),
+                allowed_root=Path(voice_allowed_root),
+            )
+            evidence_artifacts = {
+                "manifest": manifest,
+                "sample_spec": voice_profiles._load_json_strict(Path(voice_sample_spec)),
+            }
+            evidence_status = (
+                "REBUILT_PASS"
+                if profile["profile_kind"] == "PERSONAL"
+                else "REBUILT_DEFAULT_PASS"
+            )
+        else:
+            if any(value is not None for value in (voice_manifest, voice_sample_spec, voice_allowed_root)):
+                raise ValueError("default_voice_profile_does_not_accept_sample_evidence")
+            evidence_status = "DETERMINISTIC_DEFAULT"
+    binding = _voice_binding_from_profile(
+        profile,
+        requested_scene=requested_scene,
+        profile_source=profile_source,
+        source_path=source_path,
+        evidence_status=evidence_status,
+    )
+    return profile, binding, evidence_artifacts
+
+
+def prepare(
+    inputs: Sequence[Path],
+    output: Path,
+    *,
+    scene: str = "AUTO",
+    intensity: str = "BALANCED",
+    structural_transaction_scope: str = "NONE",
+    max_author_chars: int = 7000,
+    max_lines: int = 600,
+    min_author_chars: int = 1200,
+    editable_style_wrappers: Sequence[str] = (),
+    voice_profile: Path | None = None,
+    voice_profile_sha256: str | None = None,
+    voice_manifest: Path | None = None,
+    voice_sample_spec: Path | None = None,
+    voice_allowed_root: Path | None = None,
+) -> dict[str, Any]:
+    requested_scene = scene.upper()
+    requested_intensity = intensity.upper()
+    requested_transaction_scope = structural_transaction_scope.upper()
+    if requested_intensity not in REWRITE_INTENSITIES:
+        raise ValueError("unsupported rewrite intensity: " + requested_intensity)
+    if requested_transaction_scope not in STRUCTURAL_TRANSACTION_SCOPES:
+        raise ValueError(
+            "unsupported structural transaction scope: "
+            + requested_transaction_scope
+        )
+    if (
+        requested_transaction_scope == "ADJACENT_PAIR"
+        and requested_intensity != "STRUCTURAL"
+    ):
+        raise ValueError("ADJACENT_PAIR_requires_STRUCTURAL_intensity")
+    if requested_scene == "AUTO":
+        if any(
+            value is not None
+            for value in (
+                voice_profile,
+                voice_profile_sha256,
+                voice_manifest,
+                voice_sample_spec,
+                voice_allowed_root,
+            )
+        ):
+            raise ValueError("AUTO_does_not_accept_single_voice_profile")
+        profiles, voice_bindings, profile_set = build_default_voice_profile_set()
+        voice_binding: dict[str, Any] = {
+            "mode": "PROFILE_SET",
+            "requested_scene": "AUTO",
+            "scene_binding_status": "UNIT_ROUTED",
+            "profile_source": "SCENE_DEFAULT_SET",
+            "profile_set_sha256": profile_set["profile_set_sha256"],
+            "voice_default_disclosure": True,
+            "voice_evidence_status": "DETERMINISTIC_DEFAULT_SET",
+            "profiles": {
+                scene_name: dict(binding)
+                for scene_name, binding in sorted(voice_bindings.items())
+            },
+        }
+        voice_evidence_by_scene: dict[str, dict[str, Any]] = {}
+    else:
+        profile, explicit_binding, voice_evidence = resolve_voice_binding(
+            requested_scene,
+            voice_profile,
+            voice_profile_sha256,
+            voice_manifest,
+            voice_sample_spec,
+            voice_allowed_root,
+        )
+        profiles = {requested_scene: profile}
+        voice_bindings = {requested_scene: explicit_binding}
+        profile_set = {}
+        voice_binding = explicit_binding
+        voice_evidence_by_scene = {requested_scene: voice_evidence}
+    if output.exists() and any(output.iterdir()):
+        raise FileExistsError(f"output directory must be empty: {output}")
+    output.mkdir(parents=True, exist_ok=True)
+    source_dir = output / "source"
+    chunk_dir = output / "chunks"
+    source_dir.mkdir()
+    chunk_dir.mkdir()
+    policy, _policy_sha256 = scene_router.load_policy()
+    _write_json(output / "scene_routing_policy.json", policy)
+    if requested_scene == "AUTO":
+        profile_dir = output / "voice_profiles"
+        profile_dir.mkdir()
+        for scene_name, scene_profile in profiles.items():
+            _write_json(profile_dir / f"{scene_name.lower()}.json", scene_profile)
+        _write_json(output / "voice_profile_set.json", profile_set)
+    else:
+        _write_json(output / "voice_profile.json", profiles[requested_scene])
+        voice_evidence = voice_evidence_by_scene[requested_scene]
+        if "manifest" in voice_evidence:
+            _write_json(output / "voice_sample_manifest.json", voice_evidence["manifest"])
+            _write_json(output / "voice_sample_spec.json", voice_evidence["sample_spec"])
+
+    unknown_wrappers = sorted(set(editable_style_wrappers) - EDITABLE_STYLE_WRAPPERS)
+    if unknown_wrappers:
+        raise ValueError("unsupported editable style wrapper: " + ", ".join(unknown_wrappers))
+    editable_wrappers = frozenset(editable_style_wrappers)
+
+    queue: deque[tuple[Path, str, str]] = deque((path, "", "seed") for path in collect_seed_paths(inputs))
+    seen: set[str] = set()
+    files: list[dict[str, Any]] = []
+    texts: dict[str, str] = {}
+    all_spans: list[dict[str, Any]] = []
+
+    while queue:
+        path, parent_id, relation = queue.popleft()
+        key = _path_key(path)
+        if key in seen:
+            continue
+        seen.add(key)
+        file_id = f"F{len(files) + 1:05d}"
+        record: dict[str, Any] = {
+            "file_id": file_id,
+            "path": str(path),
+            "parent_file_id": parent_id,
+            "relation": relation,
+            "suffix": path.suffix.lower(),
+            "exists": path.is_file(),
+            "bytes": 0,
+            "readable_bytes": 0,
+            "encoding": "",
+            "sha256": "",
+            "modified_at": "",
+            "changed_after_snapshot": False,
+            "snapshot_copy": "",
+            "status": "UNRESOLVED",
+            "reason": "missing_file",
+        }
+        if not path.is_file():
+            files.append(record)
+            continue
+
+        stat_before = path.stat()
+        frozen_length = stat_before.st_size
+        raw = read_fixed_bytes(path, frozen_length)
+        text, encoding, decode_note = decode_snapshot(raw)
+        stat_after = path.stat()
+        changed = stat_after.st_size != frozen_length or stat_after.st_mtime_ns != stat_before.st_mtime_ns
+        record.update(
+            {
+                "bytes": frozen_length,
+                "readable_bytes": len(raw),
+                "encoding": encoding or "",
+                "sha256": sha256(raw),
+                "modified_at": datetime.fromtimestamp(stat_before.st_mtime, timezone.utc).isoformat(),
+                "changed_after_snapshot": changed,
+                "reason": decode_note or "",
+            }
+        )
+        copy_name = f"{file_id}{path.suffix.lower() or '.txt'}"
+        copy_path = source_dir / copy_name
+        copy_path.write_bytes(raw)
+        record["snapshot_copy"] = str(copy_path.relative_to(output))
+        if text is None:
+            record["status"] = "SKIPPED_GARBLED"
+            files.append(record)
+            continue
+        record["status"] = "CHANGED_AFTER_SNAPSHOT" if changed else "READY"
+        texts[file_id] = text
+        files.append(record)
+        if path.suffix.lower() in {".tex", ".ltx"}:
+            for include_kind, raw_target in discover_unresolved_tex_includes(text):
+                unresolved_id = f"F{len(files) + 1:05d}"
+                files.append(
+                    {
+                        "file_id": unresolved_id,
+                        "path": f"{path}::include::{raw_target}",
+                        "parent_file_id": file_id,
+                        "relation": include_kind,
+                        "suffix": "",
+                        "exists": False,
+                        "bytes": 0,
+                        "readable_bytes": 0,
+                        "encoding": "",
+                        "sha256": "",
+                        "modified_at": "",
+                        "changed_after_snapshot": False,
+                        "snapshot_copy": "",
+                        "status": "UNRESOLVED_INCLUDE",
+                        "reason": f"dynamic_include_target:{raw_target}",
+                    }
+                )
+            for include_kind, included in discover_tex_includes(path, text):
+                queue.append((included, file_id, include_kind))
+
+    spans_by_file: dict[str, list[dict[str, Any]]] = {}
+    for record in files:
+        text = texts.get(record["file_id"])
+        if text is None:
+            continue
+        spans = protected_spans(
+            text,
+            record["suffix"],
+            record["file_id"],
+            editable_wrappers,
+        )
+        spans_by_file[record["file_id"]] = spans
+        all_spans.extend(spans)
+
+    document_priors = build_logical_document_priors(
+        files,
+        texts,
+        spans_by_file,
+        requested_scene=requested_scene,
+        scene_policy_path=output / "scene_routing_policy.json",
+    )
+    units: list[dict[str, Any]] = []
+    for record in files:
+        text = texts.get(record["file_id"])
+        if text is None:
+            continue
+        spans = spans_by_file[record["file_id"]]
+        file_units = build_units(
+            record,
+            text,
+            spans,
+            requested_scene=requested_scene,
+            voice_bindings=voice_bindings,
+            scene_policy_path=output / "scene_routing_policy.json",
+            document_prior_scene=document_priors.get(record["file_id"], ""),
+            intensity=requested_intensity,
+            max_author_chars=max_author_chars,
+            max_lines=max_lines,
+            min_author_chars=min_author_chars,
+        )
+        if record["changed_after_snapshot"]:
+            for unit in file_units:
+                unit["status"] = "CHANGED_AFTER_SNAPSHOT"
+                unit["notes"] = (unit["notes"] + "; " if unit["notes"] else "") + "source_changed_after_snapshot"
+        units.extend(file_units)
+
+    attach_read_only_context(units)
+
+    for unit in units:
+        chunk_payload = materialize_chunk_payload(unit)
+        unit["chunk_binding_sha256"] = chunk_payload["chunk_binding_sha256"]
+        _write_json(chunk_dir / f"{unit['unit_id']}.json", chunk_payload)
+
+    snapshot_files = [
+        {
+            key: record[key]
+            for key in (
+                "file_id",
+                "path",
+                "parent_file_id",
+                "relation",
+                "suffix",
+                "bytes",
+                "readable_bytes",
+                "encoding",
+                "sha256",
+                "modified_at",
+                "changed_after_snapshot",
+                "snapshot_copy",
+                "status",
+                "reason",
+            )
+        }
+        for record in files
+    ]
+    snapshot = {"created_at": utc_now(), "inputs": [str(path.resolve()) for path in inputs], "files": snapshot_files}
+    snapshot["snapshot_id"] = sha256(
+        json.dumps(snapshot_files, ensure_ascii=False, sort_keys=True).encode("utf-8")
+    )[:16]
+    _write_json(output / "snapshot.json", snapshot)
+    transaction_inventory = build_structural_transaction_inventory(
+        units,
+        snapshot_id=snapshot["snapshot_id"],
+        snapshot_sha256=sha256((output / "snapshot.json").read_bytes()),
+        file_sha256_by_id={
+            str(record["file_id"]): str(record["sha256"])
+            for record in snapshot_files
+            if str(record.get("file_id", "")) and str(record.get("sha256", ""))
+        },
+        intensity=requested_intensity,
+        scope=requested_transaction_scope,
+    )
+    _write_json(
+        output / "structural_transaction_inventory.json",
+        transaction_inventory,
+    )
+
+    manifest_fields = (
+        "file_id",
+        "path",
+        "parent_file_id",
+        "relation",
+        "suffix",
+        "exists",
+        "bytes",
+        "readable_bytes",
+        "encoding",
+        "sha256",
+        "modified_at",
+        "changed_after_snapshot",
+        "snapshot_copy",
+        "status",
+        "reason",
+    )
+    _write_csv(output / "file_manifest.csv", files, manifest_fields)
+    _write_jsonl(output / "protected_spans.jsonl", all_spans)
+    public_units = [
+        {
+            key: value
+            for key, value in unit.items()
+            if key not in {"masked_text", "read_only_context_before", "read_only_context_after"}
+        }
+        for unit in units
+    ]
+    _write_jsonl(output / "units.jsonl", public_units)
+    ledger_fields = (
+        "unit_id",
+        "file_id",
+        "heading_path",
+        "part",
+        "start_line",
+        "end_line",
+        "line_count",
+        "scene",
+        "scene_requested",
+        "scene_document_prior",
+        "scene_routing_decision",
+        "scene_routing_policy_sha256",
+        "scene_routing_policy_revision",
+        "scene_routing_top_score",
+        "scene_routing_margin",
+        "voice_profile_id",
+        "voice_profile_revision",
+        "voice_profile_confidence",
+        "voice_profile_kind",
+        "voice_profile_source",
+        "voice_profile_binding_scene",
+        "voice_profile_sha256",
+        "voice_default_disclosure",
+        "mode",
+        "intensity",
+        "structural_plan_status",
+        "owner_chunk",
+        "chunk_binding_sha256",
+        "context_before_unit",
+        "context_after_unit",
+        "author_chars",
+        "protected_spans",
+        "status",
+        "hash_before",
+        "hash_after",
+        "diff_path",
+        "protected_hashes_ok",
+        "style_validation",
+        "notes",
+    )
+    _write_csv(output / "coverage_ledger.csv", public_units, ledger_fields)
+
+    file_statuses = Counter(record["status"] for record in files)
+    unit_statuses = Counter(unit["status"] for unit in units)
+    routing_decisions = Counter(
+        unit["scene_routing_decision"]
+        for unit in units
+        if unit["author_chars"] > 0
+    )
+    if not routing_decisions:
+        scene_routing_status = "NOT_EVALUATED"
+    elif routing_decisions.get("AMBIGUOUS"):
+        scene_routing_status = "REVIEW"
+    else:
+        scene_routing_status = "PASS"
+    processable_editable_units = unit_statuses.get("PENDING", 0)
+    run_status = "REVIEW" if any(
+        status in unit_statuses
+        for status in ("UNRESOLVED", "SKIPPED_GARBLED", "CHANGED_AFTER_SNAPSHOT")
+    ) or any(
+        status in file_statuses
+        for status in ("UNRESOLVED", "UNRESOLVED_INCLUDE", "SKIPPED_GARBLED", "CHANGED_AFTER_SNAPSHOT")
+    ) or processable_editable_units == 0 else "READY"
+    metadata = {
+        "tool": "prepare_humanize_long_document.py",
+        "created_at": utc_now(),
+        "snapshot_id": snapshot["snapshot_id"],
+        "status": run_status,
+        "scene": scene.upper(),
+        "intensity": requested_intensity,
+        "structural_transaction_scope": requested_transaction_scope,
+        "structural_transaction_candidates": len(
+            transaction_inventory["transactions"]
+        ),
+        "structural_transaction_inventory": (
+            "structural_transaction_inventory.json"
+        ),
+        "structural_transaction_inventory_sha256": transaction_inventory[
+            "inventory_sha256"
+        ],
+        "structural_transaction_policy_revision": (
+            STRUCTURAL_TRANSACTION_POLICY_REVISION
+        ),
+        "structural_transaction_policy_sha256": transaction_inventory[
+            "eligibility_policy_sha256"
+        ],
+        "voice_binding": voice_binding,
+        "scene_routing_status": scene_routing_status,
+        "scene_routing_policy_sha256": _policy_sha256,
+        "scene_routing_policy_revision": policy["revision"],
+        "scene_routing_summary": dict(sorted(routing_decisions.items())),
+        "budgets": {
+            "max_author_chars": max_author_chars,
+            "max_lines": max_lines,
+            "min_author_chars": min_author_chars,
+        },
+        "editable_style_wrappers": sorted(editable_wrappers),
+        "files_total": len(files),
+        "units_total": len(units),
+        "protected_spans_total": len(all_spans),
+        "file_statuses": dict(sorted(file_statuses.items())),
+        "unit_statuses": dict(sorted(unit_statuses.items())),
+        "processable_editable_units": processable_editable_units,
+        "no_editable_scope": processable_editable_units == 0,
+        "completion_claim_allowed": False,
+        "next_action": "Rewrite only PENDING chunk files, then validate and finalize them.",
+        "integrity_manifest": "prepare_integrity.json",
+    }
+    policy_snapshot = build_policy_snapshot()
+    metadata["policy_snapshot"] = policy_snapshot
+    metadata["policy_snapshot_sha256"] = policy_snapshot_sha256(policy_snapshot)
+    _write_json(output / "run_metadata.json", metadata)
+    integrity_manifest = build_integrity_manifest(output)
+    validate_integrity_manifest(output, integrity_manifest)
+    _write_json(output / "prepare_integrity.json", integrity_manifest)
+    return metadata
+
+
+def build_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(
+        description="冻结长 MD/TEX 输入并生成 manifest、保护占位块和初始覆盖账本；不修改源文。"
+    )
+    parser.add_argument("inputs", nargs="+", type=Path, help="一个或多个主文件或目录")
+    parser.add_argument("--output", type=Path, required=True, help="必须为空的新输出目录")
+    parser.add_argument(
+        "--scene",
+        type=str.upper,
+        choices=("AUTO", "GENERAL", "COURSE", "MODELING", "RESEARCH"),
+        default="AUTO",
+    )
+    parser.add_argument(
+        "--intensity",
+        type=str.upper,
+        choices=tuple(sorted(REWRITE_INTENSITIES)),
+        default="BALANCED",
+        help="冻结本轮改写权限；STRUCTURAL 会生成逐段结构清单并要求结构映射包",
+    )
+    parser.add_argument(
+        "--structural-transaction-scope",
+        type=str.upper,
+        choices=tuple(sorted(STRUCTURAL_TRANSACTION_SCOPES)),
+        default="NONE",
+        help=(
+            "生成候选型跨 unit 事务清单；ADJACENT_PAIR 仅接受 STRUCTURAL，"
+            "且不授予执行或语义放行权限"
+        ),
+    )
+    parser.add_argument("--max-author-chars", type=int, default=7000)
+    parser.add_argument("--max-lines", type=int, default=600)
+    parser.add_argument("--min-author-chars", type=int, default=1200)
+    parser.add_argument("--voice-profile", type=Path)
+    parser.add_argument("--voice-profile-sha256")
+    parser.add_argument("--voice-manifest", type=Path)
+    parser.add_argument("--voice-sample-spec", type=Path)
+    parser.add_argument("--voice-allowed-root", type=Path)
+    parser.add_argument(
+        "--editable-style-wrapper",
+        action="append",
+        default=[],
+        choices=sorted(EDITABLE_STYLE_WRAPPERS),
+        help="显式授权移除的非语义 TeX 样式包装命令；可重复，默认全部保护",
+    )
+    return parser
+
+
+def main(argv: Sequence[str] | None = None) -> int:
+    if hasattr(sys.stdout, "reconfigure"):
+        sys.stdout.reconfigure(encoding="utf-8")
+    parser = build_parser()
+    args = parser.parse_args(argv)
+    if args.max_author_chars < 1000 or args.max_lines < 50 or args.min_author_chars < 0:
+        parser.error("invalid chunk budget")
+    try:
+        metadata = prepare(
+            args.inputs,
+            args.output,
+            scene=args.scene,
+            intensity=args.intensity,
+            structural_transaction_scope=args.structural_transaction_scope,
+            max_author_chars=args.max_author_chars,
+            max_lines=args.max_lines,
+            min_author_chars=args.min_author_chars,
+            editable_style_wrappers=args.editable_style_wrapper,
+            voice_profile=args.voice_profile,
+            voice_profile_sha256=args.voice_profile_sha256,
+            voice_manifest=args.voice_manifest,
+            voice_sample_spec=args.voice_sample_spec,
+            voice_allowed_root=args.voice_allowed_root,
+        )
+    except (OSError, UnicodeError, ValueError, json.JSONDecodeError) as error:
+        parser.error(str(error))
+    print(json.dumps(metadata, ensure_ascii=False, indent=2, sort_keys=True))
+    return 2 if metadata["status"] == "REVIEW" else 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

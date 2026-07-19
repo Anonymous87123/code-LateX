@@ -617,7 +617,7 @@ class HumanizeSecondPassTests(unittest.TestCase):
         preparer.prepare([main], first_run, scene="AUTO", min_author_chars=0)
         first_units = self.pending_chunks(first_run)
         weak_first = next(item for item in first_units if "参数设置沿用前文" in item["masked_text"])
-        self.assertEqual("ROUTED_DOCUMENT_PRIOR", weak_first["scene_routing_decision"])
+        self.assertEqual("ROUTED", weak_first["scene_routing_decision"])
         first_rewrites = self.root / "graph-first-rewrites"
         first_rewrites.mkdir()
         for unit in first_units:
@@ -645,7 +645,7 @@ class HumanizeSecondPassTests(unittest.TestCase):
             if "参数设置沿用前文" in item["masked_text"]
         )
         self.assertEqual("MODELING", weak_second["scene"])
-        self.assertEqual("ROUTED_DOCUMENT_PRIOR", weak_second["scene_routing_decision"])
+        self.assertEqual("ROUTED", weak_second["scene_routing_decision"])
 
     def test_prepare_rejects_files_hidden_outside_the_first_rendered_manifest(self) -> None:
         first_run, _first_rewrites = self.make_first_pass()
@@ -661,6 +661,67 @@ class HumanizeSecondPassTests(unittest.TestCase):
                 self.root / "second-run",
                 self.root / "second-cases",
             )
+
+    @staticmethod
+    def mutate_rendered_manifest(first_run: Path, mutation) -> None:
+        path = first_run / "rendered_manifest.csv"
+        with path.open("r", encoding="utf-8-sig", newline="") as handle:
+            reader = csv.DictReader(handle)
+            rows = list(reader)
+            fields = list(reader.fieldnames or [])
+        mutation(rows, fields)
+        with path.open("w", encoding="utf-8-sig", newline="") as handle:
+            writer = csv.DictWriter(handle, fieldnames=fields)
+            writer.writeheader()
+            writer.writerows(rows)
+
+    def test_prepare_accepts_scoped_rendered_manifest(self) -> None:
+        first_run, _first_rewrites = self.make_first_pass()
+        inputs, rows, _metadata = second_prepare._first_pass_inputs(first_run)
+        self.assertEqual(1, len(inputs))
+        self.assertEqual("LIVE_LOCATION_LABEL_NOT_HASH_TARGET", rows[0]["source_path_scope"])
+        self.assertEqual("RENDERED_CANDIDATE_BYTES", rows[0]["sha256_scope"])
+        self.assertEqual(rows[0]["sha256"], rows[0]["rendered_sha256"])
+
+    def test_prepare_rejects_tampered_rendered_manifest_scope(self) -> None:
+        for field in ("source_path_scope", "sha256_scope"):
+            with self.subTest(field=field):
+                first_run, _first_rewrites = self.make_first_pass()
+                self.mutate_rendered_manifest(
+                    first_run,
+                    lambda rows, _fields, field=field: rows[0].__setitem__(field, "UNTRUSTED"),
+                )
+                with self.assertRaisesRegex(
+                    second_prepare.SecondPassPreparationError, "scope"
+                ):
+                    second_prepare._first_pass_inputs(first_run)
+                shutil.rmtree(first_run)
+                shutil.rmtree(self.root / "first-rewrites")
+
+    def test_prepare_rejects_disagreeing_rendered_hash_aliases(self) -> None:
+        first_run, _first_rewrites = self.make_first_pass()
+        self.mutate_rendered_manifest(
+            first_run,
+            lambda rows, _fields: rows[0].__setitem__("rendered_sha256", "0" * 64),
+        )
+        with self.assertRaisesRegex(
+            second_prepare.SecondPassPreparationError, "aliases disagree"
+        ):
+            second_prepare._first_pass_inputs(first_run)
+
+    def test_prepare_rejects_unknown_rendered_manifest_column(self) -> None:
+        first_run, _first_rewrites = self.make_first_pass()
+
+        def add_unknown(rows, fields):
+            fields.append("future_unreviewed_field")
+            for row in rows:
+                row["future_unreviewed_field"] = "value"
+
+        self.mutate_rendered_manifest(first_run, add_unknown)
+        with self.assertRaisesRegex(
+            second_prepare.SecondPassPreparationError, "fields are invalid"
+        ):
+            second_prepare._first_pass_inputs(first_run)
 
     def test_missing_trial_is_review_not_pass(self) -> None:
         first_run, second_run, cases, trials = self.prepare_second()

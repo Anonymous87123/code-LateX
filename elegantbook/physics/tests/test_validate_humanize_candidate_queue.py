@@ -113,6 +113,28 @@ class CandidateQueueValidatorTests(unittest.TestCase):
             queue_dir=output,
         )
 
+    def test_candidate_package_rejects_duplicate_json_keys(self) -> None:
+        candidate = self.write_candidate()
+        raw = candidate.read_text(encoding="utf-8")
+        candidate.write_text(
+            '{"candidate_id":"shadow",' + raw.lstrip()[1:],
+            encoding="utf-8",
+        )
+
+        with self.assertRaisesRegex(candidate_validator.CandidateError, "duplicate_json_key:candidate_id"):
+            self.validate(candidate)
+
+    def test_candidate_package_rejects_non_finite_json_numbers(self) -> None:
+        candidate = self.write_candidate()
+        raw = candidate.read_text(encoding="utf-8")
+        candidate.write_text(
+            raw.replace('"candidate_id": "research-scope-001"', '"candidate_id": NaN'),
+            encoding="utf-8",
+        )
+
+        with self.assertRaisesRegex(candidate_validator.CandidateError, "non_finite_json_number:NaN"):
+            self.validate(candidate)
+
     def warning_candidate(self, **changes: object) -> Path:
         self.before.write_text("结果可能变化。\n", encoding="utf-8")
         self.after.write_text("结果发生变化。\n", encoding="utf-8")
@@ -445,6 +467,28 @@ class CandidateQueueValidatorTests(unittest.TestCase):
         rerun = self.validate(revised, queue=True)
         self.assertTrue(rerun["queue"]["idempotent_rerun"])
         self.assertEqual(second["candidate_sha256"], rerun["candidate_sha256"])
+
+    def test_existing_queue_result_rejects_non_finite_json_numbers(self) -> None:
+        candidate = self.write_candidate()
+        first = self.validate(candidate, queue=True)
+        result_path = self.root / "queue" / "review" / "research-scope-001.result.json"
+        result_path.write_text(
+            '{"candidate_sha256":"' + first["candidate_sha256"] + '","poison":Infinity}',
+            encoding="utf-8",
+        )
+
+        self.after.write_text("实验仅在当前条件下记录到峰值，并为后续研究提供线索。\n", encoding="utf-8")
+        revised = self.write_candidate(
+            supersedes_candidate_sha256=first["candidate_sha256"],
+            anchors=[{
+                "id": "scope-anchor",
+                "before_text": "实验仅在当前条件下记录到峰值。",
+                "after_text": "实验仅在当前条件下记录到峰值",
+                "role": "scope",
+            }],
+        )
+        with self.assertRaisesRegex(candidate_validator.CandidateError, "queue_state_unreadable"):
+            self.validate(revised, queue=True)
 
     def test_candidate_hash_binds_before_and_after_content(self) -> None:
         candidate = self.write_candidate()

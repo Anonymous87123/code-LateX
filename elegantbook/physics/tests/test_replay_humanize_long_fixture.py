@@ -216,6 +216,12 @@ class ReplayHumanizeLongFixtureTests(unittest.TestCase):
             "PASS", long_23["structural_transaction_rollback_status"]
         )
         self.assertEqual("NOT_RUN", long_23["transaction_replay_status"])
+        self.assertEqual(
+            "humanize-structural-transaction-review-request/v2",
+            long_23["transaction_review_request_schema"],
+        )
+        self.assertEqual("PASS", long_23["rewrite_intent_coverage_status"])
+        self.assertEqual(0, long_23["rewrite_intent_units_missing"])
 
         long_24 = json.loads(self.run_helper("LONG-24").stdout)
         self.assertEqual(

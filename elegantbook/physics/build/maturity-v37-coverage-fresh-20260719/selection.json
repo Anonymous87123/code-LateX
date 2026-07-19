@@ -1,0 +1,105 @@
+{
+  "schema_version": "humanize-short-patch-selection/v2",
+  "requested_output": "PATCH",
+  "mode": "REWRITE",
+  "scene": "COURSE",
+  "intensity": "BALANCED",
+  "protected_terms": [],
+  "hunks": [
+    {
+      "hunk_id": "H001",
+      "decision": "DELETE_STYLE_SHELL",
+      "source_text": "值得注意的是，",
+      "start_byte": null,
+      "replacement": "",
+      "reason": "删除未增加学习对象或判断条件的空重点提示壳。"
+    },
+    {
+      "hunk_id": "H002",
+      "decision": "DELETE_STYLE_SHELL",
+      "source_text": "遇到这类题目时必须牢记公式。",
+      "start_byte": null,
+      "replacement": "",
+      "reason": "公式紧邻显示，本句只重复记忆要求，没有补充适用条件或误读。"
+    },
+    {
+      "hunk_id": "H003",
+      "decision": "UNRESOLVED",
+      "source_text": "若已知速度随时间减小，就可以直接套用匀变速公式。",
+      "start_byte": null,
+      "replacement": "若已知速度随时间减小，就可以直接套用匀变速公式。",
+      "reason": "该句给出直接套用许可，与后文先确认匀变速条件的要求相对，纯文风层不裁决。"
+    },
+    {
+      "hunk_id": "H004",
+      "decision": "DELETE_STYLE_SHELL",
+      "source_text": "这个结论具有重要意义，能够为后续学习奠定基础。",
+      "start_byte": null,
+      "replacement": "",
+      "reason": "删除没有新增对象、动作或后果的泛化价值判断与后续铺垫。"
+    },
+    {
+      "hunk_id": "H005",
+      "decision": "UNRESOLVED",
+      "source_text": "先确认题目给出的量是否满足匀变速条件，再判断公式中的加速度方向；若条件不满足，不能因为公式看起来相似就直接代入。",
+      "start_byte": null,
+      "replacement": "先确认题目给出的量是否满足匀变速条件，再判断公式中的加速度方向；若条件不满足，不能因为公式看起来相似就直接代入。",
+      "reason": "该句要求先核对适用条件并限制直接代入，与前文直接套用许可相对，纯文风层不裁决。"
+    }
+  ],
+  "coverage": {
+    "source_kind": "DOCUMENT",
+    "lexical_keeps": [],
+    "selected_spans": [
+      {
+        "selection_id": "S001",
+        "source_text": "值得注意的是，",
+        "start_byte": null,
+        "decision": "HUNK",
+        "hunk_id": "H001",
+        "reason": "本次短 PATCH 明确处理空重点提示壳。"
+      },
+      {
+        "selection_id": "S002",
+        "source_text": "遇到这类题目时必须牢记公式。",
+        "start_byte": null,
+        "decision": "HUNK",
+        "hunk_id": "H002",
+        "reason": "本次短 PATCH 明确处理未提供新判断条件的记忆命令句。"
+      },
+      {
+        "selection_id": "S003",
+        "source_text": "若已知速度随时间减小，就可以直接套用匀变速公式。",
+        "start_byte": null,
+        "decision": "HUNK",
+        "hunk_id": "H003",
+        "reason": "本次短 PATCH 将直接套用许可绑定为未决冲突左侧。"
+      },
+      {
+        "selection_id": "S004",
+        "source_text": "这个结论具有重要意义，能够为后续学习奠定基础。",
+        "start_byte": null,
+        "decision": "HUNK",
+        "hunk_id": "H004",
+        "reason": "本次短 PATCH 明确处理泛化价值判断与后续铺垫。"
+      },
+      {
+        "selection_id": "S005",
+        "source_text": "先确认题目给出的量是否满足匀变速条件，再判断公式中的加速度方向；若条件不满足，不能因为公式看起来相似就直接代入。",
+        "start_byte": null,
+        "decision": "HUNK",
+        "hunk_id": "H005",
+        "reason": "本次短 PATCH 将条件核对与禁止直接代入要求绑定为未决冲突右侧。"
+      }
+    ],
+    "explicit_conflicts": [
+      {
+        "conflict_id": "C001",
+        "rule_code": "OPPOSING_PERMISSION",
+        "left_hunk_id": "H003",
+        "right_hunk_id": "H005",
+        "reason": "两处对直接套用公式给出相对的许可与条件限制，必须成对原样保留。"
+      }
+    ]
+  }
+}

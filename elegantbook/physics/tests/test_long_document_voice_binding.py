@@ -224,7 +224,8 @@ class LongDocumentVoiceBindingTests(unittest.TestCase):
         self.assertFalse(
             result["voice_conformance"]["personal_voice_claim_allowed"]
         )
-        self.assertTrue(result["voice_completion_claim_allowed"])
+        self.assertEqual("REVIEW", result["authoring_binding_status"])
+        self.assertFalse(result["voice_completion_claim_allowed"])
         self.assertFalse(result["humanize_completion_claim_allowed"])
         self.assertFalse(result["full_completion_claim_allowed"])
 

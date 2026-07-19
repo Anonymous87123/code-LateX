@@ -91,6 +91,27 @@ class HumanizeValidationReplayTests(unittest.TestCase):
         )
         return completed, json.loads(completed.stdout)
 
+    def replay_text(
+        self,
+        evidence_dir: Path,
+        *extra: str,
+    ) -> subprocess.CompletedProcess[str]:
+        return subprocess.run(
+            [
+                sys.executable,
+                str(REPLAY_PATH),
+                str(evidence_dir),
+                "--format",
+                "text",
+                *extra,
+            ],
+            check=False,
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            env={**os.environ, "PYTHONUTF8": "1"},
+        )
+
     @staticmethod
     def tree_hashes(root: Path) -> dict[str, str]:
         return {
@@ -132,13 +153,127 @@ class HumanizeValidationReplayTests(unittest.TestCase):
             completed.returncode,
             json.dumps(payload, ensure_ascii=False, indent=2),
         )
+        self.assertEqual("PASS", payload["replay_status"])
+        self.assertEqual(0, payload["replay_exit_code"])
         self.assertEqual("PASS", payload["status"])
+        self.assertEqual(
+            "DEPRECATED_ALIAS_OF_REPLAY_STATUS",
+            payload["status_compatibility"],
+        )
+        self.assertEqual("REVIEW", payload["recorded_delivery_gate_status"])
+        self.assertEqual(2, payload["recorded_exit_code"])
+        self.assertEqual("SELF_CONSISTENCY_ONLY", payload["scope"])
+        self.assertEqual("SELF_CONSISTENCY_ONLY", payload["integrity_scope"])
         self.assertEqual("PASS", payload["record_integrity_status"])
         self.assertEqual("PASS", payload["reexecution_status"])
         self.assertEqual(original["evidence_bundle"]["run_id"], payload["run_id"])
         self.assertEqual("NOT_EVALUATED", payload["academic_correctness"])
         self.assertFalse(payload["paired_quality_clearance_granted"])
         self.assertFalse(payload["humanize_quality_claim_allowed"])
+
+    def test_impossible_recorded_status_exit_pairs_fail_before_reexecution(self) -> None:
+        evidence = self.root / "evidence"
+        self.publish(evidence)
+        manifest, artifacts = replayer._load_record(evidence)
+        baseline = json.loads(artifacts["invocation-request.json"].decode("utf-8"))
+        invalid_pairs = (
+            ("PASS", 1),
+            ("PASS", 2),
+            ("FAIL", 0),
+            ("FAIL", 2),
+            ("REVIEW", 0),
+            ("REVIEW", 1),
+        )
+
+        for status, exit_code in invalid_pairs:
+            with self.subTest(status=status, exit_code=exit_code):
+                invocation = json.loads(json.dumps(baseline))
+                invocation["expected"]["delivery_gate_status"] = status
+                invocation["expected"]["exit_code"] = exit_code
+                body = dict(invocation)
+                body.pop("invocation_sha256")
+                body.pop("run_id")
+                invocation_sha = validator._sha256(
+                    validator._canonical_json_bytes(body)
+                )
+                invocation["invocation_sha256"] = invocation_sha
+                invocation["run_id"] = f"hvr2-{invocation_sha}"
+                forged_manifest = dict(manifest)
+                forged_manifest["run_id"] = invocation["run_id"]
+                forged_manifest["invocation_request_sha256"] = invocation_sha
+                forged_artifacts = dict(artifacts)
+                forged_artifacts["invocation-request.json"] = (
+                    validator._pretty_json_bytes(invocation)
+                )
+
+                with self.assertRaises(replayer.ReplayError) as raised:
+                    replayer._validate_invocation(forged_manifest, forged_artifacts)
+                self.assertEqual("INVALID_EXPECTED_STATUS", raised.exception.code)
+
+    def test_status_exit_helper_rejects_non_string_statuses_as_replay_errors(self) -> None:
+        invalid_statuses = ([], {}, None, 0, True, ("PASS",))
+
+        for status in invalid_statuses:
+            with self.subTest(status=status):
+                with self.assertRaises(replayer.ReplayError) as raised:
+                    replayer._require_status_exit_pair(
+                        status,
+                        0,
+                        code="INVALID_TEST_STATUS",
+                        label="test delivery",
+                    )
+                self.assertEqual("INVALID_TEST_STATUS", raised.exception.code)
+
+    def test_cli_structures_non_string_recorded_status_as_fail(self) -> None:
+        for index, invalid_status in enumerate(([], {})):
+            with self.subTest(status=invalid_status):
+                evidence = self.root / f"malformed-status-{index}"
+                self.publish(evidence)
+                manifest_path = evidence / "evidence-manifest.json"
+                manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+                manifest["delivery_gate_status"] = invalid_status
+                body = dict(manifest)
+                body.pop("manifest_sha256")
+                manifest["manifest_sha256"] = validator._sha256(
+                    validator._canonical_json_bytes(body)
+                )
+                manifest_path.write_bytes(validator._pretty_json_bytes(manifest))
+
+                completed, payload = self.replay_cli(evidence)
+
+                self.assertEqual(1, completed.returncode, completed.stderr)
+                self.assertEqual("FAIL", payload["replay_status"])
+                self.assertEqual(1, payload["replay_exit_code"])
+                self.assertEqual("FAIL", payload["status"])
+                self.assertEqual(1, payload["exit_code"])
+                self.assertIsNone(payload["recorded_delivery_gate_status"])
+                self.assertIsNone(payload["recorded_exit_code"])
+                self.assertEqual("RESULT_STATUS_MISMATCH", payload["error_code"])
+                self.assertEqual("FAIL", payload["record_integrity_status"])
+                self.assertEqual("NOT_RUN", payload["reexecution_status"])
+
+    def test_text_output_names_replay_and_exposes_recorded_review(self) -> None:
+        evidence = self.root / "evidence"
+        self.publish(evidence)
+
+        completed = self.replay_text(evidence)
+
+        self.assertEqual(0, completed.returncode, completed.stderr)
+        lines = completed.stdout.splitlines()
+        self.assertEqual(
+            [
+                "replay_status: PASS",
+                "scope: SELF_CONSISTENCY_ONLY",
+                "recorded_delivery_gate_status: REVIEW",
+                "recorded_exit_code: 2",
+                "replay_exit_code: 0",
+            ],
+            lines[:5],
+        )
+        self.assertFalse(
+            any(line.startswith("status:") for line in lines),
+            completed.stdout,
+        )
 
     def test_text_record_with_finding_replays_without_absolute_path_drift(self) -> None:
         before = self.root / "research_before.md"
@@ -233,7 +368,16 @@ class HumanizeValidationReplayTests(unittest.TestCase):
                 path.write_bytes(path.read_bytes() + b"X")
                 completed, payload = self.replay_cli(tampered)
                 self.assertEqual(1, completed.returncode)
+                self.assertEqual("FAIL", payload["replay_status"])
+                self.assertEqual(1, payload["replay_exit_code"])
                 self.assertEqual("FAIL", payload["status"])
+                self.assertIsNone(payload["recorded_delivery_gate_status"])
+                self.assertIsNone(payload["recorded_exit_code"])
+                self.assertEqual("SELF_CONSISTENCY_ONLY", payload["scope"])
+                self.assertEqual(
+                    "DEPRECATED_ALIAS_OF_REPLAY_STATUS",
+                    payload["status_compatibility"],
+                )
                 self.assertEqual("NOT_RUN", payload["reexecution_status"])
 
     def test_rehashed_result_tamper_still_fails_cross_artifact_binding(self) -> None:
@@ -290,7 +434,12 @@ class HumanizeValidationReplayTests(unittest.TestCase):
         with mock.patch.object(replayer, "_current_policy_hashes", return_value=changed):
             payload, exit_code = replayer.replay_record(evidence)
         self.assertEqual(2, exit_code)
+        self.assertEqual("REVIEW", payload["replay_status"])
+        self.assertEqual(2, payload["replay_exit_code"])
         self.assertEqual("REVIEW", payload["status"])
+        self.assertEqual("REVIEW", payload["recorded_delivery_gate_status"])
+        self.assertEqual(2, payload["recorded_exit_code"])
+        self.assertEqual("SELF_CONSISTENCY_ONLY", payload["scope"])
         self.assertEqual("PASS", payload["record_integrity_status"])
         self.assertEqual("NOT_RUN", payload["reexecution_status"])
         self.assertEqual(["POLICY_DRIFT"], payload["reexecution_reasons"])

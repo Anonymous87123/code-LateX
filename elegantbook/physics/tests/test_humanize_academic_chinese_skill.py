@@ -94,7 +94,7 @@ class HumanizeAcademicChineseSkillTests(unittest.TestCase):
 
     def test_scene_rule_counts_and_unique_ids(self) -> None:
         expected = {
-            "course-notes.md": ("NOTE-HUM", 34),
+            "course-notes.md": ("NOTE-HUM", 35),
             "modeling-engineering.md": ("MOD-HUM", 38),
             "research-journal.md": ("RJH", 37),
         }
@@ -408,6 +408,17 @@ class HumanizeAcademicChineseSkillTests(unittest.TestCase):
             "由此形成的认识为后续研究提供支撑",
             "不得新造抽象桥接出口",
             "为后续检验提供线索",
+            "为后续研究提供可靠起点",
+            "不得默示接受目标检测率",
+            "CLEAN 不能原样带回未决 high span",
+            "摘要声明未决不能补救正文中的 high 残留",
+            "改用 `UNRESOLVED + 最小 PATCH/ANNOTATED`",
+            "requested_output=CLEAN",
+            "effective_output=PATCH",
+            "不得把降级后的 PATCH/ANNOTATED 标成 CLEAN",
+            "effective_output=PATCH 时必须给实际 hunk",
+            "不得把截短正文标成 PATCH",
+            "模态强度保留不等于模态 marker 逐字保留",
             "表头必须逐列为",
             "理解而非死记",
             "不以“从题目可推出”为理由自行补写",
@@ -470,6 +481,7 @@ class HumanizeAcademicChineseSkillTests(unittest.TestCase):
             "LEX-ENUM-01": [("references/pathology-catalog.md", "HUM-13")],
             "LEX-PUNCT-DASH-01": [("references/pathology-catalog.md", "HUM-06")],
             "LEX-FORMAT-BOLD-01": [("references/pathology-catalog.md", "HUM-14")],
+            "LEX-COURSE-FORMULA-CAPTION-01": [("references/course-notes.md", "NOTE-HUM-35")],
             "LEX-REPAIR-01": [("references/pathology-catalog.md", "HUM-16")],
         }
         actual = {
@@ -544,6 +556,75 @@ class HumanizeAcademicChineseSkillTests(unittest.TestCase):
         self.assertIn("`humanize_completion_claim_allowed`", longdoc)
         self.assertIn("assembly_replay_idempotency", longdoc)
         self.assertIn("humanize_second_pass_convergence", longdoc)
+
+    def test_v34_pure_style_layer_must_not_choose_between_conflicting_source_claims(self) -> None:
+        skill = (SKILL / "SKILL.md").read_text(encoding="utf-8")
+        operational = (REFERENCES / "operational-contract.md").read_text(
+            encoding="utf-8"
+        )
+        workflow = (REFERENCES / "workflow.md").read_text(encoding="utf-8")
+        prompt = (REFERENCES / "system-prompt-contract.md").read_text(
+            encoding="utf-8"
+        )
+        quick = (REFERENCES / "quick-checklist.md").read_text(encoding="utf-8")
+        combined = "\n".join((skill, operational, workflow, prompt, quick))
+
+        for phrase in (
+            "源文内部冲突不属于纯文风层的裁决权限",
+            "不得自行选择其中一条主张",
+            "两个冲突 span 都必须原样回显",
+            "requested_output=CLEAN; effective_output=PATCH",
+            "SPEECH_ACT_SOURCE_POLARITY_TENSION_SELECTED",
+            "不判断哪一条主张正确",
+        ):
+            self.assertIn(phrase, combined)
+
+    def test_v34_draft_classification_counts_require_replayable_unitization(self) -> None:
+        skill = (SKILL / "SKILL.md").read_text(encoding="utf-8")
+        operational = (REFERENCES / "operational-contract.md").read_text(
+            encoding="utf-8"
+        )
+        workflow = (REFERENCES / "workflow.md").read_text(encoding="utf-8")
+        prompt = (REFERENCES / "system-prompt-contract.md").read_text(
+            encoding="utf-8"
+        )
+        combined = "\n".join((skill, operational, workflow, prompt))
+
+        for phrase in (
+            "不构成独立外部验证",
+            "不是本问的直接观测目标",
+            "FACT_BOUNDARY",
+            "unit_id + source_span + category",
+            "classification_counts=OMITTED_UNUNITIZED",
+            "不得输出 `FACT_PAYLOAD=n`",
+        ):
+            self.assertIn(phrase, combined)
+        self.assertNotIn("交付摘要列出三类计数", workflow)
+        self.assertNotIn("交付前列出三类计数", operational)
+
+    def test_v34_patch_spans_and_draft_relations_are_source_bound(self) -> None:
+        skill = (SKILL / "SKILL.md").read_text(encoding="utf-8")
+        operational = (REFERENCES / "operational-contract.md").read_text(
+            encoding="utf-8"
+        )
+        workflow = (REFERENCES / "workflow.md").read_text(encoding="utf-8")
+        prompt = (REFERENCES / "system-prompt-contract.md").read_text(
+            encoding="utf-8"
+        )
+        combined = "\n".join((skill, operational, workflow, prompt))
+
+        for phrase in (
+            "patch_hunks_source_partition=NON_OVERLAPPING",
+            "同一 source span 只能属于一个 patch hunk",
+            "REWRITE hunk 不得包住另一个 UNRESOLVED span",
+            "数字在材料中出现不等于授权自行比较",
+            "DRAFT_DERIVED_COMPARISON_NOT_SUPPLIED",
+            "不得新增“更大/更高/低于另一情景/进一步侵蚀”",
+            "内容缺失不能改写成关系缺失",
+            "缺少 X 层 -> 缺少 X 的衔接",
+            "SPEECH_ACT_MISSING_CONTENT_TO_LINKAGE",
+        ):
+            self.assertIn(phrase, combined)
 
     def test_evaluation_separates_toolchain_and_model_qualification(self) -> None:
         text = (REFERENCES / "evaluation-contract.md").read_text(encoding="utf-8")

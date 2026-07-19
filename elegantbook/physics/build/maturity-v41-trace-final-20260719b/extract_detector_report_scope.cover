@@ -1,0 +1,555 @@
+       #!/usr/bin/env python3
+    1: """Extract style-editing scope hints from a static detector HTML report.
+       
+       The parser never opens links or executes active content. Detector annotations
+       are only candidate scope selectors. A fragment is usable automatically only
+       when it has one exact match in the normalized source document.
+       """
+       
+    1: from __future__ import annotations
+       
+    1: import argparse
+    1: import codecs
+    1: import hashlib
+    1: import json
+    1: import re
+    1: import sys
+    1: import unicodedata
+    1: from dataclasses import dataclass, field
+    1: from html.parser import HTMLParser
+    1: from pathlib import Path
+    1: from typing import Any, Sequence
+       
+       
+    1: SCHEMA_VERSION = "1.0.0"
+    1: MARKER_KEYWORDS = (
+           "aigc",
+           "risk",
+           "highlight",
+           "suspicious",
+           "detected",
+           "flagged",
+       )
+    1: IGNORED_TAGS = {"script", "style", "noscript"}
+    1: BLOCK_TAGS = {
+           "address",
+           "article",
+           "aside",
+           "blockquote",
+           "dd",
+           "div",
+           "dl",
+           "dt",
+           "fieldset",
+           "figcaption",
+           "figure",
+           "footer",
+           "form",
+           "h1",
+           "h2",
+           "h3",
+           "h4",
+           "h5",
+           "h6",
+           "header",
+           "hr",
+           "li",
+           "main",
+           "nav",
+           "ol",
+           "p",
+           "pre",
+           "section",
+           "table",
+           "tbody",
+           "td",
+           "tfoot",
+           "th",
+           "thead",
+           "tr",
+           "ul",
+       }
+    1: VOID_TAGS = {
+           "area",
+           "base",
+           "br",
+           "col",
+           "embed",
+           "hr",
+           "img",
+           "input",
+           "link",
+           "meta",
+           "param",
+           "source",
+           "track",
+           "wbr",
+       }
+       
+       
+    3: @dataclass
+    2: class _Candidate:
+    1:     sequence: int
+    1:     tag: str
+    1:     depth: int
+    1:     line: int
+    1:     column: int
+    1:     triggers: list[str]
+    1:     parts: list[str] = field(default_factory=list)
+       
+       
+    1: def _collapse_whitespace(text: str) -> str:
+   23:     return re.sub(r"\s+", " ", text).strip()
+       
+       
+    1: def normalize_text(text: str) -> str:
+           """Normalize compatibility characters and collapse whitespace."""
+   13:     return _collapse_whitespace(unicodedata.normalize("NFKC", text))
+       
+       
+    1: def _normalization_with_offsets(text: str) -> tuple[str, list[int]]:
+           """Return normalized source text and a normalized-to-original offset map."""
+    8:     output: list[str] = []
+    8:     offsets: list[int] = []
+    8:     pending_space: int | None = None
+  234:     for original_offset, raw_character in enumerate(text):
+  452:         for character in unicodedata.normalize("NFKC", raw_character):
+  226:             if character.isspace():
+   76:                 if output and output[-1] != " ":
+   76:                     pending_space = original_offset
+   76:                 continue
+  150:             if pending_space is not None:
+   16:                 output.append(" ")
+   16:                 offsets.append(pending_space)
+   16:                 pending_space = None
+  150:             output.append(character)
+  150:             offsets.append(original_offset)
+    8:     return "".join(output), offsets
+       
+       
+    1: def _marker_triggers(tag: str, attrs: Sequence[tuple[str, str | None]]) -> list[str]:
+   34:     triggers: list[str] = []
+   34:     if tag == "mark":
+   10:         triggers.append("tag:mark")
+   42:     for raw_name, raw_value in attrs:
+    8:         name = raw_name.casefold()
+    8:         value = (raw_value or "").casefold()
+    8:         if name in {"class", "id"} and any(keyword in value for keyword in MARKER_KEYWORDS):
+                   triggers.append(f"{name}={raw_value or ''}")
+    8:         elif name.startswith("data-") and any(
+                   keyword in name or keyword in value for keyword in MARKER_KEYWORDS
+               ):
+                   triggers.append(f"{raw_name}={raw_value or ''}")
+   34:     return list(dict.fromkeys(triggers))
+       
+       
+    2: class DetectorScopeHTMLParser(HTMLParser):
+    1:     """Collect visible text from marked or detector-labelled elements."""
+       
+    1:     def __init__(self) -> None:
+    8:         super().__init__(convert_charrefs=True)
+    8:         self.open_tags: list[str] = []
+    8:         self.ignored_tags: list[str] = []
+    8:         self.active: list[_Candidate] = []
+    8:         self.completed: list[_Candidate] = []
+    8:         self.sequence = 0
+       
+    1:     def _append_to_active(self, value: str) -> None:
+   20:         for candidate in self.active:
+   10:             candidate.parts.append(value)
+       
+    1:     def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+   34:         lowered = tag.casefold()
+   34:         if self.ignored_tags:
+                   if lowered in IGNORED_TAGS:
+                       self.ignored_tags.append(lowered)
+                   return
+   34:         if lowered in IGNORED_TAGS:
+                   self.ignored_tags.append(lowered)
+                   return
+       
+   34:         if lowered == "br" or lowered in BLOCK_TAGS:
+                   self._append_to_active("\n")
+       
+   34:         triggers = _marker_triggers(lowered, attrs)
+   34:         if triggers:
+   10:             line, column = self.getpos()
+   10:             self.sequence += 1
+   20:             candidate = _Candidate(
+   10:                 sequence=self.sequence,
+   10:                 tag=lowered,
+   10:                 depth=len(self.open_tags),
+   10:                 line=line,
+   10:                 column=column + 1,
+   10:                 triggers=triggers,
+                   )
+   10:             self.active.append(candidate)
+       
+   34:         if lowered not in VOID_TAGS:
+   26:             self.open_tags.append(lowered)
+       
+    1:     def handle_startendtag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+               # Empty elements have no visible fragment. A line break still separates
+               # text belonging to an already active marked ancestor.
+               if not self.ignored_tags and tag.casefold() in {"br", "hr"}:
+                   self._append_to_active("\n")
+       
+    1:     def handle_data(self, data: str) -> None:
+   10:         if not self.ignored_tags:
+   10:             self._append_to_active(data)
+       
+    1:     def handle_endtag(self, tag: str) -> None:
+   26:         lowered = tag.casefold()
+   26:         if self.ignored_tags:
+                   if lowered == self.ignored_tags[-1]:
+                       self.ignored_tags.pop()
+                   return
+       
+   26:         if lowered in BLOCK_TAGS:
+                   self._append_to_active("\n")
+       
+   26:         matching_depth = None
+   26:         for index in range(len(self.open_tags) - 1, -1, -1):
+   26:             if self.open_tags[index] == lowered:
+   26:                 matching_depth = index
+   26:                 break
+   26:         if matching_depth is None:
+                   return
+       
+   26:         remaining: list[_Candidate] = []
+   36:         for candidate in self.active:
+   10:             if candidate.depth >= matching_depth:
+   10:                 self.completed.append(candidate)
+                   else:
+                       remaining.append(candidate)
+   26:         self.active = remaining
+   26:         del self.open_tags[matching_depth:]
+       
+    1:     def close(self) -> None:
+    8:         super().close()
+    8:         self.completed.extend(self.active)
+    8:         self.active = []
+       
+       
+    1: def extract_report_fragments(html: str) -> list[dict[str, Any]]:
+           """Extract and normalize visible detector-labelled fragments."""
+    8:     parser = DetectorScopeHTMLParser()
+    8:     parser.feed(html)
+    8:     parser.close()
+       
+    8:     deduplicated: dict[str, dict[str, Any]] = {}
+   28:     for candidate in sorted(parser.completed, key=lambda item: item.sequence):
+   10:         text = _collapse_whitespace("".join(candidate.parts))
+   10:         normalized = normalize_text(text)
+   10:         if not normalized:
+                   continue
+   10:         location = {
+   10:             "line": candidate.line,
+   10:             "column": candidate.column,
+   10:             "tag": candidate.tag,
+   10:             "triggers": candidate.triggers,
+               }
+   10:         if normalized in deduplicated:
+                   existing = deduplicated[normalized]
+                   existing["report_occurrences"] += 1
+                   existing["report_locations"].append(location)
+                   for trigger in candidate.triggers:
+                       if trigger not in existing["triggers"]:
+                           existing["triggers"].append(trigger)
+                   continue
+   10:         deduplicated[normalized] = {
+   10:             "text": text,
+   10:             "normalized_text": normalized,
+   10:             "report_line": candidate.line,
+   10:             "report_column": candidate.column,
+   10:             "tag": candidate.tag,
+   10:             "triggers": list(candidate.triggers),
+   10:             "report_occurrences": 1,
+   10:             "report_locations": [location],
+               }
+       
+    8:     fragments: list[dict[str, Any]] = []
+   18:     for index, fragment in enumerate(deduplicated.values(), 1):
+   10:         fragment["index"] = index
+   10:         fragments.append(fragment)
+    8:     return fragments
+       
+       
+    1: def _declared_html_encoding(raw: bytes) -> str | None:
+    8:     header = raw[:4096].decode("latin-1", errors="ignore")
+   16:     match = re.search(
+    8:         r"(?is)<meta[^>]+charset\s*=\s*['\"]?\s*([A-Za-z0-9._-]+)",
+    8:         header,
+           )
+    8:     if match is None:
+               match = re.search(
+                   r"(?is)<meta[^>]+content\s*=\s*['\"][^'\"]*charset\s*=\s*([A-Za-z0-9._-]+)",
+                   header,
+               )
+    8:     return match.group(1) if match else None
+       
+       
+    1: def _decode_bytes(raw: bytes, *, html: bool) -> tuple[str, str]:
+   16:     candidates = ["utf-8-sig"]
+   16:     if html:
+    8:         declared = _declared_html_encoding(raw)
+    8:         if declared:
+    8:             candidates.append(declared)
+   16:     candidates.append("gb18030")
+   16:     attempted: list[str] = []
+   16:     for candidate in candidates:
+   16:         try:
+   16:             canonical = codecs.lookup(candidate).name
+               except LookupError:
+                   continue
+   16:         if canonical in attempted:
+                   continue
+   16:         attempted.append(canonical)
+   16:         try:
+   16:             return raw.decode(candidate), canonical
+               except UnicodeDecodeError:
+                   continue
+           raise UnicodeDecodeError("utf-8", raw, 0, len(raw), "unsupported or unreadable encoding")
+       
+       
+    1: def _all_occurrences(text: str, query: str) -> list[int]:
+   10:     positions: list[int] = []
+   10:     cursor = 0
+   20:     while query and cursor <= len(text) - len(query):
+   18:         position = text.find(query, cursor)
+   18:         if position < 0:
+    8:             break
+   10:         positions.append(position)
+   10:         cursor = position + 1
+   10:     return positions
+       
+       
+    1: def _line_column(text: str, offset: int) -> tuple[int, int]:
+   10:     line = text.count("\n", 0, offset) + 1
+   10:     previous_break = text.rfind("\n", 0, offset)
+   10:     return line, offset - previous_break
+       
+       
+    1: def _map_fragments(fragments: list[dict[str, Any]], source_text: str) -> None:
+    8:     normalized_source, offsets = _normalization_with_offsets(source_text)
+   18:     for fragment in fragments:
+   10:         query = fragment["normalized_text"]
+   10:         positions = _all_occurrences(normalized_source, query)
+   10:         fragment["source_occurrences"] = len(positions)
+   10:         fragment["source_start"] = None
+   10:         fragment["source_end"] = None
+   10:         fragment["source_line"] = None
+   10:         fragment["source_column"] = None
+   10:         if not positions:
+                   fragment["mapping_status"] = "MISSING"
+                   continue
+   10:         if len(positions) > 1:
+                   fragment["mapping_status"] = "AMBIGUOUS"
+                   continue
+   10:         normalized_start = positions[0]
+   10:         normalized_end = normalized_start + len(query)
+   10:         original_start = offsets[normalized_start]
+   10:         original_end = offsets[normalized_end - 1] + 1
+   10:         line, column = _line_column(source_text, original_start)
+   20:         fragment.update(
+   10:             {
+   10:                 "mapping_status": "UNIQUE",
+   10:                 "source_start": original_start,
+   10:                 "source_end": original_end,
+   10:                 "source_line": line,
+   10:                 "source_column": column,
+                   }
+               )
+       
+       
+    1: def _coverage(fragments: Sequence[dict[str, Any]]) -> dict[str, Any]:
+    8:     counts = {
+    8:         "UNIQUE": 0,
+    8:         "MISSING": 0,
+    8:         "AMBIGUOUS": 0,
+    8:         "NOT_MAPPED_NO_SOURCE": 0,
+    8:         "NOT_MAPPED_SOURCE_ERROR": 0,
+           }
+   18:     for fragment in fragments:
+   10:         status = fragment.get("mapping_status")
+   10:         if status in counts:
+   10:             counts[status] += 1
+    8:     total = len(fragments)
+    8:     unique = counts["UNIQUE"]
+    8:     return {
+    8:         "total_fragments": total,
+    8:         "uniquely_mapped": unique,
+    8:         "missing": counts["MISSING"],
+    8:         "ambiguous": counts["AMBIGUOUS"],
+    8:         "not_mapped_no_source": counts["NOT_MAPPED_NO_SOURCE"],
+    8:         "source_errors": counts["NOT_MAPPED_SOURCE_ERROR"],
+    8:         "ratio": unique / total if total else 0.0,
+           }
+       
+       
+    1: def analyze_report(report: Path | str, source: Path | str | None = None) -> dict[str, Any]:
+           """Analyze a report and optionally map every fragment to a source file."""
+    8:     report_path = Path(report)
+    8:     report_raw = report_path.read_bytes()
+    8:     report_sha256 = hashlib.sha256(report_raw).hexdigest()
+    8:     report_text, report_encoding = _decode_bytes(report_raw, html=True)
+    8:     fragments = extract_report_fragments(report_text)
+       
+    8:     source_path = Path(source) if source is not None else None
+    8:     source_sha256: str | None = None
+    8:     source_encoding: str | None = None
+    8:     review_reasons: list[dict[str, Any]] = []
+       
+    8:     if not fragments:
+               review_reasons.append(
+                   {
+                       "code": "NO_FLAGGED_VISIBLE_TEXT",
+                       "message": "The report contains no visible text in supported detector markers.",
+                   }
+               )
+    8:     elif source_path is None:
+               for fragment in fragments:
+                   fragment.update(
+                       {
+                           "mapping_status": "NOT_MAPPED_NO_SOURCE",
+                           "source_occurrences": None,
+                           "source_start": None,
+                           "source_end": None,
+                           "source_line": None,
+                           "source_column": None,
+                       }
+                   )
+               review_reasons.append(
+                   {
+                       "code": "SOURCE_NOT_PROVIDED",
+                       "message": "Report annotations cannot become an edit scope without a source document.",
+                   }
+               )
+           else:
+    8:         source_raw = source_path.read_bytes()
+    8:         source_sha256 = hashlib.sha256(source_raw).hexdigest()
+    8:         try:
+    8:             source_text, source_encoding = _decode_bytes(source_raw, html=False)
+               except UnicodeDecodeError:
+                   for fragment in fragments:
+                       fragment.update(
+                           {
+                               "mapping_status": "NOT_MAPPED_SOURCE_ERROR",
+                               "source_occurrences": None,
+                               "source_start": None,
+                               "source_end": None,
+                               "source_line": None,
+                               "source_column": None,
+                           }
+                       )
+                   review_reasons.append(
+                       {
+                           "code": "SOURCE_DECODE_FAILED",
+                           "message": "The source is not readable as UTF-8 or GB18030; no mapping was attempted.",
+                       }
+                   )
+               else:
+    8:             _map_fragments(fragments, source_text)
+   26:             missing = sum(item["mapping_status"] == "MISSING" for item in fragments)
+   26:             ambiguous = sum(item["mapping_status"] == "AMBIGUOUS" for item in fragments)
+    8:             if missing:
+                       review_reasons.append(
+                           {
+                               "code": "FRAGMENTS_MISSING_FROM_SOURCE",
+                               "count": missing,
+                               "message": "One or more normalized report fragments are absent from the source.",
+                           }
+                       )
+    8:             if ambiguous:
+                       review_reasons.append(
+                           {
+                               "code": "FRAGMENTS_AMBIGUOUS_IN_SOURCE",
+                               "count": ambiguous,
+                               "message": "One or more normalized report fragments occur more than once in the source.",
+                           }
+                       )
+       
+    8:     coverage = _coverage(fragments)
+    8:     passed = bool(fragments) and source_path is not None and coverage["uniquely_mapped"] == len(fragments)
+    8:     status = "PASS" if passed else "REVIEW"
+    8:     exit_code = 0 if passed else 2
+    8:     return {
+    8:         "schema_version": SCHEMA_VERSION,
+    8:         "operation": "detector_report_scope_extraction",
+    8:         "status": status,
+    8:         "exit_code": exit_code,
+    8:         "report_path": str(report_path.resolve()),
+    8:         "report_sha256": report_sha256,
+    8:         "report_encoding": report_encoding,
+    8:         "source_path": str(source_path.resolve()) if source_path is not None else None,
+    8:         "source_sha256": source_sha256,
+    8:         "source_encoding": source_encoding,
+    8:         "coverage": coverage,
+    8:         "review_reasons": review_reasons,
+    8:         "fragments": fragments,
+           }
+       
+       
+    1: def build_parser() -> argparse.ArgumentParser:
+           parser = argparse.ArgumentParser(
+               description="Extract static detector-report annotations as style-editing scope hints."
+           )
+           parser.add_argument("report", type=Path, help="Local HTML detector report")
+           parser.add_argument(
+               "--source",
+               type=Path,
+               help="Optional source document used for unique exact normalized mapping",
+           )
+           parser.add_argument(
+               "--format",
+               choices=("json",),
+               default="json",
+               help="Output format (currently only json)",
+           )
+           parser.add_argument("--output", type=Path, help="Optional path for the JSON result")
+           return parser
+       
+       
+    1: def main(argv: Sequence[str] | None = None) -> int:
+           args = build_parser().parse_args(argv)
+           if hasattr(sys.stdout, "reconfigure"):
+               sys.stdout.reconfigure(encoding="utf-8")
+           try:
+               payload = analyze_report(args.report, args.source)
+           except (OSError, UnicodeError) as error:
+               payload = {
+                   "schema_version": SCHEMA_VERSION,
+                   "operation": "detector_report_scope_extraction",
+                   "status": "REVIEW",
+                   "exit_code": 2,
+                   "report_path": str(args.report.resolve()),
+                   "report_sha256": None,
+                   "source_path": str(args.source.resolve()) if args.source else None,
+                   "source_sha256": None,
+                   "coverage": {
+                       "total_fragments": 0,
+                       "uniquely_mapped": 0,
+                       "missing": 0,
+                       "ambiguous": 0,
+                       "not_mapped_no_source": 0,
+                       "source_errors": 1,
+                       "ratio": 0.0,
+                   },
+                   "review_reasons": [
+                       {
+                           "code": "INPUT_READ_FAILED",
+                           "message": str(error),
+                       }
+                   ],
+                   "fragments": [],
+               }
+           rendered = json.dumps(payload, ensure_ascii=False, indent=2) + "\n"
+           if args.output:
+               args.output.parent.mkdir(parents=True, exist_ok=True)
+               args.output.write_text(rendered, encoding="utf-8")
+           sys.stdout.write(rendered)
+           return int(payload["exit_code"])
+       
+       
+    1: if __name__ == "__main__":
+           raise SystemExit(main())

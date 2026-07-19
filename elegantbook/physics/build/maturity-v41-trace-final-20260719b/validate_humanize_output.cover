@@ -1,0 +1,2078 @@
+       #!/usr/bin/env python3
+    2: """Validate a Chinese academic-style rewrite or supplied-content draft."""
+       
+    2: from __future__ import annotations
+       
+    2: import argparse
+    2: import difflib
+    2: import hashlib
+    2: import json
+    2: import os
+    2: import re
+    2: import shutil
+    2: import stat
+    2: import sys
+    2: import tempfile
+    2: import unicodedata
+    2: from collections import Counter
+    2: from pathlib import Path
+    2: from typing import Any, Sequence
+       
+       
+    2: SCRIPT_DIR = Path(__file__).resolve().parent
+    2: if str(SCRIPT_DIR) not in sys.path:
+           sys.path.insert(0, str(SCRIPT_DIR))
+       
+    2: import check_humanize_invariants as invariants  # noqa: E402
+    2: import extract_detector_report_scope as detector_scope  # noqa: E402
+    2: import scan_humanize_chinese as lexical  # noqa: E402
+       
+       
+    4: VAGUE_REASON_RE = re.compile(
+    2:     r"^(?:(?:经过)?(?:人工)?(?:已经|已)?(?:确认|复核|审核)(?:保留|接受|通过|无误|确认)?"
+           r"(?:此项|该项|内容|原句)?|(?:这是|此为|属于)?(?:一个)?(?:具体)?理由|"
+           r"(?:用户)?(?:要求|同意)?(?:保留|接受))$"
+       )
+    2: SPECIFIC_REASON_ANCHORS = (
+           "用户",
+           "题面",
+           "原句",
+           "术语",
+           "定义",
+           "引用",
+           "法规",
+           "方法",
+           "材料",
+           "算法",
+           "名称",
+           "结论",
+           "否定",
+           "模态",
+           "语气",
+           "重复",
+           "范围",
+           "表达",
+           "功能",
+           "上下文",
+           "证据",
+           "锁定",
+           "命令",
+           "条件",
+       )
+    2: WARNING_REVIEW_REQUEST_SCHEMA = "humanize-warning-review-request/v1"
+    2: PAIRED_QUALITY_REVIEW_REQUEST_SCHEMA = "humanize-paired-quality-review-request/v1"
+    2: DIRECT_VALIDATION_EVIDENCE_SCHEMA = "humanize-direct-validation-evidence/v3"
+    2: DIRECT_VALIDATION_EVIDENCE_ERROR_SCHEMA = "humanize-direct-validation-evidence-error/v1"
+    2: VALIDATION_INVOCATION_SCHEMA = "humanize-validation-invocation/v2"
+    2: VALIDATION_MODES = ("REWRITE", "DRAFT")
+    2: _PAIRED_QUALITY_CONTRACT_NAME = "paired" + "-quality-clearance-contract.md"
+    2: _PAIRED_QUALITY_VERIFIER_NAME = "verify" + "_humanize_paired_quality_response.py"
+    2: DRAFT_DERIVED_COMPARISON_PATTERNS: tuple[tuple[str, re.Pattern[str]], ...] = (
+    2:     (
+    2:         "DRAFT-COMP-01",
+    4:         re.compile(
+    2:             r"(?:降幅|增幅|末值|数值|指标|结果|变化)"
+                   r"[^。！？!?；;\n]{0,18}?(?:更大|更小|更高|更低|高于|低于)"
+               ),
+           ),
+    2:     (
+    2:         "DRAFT-COMP-02",
+    4:         re.compile(
+    2:             r"(?:高于|低于|超过|小于)[^。！？!?；;\n]{0,24}?"
+                   r"(?:情景|对照|基线|组)"
+               ),
+           ),
+    2:     (
+    2:         "DRAFT-COMP-03",
+    4:         re.compile(
+    2:             r"(?:进一步|更进一步)[^。！？!?；;\n]{0,14}?"
+                   r"(?:侵蚀|下降|上升|降低|提高|扩大|缩小)"
+               ),
+           ),
+       )
+       
+       
+    2: def _sha256(raw: bytes) -> str:
+ 4545:     return hashlib.sha256(raw).hexdigest()
+       
+       
+    2: def _canonical_json_bytes(value: Any) -> bytes:
+ 2583:     return json.dumps(
+  861:         value,
+  861:         ensure_ascii=False,
+  861:         sort_keys=True,
+  861:         separators=(",", ":"),
+  861:     ).encode("utf-8")
+       
+       
+    2: def _pretty_json_bytes(value: Any) -> bytes:
+   68:     return (
+   68:         json.dumps(value, ensure_ascii=False, indent=2, sort_keys=True) + "\n"
+   68:     ).encode("utf-8")
+       
+       
+    2: def _absolute_without_resolving(path: Path) -> Path:
+  126:     return Path(os.path.abspath(os.fspath(path)))
+       
+       
+    2: def _assert_no_reparse_ancestors(path: Path) -> None:
+   76:     current = _absolute_without_resolving(path)
+  582:     while True:
+  582:         if current.exists() or current.is_symlink():
+  582:             info = current.lstat()
+  582:             attributes = int(getattr(info, "st_file_attributes", 0))
+  582:             if current.is_symlink() or attributes & stat.FILE_ATTRIBUTE_REPARSE_POINT:
+                       raise ValueError(f"evidence path crosses a symlink or reparse point: {current}")
+  582:         parent = current.parent
+  582:         if parent == current:
+   76:             return
+  506:         current = parent
+       
+       
+    2: def _write_exclusive(path: Path, raw: bytes) -> None:
+  128:     with path.open("xb") as handle:
+   64:         handle.write(raw)
+   64:         handle.flush()
+   64:         os.fsync(handle.fileno())
+       
+       
+    2: def _assert_capturable_file(path: Path, *, label: str) -> Path:
+   37:     absolute = _absolute_without_resolving(path)
+   37:     _assert_no_reparse_ancestors(absolute)
+   37:     info = absolute.lstat()
+   37:     if not stat.S_ISREG(info.st_mode):
+               raise ValueError(f"{label} must be a regular file")
+   37:     if int(getattr(info, "st_nlink", 1)) != 1:
+               raise ValueError(f"{label} must not be a hard link")
+   37:     return absolute
+       
+       
+    2: def _strict_json_bytes(raw: bytes, *, label: str) -> Any:
+           def reject_duplicates(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
+               result: dict[str, Any] = {}
+               for key, value in pairs:
+                   if key in result:
+                       raise ValueError(f"{label} contains duplicate JSON key: {key}")
+                   result[key] = value
+               return result
+       
+           try:
+               text = raw.decode("utf-8")
+           except UnicodeDecodeError as error:
+               raise ValueError(f"{label} must be UTF-8 JSON") from error
+           try:
+               return json.loads(text, object_pairs_hook=reject_duplicates)
+           except json.JSONDecodeError as error:
+               raise ValueError(f"{label} is invalid JSON: {error.msg}") from error
+       
+       
+    2: def _capture_record(path: Path, raw: bytes, *, archive_path: str) -> dict[str, Any]:
+    6:     return {
+    6:         "archive_path": archive_path,
+    6:         "original_suffix": path.suffix,
+    6:         "sha256": _sha256(raw),
+    6:         "size": len(raw),
+           }
+       
+       
+    2: def _archive_report_scope_bytes(scope_payload: dict[str, Any]) -> bytes:
+           archived = json.loads(json.dumps(scope_payload, ensure_ascii=False))
+           archived["report_path"] = "inputs/report.bin"
+           archived["source_path"] = "inputs/before.bin"
+           return _pretty_json_bytes(archived)
+       
+       
+    2: def _report_scope_semantic_sha256(scope_payload: dict[str, Any]) -> str:
+    2:     semantic = json.loads(json.dumps(scope_payload, ensure_ascii=False))
+    2:     semantic["report_path"] = "<ARCHIVED_REPORT>"
+    2:     semantic["source_path"] = "<ARCHIVED_SOURCE>"
+    2:     return _sha256(_canonical_json_bytes(semantic))
+       
+       
+   24: def _build_invocation_request(
+    2:     payload: dict[str, Any],
+           *,
+    2:     before: Path,
+    2:     after: Path,
+    4:     mode: str | None = None,
+    4:     scene: str | None = None,
+    4:     output_format: str = "json",
+    4:     strict_speech_acts: bool = False,
+    4:     fragment_mode: bool = False,
+    4:     report_scope_path: Path | None = None,
+    4:     protected_terms: Sequence[str] = (),
+    2: ) -> dict[str, Any]:
+    3:     evidence = payload.get("evidence")
+    3:     if not isinstance(evidence, dict):
+               raise ValueError("validation payload is missing evidence bindings")
+       
+    3:     before_path = _assert_capturable_file(before, label="before artifact")
+    3:     after_path = _assert_capturable_file(after, label="after artifact")
+    3:     before_raw = before_path.read_bytes()
+    3:     after_raw = after_path.read_bytes()
+    3:     if _sha256(before_raw) != str(evidence.get("before_sha256", "")):
+               raise ValueError("before artifact changed after validation")
+    3:     if _sha256(after_raw) != str(evidence.get("after_sha256", "")):
+               raise ValueError("after artifact changed after validation")
+       
+    3:     inputs: dict[str, Any] = {
+    6:         "before": _capture_record(
+    3:             before_path,
+    3:             before_raw,
+    3:             archive_path="inputs/before.bin",
+               ),
+    6:         "after": _capture_record(
+    3:             after_path,
+    3:             after_raw,
+    3:             archive_path="inputs/after.bin",
+               ),
+           }
+    3:     report_scope: dict[str, Any] = {"provided": False}
+    3:     if report_scope_path is not None:
+               scope_path = _assert_capturable_file(
+                   report_scope_path,
+                   label="report scope artifact",
+               )
+               scope_raw = scope_path.read_bytes()
+               scope_payload = _strict_json_bytes(scope_raw, label="report scope artifact")
+               if not isinstance(scope_payload, dict):
+                   raise ValueError("report scope artifact must contain a JSON object")
+               recorded_report = scope_payload.get("report_path")
+               if not isinstance(recorded_report, str) or not recorded_report:
+                   raise ValueError("report scope artifact is missing report_path")
+               report_path = _assert_capturable_file(
+                   Path(recorded_report),
+                   label="detector report artifact",
+               )
+               report_raw = report_path.read_bytes()
+               archived_scope_raw = _archive_report_scope_bytes(scope_payload)
+               scope_check = payload.get("report_scope_check")
+               if not isinstance(scope_check, dict) or scope_check.get("status") != "PASS":
+                   raise ValueError("report scope was not validated as PASS")
+               if _report_scope_semantic_sha256(scope_payload) != str(
+                   scope_check.get("scope_semantic_sha256", "")
+               ):
+                   raise ValueError("report scope artifact changed after validation")
+               if _sha256(report_raw) != str(scope_check.get("report_sha256", "")):
+                   raise ValueError("detector report artifact changed after validation")
+               inputs["report_scope"] = _capture_record(
+                   scope_path,
+                   archived_scope_raw,
+                   archive_path="inputs/report-scope.json",
+               )
+               inputs["report"] = _capture_record(
+                   report_path,
+                   report_raw,
+                   archive_path="inputs/report.bin",
+               )
+               report_scope = {
+                   "provided": True,
+                   "scope_archive_path": "inputs/report-scope.json",
+                   "report_archive_path": "inputs/report.bin",
+                   "report_original_suffix": report_path.suffix,
+                   "scope_semantic_sha256": str(
+                       scope_check.get("scope_semantic_sha256") or ""
+                   ),
+               }
+       
+    3:     warning_proposal = payload.get("warning_proposal_state")
+    3:     if not isinstance(warning_proposal, dict):
+               warning_proposal = {}
+    3:     warning_resolutions = payload.get("warning_resolutions")
+    3:     if not isinstance(warning_resolutions, dict):
+               warning_resolutions = {}
+    3:     replay_reasons: list[str] = []
+    3:     replay_reasons = sorted(set(replay_reasons))
+    3:     recorded_policy_hashes = evidence.get("policy_hashes")
+    3:     if not isinstance(recorded_policy_hashes, dict):
+               raise ValueError("validation payload is missing policy hash evidence")
+    3:     if _policy_hashes() != recorded_policy_hashes:
+               raise ValueError("validation policy changed before evidence capture")
+       
+    3:     invocation_body = {
+    3:         "schema": VALIDATION_INVOCATION_SCHEMA,
+    3:         "validator_entrypoint": "scripts/validate_humanize_output.py",
+    3:         "arguments": {
+    3:             "mode": str(mode or payload.get("mode", "REWRITE")).upper(),
+    3:             "scene": str(scene or payload.get("scene", "AUTO")).upper(),
+    3:             "output_format": output_format,
+    3:             "strict_speech_acts": bool(strict_speech_acts),
+    3:             "fragment_mode": bool(fragment_mode),
+    3:             "protected_terms": list(protected_terms),
+    3:             "keep_reasons": dict(sorted(payload.get("keep_reasons", {}).items())),
+    3:             "warning_resolutions": dict(sorted(warning_resolutions.items())),
+    6:             "warning_review_request_sha256": str(
+    3:                 warning_proposal.get("warning_review_request_sha256") or ""
+                   ),
+    3:             "report_scope": report_scope,
+               },
+    3:         "inputs": inputs,
+    3:         "policy_hashes": recorded_policy_hashes,
+    3:         "expected": {
+    3:             "delivery_gate_status": str(payload.get("delivery_gate_status", "")),
+    3:             "exit_code": int(payload.get("exit_code", 1)),
+    6:             "paired_quality_review_request_sha256": str(
+    6:                 (payload.get("paired_quality_review_request") or {}).get(
+    3:                     "request_sha256", ""
+                       )
+                   ),
+               },
+    3:         "reexecution": {
+                   "status": (
+    3:                 "REEXECUTION_NOT_SUPPORTED" if replay_reasons else "SUPPORTED"
+                   ),
+    3:             "reasons": replay_reasons,
+               },
+    3:         "privacy": {
+    3:             "reviewer_identifier_collected": False,
+    3:             "stable_reviewer_pseudonym_archived": False,
+    3:             "source_locator_archived": False,
+    3:             "contains_unredacted_proposal_text": bool(warning_resolutions),
+               },
+           }
+    3:     invocation_sha = _sha256(_canonical_json_bytes(invocation_body))
+    9:     return {
+    3:         **invocation_body,
+    3:         "invocation_sha256": invocation_sha,
+    3:         "run_id": f"hvr2-{invocation_sha}",
+           }
+       
+       
+    8: def _evidence_bundle_record(
+    2:     payload: dict[str, Any],
+           *,
+    4:     run_id: str = "",
+    2: ) -> dict[str, Any]:
+    3:     request = payload.get("paired_quality_review_request")
+    3:     request_path = (
+    3:         "paired-quality-review-request.json" if isinstance(request, dict) else ""
+           )
+    3:     warning_request_path = (
+               "warning-review-request.json"
+    3:         if isinstance(payload.get("warning_review_request"), dict)
+    3:         else ""
+           )
+    3:     return {
+    3:         "status": "PERSISTED",
+    3:         "schema": DIRECT_VALIDATION_EVIDENCE_SCHEMA,
+    3:         "manifest_path": "evidence-manifest.json",
+    3:         "result_path": "validation-result.json",
+    3:         "invocation_path": "invocation-request.json",
+    3:         "rendered_output_path": "rendered-output.txt",
+    3:         "stderr_path": "stderr.txt",
+    3:         "execution_record_path": "execution-record.json",
+    3:         "paired_quality_request_path": request_path,
+    3:         "warning_review_request_path": warning_request_path,
+    3:         "run_id": run_id,
+           }
+       
+       
+   20: def _persist_evidence_bundle(
+    2:     payload: dict[str, Any],
+           *,
+    2:     before: Path,
+    2:     after: Path,
+    2:     output_dir: Path,
+    4:     invocation_request: dict[str, Any] | None = None,
+    4:     rendered_output: bytes | None = None,
+    4:     rendered_stderr: bytes = b"",
+    4:     report_scope_path: Path | None = None,
+    2: ) -> dict[str, Any]:
+   13:     output_dir = _absolute_without_resolving(output_dir)
+   13:     before_resolved = _assert_capturable_file(before, label="before artifact")
+   13:     after_resolved = _assert_capturable_file(after, label="after artifact")
+   13:     if output_dir in {before_resolved, after_resolved}:
+               raise ValueError("evidence directory must not replace an input artifact")
+   13:     _assert_no_reparse_ancestors(output_dir.parent)
+   13:     output_dir.parent.mkdir(parents=True, exist_ok=True)
+   13:     _assert_no_reparse_ancestors(output_dir.parent)
+   13:     evidence = payload.get("evidence")
+   13:     if not isinstance(evidence, dict):
+               raise ValueError("validation payload is missing evidence bindings")
+   13:     source_records: dict[str, dict[str, Any]] = {}
+   13:     input_artifacts: dict[str, bytes] = {}
+   13:     dependency_rechecks: list[tuple[str, Path, str]] = []
+   39:     for label, path, expected_key in (
+   13:         ("before", before_resolved, "before_sha256"),
+   13:         ("after", after_resolved, "after_sha256"),
+           ):
+   26:         raw = path.read_bytes()
+   26:         actual_sha = _sha256(raw)
+   26:         expected_sha = str(evidence.get(expected_key, ""))
+   26:         if actual_sha != expected_sha:
+                   raise ValueError(f"{label} artifact changed after validation")
+   26:         source_records[label] = {
+   26:             "sha256": actual_sha,
+   26:             "size": len(raw),
+               }
+   26:         input_artifacts[f"inputs/{label}.bin"] = raw
+       
+   13:     if invocation_request is None:
+    2:         invocation_request = _build_invocation_request(
+    1:             payload,
+    1:             before=before,
+    1:             after=after,
+    1:             report_scope_path=report_scope_path,
+               )
+   13:     invocation_body = dict(invocation_request)
+   13:     invocation_sha = str(invocation_body.pop("invocation_sha256", ""))
+   13:     run_id = str(invocation_body.pop("run_id", ""))
+   13:     if not re.fullmatch(r"[0-9a-f]{64}", invocation_sha):
+               raise ValueError("invocation request has an invalid invocation_sha256")
+   13:     if _sha256(_canonical_json_bytes(invocation_body)) != invocation_sha:
+               raise ValueError("invocation request self-hash mismatch")
+   13:     if run_id != f"hvr2-{invocation_sha}":
+               raise ValueError("invocation request run_id mismatch")
+   13:     invocation_raw = _pretty_json_bytes(invocation_request)
+       
+   13:     if report_scope_path is not None:
+               scope_path = _assert_capturable_file(
+                   report_scope_path,
+                   label="report scope artifact",
+               )
+               scope_raw = scope_path.read_bytes()
+               scope_payload = _strict_json_bytes(scope_raw, label="report scope artifact")
+               if not isinstance(scope_payload, dict):
+                   raise ValueError("report scope artifact must contain a JSON object")
+               report_value = scope_payload.get("report_path")
+               if not isinstance(report_value, str) or not report_value:
+                   raise ValueError("report scope artifact is missing report_path")
+               report_path = _assert_capturable_file(
+                   Path(report_value),
+                   label="detector report artifact",
+               )
+               report_raw = report_path.read_bytes()
+               archived_scope_raw = _archive_report_scope_bytes(scope_payload)
+               for key, raw in (("report_scope", archived_scope_raw), ("report", report_raw)):
+                   record = invocation_request.get("inputs", {}).get(key)
+                   if not isinstance(record, dict):
+                       raise ValueError(f"invocation request is missing {key} binding")
+                   if _sha256(raw) != record.get("sha256") or len(raw) != record.get("size"):
+                       raise ValueError(f"{key} artifact changed after invocation capture")
+               input_artifacts["inputs/report-scope.json"] = archived_scope_raw
+               input_artifacts["inputs/report.bin"] = report_raw
+               dependency_rechecks.extend(
+                   (
+                       ("report_scope", scope_path, _sha256(scope_raw)),
+                       ("report", report_path, _sha256(report_raw)),
+                   )
+               )
+       
+   13:     if rendered_output is None:
+    1:         rendered_output = _pretty_json_bytes(payload)
+       
+   39:     artifacts: dict[str, bytes] = {
+   13:         **input_artifacts,
+   13:         "invocation-request.json": invocation_raw,
+   13:         "validation-result.json": _pretty_json_bytes(payload),
+   13:         "rendered-output.txt": rendered_output,
+   13:         "stderr.txt": rendered_stderr,
+           }
+   13:     request = payload.get("paired_quality_review_request")
+   13:     if isinstance(request, dict):
+   13:         artifacts["paired-quality-review-request.json"] = _pretty_json_bytes(request)
+   13:     warning_request = payload.get("warning_review_request")
+   13:     if isinstance(warning_request, dict):
+               artifacts["warning-review-request.json"] = _pretty_json_bytes(warning_request)
+   13:     execution_record = {
+   13:         "schema": "humanize-validation-execution-record/v1",
+   13:         "run_id": run_id,
+   13:         "intended_exit_code": int(payload.get("exit_code", 1)),
+   13:         "rendered_stdout_sha256": _sha256(rendered_output),
+   13:         "rendered_stderr_sha256": _sha256(rendered_stderr),
+   13:         "process_exit_observation": "NOT_EXTERNALLY_OBSERVED",
+   13:         "integrity_scope": "SELF_CONSISTENCY_ONLY",
+   13:         "limitations": [
+                   "NO_EXTERNAL_TIMESTAMP_OR_SIGNATURE",
+                   "OS_PROCESS_EXIT_NOT_OBSERVED_BY_AN_INDEPENDENT_PARENT",
+                   "NO_ACADEMIC_CORRECTNESS_OR_QUALITY_CLEARANCE",
+               ],
+           }
+   13:     artifacts["execution-record.json"] = _pretty_json_bytes(execution_record)
+       
+   26:     artifact_records = {
+  104:         name: {"sha256": _sha256(raw), "size": len(raw)}
+  130:         for name, raw in sorted(artifacts.items())
+           }
+   13:     request_sha = (
+   13:         str(request.get("request_sha256", "")) if isinstance(request, dict) else ""
+           )
+   13:     manifest_body = {
+   13:         "schema": DIRECT_VALIDATION_EVIDENCE_SCHEMA,
+   13:         "run_id": run_id,
+   13:         "integrity_scope": "SELF_CONSISTENCY_ONLY",
+   13:         "external_anchor_status": "NOT_PROVIDED",
+   13:         "contains_source_content": True,
+   13:         "invocation_request_sha256": invocation_sha,
+   13:         "status": str(payload.get("status", "")),
+   13:         "delivery_gate_status": str(payload.get("delivery_gate_status", "")),
+   13:         "exit_code": int(payload.get("exit_code", 1)),
+   13:         "mode": str(payload.get("mode", "")),
+   13:         "scene": str(payload.get("scene", "")),
+   26:         "paired_quality_review_status": str(
+   13:             payload.get("paired_quality_review_status", "NOT_APPLICABLE")
+               ),
+   13:         "paired_quality_review_request_sha256": request_sha,
+   13:         "source_bindings": source_records,
+   13:         "artifacts": artifact_records,
+           }
+   13:     record_identity = {
+   13:         "schema": DIRECT_VALIDATION_EVIDENCE_SCHEMA,
+   13:         "run_id": run_id,
+   13:         "artifacts": artifact_records,
+           }
+   26:     manifest_body["record_sha256"] = _sha256(
+   13:         _canonical_json_bytes(record_identity)
+           )
+   39:     manifest = {
+   13:         **manifest_body,
+   13:         "manifest_sha256": _sha256(_canonical_json_bytes(manifest_body)),
+           }
+   13:     manifest_raw = _pretty_json_bytes(manifest)
+       
+   13:     expected_files = {**artifacts, "evidence-manifest.json": manifest_raw}
+   13:     if output_dir.exists() or output_dir.is_symlink():
+               existing_lock = output_dir.with_name(f".{output_dir.name}.publish.lock")
+               existing_lock_fd: int | None = None
+               try:
+                   existing_lock_fd = os.open(
+                       existing_lock,
+                       os.O_CREAT | os.O_EXCL | os.O_WRONLY,
+                       0o600,
+                   )
+                   _assert_no_reparse_ancestors(output_dir)
+                   if not output_dir.is_dir():
+                       raise ValueError("evidence path exists and is not a directory")
+                   expected_dirs = {
+                       str(Path(name).parent).replace("\\", "/")
+                       for name in expected_files
+                       if Path(name).parent != Path(".")
+                   }
+       
+                   def verify_existing_tree() -> None:
+                       actual_paths: set[str] = set()
+                       actual_dirs: set[str] = set()
+                       for path in output_dir.rglob("*"):
+                           relative = path.relative_to(output_dir).as_posix()
+                           _assert_no_reparse_ancestors(path)
+                           if path.is_symlink():
+                               raise ValueError(
+                                   f"evidence run_id conflict: symlink present: {relative}"
+                               )
+                           if path.is_dir():
+                               actual_dirs.add(relative)
+                           elif path.is_file():
+                               actual_paths.add(relative)
+                           else:
+                               raise ValueError(
+                                   f"evidence run_id conflict: special path present: {relative}"
+                               )
+                       if actual_paths != set(expected_files) or actual_dirs != expected_dirs:
+                           raise ValueError(
+                               "evidence run_id conflict: existing file or directory inventory differs"
+                           )
+                       for name, expected_raw in expected_files.items():
+                           path = output_dir / Path(name)
+                           _assert_capturable_file(path, label=f"existing evidence file {name}")
+                           if path.read_bytes() != expected_raw:
+                               raise ValueError(
+                                   f"evidence run_id conflict: existing bytes differ: {name}"
+                               )
+       
+                   verify_existing_tree()
+                   verify_existing_tree()
+                   return {**manifest, "publication_status": "IDEMPOTENT_REPLAY"}
+               finally:
+                   if existing_lock_fd is not None:
+                       os.close(existing_lock_fd)
+                       try:
+                           existing_lock.unlink()
+                       except OSError:
+                           pass
+       
+   26:     staging = Path(
+   26:         tempfile.mkdtemp(
+   13:             prefix=f".{output_dir.name}.staging-",
+   13:             dir=output_dir.parent,
+               )
+           )
+   13:     lock_path = output_dir.with_name(f".{output_dir.name}.publish.lock")
+   13:     lock_fd: int | None = None
+   13:     published = False
+   13:     try:
+   13:         _assert_no_reparse_ancestors(staging)
+   13:         (staging / "inputs").mkdir()
+   74:         for name, raw in artifacts.items():
+   70:             target = staging / Path(name)
+   70:             target.parent.mkdir(parents=True, exist_ok=True)
+   70:             _write_exclusive(target, raw)
+    4:         _write_exclusive(staging / "evidence-manifest.json", manifest_raw)
+   27:         for name, record in artifact_records.items():
+   24:             raw = (staging / name).read_bytes()
+   24:             if len(raw) != record["size"] or _sha256(raw) != record["sha256"]:
+                       raise ValueError(f"staged evidence drifted: {name}")
+    3:         if (staging / "evidence-manifest.json").read_bytes() != manifest_raw:
+                   raise ValueError("staged evidence manifest drifted")
+    7:         for label, path, expected_key in (
+    3:             ("before", before_resolved, "before_sha256"),
+    3:             ("after", after_resolved, "after_sha256"),
+               ):
+    5:             current_path = _assert_capturable_file(path, label=f"{label} artifact")
+    5:             if _sha256(current_path.read_bytes()) != str(evidence.get(expected_key, "")):
+    1:                 raise ValueError(f"{label} artifact changed before evidence publication")
+    2:         for label, path, expected_sha in dependency_rechecks:
+                   current_path = _assert_capturable_file(path, label=f"{label} artifact")
+                   if _sha256(current_path.read_bytes()) != expected_sha:
+                       raise ValueError(f"{label} artifact changed before evidence publication")
+    2:         lock_fd = os.open(lock_path, os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o600)
+    2:         if output_dir.exists() or output_dir.is_symlink():
+                   raise ValueError("evidence directory appeared during publication")
+    2:         staging.rename(output_dir)
+    1:         published = True
+           finally:
+   13:         if lock_fd is not None:
+    2:             os.close(lock_fd)
+    2:             try:
+    2:                 lock_path.unlink(missing_ok=True)
+                   except OSError:
+                       pass
+   13:         if not published:
+   12:             shutil.rmtree(staging, ignore_errors=True)
+    1:     return {**manifest, "publication_status": "PUBLISHED"}
+       
+       
+    2: def _evidence_failure_payload(payload: dict[str, Any], error: Exception) -> dict[str, Any]:
+           return {
+               "schema": DIRECT_VALIDATION_EVIDENCE_ERROR_SCHEMA,
+               "status": "FAIL",
+               "delivery_gate_status": "FAIL",
+               "exit_code": 1,
+               "academic_correctness": "NOT_EVALUATED",
+               "error_code": "EVIDENCE_PERSISTENCE_FAILED",
+               "error": str(error),
+               "validation_status_before_evidence_failure": str(payload.get("status", "")),
+               "validation_exit_code_before_evidence_failure": int(payload.get("exit_code", 1)),
+               "evidence_bundle": {"status": "FAIL"},
+           }
+       
+       
+    2: def _read_utf8(path: Path) -> tuple[bytes, str]:
+  236:     raw = path.read_bytes()
+  236:     return raw, raw.decode("utf-8-sig")
+       
+       
+    2: def _document_format(before: Path, after: Path) -> str:
+  113:     if before.suffix.lower() in {".tex", ".ltx"} or after.suffix.lower() in {".tex", ".ltx"}:
+   17:         return "tex"
+   96:     return "markdown"
+       
+       
+    2: def _validate_reason(reason: str, label: str) -> str:
+   35:     reason = reason.strip()
+   35:     if len(reason.encode("utf-8")) > 1024:
+               raise ValueError(f"{label} 不得超过 1024 个 UTF-8 字节")
+  622:     if any(ord(char) < 32 or ord(char) == 127 for char in reason):
+               raise ValueError(f"{label} 不得包含换行、NUL 或其他控制字符")
+   35:     chinese_count = len(re.findall(r"[\u3400-\u9fff]", reason))
+   35:     normalized = re.sub(r"[\s，。！？；：、,.!?;:'\"（）()\[\]{}_-]+", "", reason)
+           if (
+   35:         chinese_count < 6
+   30:         or VAGUE_REASON_RE.fullmatch(normalized)
+   94:         or not any(anchor in normalized for anchor in SPECIFIC_REASON_ANCHORS)
+           ):
+    7:         raise ValueError(f"{label} 必须说明具体位置的表达功能或人工判断依据")
+   28:     return reason
+       
+       
+    2: def _parse_keep_key(key: str, valid_ids: set[str]) -> tuple[str, str | None]:
+   15:     signal_id, separator, binding = key.partition("@")
+   15:     if signal_id not in valid_ids:
+    1:         raise ValueError(f"未知 signal id: {signal_id}")
+   14:     if not separator:
+    8:         return signal_id, None
+    6:     if re.fullmatch(r"\d+:\d+", binding):
+    6:         return signal_id, binding
+           if re.fullmatch(r"sha256:[0-9a-fA-F]{12,64}", binding):
+               return signal_id, binding.lower()
+           raise ValueError(f"{key} 的定位必须是 LINE:COLUMN 或 sha256:HASH")
+       
+       
+    2: def _parse_keep_reasons(values: Sequence[str], valid_ids: set[str]) -> dict[str, str]:
+    3:     reasons: dict[str, str] = {}
+    3:     for value in values:
+    3:         if "=" not in value:
+                   raise ValueError("--keep-reason 必须使用 SIGNAL_ID=具体理由")
+   12:         key, reason = (part.strip() for part in value.split("=", 1))
+    3:         _parse_keep_key(key, valid_ids)
+    3:         reasons[key] = _validate_reason(reason, f"{key} 的 KEEP 理由")
+           return reasons
+       
+       
+    2: def _parse_reason_pairs(values: Sequence[str], option: str) -> dict[str, str]:
+    4:     reasons: dict[str, str] = {}
+    5:     for value in values:
+    5:         if "=" not in value:
+                   raise ValueError(f"{option} 必须使用 CODE=具体理由")
+   20:         code, reason = (part.strip() for part in value.split("=", 1))
+    5:         if not code:
+                   raise ValueError(f"{option} 缺少 CODE")
+    5:         if code in reasons:
+    1:             raise ValueError(f"{option} 重复提交 CODE: {code}")
+    4:         reasons[code] = _validate_reason(reason, f"{code} 的具体理由")
+           return reasons
+       
+       
+    2: def _policy_hashes() -> dict[str, str]:
+  224:     paths = {
+  224:         "validator_sha256": Path(__file__).resolve(),
+  224:         "invariant_checker_sha256": Path(invariants.__file__).resolve(),
+  224:         "scanner_sha256": Path(lexical.__file__).resolve(),
+  224:         "lexicon_sha256": Path(lexical.DEFAULT_LEXICON).resolve(),
+  224:         "report_extractor_sha256": Path(detector_scope.__file__).resolve(),
+           }
+  224:     skill_root = Path(__file__).resolve().parent.parent
+  448:     paths.update(
+  224:         {
+  672:             "paired_quality_verifier_sha256": skill_root
+  224:             / "scripts"
+  224:             / _PAIRED_QUALITY_VERIFIER_NAME,
+  672:             "paired_quality_contract_sha256": skill_root
+  224:             / "references"
+  224:             / _PAIRED_QUALITY_CONTRACT_NAME,
+               }
+           )
+ 1792:     result = {name: _sha256(path.read_bytes()) for name, path in paths.items()}
+  224:     policy_reference_paths = {
+  224:         "skill_md": skill_root / "SKILL.md",
+  224:         "operational_contract": skill_root / "references" / "operational-contract.md",
+  224:         "workflow": skill_root / "references" / "workflow.md",
+  224:         "scene_routing_policy": skill_root / "references" / "scene-routing-policy.json",
+  224:         "source_provenance_trust": skill_root / "references" / "source-provenance-trust.json",
+  672:         "paired_quality_clearance_contract": skill_root
+  224:         / "references"
+  224:         / _PAIRED_QUALITY_CONTRACT_NAME,
+           }
+  224:     runtime_contract = {
+  224:         "implementation": sys.implementation.name,
+  224:         "cache_tag": sys.implementation.cache_tag,
+  224:         "python_version": list(sys.version_info[:3]),
+  224:         "unicode_version": unicodedata.unidata_version,
+  224:         "os_name": os.name,
+  448:         "policy_reference_hashes": {
+ 1344:             name: _sha256(path.read_bytes())
+ 1792:             for name, path in sorted(policy_reference_paths.items())
+               },
+           }
+  448:     result["runtime_contract_sha256"] = _sha256(
+  224:         _canonical_json_bytes(runtime_contract)
+           )
+  224:     return result
+       
+       
+    2: def _canonical_warning(warning: Any) -> dict[str, Any]:
+  626:     return {
+  626:         "code": warning.code,
+  626:         "severity": warning.severity,
+  626:         "message": warning.message,
+  626:         "details": warning.details,
+           }
+       
+       
+    2: def _warning_fingerprint(warning: Any) -> str:
+  377:     return _sha256(_canonical_json_bytes(_canonical_warning(warning)))
+       
+       
+    2: def _public_warning(warning: Any) -> dict[str, Any]:
+  249:     public = _canonical_warning(warning)
+  249:     public["warning_fingerprint"] = _warning_fingerprint(warning)
+  249:     return public
+       
+       
+   24: def _build_warning_review_request(
+    2:     warnings: Sequence[Any],
+           *,
+    2:     before_sha256: str,
+    2:     after_sha256: str,
+    2:     mode: str,
+    2:     scene: str,
+    2:     document_format: str,
+    2:     protected_terms: dict[str, Any],
+    2:     strict_speech_acts: bool,
+    2:     fragment_mode: bool,
+    4:     policy_hashes: dict[str, str] | None = None,
+    2: ) -> dict[str, Any] | None:
+  110:     if not warnings:
+   62:         return None
+   48:     request_body = {
+   48:         "schema": WARNING_REVIEW_REQUEST_SCHEMA,
+   48:         "artifact": {
+   48:             "before_sha256": before_sha256,
+   48:             "after_sha256": after_sha256,
+               },
+   48:         "validation_context": {
+   48:             "mode": mode.upper(),
+   48:             "scene": scene.upper(),
+   48:             "document_format": document_format,
+   48:             "document_scope": "FRAGMENT" if fragment_mode else "DOCUMENT",
+   48:             "strict_speech_acts": strict_speech_acts,
+   48:             "protected_terms": protected_terms,
+               },
+   48:         "policy_hashes": policy_hashes or _policy_hashes(),
+  117:         "warnings": [_public_warning(item) for item in warnings],
+           }
+  144:     return {
+   48:         **request_body,
+   48:         "request_sha256": _sha256(_canonical_json_bytes(request_body)),
+           }
+       
+       
+    2: def _changed_line_records(before_text: str, after_text: str) -> list[dict[str, Any]]:
+           # Preserve line terminators so an EOL-only rewrite is still represented by
+           # an auditable change hunk. Full artifact hashes already bind the bytes;
+           # hunk hashes must not silently normalize a CRLF/LF difference away.
+   78:     before_lines = before_text.splitlines(keepends=True)
+   78:     after_lines = after_text.splitlines(keepends=True)
+   78:     records: list[dict[str, Any]] = []
+   78:     matcher = difflib.SequenceMatcher(a=before_lines, b=after_lines, autojunk=False)
+  245:     for ordinal, (tag, before_start, before_end, after_start, after_end) in enumerate(
+  292:         (item for item in matcher.get_opcodes() if item[0] != "equal"),
+   78:         1,
+           ):
+   89:         before_block = "".join(before_lines[before_start:before_end])
+   89:         after_block = "".join(after_lines[after_start:after_end])
+   89:         record = {
+   89:             "ordinal": ordinal,
+   89:             "operation": tag.upper(),
+   89:             "before": {
+   89:                 "start_line": before_start + 1 if before_end > before_start else None,
+   89:                 "end_line": before_end if before_end > before_start else None,
+   89:                 "line_count": before_end - before_start,
+   89:                 "han_chars": len(re.findall(r"[\u3400-\u9fff]", before_block)),
+   89:                 "sha256": _sha256(before_block.encode("utf-8")),
+                   },
+   89:             "after": {
+   89:                 "start_line": after_start + 1 if after_end > after_start else None,
+   89:                 "end_line": after_end if after_end > after_start else None,
+   89:                 "line_count": after_end - after_start,
+   89:                 "han_chars": len(re.findall(r"[\u3400-\u9fff]", after_block)),
+   89:                 "sha256": _sha256(after_block.encode("utf-8")),
+                   },
+               }
+  267:         record["change_id"] = "QCH-" + _sha256(
+   89:             _canonical_json_bytes(record)
+   89:         )[:20]
+   89:         records.append(record)
+   78:     return records
+       
+       
+   26: def _build_paired_quality_review_request(
+    2:     before_text: str,
+    2:     after_text: str,
+           *,
+    2:     before_sha256: str,
+    2:     after_sha256: str,
+    2:     mode: str,
+    2:     scene: str,
+    2:     document_format: str,
+    2:     fragment_mode: bool,
+    2:     mechanical_validation_status: str,
+    4:     policy_hashes: dict[str, str] | None = None,
+    4:     report_scope_binding: dict[str, Any] | None = None,
+    2: ) -> dict[str, Any] | None:
+   99:     if mode != "REWRITE":
+   21:         return None
+   78:     decision = "NO_CHANGE" if before_sha256 == after_sha256 else "REWRITE"
+   78:     document_scope = (
+    2:         "REPORT_SELECTION"
+   78:         if report_scope_binding is not None
+   76:         else "FRAGMENT" if fragment_mode else "DOCUMENT"
+           )
+   78:     validation_context: dict[str, Any] = {
+   78:         "mode": mode,
+   78:         "decision": decision,
+   78:         "scene": scene.upper(),
+   78:         "document_format": document_format,
+   78:         "document_scope": document_scope,
+   78:         "mechanical_validation_status": mechanical_validation_status,
+           }
+   78:     if report_scope_binding is not None:
+    2:         validation_context["report_scope_binding"] = report_scope_binding
+   78:     request_body = {
+   78:         "schema": PAIRED_QUALITY_REVIEW_REQUEST_SCHEMA,
+               "status": (
+   19:             "PENDING_EXTERNAL_REVIEW"
+   78:             if mechanical_validation_status == "PASS"
+   59:             else "BLOCKED_BY_MECHANICAL_GATE"
+               ),
+   78:         "artifact": {
+   78:             "before_sha256": before_sha256,
+   78:             "after_sha256": after_sha256,
+               },
+   78:         "validation_context": validation_context,
+   78:         "policy_hashes": policy_hashes or _policy_hashes(),
+   78:         "changes": _changed_line_records(before_text, after_text),
+   78:         "review_contract": {
+   78:             "required_per_change_verdicts": ["ACCEPT", "REVISE", "REVERT"],
+   78:             "required_dimensions": [
+                       "actionable_pathology_remaining",
+                       "no_change_is_best_available_decision",
+                       "problem_span_binding",
+                       "independent_reading_benefit",
+                       "subject_and_modifier_alignment",
+                       "verb_object_collocation",
+                       "logical_relation_preservation",
+                       "information_density_and_rhythm",
+                       "author_voice_non_regression",
+                   ],
+   78:             "empty_or_generic_benefit_is_clearance": False,
+   78:             "local_model_or_caller_assertion_is_clearance": False,
+   78:             "validator_pass_is_quality_clearance": False,
+               },
+   78:         "limitations": {
+   78:             "academic_correctness": "NOT_EVALUATED",
+   78:             "authorship": "NOT_EVALUATED",
+   78:             "quality_clearance_granted": False,
+               },
+           }
+  234:     return {
+   78:         **request_body,
+   78:         "request_sha256": _sha256(_canonical_json_bytes(request_body)),
+           }
+       
+       
+   14: def _warning_review_attestation(
+    2:     warning_resolutions: dict[str, str],
+    2:     warning_review_request_sha256: str,
+    2:     reviewer_kind: str,
+    2:     reviewer_id: str,
+    2:     current_request: dict[str, Any] | None,
+    2: ) -> dict[str, Any]:
+  110:     kind = reviewer_kind.strip().upper() or "NONE"
+  110:     identity = reviewer_id.strip()
+  110:     request_sha256 = warning_review_request_sha256.strip().lower()
+  110:     if kind != "NONE" or identity:
+   10:         raise ValueError(
+    5:             "warning reviewer identity metadata is retired; submit only a request-bound "
+                   "unverified caller proposal"
+               )
+  105:     if warning_resolutions:
+    9:         if not re.fullmatch(r"[0-9a-f]{64}", request_sha256):
+                   raise ValueError(
+                       "warning_resolutions require a 64-character "
+                       "warning_review_request_sha256 from the current REVIEW result"
+                   )
+    9:         if current_request is None or request_sha256 != current_request["request_sha256"]:
+    8:             raise ValueError(
+    4:                 "warning_review_request_sha256 does not match the current artifact, "
+                       "warning details, validation context, or policy hashes"
+                   )
+   10:         current_fingerprints = {
+   19:             item["warning_fingerprint"] for item in current_request["warnings"]
+               }
+    5:         unknown = sorted(set(warning_resolutions) - current_fingerprints)
+    5:         if unknown:
+    2:             raise ValueError(
+    2:                 "warning resolution fingerprint not present in current request: "
+    1:                 + ",".join(unknown)
+                   )
+    4:         return {
+    4:             "proposal_source": "UNVERIFIED_CALLER_PROPOSAL",
+    4:             "reviewer_identifier_collected": False,
+    4:             "stable_reviewer_pseudonym_recorded": False,
+    4:             "cross_record_reviewer_linkability": "NOT_RECORDED",
+    4:             "identity_verified": False,
+    4:             "review_clearance_granted": False,
+    4:             "attestation_status": "NOT_APPLICABLE",
+    4:             "warning_review_request_sha256": request_sha256,
+    4:             "proposed_warning_fingerprints": sorted(warning_resolutions),
+               }
+   96:     if request_sha256:
+    2:         raise ValueError(
+    1:             "warning request hash is only valid with warning_resolutions proposals"
+               )
+   95:     return {
+   95:         "proposal_source": "NOT_PROVIDED",
+   95:         "reviewer_identifier_collected": False,
+   95:         "stable_reviewer_pseudonym_recorded": False,
+   95:         "cross_record_reviewer_linkability": "NOT_RECORDED",
+   95:         "identity_verified": False,
+   95:         "review_clearance_granted": False,
+   95:         "attestation_status": "NOT_PROVIDED",
+   95:         "warning_review_request_sha256": None,
+   95:         "proposed_warning_fingerprints": [],
+           }
+       
+       
+    2: def _finding_key(finding: dict[str, Any]) -> tuple[str, str]:
+  285:     matched = re.sub(r"\s+", "", str(finding["matched"]))
+  285:     return str(finding["signal_id"]), matched
+       
+       
+    2: def _finding_hash(finding: dict[str, Any]) -> str:
+  348:     stable = {
+ 1218:         key: finding[key]
+ 1566:         for key in ("line", "column", "signal_id", "matched", "context", "severity", "action")
+           }
+  348:     return _sha256(
+  174:         json.dumps(stable, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode("utf-8")
+           )
+       
+       
+    2: def _finding_identity(finding: dict[str, Any]) -> tuple[str, int, int, str]:
+  118:     return (
+  118:         str(finding["signal_id"]),
+  118:         int(finding["line"]),
+  118:         int(finding["column"]),
+  118:         _finding_hash(finding),
+           )
+       
+       
+    8: def _introduced_findings(
+    2:     before: Sequence[dict[str, Any]],
+    2:     after: Sequence[dict[str, Any]],
+    2: ) -> list[dict[str, Any]]:
+  455:     remaining = Counter(_finding_key(item) for item in before if item["candidate"])
+  111:     introduced: list[dict[str, Any]] = []
+  326:     for finding in (item for item in after if item["candidate"]):
+   52:         key = _finding_key(finding)
+   52:         if remaining[key] > 0:
+   30:             remaining[key] -= 1
+               else:
+   22:             introduced.append(finding)
+  111:     return introduced
+       
+       
+    2: def _public_finding(finding: dict[str, Any]) -> dict[str, Any]:
+  112:     public = {
+  560:         key: finding[key]
+  672:         for key in (
+                   "file",
+                   "line",
+                   "column",
+                   "signal_id",
+                   "severity",
+                   "action",
+                   "matched",
+                   "context",
+                   "count",
+                   "rationale",
+               )
+           }
+   56:     public["file"] = Path(str(public["file"])).name
+   56:     public["finding_hash"] = _finding_hash(finding)
+   56:     return public
+       
+       
+   10: def _resolve_keep_reasons(
+    2:     reasons: dict[str, str],
+    2:     findings: Sequence[dict[str, Any]],
+    2:     valid_ids: set[str],
+    2: ) -> tuple[set[tuple[str, int, int, str]], list[dict[str, Any]]]:
+  111:     accepted: set[tuple[str, int, int, str]] = set()
+  111:     records: list[dict[str, Any]] = []
+  115:     for key, raw_reason in reasons.items():
+    5:         signal_id, binding = _parse_keep_key(key, valid_ids)
+    5:         reason = _validate_reason(raw_reason, f"{key} 的 KEEP 理由")
+   14:         matches = [item for item in findings if item["signal_id"] == signal_id]
+    5:         if binding is None:
+    2:             if len(matches) != 1:
+    2:                 raise ValueError(
+    1:                     f"{signal_id} 对应 {len(matches)} 个待复核位置；"
+                           "必须使用 SIGNAL_ID@LINE:COLUMN 或 @sha256:HASH"
+                       )
+    3:         elif binding.startswith("sha256:"):
+                   prefix = binding.removeprefix("sha256:")
+                   matches = [item for item in matches if _finding_hash(item).startswith(prefix)]
+               else:
+   12:             line, column = (int(part) for part in binding.split(":", 1))
+    6:             matches = [
+    9:                 item
+   12:                 for item in matches
+    9:                 if int(item["line"]) == line and int(item["column"]) == column
+                   ]
+    4:         if len(matches) != 1:
+                   raise ValueError(f"{key} 未唯一定位待复核 finding（匹配 {len(matches)} 个）")
+    4:         finding = matches[0]
+    4:         identity = _finding_identity(finding)
+    4:         if identity in accepted:
+                   raise ValueError(f"{key} 重复接受同一 finding")
+    4:         accepted.add(identity)
+    4:         record = _public_finding(finding)
+    4:         record.update({"binding": key, "reason": reason})
+    4:         records.append(record)
+  110:     return accepted, records
+       
+       
+    2: def _source_value_missing(source: Sequence[str], output: Sequence[str]) -> list[str]:
+           """Return DRAFT payload values that never occur in the supplied artifact."""
+  147:     source_values = set(source)
+  182:     return [item for item in output if item not in source_values]
+       
+       
+    2: def _coalesce_ranges(ranges: Sequence[tuple[int, int]]) -> list[tuple[int, int]]:
+    2:     merged: list[tuple[int, int]] = []
+    5:     for start, end in sorted(ranges):
+    3:         if merged and start <= merged[-1][1]:
+                   merged[-1] = (merged[-1][0], max(merged[-1][1], end))
+               else:
+    3:             merged.append((start, end))
+    2:     return merged
+       
+       
+   10: def _matches_selection_only_edit(
+    2:     before_text: str,
+    2:     after_text: str,
+    2:     editable_ranges: Sequence[tuple[int, int]],
+    2: ) -> bool:
+           """Return whether after can be formed by replacing only the supplied ranges."""
+    2:     prefix = before_text[: editable_ranges[0][0]]
+    2:     suffix = before_text[editable_ranges[-1][1] :]
+    2:     if not after_text.startswith(prefix) or not after_text.endswith(suffix):
+    1:         return False
+       
+    1:     cursor = len(prefix)
+    1:     suffix_start = len(after_text) - len(suffix)
+    2:     for (_, previous_end), (next_start, _) in zip(editable_ranges, editable_ranges[1:]):
+    1:         immutable = before_text[previous_end:next_start]
+    1:         if not immutable:
+                   continue
+    1:         found = after_text.find(immutable, cursor, suffix_start)
+    1:         if found < 0:
+                   return False
+    1:         cursor = found + len(immutable)
+    1:     return cursor <= suffix_start
+       
+       
+   14: def _report_scope_invariants(
+    2:     report_scope_path: Path,
+           *,
+    2:     before_path: Path,
+    2:     before_raw: bytes,
+    2:     before_text: str,
+    2:     after_text: str,
+    2: ) -> dict[str, Any]:
+           """Bind a REPORT_INFORMED rewrite to exact extractor ranges and source bytes."""
+    4:     scope_raw, scope_text = _read_utf8(report_scope_path)
+    4:     payload = json.loads(scope_text)
+    4:     if payload.get("schema_version") != detector_scope.SCHEMA_VERSION:
+               raise ValueError("report scope schema_version is unsupported")
+    4:     if payload.get("operation") != "detector_report_scope_extraction":
+               raise ValueError("report scope operation is invalid")
+    4:     if payload.get("status") != "PASS" or payload.get("exit_code") != 0:
+               raise ValueError("report scope must be extractor PASS/0")
+       
+    4:     recorded_report_path = payload.get("report_path")
+    4:     if not isinstance(recorded_report_path, str) or not recorded_report_path:
+               raise ValueError("report scope report_path is missing")
+    4:     report_path = Path(recorded_report_path)
+    4:     if not report_path.is_absolute():
+               raise ValueError("report scope report_path must be absolute")
+    4:     replayed = detector_scope.analyze_report(report_path, before_path)
+   24:     for key in (
+               "status",
+               "exit_code",
+               "report_sha256",
+               "source_sha256",
+               "coverage",
+               "fragments",
+           ):
+   22:         if payload.get(key) != replayed.get(key):
+    2:             raise ValueError(f"report scope does not match extractor replay: {key}")
+       
+    2:     before_sha256 = _sha256(before_raw)
+    2:     if payload.get("source_sha256") != before_sha256:
+               raise ValueError("report scope source_sha256 does not match the exact before artifact")
+       
+    2:     fragments = payload.get("fragments")
+    2:     coverage = payload.get("coverage")
+    2:     if not isinstance(fragments, list) or not fragments:
+               raise ValueError("report scope must contain at least one fragment")
+    2:     if not isinstance(coverage, dict):
+               raise ValueError("report scope coverage is missing")
+    2:     if coverage.get("total_fragments") != len(fragments):
+               raise ValueError("report scope coverage total does not match fragments")
+    2:     if coverage.get("uniquely_mapped") != len(fragments):
+               raise ValueError("report scope contains a fragment that is not uniquely mapped")
+   10:     if any(coverage.get(key) != 0 for key in ("missing", "ambiguous", "source_errors")):
+               raise ValueError("report scope contains unresolved mapping results")
+       
+    2:     raw_ranges: list[tuple[int, int]] = []
+    5:     for position, fragment in enumerate(fragments, start=1):
+    3:         if not isinstance(fragment, dict) or fragment.get("mapping_status") != "UNIQUE":
+                   raise ValueError(f"report scope fragment {position} is not UNIQUE")
+    3:         if fragment.get("source_occurrences") != 1:
+                   raise ValueError(f"report scope fragment {position} is not uniquely sourced")
+    3:         start = fragment.get("source_start")
+    3:         end = fragment.get("source_end")
+               if (
+    3:             not isinstance(start, int)
+    3:             or isinstance(start, bool)
+    3:             or not isinstance(end, int)
+    3:             or isinstance(end, bool)
+    3:             or start < 0
+    3:             or end <= start
+    3:             or end > len(before_text)
+               ):
+                   raise ValueError(f"report scope fragment {position} has an invalid source range")
+    3:         expected = fragment.get("normalized_text")
+    3:         actual = detector_scope.normalize_text(before_text[start:end])
+    3:         if not isinstance(expected, str) or actual != expected:
+                   raise ValueError(f"report scope fragment {position} no longer matches source text")
+    3:         raw_ranges.append((start, end))
+       
+    2:     editable_ranges = _coalesce_ranges(raw_ranges)
+    2:     outside_unchanged = _matches_selection_only_edit(before_text, after_text, editable_ranges)
+    2:     return {
+    2:         "status": "PASS" if outside_unchanged else "FAIL",
+    2:         "scope_path": None,
+    2:         "scope_sha256": None,
+    2:         "scope_semantic_sha256": _report_scope_semantic_sha256(payload),
+    2:         "report_sha256": payload["report_sha256"],
+    2:         "source_sha256": before_sha256,
+    2:         "extractor_replay_match": True,
+    2:         "fragment_count": len(fragments),
+    2:         "editable_range_count": len(editable_ranges),
+    4:         "editable_ranges": [
+    7:             {"source_start": start, "source_end": end} for start, end in editable_ranges
+               ],
+    2:         "outside_selection_unchanged": outside_unchanged,
+           }
+       
+       
+    8: def _draft_derived_comparison_candidates(
+    2:     text: str,
+           *,
+    2:     document_format: str,
+    2: ) -> list[dict[str, Any]]:
+   84:     surface, _protected = invariants._speech_surface(
+   42:         text,
+   42:         document_format,
+   42:         True,
+           )
+   42:     sentences = invariants._segment_spans(surface, r"[。！？!?；;\n]+", "D")
+   42:     candidates: list[dict[str, Any]] = []
+  168:     for category, pattern in DRAFT_DERIVED_COMPARISON_PATTERNS:
+  132:         for match in pattern.finditer(surface):
+    6:             sentence = invariants._containing_span(sentences, match.start())
+    6:             if sentence is None:
+                       continue
+    6:             line, column = invariants._line_column(surface, match.start())
+   12:             candidates.append(
+    6:                 {
+    6:                     "category": category,
+    6:                     "line": line,
+    6:                     "column": column,
+    6:                     "match": re.sub(r"\s+", " ", match.group(0)).strip()[:120],
+   18:                     "sentence_context": re.sub(
+    6:                         r"\s+", " ", str(sentence["text"])
+    6:                     ).strip()[:240],
+                       }
+                   )
+   84:     return sorted(
+   42:         candidates,
+   48:         key=lambda item: (int(item["line"]), int(item["column"]), str(item["category"])),
+           )
+       
+       
+   12: def _draft_surface_source_invariants(
+    2:     supplied_text: str,
+    2:     draft_text: str,
+           *,
+    2:     document_format: str,
+    2:     protected_terms: Sequence[str],
+    2: ) -> tuple[Any, dict[str, Any]]:
+           """Check deterministic DRAFT surface payload without claiming semantic entailment.
+       
+           DRAFT may omit supplied material, so rewrite equality invariants are inapplicable.
+           This gate instead rejects protected or literal payload that appears in the draft but
+           nowhere in the supplied artifact. It deliberately does not certify natural-language
+           entailment; that remains a separate NOT_EVALUATED layer.
+           """
+   42:     result = invariants.check_documents(
+   21:         draft_text,
+   21:         draft_text,
+   21:         document_format=document_format,
+   21:         protected_terms=protected_terms,
+           )
+   42:     supplied_normalized, supplied_code, supplied_code_ranges = invariants._prepare(
+   21:         supplied_text,
+   21:         document_format,
+           )
+   42:     draft_normalized, draft_code, draft_code_ranges = invariants._prepare(
+   21:         draft_text,
+   21:         document_format,
+           )
+   21:     supplied_math = invariants._math_spans(supplied_normalized, supplied_code_ranges)
+   21:     draft_math = invariants._math_spans(draft_normalized, draft_code_ranges)
+   21:     supplied_math_ranges = invariants._locate_exact_spans(supplied_normalized, supplied_math)
+   21:     draft_math_ranges = invariants._locate_exact_spans(draft_normalized, draft_math)
+   21:     supplied_excluded = sorted(supplied_code_ranges + supplied_math_ranges)
+   21:     draft_excluded = sorted(draft_code_ranges + draft_math_ranges)
+       
+   21:     checks: list[tuple[str, str, Sequence[str], Sequence[str]]] = [
+   21:         (
+   21:             "DRAFT_CODE_NOT_SUPPLIED",
+   21:             "Code span in draft is absent from supplied content",
+   21:             supplied_code,
+   21:             draft_code,
+               ),
+   21:         (
+   21:             "DRAFT_MATH_NOT_SUPPLIED",
+   21:             "Math span in draft is absent from supplied content",
+   21:             supplied_math,
+   21:             draft_math,
+               ),
+   21:         (
+   21:             "DRAFT_FORMAL_STATEMENT_NOT_SUPPLIED",
+   21:             "Formal statement span in draft is absent from supplied content",
+   42:             invariants._extract_environment_spans(
+   21:                 supplied_normalized,
+   21:                 invariants.FORMAL_STATEMENT_ENVIRONMENTS,
+                   ),
+   42:             invariants._extract_environment_spans(
+   21:                 draft_normalized,
+   21:                 invariants.FORMAL_STATEMENT_ENVIRONMENTS,
+                   ),
+               ),
+   21:         (
+   21:             "DRAFT_CRITICAL_COMMAND_NOT_SUPPLIED",
+   21:             "Citation, reference, label, URL, or other critical command was not supplied",
+   21:             invariants._critical_commands(supplied_normalized, supplied_code_ranges),
+   21:             invariants._critical_commands(draft_normalized, draft_code_ranges),
+               ),
+   21:         (
+   21:             "DRAFT_QUOTATION_NOT_SUPPLIED",
+   21:             "Direct quotation in draft is absent from supplied content",
+   21:             invariants._quotation_spans(supplied_normalized, supplied_excluded),
+   21:             invariants._quotation_spans(draft_normalized, draft_excluded),
+               ),
+   21:         (
+   21:             "DRAFT_NUMBER_OR_UNIT_NOT_SUPPLIED",
+   21:             "Number or unit in draft is absent from supplied content",
+   21:             invariants._numbers_and_units(supplied_normalized, supplied_code_ranges),
+   21:             invariants._numbers_and_units(draft_normalized, draft_code_ranges),
+               ),
+   21:         (
+   21:             "DRAFT_GARBLED_TEXT_NOT_SUPPLIED",
+   21:             "Garbled span in draft is absent from supplied content",
+   21:             invariants._garbled_spans(supplied_text),
+   21:             invariants._garbled_spans(draft_text),
+               ),
+           ]
+   21:     details: dict[str, Any] = {}
+  168:     for code, message, source_items, output_items in checks:
+  147:         missing = _source_value_missing(source_items, output_items)
+  147:         details[code] = {
+  147:             "supplied_count": len(source_items),
+  147:             "draft_count": len(output_items),
+  147:             "not_supplied": missing,
+               }
+  147:         if missing:
+   14:             result.errors.append(
+   14:                 invariants.Diagnostic(
+    7:                     code=code,
+    7:                     severity="error",
+    7:                     message=message,
+    7:                     details=details[code],
+                       )
+                   )
+       
+   21:     supplied_attribution = invariants._marker_counts(supplied_text)["attribution_source"]
+   21:     draft_attribution = invariants._marker_counts(draft_text)["attribution_source"]
+   21:     attribution_missing = list((draft_attribution - supplied_attribution).elements())
+   21:     details["DRAFT_ATTRIBUTION_NOT_SUPPLIED"] = {
+   21:         "supplied": dict(sorted(supplied_attribution.items())),
+   21:         "draft": dict(sorted(draft_attribution.items())),
+   21:         "not_supplied": attribution_missing,
+           }
+   21:     if attribution_missing:
+    2:         result.errors.append(
+    2:             invariants.Diagnostic(
+    1:                 code="DRAFT_ATTRIBUTION_NOT_SUPPLIED",
+    1:                 severity="error",
+    1:                 message="Attribution or literature-source marker was introduced without supply",
+    1:                 details=details["DRAFT_ATTRIBUTION_NOT_SUPPLIED"],
+                   )
+               )
+       
+   21:     terms = invariants.normalize_protected_terms(protected_terms)
+   21:     supplied_term_values = set(invariants._term_occurrences(supplied_text, terms))
+   21:     draft_term_items = invariants._term_occurrences(draft_text, terms)
+   24:     term_missing = [term for term in draft_term_items if term not in supplied_term_values]
+   21:     details["DRAFT_PROTECTED_TERM_NOT_SUPPLIED"] = {
+   21:         "protected_terms": terms,
+   21:         "not_supplied": term_missing,
+           }
+   21:     if term_missing:
+    2:         result.errors.append(
+    2:             invariants.Diagnostic(
+    1:                 code="DRAFT_PROTECTED_TERM_NOT_SUPPLIED",
+    1:                 severity="error",
+    1:                 message="Protected term occurrence in draft is absent from supplied content",
+    1:                 details=details["DRAFT_PROTECTED_TERM_NOT_SUPPLIED"],
+                   )
+               )
+       
+   42:     supplied_comparisons = _draft_derived_comparison_candidates(
+   21:         supplied_text,
+   21:         document_format=document_format,
+           )
+   42:     draft_comparisons = _draft_derived_comparison_candidates(
+   21:         draft_text,
+   21:         document_format=document_format,
+           )
+   63:     supplied_comparison_budget = Counter(
+   43:         str(item["category"]) for item in supplied_comparisons
+           )
+   21:     introduced_comparisons: list[dict[str, Any]] = []
+   26:     for item in draft_comparisons:
+    5:         category = str(item["category"])
+    5:         if supplied_comparison_budget[category] > 0:
+    1:             supplied_comparison_budget[category] -= 1
+               else:
+    4:             introduced_comparisons.append(item)
+   21:     comparison_details = {
+   21:         "supplied_candidates": supplied_comparisons,
+   21:         "draft_candidates": draft_comparisons,
+   21:         "introduced_candidates": introduced_comparisons,
+   21:         "semantic_entailment": "NOT_EVALUATED",
+   21:         "required_action": "PRESERVE_EXPLICIT_SUPPLIED_RELATIONS",
+   21:         "detector_scope": "NARROW_DERIVED_COMPARISON_SURFACE_CANDIDATES",
+           }
+   21:     details["DRAFT_DERIVED_COMPARISON_NOT_SUPPLIED"] = comparison_details
+   21:     if introduced_comparisons:
+    2:         result.warnings.append(
+    2:             invariants.Diagnostic(
+    1:                 code="DRAFT_DERIVED_COMPARISON_NOT_SUPPLIED",
+    1:                 severity="warning",
+                       message=(
+    1:                     "The draft introduces a comparison or cross-scenario intensification "
+                           "surface that was not explicitly supplied; semantic entailment is not "
+                           "evaluated, so preserve the supplied values and relations or escalate."
+                       ),
+    1:                 details=comparison_details,
+                   )
+               )
+       
+   21:     result.evidence["draft_surface_source"] = details
+   21:     surface = {
+   21:         "status": "FAIL" if result.errors else "PASS",
+   21:         "semantic_entailment_certified": False,
+   21:         "scope": [
+                   "code",
+                   "math",
+                   "formal_statements",
+                   "critical_tex_commands",
+                   "direct_quotations",
+                   "numbers_and_units",
+                   "garbled_spans",
+                   "attribution_markers",
+                   "explicit_protected_terms",
+                   "derived_comparison_markers",
+               ],
+   21:         "details": details,
+           }
+   21:     return result, surface
+       
+       
+   32: def validate(
+    2:     before_path: Path,
+    2:     after_path: Path,
+           *,
+    4:     mode: str = "REWRITE",
+    4:     scene: str = "AUTO",
+    4:     keep_reasons: dict[str, str] | None = None,
+    4:     accepted_warnings: dict[str, str] | None = None,
+    4:     warning_resolutions: dict[str, str] | None = None,
+    4:     warning_review_request_sha256: str = "",
+    4:     warning_reviewer_kind: str = "NONE",
+    4:     warning_reviewer_id: str = "",
+    4:     strict_speech_acts: bool = False,
+    4:     protected_terms: Sequence[str] = (),
+    4:     fragment_mode: bool = False,
+    4:     report_scope_path: Path | None = None,
+    2: ) -> dict[str, Any]:
+  117:     policy_snapshot = _policy_hashes()
+  117:     mode = mode.upper()
+  117:     if mode not in VALIDATION_MODES:
+               raise ValueError(f"mode must be one of {VALIDATION_MODES}")
+  117:     if fragment_mode and mode != "REWRITE":
+    1:         raise ValueError("fragment_mode is only valid for REWRITE")
+  116:     if report_scope_path is not None and mode != "REWRITE":
+               raise ValueError("report_scope_path is only valid for REWRITE")
+  116:     if report_scope_path is not None and fragment_mode:
+               raise ValueError("report_scope_path requires full-document validation, not fragment_mode")
+  116:     before_raw, before_text = _read_utf8(before_path)
+  116:     after_raw, after_text = _read_utf8(after_path)
+  116:     lexicon = lexical.load_lexicon()
+  116:     keep_reasons = keep_reasons or {}
+  116:     accepted_warnings = accepted_warnings or {}
+  116:     warning_resolutions = warning_resolutions or {}
+  116:     if accepted_warnings:
+    2:         raise ValueError(
+    1:             "accepted_warnings/--accept-warning is retired because a caller assertion "
+                   "cannot clear warnings; use warning_resolutions/--propose-warning-resolution "
+                   "with the current review request"
+               )
+  115:     terms = invariants.normalize_protected_terms(protected_terms)
+ 3450:     valid_signal_ids = {item["id"] for item in lexicon["signals"]}
+  120:     for key, reason in keep_reasons.items():
+    7:         _parse_keep_key(key, valid_signal_ids)
+    6:         _validate_reason(reason, f"{key} 的 KEEP 理由")
+       
+  113:     document_format = _document_format(before_path, after_path)
+  113:     if mode == "DRAFT":
+   42:         invariant_result, draft_surface_source_check = _draft_surface_source_invariants(
+   21:             before_text,
+   21:             after_text,
+   21:             document_format=document_format,
+   21:             protected_terms=terms,
+               )
+   21:         semantic_source_check = (
+   21:             "PASS_COPY_ONLY" if before_text.strip() == after_text.strip() else "NOT_EVALUATED"
+               )
+           else:
+  184:         invariant_result = invariants.check_documents(
+   92:             before_text,
+   92:             after_text,
+   92:             document_format=document_format,
+   92:             strict_speech_acts=strict_speech_acts,
+   92:             protected_terms=terms,
+   92:             fragment_mode=fragment_mode,
+               )
+   92:         draft_surface_source_check = {
+   92:             "status": "N/A",
+   92:             "semantic_entailment_certified": False,
+   92:             "scope": [],
+   92:             "details": {},
+               }
+   92:         semantic_source_check = "N/A"
+  113:     report_scope_check: dict[str, Any] = {
+  113:         "status": "N/A",
+  113:         "scope_path": None,
+  113:         "scope_sha256": None,
+  113:         "scope_semantic_sha256": None,
+  113:         "report_sha256": None,
+  113:         "source_sha256": None,
+  113:         "extractor_replay_match": None,
+  113:         "fragment_count": 0,
+  113:         "editable_range_count": 0,
+  113:         "editable_ranges": [],
+  113:         "outside_selection_unchanged": None,
+           }
+  113:     if report_scope_path is not None:
+    8:         report_scope_check = _report_scope_invariants(
+    4:             report_scope_path,
+    4:             before_path=before_path,
+    4:             before_raw=before_raw,
+    4:             before_text=before_text,
+    4:             after_text=after_text,
+               )
+    2:         invariant_result.evidence["document_scope"] = "REPORT_SELECTION"
+    2:         if report_scope_check["status"] == "FAIL":
+    2:             invariant_result.errors.append(
+    2:                 invariants.Diagnostic(
+    1:                     code="REPORT_SCOPE_OUTSIDE_SELECTION_CHANGED",
+    1:                     severity="error",
+    1:                     message="Text outside uniquely mapped report selections changed",
+    1:                     details=report_scope_check,
+                       )
+                   )
+  222:     before_findings = lexical.scan_text(
+  111:         before_text,
+  111:         file="before",
+  111:         scene=scene,
+  111:         lexicon=lexicon,
+           )
+  222:     after_findings = lexical.scan_text(
+  111:         after_text,
+  111:         file="after",
+  111:         scene=scene,
+  111:         lexicon=lexicon,
+           )
+  111:     introduced = _introduced_findings(before_findings, after_findings)
+  111:     reviewable_by_identity: dict[tuple[str, int, int, str], dict[str, Any]] = {}
+  163:     for item in after_findings:
+   52:         if item["candidate"] and item["severity"] == "high":
+   36:             reviewable_by_identity[_finding_identity(item)] = item
+  133:     for item in introduced:
+   22:         reviewable_by_identity[_finding_identity(item)] = item
+  222:     accepted_identities, accepted_findings = _resolve_keep_reasons(
+  111:         keep_reasons,
+  111:         list(reviewable_by_identity.values()),
+  111:         valid_signal_ids,
+           )
+  220:     unexplained_high = [
+  134:         item
+  270:         for item in after_findings
+   50:         if item["candidate"]
+   50:         and item["severity"] == "high"
+   34:         and _finding_identity(item) not in accepted_identities
+           ]
+  220:     unexplained_introduced = [
+  242:         item for item in introduced if _finding_identity(item) not in accepted_identities
+           ]
+  110:     normalized_resolutions: dict[str, str] = {}
+  127:     for fingerprint, reason in warning_resolutions.items():
+   17:         if not re.fullmatch(r"[0-9a-fA-F]{64}", fingerprint):
+                   raise ValueError(
+                       "warning resolution keys must be full 64-character warning fingerprints"
+                   )
+   17:         normalized_fingerprint = fingerprint.lower()
+   17:         if normalized_fingerprint in normalized_resolutions:
+                   raise ValueError(f"duplicate warning resolution: {normalized_fingerprint}")
+   34:         normalized_resolutions[normalized_fingerprint] = _validate_reason(
+   17:             reason,
+   17:             f"{normalized_fingerprint} 的处理建议",
+               )
+  110:     warning_resolutions = normalized_resolutions
+  110:     before_sha256 = _sha256(before_raw)
+  110:     after_sha256 = _sha256(after_raw)
+  110:     protected_term_evidence = invariant_result.evidence["protected_terms"]
+  220:     warning_review_request = _build_warning_review_request(
+  110:         invariant_result.warnings,
+  110:         before_sha256=before_sha256,
+  110:         after_sha256=after_sha256,
+  110:         mode=mode,
+  110:         scene=scene,
+  110:         document_format=document_format,
+  110:         protected_terms=protected_term_evidence,
+  110:         strict_speech_acts=strict_speech_acts,
+  110:         fragment_mode=fragment_mode,
+  110:         policy_hashes=policy_snapshot,
+           )
+  220:     warning_review = _warning_review_attestation(
+  110:         warning_resolutions,
+  110:         warning_review_request_sha256,
+  110:         warning_reviewer_kind,
+  110:         warning_reviewer_id,
+  110:         warning_review_request,
+           )
+   99:     unaccepted_warnings = list(invariant_result.warnings)
+  107:     proposed_fingerprints = {item.lower() for item in warning_resolutions}
+  198:     warnings_without_resolution_proposal = [
+   60:         item
+  258:         for item in invariant_result.warnings
+   60:         if _warning_fingerprint(item) not in proposed_fingerprints
+           ]
+       
+   99:     if invariant_result.errors:
+   19:         mechanical_validation_status, mechanical_validation_exit_code = "FAIL", 1
+           elif (
+   80:         unaccepted_warnings
+   41:         or unexplained_high
+   30:         or unexplained_introduced
+   30:         or semantic_source_check == "NOT_EVALUATED"
+           ):
+   60:         mechanical_validation_status, mechanical_validation_exit_code = "REVIEW", 2
+           else:
+   20:         mechanical_validation_status, mechanical_validation_exit_code = "PASS", 0
+       
+  198:     paired_quality_review_request = _build_paired_quality_review_request(
+   99:         before_raw.decode("utf-8"),
+   99:         after_raw.decode("utf-8"),
+   99:         before_sha256=before_sha256,
+   99:         after_sha256=after_sha256,
+   99:         mode=mode,
+   99:         scene=scene,
+   99:         document_format=document_format,
+   99:         fragment_mode=fragment_mode,
+   99:         mechanical_validation_status=mechanical_validation_status,
+   99:         policy_hashes=policy_snapshot,
+               report_scope_binding=(
+    2:             {
+    4:                 "scope_semantic_sha256": report_scope_check[
+    2:                     "scope_semantic_sha256"
+                       ],
+    2:                 "report_sha256": report_scope_check["report_sha256"],
+    2:                 "source_sha256": report_scope_check["source_sha256"],
+    2:                 "fragment_count": report_scope_check["fragment_count"],
+    2:                 "editable_ranges": report_scope_check["editable_ranges"],
+                   }
+   99:             if report_scope_path is not None
+   97:             else None
+               ),
+           )
+   99:     if paired_quality_review_request is None:
+   21:         paired_quality_review_status = "NOT_REQUIRED"
+           else:
+   78:         paired_quality_review_status = str(paired_quality_review_request["status"])
+       
+   99:     if mechanical_validation_status == "FAIL":
+   19:         status, exit_code = "FAIL", 1
+   80:     elif mechanical_validation_status == "REVIEW":
+   60:         status, exit_code = "REVIEW", 2
+   20:     elif paired_quality_review_status == "PENDING_EXTERNAL_REVIEW":
+   19:         status, exit_code = "REVIEW", 2
+           else:
+    1:         status, exit_code = "PASS", 0
+       
+   99:     hard_invariant_layer_status = "FAIL" if invariant_result.errors else "PASS"
+   99:     speech_act_layer_status = "REVIEW" if unaccepted_warnings else "PASS"
+   99:     style_signal_layer_status = (
+   99:         "REVIEW" if unexplained_high or unexplained_introduced else "PASS"
+           )
+       
+   99:     review_reasons: list[str] = []
+   99:     if unaccepted_warnings:
+   39:         review_reasons.append("speech_act_warning")
+   99:     if unexplained_high:
+   21:         review_reasons.append("unexplained_high_severity_signal")
+   99:     if unexplained_introduced:
+   17:         review_reasons.append("introduced_style_signal")
+   99:     if semantic_source_check == "NOT_EVALUATED":
+   20:         review_reasons.append("semantic_source_not_evaluated")
+   99:     if paired_quality_review_status == "PENDING_EXTERNAL_REVIEW":
+   19:         review_reasons.append("paired_quality_not_evaluated")
+       
+   99:     if _policy_hashes() != policy_snapshot:
+               raise ValueError("validation policy changed while the validator was running")
+       
+ 3564:     return {
+   99:         "status": status,
+   99:         "exit_code": exit_code,
+   99:         "candidate_assembly_status": mechanical_validation_status,
+   99:         "candidate_assembly_exit_code": mechanical_validation_exit_code,
+   99:         "mechanical_validation_status": mechanical_validation_status,
+   99:         "mechanical_validation_exit_code": mechanical_validation_exit_code,
+   99:         "delivery_gate_status": status,
+   99:         "delivery_gate_exit_code": exit_code,
+   99:         "hard_invariant_layer_status": hard_invariant_layer_status,
+   99:         "speech_act_layer_status": speech_act_layer_status,
+  198:         "speech_act_diagnostics": invariant_result.to_dict().get(
+   99:             "advisories", []
+               ),
+   99:         "style_signal_layer_status": style_signal_layer_status,
+   99:         "paired_quality_review_status": paired_quality_review_status,
+   99:         "paired_quality_review_request": paired_quality_review_request,
+   99:         "paired_quality_review_local_clearance_supported": False,
+   99:         "paired_quality_clearance_granted": False,
+   99:         "humanize_quality_claim_allowed": (
+  177:             mode != "DRAFT"
+   78:             and paired_quality_review_status == "NOT_REQUIRED"
+                   and mechanical_validation_status == "PASS"
+               ),
+   99:         "academic_correctness": "NOT_EVALUATED",
+   99:         "mode": mode,
+   99:         "scene": scene.upper(),
+   99:         "draft_surface_source_check": draft_surface_source_check,
+   99:         "report_scope_check": report_scope_check,
+   99:         "semantic_source_check": semantic_source_check,
+  198:         "evidence": {
+   99:             "checker_executed": True,
+   99:             "before_path": None,
+   99:             "after_path": None,
+   99:             "source_path_archived": False,
+   99:             "before_sha256": before_sha256,
+   99:             "after_sha256": after_sha256,
+   99:             "document_format": document_format,
+                   "document_scope": (
+    2:                 "REPORT_SELECTION"
+   99:                 if report_scope_path is not None
+   97:                 else "FRAGMENT" if fragment_mode else "DOCUMENT"
+                   ),
+   99:             "protected_terms": protected_term_evidence,
+   99:             "policy_hashes": policy_snapshot,
+               },
+   99:         "invariants": invariant_result.to_dict(),
+  198:         "lexical_summary": {
+   99:             "before_candidates": len(before_findings),
+   99:             "after_candidates": len(after_findings),
+   99:             "introduced_candidates": len(introduced),
+   99:             "unexplained_high_candidates": len(unexplained_high),
+   99:             "accepted_candidates": len(accepted_findings),
+               },
+   99:         "review_reasons": review_reasons,
+   99:         "keep_reasons": dict(sorted(keep_reasons.items())),
+   99:         "accepted_warning_reasons": {},
+   99:         "warning_resolutions": dict(sorted(warning_resolutions.items())),
+   99:         "warning_review_request": warning_review_request,
+   99:         "warning_proposal_state": warning_review,
+   99:         "accepted_findings": accepted_findings,
+   99:         "accepted_warnings": [],
+  198:         "proposed_warning_resolutions": [
+   76:             {
+    8:                 **_public_warning(item),
+    8:                 "reason": warning_resolutions[_warning_fingerprint(item)],
+    8:                 "review_clearance_granted": False,
+                   }
+  258:             for item in invariant_result.warnings
+   60:             if _warning_fingerprint(item) in proposed_fingerprints
+               ],
+  159:         "pending_warnings": [_public_warning(item) for item in unaccepted_warnings],
+  198:         "warnings_without_resolution_proposal": [
+  250:             _public_warning(item) for item in warnings_without_resolution_proposal
+               ],
+  159:         "unaccepted_warnings": [_public_warning(item) for item in unaccepted_warnings],
+  129:         "unexplained_high_findings": [_public_finding(item) for item in unexplained_high],
+  121:         "introduced_findings": [_public_finding(item) for item in unexplained_introduced],
+           }
+       
+       
+    2: def _text_output(payload: dict[str, Any]) -> str:
+    1:     evidence = payload["evidence"]
+    1:     summary = payload["lexical_summary"]
+   36:     lines = [
+    1:         f"status: {payload['status']}",
+    1:         f"delivery_gate_status: {payload['delivery_gate_status']}",
+    1:         f"hard_invariant_layer_status: {payload['hard_invariant_layer_status']}",
+    1:         f"speech_act_layer_status: {payload['speech_act_layer_status']}",
+    1:         f"style_signal_layer_status: {payload['style_signal_layer_status']}",
+    1:         f"candidate_assembly_status: {payload['candidate_assembly_status']}",
+    1:         f"mechanical_validation_status: {payload['mechanical_validation_status']}",
+    1:         f"paired_quality_review_status: {payload['paired_quality_review_status']}",
+    2:         "paired_quality_review_request_sha256: "
+               + (
+    1:             payload["paired_quality_review_request"]["request_sha256"]
+    1:             if payload["paired_quality_review_request"]
+                   else "NONE"
+               ),
+    2:         "paired_quality_clearance_granted: "
+    1:         + str(payload["paired_quality_clearance_granted"]).upper(),
+    2:         "humanize_quality_claim_allowed: "
+    1:         + str(payload["humanize_quality_claim_allowed"]).upper(),
+    1:         f"academic_correctness: {payload['academic_correctness']}",
+    1:         f"mode: {payload['mode']}",
+    1:         f"document_scope: {payload['evidence']['document_scope']}",
+    1:         f"draft_surface_source_check: {payload['draft_surface_source_check']['status']}",
+    1:         f"report_scope_check: {payload['report_scope_check']['status']}",
+    1:         f"semantic_source_check: {payload['semantic_source_check']}",
+    1:         f"warning_proposal_source: {payload['warning_proposal_state']['proposal_source']}",
+    1:         f"warning_proposal_attestation_status: {payload['warning_proposal_state']['attestation_status']}",
+    1:         f"warning_proposal_identity_verified: {str(payload['warning_proposal_state']['identity_verified']).upper()}",
+    1:         f"warning_proposal_clearance_granted: {str(payload['warning_proposal_state']['review_clearance_granted']).upper()}",
+    2:         "warning_reviewer_identifier_collected: "
+    1:         + str(payload["warning_proposal_state"]["reviewer_identifier_collected"]).upper(),
+    2:         "warning_stable_reviewer_pseudonym_recorded: "
+    1:         + str(payload["warning_proposal_state"]["stable_reviewer_pseudonym_recorded"]).upper(),
+    2:         "warning_review_request_sha256: "
+               + (
+    1:             payload["warning_review_request"]["request_sha256"]
+    1:             if payload["warning_review_request"]
+                   else "NONE"
+               ),
+    1:         f"before_sha256: {evidence['before_sha256']}",
+    1:         f"after_sha256: {evidence['after_sha256']}",
+    1:         f"protected_terms: {evidence['protected_terms']['status']}",
+    1:         f"protected_term_count: {evidence['protected_terms']['count']}",
+    1:         f"protected_term_sha256: {evidence['protected_terms']['sha256'] or 'NONE'}",
+    1:         f"invariant_errors: {payload['invariants']['summary']['errors']}",
+    1:         f"invariant_warnings: {payload['invariants']['summary']['warnings']}",
+    1:         f"after_candidates: {summary['after_candidates']}",
+    1:         f"introduced_candidates: {summary['introduced_candidates']}",
+    1:         f"unexplained_high_candidates: {summary['unexplained_high_candidates']}",
+    1:         f"accepted_candidates: {summary['accepted_candidates']}",
+           ]
+    2:     for reason in payload["review_reasons"]:
+    1:         lines.append(f"review: {reason}")
+    2:     for warning in payload["unaccepted_warnings"]:
+    2:         lines.append(
+    1:             f"warning: {warning['code']} [{warning['severity']}] {warning['message']}"
+               )
+    1:     for finding in payload["unexplained_high_findings"]:
+               display_file = Path(str(finding["file"])).name
+               lines.append(
+                   f"[{finding['signal_id']}/{finding['severity']}] "
+                   f"{display_file}:{finding['line']}:{finding['column']} {finding['matched']}"
+               )
+    1:     return "\n".join(lines) + "\n"
+       
+       
+    2: def _render_payload(payload: dict[str, Any], output_format: str) -> bytes:
+           if output_format == "json":
+               return _pretty_json_bytes(payload)
+           if payload.get("schema") == DIRECT_VALIDATION_EVIDENCE_ERROR_SCHEMA:
+               return (
+                   "status: FAIL\n"
+                   f"delivery_gate_status: {payload['delivery_gate_status']}\n"
+                   f"error_code: {payload['error_code']}\n"
+                   f"error: {payload['error']}\n"
+               ).encode("utf-8")
+           return _text_output(payload).encode("utf-8")
+       
+       
+    2: def _emit_stdout(raw: bytes) -> None:
+           buffer = getattr(sys.stdout, "buffer", None)
+           if buffer is not None:
+               buffer.write(raw)
+               buffer.flush()
+               return
+           sys.stdout.write(raw.decode("utf-8"))
+       
+       
+    2: def build_parser() -> argparse.ArgumentParser:
+           parser = argparse.ArgumentParser(
+               description="验证纯文风改写或 supplied-content 草稿的可机械边界。"
+           )
+           parser.add_argument("before", type=Path, help="改写前 UTF-8 Markdown/TeX")
+           parser.add_argument("after", type=Path, help="改写后 UTF-8 Markdown/TeX")
+           parser.add_argument(
+               "--mode",
+               type=str.upper,
+               choices=VALIDATION_MODES,
+               default="REWRITE",
+               help="REWRITE 比较改前/改后；DRAFT 把第一个文件视为 supplied content，并保留语义来源 NOT_EVALUATED",
+           )
+           parser.add_argument(
+               "--scene",
+               type=str.upper,
+               choices=lexical.SCENE_CHOICES,
+               default="AUTO",
+           )
+           parser.add_argument("--format", choices=("json", "text"), default="text", dest="output_format")
+           parser.add_argument(
+               "--keep-reason",
+               action="append",
+               default=[],
+               metavar="SIGNAL_ID[@LINE:COLUMN]=具体理由",
+               help="为唯一高风险命中登记理由；多命中时必须绑定位置或 finding hash；可重复",
+           )
+           parser.add_argument(
+               "--strict-speech-acts",
+               action="store_true",
+               help="把否定、模态、定义、报告状态等变化升级为硬错误",
+           )
+           parser.add_argument(
+               "--fragment",
+               action="store_true",
+               help=(
+                   "Validate a REWRITE fragment: unchanged TeX boundary imbalance is allowed, "
+                   "but structural drift still fails"
+               ),
+           )
+           parser.add_argument(
+               "--report-scope",
+               type=Path,
+               help=(
+                   "Bind a REPORT_INFORMED REWRITE to extractor PASS/0 JSON and reject "
+                   "changes outside its UNIQUE source ranges"
+               ),
+           )
+           parser.add_argument(
+               "--accept-warning",
+               action="append",
+               default=[],
+               metavar="CODE=具体理由",
+               help="已停用；任何非空值都会报错，调用方声明不得清除 warning",
+           )
+           parser.add_argument(
+               "--propose-warning-resolution",
+               action="append",
+               default=[],
+               metavar="WARNING_FINGERPRINT=具体处理建议",
+               help="对当前 review request 中的 warning 提交处理建议；只记录，不清除 REVIEW",
+           )
+           parser.add_argument(
+               "--warning-review-request-sha256",
+               default="",
+               metavar="SHA256",
+               help="首次 REVIEW 输出的 request_sha256；绑定 artifact、warning、配置与 policy",
+           )
+           parser.add_argument(
+               "--warning-reviewer-kind",
+               type=str.upper,
+               choices=("HUMAN",),
+               default="NONE",
+               help="已停用；任何非空值都会报错，普通 proposal 不采集审阅者身份",
+           )
+           parser.add_argument(
+               "--warning-reviewer-id",
+               default="",
+               help="已停用；任何非空值都会报错，避免在 argv、日志和证据中泄漏身份标签",
+           )
+           parser.add_argument(
+               "--term",
+               action="append",
+               default=[],
+               metavar="TERM",
+               help="精确保护方法名、材料名或术语；可重复，未提供时不声称已自动校验",
+           )
+           parser.add_argument(
+               "--evidence-dir",
+               type=Path,
+               default=None,
+               metavar="DIR",
+               help=(
+                   "原子保存输入、调用参数、validation result、paired-quality request、"
+                   "精确 stdout/stderr 和 evidence manifest；相同目录只允许逐字节幂等重放"
+               ),
+           )
+           return parser
+       
+       
+    2: def main(argv: Sequence[str] | None = None) -> int:
+           if hasattr(sys.stdout, "reconfigure"):
+               sys.stdout.reconfigure(encoding="utf-8")
+           parser = build_parser()
+           args = parser.parse_args(argv)
+           try:
+               lexicon = lexical.load_lexicon()
+               valid_ids = {item["id"] for item in lexicon["signals"]}
+               keep_reasons = _parse_keep_reasons(args.keep_reason, valid_ids)
+               if args.accept_warning:
+                   raise ValueError(
+                       "--accept-warning is retired because caller assertions cannot clear warnings; "
+                       "use --propose-warning-resolution with the current review request"
+                   )
+               warning_resolutions = _parse_reason_pairs(
+                   args.propose_warning_resolution,
+                   "--propose-warning-resolution",
+               )
+               payload = validate(
+                   args.before,
+                   args.after,
+                   mode=args.mode,
+                   scene=args.scene,
+                   keep_reasons=keep_reasons,
+                   warning_resolutions=warning_resolutions,
+                   warning_review_request_sha256=args.warning_review_request_sha256,
+                   warning_reviewer_kind=args.warning_reviewer_kind,
+                   warning_reviewer_id=args.warning_reviewer_id,
+                   strict_speech_acts=args.strict_speech_acts,
+                   protected_terms=args.term,
+                   fragment_mode=args.fragment,
+                   report_scope_path=args.report_scope,
+               )
+           except (OSError, UnicodeError, ValueError, json.JSONDecodeError) as error:
+               parser.error(str(error))
+           rendered_output: bytes
+           if args.evidence_dir is not None:
+               try:
+                   invocation_request = _build_invocation_request(
+                       payload,
+                       before=args.before,
+                       after=args.after,
+                       mode=args.mode,
+                       scene=args.scene,
+                       output_format=args.output_format,
+                       strict_speech_acts=args.strict_speech_acts,
+                       fragment_mode=args.fragment,
+                       report_scope_path=args.report_scope,
+                       protected_terms=args.term,
+                   )
+                   payload["evidence_bundle"] = _evidence_bundle_record(
+                       payload,
+                       run_id=invocation_request["run_id"],
+                   )
+                   rendered_output = _render_payload(payload, args.output_format)
+                   _persist_evidence_bundle(
+                       payload,
+                       before=args.before,
+                       after=args.after,
+                       output_dir=args.evidence_dir,
+                       invocation_request=invocation_request,
+                       rendered_output=rendered_output,
+                       rendered_stderr=b"",
+                       report_scope_path=args.report_scope,
+                   )
+               except (OSError, UnicodeError, ValueError) as error:
+                   payload = _evidence_failure_payload(payload, error)
+                   rendered_output = _render_payload(payload, args.output_format)
+           else:
+               rendered_output = _render_payload(payload, args.output_format)
+           _emit_stdout(rendered_output)
+           return int(payload["exit_code"])
+       
+       
+    2: if __name__ == "__main__":
+           raise SystemExit(main())

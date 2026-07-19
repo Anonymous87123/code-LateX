@@ -2,6 +2,7 @@ import base64
 import importlib.util
 import json
 import os
+import stat
 import tempfile
 import unittest
 from unittest import mock
@@ -38,6 +39,7 @@ class PairedQualityVerifierTests(unittest.TestCase):
         self.review_record_path = self.root / "review-record.json"
         self.keyset_path = self.root / "keyset.json"
         self.anchor_path = self.root / "anchor.json"
+        self.redemption_ledger_path = self.root / "redemption-ledger.json"
         self.now = 1_000_000
         self.private = Ed25519PrivateKey.generate()
         self.request = self._write_request()
@@ -52,12 +54,10 @@ class PairedQualityVerifierTests(unittest.TestCase):
     def _write_request(self) -> dict:
         before_hash = verifier._sha256(self.before.read_bytes())
         after_hash = verifier._sha256(self.after.read_bytes())
-        change = {
-            "change_id": "QCH-test",
-            "operation": "REPLACE",
-            "before": {"sha256": verifier._sha256(b"before")},
-            "after": {"sha256": verifier._sha256(b"after")},
-        }
+        change = verifier._changed_line_records(
+            self.before.read_bytes().decode("utf-8"),
+            self.after.read_bytes().decode("utf-8"),
+        )[0]
         body = {
             "schema": verifier.REQUEST_SCHEMA,
             "status": "PENDING_EXTERNAL_REVIEW",
@@ -67,13 +67,7 @@ class PairedQualityVerifierTests(unittest.TestCase):
                 "document_format": "markdown", "document_scope": "DOCUMENT",
                 "mechanical_validation_status": "PASS",
             },
-            "policy_hashes": {
-                key: str(index) * 64
-                for index, key in enumerate(
-                    sorted(verifier.REQUIRED_POLICY_HASHES),
-                    start=1,
-                )
-            },
+            "policy_hashes": verifier._current_policy_hashes(),
             "changes": [change],
             "review_contract": {
                 "required_per_change_verdicts": ["ACCEPT", "REVISE", "REVERT"],
@@ -82,7 +76,11 @@ class PairedQualityVerifierTests(unittest.TestCase):
                 "local_model_or_caller_assertion_is_clearance": False,
                 "validator_pass_is_quality_clearance": False,
             },
-            "limitations": {"academic_correctness": "NOT_EVALUATED"},
+            "limitations": {
+                "academic_correctness": "NOT_EVALUATED",
+                "authorship": "NOT_EVALUATED",
+                "quality_clearance_granted": False,
+            },
         }
         request = {**body, "request_sha256": verifier._sha256(verifier._canonical_json(body))}
         self.request_path.write_text(json.dumps(request, ensure_ascii=False), encoding="utf-8")
@@ -269,6 +267,7 @@ class PairedQualityVerifierTests(unittest.TestCase):
         protected_anchor: bool = True,
         with_review_record: bool = True,
         review_record: Path | None = None,
+        redemption_ledger: Path | None = None,
     ) -> dict:
         environment = {verifier.EXTERNAL_ANCHOR_ENV: str(self.anchor_path)} if anchor else {}
         protection = mock.patch.object(
@@ -290,16 +289,39 @@ class PairedQualityVerifierTests(unittest.TestCase):
                     if with_review_record
                     else None
                 ),
+                redemption_ledger_path=(redemption_ledger or self.redemption_ledger_path),
                 now=self.now,
             )
 
     def test_externally_anchored_valid_response_grants_only_paired_clearance(self) -> None:
         result = self.invoke()
-        self.assertEqual("PASS", result["status"])
-        self.assertEqual(0, result["exit_code"])
-        self.assertTrue(result["paired_quality_clearance_granted"])
+        self.assertEqual("REVIEW", result["status"])
+        self.assertEqual(2, result["exit_code"])
+        self.assertEqual("PASS", result["verification_status"])
+        self.assertEqual("PASS", result["paired_quality_gate_status"])
+        self.assertEqual("REVIEW", result["delivery_gate_status"])
+        self.assertFalse(result["paired_quality_clearance_granted"])
         self.assertEqual("PASS", result["review_record_status"])
         self.assertEqual("NOT_EVALUATED", result["academic_correctness"])
+
+    def test_caller_provided_redemption_ledger_is_diagnostic_only(self) -> None:
+        result = self.invoke(redemption_ledger=self.root / "missing" / "ledger.json")
+        self.assertEqual("REVIEW", result["status"])
+        self.assertEqual("PASS", result["verification_status"])
+        self.assertEqual("PASS", result["paired_quality_gate_status"])
+        self.assertEqual("CALLER_PROVIDED_DIAGNOSTIC_ONLY", result["redemption_status"])
+        self.assertFalse(result["paired_quality_clearance_granted"])
+        self.assertFalse((self.root / "missing" / "ledger.json").exists())
+
+    def test_caller_redemption_ledger_cannot_change_repeated_verification(self) -> None:
+        first = self.invoke()
+        self.assertEqual("REVIEW", first["status"])
+        self.assertEqual("PASS", first["verification_status"])
+        second = self.invoke()
+        self.assertEqual("REVIEW", second["status"])
+        self.assertEqual("PASS", second["verification_status"])
+        self.assertEqual(first["paired_quality_gate_status"], second["paired_quality_gate_status"])
+        self.assertFalse(self.redemption_ledger_path.exists())
 
     def test_missing_review_record_remains_review(self) -> None:
         result = self.invoke(with_review_record=False)
@@ -371,6 +393,22 @@ class PairedQualityVerifierTests(unittest.TestCase):
         self.assertEqual(2, result["exit_code"])
         self.assertEqual("PASS", result["cryptographic_signature_status"])
         self.assertEqual("UNPROTECTED_TRUST_ANCHOR", result["reasons"][0]["code"])
+        self.assertFalse(result["paired_quality_clearance_granted"])
+
+    def test_caller_owned_posix_anchor_is_not_a_protected_trust_root(self) -> None:
+        caller_owned = mock.Mock(
+            st_uid=1000,
+            st_mode=stat.S_IFREG | 0o600,
+        )
+        with mock.patch.object(verifier.os, "name", "posix"), mock.patch.object(
+            verifier.os, "getuid", return_value=1000, create=True
+        ), mock.patch.object(type(self.anchor_path), "stat", return_value=caller_owned):
+            protected = verifier._trust_anchor_is_protected(self.anchor_path)
+
+        self.assertFalse(protected)
+        result = self.invoke(protected_anchor=protected)
+        self.assertEqual("REVIEW", result["status"])
+        self.assertNotEqual("EXTERNALLY_ANCHORED", result["trust_root_status"])
         self.assertFalse(result["paired_quality_clearance_granted"])
 
     def test_valid_signature_without_external_anchor_is_review(self) -> None:
@@ -522,6 +560,53 @@ class PairedQualityVerifierTests(unittest.TestCase):
                 self.assertEqual("FAIL", result["status"])
                 self.assertEqual(expected_code, result["reasons"][0]["code"])
 
+    def test_time_policy_inputs_must_be_finite_and_within_fixed_limits(self) -> None:
+        common = {
+            "request_path": self.request_path,
+            "challenge_path": self.challenge_path,
+            "response_path": self.response_path,
+            "before_path": self.before,
+            "after_path": self.after,
+            "keyset_path": self.keyset_path,
+            "trust_anchor_path": self.anchor_path,
+            "review_record_path": self.review_record_path,
+            "now": self.now,
+        }
+        for field, value in (("now", float("nan")), ("now", float("inf")),
+                             ("clock_skew", float("nan")), ("max_ttl", float("inf"))):
+            with self.subTest(field=field, value=value):
+                kwargs = dict(common)
+                kwargs[field] = value
+                with self.assertRaisesRegex(ValueError, "finite"):
+                    verifier.verify(**kwargs)
+
+        for field, value in (("clock_skew", verifier.MAX_CLOCK_SKEW + 1),
+                             ("max_ttl", verifier.MAX_TTL + 1)):
+            with self.subTest(field=field, value=value):
+                kwargs = dict(common)
+                kwargs[field] = value
+                with self.assertRaisesRegex(ValueError, "maximum"):
+                    verifier.verify(**kwargs)
+
+    def test_malformed_revocation_entries_fail_closed(self) -> None:
+        cases = (
+            {"kid": "pq-test", "mode": "UNKNOWN"},
+            {"kid": "pq-test", "mode": "ISSUED_AT_OR_AFTER"},
+            {"kid": "pq-test", "mode": "ISSUED_AT_OR_AFTER", "issued_at": "not-int"},
+            {"kid": "pq-test", "mode": "ALL_SIGNATURES", "extra": True},
+        )
+        for revocation in cases:
+            with self.subTest(revocation=revocation):
+                self._rewrite_keyset(
+                    lambda keyset, revocation=revocation: keyset["revocations"].append(
+                        revocation
+                    )
+                )
+                result = self.invoke()
+                self.assertEqual("FAIL", result["status"])
+                self.assertEqual("INVALID_KEYSET", result["reasons"][0]["code"])
+                self._write_keyset_and_anchor()
+
     def test_challenge_future_expired_and_excessive_ttl_are_rejected(self) -> None:
         original = json.loads(self.challenge_path.read_text(encoding="utf-8"))
         for name, issued, expires, expected_code in (
@@ -583,7 +668,10 @@ class PairedQualityVerifierTests(unittest.TestCase):
     def test_no_change_requires_one_synthetic_target(self) -> None:
         self._configure_no_change()
         result = self.invoke()
-        self.assertEqual("PASS", result["status"])
+        self.assertEqual("REVIEW", result["status"])
+        self.assertEqual("PASS", result["verification_status"])
+        self.assertEqual("PASS", result["paired_quality_gate_status"])
+        self.assertEqual("REVIEW", result["delivery_gate_status"])
         self.assertEqual(["NO_CHANGE"], result["expected_change_targets"])
 
         empty = self._signed_response(
@@ -638,6 +726,29 @@ class PairedQualityVerifierTests(unittest.TestCase):
                 json.dumps(self.request, ensure_ascii=False),
                 encoding="utf-8",
             )
+
+    def test_request_hunks_are_bound_to_current_artifact_bytes(self) -> None:
+        forged = json.loads(self.request_path.read_text(encoding="utf-8"))
+        forged["changes"][0]["before"]["sha256"] = "d" * 64
+        with self.assertRaisesRegex(verifier.VerificationError, "hunks do not match"):
+            verifier._validate_request_hunks_against_artifacts(
+                forged, self.before.read_bytes(), self.after.read_bytes()
+            )
+
+    def test_policy_hash_drift_blocks_before_external_signature_clearance(self) -> None:
+        request = json.loads(self.request_path.read_text(encoding="utf-8"))
+        body = dict(request)
+        body.pop("request_sha256")
+        body["policy_hashes"] = dict(body["policy_hashes"])
+        body["policy_hashes"]["validator_sha256"] = "e" * 64
+        request = {
+            **body,
+            "request_sha256": verifier._sha256(verifier._canonical_json(body)),
+        }
+        self.request_path.write_text(json.dumps(request, ensure_ascii=False), encoding="utf-8")
+        result = self.invoke()
+        self.assertEqual("FAIL", result["status"])
+        self.assertEqual("POLICY_HASH_DRIFT", result["reasons"][0]["code"])
 
     def test_symlinked_input_path_is_rejected(self) -> None:
         link = self.root / "response-link.jws"

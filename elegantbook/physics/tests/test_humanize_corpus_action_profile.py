@@ -1,9 +1,11 @@
 import importlib.util
+import io
 import json
 import os
 import re
 import tempfile
 import unittest
+from contextlib import redirect_stdout
 from pathlib import Path
 
 
@@ -118,6 +120,22 @@ class HumanizeCorpusActionProfileTests(unittest.TestCase):
         ):
             self.assertEqual("EXCLUDED_CONFIG", sources[source_id]["status"])
             self.assertEqual("origin_unresolved_excluded", sources[source_id]["role"])
+
+    def test_text_summary_separates_production_and_provisional_cards(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            output = Path(temp) / "profile.json"
+            stdout = io.StringIO()
+            with redirect_stdout(stdout):
+                exit_code = profile_builder.main(
+                    ["--output", str(output), "--format", "text"]
+                )
+
+        rendered = stdout.getvalue()
+        self.assertEqual(0, exit_code)
+        self.assertIn("PROFILE_PASS", rendered)
+        self.assertIn("production_positive=0", rendered)
+        self.assertIn("provisional_positive=17", rendered)
+        self.assertNotIn("21 available", rendered)
 
     def test_model_generated_source_cannot_back_a_positive_action(self) -> None:
         with tempfile.TemporaryDirectory() as temp:

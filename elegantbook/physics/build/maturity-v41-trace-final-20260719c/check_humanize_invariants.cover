@@ -1,0 +1,1939 @@
+       #!/usr/bin/env python3
+    2: """Compare a source document with its humanized rewrite.
+       
+       This checker deliberately audits preservation, not academic correctness.  It
+       protects deterministic Markdown/LaTeX spans and reports changes to Chinese
+       speech-act markers that can silently alter an author's claim.
+       """
+       
+    2: from __future__ import annotations
+       
+    2: import argparse
+    2: import hashlib
+    2: import json
+    2: import re
+    2: import sys
+    2: from collections import Counter
+    2: from dataclasses import asdict, dataclass, field
+    2: from pathlib import Path
+    2: from typing import Iterable, Sequence
+       
+       
+    2: MATH_ENVIRONMENTS = {
+           "align",
+           "align*",
+           "alignat",
+           "alignat*",
+           "aligned",
+           "alignedat",
+           "array",
+           "cases",
+           "displaymath",
+           "equation",
+           "equation*",
+           "gather",
+           "gather*",
+           "math",
+           "matrix",
+           "multline",
+           "multline*",
+           "pmatrix",
+           "smallmatrix",
+           "split",
+           "vmatrix",
+           "Vmatrix",
+       }
+    2: QUOTE_ENVIRONMENTS = {"quote", "quotation"}
+    2: CODE_ENVIRONMENTS = {"Verbatim", "lstlisting", "minted", "verbatim", "verbatim*"}
+    4: FORMAL_STATEMENT_ENVIRONMENTS = {
+   54:     f"{name}{suffix}"
+   22:     for name in (
+               "corollary",
+               "definition",
+               "example",
+               "exercise",
+               "lemma",
+               "problem",
+               "proposition",
+               "question",
+               "theorem",
+           )
+   54:     for suffix in ("", "*")
+       }
+    2: CRITICAL_COMMANDS = {
+           "autoref",
+           "cite",
+           "citealp",
+           "citeauthor",
+           "citep",
+           "citeyear",
+           "citet",
+           "cref",
+           "Cref",
+           "eqref",
+           "includegraphics",
+           "label",
+           "pageref",
+           "ref",
+           "url",
+       }
+       
+    2: SPEECH_ACT_MARKERS: dict[str, tuple[str, ...]] = {
+    2:     "negation": (
+               "并不意味着",
+               "并非",
+               "不能",
+               "不再",
+               "未曾",
+               "没有",
+               "不",
+               "未",
+               "无",
+               "非",
+           ),
+    2:     "modality_scope": (
+               "不一定",
+               "在一定程度上",
+               "有必要",
+               "必须",
+               "应当",
+               "需要",
+               "可能",
+               "或许",
+               "可以",
+               "仅仅",
+               "仅",
+               "只",
+               "可",
+               "应",
+           ),
+    2:     "focus_scope": (
+               "最主要",
+               "首要",
+               "优先",
+               "重点",
+               "主要",
+           ),
+    2:     "definition_naming": (
+               "以下简称",
+               "称之为",
+               "定义为",
+               "记作",
+               "记为",
+               "称为",
+               "简称",
+               "所谓",
+               "定义",
+           ),
+    2:     "assumption": ("不妨设", "假定", "假设", "设"),
+    2:     "reporting_observation": (
+               "研究结果表明",
+               "实验结果表明",
+               "结果表明",
+               "结果显示",
+               "可以观察到",
+               "可以看到",
+               "观察到",
+               "我们发现",
+               "表明",
+               "显示",
+               "发现",
+           ),
+    2:     "attribution_source": (
+               "已有研究",
+               "既有研究",
+               "相关研究",
+               "已有文献",
+               "既有文献",
+               "相关文献",
+               "业内普遍认为",
+               "一些学者指出",
+               "有观点认为",
+               "研究者认为",
+               "研究者指出",
+               "专家认为",
+               "专家指出",
+               "学者认为",
+               "学者指出",
+               "文献认为",
+               "文献指出",
+               "本研究证实",
+               "本研究证明",
+               "本研究表明",
+               "本文证实",
+               "本文证明",
+               "本文表明",
+           ),
+    2:     "condition": ("当且仅当", "只有当", "除非", "仅当", "只要", "如果", "若", "当"),
+       }
+       
+       # Single-character Chinese markers require lexical exclusions.  Without these,
+       # a useful signal such as "应" also fires inside technical words such as
+       # "响应" and "对应".  Keep this list deliberately narrow and auditable.
+    2: SINGLE_MARKER_EXCLUSIONS: dict[str, tuple[str, ...]] = {
+           # These are lexical/technical compounds, not sentence-level negation.
+           # Keep the list explicit so a new domain term is reviewed rather than
+           # silently broadening a generic boundary heuristic.
+    2:     "不": (
+               "不仅",
+               "不但",
+               "不同",
+               "不变量",
+               "不锈钢",
+               "不可压缩流",
+               "不可约",
+               "不连续",
+               "不对称",
+           ),
+    2:     "非": ("非常",),
+    2:     "仅": ("不仅",),
+    2:     "应": ("对应", "响应", "反应", "效应", "适应", "应用", "应力", "应变", "应答"),
+    2:     "设": ("设备", "设施", "建设", "设计"),
+    2:     "若": ("若干",),
+    2:     "当": ("相当", "恰当", "适当", "当量", "当代"),
+    2:     "可": ("可靠", "许可", "认可", "可视化"),
+       }
+       
+       # These checks cover a narrow class of source-to-rewrite transitions that a
+       # token inventory cannot see.  They are intentionally conservative: a warning
+       # is emitted only when the risky predicate is absent from the source and the
+       # source contains the corresponding directive or support shell.
+    2: SEMANTIC_TRANSITION_RULES: tuple[
+           tuple[str, str, tuple[str, ...], tuple[str, ...]], ...
+    2: ] = (
+           (
+               "SPEECH_ACT_DIRECTIVE_TO_COMPLETION",
+               "An editing directive or artifact purpose was rewritten as a completed artifact assertion.",
+               (
+                   r"表格的作用(?:是|在于)",
+                   r"正文(?:里|中)?(?:要|需要|应当|应该)",
+                   r"如果放到图上",
+                   r"图上应当",
+               ),
+               (
+                   r"表格[^。！？\n]{0,16}(?:列出|展示|包含|给出)",
+                   r"图(?:中|上)[^。！？\n]{0,16}(?:标出|展示|包含|给出)",
+               ),
+           ),
+           (
+               "SPEECH_ACT_EDITORIAL_TO_EVIDENCE",
+               "An editorial instruction to retain or present evidence was rewritten as an evidence claim.",
+               (
+                   r"(?:正文|文中)[^。！？\n]{0,96}(?:要|需|需要|应当|应该|必须)[^。！？\n]{0,96}(?:保留|呈现|写成|说明)",
+               ),
+               (
+                   r"(?:粗扫|加密扫描|两类扫描|扫描结果)[^。！？\n]{0,32}(?:共同)?(?:支持|表明|显示|证明)[^。！？\n]{0,48}(?:结论|判断|区间)",
+               ),
+           ),
+           (
+               "SPEECH_ACT_SUPPORT_TO_ACTUAL_USE",
+               "A support, value, or closure claim was rewritten as actual engineering use or a completed decision.",
+               (
+                   r"为工程应用提供[^。！？\n]{0,12}(?:支撑|依据|参考)",
+                   r"从数据到决策[^。！？\n]{0,16}闭环",
+                   r"形成[^。！？\n]{0,16}闭环",
+               ),
+               (
+                   r"(?:用于|用来|服务于|指导|影响)[^。！？\n]{0,16}(?:工程决策|方案选择)",
+                   r"(?:工程决策|方案选择)[^。！？\n]{0,12}(?:已经|已被|完成|落地)",
+               ),
+           ),
+           (
+               "SPEECH_ACT_MISSING_CONTENT_TO_LINKAGE",
+               "Missing content or an absent analysis layer was rewritten as missing linkage or transition.",
+               (
+                   r"缺少[^。！？\n]{1,48}(?:层面|层|内容|分析|讨论)",
+               ),
+               (
+                   r"缺少[^。！？\n]{1,56}(?:衔接|联系|连接|过渡)",
+               ),
+           ),
+           (
+               "SPEECH_ACT_ABSENCE_TO_FAILURE",
+               "An absent or ungenerated artifact was rewritten as an artifact that existed and failed validation.",
+               (
+                   r"(?:没法|未能|没有|尚未|无法)[^。！？\n]{0,24}(?:生成|产生|形成|得到|输出)",
+               ),
+               (
+                   r"(?:字段|结果|输出|工件)[^。！？\n]{0,16}(?:验证|校验|测试|生成)[^。！？\n]{0,8}(?:失败|有误|错误)",
+               ),
+           ),
+           (
+               "SPEECH_ACT_PURPOSE_TO_RESULT",
+               "A stated purpose or comparison role was rewritten as an observed result or proof.",
+               (
+                   r"(?:用于|用来|作用在于)[^。！？\n]{0,24}(?:比较|校准|检验|拆分|说明|分析)",
+               ),
+               (
+                   r"(?:结果|实验|测试)[^。！？\n]{0,8}(?:表明|显示|证明)",
+                   r"(?:验证|证明)了",
+               ),
+           ),
+           (
+               "SPEECH_ACT_PENDING_CHECK_TO_COMPLETION",
+               "A pending check, rerun, or validation was rewritten as a completed or effective state.",
+               (
+                   r"(?:需要|仍需|待|尚待)[^。！？\n]{0,20}(?:实测|验证|确认|重跑|复核|证明)",
+               ),
+               (
+                   r"(?:已经|已)[^，,；;：:。！？\n]{0,20}(?:生效|完成|验证|确认|关闭|证明|通过)",
+               ),
+           ),
+           (
+               "SPEECH_ACT_INTERNAL_TO_EXTERNAL_VALIDATION",
+               "An explicitly internal indicator or projection was rewritten as external or real-world validation.",
+               (
+                   r"(?:内部|情景)[^。！？\n]{0,40}(?:不是|不构成)[^。！？\n]{0,20}(?:外部|实际)[^。！？\n]{0,12}(?:验证|观测|事实)",
+               ),
+               (
+                   r"(?:验证|证明)了[^。！？\n]{0,24}(?:实际|真实|外部|长期|生态健康)",
+               ),
+           ),
+           (
+               "SPEECH_ACT_CANDIDATE_TO_CONFIRMED",
+               "A conditional candidate, bracket, or unstable ordering was rewritten as a verified threshold or stable conclusion.",
+               (
+                   r"(?:候选(?:括号|区间|阈值|路线|解释)|并非完全稳健|可能[^。！？\n]{0,12}交换)",
+               ),
+               (
+                   r"(?:经[^。！？\n]{0,12}验证的[^。！？\n]{0,16}(?:阈值|结论|排序)|稳健[^。！？\n]{0,12}(?:临界阈值|阈值|结论)|稳定排序|已经?证明|已证明)",
+               ),
+           ),
+       )
+       
+    2: HEDGE_MARKERS = ("可能", "或许", "在一定程度上")
+    4: DEGREE_CLAIM_PATTERN = re.compile(
+    2:     r"(?:影响程度[^。！？\n]{0,8}(?:有限|较小|轻微|显著|较大)|"
+           r"影响[^。！？\n]{0,5}(?:有限|较小|轻微|显著|较大))"
+       )
+       
+    4: DIRECT_PERMISSION_PATTERN = re.compile(
+    2:     r"(?<![不未没无非])(?:可以|能够|能|可)[^。！？!?；;\n]{0,40}?直接"
+       )
+    4: DIRECT_PROHIBITION_PATTERN = re.compile(
+    2:     r"(?:不可以|不能|不可|不得|不应|不宜|不要)[^。！？!?；;\n]{0,40}?直接"
+       )
+    4: POLARITY_ANCHOR_STRIP_PATTERN = re.compile(
+    2:     r"不可以|可以|能够|不能|不可|不得|不应|不宜|不要|能|可|直接"
+       )
+    2: POLARITY_ANCHOR_STOP = {
+           "不满",
+           "不能",
+           "不可",
+           "不要",
+           "不得",
+           "不应",
+           "不宜",
+           "可以",
+           "能够",
+           "直接",
+           "因为",
+           "如果",
+           "即使",
+           "据此",
+           "时候",
+           "条件",
+           "满足",
+           "进行",
+           "需要",
+           "应当",
+           "相关",
+       }
+       
+       
+    6: @dataclass(frozen=True)
+    4: class Diagnostic:
+    2:     code: str
+    2:     severity: str
+    2:     message: str
+    2:     details: dict[str, object] = field(default_factory=dict)
+       
+       
+    6: @dataclass
+    4: class CheckResult:
+    2:     errors: list[Diagnostic] = field(default_factory=list)
+    2:     warnings: list[Diagnostic] = field(default_factory=list)
+    2:     advisories: list[Diagnostic] = field(default_factory=list)
+    2:     evidence: dict[str, object] = field(default_factory=dict)
+       
+    4:     @property
+    4:     def hard_failure(self) -> bool:
+  400:         return bool(self.errors)
+       
+    4:     @property
+    4:     def status(self) -> str:
+  199:         return "fail" if self.hard_failure else "pass"
+       
+    2:     def to_dict(self) -> dict[str, object]:
+  198:         return {
+  198:             "status": self.status,
+  198:             "hard_failure": self.hard_failure,
+  198:             "summary": {
+  198:                 "errors": len(self.errors),
+  198:                 "warnings": len(self.warnings),
+  198:                 "advisories": len(self.advisories),
+                   },
+  242:             "errors": [asdict(item) for item in self.errors],
+  318:             "warnings": [asdict(item) for item in self.warnings],
+  202:             "advisories": [asdict(item) for item in self.advisories],
+  198:             "evidence": self.evidence,
+               }
+       
+       
+    2: def _is_escaped(text: str, index: int) -> bool:
+  886:     backslashes = 0
+  886:     index -= 1
+  898:     while index >= 0 and text[index] == "\\":
+   12:         backslashes += 1
+   12:         index -= 1
+  886:     return backslashes % 2 == 1
+       
+       
+    2: def strip_tex_comments(text: str) -> str:
+           """Remove unescaped TeX comments while preserving line boundaries."""
+   82:     output: list[str] = []
+  281:     for line in text.splitlines(keepends=True):
+  199:         cut = None
+ 3615:         for index, char in enumerate(line):
+ 3423:             if char == "%" and not _is_escaped(line, index):
+    7:                 cut = index
+    7:                 break
+  199:         if cut is None:
+  192:             output.append(line)
+  192:             continue
+    7:         prefix = line[:cut]
+    7:         if prefix.endswith("\r"):
+>>>>>>             prefix = prefix[:-1]
+               # TeX comments consume the physical newline as well.  Removing both
+               # makes comment-only line insertion invisible while retaining any
+               # intentional space before the percent sign.
+    7:         output.append(prefix)
+   82:     return "".join(output)
+       
+       
+    2: def _tex_comment_spans(text: str) -> list[str]:
+           """Return unescaped TeX comments exactly, including a bare continuation percent."""
+   68:     comments: list[str] = []
+  239:     for line in text.replace("\r\n", "\n").replace("\r", "\n").splitlines():
+ 3004:         for index, char in enumerate(line):
+ 2840:             if char == "%" and not _is_escaped(line, index):
+    7:                 comments.append(line[index:])
+    7:                 break
+   68:     return comments
+       
+       
+    2: def _canonical_span(text: str) -> str:
+  336:     text = text.replace("\r\n", "\n").replace("\r", "\n")
+ 1130:     return "\n".join(line.rstrip() for line in text.strip().split("\n"))
+       
+       
+    2: def _mask_ranges(text: str, ranges: Iterable[tuple[int, int]]) -> str:
+11273:     chars = list(text)
+13434:     for start, end in ranges:
+ 2161:         chars[start:end] = " " * (end - start)
+11273:     return "".join(chars)
+       
+       
+    2: def _merge_ranges(ranges: Iterable[tuple[int, int]]) -> list[tuple[int, int]]:
+ 2589:     merged: list[list[int]] = []
+ 3615:     for start, end in sorted(ranges):
+ 1026:         if end <= start:
+>>>>>>             continue
+ 1026:         if not merged or start > merged[-1][1]:
+  972:             merged.append([start, end])
+               else:
+   54:             merged[-1][1] = max(merged[-1][1], end)
+ 3561:     return [(start, end) for start, end in merged]
+       
+       
+    2: def _tex_comment_ranges(text: str) -> list[tuple[int, int]]:
+   82:     ranges: list[tuple[int, int]] = []
+   82:     offset = 0
+  281:     for line in text.splitlines(keepends=True):
+ 3615:         for index, char in enumerate(line):
+ 3423:             if char == "%" and not _is_escaped(line, index):
+    7:                 ranges.append((offset + index, offset + len(line)))
+    7:                 break
+  199:         offset += len(line)
+   82:     return ranges
+       
+       
+   10: def _named_environment_ranges(
+    2:     text: str,
+    2:     names: set[str],
+    4:     excluded_ranges: Sequence[tuple[int, int]] = (),
+    2: ) -> list[tuple[int, int]]:
+  972:     if not names:
+>>>>>>         return []
+  972:     masked = _mask_ranges(text, excluded_ranges)
+ 1944:     alternatives = "|".join(
+14120:         sorted((re.escape(name) for name in names), key=len, reverse=True)
+           )
+ 1944:     pattern = re.compile(
+  972:         rf"(?s)\\begin\s*\{{(?P<name>{alternatives})\}}.*?"
+               rf"\\end\s*\{{(?P=name)\}}"
+           )
+  999:     return [(match.start(), match.end()) for match in pattern.finditer(masked)]
+       
+       
+    8: def _math_ranges_for_speech(
+    2:     text: str,
+    2:     excluded_ranges: Sequence[tuple[int, int]],
+    2: ) -> list[tuple[int, int]]:
+  446:     occupied = list(excluded_ranges)
+  446:     ranges = _named_environment_ranges(text, MATH_ENVIRONMENTS, occupied)
+  446:     occupied.extend(ranges)
+  446:     masked = _mask_ranges(text, occupied)
+ 1338:     for pattern in (re.compile(r"(?s)\\\[.*?\\\]"), re.compile(r"(?s)\\\(.*?\\\)")):
+  915:         found = [(match.start(), match.end()) for match in pattern.finditer(masked)]
+  892:         ranges.extend(found)
+  892:         occupied.extend(found)
+  892:         masked = _mask_ranges(text, occupied)
+       
+  446:     index = 0
+18585:     while index < len(masked):
+18139:         if masked[index] != "$" or _is_escaped(masked, index):
+18005:             index += 1
+18005:             continue
+  134:         delimiter = "$$" if masked.startswith("$$", index) else "$"
+  134:         search = index + len(delimiter)
+  134:         closing = -1
+  134:         while search < len(masked):
+  134:             candidate = masked.find(delimiter, search)
+  134:             if candidate < 0:
+>>>>>>                 break
+  134:             if not _is_escaped(masked, candidate):
+  134:                 closing = candidate
+  134:                 break
+>>>>>>             search = candidate + len(delimiter)
+  134:         if closing < 0:
+>>>>>>             index += len(delimiter)
+>>>>>>             continue
+  134:         end = closing + len(delimiter)
+  134:         ranges.append((index, end))
+  134:         masked = _mask_ranges(masked, [(index, end)])
+  134:         index = end
+  446:     return _merge_ranges(ranges)
+       
+       
+    8: def _quotation_ranges_for_speech(
+    2:     text: str,
+    2:     excluded_ranges: Sequence[tuple[int, int]],
+    2: ) -> list[tuple[int, int]]:
+  444:     masked = _mask_ranges(text, excluded_ranges)
+  444:     ranges: list[tuple[int, int]] = []
+ 3552:     for pattern in (
+  444:         re.compile(r"“[^”\n]*”"),
+  444:         re.compile(r"‘[^’\n]*’"),
+  444:         re.compile(r"「[^」\n]*」"),
+  444:         re.compile(r"『[^』\n]*』"),
+  444:         re.compile(r'"[^"\n]+"'),
+  444:         re.compile(r"(?<!`)``[^\n]*?''"),
+  444:         re.compile(r"(?m)^(?:[ \t]*>[^\n]*(?:\n|$))+"),
+           ):
+ 6261:         ranges.extend((match.start(), match.end()) for match in pattern.finditer(masked))
+       
+  444:     command_quote_re = re.compile(r"\\(?:enquote|textquote)\s*(?P<brace>\{)")
+  446:     for match in command_quote_re.finditer(masked):
+    2:         parsed = _balanced_group(text, match.start("brace"), "{", "}")
+    2:         if parsed is not None:
+    2:             ranges.append((match.start(), parsed[1]))
+  888:     ranges.extend(
+  444:         _named_environment_ranges(text, QUOTE_ENVIRONMENTS, excluded_ranges)
+           )
+  444:     return _merge_ranges(ranges)
+       
+       
+    8: def _critical_command_ranges_for_speech(
+    2:     text: str,
+    2:     excluded_ranges: Sequence[tuple[int, int]],
+    2: ) -> list[tuple[int, int]]:
+   82:     masked = _mask_ranges(text, excluded_ranges)
+   82:     ranges: list[tuple[int, int]] = []
+   82:     command_re = re.compile(r"\\(?P<name>[A-Za-z@]+)(?P<star>\*)?")
+  125:     for match in command_re.finditer(masked):
+   43:         name = match.group("name")
+   43:         if name not in CRITICAL_COMMANDS and not _is_citation_command(name):
+   24:             continue
+   19:         index = match.end()
+   23:         while True:
+   23:             while index < len(masked) and masked[index].isspace():
+>>>>>>                 index += 1
+   23:             if index < len(masked) and masked[index] == "[":
+    4:                 parsed = _balanced_group(masked, index, "[", "]")
+    4:                 if parsed is None:
+>>>>>>                     break
+    4:                 _, index = parsed
+    4:                 continue
+   19:             break
+   19:         while index < len(masked) and masked[index].isspace():
+>>>>>>             index += 1
+   19:         parsed = _balanced_group(masked, index, "{", "}")
+   19:         ranges.append((match.start(), parsed[1] if parsed is not None else match.end()))
+   82:     return ranges
+       
+       
+   10: def _speech_surface(
+    2:     text: str,
+    2:     document_format: str,
+    2:     protect_quotes: bool,
+    2: ) -> tuple[str, list[tuple[int, int]]]:
+  446:     normalized = text.replace("\r\n", "\n").replace("\r", "\n")
+  446:     _, code_ranges = _code_spans(normalized)
+  446:     ranges = list(code_ranges)
+  446:     ranges.extend(_math_ranges_for_speech(normalized, ranges))
+  446:     if document_format == "tex":
+   82:         ranges.extend(_tex_comment_ranges(normalized))
+  164:         ranges.extend(
+  164:             _named_environment_ranges(
+   82:                 normalized, FORMAL_STATEMENT_ENVIRONMENTS, ranges
+                   )
+               )
+   82:         ranges.extend(_critical_command_ranges_for_speech(normalized, ranges))
+  446:     if protect_quotes:
+  444:         ranges.extend(_quotation_ranges_for_speech(normalized, ranges))
+  446:     merged = _merge_ranges(ranges)
+  446:     return _mask_ranges(normalized, merged), merged
+       
+       
+    8: def _markdown_fence_spans(
+    2:     text: str,
+    4:     excluded_ranges: Sequence[tuple[int, int]] = (),
+    2: ) -> list[tuple[int, int, str]]:
+           """Return CommonMark fences, whose closer may be longer than the opener."""
+  892:     masked = _mask_ranges(text, excluded_ranges)
+ 1784:     opening_re = re.compile(
+  892:         r"(?m)^[ \t]{0,3}(?P<fence>`{3,}|~{3,})[^\n]*(?:\n|$)"
+           )
+  892:     spans: list[tuple[int, int, str]] = []
+  892:     cursor = 0
+  920:     while cursor < len(masked):
+  894:         opening = opening_re.search(masked, cursor)
+  894:         if opening is None:
+  866:             break
+   28:         fence = opening.group("fence")
+   56:         closing_re = re.compile(
+   28:             rf"(?m)^[ \t]{{0,3}}{re.escape(fence[0])}{{{len(fence)},}}[ \t]*(?:\n|$)"
+               )
+   28:         closing = closing_re.search(masked, opening.end())
+   28:         end = closing.end() if closing is not None else len(masked)
+   28:         spans.append((opening.start(), end, _canonical_span(text[opening.start():end])))
+   28:         cursor = end
+  892:     return spans
+       
+       
+    2: def _code_spans(text: str) -> tuple[list[str], list[tuple[int, int]]]:
+  892:     items: list[tuple[int, int, str]] = []
+  892:     occupied: list[tuple[int, int]] = []
+ 1784:     alternatives = "|".join(
+ 6244:         sorted((re.escape(name) for name in CODE_ENVIRONMENTS), key=len, reverse=True)
+           )
+ 1784:     tex_env_re = re.compile(
+  892:         rf"(?s)\\begin\s*\{{(?P<name>{alternatives})\}}.*?"
+               rf"\\end\s*\{{(?P=name)\}}"
+           )
+  896:     for match in tex_env_re.finditer(text):
+    4:         items.append((match.start(), match.end(), _canonical_span(match.group(0))))
+    4:         occupied.append((match.start(), match.end()))
+       
+  920:     for start, end, canonical in _markdown_fence_spans(text, occupied):
+   28:         items.append((start, end, canonical))
+   28:         occupied.append((start, end))
+       
+  892:     masked = _mask_ranges(text, occupied)
+  892:     verb_re = re.compile(r"\\(?:verb|lstinline)\*?(?P<delimiter>[^\w\s]).*?(?P=delimiter)")
+  896:     for match in verb_re.finditer(masked):
+    4:         items.append((match.start(), match.end(), _canonical_span(match.group(0))))
+    4:         occupied.append((match.start(), match.end()))
+  892:     masked = _mask_ranges(text, occupied)
+       
+  892:     index = 0
+38831:     while index < len(masked):
+37939:         if masked[index] != "`":
+37913:             index += 1
+37913:             continue
+   26:         end_ticks = index
+   52:         while end_ticks < len(masked) and masked[end_ticks] == "`":
+   26:             end_ticks += 1
+   26:         delimiter = masked[index:end_ticks]
+   26:         closing = masked.find(delimiter, end_ticks)
+   26:         if closing < 0 or "\n" in masked[end_ticks:closing]:
+>>>>>>             index = end_ticks
+>>>>>>             continue
+   26:         end = closing + len(delimiter)
+   26:         items.append((index, end, _canonical_span(text[index:end])))
+   26:         occupied.append((index, end))
+   26:         index = end
+       
+  954:     items.sort(key=lambda item: item[0])
+  892:     occupied.sort()
+  954:     return [item[2] for item in items], occupied
+       
+       
+    2: def _extract_environment_spans(text: str, names: set[str]) -> list[str]:
+  446:     if not names:
+>>>>>>         return []
+ 8920:     alternatives = "|".join(sorted((re.escape(name) for name in names), key=len, reverse=True))
+  892:     pattern = re.compile(
+  446:         rf"(?s)\\begin\s*\{{(?P<name>{alternatives})\}}.*?"
+               rf"\\end\s*\{{(?P=name)\}}"
+           )
+  463:     return [_canonical_span(match.group(0)) for match in pattern.finditer(text)]
+       
+       
+    2: def _math_spans(text: str, excluded_ranges: Sequence[tuple[int, int]]) -> list[str]:
+  446:     masked = _mask_ranges(text, excluded_ranges)
+  446:     spans: list[tuple[int, int, str]] = []
+  446:     occupied = list(excluded_ranges)
+       
+  892:     alternatives = "|".join(
+10704:         sorted((re.escape(name) for name in MATH_ENVIRONMENTS), key=len, reverse=True)
+           )
+  892:     env_re = re.compile(
+  446:         rf"(?s)\\begin\s*\{{(?P<name>{alternatives})\}}.*?"
+               rf"\\end\s*\{{(?P=name)\}}"
+           )
+  456:     for match in env_re.finditer(masked):
+   10:         spans.append((match.start(), match.end(), _canonical_span(text[match.start():match.end()])))
+   10:         occupied.append((match.start(), match.end()))
+       
+  446:     masked = _mask_ranges(masked, occupied)
+ 1338:     for pattern in (re.compile(r"(?s)\\\[.*?\\\]"), re.compile(r"(?s)\\\(.*?\\\)")):
+  892:         matches = list(pattern.finditer(masked))
+  915:         for match in matches:
+   23:             spans.append((match.start(), match.end(), _canonical_span(text[match.start():match.end()])))
+   23:             occupied.append((match.start(), match.end()))
+  915:         masked = _mask_ranges(masked, [(match.start(), match.end()) for match in matches])
+       
+  446:     index = 0
+18396:     while index < len(masked):
+17950:         if masked[index] != "$" or _is_escaped(masked, index):
+17816:             index += 1
+17816:             continue
+  134:         delimiter = "$$" if masked.startswith("$$", index) else "$"
+  134:         search = index + len(delimiter)
+  134:         closing = -1
+  134:         while search < len(masked):
+  134:             candidate = masked.find(delimiter, search)
+  134:             if candidate < 0:
+>>>>>>                 break
+  134:             if not _is_escaped(masked, candidate):
+  134:                 closing = candidate
+  134:                 break
+>>>>>>             search = candidate + len(delimiter)
+  134:         if closing < 0:
+>>>>>>             index += len(delimiter)
+>>>>>>             continue
+  134:         end = closing + len(delimiter)
+  134:         spans.append((index, end, _canonical_span(text[index:end])))
+  134:         index = end
+       
+  613:     spans.sort(key=lambda item: item[0])
+  613:     return [item[2] for item in spans]
+       
+       
+    2: def _quotation_spans(text: str, excluded_ranges: Sequence[tuple[int, int]]) -> list[str]:
+  444:     masked = _mask_ranges(text, excluded_ranges)
+  444:     spans: list[tuple[int, str]] = []
+  444:     patterns = (
+  444:         re.compile(r"“[^”\n]*”"),
+  444:         re.compile(r"‘[^’\n]*’"),
+  444:         re.compile(r"「[^」\n]*」"),
+  444:         re.compile(r"『[^』\n]*』"),
+  444:         re.compile(r'"[^"\n]+"'),
+  444:         re.compile(r"(?<!`)``[^\n]*?''"),
+  444:         re.compile(r"(?m)^(?:[ \t]*>[^\n]*(?:\n|$))+"),
+           )
+ 3552:     for pattern in patterns:
+ 3153:         for match in pattern.finditer(masked):
+   45:             spans.append((match.start(), _canonical_span(text[match.start():match.end()])))
+       
+  444:     command_quote_re = re.compile(r"\\(?:enquote|textquote)\s*(?P<brace>\{)")
+  446:     for match in command_quote_re.finditer(masked):
+    2:         parsed = _balanced_group(text, match.start("brace"), "{", "}")
+    2:         if parsed is None:
+>>>>>>             continue
+    2:         _, end = parsed
+    2:         spans.append((match.start(), _canonical_span(text[match.start():end])))
+       
+  888:     quote_env_re = re.compile(
+  444:         r"(?s)\\begin\s*\{(?P<name>quote|quotation)\}.*?"
+               r"\\end\s*\{(?P=name)\}"
+           )
+  444:     for match in quote_env_re.finditer(masked):
+>>>>>>         spans.append((match.start(), _canonical_span(text[match.start():match.end()])))
+  491:     spans.sort(key=lambda item: item[0])
+  491:     return [item[1] for item in spans]
+       
+       
+    2: def _balanced_group(text: str, start: int, opening: str, closing: str) -> tuple[str, int] | None:
+   56:     if start >= len(text) or text[start] != opening:
+>>>>>>         return None
+   56:     depth = 0
+   56:     index = start
+  520:     while index < len(text):
+  520:         char = text[index]
+  520:         if char == opening and not _is_escaped(text, index):
+   60:             depth += 1
+  460:         elif char == closing and not _is_escaped(text, index):
+   60:             depth -= 1
+   60:             if depth == 0:
+   56:                 return text[start:index + 1], index + 1
+  464:         index += 1
+>>>>>>     return None
+       
+       
+    2: def _critical_commands(text: str, excluded_ranges: Sequence[tuple[int, int]]) -> list[str]:
+  446:     masked = _mask_ranges(text, excluded_ranges)
+  446:     output: list[tuple[int, str]] = []
+  446:     command_re = re.compile(r"\\(?P<name>[A-Za-z@]+)(?P<star>\*)?")
+  557:     for match in command_re.finditer(masked):
+  111:         name = match.group("name")
+  111:         if name not in CRITICAL_COMMANDS and not _is_citation_command(name):
+   86:             continue
+   25:         index = match.end()
+   25:         groups: list[str] = []
+   29:         while True:
+   29:             while index < len(masked) and masked[index].isspace():
+>>>>>>                 index += 1
+   29:             if index < len(masked) and masked[index] == "[":
+    4:                 parsed = _balanced_group(masked, index, "[", "]")
+    4:                 if parsed is None:
+>>>>>>                     break
+    4:                 group, index = parsed
+    4:                 groups.append(_canonical_span(group))
+    4:                 continue
+   25:             break
+   25:         while index < len(masked) and masked[index].isspace():
+>>>>>>             index += 1
+   25:         parsed_arg = _balanced_group(masked, index, "{", "}")
+   25:         if parsed_arg is None:
+>>>>>>             canonical = f"\\{name}{match.group('star') or ''}<MISSING_ARGUMENT>"
+               else:
+   25:             argument, _ = parsed_arg
+   25:             groups.append(_canonical_span(argument))
+   25:             canonical = f"\\{name}{match.group('star') or ''}" + "".join(groups)
+   25:         output.append((match.start(), canonical))
+  471:     output.sort(key=lambda item: item[0])
+  471:     return [item[1] for item in output]
+       
+       
+    2: def _is_citation_command(name: str) -> bool:
+  228:     return bool(
+  228:         re.fullmatch(
+  114:             r"(?:cite(?:alp|alt|author|p|t|year|yearpar)?|"
+                   r"(?:auto|foot|full|no|paren|smart|super|text)cite)",
+  114:             name,
+               )
+           )
+       
+       
+    4: NUMBER_UNIT_RE = re.compile(
+    2:     r"(?<![A-Za-z0-9_])"
+           r"[-+]?(?:\d{1,3}(?:,\d{3})+|\d+)(?:\.\d+)?(?:[eE][-+]?\d+)?"
+           r"(?:\s*(?:~|～|–|—|至)\s*[-+]?(?:\d+(?:\.\d+)?))?"
+           r"\s*(?:\\%|%|‰|℃|°[CF]|"
+           r"(?:[kMGTmunμ]?(?:m|s|g|A|K|mol|Hz|Pa|J|W|V|N|L|l|B|bps))"
+           r"(?:\^?\{?-?\d+\}?|[²³])?(?:/[A-Za-zμ]+(?:\^?\{?-?\d+\}?|[²³])?)?|"
+           r"年|月|日|小时|分钟|秒|千米|公里|厘米|毫米|微米|纳米|米|千克|公斤|克|毫克|人|次|项|组|倍)?"
+       )
+    4: CHINESE_NUMBER_RE = re.compile(
+    2:     r"(?:"
+           r"第[零〇一二两三四五六七八九十百千万亿廿卅]+"
+           r"(?:位|名|篇|章|节|级|轮|次|项|组|倍)?"
+           r"|[零〇一二两三四五六七八九十百千万亿廿卅]+"
+           r"(?:年|月|日|小时|分钟|秒|千米|公里|厘米|毫米|微米|纳米|米|千克|公斤|克|毫克|"
+           r"人|位|名|篇|章|节|级|轮|次|项|组|倍)"
+           r")"
+       )
+    4: GARBLED_MARKER_RE = re.compile(
+    2:     r"(?:\ufffd|[\ue000-\uf8ff]|锛岋|銆俾|鈥濃|â(?:€|€™|€œ|€“|€”))"
+       )
+    4: GARBLED_SPAN_RE = re.compile(
+    2:     rf"[^，。！？；;\s]*(?:{GARBLED_MARKER_RE.pattern})[^，。！？；;\s]*"
+       )
+       
+       
+    2: def _numbers_and_units(text: str, excluded_ranges: Sequence[tuple[int, int]]) -> list[str]:
+  446:     masked = _mask_ranges(text, excluded_ranges)
+  446:     output: list[tuple[int, str]] = []
+  867:     for match in NUMBER_UNIT_RE.finditer(masked):
+  421:         token = re.sub(r"\s+", "", match.group(0)).replace("\\%", "%")
+  421:         output.append((match.start(), token))
+  941:     output.extend((match.start(), match.group(0)) for match in CHINESE_NUMBER_RE.finditer(masked))
+  916:     return [token for _, token in sorted(output)]
+       
+       
+    2: def _garbled_spans(text: str) -> list[str]:
+  460:     return [_canonical_span(match.group(0)) for match in GARBLED_SPAN_RE.finditer(text)]
+       
+       
+    2: def _environment_events(text: str, excluded_ranges: Sequence[tuple[int, int]]) -> list[tuple[str, str]]:
+  404:     masked = _mask_ranges(text, excluded_ranges)
+  404:     pattern = re.compile(r"\\(?P<kind>begin|end)\s*\{(?P<name>[^{}\s]+)\}")
+  464:     return [(match.group("kind"), match.group("name")) for match in pattern.finditer(masked)]
+       
+       
+    2: def _validate_environment_nesting(events: Sequence[tuple[str, str]]) -> list[str]:
+  404:     stack: list[str] = []
+  404:     problems: list[str] = []
+  464:     for kind, name in events:
+   60:         if kind == "begin":
+   34:             stack.append(name)
+   26:         elif not stack:
+>>>>>>             problems.append(f"end{{{name}}} has no matching begin")
+   26:         elif stack[-1] != name:
+>>>>>>             problems.append(f"end{{{name}}} closes begin{{{stack[-1]}}}")
+>>>>>>             stack.pop()
+               else:
+   26:             stack.pop()
+  816:     problems.extend(f"begin{{{name}}} has no matching end" for name in reversed(stack))
+  404:     return problems
+       
+       
+    2: def _brace_problems(text: str, excluded_ranges: Sequence[tuple[int, int]]) -> list[str]:
+  404:     masked = _mask_ranges(text, excluded_ranges)
+  404:     stack: list[int] = []
+  404:     problems: list[str] = []
+18365:     for index, char in enumerate(masked):
+17961:         if char == "{" and not _is_escaped(masked, index):
+   98:             stack.append(index)
+17863:         elif char == "}" and not _is_escaped(masked, index):
+   99:             if stack:
+   98:                 stack.pop()
+                   else:
+    1:                 problems.append(f"unmatched closing brace at offset {index}")
+  808:     problems.extend(f"unmatched opening brace at offset {index}" for index in stack[:10])
+  404:     if len(stack) > 10:
+>>>>>>         problems.append(f"{len(stack) - 10} additional unmatched opening braces")
+  404:     return problems
+       
+       
+    2: def _marker_counts(text: str) -> dict[str, Counter[str]]:
+   42:     result: dict[str, Counter[str]] = {}
+  378:     for category, markers in SPEECH_ACT_MARKERS.items():
+  336:         ordered = sorted(markers, key=len, reverse=True)
+ 4200:         pattern = re.compile("|".join(re.escape(marker) for marker in ordered))
+  336:         counts: Counter[str] = Counter()
+  345:         for match in pattern.finditer(text):
+    9:             marker = match.group(0)
+    9:             if len(marker) == 1 and _inside_excluded_word(text, match.start(), marker):
+    1:                 continue
+    8:             counts[marker] += 1
+  336:         result[category] = counts
+   42:     return result
+       
+       
+    2: def _segment_spans(text: str, pattern: str, prefix: str) -> list[dict[str, object]]:
+ 1264:     spans: list[dict[str, object]] = []
+ 1264:     start = 0
+ 4249:     for match in re.finditer(pattern, text):
+ 2985:         if match.start() > start and text[start : match.start()].strip():
+ 5724:             spans.append(
+ 2862:                 {
+ 2862:                     "id": f"{prefix}{len(spans) + 1:04d}",
+ 2862:                     "start": start,
+ 2862:                     "end": match.start(),
+ 2862:                     "text": text[start : match.start()],
+                       }
+                   )
+ 2985:         start = match.end()
+ 1264:     if start < len(text) and text[start:].strip():
+   20:         spans.append(
+   10:             {
+   10:                 "id": f"{prefix}{len(spans) + 1:04d}",
+   10:                 "start": start,
+   10:                 "end": len(text),
+   10:                 "text": text[start:],
+                   }
+               )
+ 1264:     return spans
+       
+       
+    8: def _containing_span(
+    4:     spans: Sequence[dict[str, object]], offset: int
+    2: ) -> dict[str, object] | None:
+ 2108:     return next(
+ 3162:         (
+ 5789:             item
+ 5789:             for item in spans
+ 5789:             if int(item["start"]) <= offset < int(item["end"])
+               ),
+ 1054:         None,
+           )
+       
+       
+    2: def _line_column(text: str, offset: int) -> tuple[int, int]:
+ 1076:     line = text.count("\n", 0, offset) + 1
+ 1076:     previous_newline = text.rfind("\n", 0, offset)
+ 1076:     return line, offset - previous_newline
+       
+       
+    8: def _collect_speech_occurrences(
+    2:     text: str,
+    2:     side: str,
+    2: ) -> tuple[
+           dict[str, list[dict[str, object]]],
+           list[dict[str, object]],
+           list[dict[str, object]],
+       ]:
+  404:     sentence_spans = _segment_spans(text, r"[。！？!?；;\n]+", "T")
+  404:     claim_spans = _segment_spans(text, r"[，,：:；;。！？!?\n]+", "C")
+  404:     occurrences: dict[str, list[dict[str, object]]] = {}
+ 3636:     for category, markers in SPEECH_ACT_MARKERS.items():
+ 3232:         ordered = sorted(markers, key=len, reverse=True)
+40400:         pattern = re.compile("|".join(re.escape(marker) for marker in ordered))
+ 3232:         category_occurrences: list[dict[str, object]] = []
+ 3839:         for match in pattern.finditer(text):
+  607:             marker = match.group(0)
+  607:             if len(marker) == 1 and _inside_excluded_word(text, match.start(), marker):
+   83:                 continue
+  524:             sentence = _containing_span(sentence_spans, match.start())
+  524:             claim = _containing_span(claim_spans, match.start())
+  524:             if sentence is None or claim is None:
+>>>>>>                 continue
+  524:             line, column = _line_column(text, match.start())
+  524:             end_line, end_column = _line_column(text, match.end())
+ 1048:             category_occurrences.append(
+  524:                 {
+  524:                     "side": side,
+  524:                     "category": category,
+  524:                     "marker": marker,
+  524:                     "start": match.start(),
+  524:                     "end": match.end(),
+  524:                     "line": line,
+  524:                     "column": column,
+  524:                     "end_line": end_line,
+  524:                     "end_column": end_column,
+  524:                     "sentence_id": sentence["id"],
+  524:                     "claim_id": claim["id"],
+ 1572:                     "sentence_context": re.sub(
+  524:                         r"\s+", " ", str(sentence["text"])
+  524:                     ).strip()[:240],
+                       }
+                   )
+ 3232:         occurrences[category] = category_occurrences
+  404:     return occurrences, sentence_spans, claim_spans
+       
+       
+   10: def _claim_records(
+    2:     text: str,
+    2:     claims: Sequence[dict[str, object]],
+    2:     occurrences: dict[str, list[dict[str, object]]],
+    2: ) -> list[dict[str, object]]:
+  808:     all_occurrences = [
+ 3756:         occurrence
+ 4040:         for category_occurrences in occurrences.values()
+ 3756:         for occurrence in category_occurrences
+           ]
+  404:     records: list[dict[str, object]] = []
+ 1657:     for claim in claims:
+ 1253:         claim_id = str(claim["id"])
+ 1253:         claim_start = int(claim["start"])
+ 1253:         claim_text = str(claim["text"])
+ 3759:         marker_ranges = _merge_ranges(
+ 6062:             (
+  524:                 int(item["start"]) - claim_start,
+  524:                 int(item["end"]) - claim_start,
+                   )
+ 8044:             for item in all_occurrences
+ 5538:             if item["claim_id"] == claim_id
+               )
+ 2506:         key = re.sub(
+ 1253:             r"[\s，,、:：;；]+", "", _mask_ranges(claim_text, marker_ranges)
+               )
+ 2506:         records.append(
+ 3759:             {
+ 1253:                 **claim,
+ 1253:                 "key": key,
+ 1215:                 "key_sha256": hashlib.sha256(key.encode("utf-8")).hexdigest()
+ 1253:                 if key
+   38:                 else "",
+ 2506:                 "category_counts": {
+30072:                     category: Counter(
+ 5538:                         str(item["marker"])
+25586:                         for item in category_occurrences
+ 5538:                         if item["claim_id"] == claim_id
+                           )
+12530:                     for category, category_occurrences in occurrences.items()
+                       },
+                   }
+               )
+  404:     return records
+       
+       
+    2: def _counter_delta(before: Counter[str], after: Counter[str]) -> dict[str, dict[str, int]]:
+ 1726:     return {
+ 1726:         "removed": dict(sorted((before - after).items())),
+ 1726:         "added": dict(sorted((after - before).items())),
+           }
+       
+       
+    8: def _possibility_allowance(
+    2:     before_claim: dict[str, object],
+    2:     after_claim: dict[str, object],
+    2: ) -> dict[str, object] | None:
+   15:     category = "modality_scope"
+   15:     before_counts = Counter(before_claim["category_counts"][category])
+   15:     after_counts = Counter(after_claim["category_counts"][category])
+   15:     core = {"可能", "或许"}
+   15:     eligible = {"可能", "或许", "在一定程度上"}
+   60:     before_core = sum(before_counts.get(item, 0) for item in core)
+   60:     after_core = sum(after_counts.get(item, 0) for item in core)
+   75:     before_eligible = sum(before_counts.get(item, 0) for item in eligible)
+   75:     after_eligible = sum(after_counts.get(item, 0) for item in eligible)
+   30:     before_other = Counter(
+   38:         {key: value for key, value in before_counts.items() if key not in eligible}
+           )
+   30:     after_other = Counter(
+   24:         {key: value for key, value in after_counts.items() if key not in eligible}
+           )
+   15:     if before_core < 2 or after_core != 1 or after_eligible != 1:
+   12:         return None
+    3:     if before_other != after_other or before_eligible <= after_eligible:
+>>>>>>         return None
+    3:     delta = _counter_delta(before_counts, after_counts)
+    3:     budget = before_eligible - 1
+    3:     consumed = sum(delta["removed"].values()) - sum(delta["added"].values())
+    3:     if consumed != budget:
+>>>>>>         return None
+    3:     return {
+    3:         "before_claim_id": before_claim["id"],
+    3:         "after_claim_id": after_claim["id"],
+    3:         "claim_key_sha256": before_claim["key_sha256"],
+    3:         "budget": budget,
+    3:         "consumed": consumed,
+    3:         "remaining": budget - consumed,
+    3:         "explained_removed": delta["removed"],
+    3:         "explained_added": delta["added"],
+           }
+       
+       
+    8: def _claim_occurrences(
+    4:     occurrences: Sequence[dict[str, object]], claim_id: str
+    2: ) -> list[dict[str, object]]:
+   58:     return [item for item in occurrences if item["claim_id"] == claim_id]
+       
+       
+    8: def _speech_act_audit(
+    2:     before_text: str,
+    2:     after_text: str,
+    2: ) -> tuple[dict[str, object], list[tuple[str, dict[str, object]]], list[dict[str, object]], list[dict[str, object]]]:
+  202:     before_occurrences, _before_sentences, before_claim_spans = (
+  202:         _collect_speech_occurrences(before_text, "before")
+           )
+  202:     after_occurrences, _after_sentences, after_claim_spans = (
+  202:         _collect_speech_occurrences(after_text, "after")
+           )
+  404:     before_claims = _claim_records(
+  202:         before_text, before_claim_spans, before_occurrences
+           )
+  202:     after_claims = _claim_records(after_text, after_claim_spans, after_occurrences)
+  202:     before_by_key: dict[str, list[dict[str, object]]] = {}
+  202:     after_by_key: dict[str, list[dict[str, object]]] = {}
+  898:     for claim in before_claims:
+  696:         if claim["key"]:
+  675:             before_by_key.setdefault(str(claim["key"]), []).append(claim)
+  759:     for claim in after_claims:
+  557:         if claim["key"]:
+  540:             after_by_key.setdefault(str(claim["key"]), []).append(claim)
+  404:     pairs = [
+ 1314:         (items[0], after_by_key[key][0])
+ 1067:         for key, items in before_by_key.items()
+ 1314:         if len(items) == 1 and len(after_by_key.get(key, [])) == 1
+           ]
+  467:     paired_before_ids = {str(before_claim["id"]) for before_claim, _ in pairs}
+  467:     paired_after_ids = {str(after_claim["id"]) for _, after_claim in pairs}
+       
+  202:     audit: dict[str, object] = {"categories": {}}
+  202:     warnings: list[tuple[str, dict[str, object]]] = []
+ 1818:     for category in SPEECH_ACT_MARKERS:
+ 1616:         before_items = before_occurrences[category]
+ 1616:         after_items = after_occurrences[category]
+ 3533:         before_counts = Counter(str(item["marker"]) for item in before_items)
+ 3455:         after_counts = Counter(str(item["marker"]) for item in after_items)
+ 1616:         allowances: list[dict[str, object]] = []
+ 1616:         residuals: list[dict[str, object]] = []
+ 3736:         for before_claim, after_claim in pairs:
+ 2120:             claim_before = Counter(before_claim["category_counts"][category])
+ 2120:             claim_after = Counter(after_claim["category_counts"][category])
+ 2120:             if claim_before == claim_after:
+ 2104:                 continue
+   16:             allowance = (
+   15:                 _possibility_allowance(before_claim, after_claim)
+   16:                 if category == "modality_scope"
+    1:                 else None
+                   )
+   16:             if allowance is not None:
+    3:                 allowances.append(allowance)
+    3:                 continue
+   26:             residuals.append(
+   39:                 {
+   13:                     "scope": "CLAIM",
+   13:                     "before_claim_id": before_claim["id"],
+   13:                     "after_claim_id": after_claim["id"],
+   13:                     **_counter_delta(claim_before, claim_after),
+   26:                     "before_occurrences": _claim_occurrences(
+   13:                         before_items, str(before_claim["id"])
+                           ),
+   26:                     "after_occurrences": _claim_occurrences(
+   13:                         after_items, str(after_claim["id"])
+                           ),
+                       }
+                   )
+ 3232:         unpaired_before = [
+ 3533:             item for item in before_items if item["claim_id"] not in paired_before_ids
+               ]
+ 3232:         unpaired_after = [
+ 3455:             item for item in after_items if item["claim_id"] not in paired_after_ids
+               ]
+ 4848:         unpaired_before_counts = Counter(
+ 3420:             str(item["marker"]) for item in unpaired_before
+               )
+ 3356:         unpaired_after_counts = Counter(str(item["marker"]) for item in unpaired_after)
+ 1616:         if unpaired_before_counts != unpaired_after_counts:
+  188:             residuals.append(
+  282:                 {
+   94:                     "scope": "UNALIGNED_POOL",
+   94:                     "before_claim_id": None,
+   94:                     "after_claim_id": None,
+   94:                     **_counter_delta(unpaired_before_counts, unpaired_after_counts),
+   94:                     "before_occurrences": unpaired_before,
+   94:                     "after_occurrences": unpaired_after,
+                       }
+                   )
+ 1616:         details = {
+ 1616:             "before": dict(sorted(before_counts.items())),
+ 1616:             "after": dict(sorted(after_counts.items())),
+ 1616:             "before_occurrences": before_items,
+ 1616:             "after_occurrences": after_items,
+ 1616:             "raw_delta": _counter_delta(before_counts, after_counts),
+ 1616:             "safe_compression_allowances": allowances,
+ 1616:             "residual_delta": residuals,
+               }
+ 1616:         audit["categories"][category] = details
+ 1616:         if residuals:
+  103:             warnings.append((category, details))
+  202:     audit["claim_pairing"] = {
+  202:         "before_claims": len(before_claims),
+  202:         "after_claims": len(after_claims),
+  202:         "unique_exact_pairs": len(pairs),
+  202:         "unpaired_before_claims": len(before_claims) - len(paired_before_ids),
+  202:         "unpaired_after_claims": len(after_claims) - len(paired_after_ids),
+           }
+  202:     return audit, warnings, before_claims, after_claims
+       
+       
+    2: def _claim_strength_tension(claim_text: str) -> dict[str, list[str]] | None:
+ 2506:     hedges = [
+ 6265:         marker
+ 8771:         for marker in ("可能", "或许", "在一定程度上", "不一定", "未必")
+ 6265:         if marker in claim_text
+           ]
+ 1253:     if not hedges:
+ 1140:         return None
+  226:     strong = [
+    8:         match.group(0)
+  347:         for match in re.finditer(
+  113:             r"证实|证明|必然|显著(?:提升|提高|降低|改善|增强|差异)",
+  113:             claim_text,
+               )
+           ]
+  113:     if re.search(r"(?:不能|尚不能|未能|无法)[^，,。！？!?；;]{0,6}(?:证实|证明)", claim_text):
+>>>>>>         strong = [item for item in strong if item not in {"证实", "证明"}]
+  113:     if not strong:
+  105:         return None
+    8:     return {"hedges": hedges, "strong_markers": strong}
+       
+       
+    8: def _inherited_claim_strength_advisories(
+    2:     before_claims: Sequence[dict[str, object]],
+    2:     after_claims: Sequence[dict[str, object]],
+    2: ) -> list[Diagnostic]:
+  606:     before_budget = Counter(
+  696:         re.sub(r"\s+", " ", str(claim["text"])).strip()
+ 1100:         for claim in before_claims
+  696:         if _claim_strength_tension(str(claim["text"])) is not None
+           )
+  202:     advisories: list[Diagnostic] = []
+  759:     for claim in after_claims:
+  557:         text = re.sub(r"\s+", " ", str(claim["text"])).strip()
+  557:         tension = _claim_strength_tension(text)
+  557:         if tension is None or before_budget[text] <= 0:
+  553:             continue
+    4:         before_budget[text] -= 1
+    8:         advisories.append(
+    8:             Diagnostic(
+    4:                 code="SPEECH_ACT_INHERITED_CLAIM_STRENGTH_TENSION",
+    4:                 severity="advisory",
+                       message=(
+    4:                     "The source already combines hedging and a strong claim marker; "
+                           "manual semantic review may be useful."
+                       ),
+    4:                 details={
+    4:                     "inherited": True,
+    4:                     "source_occurrences": tension,
+    4:                     "rewrite_occurrences": tension,
+    4:                     "claim_id": claim["id"],
+    4:                     "claim_sha256": hashlib.sha256(text.encode("utf-8")).hexdigest(),
+    4:                     "claim_context": text[:240],
+    4:                     "automatic_decision": "NONE",
+    4:                     "semantic_judgment": "NOT_EVALUATED",
+    4:                     "blocking": False,
+                       },
+                   )
+               )
+  202:     return advisories
+       
+       
+    2: def _matched_patterns(text: str, patterns: Sequence[str]) -> list[str]:
+ 5454:     matches: list[str] = []
+13130:     for raw_pattern in patterns:
+ 7676:         match = re.search(raw_pattern, text)
+ 7676:         if match:
+  148:             matches.append(match.group(0)[:240])
+ 5454:     return matches
+       
+       
+    2: def _first_person_inventory(text: str) -> dict[str, int]:
+           """Count only explicit first-person references likely to change author voice."""
+  404:     singular = re.findall(r"(?<![自他本])我(?!们)", text)
+  404:     plural = re.findall(r"我们", text)
+  404:     return {"singular": len(singular), "plural": len(plural)}
+       
+       
+   10: def _first_person_introduction_diagnostic(
+    2:     before: str,
+    2:     after: str,
+           *,
+    2:     severity: str,
+    2: ) -> Diagnostic | None:
+  202:     before_counts = _first_person_inventory(before)
+  202:     after_counts = _first_person_inventory(after)
+  404:     added = {
+  404:         key: after_counts[key] - before_counts[key]
+  808:         for key in before_counts
+  404:         if after_counts[key] > before_counts[key]
+           }
+  202:     if not added:
+  201:         return None
+    2:     return Diagnostic(
+    1:         code="SPEECH_ACT_FIRST_PERSON_REFERENCE_INTRODUCED",
+    1:         severity=severity,
+               message=(
+    1:             "The rewrite introduces additional singular or plural first-person references; "
+                   "preserve the source speaker stance unless the change is explicitly reviewed."
+               ),
+    1:         details={
+    1:             "source_counts": before_counts,
+    1:             "rewrite_counts": after_counts,
+    1:             "added_counts": added,
+    1:             "required_action": "PRESERVE_SOURCE_SPEAKER_STANCE_OR_REVIEW",
+    1:             "semantic_judgment": "NOT_EVALUATED",
+               },
+           )
+       
+       
+    2: def _polarity_anchors(sentence: str) -> set[str]:
+   22:     stripped = POLARITY_ANCHOR_STRIP_PATTERN.sub(" ", sentence)
+   22:     anchors: set[str] = set()
+   81:     for run in re.findall(r"[\u3400-\u9fff]+", stripped):
+  236:         for size in (2, 3, 4):
+  803:             for index in range(max(0, len(run) - size + 1)):
+  626:                 value = run[index : index + size]
+  626:                 if value not in POLARITY_ANCHOR_STOP:
+  586:                     anchors.add(value)
+   22:     return anchors
+       
+       
+   10: def _direct_polarity_spans(
+    2:     text: str,
+           *,
+    2:     side: str,
+    2:     pattern: re.Pattern[str],
+    2: ) -> list[dict[str, object]]:
+  414:     spans: list[dict[str, object]] = []
+ 1232:     for sentence in _segment_spans(text, r"[。！？!?；;\n]+", "P"):
+  818:         sentence_text = str(sentence["text"])
+  818:         match = pattern.search(sentence_text)
+  818:         if match is None:
+  796:             continue
+   22:         absolute_start = int(sentence["start"]) + match.start()
+   22:         line, column = _line_column(text, absolute_start)
+   44:         spans.append(
+   22:             {
+   22:                 "side": side,
+   22:                 "sentence_id": sentence["id"],
+   22:                 "line": line,
+   22:                 "column": column,
+   22:                 "marker": match.group(0)[:80],
+   22:                 "sentence_context": re.sub(r"\s+", " ", sentence_text).strip()[:240],
+   22:                 "anchors": sorted(_polarity_anchors(sentence_text)),
+                   }
+               )
+  414:     return spans
+       
+       
+   10: def _source_polarity_tension_diagnostic(
+    2:     before: str,
+    2:     after: str,
+           *,
+    2:     severity: str,
+    2: ) -> Diagnostic | None:
+  404:     source_positive = _direct_polarity_spans(
+  202:         before,
+  202:         side="before",
+  202:         pattern=DIRECT_PERMISSION_PATTERN,
+           )
+  404:     source_negative = _direct_polarity_spans(
+  202:         before,
+  202:         side="before",
+  202:         pattern=DIRECT_PROHIBITION_PATTERN,
+           )
+  202:     if not source_positive or not source_negative:
+  196:         return None
+       
+    6:     paired_anchors: set[str] = set()
+    6:     paired_positive: list[dict[str, object]] = []
+    6:     paired_negative: list[dict[str, object]] = []
+   12:     for positive in source_positive:
+    6:         positive_anchors = set(positive["anchors"])
+   12:         for negative in source_negative:
+    6:             shared = positive_anchors & set(negative["anchors"])
+    6:             if not shared:
+    1:                 continue
+    5:             paired_anchors.update(shared)
+    5:             if positive not in paired_positive:
+    5:                 paired_positive.append(positive)
+    5:             if negative not in paired_negative:
+    5:                 paired_negative.append(negative)
+    6:     if not paired_anchors:
+    1:         return None
+       
+   10:     rewrite_positive_all = _direct_polarity_spans(
+    5:         after,
+    5:         side="after",
+    5:         pattern=DIRECT_PERMISSION_PATTERN,
+           )
+   10:     rewrite_negative_all = _direct_polarity_spans(
+    5:         after,
+    5:         side="after",
+    5:         pattern=DIRECT_PROHIBITION_PATTERN,
+           )
+       
+    5:     def shares_source_anchor(item: dict[str, object]) -> bool:
+    9:         return bool(set(item["anchors"]) & paired_anchors)
+       
+    7:     rewrite_positive = [item for item in rewrite_positive_all if shares_source_anchor(item)]
+   12:     rewrite_negative = [item for item in rewrite_negative_all if shares_source_anchor(item)]
+    5:     if bool(rewrite_positive) == bool(rewrite_negative):
+    2:         return None
+       
+           # Prefer the longest anchors so details stay useful without presenting every
+           # overlapping character n-gram as independent evidence.
+    9:     longest_anchors = [
+   11:         anchor
+   28:         for anchor in sorted(paired_anchors, key=lambda item: (-len(item), item))
+   76:         if not any(anchor in prior for prior in paired_anchors if len(prior) > len(anchor))
+    3:     ][:12]
+    6:     return Diagnostic(
+    3:         code="SPEECH_ACT_SOURCE_POLARITY_TENSION_SELECTED",
+    3:         severity=severity,
+               message=(
+    3:             "The source contains lexically anchored direct permission and prohibition "
+                   "spans, but the rewrite preserves only one surface polarity; preserve both "
+                   "and escalate instead of choosing a domain claim."
+               ),
+    3:         details={
+    3:             "shared_anchors": longest_anchors,
+    3:             "source_positive_spans": paired_positive,
+    3:             "source_negative_spans": paired_negative,
+    3:             "rewrite_positive_spans": rewrite_positive,
+    3:             "rewrite_negative_spans": rewrite_negative,
+    3:             "required_action": "PRESERVE_BOTH_AND_ESCALATE",
+    3:             "academic_correctness": "NOT_EVALUATED",
+    3:             "detector_scope": "LEXICALLY_ANCHORED_DIRECT_PERMISSION_POLARITY_ONLY",
+               },
+           )
+       
+       
+   10: def _semantic_transition_diagnostics(
+    2:     before: str,
+    2:     after: str,
+           *,
+    2:     severity: str,
+    2: ) -> list[Diagnostic]:
+  202:     diagnostics: list[Diagnostic] = []
+ 2020:     for code, message, before_patterns, after_patterns in SEMANTIC_TRANSITION_RULES:
+ 1818:         before_trigger = _matched_patterns(before, before_patterns)
+ 1818:         after_predicate = _matched_patterns(after, after_patterns)
+ 1818:         source_predicate = _matched_patterns(before, after_patterns)
+ 1818:         if not before_trigger or not after_predicate or source_predicate:
+ 1797:             continue
+   42:         diagnostics.append(
+   42:             Diagnostic(
+   21:                 code=code,
+   21:                 severity=severity,
+   21:                 message=message,
+   21:                 details={
+   21:                     "source_triggers": before_trigger,
+   21:                     "rewrite_predicates": after_predicate,
+   21:                     "source_contains_rewrite_predicate": False,
+   21:                     "semantic_judgment": "NOT_EVALUATED",
+   21:                     "required_action": "PRESERVE_SOURCE_PREDICATE_AND_STATUS",
+                       },
+                   )
+               )
+       
+ 1010:     hedge_count = sum(marker in before for marker in HEDGE_MARKERS)
+  204:     source_degree_claims = [match.group(0) for match in DEGREE_CLAIM_PATTERN.finditer(before)]
+  207:     rewrite_degree_claims = [match.group(0) for match in DEGREE_CLAIM_PATTERN.finditer(after)]
+  202:     if hedge_count >= 2 and rewrite_degree_claims and not source_degree_claims:
+    4:         diagnostics.append(
+    4:             Diagnostic(
+    2:                 code="SPEECH_ACT_MODALITY_TO_DEGREE",
+    2:                 severity=severity,
+    2:                 message="Stacked uncertainty markers were rewritten as a new degree claim.",
+    2:                 details={
+    8:                     "source_hedges": [marker for marker in HEDGE_MARKERS if marker in before],
+    2:                     "rewrite_degree_claims": rewrite_degree_claims[:8],
+    2:                     "source_degree_claims": [],
+                       },
+                   )
+               )
+  404:     polarity_diagnostic = _source_polarity_tension_diagnostic(
+  202:         before,
+  202:         after,
+  202:         severity=severity,
+           )
+  202:     if polarity_diagnostic is not None:
+    3:         diagnostics.append(polarity_diagnostic)
+  404:     person_diagnostic = _first_person_introduction_diagnostic(
+  202:         before,
+  202:         after,
+  202:         severity=severity,
+           )
+  202:     if person_diagnostic is not None:
+    1:         diagnostics.append(person_diagnostic)
+  202:     return diagnostics
+       
+       
+    2: def _inside_excluded_word(text: str, index: int, marker: str) -> bool:
+ 1613:     for word in SINGLE_MARKER_EXCLUSIONS.get(marker, ()):
+ 1412:         search_start = max(0, index - len(word) + 1)
+ 1412:         position = text.find(word, search_start, min(len(text), index + len(word)))
+ 1412:         if position >= 0 and position <= index < position + len(word):
+   84:             return True
+  201:     return False
+       
+       
+    2: def _sequence_details(before: Sequence[str], after: Sequence[str]) -> dict[str, object]:
+   37:     before_counter = Counter(before)
+   37:     after_counter = Counter(after)
+   37:     first_difference = None
+   40:     for index, pair in enumerate(zip(before, after)):
+   31:         if pair[0] != pair[1]:
+   28:             first_difference = index
+   28:             break
+   37:     if first_difference is None and len(before) != len(after):
+    9:         first_difference = min(len(before), len(after))
+       
+   37:     def limited(counter: Counter[str]) -> list[dict[str, object]]:
+  148:         return [
+   70:             {"value": value[:240], "count": count}
+  218:             for value, count in counter.most_common(8)
+   70:             if count > 0
+               ]
+       
+   37:     return {
+   37:         "before_count": len(before),
+   37:         "after_count": len(after),
+   37:         "first_difference": first_difference,
+   37:         "removed": limited(before_counter - after_counter),
+   37:         "added": limited(after_counter - before_counter),
+           }
+       
+       
+    2: def normalize_protected_terms(terms: Sequence[str]) -> list[str]:
+  338:     normalized: list[str] = []
+  338:     seen: set[str] = set()
+  358:     for raw in terms:
+   20:         term = raw.strip()
+   20:         if not term:
+>>>>>>             raise ValueError("protected term must not be empty")
+   20:         if term not in seen:
+   20:             seen.add(term)
+   20:             normalized.append(term)
+  338:     return normalized
+       
+       
+    2: def _term_evidence(terms: Sequence[str]) -> dict[str, object]:
+  202:     raw = json.dumps(list(terms), ensure_ascii=False, separators=(",", ":")).encode("utf-8")
+  202:     return {
+  202:         "status": "CHECKED" if terms else "NOT_PROVIDED",
+  202:         "count": len(terms),
+  202:         "sha256": hashlib.sha256(raw).hexdigest() if terms else None,
+           }
+       
+       
+    2: def _term_occurrences(text: str, terms: Sequence[str]) -> list[str]:
+   54:     occurrences: list[tuple[int, str]] = []
+   80:     for term in terms:
+   26:         cursor = 0
+   46:         while True:
+   46:             position = text.find(term, cursor)
+   46:             if position < 0:
+   26:                 break
+   20:             occurrences.append((position, term))
+   20:             cursor = position + len(term)
+   74:     return [term for _, term in sorted(occurrences)]
+       
+       
+   14: def _compare_sequence(
+    2:     result: CheckResult,
+    2:     code: str,
+    2:     label: str,
+    2:     before: Sequence[str],
+    2:     after: Sequence[str],
+    2: ) -> None:
+ 1453:     if list(before) == list(after):
+ 1419:         return
+   68:     result.errors.append(
+   68:         Diagnostic(
+   34:             code=code,
+   34:             severity="error",
+   34:             message=f"{label} changed in count, content, or order.",
+   34:             details=_sequence_details(before, after),
+               )
+           )
+       
+       
+    2: def _prepare(text: str, document_format: str) -> tuple[str, list[str], list[tuple[int, int]]]:
+  446:     normalized = text.replace("\r\n", "\n").replace("\r", "\n")
+  446:     if document_format == "tex":
+   82:         normalized = strip_tex_comments(normalized)
+  446:     code, ranges = _code_spans(normalized)
+  446:     return normalized, code, ranges
+       
+       
+   18: def check_documents(
+    2:     before: str,
+    2:     after: str,
+           *,
+    4:     document_format: str = "markdown",
+    4:     protect_quotes: bool = True,
+    4:     strict_speech_acts: bool = False,
+    4:     protected_terms: Sequence[str] = (),
+    4:     fragment_mode: bool = False,
+    2: ) -> CheckResult:
+           """Check deterministic preservation invariants for a style-only rewrite."""
+  202:     if document_format not in {"markdown", "tex"}:
+>>>>>>         raise ValueError("document_format must be 'markdown' or 'tex'")
+       
+  202:     terms = normalize_protected_terms(protected_terms)
+  404:     result = CheckResult(
+  202:         evidence={
+  202:             "protected_terms": _term_evidence(terms),
+  202:             "document_scope": "FRAGMENT" if fragment_mode else "DOCUMENT",
+               }
+           )
+  202:     if terms:
+   12:         _compare_sequence(
+    6:             result,
+    6:             "PROTECTED_TERM_CHANGED",
+    6:             "Explicitly supplied protected terms",
+    6:             _term_occurrences(before, terms),
+    6:             _term_occurrences(after, terms),
+               )
+  404:     _compare_sequence(
+  202:         result,
+  202:         "GARBLED_TEXT_CHANGED",
+  202:         "Replacement characters or obvious mojibake spans",
+  202:         _garbled_spans(before),
+  202:         _garbled_spans(after),
+           )
+  202:     if document_format == "tex":
+   68:         _compare_sequence(
+   34:             result,
+   34:             "TEX_COMMENT_CHANGED",
+   34:             "TeX comments or line-continuation percent markers",
+   34:             _tex_comment_spans(before),
+   34:             _tex_comment_spans(after),
+               )
+  202:     before_text, before_code, before_code_ranges = _prepare(before, document_format)
+  202:     after_text, after_code, after_code_ranges = _prepare(after, document_format)
+       
+  202:     _compare_sequence(result, "PROTECTED_CODE_CHANGED", "Code spans or fences", before_code, after_code)
+       
+  202:     before_formal = _extract_environment_spans(before_text, FORMAL_STATEMENT_ENVIRONMENTS)
+  202:     after_formal = _extract_environment_spans(after_text, FORMAL_STATEMENT_ENVIRONMENTS)
+  404:     _compare_sequence(
+  202:         result,
+  202:         "PROTECTED_FORMAL_STATEMENT_CHANGED",
+  202:         "Exam prompts or formal statement environments",
+  202:         before_formal,
+  202:         after_formal,
+           )
+       
+  202:     before_math = _math_spans(before_text, before_code_ranges)
+  202:     after_math = _math_spans(after_text, after_code_ranges)
+  202:     _compare_sequence(result, "PROTECTED_MATH_CHANGED", "Math spans or environments", before_math, after_math)
+       
+  202:     before_math_ranges = _locate_exact_spans(before_text, before_math)
+  202:     after_math_ranges = _locate_exact_spans(after_text, after_math)
+  202:     before_excluded = sorted(before_code_ranges + before_math_ranges)
+  202:     after_excluded = sorted(after_code_ranges + after_math_ranges)
+       
+  202:     before_commands = _critical_commands(before_text, before_code_ranges)
+  202:     after_commands = _critical_commands(after_text, after_code_ranges)
+  404:     _compare_sequence(
+  202:         result,
+  202:         "CRITICAL_LATEX_COMMAND_CHANGED",
+  202:         "Critical LaTeX commands or arguments",
+  202:         before_commands,
+  202:         after_commands,
+           )
+       
+  202:     if protect_quotes:
+  201:         before_quotes = _quotation_spans(before_text, before_excluded)
+  201:         after_quotes = _quotation_spans(after_text, after_excluded)
+  402:         _compare_sequence(
+  201:             result,
+  201:             "DIRECT_QUOTATION_CHANGED",
+  201:             "Direct quotations",
+  201:             before_quotes,
+  201:             after_quotes,
+               )
+       
+  202:     before_numbers = _numbers_and_units(before_text, before_code_ranges)
+  202:     after_numbers = _numbers_and_units(after_text, after_code_ranges)
+  404:     _compare_sequence(
+  202:         result,
+  202:         "NUMBER_OR_UNIT_CHANGED",
+  202:         "Numbers or units",
+  202:         before_numbers,
+  202:         after_numbers,
+           )
+       
+  202:     before_events = _environment_events(before_text, before_code_ranges)
+  202:     after_events = _environment_events(after_text, after_code_ranges)
+  202:     if before_events != after_events:
+    6:         result.errors.append(
+    6:             Diagnostic(
+    3:                 code="LATEX_ENVIRONMENT_ORDER_CHANGED",
+    3:                 severity="error",
+    3:                 message="LaTeX environment names or order changed.",
+    6:                 details=_sequence_details(
+    7:                     [f"{kind}:{name}" for kind, name in before_events],
+    5:                     [f"{kind}:{name}" for kind, name in after_events],
+                       ),
+                   )
+               )
+  202:     before_environment_problems = _validate_environment_nesting(before_events)
+  202:     after_environment_problems = _validate_environment_nesting(after_events)
+  202:     if fragment_mode:
+    4:         if before_environment_problems != after_environment_problems:
+    4:             result.errors.append(
+    4:                 Diagnostic(
+    2:                     code="LATEX_ENVIRONMENT_FRAGMENT_BALANCE_CHANGED",
+    2:                     severity="error",
+    2:                     message="LaTeX fragment boundary balance changed.",
+    2:                     details={
+    2:                         "before": before_environment_problems[:20],
+    2:                         "after": after_environment_problems[:20],
+                           },
+                       )
+                   )
+           else:
+  594:         for side, problems in (
+  198:             ("before", before_environment_problems),
+  198:             ("after", after_environment_problems),
+               ):
+  396:             if problems:
+    4:                 result.errors.append(
+    4:                     Diagnostic(
+    2:                         code="LATEX_ENVIRONMENT_UNBALANCED",
+    2:                         severity="error",
+    2:                         message=f"LaTeX environments are unbalanced in {side} document.",
+    2:                         details={"side": side, "problems": problems[:20]},
+                           )
+                       )
+       
+  202:     before_brace_problems = _brace_problems(before_text, before_code_ranges)
+  202:     after_brace_problems = _brace_problems(after_text, after_code_ranges)
+  202:     if fragment_mode:
+    4:         if before_brace_problems != after_brace_problems:
+>>>>>>             result.errors.append(
+>>>>>>                 Diagnostic(
+>>>>>>                     code="LATEX_BRACE_FRAGMENT_BALANCE_CHANGED",
+>>>>>>                     severity="error",
+>>>>>>                     message="LaTeX fragment brace balance changed.",
+>>>>>>                     details={
+>>>>>>                         "before": before_brace_problems[:20],
+>>>>>>                         "after": after_brace_problems[:20],
+                           },
+                       )
+                   )
+           else:
+  594:         for side, problems in (
+  198:             ("before", before_brace_problems),
+  198:             ("after", after_brace_problems),
+               ):
+  396:             if problems:
+    2:                 result.errors.append(
+    2:                     Diagnostic(
+    1:                         code="LATEX_BRACES_UNBALANCED",
+    1:                         severity="error",
+    1:                         message=f"Unescaped braces are unbalanced in {side} document.",
+    1:                         details={"side": side, "problems": problems[:20]},
+                           )
+                       )
+       
+  404:     before_speech_text, before_speech_protected = _speech_surface(
+  202:         before, document_format, protect_quotes
+           )
+  404:     after_speech_text, after_speech_protected = _speech_surface(
+  202:         after, document_format, protect_quotes
+           )
+  404:     speech_audit, speech_warnings, before_claims, after_claims = _speech_act_audit(
+  202:         before_speech_text, after_speech_text
+           )
+  202:     speech_audit["protection"] = {
+  202:         "before_ranges": len(before_speech_protected),
+  202:         "after_ranges": len(after_speech_protected),
+  202:         "masking": "LENGTH_PRESERVING",
+  202:         "line_column_basis": "NORMALIZED_LF_1_BASED_UNICODE_CODEPOINT",
+           }
+  202:     result.evidence["speech_act_audit"] = speech_audit
+  305:     for category, details in speech_warnings:
+  103:         severity = "error" if strict_speech_acts else "warning"
+  206:         diagnostic = Diagnostic(
+  103:             code=f"SPEECH_ACT_{category.upper()}_CHANGED",
+  103:             severity=severity,
+  103:             message=f"Speech-act markers changed in category '{category}'; review semantic force manually.",
+  103:             details=details,
+               )
+  103:         (result.errors if strict_speech_acts else result.warnings).append(diagnostic)
+       
+  404:     result.advisories.extend(
+  202:         _inherited_claim_strength_advisories(before_claims, after_claims)
+           )
+       
+  202:     transition_severity = "error" if strict_speech_acts else "warning"
+  431:     for diagnostic in _semantic_transition_diagnostics(
+  202:         before_speech_text,
+  202:         after_speech_text,
+  202:         severity=transition_severity,
+           ):
+   27:         (result.errors if strict_speech_acts else result.warnings).append(diagnostic)
+       
+  202:     return result
+       
+       
+    2: def _locate_exact_spans(text: str, spans: Sequence[str]) -> list[tuple[int, int]]:
+           """Best-effort locations for already canonicalized spans, used only for masking."""
+  446:     ranges: list[tuple[int, int]] = []
+  446:     cursor = 0
+  613:     for span in spans:
+  167:         position = text.find(span, cursor)
+  167:         if position < 0:
+                   # Canonicalization may have removed outer/trailing whitespace.  Searching
+                   # from the start still masks the meaningful span in ordinary documents.
+>>>>>>             position = text.find(span)
+  167:         if position >= 0:
+  167:             ranges.append((position, position + len(span)))
+  167:             cursor = position + len(span)
+  446:     return ranges
+       
+       
+    2: def _infer_format(path: Path, requested: str) -> str:
+>>>>>>     if requested != "auto":
+>>>>>>         return requested
+>>>>>>     return "tex" if path.suffix.lower() in {".tex", ".ltx"} else "markdown"
+       
+       
+    2: def _text_output(result: CheckResult) -> str:
+>>>>>>     term_evidence = result.evidence.get("protected_terms", {})
+>>>>>>     lines = [
+>>>>>>         f"status: {result.status}",
+>>>>>>         f"hard errors: {len(result.errors)}",
+>>>>>>         f"warnings: {len(result.warnings)}",
+>>>>>>         f"advisories: {len(result.advisories)}",
+>>>>>>         f"protected terms: {term_evidence.get('status', 'NOT_PROVIDED')}",
+>>>>>>         f"protected term count: {term_evidence.get('count', 0)}",
+>>>>>>         f"protected term sha256: {term_evidence.get('sha256') or 'NONE'}",
+           ]
+>>>>>>     for diagnostic in [*result.errors, *result.warnings, *result.advisories]:
+>>>>>>         lines.append(f"[{diagnostic.severity.upper()}] {diagnostic.code}: {diagnostic.message}")
+>>>>>>         if diagnostic.details:
+>>>>>>             lines.append("  " + json.dumps(diagnostic.details, ensure_ascii=False, sort_keys=True))
+>>>>>>     return "\n".join(lines)
+       
+       
+    2: def build_parser() -> argparse.ArgumentParser:
+>>>>>>     parser = argparse.ArgumentParser(
+>>>>>>         description="Check preservation invariants between original and humanized Markdown/TeX."
+           )
+>>>>>>     parser.add_argument("before", type=Path, help="Original UTF-8 Markdown or TeX file")
+>>>>>>     parser.add_argument("after", type=Path, help="Humanized UTF-8 Markdown or TeX file")
+>>>>>>     parser.add_argument("--format", choices=("auto", "markdown", "tex"), default="auto")
+>>>>>>     parser.add_argument("--json", action="store_true", help="Emit machine-readable JSON")
+>>>>>>     parser.add_argument(
+>>>>>>         "--allow-quote-edits",
+>>>>>>         action="store_true",
+>>>>>>         help="Do not protect direct quotations (off by default)",
+           )
+>>>>>>     parser.add_argument(
+>>>>>>         "--strict-speech-acts",
+>>>>>>         action="store_true",
+>>>>>>         help="Treat changes to negation/modality/focus/definition/reporting markers as hard errors",
+           )
+>>>>>>     parser.add_argument(
+>>>>>>         "--fragment",
+>>>>>>         action="store_true",
+               help=(
+>>>>>>             "Validate a document fragment: unchanged boundary imbalance is allowed, "
+                   "but any environment or brace-balance drift still fails"
+               ),
+           )
+>>>>>>     parser.add_argument(
+>>>>>>         "--term",
+>>>>>>         action="append",
+>>>>>>         default=[],
+>>>>>>         metavar="TERM",
+>>>>>>         help="Protect an exact method, material, or glossary term; repeat for multiple terms",
+           )
+>>>>>>     return parser
+       
+       
+    2: def main(argv: Sequence[str] | None = None) -> int:
+>>>>>>     if hasattr(sys.stdout, "reconfigure"):
+>>>>>>         sys.stdout.reconfigure(encoding="utf-8")
+>>>>>>     if hasattr(sys.stderr, "reconfigure"):
+>>>>>>         sys.stderr.reconfigure(encoding="utf-8")
+>>>>>>     args = build_parser().parse_args(argv)
+>>>>>>     try:
+>>>>>>         before = args.before.read_text(encoding="utf-8-sig")
+>>>>>>         after = args.after.read_text(encoding="utf-8-sig")
+>>>>>>     except (OSError, UnicodeError) as exc:
+>>>>>>         print(f"input error: {exc}", file=sys.stderr)
+>>>>>>         return 2
+       
+>>>>>>     result = check_documents(
+>>>>>>         before,
+>>>>>>         after,
+>>>>>>         document_format=_infer_format(args.before, args.format),
+>>>>>>         protect_quotes=not args.allow_quote_edits,
+>>>>>>         strict_speech_acts=args.strict_speech_acts,
+>>>>>>         protected_terms=args.term,
+>>>>>>         fragment_mode=args.fragment,
+           )
+>>>>>>     if args.json:
+>>>>>>         print(json.dumps(result.to_dict(), ensure_ascii=False, indent=2, sort_keys=True))
+           else:
+>>>>>>         print(_text_output(result))
+>>>>>>     return 1 if result.hard_failure else 0
+       
+       
+    2: if __name__ == "__main__":
+>>>>>>     raise SystemExit(main())

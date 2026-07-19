@@ -4,6 +4,10 @@ import importlib.util
 import io
 import json
 import os
+import re
+import shlex
+import signal
+import subprocess
 import sys
 import tempfile
 import time
@@ -38,6 +42,10 @@ finalizer = load_module(
     "finalize_humanize_long_document",
     SKILL / "scripts" / "finalize_humanize_long_document.py",
 )
+scaffolder = load_module(
+    "scaffold_humanize_rewrites",
+    SKILL / "scripts" / "scaffold_humanize_rewrites.py",
+)
 
 
 def _directory_bytes(root: Path) -> dict[str, bytes]:
@@ -62,6 +70,8 @@ class LongDocumentFinalizationTests(unittest.TestCase):
         "integrity_changes",
         "process_containment",
         "descendant_cleanup",
+        "timed_out",
+        "timeout_seconds",
     }
 
     def setUp(self) -> None:
@@ -88,10 +98,176 @@ class LongDocumentFinalizationTests(unittest.TestCase):
         pending = next(item for item in chunks if item["status"] == "PENDING")
         return source, run_dir, pending
 
+    def prepare_markdown_unit(
+        self,
+        text: str,
+        *,
+        intensity: str = "BALANCED",
+        name: str = "source",
+    ) -> tuple[Path, Path, dict]:
+        source = self.root / f"{name}.md"
+        source.write_text(text, encoding="utf-8")
+        run_dir = self.root / f"run-{name}"
+        preparer.prepare(
+            [source],
+            run_dir,
+            scene="GENERAL",
+            intensity=intensity,
+        )
+        chunks = [
+            json.loads(path.read_text(encoding="utf-8"))
+            for path in (run_dir / "chunks").glob("*.json")
+        ]
+        pending = next(item for item in chunks if item["status"] == "PENDING")
+        return source, run_dir, pending
+
     def rewrite_dir(self) -> Path:
         path = self.root / "rewrites"
         path.mkdir(exist_ok=True)
         return path
+
+    def valid_v5_no_change_scaffold(self) -> tuple[Path, Path, dict, Path]:
+        source, run_dir, pending = self.prepare(
+            "\\section{定义}\n该定义保持原有条件范围和说明结构。\n"
+        )
+        rewrites = self.root / "scaffold-rewrites"
+        scaffolder.scaffold(run_dir, rewrites, "NO_CHANGE")
+        bundle_path = rewrites / f"{pending['unit_id']}.json"
+        bundle = json.loads(bundle_path.read_text(encoding="utf-8"))
+        bundle["reason"] = "正式定义段落保留原有条件范围和说明结构"
+        bundle["evidence_spans"] = [
+            self.masked_line_span(pending["masked_text"], "该定义")
+        ]
+        bundle_path.write_text(
+            json.dumps(bundle, ensure_ascii=False, indent=2) + "\n",
+            encoding="utf-8",
+        )
+        return source, run_dir, pending, rewrites
+
+    def test_scaffold_metadata_is_validated_and_not_collected_as_a_unit(self) -> None:
+        _, run_dir, pending = self.prepare("这是一段可以保持原样的正文。")
+        rewrites = self.root / "scaffold-rewrites"
+        scaffolder.scaffold(run_dir, rewrites, "NO_CHANGE")
+        bundle_path = rewrites / f"{pending['unit_id']}.json"
+        bundle = json.loads(bundle_path.read_text(encoding="utf-8"))
+        bundle["reason"] = "原文结构自然"
+        bundle_path.write_text(
+            json.dumps(bundle, ensure_ascii=False, indent=2) + "\n",
+            encoding="utf-8",
+        )
+
+        rewrites_map, transactions, declines = finalizer.collect_rewrites(rewrites)
+
+        self.assertEqual({pending["unit_id"]}, set(rewrites_map))
+        self.assertEqual({}, transactions)
+        self.assertEqual({}, declines)
+        result = finalizer.finalize(run_dir, rewrites)
+        self.assertNotIn("unknown rewrite units", " ".join(result.get("errors", [])))
+        self.assertEqual("REVIEW", result["status"])
+
+    def test_malformed_scaffold_metadata_is_not_silently_ignored(self) -> None:
+        rewrites = self.rewrite_dir()
+        (rewrites / "scaffold_metadata.json").write_text(
+            json.dumps({"schema_version": "humanize-rewrite-scaffold/v1"}),
+            encoding="utf-8",
+        )
+        with self.assertRaisesRegex(ValueError, "scaffold metadata"):
+            finalizer.collect_rewrites(rewrites)
+
+    def test_scaffold_metadata_rejects_invalid_template_hash(self) -> None:
+        _, run_dir, _ = self.prepare("这是一段可以保持原样的正文。")
+        rewrites = self.root / "scaffold-rewrites"
+        scaffolder.scaffold(run_dir, rewrites, "NO_CHANGE")
+        metadata_path = rewrites / "scaffold_metadata.json"
+        metadata = json.loads(metadata_path.read_text(encoding="utf-8"))
+        metadata["records"][0]["template_sha256"] = "CALLER-FORGED-NOT-A-HASH"
+        metadata_path.write_text(
+            json.dumps(metadata, ensure_ascii=False, indent=2) + "\n",
+            encoding="utf-8",
+        )
+
+        with self.assertRaisesRegex(ValueError, "template hash"):
+            finalizer.collect_rewrites(rewrites)
+
+    def test_v5_scaffold_live_source_drift_remains_review_two(self) -> None:
+        source, run_dir, _pending, rewrites = self.valid_v5_no_change_scaffold()
+        source.write_text(
+            source.read_text(encoding="utf-8") + "% external drift\n",
+            encoding="utf-8",
+        )
+
+        result = finalizer.finalize(run_dir, rewrites)
+
+        self.assertEqual("REVIEW", result["status"])
+        self.assertEqual("REVIEW", result["delivery_gate_status"])
+        self.assertEqual(2, result["exit_code"])
+        self.assertFalse(result.get("runtime_error", False))
+        self.assertEqual(1, result["source_files_changed_since_snapshot"])
+        self.assertEqual("MODIFIED", result["source_change_details"][0]["current_state"])
+
+    def test_v5_scaffold_requires_publication_commit(self) -> None:
+        _source, run_dir, _pending, rewrites = self.valid_v5_no_change_scaffold()
+        (rewrites / finalizer.SCAFFOLD_COMMITTED_MARKER_NAME).unlink()
+
+        with self.assertRaisesRegex(ValueError, "missing publication commit"):
+            finalizer.collect_rewrites(rewrites, run_dir=run_dir)
+
+    def test_v5_scaffold_rejects_tampered_publication_commit(self) -> None:
+        _source, run_dir, _pending, rewrites = self.valid_v5_no_change_scaffold()
+        marker_path = rewrites / finalizer.SCAFFOLD_COMMITTED_MARKER_NAME
+        marker = json.loads(marker_path.read_text(encoding="utf-8"))
+        marker["scaffold_metadata_sha256"] = "f" * 64
+        marker_path.write_text(
+            json.dumps(marker, ensure_ascii=False, indent=2) + "\n",
+            encoding="utf-8",
+        )
+
+        with self.assertRaisesRegex(ValueError, "metadata hash mismatch"):
+            finalizer.collect_rewrites(rewrites, run_dir=run_dir)
+
+    def test_v5_scaffold_rejects_invalid_publication_commit_schema(self) -> None:
+        _source, run_dir, _pending, rewrites = self.valid_v5_no_change_scaffold()
+        marker_path = rewrites / finalizer.SCAFFOLD_COMMITTED_MARKER_NAME
+        marker = json.loads(marker_path.read_text(encoding="utf-8"))
+        marker["schema_version"] = "humanize-scaffold-publication-commit/v999"
+        marker_path.write_text(
+            json.dumps(marker, ensure_ascii=False, indent=2) + "\n",
+            encoding="utf-8",
+        )
+
+        with self.assertRaisesRegex(ValueError, "publication commit schema"):
+            finalizer.collect_rewrites(rewrites, run_dir=run_dir)
+
+    def test_v5_scaffold_rejects_hardlinked_publication_commit(self) -> None:
+        _source, run_dir, _pending, rewrites = self.valid_v5_no_change_scaffold()
+        marker_path = rewrites / finalizer.SCAFFOLD_COMMITTED_MARKER_NAME
+        os.link(marker_path, self.root / "commit-marker-alias")
+
+        with self.assertRaisesRegex(ValueError, "standalone regular file"):
+            finalizer.collect_rewrites(rewrites, run_dir=run_dir)
+
+    def test_v5_scaffold_rejects_linked_publication_commit(self) -> None:
+        _source, run_dir, _pending, rewrites = self.valid_v5_no_change_scaffold()
+        marker_path = rewrites / finalizer.SCAFFOLD_COMMITTED_MARKER_NAME
+        original = self.root / "commit-marker-original"
+        marker_path.rename(original)
+        try:
+            os.symlink(original, marker_path)
+        except OSError as error:
+            original.rename(marker_path)
+            self.skipTest(f"file symlinks unavailable: {error}")
+
+        with self.assertRaisesRegex(ValueError, "commit must not be a link"):
+            finalizer.collect_rewrites(rewrites, run_dir=run_dir)
+
+    def test_v5_scaffold_rejects_residual_uncommitted_marker(self) -> None:
+        _source, run_dir, _pending, rewrites = self.valid_v5_no_change_scaffold()
+        (rewrites / finalizer.SCAFFOLD_UNCOMMITTED_MARKER_NAME).write_text(
+            "{}\n", encoding="utf-8"
+        )
+
+        with self.assertRaisesRegex(ValueError, "publication is uncommitted"):
+            finalizer.collect_rewrites(rewrites, run_dir=run_dir)
 
     def voice_bound_bundle(self, unit: dict, payload: dict) -> dict:
         return {
@@ -100,6 +276,1037 @@ class LongDocumentFinalizationTests(unittest.TestCase):
             "voice_profile_sha256": unit["voice_profile_sha256"],
             **payload,
         }
+
+    def authoring_bound_bundle(
+        self,
+        run_dir: Path,
+        unit: dict,
+        payload: dict,
+    ) -> dict:
+        preflight = finalizer.validate_long_authoring_snapshot(run_dir)
+        binding = preflight["bindings"][unit["unit_id"]]
+        return self.voice_bound_bundle(
+            unit,
+            {
+                **payload,
+                "schema_version": "humanize-unit-rewrite-bundle/v3",
+                "authoring_binding": binding,
+            },
+        )
+
+    def masked_line_span(
+        self,
+        masked_text: str,
+        needle: str,
+        *,
+        span_id: str = "S1",
+    ) -> dict:
+        lines = masked_text.replace("\r\n", "\n").replace("\r", "\n").splitlines(
+            keepends=True
+        )
+        line_number = next(
+            index for index, line in enumerate(lines, 1) if needle in line
+        )
+        return {
+            "id": span_id,
+            "start_line": line_number,
+            "end_line": line_number,
+            "sha256": hashlib.sha256(
+                lines[line_number - 1].encode("utf-8")
+            ).hexdigest(),
+        }
+
+    def masked_line_range_span(
+        self,
+        masked_text: str,
+        start_needle: str,
+        end_needle: str,
+        *,
+        span_id: str = "S1",
+    ) -> dict:
+        lines = masked_text.replace("\r\n", "\n").replace("\r", "\n").splitlines(
+            keepends=True
+        )
+        start_line = next(
+            index for index, line in enumerate(lines, 1) if start_needle in line
+        )
+        end_line = next(
+            index
+            for index, line in enumerate(lines[start_line - 1 :], start_line)
+            if end_needle in line
+        )
+        return {
+            "id": span_id,
+            "start_line": start_line,
+            "end_line": end_line,
+            "sha256": hashlib.sha256(
+                "".join(lines[start_line - 1 : end_line]).encode("utf-8")
+            ).hexdigest(),
+        }
+
+    def test_v35_rewrite_intent_source_spans_form_an_ordered_nonoverlapping_partition(self) -> None:
+        digest = "a" * 64
+        cases = {
+            "range_duplicate": [
+                {"id": "S1", "start_line": 1, "end_line": 2, "sha256": digest},
+                {"id": "S2", "start_line": 1, "end_line": 2, "sha256": digest},
+            ],
+            "overlap": [
+                {"id": "S1", "start_line": 1, "end_line": 2, "sha256": digest},
+                {"id": "S2", "start_line": 2, "end_line": 3, "sha256": digest},
+            ],
+            "out_of_order": [
+                {"id": "S1", "start_line": 3, "end_line": 3, "sha256": digest},
+                {"id": "S2", "start_line": 1, "end_line": 1, "sha256": digest},
+            ],
+        }
+        for error, spans in cases.items():
+            with self.subTest(error=error):
+                with self.assertRaisesRegex(ValueError, error):
+                    finalizer._validate_intent_span_shape(
+                        spans,
+                        "rewrite_intent_source_spans",
+                    )
+
+        finalizer._validate_intent_span_shape(
+            [
+                {"id": "S1", "start_line": 1, "end_line": 1, "sha256": digest},
+                {"id": "S2", "start_line": 2, "end_line": 3, "sha256": digest},
+            ],
+            "rewrite_intent_source_spans",
+        )
+
+    def v3_rewrite_bundle(
+        self,
+        run_dir: Path,
+        unit: dict,
+        *,
+        masked_text: str,
+        source_span: dict,
+        summary: str = "删除空泛收尾并保留材料范围",
+        target_signal: str = "STYLE-EMPTY-ENDING",
+    ) -> dict:
+        return self.authoring_bound_bundle(
+            run_dir,
+            unit,
+            {
+                "decision": "REWRITE",
+                "masked_text": masked_text,
+                "keep_reasons": {},
+                "rewrite_intent": {
+                    "summary": summary,
+                    "operations": [
+                        {
+                            "id": "O1",
+                            "kind": "REWRITE_STYLE_SHELL",
+                            "source_span_ids": [source_span["id"]],
+                            "target_signals": [target_signal],
+                            "summary": summary,
+                        }
+                    ],
+                    "source_spans": [source_span],
+                    "target_signals": [target_signal],
+                },
+            },
+        )
+
+    def v3_topology_bundle(
+        self,
+        run_dir: Path,
+        unit: dict,
+        *,
+        masked_text: str,
+        source_span: dict,
+        operation_kind: str,
+        target_signal: str,
+        summary: str,
+    ) -> dict:
+        return self.v3_rewrite_bundle(
+            run_dir,
+            unit,
+            masked_text=masked_text,
+            source_span=source_span,
+            summary=summary,
+            target_signal=target_signal,
+        ) | {
+            "rewrite_intent": {
+                "summary": summary,
+                "operations": [
+                    {
+                        "id": "O1",
+                        "kind": operation_kind,
+                        "source_span_ids": [source_span["id"]],
+                        "target_signals": [target_signal],
+                        "summary": summary,
+                    }
+                ],
+                "source_spans": [source_span],
+                "target_signals": [target_signal],
+            }
+        }
+
+    def test_v3_rewrite_intent_is_bound_to_source_diff_and_review_request(self) -> None:
+        source_text = (
+            "# 讨论\n\n"
+            "材料范围限于已经登记的记录，随后用一句空泛说明结束。\n\n"
+            "下一段保留原有对象与限定条件。\n"
+        )
+        _, run_dir, unit = self.prepare_markdown_unit(source_text, name="intent-pass")
+        span = self.masked_line_span(unit["masked_text"], "材料范围")
+        revised = unit["masked_text"].replace(
+            "随后用一句空泛说明结束", "相关说明仍限于这些记录"
+        )
+        rewrites = self.rewrite_dir()
+        bundle = self.v3_rewrite_bundle(
+            run_dir, unit, masked_text=revised, source_span=span
+        )
+        (rewrites / f"{unit['unit_id']}.json").write_text(
+            json.dumps(bundle, ensure_ascii=False), encoding="utf-8"
+        )
+
+        result = finalizer.finalize(run_dir, rewrites)
+
+        self.assertEqual(1, result["unit_statuses"]["DONE"])
+        self.assertEqual("PASS", result["rewrite_intent_coverage_status"])
+        self.assertEqual(1, result["rewrite_intent_units_pass"])
+        record = result["rewrite_intent_evidence"][unit["unit_id"]]
+        evidence = json.loads(
+            (run_dir / record["path"]).read_text(encoding="utf-8")
+        )
+        request = result["paired_quality_review_requests"][unit["unit_id"]]
+        diff_path = run_dir / evidence["diff"]["path"]
+        self.assertEqual("PASS", evidence["status"])
+        self.assertEqual(
+            hashlib.sha256(diff_path.read_bytes()).hexdigest(),
+            evidence["diff"]["sha256"],
+        )
+        self.assertEqual(
+            request["request_sha256"],
+            evidence["paired_quality_review_request_sha256"],
+        )
+        self.assertEqual(record["path"], request["rewrite_intent_evidence_path"])
+        self.assertEqual("PASS", evidence["intent_diff_binding"]["status"])
+        body = {
+            key: value for key, value in evidence.items() if key != "evidence_sha256"
+        }
+        self.assertEqual(
+            hashlib.sha256(
+                finalizer._canonical_json(body).encode("utf-8")
+            ).hexdigest(),
+            evidence["evidence_sha256"],
+        )
+
+    def test_v3_rewrite_intent_rejects_span_outside_actual_diff(self) -> None:
+        source_text = (
+            "# 讨论\n\n"
+            "第一段说明材料范围与记录边界。\n\n"
+            "第二段说明对象条件与来源状态。\n"
+        )
+        _, run_dir, unit = self.prepare_markdown_unit(
+            source_text, name="intent-outside-diff"
+        )
+        span = self.masked_line_span(unit["masked_text"], "第二段")
+        revised = unit["masked_text"].replace(
+            "第一段说明材料范围与记录边界", "第一段只说明已登记材料的范围"
+        )
+        rewrites = self.rewrite_dir()
+        bundle = self.v3_rewrite_bundle(
+            run_dir, unit, masked_text=revised, source_span=span
+        )
+        (rewrites / f"{unit['unit_id']}.json").write_text(
+            json.dumps(bundle, ensure_ascii=False), encoding="utf-8"
+        )
+
+        result = finalizer.finalize(run_dir, rewrites)
+        row = next(
+            item
+            for item in self.final_ledger(run_dir)
+            if item["unit_id"] == unit["unit_id"]
+        )
+
+        self.assertEqual(1, result["unit_statuses"]["UNRESOLVED"])
+        self.assertIn("rewrite_intent_source_spans_outside_diff", row["notes"])
+        self.assertEqual("FAIL", row["rewrite_intent_status"])
+
+    def test_v3_rewrite_intent_rejects_undeclared_second_change(self) -> None:
+        source_text = (
+            "# 讨论\n\n"
+            "第一段说明材料范围与记录边界。\n\n"
+            "第二段说明对象条件与来源状态。\n"
+        )
+        _, run_dir, unit = self.prepare_markdown_unit(
+            source_text, name="intent-extra-diff"
+        )
+        span = self.masked_line_span(unit["masked_text"], "第一段")
+        revised = (
+            unit["masked_text"]
+            .replace("第一段说明材料范围与记录边界", "第一段只说明已登记材料的范围")
+            .replace("第二段说明对象条件与来源状态", "第二段改写了未申报的内容")
+        )
+        rewrites = self.rewrite_dir()
+        bundle = self.v3_rewrite_bundle(
+            run_dir, unit, masked_text=revised, source_span=span
+        )
+        (rewrites / f"{unit['unit_id']}.json").write_text(
+            json.dumps(bundle, ensure_ascii=False), encoding="utf-8"
+        )
+
+        result = finalizer.finalize(run_dir, rewrites)
+        row = next(
+            item
+            for item in self.final_ledger(run_dir)
+            if item["unit_id"] == unit["unit_id"]
+        )
+
+        self.assertEqual(1, result["unit_statuses"]["UNRESOLVED"])
+        self.assertIn("rewrite_intent_diff_outside_declared_spans", row["notes"])
+
+    def test_v3_no_change_rejects_generic_reason_even_with_bound_span(self) -> None:
+        source_text = "# 定义\n\n正式定义保持对象、条件和并列结构。\n"
+        _, run_dir, unit = self.prepare_markdown_unit(
+            source_text, name="intent-generic-no-change"
+        )
+        span = self.masked_line_span(unit["masked_text"], "正式定义")
+        rewrites = self.rewrite_dir()
+        bundle = self.authoring_bound_bundle(
+            run_dir,
+            unit,
+            {
+                "decision": "NO_CHANGE",
+                "reason": "该段保持原有自然表达",
+                "evidence_spans": [span],
+                "keep_reasons": {},
+            },
+        )
+        (rewrites / f"{unit['unit_id']}.json").write_text(
+            json.dumps(bundle, ensure_ascii=False), encoding="utf-8"
+        )
+
+        result = finalizer.finalize(run_dir, rewrites)
+        row = next(
+            item
+            for item in self.final_ledger(run_dir)
+            if item["unit_id"] == unit["unit_id"]
+        )
+
+        self.assertEqual(1, result["unit_statuses"]["UNRESOLVED"])
+        self.assertIn("NO_CHANGE_reason_generic_or_unlocated", row["notes"])
+
+    def test_v3_no_change_with_specific_bound_reason_passes_intent(self) -> None:
+        source_text = "# 定义\n\n正式定义保留对象、条件和并列结构。\n"
+        _, run_dir, unit = self.prepare_markdown_unit(
+            source_text, name="intent-specific-no-change"
+        )
+        span = self.masked_line_span(unit["masked_text"], "正式定义")
+        rewrites = self.rewrite_dir()
+        bundle = self.authoring_bound_bundle(
+            run_dir,
+            unit,
+            {
+                "decision": "NO_CHANGE",
+                "reason": "正式定义保留对象、条件和并列结构，避免改变等权关系",
+                "evidence_spans": [span],
+                "keep_reasons": {},
+            },
+        )
+        (rewrites / f"{unit['unit_id']}.json").write_text(
+            json.dumps(bundle, ensure_ascii=False), encoding="utf-8"
+        )
+
+        result = finalizer.finalize(run_dir, rewrites)
+        evidence = result["rewrite_intent_evidence"][unit["unit_id"]]
+        payload = json.loads((run_dir / evidence["path"]).read_text(encoding="utf-8"))
+
+        self.assertEqual(1, result["unit_statuses"]["NO_CHANGE"])
+        self.assertEqual("PASS", result["rewrite_intent_coverage_status"])
+        self.assertEqual("PASS", payload["status"])
+        self.assertEqual("NO_CHANGE", payload["decision"])
+
+    def test_v3_rewrite_rejects_source_span_hash_mismatch(self) -> None:
+        source_text = "# 讨论\n\n原段说明材料范围，随后给出空泛收尾。\n"
+        _, run_dir, unit = self.prepare_markdown_unit(
+            source_text, name="intent-source-hash-mismatch"
+        )
+        span = self.masked_line_span(unit["masked_text"], "原段说明")
+        span["sha256"] = "f" * 64
+        revised = unit["masked_text"].replace(
+            "随后给出空泛收尾", "说明仍限于这些材料"
+        )
+        bundle = self.v3_rewrite_bundle(
+            run_dir, unit, masked_text=revised, source_span=span
+        )
+        rewrites = self.rewrite_dir()
+        (rewrites / f"{unit['unit_id']}.json").write_text(
+            json.dumps(bundle, ensure_ascii=False), encoding="utf-8"
+        )
+
+        result = finalizer.finalize(run_dir, rewrites)
+        row = next(
+            item for item in self.final_ledger(run_dir) if item["unit_id"] == unit["unit_id"]
+        )
+
+        self.assertEqual(1, result["unit_statuses"]["UNRESOLVED"])
+        self.assertIn("rewrite_intent_source_spans_sha256_mismatch", row["notes"])
+
+    def test_v3_rewrite_rejects_uncovered_target_signal(self) -> None:
+        source_text = "# 讨论\n\n原段说明材料范围，随后给出空泛收尾。\n"
+        _, run_dir, unit = self.prepare_markdown_unit(
+            source_text, name="intent-target-signal-coverage"
+        )
+        span = self.masked_line_span(unit["masked_text"], "原段说明")
+        revised = unit["masked_text"].replace(
+            "随后给出空泛收尾", "说明仍限于这些材料"
+        )
+        bundle = self.v3_rewrite_bundle(
+            run_dir, unit, masked_text=revised, source_span=span
+        )
+        bundle["rewrite_intent"]["target_signals"].append(
+            "STYLE-UNREFERENCED-SIGNAL"
+        )
+        rewrites = self.rewrite_dir()
+        (rewrites / f"{unit['unit_id']}.json").write_text(
+            json.dumps(bundle, ensure_ascii=False), encoding="utf-8"
+        )
+
+        result = finalizer.finalize(run_dir, rewrites)
+        row = next(
+            item for item in self.final_ledger(run_dir) if item["unit_id"] == unit["unit_id"]
+        )
+
+        self.assertEqual(1, result["unit_statuses"]["UNRESOLVED"])
+        self.assertIn("rewrite_intent_target_signal_coverage_incomplete", row["notes"])
+
+    def test_unit_explicit_null_schema_is_not_legacy(self) -> None:
+        source_text = "# 讨论\n\n原段说明材料范围，随后给出空泛收尾。\n"
+        _, run_dir, unit = self.prepare_markdown_unit(
+            source_text, name="intent-null-schema"
+        )
+        span = self.masked_line_span(unit["masked_text"], "原段说明")
+        revised = unit["masked_text"].replace(
+            "随后给出空泛收尾", "说明仍限于这些材料"
+        )
+        bundle = self.v3_rewrite_bundle(
+            run_dir, unit, masked_text=revised, source_span=span
+        )
+        bundle["schema_version"] = None
+        rewrites = self.rewrite_dir()
+        (rewrites / f"{unit['unit_id']}.json").write_text(
+            json.dumps(bundle, ensure_ascii=False), encoding="utf-8"
+        )
+
+        result = finalizer.finalize(run_dir, rewrites)
+        row = next(
+            item for item in self.final_ledger(run_dir) if item["unit_id"] == unit["unit_id"]
+        )
+
+        self.assertEqual(1, result["unit_statuses"]["UNRESOLVED"])
+        self.assertIn("unit_rewrite_bundle_schema_invalid", row["notes"])
+
+    def test_legacy_rewrite_remains_readable_but_intent_coverage_is_review(self) -> None:
+        source_text = "# 讨论\n\n原段说明材料范围，随后给出空泛收尾。\n"
+        _, run_dir, unit = self.prepare_markdown_unit(
+            source_text, name="intent-legacy"
+        )
+        revised = unit["masked_text"].replace(
+            "随后给出空泛收尾", "说明仍限于这些材料"
+        )
+        rewrites = self.rewrite_dir()
+        legacy = self.voice_bound_bundle(
+            unit,
+            {
+                "decision": "REWRITE",
+                "masked_text": revised,
+                "keep_reasons": {},
+            },
+        )
+        (rewrites / f"{unit['unit_id']}.json").write_text(
+            json.dumps(legacy, ensure_ascii=False), encoding="utf-8"
+        )
+
+        result = finalizer.finalize(run_dir, rewrites)
+
+        self.assertEqual(1, result["unit_statuses"]["DONE"])
+        self.assertEqual("REVIEW", result["rewrite_intent_coverage_status"])
+        self.assertTrue(result["rewrite_intent_blocks_delivery"])
+        evidence = result["rewrite_intent_evidence"][unit["unit_id"]]
+        self.assertEqual("REVIEW", evidence["status"])
+
+    def test_balanced_rewrite_rejects_undeclared_full_paragraph_reorder(self) -> None:
+        source = self.root / "source.md"
+        source.write_text(
+            "# 范围\n"
+            "甲样本呈现局部波动。此处先描述观察范围，随后解释边界，读者据此辨认现象与结论的差别。\n\n"
+            "乙样本呈现稳定趋势。此处承接前段限定的范围，结尾说明甲乙观察各自对应不同条件。\n",
+            encoding="utf-8",
+        )
+        run_dir = self.root / "run"
+        preparer.prepare(
+            [source],
+            run_dir,
+            scene="GENERAL",
+            intensity="BALANCED",
+        )
+        chunks = [
+            json.loads(path.read_text(encoding="utf-8"))
+            for path in (run_dir / "chunks").glob("*.json")
+        ]
+        unit = next(item for item in chunks if item["status"] == "PENDING")
+        blocks = preparer.structural_paragraph_blocks(unit["masked_text"])
+        self.assertEqual(2, len(blocks), unit["masked_text"])
+        title, first = blocks[0].splitlines()
+        second = blocks[1]
+        swapped = title + "\n" + second + "\n\n" + first + "\n"
+        rewrites = self.rewrite_dir()
+        (rewrites / f"{unit['unit_id']}.json").write_text(
+            json.dumps(
+                self.voice_bound_bundle(
+                    unit,
+                    {
+                        "decision": "REWRITE",
+                        "masked_text": swapped,
+                        "keep_reasons": {},
+                    },
+                ),
+                ensure_ascii=False,
+            ),
+            encoding="utf-8",
+        )
+
+        result = finalizer.finalize(run_dir, rewrites)
+        structural = json.loads(
+            (run_dir / "validation" / f"{unit['unit_id']}.structural.json").read_text(
+                encoding="utf-8"
+            )
+        )
+
+        self.assertEqual("REVIEW", result["status"])
+        self.assertEqual(1, result["unit_statuses"]["UNRESOLVED"])
+        self.assertEqual("REVIEW", structural["status"])
+        self.assertTrue(
+            structural["non_structural_paragraph_order_check"]["reordered"]
+        )
+        self.assertEqual(
+            "BLOCKED_BY_SCOPE_VIOLATION", structural["semantic_review_status"]
+        )
+        self.assertEqual({}, result["structural_semantic_review_requests"])
+        self.assertFalse((run_dir / "rendered_review").exists())
+
+    def test_balanced_rewrite_rejects_near_exact_paragraph_reorder(self) -> None:
+        source_text = (
+            "# 结果讨论\n\n"
+            "样本筛选首先处理记录之间的可比性。研究者按照预先列出的字段核对缺项，并把无法确认来源的记录留在待核清单中。这个步骤只决定哪些材料进入后续整理，不对材料质量作额外判断。\n\n"
+            "编码环节随后处理同义表达的归并。相同含义的表述被放到同一标签下，但原记录中的否定和条件仍单独保留。这样做是为了避免表面用词差异被误当成新的观察。\n\n"
+            "比较环节关注不同标签在材料中的出现位置。段落重心落在比较范围，不把顺序差异写成主次判断。\n\n"
+            "解释环节最后回到原记录能够支持的命题。缺少来源支撑的内容仍保留为未决事项。\n"
+        )
+        _, run_dir, unit = self.prepare_markdown_unit(source_text, name="near-reorder")
+        blocks = preparer.structural_paragraph_blocks(unit["masked_text"])
+        title, first = blocks[0].splitlines()
+        second, third, fourth = blocks[1:]
+        revised_first = first.replace("首先处理", "处理").replace("这个步骤", "该步骤")
+        revised_second = second.replace("随后处理", "处理").replace("这样做是为了", "这样可以")
+        masked = (
+            title
+            + "\n"
+            + revised_second
+            + "\n\n"
+            + revised_first
+            + "\n\n"
+            + third
+            + "\n\n"
+            + fourth
+            + "\n"
+        )
+        rewrites = self.rewrite_dir()
+        (rewrites / f"{unit['unit_id']}.json").write_text(
+            json.dumps(
+                self.voice_bound_bundle(
+                    unit,
+                    {"decision": "REWRITE", "masked_text": masked, "keep_reasons": {}},
+                ),
+                ensure_ascii=False,
+            ),
+            encoding="utf-8",
+        )
+
+        result = finalizer.finalize(run_dir, rewrites)
+        structural = json.loads(
+            (run_dir / "validation" / f"{unit['unit_id']}.structural.json").read_text(
+                encoding="utf-8"
+            )
+        )
+
+        self.assertEqual(1, result["unit_statuses"]["UNRESOLVED"])
+        self.assertTrue(structural["non_structural_paragraph_order_check"]["reordered"])
+        self.assertTrue(
+            structural["non_structural_paragraph_order_check"]["near_exact_reordered"]
+        )
+
+    def test_balanced_rewrite_rejects_significant_paragraph_merge_and_split(self) -> None:
+        source_text = (
+            "# 方法\n\n"
+            "第一段说明样本进入分析前的整理范围，并保留原有对象和限定条件。\n\n"
+            "第二段说明标签归并的操作边界，否定和来源状态仍分别保存。\n\n"
+            "第三段说明比较时采用的阅读顺序，不把顺序差异写成主次判断。\n\n"
+            "第四段说明解释的收尾范围，缺少依据的内容继续保留为未决事项。\n"
+        )
+        for name, transform in (
+            (
+                "merge",
+                lambda blocks: [blocks[0] + blocks[1], *blocks[2:]],
+            ),
+            (
+                "split",
+                lambda blocks: [
+                    "第一段说明样本进入分析前的整理范围。",
+                    "这一处理保留原有对象和限定条件。",
+                    *blocks[1:],
+                ],
+            ),
+        ):
+            with self.subTest(name=name):
+                _, run_dir, unit = self.prepare_markdown_unit(source_text, name=name)
+                blocks = preparer.structural_paragraph_blocks(unit["masked_text"])
+                title, first = blocks[0].splitlines()
+                author_blocks = [first, *blocks[1:]]
+                masked = title + "\n" + "\n\n".join(transform(author_blocks)) + "\n"
+                rewrites = self.root / f"rewrites-{name}"
+                rewrites.mkdir()
+                (rewrites / f"{unit['unit_id']}.json").write_text(
+                    json.dumps(
+                        self.voice_bound_bundle(
+                            unit,
+                            {
+                                "decision": "REWRITE",
+                                "masked_text": masked,
+                                "keep_reasons": {},
+                            },
+                        ),
+                        ensure_ascii=False,
+                    ),
+                    encoding="utf-8",
+                )
+
+                result = finalizer.finalize(run_dir, rewrites)
+
+                self.assertEqual(1, result["unit_statuses"]["UNRESOLVED"])
+                row = next(
+                    item
+                    for item in self.final_ledger(run_dir)
+                    if item["unit_id"] == unit["unit_id"]
+                )
+                self.assertEqual("non_structural_paragraph_topology_changed", row["notes"])
+                self.assertFalse((run_dir / "rendered_review").exists())
+
+    def test_balanced_v3_allows_declared_adjacent_redundancy_merge(self) -> None:
+        first = "第一段说明样本范围只包括已经登记的记录。"
+        second = "第二段重复说明分析对象仍限于这些登记记录。"
+        third = "第三段保留独立的方法边界和来源状态。"
+        source_text = "# 方法\n\n" + "\n\n".join((first, second, third)) + "\n"
+        _, run_dir, unit = self.prepare_markdown_unit(
+            source_text, name="declared-balanced-merge"
+        )
+        span = self.masked_line_range_span(
+            unit["masked_text"], "第一段说明", "第二段重复"
+        )
+        revised = unit["masked_text"].replace("\r\n", "\n").replace(
+            first + "\n\n" + second,
+            first + second,
+        )
+        rewrites = self.rewrite_dir()
+        bundle = self.v3_topology_bundle(
+            run_dir,
+            unit,
+            masked_text=revised,
+            source_span=span,
+            operation_kind="MERGE_ADJACENT_REDUNDANCY",
+            target_signal="HIERARCHY-ADJACENT-REDUNDANCY",
+            summary="合并职责重复的相邻两段并保留共同的材料范围",
+        )
+        (rewrites / f"{unit['unit_id']}.json").write_text(
+            json.dumps(bundle, ensure_ascii=False), encoding="utf-8"
+        )
+
+        result = finalizer.finalize(run_dir, rewrites)
+        structural = json.loads(
+            (run_dir / "validation" / f"{unit['unit_id']}.structural.json").read_text(
+                encoding="utf-8"
+            )
+        )
+
+        self.assertEqual(1, result["unit_statuses"]["DONE"])
+        self.assertEqual("PASS", result["rewrite_intent_coverage_status"])
+        topology = structural["non_structural_paragraph_order_check"]
+        self.assertEqual("PASS", topology["status"])
+        self.assertEqual("PASS", topology["topology_authorization_status"])
+        self.assertEqual(1, topology["authorized_topology_operations"])
+
+    def test_balanced_v3_allows_declared_overloaded_paragraph_split(self) -> None:
+        overloaded = (
+            "本段先界定样本范围，只纳入已经登记的记录。"
+            "随后说明标签归并保留否定和来源状态。"
+            "最后说明缺项记录仍进入待核清单。"
+        )
+        following = "下一段单独讨论比较结果的适用边界。"
+        source_text = "# 方法\n\n" + overloaded + "\n\n" + following + "\n"
+        _, run_dir, unit = self.prepare_markdown_unit(
+            source_text, name="declared-balanced-split"
+        )
+        span = self.masked_line_span(unit["masked_text"], "本段先界定")
+        revised = unit["masked_text"].replace(
+            overloaded,
+            "本段先界定样本范围，只纳入已经登记的记录。\n\n"
+            "随后说明标签归并保留否定和来源状态。最后说明缺项记录仍进入待核清单。",
+        )
+        rewrites = self.rewrite_dir()
+        bundle = self.v3_topology_bundle(
+            run_dir,
+            unit,
+            masked_text=revised,
+            source_span=span,
+            operation_kind="SPLIT_OVERLOADED_PARAGRAPH",
+            target_signal="HIERARCHY-OVERLOADED-PARAGRAPH",
+            summary="拆开职责过载段落以区分范围界定和操作说明",
+        )
+        (rewrites / f"{unit['unit_id']}.json").write_text(
+            json.dumps(bundle, ensure_ascii=False), encoding="utf-8"
+        )
+
+        result = finalizer.finalize(run_dir, rewrites)
+        structural = json.loads(
+            (run_dir / "validation" / f"{unit['unit_id']}.structural.json").read_text(
+                encoding="utf-8"
+            )
+        )
+
+        self.assertEqual(1, result["unit_statuses"]["DONE"])
+        self.assertEqual("PASS", result["rewrite_intent_coverage_status"])
+        topology = structural["non_structural_paragraph_order_check"]
+        self.assertEqual("PASS", topology["status"])
+        self.assertEqual("PASS", topology["topology_authorization_status"])
+        self.assertEqual(1, topology["authorized_topology_operations"])
+
+    def test_balanced_v3_rejects_topology_operation_kind_mismatch(self) -> None:
+        first = "第一段说明样本范围只包括已经登记的记录。"
+        second = "第二段重复说明分析对象仍限于这些登记记录。"
+        source_text = "# 方法\n\n" + first + "\n\n" + second + "\n"
+        _, run_dir, unit = self.prepare_markdown_unit(
+            source_text, name="balanced-topology-kind-mismatch"
+        )
+        span = self.masked_line_range_span(
+            unit["masked_text"], "第一段说明", "第二段重复"
+        )
+        revised = unit["masked_text"].replace("\r\n", "\n").replace(
+            first + "\n\n" + second, first + second
+        )
+        rewrites = self.rewrite_dir()
+        bundle = self.v3_topology_bundle(
+            run_dir,
+            unit,
+            masked_text=revised,
+            source_span=span,
+            operation_kind="SPLIT_OVERLOADED_PARAGRAPH",
+            target_signal="HIERARCHY-OVERLOADED-PARAGRAPH",
+            summary="错误地把相邻段合并申报为拆分操作",
+        )
+        (rewrites / f"{unit['unit_id']}.json").write_text(
+            json.dumps(bundle, ensure_ascii=False), encoding="utf-8"
+        )
+
+        result = finalizer.finalize(run_dir, rewrites)
+        row = next(
+            item for item in self.final_ledger(run_dir) if item["unit_id"] == unit["unit_id"]
+        )
+
+        self.assertEqual(1, result["unit_statuses"]["UNRESOLVED"])
+        self.assertIn("balanced_topology_operation_kind_mismatch", row["notes"])
+
+    def test_balanced_v3_rejects_merge_span_covering_three_paragraphs(self) -> None:
+        paragraphs = (
+            "第一段说明样本范围只包括已经登记的记录。",
+            "第二段重复说明分析对象仍限于这些登记记录。",
+            "第三段保留独立的方法边界和来源状态。",
+        )
+        source_text = "# 方法\n\n" + "\n\n".join(paragraphs) + "\n"
+        _, run_dir, unit = self.prepare_markdown_unit(
+            source_text, name="balanced-merge-overbroad-span"
+        )
+        span = self.masked_line_range_span(
+            unit["masked_text"], "第一段说明", "第三段保留"
+        )
+        revised = unit["masked_text"].replace("\r\n", "\n").replace(
+            paragraphs[0] + "\n\n" + paragraphs[1],
+            paragraphs[0] + paragraphs[1],
+        )
+        rewrites = self.rewrite_dir()
+        bundle = self.v3_topology_bundle(
+            run_dir,
+            unit,
+            masked_text=revised,
+            source_span=span,
+            operation_kind="MERGE_ADJACENT_REDUNDANCY",
+            target_signal="HIERARCHY-ADJACENT-REDUNDANCY",
+            summary="用过宽跨度申报相邻重复段合并",
+        )
+        (rewrites / f"{unit['unit_id']}.json").write_text(
+            json.dumps(bundle, ensure_ascii=False), encoding="utf-8"
+        )
+
+        result = finalizer.finalize(run_dir, rewrites)
+        row = next(
+            item for item in self.final_ledger(run_dir) if item["unit_id"] == unit["unit_id"]
+        )
+
+        self.assertEqual(1, result["unit_statuses"]["UNRESOLVED"])
+        self.assertIn("balanced_merge_source_paragraph_count_invalid", row["notes"])
+
+    def test_balanced_v3_authorizes_net_zero_merge_and_split_separately(self) -> None:
+        first = "第一段说明样本范围只包括已经登记的记录。"
+        second = "第二段重复说明分析对象仍限于这些登记记录。"
+        overloaded = (
+            "第三段先说明标签归并保留否定和来源状态。"
+            "随后说明缺项记录仍进入待核清单。"
+        )
+        fourth = "第四段单独讨论比较结果的适用边界。"
+        source_text = (
+            "# 方法\n\n" + "\n\n".join((first, second, overloaded, fourth)) + "\n"
+        )
+        _, run_dir, unit = self.prepare_markdown_unit(
+            source_text, name="balanced-net-zero-topology"
+        )
+        merge_span = self.masked_line_range_span(
+            unit["masked_text"], "第一段说明", "第二段重复", span_id="S1"
+        )
+        split_span = self.masked_line_span(
+            unit["masked_text"], "第三段先说明", span_id="S2"
+        )
+        revised = (
+            unit["masked_text"]
+            .replace("\r\n", "\n")
+            .replace(first + "\n\n" + second, first + second)
+            .replace(
+                overloaded,
+                "第三段先说明标签归并保留否定和来源状态。\n\n"
+                "随后说明缺项记录仍进入待核清单。",
+            )
+        )
+        signals = [
+            "HIERARCHY-ADJACENT-REDUNDANCY",
+            "HIERARCHY-OVERLOADED-PARAGRAPH",
+        ]
+        bundle = self.authoring_bound_bundle(
+            run_dir,
+            unit,
+            {
+                "decision": "REWRITE",
+                "masked_text": revised,
+                "keep_reasons": {},
+                "rewrite_intent": {
+                    "summary": "分别合并相邻重复段并拆开职责过载段",
+                    "operations": [
+                        {
+                            "id": "O1",
+                            "kind": "MERGE_ADJACENT_REDUNDANCY",
+                            "source_span_ids": ["S1"],
+                            "target_signals": [signals[0]],
+                            "summary": "合并重复说明同一材料范围的相邻两段",
+                        },
+                        {
+                            "id": "O2",
+                            "kind": "SPLIT_OVERLOADED_PARAGRAPH",
+                            "source_span_ids": ["S2"],
+                            "target_signals": [signals[1]],
+                            "summary": "拆开同时承担归并规则和缺项处置的段落",
+                        },
+                    ],
+                    "source_spans": [merge_span, split_span],
+                    "target_signals": signals,
+                },
+            },
+        )
+        rewrites = self.rewrite_dir()
+        (rewrites / f"{unit['unit_id']}.json").write_text(
+            json.dumps(bundle, ensure_ascii=False), encoding="utf-8"
+        )
+
+        result = finalizer.finalize(run_dir, rewrites)
+        structural = json.loads(
+            (run_dir / "validation" / f"{unit['unit_id']}.structural.json").read_text(
+                encoding="utf-8"
+            )
+        )
+
+        topology = structural["non_structural_paragraph_order_check"]
+        row = next(
+            item for item in self.final_ledger(run_dir) if item["unit_id"] == unit["unit_id"]
+        )
+        self.assertEqual(
+            1,
+            result["unit_statuses"].get("DONE", 0),
+            {"ledger": row, "topology": topology},
+        )
+        self.assertTrue(topology["paragraph_topology_changed"])
+        self.assertEqual(1, len(topology["detected_paragraph_merges"]))
+        self.assertEqual(1, len(topology["detected_paragraph_splits"]))
+        self.assertEqual(2, topology["authorized_topology_operations"])
+
+    def test_balanced_v3_rejects_merge_across_standalone_protected_anchor(self) -> None:
+        source_text = (
+            "# 讨论\n\n"
+            "第一段说明材料范围只包括已经登记的记录。\n\n"
+            "> “该引语必须保留在两个论述段之间。”\n\n"
+            "第二段重复说明分析对象仍限于这些登记记录。\n"
+        )
+        _, run_dir, unit = self.prepare_markdown_unit(
+            source_text, name="balanced-merge-protected-anchor"
+        )
+        span = self.masked_line_range_span(
+            unit["masked_text"], "第一段说明", "第二段重复"
+        )
+        normalized = unit["masked_text"].replace("\r\n", "\n")
+        revised = normalized.replace("\n\n", "", 2)
+        bundle = self.v3_topology_bundle(
+            run_dir,
+            unit,
+            masked_text=revised,
+            source_span=span,
+            operation_kind="MERGE_ADJACENT_REDUNDANCY",
+            target_signal="HIERARCHY-ADJACENT-REDUNDANCY",
+            summary="错误地跨独立引语锚点合并相邻论述段",
+        )
+        rewrites = self.rewrite_dir()
+        (rewrites / f"{unit['unit_id']}.json").write_text(
+            json.dumps(bundle, ensure_ascii=False), encoding="utf-8"
+        )
+
+        result = finalizer.finalize(run_dir, rewrites)
+        row = next(
+            item for item in self.final_ledger(run_dir) if item["unit_id"] == unit["unit_id"]
+        )
+
+        self.assertEqual(1, result["unit_statuses"]["UNRESOLVED"])
+        self.assertIn("protected", row["notes"].lower())
+
+    def test_light_rejects_even_declared_paragraph_split(self) -> None:
+        overloaded = (
+            "本段先界定样本范围，只纳入已经登记的记录。"
+            "随后说明标签归并保留否定和来源状态。"
+        )
+        source_text = "# 方法\n\n" + overloaded + "\n"
+        _, run_dir, unit = self.prepare_markdown_unit(
+            source_text,
+            intensity="LIGHT",
+            name="light-declared-topology",
+        )
+        span = self.masked_line_span(unit["masked_text"], "本段先界定")
+        revised = unit["masked_text"].replace(
+            overloaded,
+            "本段先界定样本范围，只纳入已经登记的记录。\n\n"
+            "随后说明标签归并保留否定和来源状态。",
+        )
+        bundle = self.v3_topology_bundle(
+            run_dir,
+            unit,
+            masked_text=revised,
+            source_span=span,
+            operation_kind="SPLIT_OVERLOADED_PARAGRAPH",
+            target_signal="HIERARCHY-OVERLOADED-PARAGRAPH",
+            summary="在 LIGHT 范围内错误申报拆分职责过载段落",
+        )
+        rewrites = self.rewrite_dir()
+        (rewrites / f"{unit['unit_id']}.json").write_text(
+            json.dumps(bundle, ensure_ascii=False), encoding="utf-8"
+        )
+
+        result = finalizer.finalize(run_dir, rewrites)
+
+        self.assertEqual(1, result["unit_statuses"]["UNRESOLVED"])
+
+    def test_balanced_rewrite_rejects_protected_block_anchor_move(self) -> None:
+        source_text = (
+            "# 讨论\n\n"
+            "第一段说明材料进入分析前的整理范围，并保留原有对象和限定条件。\n\n"
+            "> “该引语必须逐字保留，并维持原有位置。”\n\n"
+            "第二段说明标签归并的操作边界，否定和来源状态仍分别保存。\n\n"
+            "第三段说明比较时采用的阅读顺序，不把顺序差异写成主次判断。\n"
+        )
+        _, run_dir, unit = self.prepare_markdown_unit(source_text, name="protected-anchor")
+        blocks = preparer.structural_paragraph_blocks(unit["masked_text"])
+        title, first, protected = blocks[0].splitlines()
+        second, third = blocks[1:]
+        masked = title + "\n" + protected + "\n" + first + "\n\n" + second + "\n\n" + third + "\n"
+        rewrites = self.rewrite_dir()
+        (rewrites / f"{unit['unit_id']}.json").write_text(
+            json.dumps(
+                self.voice_bound_bundle(
+                    unit,
+                    {"decision": "REWRITE", "masked_text": masked, "keep_reasons": {}},
+                ),
+                ensure_ascii=False,
+            ),
+            encoding="utf-8",
+        )
+
+        result = finalizer.finalize(run_dir, rewrites)
+        structural = json.loads(
+            (run_dir / "validation" / f"{unit['unit_id']}.structural.json").read_text(
+                encoding="utf-8"
+            )
+        )
+
+        self.assertEqual(1, result["unit_statuses"]["UNRESOLVED"])
+        self.assertTrue(
+            structural["non_structural_paragraph_order_check"]["protected_anchor_reordered"]
+        )
+        self.assertFalse((run_dir / "rendered_review").exists())
+
+    def test_light_rejects_sentence_reorder_but_balanced_allows_it(self) -> None:
+        source_text = (
+            "# 结果\n\n"
+            "样本筛选范围限于已登记材料。缺项记录暂时留在待核清单。当前段落不评价材料质量。\n\n"
+            "下一段说明标签归并边界，并保留原记录中的限定条件。\n"
+        )
+        for intensity, expected_status in (("LIGHT", "UNRESOLVED"), ("BALANCED", "DONE")):
+            with self.subTest(intensity=intensity):
+                _, run_dir, unit = self.prepare_markdown_unit(
+                    source_text,
+                    intensity=intensity,
+                    name=f"sentence-{intensity.lower()}",
+                )
+                blocks = preparer.structural_paragraph_blocks(unit["masked_text"])
+                title, first = blocks[0].splitlines()
+                reordered = (
+                    "缺项记录暂时留在待核清单。样本筛选范围限于已登记材料。"
+                    "当前段落不评价材料质量。"
+                )
+                masked = title + "\n" + reordered + "\n\n" + blocks[1] + "\n"
+                rewrites = self.root / f"rewrites-sentence-{intensity.lower()}"
+                rewrites.mkdir()
+                (rewrites / f"{unit['unit_id']}.json").write_text(
+                    json.dumps(
+                        self.voice_bound_bundle(
+                            unit,
+                            {
+                                "decision": "REWRITE",
+                                "masked_text": masked,
+                                "keep_reasons": {},
+                            },
+                        ),
+                        ensure_ascii=False,
+                    ),
+                    encoding="utf-8",
+                )
+
+                result = finalizer.finalize(run_dir, rewrites)
+
+                self.assertEqual(1, result["unit_statuses"][expected_status])
+                if intensity == "LIGHT":
+                    row = next(
+                        item
+                        for item in self.final_ledger(run_dir)
+                        if item["unit_id"] == unit["unit_id"]
+                    )
+                    self.assertEqual("light_sentence_reorder_not_allowed", row["notes"])
 
     def assert_paired_quality_review_candidate(
         self,
@@ -330,6 +1537,175 @@ class LongDocumentFinalizationTests(unittest.TestCase):
             "fragments": fragments,
         }
 
+    def structural_transaction_v2_bundle(
+        self, run_dir: Path, units: list[dict]
+    ) -> dict:
+        bundle = self.structural_transaction_bundle(run_dir, units)
+        bundle["schema_version"] = "humanize-structural-transaction-bundle/v2"
+        chunks = {
+            unit["unit_id"]: json.loads(
+                (run_dir / "chunks" / f"{unit['unit_id']}.json").read_text(
+                    encoding="utf-8"
+                )
+            )
+            for unit in units
+        }
+        unit_ids = [unit["unit_id"] for unit in units]
+        ordered_refs, source_map = finalizer._transaction_source_inventory(
+            unit_ids, chunks
+        )
+        for fragment in bundle["fragments"]:
+            plan = finalizer._validate_structural_transaction_fragment_plan(
+                fragment,
+                target_unit_id=fragment["target_unit_id"],
+                ordered_source_refs=ordered_refs,
+                source_map=source_map,
+            )
+            baseline = str(plan["_baseline_masked_text"])
+            candidate = str(fragment["masked_text"])
+            before_lines = baseline.replace("\r\n", "\n").replace(
+                "\r", "\n"
+            ).splitlines(keepends=True)
+            after_lines = candidate.replace("\r\n", "\n").replace(
+                "\r", "\n"
+            ).splitlines(keepends=True)
+            matcher = __import__("difflib").SequenceMatcher(
+                a=before_lines, b=after_lines, autojunk=False
+            )
+            ranges = []
+            for tag, before_start, before_end, _after_start, _after_end in matcher.get_opcodes():
+                if tag == "equal":
+                    continue
+                if before_end > before_start:
+                    start_line = before_start + 1
+                    end_line = before_end
+                else:
+                    start_line = max(1, before_start)
+                    end_line = start_line
+                ranges.append((start_line, end_line))
+            if ranges:
+                spans = []
+                operations = []
+                signals = []
+                for index, (start_line, end_line) in enumerate(ranges, 1):
+                    span_id = f"S{index}"
+                    signal = f"STYLE-TRANSACTION-LOCAL-{index}"
+                    spans.append(
+                        {
+                            "id": span_id,
+                            "start_line": start_line,
+                            "end_line": end_line,
+                            "sha256": hashlib.sha256(
+                                "".join(before_lines[start_line - 1 : end_line]).encode(
+                                    "utf-8"
+                                )
+                            ).hexdigest(),
+                        }
+                    )
+                    operations.append(
+                        {
+                            "id": f"O{index}",
+                            "kind": "REWRITE_STYLE_SHELL",
+                            "source_span_ids": [span_id],
+                            "target_signals": [signal],
+                            "summary": "删除目标片段中的空泛强调壳并保留原有观察对象",
+                        }
+                    )
+                    signals.append(signal)
+                fragment["local_rewrite_intent"] = {
+                    "decision": "REWRITE",
+                    "rewrite_intent": {
+                        "summary": "删除目标片段中的空泛强调壳并保留原有观察对象",
+                        "operations": operations,
+                        "source_spans": spans,
+                        "target_signals": signals,
+                    },
+                }
+            else:
+                evidence_line = next(
+                    index
+                    for index, line in enumerate(before_lines, 1)
+                    if re.search(r"[\u3400-\u9fff]", line)
+                )
+                fragment["local_rewrite_intent"] = {
+                    "decision": "NO_CHANGE",
+                    "reason": "该目标片段只承接结构移动，保留段内原有对象和措辞",
+                    "evidence_spans": [
+                        {
+                            "id": "S1",
+                            "start_line": evidence_line,
+                            "end_line": evidence_line,
+                            "sha256": hashlib.sha256(
+                                before_lines[evidence_line - 1].encode("utf-8")
+                            ).hexdigest(),
+                        }
+                    ],
+                }
+        return bundle
+
+    def set_transaction_fragment_local_no_change(
+        self,
+        bundle: dict,
+        run_dir: Path,
+        units: list[dict],
+        *,
+        fragment_index: int = 0,
+    ) -> None:
+        chunks = {
+            unit["unit_id"]: json.loads(
+                (run_dir / "chunks" / f"{unit['unit_id']}.json").read_text(
+                    encoding="utf-8"
+                )
+            )
+            for unit in units
+        }
+        unit_ids = [unit["unit_id"] for unit in units]
+        ordered_refs, source_map = finalizer._transaction_source_inventory(
+            unit_ids, chunks
+        )
+        fragment = bundle["fragments"][fragment_index]
+        plan = finalizer._validate_structural_transaction_fragment_plan(
+            fragment,
+            target_unit_id=fragment["target_unit_id"],
+            ordered_source_refs=ordered_refs,
+            source_map=source_map,
+        )
+        baseline = str(plan["_baseline_masked_text"])
+        fragment["masked_text"] = baseline
+        for target_group, block in zip(
+            fragment["target_groups"],
+            preparer.structural_paragraph_blocks(baseline),
+        ):
+            target_group["target_paragraph_sha256"] = hashlib.sha256(
+                block.encode("utf-8")
+            ).hexdigest()
+        if "值得注意的是" in baseline:
+            fragment["keep_reasons"] = {
+                "LEX-EMPH-01": "课程原段用该提示明确切换观察对象，保留其教学定位功能"
+            }
+        lines = baseline.replace("\r\n", "\n").replace("\r", "\n").splitlines(
+            keepends=True
+        )
+        evidence_line = next(
+            index
+            for index, line in enumerate(lines, 1)
+            if re.search(r"[\u3400-\u9fff]", line)
+        )
+        fragment["local_rewrite_intent"] = {
+            "decision": "NO_CHANGE",
+            "reason": "该目标片段只承接结构移动，保留段内原有对象和措辞",
+            "evidence_spans": [
+                {
+                    "id": "S1",
+                    "start_line": evidence_line,
+                    "end_line": evidence_line,
+                    "sha256": hashlib.sha256(
+                        lines[evidence_line - 1].encode("utf-8")
+                    ).hexdigest(),
+                }
+            ],
+        }
+
     def structural_transaction_decline(
         self,
         run_dir: Path,
@@ -445,9 +1821,21 @@ class LongDocumentFinalizationTests(unittest.TestCase):
         self.assertIsInstance(payload["integrity_changes"], dict)
         self.assertIn(
             payload["process_containment"],
-            {"NOT_RUN", "WINDOWS_JOB_OBJECT", "POSIX_PROCESS_GROUP"},
+            {
+                "NOT_RUN",
+                "WINDOWS_JOB_OBJECT",
+                "LINUX_SUBREAPER_PROCESS_GROUP",
+                "LINUX_SUBREAPER_UNAVAILABLE",
+                "POSIX_SUBREAPER_UNSUPPORTED",
+                "UNAVAILABLE",
+            },
         )
         self.assertIn(payload["descendant_cleanup"], {"NOT_RUN", "PASS", "FAIL"})
+        self.assertIsInstance(payload["timed_out"], bool)
+        self.assertTrue(
+            payload["timeout_seconds"] is None
+            or isinstance(payload["timeout_seconds"], float)
+        )
 
     def test_valid_rewrite_restores_protected_text_and_writes_diff(self) -> None:
         source, run_dir, unit = self.prepare(
@@ -514,6 +1902,8 @@ class LongDocumentFinalizationTests(unittest.TestCase):
                 "lexicon_sha256",
                 "report_extractor_sha256",
                 "runtime_contract_sha256",
+                "paired_quality_verifier_sha256",
+                "paired_quality_contract_sha256",
             },
             set(request["policy_hashes"]),
         )
@@ -936,6 +2326,45 @@ class LongDocumentFinalizationTests(unittest.TestCase):
         self.assertEqual("REVIEW", result["status"])
         self.assertIn("structural_locked_paragraph_moved_or_merged", row["notes"])
 
+    def test_structural_default_mapping_cannot_hide_payload_swap(self) -> None:
+        _source, run_dir, unit = self.prepare(
+            "甲对象的作用落在局部条件上。\n\n乙对象的限制来自边界条件。\n",
+            intensity="STRUCTURAL",
+        )
+        blocks = preparer.structural_paragraph_blocks(unit["masked_text"])
+        source_ids = [item["paragraph_id"] for item in unit["structural_paragraphs"]]
+        target_text = "\n\n".join([blocks[1], blocks[0]]) + "\n"
+        # Deliberately retain the default one-to-one source IDs.  The target
+        # text has moved payload, but the old plan implementation treated this
+        # as no structural change.
+        plan = self.structural_plan(
+            unit,
+            target_text,
+            [[source_ids[0]], [source_ids[1]]],
+        )
+        rewrites = self.rewrite_dir()
+        (rewrites / f"{unit['unit_id']}.json").write_text(
+            json.dumps(
+                self.voice_bound_bundle(
+                    unit,
+                    {
+                        "decision": "REWRITE",
+                        "masked_text": target_text,
+                        "structural_plan": plan,
+                    },
+                ),
+                ensure_ascii=False,
+            ),
+            encoding="utf-8",
+        )
+
+        result = finalizer.finalize(run_dir, rewrites)
+        self.assertEqual("REVIEW", result["status"])
+        self.assertEqual("NOT_EVALUATED", result["structural_semantic_mapping"])
+        row = next(item for item in self.final_ledger(run_dir) if item["unit_id"] == unit["unit_id"])
+        self.assertEqual("DONE", row["status"])
+        self.assertEqual("PENDING_EXTERNAL_REVIEW", row["structural_semantic_review_status"])
+
     def test_structural_plan_cannot_detach_formula_from_its_source_paragraph(self) -> None:
         _source, run_dir, unit = self.prepare(
             "\\section{讨论}\n\n第一段说明对象 $x=1$。\n\n"
@@ -1265,6 +2694,68 @@ class LongDocumentFinalizationTests(unittest.TestCase):
         self.assertEqual(0, second["structural_transaction_candidates_pending"])
         self.assertTrue(second["structural_transaction_scope_complete"])
 
+    def test_v5_scaffold_accepts_bound_transaction_member_substitution(self) -> None:
+        _source, run_dir, units = self.prepare_structural_pair()
+        rewrites = self.root / "scaffold-rewrites"
+        scaffolder.scaffold(run_dir, rewrites, "REWRITE")
+        for unit in units:
+            (rewrites / f"{unit['unit_id']}.json").unlink()
+        bundle = self.structural_transaction_bundle(run_dir, units)
+        (rewrites / "pair.transaction.json").write_text(
+            json.dumps(bundle, ensure_ascii=False), encoding="utf-8"
+        )
+
+        result = finalizer.finalize(run_dir, rewrites)
+
+        self.assertEqual(1, result["structural_transaction_candidates_executed"])
+        self.assertEqual(0, result["structural_transaction_candidates_pending"])
+        self.assertEqual("REVIEW_CANDIDATE", result["publish_state"])
+        self.assertEqual(
+            {"DONE"},
+            {
+                row["status"]
+                for row in self.final_ledger(run_dir)
+                if row["unit_id"] in {unit["unit_id"] for unit in units}
+            },
+        )
+
+    def test_v5_scaffold_decline_does_not_substitute_for_unit_bundles(self) -> None:
+        _source, run_dir, units = self.prepare_structural_pair()
+        rewrites = self.root / "scaffold-rewrites"
+        scaffolder.scaffold(run_dir, rewrites, "NO_CHANGE")
+        for unit in units:
+            (rewrites / f"{unit['unit_id']}.json").unlink()
+        decline = self.structural_transaction_decline(run_dir, units)
+        (rewrites / "pair.decline.json").write_text(
+            json.dumps(decline, ensure_ascii=False), encoding="utf-8"
+        )
+
+        with self.assertRaisesRegex(ValueError, "bundle coverage mismatch"):
+            finalizer.finalize(run_dir, rewrites)
+        self.assertFalse((run_dir / "rendered").exists())
+        self.assertFalse((run_dir / "rendered_partial").exists())
+        self.assertFalse((run_dir / "rendered_review").exists())
+
+    def test_v5_no_change_scaffold_cannot_be_replaced_by_transaction(self) -> None:
+        _source, run_dir, units = self.prepare_structural_pair()
+        rewrites = self.root / "scaffold-rewrites"
+        scaffolder.scaffold(run_dir, rewrites, "NO_CHANGE")
+        for unit in units:
+            (rewrites / f"{unit['unit_id']}.json").unlink()
+        bundle = self.structural_transaction_bundle(run_dir, units)
+        (rewrites / "pair.transaction.json").write_text(
+            json.dumps(bundle, ensure_ascii=False), encoding="utf-8"
+        )
+
+        with self.assertRaisesRegex(
+            ValueError,
+            "transaction substitution requires REWRITE decision",
+        ):
+            finalizer.finalize(run_dir, rewrites)
+        self.assertFalse((run_dir / "rendered").exists())
+        self.assertFalse((run_dir / "rendered_partial").exists())
+        self.assertFalse((run_dir / "rendered_review").exists())
+
     def test_structural_transaction_passes_two_fragments_and_document_gate(self) -> None:
         source, run_dir, units = self.prepare_structural_pair()
         rewrites = self.rewrite_dir()
@@ -1292,7 +2783,7 @@ class LongDocumentFinalizationTests(unittest.TestCase):
                 bundle["transaction_id"]
             ]["disposition"],
         )
-        self.assertEqual("PASS", transaction["atomic_gate_status"])
+        self.assertEqual("PASS", transaction["atomic_gate_status"], transaction)
         self.assertEqual("PASS", transaction["source_member_claim_status"])
         self.assertEqual(
             {unit["unit_id"]: "PASS" for unit in units},
@@ -1342,6 +2833,211 @@ class LongDocumentFinalizationTests(unittest.TestCase):
             request["transaction_binding_sha256"],
         )
         self.assertEqual(2, len(request["frozen_pair"]["compound_refs"]))
+        self.assertEqual("REVIEW", result["rewrite_intent_coverage_status"])
+        self.assertEqual(2, result["rewrite_intent_units_review"])
+        self.assertEqual(0, result["rewrite_intent_units_missing"])
+
+    def test_structural_transaction_v2_binds_fragment_intent_and_evidence(self) -> None:
+        _source, run_dir, units = self.prepare_structural_pair()
+        rewrites = self.rewrite_dir()
+        bundle = self.structural_transaction_v2_bundle(run_dir, units)
+        (rewrites / "pair.transaction.json").write_text(
+            json.dumps(bundle, ensure_ascii=False), encoding="utf-8"
+        )
+
+        result = finalizer.finalize(run_dir, rewrites)
+        transaction = result["structural_transaction_results"][
+            bundle["transaction_id"]
+        ]
+
+        self.assertEqual("PASS", transaction["atomic_gate_status"])
+        self.assertEqual("PASS", result["rewrite_intent_coverage_status"])
+        self.assertEqual(2, result["rewrite_intent_units_pass"])
+        self.assertEqual(0, result["rewrite_intent_units_review"])
+        self.assertEqual(0, result["rewrite_intent_units_missing"])
+        transaction_request = result["structural_transaction_review_requests"][
+            bundle["transaction_id"]
+        ]
+        for unit in units:
+            unit_id = unit["unit_id"]
+            record = result["rewrite_intent_evidence"][unit_id]
+            evidence = json.loads(
+                (run_dir / record["path"]).read_text(encoding="utf-8")
+            )
+            paired = result["paired_quality_review_requests"][unit_id]
+            body = {
+                key: value
+                for key, value in evidence.items()
+                if key != "evidence_sha256"
+            }
+            self.assertEqual(
+                "humanize-transaction-fragment-rewrite-intent-evidence/v1",
+                evidence["schema_version"],
+            )
+            self.assertEqual("PASS", evidence["status"])
+            self.assertEqual(transaction["bundle_sha256"], evidence["bundle_sha256"])
+            self.assertEqual(
+                paired["request_sha256"],
+                evidence["paired_quality_review_request_sha256"],
+            )
+            self.assertEqual(
+                transaction_request["request_sha256"],
+                evidence["structural_transaction_review_request_sha256"],
+            )
+            self.assertEqual(
+                hashlib.sha256(
+                    finalizer._canonical_json(body).encode("utf-8")
+                ).hexdigest(),
+                evidence["evidence_sha256"],
+            )
+            self.assertEqual(record["path"], paired["rewrite_intent_evidence_path"])
+
+    def test_structural_transaction_v2_allows_fragment_local_no_change(self) -> None:
+        _source, run_dir, units = self.prepare_structural_pair()
+        rewrites = self.rewrite_dir()
+        bundle = self.structural_transaction_v2_bundle(run_dir, units)
+        self.set_transaction_fragment_local_no_change(bundle, run_dir, units)
+        (rewrites / "pair.transaction.json").write_text(
+            json.dumps(bundle, ensure_ascii=False), encoding="utf-8"
+        )
+
+        result = finalizer.finalize(run_dir, rewrites)
+        transaction = result["structural_transaction_results"][
+            bundle["transaction_id"]
+        ]
+
+        self.assertEqual("PASS", transaction["atomic_gate_status"], transaction)
+        self.assertEqual("PASS", result["rewrite_intent_coverage_status"])
+        evidence = result["rewrite_intent_evidence"][units[0]["unit_id"]]
+        payload = json.loads((run_dir / evidence["path"]).read_text(encoding="utf-8"))
+        self.assertEqual("NO_CHANGE", payload["decision"])
+        self.assertEqual("NOT_APPLICABLE", payload["intent_diff_binding"]["status"])
+
+    def test_structural_transaction_v2_rejects_fragment_intent_hash_mismatch(self) -> None:
+        _source, run_dir, units = self.prepare_structural_pair()
+        rewrites = self.rewrite_dir()
+        bundle = self.structural_transaction_v2_bundle(run_dir, units)
+        local = bundle["fragments"][0]["local_rewrite_intent"]
+        local["rewrite_intent"]["source_spans"][0]["sha256"] = "f" * 64
+        (rewrites / "pair.transaction.json").write_text(
+            json.dumps(bundle, ensure_ascii=False), encoding="utf-8"
+        )
+
+        result = finalizer.finalize(run_dir, rewrites)
+        transaction = result["structural_transaction_results"][
+            bundle["transaction_id"]
+        ]
+
+        self.assertEqual("ROLLED_BACK", transaction["atomic_gate_status"])
+        self.assertTrue(
+            any("rewrite_intent_source_spans_sha256_mismatch" in error for error in transaction["errors"]),
+            transaction,
+        )
+        self.assertEqual({}, result["rewrite_intent_evidence"])
+
+    def test_structural_transaction_v2_rejects_local_no_change_with_hidden_edit(self) -> None:
+        _source, run_dir, units = self.prepare_structural_pair()
+        rewrites = self.rewrite_dir()
+        bundle = self.structural_transaction_v2_bundle(run_dir, units)
+        self.set_transaction_fragment_local_no_change(bundle, run_dir, units)
+        fragment = bundle["fragments"][0]
+        fragment["masked_text"] = fragment["masked_text"].replace(
+            "当前观察对象", "当前观察范围", 1
+        )
+        for target_group, block in zip(
+            fragment["target_groups"],
+            preparer.structural_paragraph_blocks(fragment["masked_text"]),
+        ):
+            target_group["target_paragraph_sha256"] = hashlib.sha256(
+                block.encode("utf-8")
+            ).hexdigest()
+        (rewrites / "pair.transaction.json").write_text(
+            json.dumps(bundle, ensure_ascii=False), encoding="utf-8"
+        )
+
+        result = finalizer.finalize(run_dir, rewrites)
+        transaction = result["structural_transaction_results"][
+            bundle["transaction_id"]
+        ]
+
+        self.assertEqual("ROLLED_BACK", transaction["atomic_gate_status"])
+        self.assertTrue(
+            any("transaction_fragment_NO_CHANGE_has_local_diff" in error for error in transaction["errors"]),
+            transaction,
+        )
+        self.assertEqual({}, result["rewrite_intent_evidence"])
+
+    def test_structural_transaction_v2_rejects_undeclared_second_local_change(self) -> None:
+        _source, run_dir, units = self.prepare_structural_pair()
+        rewrites = self.rewrite_dir()
+        bundle = self.structural_transaction_v2_bundle(run_dir, units)
+        fragment = bundle["fragments"][0]
+        fragment["masked_text"] = fragment["masked_text"].replace(
+            "另一组观察对象", "另一组观察范围", 1
+        )
+        for target_group, block in zip(
+            fragment["target_groups"],
+            preparer.structural_paragraph_blocks(fragment["masked_text"]),
+        ):
+            target_group["target_paragraph_sha256"] = hashlib.sha256(
+                block.encode("utf-8")
+            ).hexdigest()
+        (rewrites / "pair.transaction.json").write_text(
+            json.dumps(bundle, ensure_ascii=False), encoding="utf-8"
+        )
+
+        result = finalizer.finalize(run_dir, rewrites)
+        transaction = result["structural_transaction_results"][
+            bundle["transaction_id"]
+        ]
+
+        self.assertEqual("ROLLED_BACK", transaction["atomic_gate_status"])
+        self.assertTrue(
+            any("rewrite_intent_diff_outside_declared_spans" in error for error in transaction["errors"]),
+            transaction,
+        )
+        self.assertEqual({}, result["rewrite_intent_evidence"])
+
+    def test_structural_transaction_explicit_null_schema_is_not_a_unit_bundle(self) -> None:
+        _source, run_dir, units = self.prepare_structural_pair()
+        rewrites = self.rewrite_dir()
+        bundle = self.structural_transaction_bundle(run_dir, units)
+        bundle["schema_version"] = None
+        (rewrites / "pair.transaction.json").write_text(
+            json.dumps(bundle, ensure_ascii=False), encoding="utf-8"
+        )
+
+        with self.assertRaisesRegex(
+            ValueError, "structural_transaction_bundle_schema_invalid"
+        ):
+            finalizer.finalize(run_dir, rewrites)
+
+    def test_structural_transaction_v2_replay_keeps_intent_evidence_bytes(self) -> None:
+        _source, run_dir, units = self.prepare_structural_pair()
+        rewrites = self.rewrite_dir()
+        bundle = self.structural_transaction_v2_bundle(run_dir, units)
+        (rewrites / "pair.transaction.json").write_text(
+            json.dumps(bundle, ensure_ascii=False), encoding="utf-8"
+        )
+        first = finalizer.finalize(run_dir, rewrites)
+        evidence_before = {
+            unit["unit_id"]: (run_dir / first["rewrite_intent_evidence"][unit["unit_id"]]["path"]).read_bytes()
+            for unit in units
+        }
+
+        second = finalizer.finalize(run_dir, rewrites)
+
+        self.assertEqual("PASS", second["idempotency"])
+        self.assertEqual(
+            evidence_before,
+            {
+                unit["unit_id"]: (
+                    run_dir
+                    / second["rewrite_intent_evidence"][unit["unit_id"]]["path"]
+                ).read_bytes()
+                for unit in units
+            },
+        )
 
     def test_structural_transaction_single_fragment_failure_rolls_back_both(self) -> None:
         source, run_dir, units = self.prepare_structural_pair()
@@ -1523,6 +3219,71 @@ class LongDocumentFinalizationTests(unittest.TestCase):
             ValueError, "member also has standalone rewrite"
         ):
             finalizer.finalize(run_dir, rewrites)
+
+    def test_structural_transaction_shape_rejects_duplicate_members(self) -> None:
+        original_root = self.root
+        for attack in ("binding", "fragment"):
+            with self.subTest(attack=attack), tempfile.TemporaryDirectory() as temp:
+                self.root = Path(temp)
+                _source, run_dir, units = self.prepare_structural_pair()
+                rewrites = self.rewrite_dir()
+                bundle = self.structural_transaction_bundle(run_dir, units)
+                if attack == "binding":
+                    bundle["unit_bindings"][1] = dict(bundle["unit_bindings"][0])
+                else:
+                    bundle["fragments"][1]["target_unit_id"] = bundle[
+                        "fragments"
+                    ][0]["target_unit_id"]
+                (rewrites / "pair.transaction.json").write_text(
+                    json.dumps(bundle, ensure_ascii=False), encoding="utf-8"
+                )
+                with self.assertRaisesRegex(
+                    ValueError,
+                    "unit_binding_duplicate|fragment_target_duplicate",
+                ):
+                    finalizer.collect_rewrites(rewrites)
+        self.root = original_root
+
+    def test_structural_transaction_atomic_count_gate_rejects_half_state(self) -> None:
+        result = {
+            "unit_ids": ["U-one", "U-two"],
+            "atomic_gate_status": "PASS",
+        }
+        half = {
+            "U-one": {"status": "DONE"},
+            "U-two": {"status": "UNRESOLVED"},
+        }
+        with self.assertRaisesRegex(ValueError, "acceptance_partial"):
+            finalizer._structural_transaction_atomic_counts(
+                result,
+                half,
+                published=False,
+            )
+        result["atomic_gate_status"] = "ROLLED_BACK"
+        with self.assertRaisesRegex(ValueError, "retained_member"):
+            finalizer._structural_transaction_atomic_counts(
+                result,
+                half,
+                published=False,
+            )
+
+        complete = {
+            "U-one": {"status": "DONE"},
+            "U-two": {"status": "DONE"},
+        }
+        result["atomic_gate_status"] = "PASS"
+        self.assertEqual(
+            {
+                "atomic_member_count": 2,
+                "accepted_member_count": 2,
+                "published_member_count": 2,
+            },
+            finalizer._structural_transaction_atomic_counts(
+                result,
+                complete,
+                published=True,
+            ),
+        )
 
     def test_transaction_member_cannot_be_claimed_by_two_transactions(self) -> None:
         _source, run_dir, units = self.prepare_structural_pair()
@@ -1812,6 +3573,29 @@ class LongDocumentFinalizationTests(unittest.TestCase):
         second = finalizer.finalize(run_dir, rewrites)
 
         self.assertEqual("FAIL", second["status"])
+        self.assertEqual(rendered_before, _directory_bytes(run_dir / "rendered_review"))
+        self.assertEqual(evidence_before, self.evidence_snapshot(run_dir))
+
+    def test_failed_transaction_v2_intent_rerun_preserves_previous_evidence(self) -> None:
+        _source, run_dir, units = self.prepare_structural_pair()
+        rewrites = self.rewrite_dir()
+        bundle = self.structural_transaction_v2_bundle(run_dir, units)
+        path = rewrites / "pair.transaction.json"
+        path.write_text(json.dumps(bundle, ensure_ascii=False), encoding="utf-8")
+        first = finalizer.finalize(run_dir, rewrites)
+        self.assertEqual("PASS", first["rewrite_intent_coverage_status"])
+        rendered_before = _directory_bytes(run_dir / "rendered_review")
+        evidence_before = self.evidence_snapshot(run_dir)
+
+        bundle["fragments"][0]["local_rewrite_intent"]["rewrite_intent"][
+            "source_spans"
+        ][0]["sha256"] = "f" * 64
+        path.write_text(json.dumps(bundle, ensure_ascii=False), encoding="utf-8")
+
+        second = finalizer.finalize(run_dir, rewrites)
+
+        self.assertEqual("FAIL", second["status"])
+        self.assertTrue(second["failed_attempt"])
         self.assertEqual(rendered_before, _directory_bytes(run_dir / "rendered_review"))
         self.assertEqual(evidence_before, self.evidence_snapshot(run_dir))
 
@@ -2662,6 +4446,45 @@ class LongDocumentFinalizationTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "policy changed after prepare"):
             finalizer.finalize(run_dir, rewrites)
 
+    def test_resealed_old_policy_snapshot_cannot_be_consumed_after_policy_drift(self) -> None:
+        _, run_dir, unit = self.prepare("\\section{例题}\n本题先判断方向。\n")
+        metadata_path = run_dir / "run_metadata.json"
+        metadata = json.loads(metadata_path.read_text(encoding="utf-8"))
+        snapshot = dict(metadata["policy_snapshot"])
+        implementation_hashes = dict(snapshot["implementation_hashes"])
+        implementation_hashes["finalize_script_sha256"] = "0" * 64
+        snapshot["implementation_hashes"] = implementation_hashes
+        metadata["policy_snapshot"] = snapshot
+        metadata["policy_snapshot_sha256"] = preparer.policy_snapshot_sha256(snapshot)
+        metadata_path.write_text(
+            json.dumps(metadata, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
+            encoding="utf-8",
+        )
+        (run_dir / "prepare_integrity.json").write_text(
+            json.dumps(
+                preparer.build_integrity_manifest(run_dir),
+                ensure_ascii=False,
+                indent=2,
+                sort_keys=True,
+            )
+            + "\n",
+            encoding="utf-8",
+        )
+        rewrites = self.rewrite_dir()
+        (rewrites / f"{unit['unit_id']}.json").write_text(
+            json.dumps(
+                self.voice_bound_bundle(
+                    unit,
+                    {"decision": "NO_CHANGE", "reason": "原句已经直接"},
+                ),
+                ensure_ascii=False,
+            ),
+            encoding="utf-8",
+        )
+
+        with self.assertRaisesRegex(ValueError, "run policy snapshot drift"):
+            finalizer.finalize(run_dir, rewrites)
+
     def test_resealed_unit_route_voice_ledger_and_chunk_forgery_fails_source_rebuild(self) -> None:
         _, run_dir, unit = self.prepare("\\section{例题}\n本题先判断方向。\n")
         units_path = run_dir / "units.jsonl"
@@ -2919,6 +4742,24 @@ class LongDocumentFinalizationTests(unittest.TestCase):
         self.assertFalse(result["full_completion_claim_allowed"])
         self.assertEqual(1, result["source_files_changed_since_snapshot"])
         self.assertTrue((run_dir / "rendered_partial").is_dir())
+        summary = finalizer._render_text_summary(result)
+        self.assertIn("source_snapshot=CHANGED count=1", summary)
+        self.assertIn("unit_statuses_do_not_establish_current_source_coverage=true", summary)
+        with (run_dir / "rendered_manifest.csv").open(
+            "r", encoding="utf-8-sig", newline=""
+        ) as handle:
+            manifest = list(csv.DictReader(handle))
+        self.assertTrue(manifest)
+        row = manifest[0]
+        self.assertEqual("LIVE_LOCATION_LABEL_NOT_HASH_TARGET", row["source_path_scope"])
+        self.assertEqual("RENDERED_CANDIDATE_BYTES", row["sha256_scope"])
+        self.assertEqual(row["sha256"], row["rendered_sha256"])
+        self.assertRegex(row["source_snapshot_copy"], r"^source[/\\]F\d+")
+        self.assertRegex(row["source_snapshot_sha256"], r"^[0-9a-f]{64}$")
+        self.assertNotEqual(
+            row["source_snapshot_sha256"],
+            finalizer.sha256(source.read_bytes()),
+        )
 
     def test_source_deleted_after_snapshot_blocks_full_completion(self) -> None:
         source, run_dir, unit = self.prepare("\\section{背景}\n本段保持原有自然表达。\n")
@@ -3232,14 +5073,20 @@ class LongDocumentFinalizationTests(unittest.TestCase):
     def test_check_command_cannot_modify_real_staging_tree(self) -> None:
         source, run_dir, unit = self.prepare("\\section{定义}\n值得注意的是，该段文字自然。\n")
         rewrites = self.rewrite_dir()
+        source_span = self.masked_line_span(
+            unit["masked_text"], "值得注意的是"
+        )
         (rewrites / f"{unit['unit_id']}.json").write_text(
             json.dumps(
-                self.voice_bound_bundle(
+                self.v3_rewrite_bundle(
+                    run_dir,
                     unit,
-                    {
-                        "decision": "REWRITE",
-                        "masked_text": unit["masked_text"].replace("值得注意的是，", ""),
-                    },
+                    masked_text=unit["masked_text"].replace(
+                        "值得注意的是，", ""
+                    ),
+                    source_span=source_span,
+                    summary="删除失去强调作用的程式化提示语",
+                    target_signal="LEX-EMPH-01",
                 ),
                 ensure_ascii=False,
             ),
@@ -3456,6 +5303,7 @@ class LongDocumentFinalizationTests(unittest.TestCase):
         new_request = second["paired_quality_review_requests"][unit["unit_id"]]
         self.assertNotEqual(old_request_sha, new_request["request_sha256"])
         self.assertEqual("", new_request["path"])
+        self.assertEqual("", new_request["rewrite_intent_evidence_path"])
         self.assertFalse(second["failed_attempt_evidence_paths_reusable"])
         self.assertEqual(
             old_metadata, (run_dir / "finalization_metadata.json").read_bytes()
@@ -3659,6 +5507,44 @@ class LongDocumentFinalizationTests(unittest.TestCase):
         self.assertEqual("OSError", payload["error_type"])
         self.assertEqual("", stderr.getvalue())
 
+    def test_text_summary_leads_with_authoritative_delivery_state(self) -> None:
+        stdout = io.StringIO()
+        metadata = {
+            "status": "REVIEW",
+            "exit_code": 2,
+            "delivery_gate_status": "REVIEW",
+            "publish_state": "REVIEW_CANDIDATE",
+            "candidate_assembly_status": "PASS",
+            "paired_quality_gate_status": "PENDING_EXTERNAL_REVIEW",
+            "unit_statuses": {"DONE": 1},
+            "published_path": str(self.root / "run" / "rendered_review"),
+            "compile_check": {"status": "NOT_RUN"},
+            "humanize_completion_claim_allowed": False,
+        }
+        with mock.patch.object(finalizer, "finalize", return_value=metadata), mock.patch.object(
+            sys, "stdout", stdout
+        ):
+            exit_code = finalizer.main(
+                [
+                    "--run-dir",
+                    str(self.root / "run"),
+                    "--rewrites",
+                    str(self.root),
+                    "--format",
+                    "text",
+                ]
+            )
+
+        rendered = stdout.getvalue()
+        self.assertEqual(2, exit_code)
+        self.assertEqual(
+            "DELIVERY REVIEW exit=2 publish=REVIEW_CANDIDATE",
+            rendered.splitlines()[0],
+        )
+        self.assertIn("scope=CANDIDATE_ASSEMBLY_NOT_DELIVERY", rendered)
+        self.assertIn("review_candidate=", rendered)
+        self.assertIn("humanize_completion_claim_allowed=false", rendered)
+
     def test_malformed_rerun_restores_previous_candidate_and_marks_failed_attempt(self) -> None:
         _, run_dir, unit = self.prepare(
             "\\section{定义}\n该定义保持原有平行结构。\n"
@@ -3735,14 +5621,20 @@ class LongDocumentFinalizationTests(unittest.TestCase):
     def test_check_command_side_effects_in_disposable_copy_do_not_publish(self) -> None:
         source, run_dir, unit = self.prepare("\\section{定义}\n值得注意的是，该段文字自然。\n")
         rewrites = self.rewrite_dir()
+        source_span = self.masked_line_span(
+            unit["masked_text"], "值得注意的是"
+        )
         (rewrites / f"{unit['unit_id']}.json").write_text(
             json.dumps(
-                self.voice_bound_bundle(
+                self.v3_rewrite_bundle(
+                    run_dir,
                     unit,
-                    {
-                        "decision": "REWRITE",
-                        "masked_text": unit["masked_text"].replace("值得注意的是，", ""),
-                    },
+                    masked_text=unit["masked_text"].replace(
+                        "值得注意的是，", ""
+                    ),
+                    source_span=source_span,
+                    summary="删除失去强调作用的程式化提示语",
+                    target_signal="LEX-EMPH-01",
                 ),
                 ensure_ascii=False,
             ),
@@ -3833,10 +5725,658 @@ class LongDocumentFinalizationTests(unittest.TestCase):
         self.assert_paired_quality_review_candidate(result)
         self.assertEqual("PASS", result["compile_check"]["descendant_cleanup"])
         self.assertEqual(
-            "WINDOWS_JOB_OBJECT" if os.name == "nt" else "POSIX_PROCESS_GROUP",
+            "WINDOWS_JOB_OBJECT"
+            if os.name == "nt"
+            else "LINUX_SUBREAPER_PROCESS_GROUP",
             result["compile_check"]["process_containment"],
         )
         self.assertNotEqual("LATE_POISON\n", target.read_text(encoding="utf-8"))
+
+    def test_posix_supervisor_enables_subreaper_before_command_spawn(self) -> None:
+        source = finalizer._posix_compile_wrapper_source()
+
+        self.assertLess(
+            source.index("subreaper_enabled = enable_subreaper()"),
+            source.index("child = subprocess.Popen(command, shell=True, close_fds=True)"),
+        )
+        self.assertLess(
+            source.index("signal.signal(watched_signal, raise_supervisor_signal)"),
+            source.index("child = subprocess.Popen(command, shell=True, close_fds=True)"),
+        )
+        self.assertLess(
+            source.index("ignore_supervisor_signals()"),
+            source.index("direct_child_stopped = stop_direct_child(child)"),
+        )
+        interrupted = source.index("except SupervisorSignal as interruption:")
+        self.assertLess(
+            source.index("direct_child_stopped = stop_direct_child(child)", interrupted),
+            source.index("cleanup_ok = cleanup_adopted_descendants", interrupted),
+        )
+        self.assertIn(
+            "cleanup_adopted_descendants(subreaper_enabled)",
+            source,
+        )
+        self.assertIn(
+            "if not subreaper_enabled:",
+            source,
+        )
+
+    def test_posix_supervisor_stop_prefers_graceful_cleanup_to_sigkill(self) -> None:
+        events: list[str] = []
+
+        class Process:
+            pid = 41001
+
+            def terminate(self) -> None:
+                events.append("terminate")
+
+            def wait(self, timeout: float | None = None) -> int:
+                events.append(f"wait:{timeout}")
+                return 143
+
+            def kill(self) -> None:
+                events.append("kill")
+
+        result = finalizer._stop_posix_compile_supervisor(
+            Process(), graceful_timeout=0.01
+        )
+
+        self.assertEqual("PASS", result)
+        self.assertEqual(["terminate", "wait:0.01"], events)
+
+    def test_posix_containment_labels_fail_closed_capability_states(self) -> None:
+        with mock.patch.object(finalizer.sys, "platform", "linux"):
+            self.assertEqual(
+                "LINUX_SUBREAPER_UNAVAILABLE",
+                finalizer._posix_process_containment_label(
+                    supervisor_cleanup="FAIL", return_code=125
+                ),
+            )
+            self.assertEqual(
+                "LINUX_SUBREAPER_PROCESS_GROUP",
+                finalizer._posix_process_containment_label(
+                    supervisor_cleanup="PASS", return_code=125
+                ),
+            )
+        with mock.patch.object(finalizer.sys, "platform", "darwin"):
+            self.assertEqual(
+                "POSIX_SUBREAPER_UNSUPPORTED",
+                finalizer._posix_process_containment_label(
+                    supervisor_cleanup="FAIL", return_code=125
+                ),
+            )
+
+    def test_posix_supervisor_timeout_enumerates_descendants_before_sigkill(self) -> None:
+        events: list[str] = []
+
+        class Process:
+            pid = 41002
+
+            def terminate(self) -> None:
+                events.append("terminate")
+
+            def wait(self, timeout: float | None = None) -> int:
+                events.append(f"wait:{timeout}")
+                if timeout is not None:
+                    raise subprocess.TimeoutExpired("wrapper", timeout)
+                return -9
+
+            def kill(self) -> None:
+                events.append("kill")
+
+        process = Process()
+
+        def kill_descendants(live_process: object) -> str:
+            self.assertIs(process, live_process)
+            self.assertNotIn("kill", events)
+            events.append("enumerate-descendants")
+            return "PASS"
+
+        with mock.patch.object(
+            finalizer,
+            "_kill_linux_descendants_before_supervisor_exit",
+            side_effect=kill_descendants,
+        ), mock.patch.object(
+            finalizer,
+            "_terminate_compile_process_tree",
+            return_value="PASS",
+        ):
+            result = finalizer._stop_posix_compile_supervisor(
+                process, graceful_timeout=0.01
+            )
+
+        self.assertEqual("PASS", result)
+        self.assertLess(events.index("enumerate-descendants"), events.index("kill"))
+
+    def test_run_compile_interruption_routes_posix_wrapper_to_graceful_stop(self) -> None:
+        events: list[str] = []
+
+        class Process:
+            pid = 41003
+            returncode = None
+
+            def communicate(
+                self, _command: str, timeout: float | None = None
+            ) -> None:
+                events.append("communicate")
+                raise KeyboardInterrupt
+
+            def poll(self) -> int | None:
+                return None
+
+            def kill(self) -> None:
+                events.append("kill")
+
+            def wait(self, timeout: float | None = None) -> int:
+                events.append(f"wait:{timeout}")
+                return -15
+
+        process = Process()
+        with mock.patch.object(finalizer.os, "name", "posix"), mock.patch.object(
+            finalizer.subprocess, "Popen", return_value=process
+        ), mock.patch.object(
+            finalizer,
+            "_stop_posix_compile_supervisor",
+            return_value="PASS",
+        ) as graceful_stop:
+            with self.assertRaises(KeyboardInterrupt):
+                finalizer._run_compile("exit 0", self.root)
+
+        graceful_stop.assert_called_once_with(process)
+        self.assertNotIn("kill", events)
+
+    def test_posix_supervisor_stop_swallows_second_interrupt_and_still_kills(self) -> None:
+        events: list[str] = []
+
+        class Process:
+            pid = 41004
+
+            def terminate(self) -> None:
+                events.append("terminate")
+                raise KeyboardInterrupt
+
+            def poll(self) -> int | None:
+                return None
+
+            def wait(self, timeout: float | None = None) -> int:
+                events.append(f"wait:{timeout}")
+                if timeout is not None:
+                    raise subprocess.TimeoutExpired("wrapper", timeout)
+                return -9
+
+            def kill(self) -> None:
+                events.append("kill")
+
+        process = Process()
+        with mock.patch.object(
+            finalizer,
+            "_kill_linux_descendants_before_supervisor_exit",
+            return_value="PASS",
+        ) as kill_descendants, mock.patch.object(
+            finalizer,
+            "_terminate_compile_process_tree",
+            return_value="PASS",
+        ):
+            result = finalizer._stop_posix_compile_supervisor(process)
+
+        self.assertEqual("PASS", result)
+        kill_descendants.assert_called_once_with(process)
+        self.assertLess(events.index("terminate"), events.index("kill"))
+
+    def test_posix_supervisor_stop_swallows_interrupt_during_kill(self) -> None:
+        events: list[str] = []
+
+        class Process:
+            pid = 41005
+
+            def terminate(self) -> None:
+                events.append("terminate")
+
+            def poll(self) -> int | None:
+                return None
+
+            def wait(self, timeout: float | None = None) -> int:
+                events.append(f"wait:{timeout}")
+                if timeout is not None:
+                    raise subprocess.TimeoutExpired("wrapper", timeout)
+                return -9
+
+            def kill(self) -> None:
+                events.append("kill")
+                raise KeyboardInterrupt
+
+        process = Process()
+        with mock.patch.object(
+            finalizer,
+            "_kill_linux_descendants_before_supervisor_exit",
+            return_value="PASS",
+        ), mock.patch.object(
+            finalizer,
+            "_terminate_compile_process_tree",
+            return_value="PASS",
+        ):
+            result = finalizer._stop_posix_compile_supervisor(process)
+
+        self.assertEqual("PASS", result)
+        self.assertIn("kill", events)
+
+    def test_windows_job_handle_closes_when_termination_is_interrupted(self) -> None:
+        closed: list[int] = []
+
+        class Kernel:
+            def TerminateJobObject(self, _job: int, _code: int) -> bool:
+                raise KeyboardInterrupt
+
+            def CloseHandle(self, job: int) -> bool:
+                closed.append(job)
+                return True
+
+        with mock.patch.object(finalizer.os, "name", "nt"):
+            result = finalizer._terminate_compile_process_tree(
+                mock.Mock(), (17, Kernel())
+            )
+
+        self.assertEqual("FAIL", result)
+        self.assertEqual([17], closed)
+
+    def test_windows_uncontained_cleanup_retries_after_interrupt(self) -> None:
+        class Process:
+            pid = 41006
+
+            def __init__(self) -> None:
+                self.alive = True
+                self.kill_calls = 0
+
+            def poll(self) -> int | None:
+                return None if self.alive else -9
+
+            def kill(self) -> None:
+                self.kill_calls += 1
+                if self.kill_calls == 1:
+                    raise KeyboardInterrupt
+                self.alive = False
+
+            def wait(self, timeout: float | None = None) -> int:
+                return -9
+
+        process = Process()
+        with mock.patch.object(finalizer.os, "name", "nt"):
+            result = finalizer._terminate_compile_process_tree(process, None)
+
+        self.assertEqual("PASS", result)
+        self.assertEqual(2, process.kill_calls)
+
+    def test_compile_wrapper_launch_uses_isolated_python_flags(self) -> None:
+        calls: list[tuple[tuple[object, ...], dict[str, object]]] = []
+
+        class Process:
+            returncode = 0
+
+            def communicate(
+                self, _command: str, timeout: float | None = None
+            ) -> tuple[None, None]:
+                return None, None
+
+        process = Process()
+
+        def fake_popen(*args: object, **kwargs: object) -> Process:
+            calls.append((args, kwargs))
+            return process
+
+        def fake_read(fd: int, **_kwargs: object) -> str:
+            os.close(fd)
+            return "PASS"
+
+        with mock.patch.object(finalizer.os, "name", "posix"), mock.patch.object(
+            finalizer.subprocess, "Popen", side_effect=fake_popen
+        ), mock.patch.object(
+            finalizer, "_read_posix_compile_status", side_effect=fake_read
+        ), mock.patch.object(
+            finalizer, "_terminate_compile_process_tree", return_value="PASS"
+        ):
+            result = finalizer._run_compile("exit 0", self.root)
+
+        self.assertEqual("PASS", result["status"])
+        argv = calls[0][0][0]
+        self.assertEqual(
+            [sys.executable, "-I", "-S", "-X", "utf8", "-c"],
+            list(argv[:6]),
+        )
+
+    def test_run_compile_setup_interrupt_closes_posix_status_fds(self) -> None:
+        real_pipe = os.pipe
+        real_close = os.close
+        real_set_inheritable = os.set_inheritable
+        status_read_fd, status_write_fd = real_pipe()
+        closed: list[int] = []
+
+        def fake_close(fd: int) -> None:
+            closed.append(fd)
+            real_close(fd)
+
+        def fake_set_inheritable(fd: int, inheritable: bool) -> None:
+            if fd == status_write_fd:
+                raise KeyboardInterrupt
+            real_set_inheritable(fd, inheritable)
+
+        try:
+            with mock.patch.object(finalizer.os, "name", "posix"), mock.patch.object(
+                finalizer.os, "pipe", return_value=(status_read_fd, status_write_fd)
+            ), mock.patch.object(
+                finalizer.os, "set_inheritable", side_effect=fake_set_inheritable
+            ), mock.patch.object(finalizer.os, "close", side_effect=fake_close):
+                with self.assertRaises(KeyboardInterrupt):
+                    finalizer._run_compile("exit 0", self.root)
+        finally:
+            for fd in (status_read_fd, status_write_fd):
+                try:
+                    real_close(fd)
+                except OSError:
+                    pass
+
+        self.assertIn(status_read_fd, closed)
+        self.assertIn(status_write_fd, closed)
+
+    def test_run_compile_timeout_is_structured_and_routes_posix_cleanup(self) -> None:
+        calls: list[tuple[str, float | None]] = []
+
+        class Process:
+            pid = 41007
+            returncode = 143
+
+            def communicate(
+                self, command: str, timeout: float | None = None
+            ) -> None:
+                calls.append((command, timeout))
+                raise subprocess.TimeoutExpired(command, timeout)
+
+        process = Process()
+
+        def fake_status_read(fd: int, **_kwargs: object) -> str:
+            os.close(fd)
+            return "PASS"
+
+        with mock.patch.object(finalizer.os, "name", "posix"), mock.patch.object(
+            finalizer.sys, "platform", "linux"
+        ), mock.patch.object(
+            finalizer.subprocess, "Popen", return_value=process
+        ), mock.patch.object(
+            finalizer,
+            "_stop_posix_compile_supervisor",
+            return_value="PASS",
+        ) as graceful_stop, mock.patch.object(
+            finalizer,
+            "_read_posix_compile_status",
+            side_effect=fake_status_read,
+        ), mock.patch.object(
+            finalizer,
+            "_terminate_compile_process_tree",
+            return_value="PASS",
+        ) as group_cleanup:
+            result = finalizer._run_compile(
+                "long-running-check", self.root, timeout_seconds=0.25
+            )
+
+        self.assert_compile_check_schema(result)
+        self.assertEqual("FAIL", result["status"])
+        self.assertEqual(124, result["exit_code"])
+        self.assertTrue(result["timed_out"])
+        self.assertEqual(0.25, result["timeout_seconds"])
+        self.assertEqual("PASS", result["descendant_cleanup"])
+        self.assertEqual("LINUX_SUBREAPER_PROCESS_GROUP", result["process_containment"])
+        self.assertIn("timed out after 0.25 seconds", result["stderr"])
+        self.assertEqual([("long-running-check", 0.25)], calls)
+        graceful_stop.assert_called_once_with(process)
+        group_cleanup.assert_called_once_with(process, None)
+
+    def test_run_compile_timeout_assigns_windows_job_before_releasing_command(self) -> None:
+        events: list[str] = []
+        containment = object()
+
+        class Process:
+            returncode = 1
+
+            def communicate(
+                self, command: str, timeout: float | None = None
+            ) -> None:
+                self.command = command
+                events.append(f"communicate:{timeout}")
+                raise subprocess.TimeoutExpired(command, timeout)
+
+            def wait(self, timeout: float | None = None) -> int:
+                events.append(f"wait:{timeout}")
+                return 1
+
+        process = Process()
+
+        def assign_job(_process: object) -> object:
+            self.assertIs(process, _process)
+            events.append("assign-job")
+            return containment
+
+        def terminate_tree(_process: object, active_containment: object) -> str:
+            self.assertIs(process, _process)
+            self.assertIs(containment, active_containment)
+            events.append("terminate-job")
+            return "PASS"
+
+        with mock.patch.object(finalizer.os, "name", "nt"), mock.patch.object(
+            finalizer.subprocess, "CREATE_NO_WINDOW", 0, create=True
+        ), mock.patch.object(
+            finalizer.subprocess, "Popen", return_value=process
+        ), mock.patch.object(
+            finalizer,
+            "_assign_windows_kill_on_close_job",
+            side_effect=assign_job,
+        ), mock.patch.object(
+            finalizer,
+            "_terminate_compile_process_tree",
+            side_effect=terminate_tree,
+        ):
+            result = finalizer._run_compile(
+                "long-running-check", self.root, timeout_seconds=0.5
+            )
+
+        self.assert_compile_check_schema(result)
+        self.assertEqual("FAIL", result["status"])
+        self.assertEqual(124, result["exit_code"])
+        self.assertTrue(result["timed_out"])
+        self.assertEqual(0.5, result["timeout_seconds"])
+        self.assertEqual("PASS", result["descendant_cleanup"])
+        self.assertEqual("WINDOWS_JOB_OBJECT", result["process_containment"])
+        self.assertLess(events.index("assign-job"), events.index("communicate:0.5"))
+        self.assertLess(events.index("communicate:0.5"), events.index("terminate-job"))
+        self.assertLess(events.index("terminate-job"), events.index("wait:1.0"))
+
+    def test_posix_status_read_has_a_deadline_when_writer_stays_open(self) -> None:
+        read_fd, write_fd = os.pipe()
+        started = time.monotonic()
+        try:
+            result = finalizer._read_posix_compile_status(
+                read_fd, timeout_seconds=0.03
+            )
+            read_fd = -1
+        finally:
+            os.close(write_fd)
+            if read_fd >= 0:
+                os.close(read_fd)
+
+        self.assertEqual("FAIL", result)
+        self.assertLess(time.monotonic() - started, 0.5)
+
+    def test_posix_status_reader_requires_one_exact_record(self) -> None:
+        payloads = [
+            b'{"cleanup":"FAIL","command_exit":9}\n'
+            b'{"cleanup":"PASS","command_exit":0}\n',
+            b'{"cleanup":"PASS","command_exit":0,"extra":true}\n',
+            b'{"cleanup":"PASS","command_exit":true}\n',
+            b'{"cleanup":"FAIL","cleanup":"PASS","command_exit":0}\n',
+            b'{"cleanup":"PASS","command_exit":NaN}\n',
+        ]
+        for payload in payloads:
+            read_fd, write_fd = os.pipe()
+            try:
+                os.write(write_fd, payload)
+                os.close(write_fd)
+                write_fd = -1
+                self.assertEqual("FAIL", finalizer._read_posix_compile_status(read_fd))
+                read_fd = -1
+            finally:
+                for fd in (read_fd, write_fd):
+                    if fd >= 0:
+                        os.close(fd)
+
+    def test_posix_status_reader_binds_command_exit_to_wrapper(self) -> None:
+        read_fd, write_fd = os.pipe()
+        try:
+            os.write(write_fd, b'{"cleanup":"PASS","command_exit":0}\n')
+            os.close(write_fd)
+            write_fd = -1
+            self.assertEqual(
+                "FAIL",
+                finalizer._read_posix_compile_status(
+                    read_fd, expected_command_exit=143
+                ),
+            )
+            read_fd = -1
+        finally:
+            for fd in (read_fd, write_fd):
+                if fd >= 0:
+                    os.close(fd)
+
+    @unittest.skipUnless(
+        os.name == "nt" or sys.platform.startswith("linux"),
+        "requires Windows Job Object or Linux subreaper containment",
+    )
+    def test_real_compile_timeout_kills_detached_descendant(self) -> None:
+        poison = self.root / "timeout-poison.txt"
+        child_pid_path = self.root / "timeout-child.pid"
+        spawner_pid_path = self.root / "timeout-spawner.pid"
+        child = self.root / "timeout-child.py"
+        child.write_text(
+            "import os, time\n"
+            "from pathlib import Path\n"
+            f"Path({str(child_pid_path)!r}).write_text(str(os.getpid()), encoding='ascii')\n"
+            "time.sleep(0.8)\n"
+            f"Path({str(poison)!r}).write_text('POISON', encoding='ascii')\n",
+            encoding="utf-8",
+        )
+        spawner = self.root / "timeout-spawner.py"
+        spawner.write_text(
+            "import os, subprocess, sys, time\n"
+            "from pathlib import Path\n"
+            f"Path({str(spawner_pid_path)!r}).write_text(str(os.getpid()), encoding='ascii')\n"
+            "kwargs = {}\n"
+            "if os.name == 'nt':\n"
+            "    kwargs['creationflags'] = subprocess.DETACHED_PROCESS | subprocess.CREATE_NEW_PROCESS_GROUP\n"
+            "else:\n"
+            "    kwargs['start_new_session'] = True\n"
+            f"subprocess.Popen([sys.executable, {str(child)!r}], "
+            "stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, "
+            "stderr=subprocess.DEVNULL, close_fds=True, **kwargs)\n"
+            "time.sleep(30)\n",
+            encoding="utf-8",
+        )
+        command = f'"{sys.executable}" "{spawner}"'
+
+        pids: list[int] = []
+        try:
+            result = finalizer._run_compile(
+                command, self.root, timeout_seconds=0.2
+            )
+            time.sleep(1.0)
+            for path in (child_pid_path, spawner_pid_path):
+                if path.is_file():
+                    pids.append(int(path.read_text(encoding="ascii")))
+
+            self.assert_compile_check_schema(result)
+            self.assertEqual("FAIL", result["status"])
+            self.assertEqual(124, result["exit_code"])
+            self.assertTrue(result["timed_out"])
+            self.assertEqual(0.2, result["timeout_seconds"])
+            self.assertEqual("PASS", result["descendant_cleanup"])
+            self.assertFalse(poison.exists())
+        finally:
+            for pid in pids:
+                try:
+                    os.kill(pid, signal.SIGTERM)
+                except OSError:
+                    pass
+
+    @unittest.skipUnless(
+        sys.platform.startswith("linux"), "requires Linux subreaper semantics"
+    )
+    def test_posix_wrapper_signal_cleans_setsids_descendant_before_exit(self) -> None:
+        target = self.root / "late-poison.txt"
+        started = self.root / "detached-started.txt"
+        child = self.root / "detached-child.py"
+        child.write_text(
+            "import os, time\n"
+            "from pathlib import Path\n"
+            f"Path({str(started)!r}).write_text(str(os.getpid()), encoding='ascii')\n"
+            "time.sleep(0.8)\n"
+            f"Path({str(target)!r}).write_text('POISON', encoding='ascii')\n",
+            encoding="utf-8",
+        )
+        spawner = self.root / "long-running-spawner.py"
+        spawner.write_text(
+            "import subprocess, sys, time\n"
+            f"subprocess.Popen([sys.executable, {str(child)!r}], "
+            "stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, "
+            "stderr=subprocess.DEVNULL, close_fds=True, start_new_session=True)\n"
+            "time.sleep(30)\n",
+            encoding="utf-8",
+        )
+        command = f"{shlex.quote(sys.executable)} {shlex.quote(str(spawner))}"
+        read_fd, write_fd = os.pipe()
+        os.set_inheritable(write_fd, True)
+        environment = os.environ.copy()
+        environment["CODEX_COMPILE_STATUS_FD"] = str(write_fd)
+        process = subprocess.Popen(
+            [
+                sys.executable,
+                "-X",
+                "utf8",
+                "-c",
+                finalizer._posix_compile_wrapper_source(),
+            ],
+            stdin=subprocess.PIPE,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+            text=True,
+            env=environment,
+            pass_fds=(write_fd,),
+            start_new_session=True,
+        )
+        os.close(write_fd)
+        detached_pid: int | None = None
+        try:
+            assert process.stdin is not None
+            process.stdin.write(command)
+            process.stdin.close()
+            deadline = time.monotonic() + 5.0
+            while not started.is_file() and time.monotonic() < deadline:
+                time.sleep(0.02)
+            self.assertTrue(started.is_file(), "detached child did not start")
+            detached_pid = int(started.read_text(encoding="ascii"))
+            process.terminate()
+            process.wait(timeout=5.0)
+            cleanup = finalizer._read_posix_compile_status(read_fd)
+            read_fd = -1
+            time.sleep(1.0)
+            self.assertEqual("PASS", cleanup)
+            self.assertFalse(target.exists())
+        finally:
+            if read_fd >= 0:
+                os.close(read_fd)
+            if process.poll() is None:
+                process.kill()
+                process.wait()
+            if detached_pid is not None:
+                try:
+                    os.kill(detached_pid, signal.SIGKILL)
+                except ProcessLookupError:
+                    pass
 
     def test_compile_check_schema_is_stable_when_command_is_not_provided(self) -> None:
         _, run_dir, unit = self.prepare("\\section{定义}\n该定义保持平行结构。\n")
@@ -3857,9 +6397,20 @@ class LongDocumentFinalizationTests(unittest.TestCase):
         self.assert_paired_quality_review_candidate(result)
         self.assert_compile_check_schema(result["compile_check"])
         self.assertEqual("NOT_RUN", result["compile_check"]["status"])
+        self.assertFalse(result["compile_check"]["timed_out"])
+        self.assertIsNone(result["compile_check"]["timeout_seconds"])
         self.assertIsNone(result["compile_check"]["cwd"])
         self.assertEqual("PASS", result["compile_check"]["integrity_status"])
         self.assertEqual({}, result["compile_check"]["integrity_changes"])
+
+    def test_invalid_compile_timeout_is_rejected_before_any_skip_branch(self) -> None:
+        _, run_dir, _unit = self.prepare("\\section{定义}\n该定义保持原有的逻辑结构。\n")
+        with self.assertRaisesRegex(ValueError, "finite positive"):
+            finalizer._finalize_locked(
+                run_dir,
+                self.rewrite_dir(),
+                check_timeout_seconds=0,
+            )
 
     def test_compile_check_schema_is_stable_when_format_check_fails(self) -> None:
         _, run_dir, unit = self.prepare(
@@ -3890,6 +6441,43 @@ class LongDocumentFinalizationTests(unittest.TestCase):
         self.assertIsNone(result["compile_check"]["cwd"])
         self.assertEqual("NOT_RUN", result["compile_check"]["integrity_status"])
         self.assertEqual({}, result["compile_check"]["integrity_changes"])
+
+    def test_compile_setup_failure_is_a_structured_gate_failure(self) -> None:
+        _, run_dir, unit = self.prepare("\\section{定义}\n该定义保持原有的逻辑结构。\n")
+        rewrites = self.rewrite_dir()
+        (rewrites / f"{unit['unit_id']}.json").write_text(
+            json.dumps(
+                self.voice_bound_bundle(
+                    unit,
+                    {
+                        "decision": "NO_CHANGE",
+                        "reason": "The definition already preserves the required structure.",
+                    },
+                ),
+                ensure_ascii=False,
+            ),
+            encoding="utf-8",
+        )
+
+        with mock.patch.object(
+            finalizer, "_run_compile", side_effect=OSError("job assignment failed")
+        ):
+            result = finalizer.finalize(
+                run_dir,
+                rewrites,
+                check_command="compile-check",
+                check_timeout_seconds=7.5,
+            )
+
+        compile_check = result["compile_check"]
+        self.assert_compile_check_schema(compile_check)
+        self.assertEqual("FAIL", result["status"])
+        self.assertEqual("FAIL", compile_check["status"])
+        self.assertEqual("UNAVAILABLE", compile_check["process_containment"])
+        self.assertEqual("FAIL", compile_check["descendant_cleanup"])
+        self.assertFalse(compile_check["timed_out"])
+        self.assertEqual(7.5, compile_check["timeout_seconds"])
+        self.assertIn("OSError: job assignment failed", compile_check["stderr"])
 
 
 if __name__ == "__main__":

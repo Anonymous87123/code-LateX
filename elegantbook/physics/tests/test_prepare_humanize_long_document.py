@@ -89,8 +89,15 @@ class LongDocumentPreparationTests(unittest.TestCase):
         metadata = preparer.prepare([main], output, min_author_chars=0)
         manifest = self.read_csv(output / "file_manifest.csv")
         statuses = {Path(row["path"]).name: row["status"] for row in manifest}
+        reasons = {Path(row["path"]).name: row["reason"] for row in manifest}
         self.assertEqual("SKIPPED_GARBLED", statuses["bad.tex"])
         self.assertEqual("READY", statuses["good.tex"])
+        self.assertRegex(
+            reasons["bad.tex"],
+            r"utf8_decode_error:start=0:end=1:bytes=81:input_bytes=5;"
+            r"gb18030_decode_error:start=0:end=1:bytes=81:input_bytes=5",
+        )
+        self.assertNotIn("\\input", reasons["bad.tex"])
         self.assertEqual("REVIEW", metadata["status"])
 
     def test_utf16le_input_is_marked_garbled(self) -> None:
@@ -205,6 +212,23 @@ class LongDocumentPreparationTests(unittest.TestCase):
         self.assertTrue((output / "units.jsonl").is_file())
         self.assertTrue((output / "protected_spans.jsonl").is_file())
         self.assertTrue((output / "prepare_integrity.json").is_file())
+
+    def test_plain_text_seed_is_discovered_and_split_as_paragraphs(self) -> None:
+        source = self.root / "notes.txt"
+        source.write_text(
+            "第一段说明研究对象和范围。\n\n第二段说明结果的边界。\n",
+            encoding="utf-8",
+        )
+
+        output = self.root / "txt-run"
+        metadata = preparer.prepare([source], output, scene="GENERAL", min_author_chars=0)
+        manifest = self.read_csv(output / "file_manifest.csv")
+        ledger = self.read_csv(output / "coverage_ledger.csv")
+
+        self.assertEqual("READY", metadata["status"])
+        self.assertEqual(".txt", manifest[0]["suffix"])
+        self.assertEqual(1, len(ledger))
+        self.assertTrue(all(row["status"] == "PENDING" for row in ledger))
 
     def test_structural_intensity_freezes_paragraph_inventory_and_title_lock(self) -> None:
         source = self.root / "structural.md"
@@ -698,6 +722,25 @@ class LongDocumentPreparationTests(unittest.TestCase):
         self.assertEqual("UNRESOLVED", chunk["status"])
         self.assertIn("ambiguous_scene_route", chunk["notes"])
 
+    def test_auto_low_score_positive_tie_is_also_unresolved(self) -> None:
+        source = self.root / "low-score-ambiguous.md"
+        source.write_text(
+            "# 方法\n本题需要说明。本研究需要说明。\n",
+            encoding="utf-8",
+        )
+        output = self.root / "auto-low-score-ambiguous"
+
+        metadata = preparer.prepare([source], output, scene="AUTO", min_author_chars=0)
+        chunk = next(
+            json.loads(path.read_text(encoding="utf-8"))
+            for path in (output / "chunks").glob("*.json")
+        )
+
+        self.assertEqual("REVIEW", metadata["scene_routing_status"])
+        self.assertEqual("AMBIGUOUS", chunk["scene_routing_decision"])
+        self.assertEqual({"COURSE": 2, "MODELING": 0, "RESEARCH": 2}, chunk["scene_routing_scores"])
+        self.assertEqual("UNRESOLVED", chunk["status"])
+
     def test_protected_only_ambiguous_heading_does_not_create_false_unresolved_gap(self) -> None:
         source = self.root / "protected-ambiguous.md"
         source.write_text(
@@ -742,7 +785,7 @@ class LongDocumentPreparationTests(unittest.TestCase):
         )
 
         self.assertEqual("COURSE", chunks[-1]["scene"])
-        self.assertEqual("ROUTED_DOCUMENT_PRIOR", chunks[-1]["scene_routing_decision"])
+        self.assertEqual("ROUTED", chunks[-1]["scene_routing_decision"])
         self.assertEqual("COURSE", chunks[-1]["scene_document_prior"])
 
     def test_neutral_unit_does_not_inherit_unrelated_document_prior(self) -> None:
@@ -791,7 +834,7 @@ class LongDocumentPreparationTests(unittest.TestCase):
         appendix_chunk = next(item for item in chunks if "参数设置沿用前文" in item["masked_text"])
 
         self.assertEqual("MODELING", appendix_chunk["scene"])
-        self.assertEqual("ROUTED_DOCUMENT_PRIOR", appendix_chunk["scene_routing_decision"])
+        self.assertEqual("ROUTED", appendix_chunk["scene_routing_decision"])
         self.assertEqual("MODELING", appendix_chunk["scene_document_prior"])
 
     def test_markdown_percentage_does_not_mask_following_author_prose(self) -> None:
@@ -823,6 +866,8 @@ class LongDocumentPreparationTests(unittest.TestCase):
         self.assertEqual("REVIEW", metadata["status"])
         self.assertEqual(0, metadata["processable_editable_units"])
         self.assertTrue(metadata["no_editable_scope"])
+        self.assertIn("No editable author-text units", metadata["next_action"])
+        self.assertNotIn("Rewrite only PENDING", metadata["next_action"])
 
     def test_adjacent_units_have_read_only_context_and_unique_owners(self) -> None:
         source = self.root / "two.md"
@@ -877,6 +922,39 @@ class LongDocumentPreparationTests(unittest.TestCase):
             "prepare_integrity.json",
         ):
             self.assertTrue((output / name).is_file(), name)
+
+    def test_cli_help_and_error_explain_chunk_budget_bounds(self) -> None:
+        help_result = subprocess.run(
+            [sys.executable, str(SCRIPT), "--help"],
+            check=False,
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+        )
+        self.assertEqual(0, help_result.returncode)
+        self.assertIn("必须 >= 1000", help_result.stdout)
+        self.assertIn("必须 >= 50", help_result.stdout)
+        self.assertIn("必须 >= 0", help_result.stdout)
+
+        source = self.root / "invalid-budget.md"
+        source.write_text("正文。\n", encoding="utf-8")
+        invalid = subprocess.run(
+            [
+                sys.executable,
+                str(SCRIPT),
+                str(source),
+                "--output",
+                str(self.root / "invalid-budget-run"),
+                "--max-author-chars",
+                "350",
+            ],
+            check=False,
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+        )
+        self.assertEqual(2, invalid.returncode)
+        self.assertIn("--max-author-chars must be >= 1000", invalid.stderr)
 
     def test_cli_accepts_adjacent_pair_only_with_structural_intensity(self) -> None:
         source = self.root / "cli-transaction.md"

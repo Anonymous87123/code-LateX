@@ -1,0 +1,278 @@
+{
+  "academic_correctness": "NOT_EVALUATED",
+  "coverage_basis": [
+    "CURRENT_SCANNER_HIGH_AUDIT_VIEW",
+    "CALLER_BOUND_SELECTED_SPANS",
+    "CALLER_DECLARED_CONFLICT_PAIRS"
+  ],
+  "coverage_claim_scope": "ENUMERATED_HIGH_AND_BOUND_DECLARATIONS_ONLY",
+  "coverage_completion_claim_allowed": true,
+  "coverage_limitations": [
+    "NO_COMPLETE_NATURAL_LANGUAGE_SEMANTIC_DISCOVERY",
+    "CONFLICT_INVENTORY_IS_CALLER_DECLARED_ONLY",
+    "KEEP_REASONS_ARE_NOT_EXTERNAL_QUALITY_CLEARANCE",
+    "SELF_CONSISTENCY_ONLY_WITHOUT_EXTERNAL_REQUEST_ANCHOR"
+  ],
+  "coverage_sha256": "4c78c7b414c60bb59de8b06bc0d0477124987c85a8ca6030a9f0b275084e7360",
+  "declarations": {
+    "explicit_conflicts": [
+      {
+        "conflict_id": "C001",
+        "left_hunk_id": "H002",
+        "reason": "一处允许直接套用，另一处要求先核条件并在条件不满足时禁止直接代入；纯文风层不裁决。",
+        "right_hunk_id": "H004",
+        "rule_code": "OPPOSING_PERMISSION"
+      }
+    ],
+    "lexical_keeps": [],
+    "selected_spans": [
+      {
+        "decision": "HUNK",
+        "end_byte": 87,
+        "hunk_id": "H001",
+        "reason": "用户要求处理可明确定位的空重点和教练命令，该整句由保留模态强度的改写 hunk 处置。",
+        "selection_id": "S001",
+        "source_text": "值得注意的是，遇到这类题目时必须牢记公式。",
+        "source_text_sha256": "28087ba6036bd3e29a5169b42f4a14ee5504dd04b5275d826bef6e897d0175a7",
+        "start_byte": 24
+      },
+      {
+        "decision": "HUNK",
+        "end_byte": 159,
+        "hunk_id": "H002",
+        "reason": "直接套用的许可主张按用户要求绑定到原样未决 hunk。",
+        "selection_id": "S002",
+        "source_text": "若已知速度随时间减小，就可以直接套用匀变速公式。",
+        "source_text_sha256": "540870938eb8403db678a5dccb44ec886676c62ab6a115c76283636300a8b3db",
+        "start_byte": 87
+      },
+      {
+        "decision": "HUNK",
+        "end_byte": 228,
+        "hunk_id": "H003",
+        "reason": "用户要求处理泛化意义和后续铺垫，该整句由删除 hunk 处置。",
+        "selection_id": "S003",
+        "source_text": "这个结论具有重要意义，能够为后续学习奠定基础。",
+        "source_text_sha256": "e902b2e2d06953882542950421e0ae697f1f341bbf87e8e2033740ab7523ee76",
+        "start_byte": 159
+      },
+      {
+        "decision": "KEEP",
+        "end_byte": 318,
+        "hunk_id": null,
+        "reason": "该句指向随后明确展开的适用条件误读，具有具体课程纠偏功能，按 COURSE 规则原样保留。",
+        "selection_id": "S004",
+        "source_text": "不要只看公式的形式。",
+        "source_text_sha256": "6ac962557c037fa1a4b693ecac4aadb318f60f0aae7b43a6d4fcf374767fbb7e",
+        "start_byte": 288
+      },
+      {
+        "decision": "HUNK",
+        "end_byte": 486,
+        "hunk_id": "H004",
+        "reason": "条件限制主张按用户要求绑定到原样未决 hunk。",
+        "selection_id": "S005",
+        "source_text": "先确认题目给出的量是否满足匀变速条件，再判断公式中的加速度方向；若条件不满足，不能因为公式看起来相似就直接代入。",
+        "source_text_sha256": "6c9626ce808879df2f693e4d0a4a8e2d97d613ac31bd64be2e1e1ea3f11eaa67",
+        "start_byte": 318
+      }
+    ],
+    "source_kind": "DOCUMENT"
+  },
+  "declarations_sha256": "1cd2da591b7a85ad517d1169b2d5ffdf62ee4a1a378fb93539adedb651b58774",
+  "humanize_quality_claim_allowed": false,
+  "inventories": {
+    "explicit_conflicts": [
+      {
+        "conflict_id": "C001",
+        "disposition": "UNRESOLVED_PAIR",
+        "left": {
+          "decision": "UNRESOLVED",
+          "end_byte": 159,
+          "hunk_id": "H002",
+          "source_text_sha256": "540870938eb8403db678a5dccb44ec886676c62ab6a115c76283636300a8b3db",
+          "start_byte": 87
+        },
+        "left_hunk_id": "H002",
+        "reason": "一处允许直接套用，另一处要求先核条件并在条件不满足时禁止直接代入；纯文风层不裁决。",
+        "right": {
+          "decision": "UNRESOLVED",
+          "end_byte": 486,
+          "hunk_id": "H004",
+          "source_text_sha256": "6c9626ce808879df2f693e4d0a4a8e2d97d613ac31bd64be2e1e1ea3f11eaa67",
+          "start_byte": 318
+        },
+        "right_hunk_id": "H004",
+        "rule_code": "OPPOSING_PERMISSION"
+      }
+    ],
+    "lexical_high": [
+      {
+        "disposition": {
+          "decision": "REWRITE",
+          "hunk_id": "H001",
+          "reason": "删除空重点提示，把无对象的记忆命令改为原文已有的公式适用性判断，同时保留必须的模态强度。"
+        },
+        "end_byte": 42,
+        "finding_id": "LF-1215317658875f39acfe181e",
+        "role": "CANDIDATE",
+        "severity": "high",
+        "signal_id": "LEX-EMPH-01",
+        "source_text": "值得注意的是",
+        "source_text_sha256": "c4cf0064ca73c1645f714c256e16594c8a39299b8d0bbab63fb94a0857a99183",
+        "start_byte": 24
+      },
+      {
+        "disposition": {
+          "decision": "REWRITE",
+          "hunk_id": "H001",
+          "reason": "删除空重点提示，把无对象的记忆命令改为原文已有的公式适用性判断，同时保留必须的模态强度。"
+        },
+        "end_byte": 78,
+        "finding_id": "LF-1dce24aa27d3f68d6e4d9ac8",
+        "role": "CANDIDATE",
+        "severity": "high",
+        "signal_id": "LEX-COACH-01",
+        "source_text": "必须牢记",
+        "source_text_sha256": "ccf0f2a6e15194eb95b61839278755f20bf79a3778d1f0b6b384aef459d19c67",
+        "start_byte": 66
+      },
+      {
+        "disposition": {
+          "decision": "DELETE_STYLE_SHELL",
+          "hunk_id": "H003",
+          "reason": "泛化价值判断和后续铺垫没有给出具体学习对象、动作或后果，作为风格句壳整句删除。"
+        },
+        "end_byte": 189,
+        "finding_id": "LF-5900485e4cff113e7bb133f2",
+        "role": "CANDIDATE",
+        "severity": "high",
+        "signal_id": "LEX-MARKET-01",
+        "source_text": "具有重要意义",
+        "source_text_sha256": "7648e5fdc7f26b7f40f885d52668233e67d665190d0293166b9879d4f1389315",
+        "start_byte": 171
+      },
+      {
+        "disposition": {
+          "decision": "DELETE_STYLE_SHELL",
+          "hunk_id": "H003",
+          "reason": "泛化价值判断和后续铺垫没有给出具体学习对象、动作或后果，作为风格句壳整句删除。"
+        },
+        "end_byte": 225,
+        "finding_id": "LF-da16b28ff45619a3ab412970",
+        "role": "CANDIDATE",
+        "severity": "high",
+        "signal_id": "LEX-FOUNDATION-01",
+        "source_text": "为后续学习奠定基础",
+        "source_text_sha256": "e77b3f560af1e1b904a311b004ee8bac9590de086d2f0276ae9d70384d18d688",
+        "start_byte": 198
+      }
+    ],
+    "selected_spans": [
+      {
+        "decision": "HUNK",
+        "disposition": {
+          "decision": "REWRITE",
+          "hunk_id": "H001",
+          "reason": "用户要求处理可明确定位的空重点和教练命令，该整句由保留模态强度的改写 hunk 处置。"
+        },
+        "end_byte": 87,
+        "hunk_id": "H001",
+        "reason": "用户要求处理可明确定位的空重点和教练命令，该整句由保留模态强度的改写 hunk 处置。",
+        "selection_id": "S001",
+        "source_text": "值得注意的是，遇到这类题目时必须牢记公式。",
+        "source_text_sha256": "28087ba6036bd3e29a5169b42f4a14ee5504dd04b5275d826bef6e897d0175a7",
+        "start_byte": 24
+      },
+      {
+        "decision": "HUNK",
+        "disposition": {
+          "decision": "UNRESOLVED",
+          "hunk_id": "H002",
+          "reason": "直接套用的许可主张按用户要求绑定到原样未决 hunk。"
+        },
+        "end_byte": 159,
+        "hunk_id": "H002",
+        "reason": "直接套用的许可主张按用户要求绑定到原样未决 hunk。",
+        "selection_id": "S002",
+        "source_text": "若已知速度随时间减小，就可以直接套用匀变速公式。",
+        "source_text_sha256": "540870938eb8403db678a5dccb44ec886676c62ab6a115c76283636300a8b3db",
+        "start_byte": 87
+      },
+      {
+        "decision": "HUNK",
+        "disposition": {
+          "decision": "DELETE_STYLE_SHELL",
+          "hunk_id": "H003",
+          "reason": "用户要求处理泛化意义和后续铺垫，该整句由删除 hunk 处置。"
+        },
+        "end_byte": 228,
+        "hunk_id": "H003",
+        "reason": "用户要求处理泛化意义和后续铺垫，该整句由删除 hunk 处置。",
+        "selection_id": "S003",
+        "source_text": "这个结论具有重要意义，能够为后续学习奠定基础。",
+        "source_text_sha256": "e902b2e2d06953882542950421e0ae697f1f341bbf87e8e2033740ab7523ee76",
+        "start_byte": 159
+      },
+      {
+        "decision": "KEEP",
+        "disposition": {
+          "decision": "KEEP",
+          "hunk_id": null,
+          "reason": "该句指向随后明确展开的适用条件误读，具有具体课程纠偏功能，按 COURSE 规则原样保留。"
+        },
+        "end_byte": 318,
+        "hunk_id": null,
+        "reason": "该句指向随后明确展开的适用条件误读，具有具体课程纠偏功能，按 COURSE 规则原样保留。",
+        "selection_id": "S004",
+        "source_text": "不要只看公式的形式。",
+        "source_text_sha256": "6ac962557c037fa1a4b693ecac4aadb318f60f0aae7b43a6d4fcf374767fbb7e",
+        "start_byte": 288
+      },
+      {
+        "decision": "HUNK",
+        "disposition": {
+          "decision": "UNRESOLVED",
+          "hunk_id": "H004",
+          "reason": "条件限制主张按用户要求绑定到原样未决 hunk。"
+        },
+        "end_byte": 486,
+        "hunk_id": "H004",
+        "reason": "条件限制主张按用户要求绑定到原样未决 hunk。",
+        "selection_id": "S005",
+        "source_text": "先确认题目给出的量是否满足匀变速条件，再判断公式中的加速度方向；若条件不满足，不能因为公式看起来相似就直接代入。",
+        "source_text_sha256": "6c9626ce808879df2f693e4d0a4a8e2d97d613ac31bd64be2e1e1ea3f11eaa67",
+        "start_byte": 318
+      }
+    ]
+  },
+  "mechanical_coverage_status": "PASS",
+  "policy_hashes": {
+    "coverage_builder_sha256": "245f78f6eb3a902de6564d59f7278883f002b25d5913f5ae25f864d9edb61c17",
+    "lexicon_sha256": "52191aaa422515e03e14c9f5981f4e190320b1f6fa203e370041abb742e6937c",
+    "runtime_contract_sha256": "a5f10e87196bf5517f8da41649b663c7a3b6b070253c8fdb3bfa6aa8168c6fd6",
+    "scanner_sha256": "4237049cafe1c06e81afa33115ffaf00d9ba5d69c86baaada96b387d3c70c048"
+  },
+  "schema_version": "humanize-short-patch-coverage/v2",
+  "semantic_completeness_claim_allowed": false,
+  "source": {
+    "document_format": "tex",
+    "encoding": "utf-8",
+    "offset_unit": "UTF8_BYTES",
+    "scan_scene": "AUTO",
+    "scene": "COURSE",
+    "sha256": "9805eab8480836f942078c112dfcd4160c293cd18bfd79ae0e308c02db956b65",
+    "size_bytes": 487,
+    "source_kind": "DOCUMENT"
+  },
+  "summary": {
+    "explicit_conflicts_total": 1,
+    "lexical_candidate_total": 4,
+    "lexical_disposition_counts": {
+      "DELETE_STYLE_SHELL": 2,
+      "REWRITE": 2
+    },
+    "lexical_high_total": 4,
+    "selected_spans_total": 5
+  }
+}

@@ -140,6 +140,51 @@ class HumanizeInvariantTests(unittest.TestCase):
         )
         self.assertIn("SPEECH_ACT_DIRECTIVE_TO_COMPLETION", codes(result, "warnings"))
 
+    def test_v41_editorial_evidence_instruction_must_not_become_support_claim(self) -> None:
+        result = invariants.check_documents(
+            "正文里既要保留粗扫结果，也要保留加密扫描结果，并把结论写成区间性的观测判断。",
+            "粗扫结果与加密扫描结果共同支持区间性的观测判断。",
+        )
+        self.assertIn("SPEECH_ACT_EDITORIAL_TO_EVIDENCE", codes(result, "warnings"))
+
+    def test_v42_editorial_location_scope_cannot_be_silently_deleted(self) -> None:
+        result = invariants.check_documents(
+            "因此，正文里既要保留粗扫结果，也要保留加密扫描结果，并把结论写成区间性的观测判断。",
+            "因此，既要保留粗扫结果，也要保留加密扫描结果，并把结论写成区间性的观测判断。",
+        )
+        self.assertIn(
+            "SPEECH_ACT_EDITORIAL_SCOPE_DROPPED",
+            codes(result, "warnings"),
+        )
+
+    def test_v42_editorial_location_scope_may_move_without_warning(self) -> None:
+        result = invariants.check_documents(
+            "正文里需要保留粗扫结果和加密扫描结果。",
+            "粗扫结果和加密扫描结果都需要保留在正文中。",
+        )
+        self.assertNotIn(
+            "SPEECH_ACT_EDITORIAL_SCOPE_DROPPED",
+            codes(result, "warnings"),
+        )
+
+    def test_v42_unscoped_or_non_directive_prose_does_not_trigger_scope_gate(self) -> None:
+        unscoped = invariants.check_documents(
+            "需要保留粗扫结果和加密扫描结果。",
+            "粗扫结果和加密扫描结果需要保留。",
+        )
+        descriptive = invariants.check_documents(
+            "正文中展示了粗扫结果和加密扫描结果。",
+            "这里展示了粗扫结果和加密扫描结果。",
+        )
+        self.assertNotIn(
+            "SPEECH_ACT_EDITORIAL_SCOPE_DROPPED",
+            codes(unscoped, "warnings"),
+        )
+        self.assertNotIn(
+            "SPEECH_ACT_EDITORIAL_SCOPE_DROPPED",
+            codes(descriptive, "warnings"),
+        )
+
     def test_v7_support_claim_must_not_become_actual_engineering_use(self) -> None:
         result = invariants.check_documents(
             "该模型形成了从数据到决策的完整闭环，为工程应用提供有力支撑。",
@@ -147,12 +192,412 @@ class HumanizeInvariantTests(unittest.TestCase):
         )
         self.assertIn("SPEECH_ACT_SUPPORT_TO_ACTUAL_USE", codes(result, "warnings"))
 
+    def test_v41_new_singular_first_person_reference_requires_review(self) -> None:
+        result = invariants.check_documents(
+            "工程上，下一阶段先完成三件事。",
+            "下一阶段我先做三件事。",
+        )
+        self.assertIn(
+            "SPEECH_ACT_FIRST_PERSON_REFERENCE_INTRODUCED",
+            codes(result, "warnings"),
+        )
+
+    def test_v41_removing_presenter_plural_does_not_require_person_shift_review(self) -> None:
+        result = invariants.check_documents(
+            "我们先核对条件，再写出结果。",
+            "先核对条件，再写出结果。",
+        )
+        self.assertNotIn(
+            "SPEECH_ACT_FIRST_PERSON_REFERENCE_INTRODUCED",
+            codes(result, "warnings"),
+        )
+
     def test_v7_hedge_stack_must_not_become_new_degree_claim(self) -> None:
         result = invariants.check_documents(
             "模型可能在一定程度上或许仍会受到传感器漂移影响。",
             "传感器漂移可能影响模型，影响程度或许有限。",
         )
         self.assertIn("SPEECH_ACT_MODALITY_TO_DEGREE", codes(result, "warnings"))
+
+    def test_v32_local_redundant_possibility_stack_can_collapse_to_one_hedge(self) -> None:
+        result = invariants.check_documents(
+            "该结果可能在一定程度上或许暗示界面重排。",
+            "该结果可能暗示界面重排。",
+        )
+
+        self.assertNotIn("SPEECH_ACT_MODALITY_SCOPE_CHANGED", codes(result, "warnings"))
+        self.assertNotIn("SPEECH_ACT_MODALITY_TO_DEGREE", codes(result, "warnings"))
+        modality = result.evidence["speech_act_audit"]["categories"][
+            "modality_scope"
+        ]
+        self.assertEqual([], modality["residual_delta"])
+        self.assertEqual(1, len(modality["safe_compression_allowances"]))
+        allowance = modality["safe_compression_allowances"][0]
+        self.assertEqual(2, allowance["budget"])
+        self.assertEqual(2, allowance["consumed"])
+        self.assertEqual(0, allowance["remaining"])
+
+    def test_v33_speech_occurrences_include_line_column_claim_and_context(self) -> None:
+        text = "首句保持不变。\n该结果可能成立，也或许受边界影响。"
+        result = invariants.check_documents(text, text)
+        occurrences = result.evidence["speech_act_audit"]["categories"][
+            "modality_scope"
+        ]["before_occurrences"]
+
+        self.assertEqual(["可能", "或许"], [item["marker"] for item in occurrences])
+        self.assertEqual(2, occurrences[0]["line"])
+        self.assertEqual(4, occurrences[0]["column"])
+        self.assertRegex(str(occurrences[0]["sentence_id"]), r"^T\d{4}$")
+        self.assertRegex(str(occurrences[0]["claim_id"]), r"^C\d{4}$")
+        self.assertIn("该结果可能成立", occurrences[0]["sentence_context"])
+
+    def test_single_character_modal_ying_respects_lexical_boundaries(self) -> None:
+        non_modal = (
+            "相应参数、响应信号、适应过程和供应条件均已记录；"
+            "呼应关系、回应信号、感应电流和顺应性也已讨论；"
+            "应急预案与应激反应另行说明。"
+        )
+        result = invariants.check_documents(non_modal, non_modal)
+        modality = result.evidence["speech_act_audit"]["categories"][
+            "modality_scope"
+        ]
+        self.assertEqual([], modality["before_occurrences"])
+        self.assertEqual([], modality["after_occurrences"])
+
+        modal = "应当保留该项；应予说明；应由作者复核；应开展后续实验。"
+        modal_result = invariants.check_documents(modal, modal)
+        modal_occurrences = modal_result.evidence["speech_act_audit"]["categories"][
+            "modality_scope"
+        ]["before_occurrences"]
+        self.assertEqual(
+            ["应当", "应", "应", "应"],
+            [item["marker"] for item in modal_occurrences],
+        )
+
+    def test_full_lexical_exclusion_suppresses_every_single_marker_in_span(self) -> None:
+        technical = "该表示不可约；模型满足不可压缩流条件。"
+        result = invariants.check_documents(technical, technical)
+        categories = result.evidence["speech_act_audit"]["categories"]
+
+        self.assertEqual([], categories["negation"]["before_occurrences"])
+        self.assertEqual([], categories["modality_scope"]["before_occurrences"])
+
+        directive = "本轮不可开展；下一轮可开展；相关说明应开展。"
+        directive_result = invariants.check_documents(directive, directive)
+        directive_categories = directive_result.evidence["speech_act_audit"][
+            "categories"
+        ]
+        self.assertEqual(
+            ["不"],
+            [item["marker"] for item in directive_categories["negation"]["before_occurrences"]],
+        )
+        self.assertEqual(
+            ["可", "可", "应"],
+            [
+                item["marker"]
+                for item in directive_categories["modality_scope"]["before_occurrences"]
+            ],
+        )
+
+    def test_negative_technical_predicates_keep_real_negation_polarity(self) -> None:
+        cases = (
+            ("该函数不连续。", "该函数连续。"),
+            ("两个对象不同。", "两个对象相同。"),
+            ("该结构不对称。", "该结构对称。"),
+        )
+        for before, after in cases:
+            with self.subTest(before=before):
+                normal = invariants.check_documents(before, after)
+                strict = invariants.check_documents(
+                    before,
+                    after,
+                    strict_speech_acts=True,
+                )
+                code = "SPEECH_ACT_NEGATION_CHANGED"
+                self.assertIn(code, codes(normal, "warnings"))
+                self.assertIn(code, codes(strict, "errors"))
+                self.assertTrue(strict.hard_failure)
+                occurrences = normal.evidence["speech_act_audit"]["categories"][
+                    "negation"
+                ]["before_occurrences"]
+                self.assertEqual(["不"], [item["marker"] for item in occurrences])
+
+    def test_technical_ke_terms_do_not_create_modality_drift(self) -> None:
+        before = "该函数可微，积分可积，映射可逆，曲线可导。"
+        after = "该函数存在导数，积分存在，映射存在逆，曲线存在导数。"
+        result = invariants.check_documents(
+            before,
+            after,
+            strict_speech_acts=True,
+        )
+
+        self.assertNotIn("SPEECH_ACT_MODALITY_SCOPE_CHANGED", codes(result, "errors"))
+        modality = result.evidence["speech_act_audit"]["categories"][
+            "modality_scope"
+        ]
+        self.assertEqual([], modality["before_occurrences"])
+        self.assertEqual([], modality["after_occurrences"])
+
+    def test_bukewei_excludes_technical_ke_but_preserves_bu_polarity(self) -> None:
+        result = invariants.check_documents(
+            "该函数不可微。",
+            "该函数可微。",
+            strict_speech_acts=True,
+        )
+        categories = result.evidence["speech_act_audit"]["categories"]
+
+        self.assertIn("SPEECH_ACT_NEGATION_CHANGED", codes(result, "errors"))
+        self.assertNotIn("SPEECH_ACT_MODALITY_SCOPE_CHANGED", codes(result, "errors"))
+        self.assertEqual(
+            ["不"],
+            [item["marker"] for item in categories["negation"]["before_occurrences"]],
+        )
+        self.assertEqual([], categories["modality_scope"]["before_occurrences"])
+        self.assertEqual([], categories["modality_scope"]["after_occurrences"])
+
+    def test_route_shell_exempts_only_its_leading_logical_marker(self) -> None:
+        before = "因此本节讨论方法，所以结论成立。"
+        after = "本节讨论方法，结论成立。"
+        normal = invariants.check_documents(before, after)
+        strict = invariants.check_documents(
+            before,
+            after,
+            strict_speech_acts=True,
+        )
+
+        code = "SPEECH_ACT_LOGICAL_RELATION_CHANGED"
+        self.assertIn(code, codes(normal, "warnings"))
+        self.assertIn(code, codes(strict, "errors"))
+        logical = normal.evidence["speech_act_audit"]["categories"][
+            "logical_relation"
+        ]
+        self.assertEqual(["所以"], [item["marker"] for item in logical["before_occurrences"]])
+        self.assertEqual({"所以": 1}, logical["raw_delta"]["removed"])
+
+    def test_leading_route_shell_may_be_deleted_without_logical_warning(self) -> None:
+        result = invariants.check_documents(
+            "因此，本节讨论方法。",
+            "本节讨论方法。",
+            strict_speech_acts=True,
+        )
+
+        self.assertNotIn("SPEECH_ACT_LOGICAL_RELATION_CHANGED", codes(result, "errors"))
+
+    def test_empty_emphasis_shell_marker_is_not_treated_as_modality(self) -> None:
+        result = invariants.check_documents(
+            "需要指出的是，问卷结果可能受样本结构影响。",
+            "问卷结果可能受样本结构影响。",
+            strict_speech_acts=True,
+        )
+
+        self.assertNotIn("SPEECH_ACT_MODALITY_SCOPE_CHANGED", codes(result, "errors"))
+        modality = result.evidence["speech_act_audit"]["categories"]["modality_scope"]
+        self.assertEqual(["可能"], [item["marker"] for item in modality["before_occurrences"]])
+
+    def test_future_bridge_shell_marker_may_be_deleted_but_real_inference_remains_protected(self) -> None:
+        shell = invariants.check_documents(
+            "本文梳理三类回答，从而为后续分析提供可靠起点。",
+            "本文梳理三类回答。",
+            strict_speech_acts=True,
+        )
+        inference = invariants.check_documents(
+            "样本扩大，从而误差下降。",
+            "样本扩大，误差下降。",
+            strict_speech_acts=True,
+        )
+
+        self.assertNotIn("SPEECH_ACT_LOGICAL_RELATION_CHANGED", codes(shell, "errors"))
+        self.assertIn("SPEECH_ACT_LOGICAL_RELATION_CHANGED", codes(inference, "errors"))
+
+    def test_suoyiran_is_not_a_logical_relation_marker(self) -> None:
+        result = invariants.check_documents(
+            "还应进一步说明其所以然。",
+            "还应进一步解释其中原因。",
+            strict_speech_acts=True,
+        )
+
+        self.assertNotIn("SPEECH_ACT_LOGICAL_RELATION_CHANGED", codes(result, "errors"))
+        logical = result.evidence["speech_act_audit"]["categories"][
+            "logical_relation"
+        ]
+        self.assertEqual([], logical["before_occurrences"])
+        self.assertEqual([], logical["after_occurrences"])
+
+    def test_formula_caption_connectives_cannot_be_silently_deleted(self) -> None:
+        before = (
+            "水平方向合力为\n"
+            " \\(F_x=F-\\mu N.\\)\n"
+            "因此\n"
+            " \\(a=F_x/m.\\)\n"
+            "求取极值后\n"
+            " \\(a'=0.\\)\n"
+            "于是\n"
+            " \\(\\tan\\theta=\\mu.\\)"
+        )
+        after = (
+            "水平方向合力为\n"
+            " \\(F_x=F-\\mu N.\\)\n"
+            " \\(a=F_x/m.\\)\n"
+            "求取极值后\n"
+            " \\(a'=0.\\)\n"
+            " \\(\\tan\\theta=\\mu.\\)"
+        )
+        result = invariants.check_documents(before, after, document_format="tex")
+
+        self.assertIn(
+            "SPEECH_ACT_LOGICAL_RELATION_CHANGED",
+            codes(result, "warnings"),
+        )
+        logical = result.evidence["speech_act_audit"]["categories"][
+            "logical_relation"
+        ]
+        self.assertEqual({"因此": 1, "于是": 1}, logical["raw_delta"]["removed"])
+        self.assertEqual({}, logical["raw_delta"]["added"])
+
+    def test_formula_caption_connectives_may_move_without_count_drift(self) -> None:
+        before = "因此\n \\(a=F/m.\\)\n于是\n \\(a'=0.\\)"
+        after = "由前式，因此 \\(a=F/m.\\)；求导后，于是 \\(a'=0.\\)"
+        result = invariants.check_documents(before, after, document_format="tex")
+
+        self.assertNotIn(
+            "SPEECH_ACT_LOGICAL_RELATION_CHANGED",
+            codes(result, "warnings"),
+        )
+
+    def test_v33_modality_relocation_between_claims_cannot_hide_behind_equal_counts(self) -> None:
+        result = invariants.check_documents(
+            "甲可能成立。乙成立。",
+            "甲成立。乙可能成立。",
+        )
+
+        self.assertIn("SPEECH_ACT_MODALITY_SCOPE_CHANGED", codes(result, "warnings"))
+        diagnostic = next(
+            item
+            for item in result.warnings
+            if item.code == "SPEECH_ACT_MODALITY_SCOPE_CHANGED"
+        )
+        self.assertEqual({}, diagnostic.details["raw_delta"]["removed"])
+        self.assertEqual({}, diagnostic.details["raw_delta"]["added"])
+        self.assertEqual(2, len(diagnostic.details["residual_delta"]))
+
+    def test_v33_local_allowance_cannot_pay_for_other_claim_or_new_claim(self) -> None:
+        result = invariants.check_documents(
+            "甲可能或许成立。乙可能成立。",
+            "甲可能成立。乙成立。丙可能成立。",
+        )
+
+        self.assertIn("SPEECH_ACT_MODALITY_SCOPE_CHANGED", codes(result, "warnings"))
+        diagnostic = next(
+            item
+            for item in result.warnings
+            if item.code == "SPEECH_ACT_MODALITY_SCOPE_CHANGED"
+        )
+        self.assertEqual(1, len(diagnostic.details["safe_compression_allowances"]))
+        self.assertTrue(diagnostic.details["residual_delta"])
+
+    def test_v33_protected_quote_cannot_lend_possibility_allowance(self) -> None:
+        result = invariants.check_documents(
+            "“可能或许”，甲可能成立。",
+            "“可能或许”，甲成立。",
+        )
+
+        self.assertIn("SPEECH_ACT_MODALITY_SCOPE_CHANGED", codes(result, "warnings"))
+        occurrences = result.evidence["speech_act_audit"]["categories"][
+            "modality_scope"
+        ]["before_occurrences"]
+        self.assertEqual(["可能"], [item["marker"] for item in occurrences])
+
+    def test_v33_degree_claim_in_another_sentence_cannot_exempt_modality_drift(self) -> None:
+        result = invariants.check_documents(
+            "甲可能或许改变。乙影响有限。",
+            "甲可能改变且影响显著。乙影响有限。",
+        )
+
+        self.assertIn("SPEECH_ACT_MODALITY_SCOPE_CHANGED", codes(result, "warnings"))
+
+    def test_v33_single_core_possibility_plus_degree_phrase_has_no_allowance(self) -> None:
+        result = invariants.check_documents(
+            "该结果可能在一定程度上改变。",
+            "该结果可能改变。",
+        )
+
+        self.assertIn("SPEECH_ACT_MODALITY_SCOPE_CHANGED", codes(result, "warnings"))
+        modality = result.evidence["speech_act_audit"]["categories"][
+            "modality_scope"
+        ]
+        self.assertEqual([], modality["safe_compression_allowances"])
+
+    def test_v33_duplicate_claim_keys_fail_closed_without_allowance(self) -> None:
+        result = invariants.check_documents(
+            "甲可能或许成立。甲可能或许成立。",
+            "甲可能成立。甲可能成立。",
+        )
+
+        self.assertIn("SPEECH_ACT_MODALITY_SCOPE_CHANGED", codes(result, "warnings"))
+        pairing = result.evidence["speech_act_audit"]["claim_pairing"]
+        self.assertEqual(0, pairing["unique_exact_pairs"])
+
+    def test_v33_tex_comment_and_formal_statement_do_not_supply_speech_markers(self) -> None:
+        before = (
+            "% 可能或许只是注释\n"
+            "\\begin{definition}可能或许作为正式表述。\\end{definition}\n"
+            "正文可能成立。"
+        )
+        after = (
+            "% 可能或许只是注释\n"
+            "\\begin{definition}可能或许作为正式表述。\\end{definition}\n"
+            "正文成立。"
+        )
+        result = invariants.check_documents(before, after, document_format="tex")
+
+        self.assertIn("SPEECH_ACT_MODALITY_SCOPE_CHANGED", codes(result, "warnings"))
+        occurrences = result.evidence["speech_act_audit"]["categories"][
+            "modality_scope"
+        ]["before_occurrences"]
+        self.assertEqual(["可能"], [item["marker"] for item in occurrences])
+
+    def test_v33_crlf_and_lf_share_stable_occurrence_coordinates(self) -> None:
+        crlf = invariants.check_documents(
+            "首行。\r\n结果可能成立。", "首行。\r\n结果可能成立。"
+        )
+        lf = invariants.check_documents(
+            "首行。\n结果可能成立。", "首行。\n结果可能成立。"
+        )
+        crlf_occurrence = crlf.evidence["speech_act_audit"]["categories"][
+            "modality_scope"
+        ]["before_occurrences"][0]
+        lf_occurrence = lf.evidence["speech_act_audit"]["categories"][
+            "modality_scope"
+        ]["before_occurrences"][0]
+
+        self.assertEqual(
+            (lf_occurrence["line"], lf_occurrence["column"]),
+            (crlf_occurrence["line"], crlf_occurrence["column"]),
+        )
+
+    def test_v33_inherited_claim_strength_tension_is_nonblocking_advisory(self) -> None:
+        text = "该结果可能证明机制成立。"
+        normal = invariants.check_documents(text, text)
+        strict = invariants.check_documents(text, text, strict_speech_acts=True)
+
+        code = "SPEECH_ACT_INHERITED_CLAIM_STRENGTH_TENSION"
+        self.assertIn(code, codes(normal, "advisories"))
+        self.assertNotIn(code, codes(normal, "warnings"))
+        self.assertFalse(normal.errors)
+        self.assertFalse(strict.errors)
+        advisory = next(item for item in normal.advisories if item.code == code)
+        self.assertTrue(advisory.details["inherited"])
+        self.assertEqual("NONE", advisory.details["automatic_decision"])
+        self.assertEqual("NOT_EVALUATED", advisory.details["semantic_judgment"])
+
+    def test_v32_yiweizhe_is_implication_not_definition_marker(self) -> None:
+        result = invariants.check_documents(
+            "这并不意味着已经排除仪器漂移。",
+            "这并不代表已经排除仪器漂移。",
+        )
+
+        self.assertNotIn("SPEECH_ACT_DEFINITION_NAMING_CHANGED", codes(result, "warnings"))
+        self.assertIn("SPEECH_ACT_NEGATION_CHANGED", codes(result, "warnings"))
 
     def test_v7_transition_checks_do_not_fire_when_source_already_states_result(self) -> None:
         result = invariants.check_documents(
@@ -176,6 +621,137 @@ class HumanizeInvariantTests(unittest.TestCase):
         self.assertIn("SPEECH_ACT_SUPPORT_TO_ACTUAL_USE", codes(result, "errors"))
         self.assertFalse(result.warnings)
 
+    def test_v34_missing_content_cannot_be_rewritten_as_missing_linkage(self) -> None:
+        normal = invariants.check_documents(
+            "从模型情景直接滑到治理建议时，缺少成本、政策执行和外部验证层。",
+            "从模型情景过渡到治理建议时，缺少成本、政策执行和外部验证层面的衔接。",
+        )
+        strict = invariants.check_documents(
+            "从模型情景直接滑到治理建议时，缺少成本、政策执行和外部验证层。",
+            "从模型情景过渡到治理建议时，缺少成本、政策执行和外部验证层面的衔接。",
+            strict_speech_acts=True,
+        )
+        code = "SPEECH_ACT_MISSING_CONTENT_TO_LINKAGE"
+
+        self.assertIn(code, codes(normal, "warnings"))
+        self.assertIn(code, codes(strict, "errors"))
+        diagnostic = next(item for item in normal.warnings if item.code == code)
+        self.assertFalse(diagnostic.details["source_contains_rewrite_predicate"])
+
+    def test_v34_existing_linkage_claim_is_not_a_missing_content_transition(self) -> None:
+        result = invariants.check_documents(
+            "该段缺少成本分析与政策执行之间的衔接。",
+            "该段缺少成本与政策执行层面的联系。",
+        )
+
+        self.assertNotIn(
+            "SPEECH_ACT_MISSING_CONTENT_TO_LINKAGE",
+            codes(result, "warnings"),
+        )
+
+    def test_v35_real_gpt_material_predicate_upgrades_require_review(self) -> None:
+        cases = (
+            (
+                "SPEECH_ACT_ABSENCE_TO_FAILURE",
+                "MemoryError，因此后续字段没法完整生成。",
+                "后续字段验证失败，说明字段生成逻辑有误。",
+            ),
+            (
+                "SPEECH_ACT_PURPOSE_TO_RESULT",
+                "污染情景用于比较污染叠加阻隔对基线收益的影响。",
+                "结果表明污染叠加阻隔侵蚀了基线收益。",
+            ),
+            (
+                "SPEECH_ACT_PENDING_CHECK_TO_COMPLETION",
+                "热生效这点需要实测，宿主可能已把配置读进内存。",
+                "配置已经热生效，补丁已关闭。",
+            ),
+            (
+                "SPEECH_ACT_INTERNAL_TO_EXTERNAL_VALIDATION",
+                "综合健康指数是内部比较指标，不是外部生态健康验证。",
+                "综合健康指数验证了实际生态健康状况。",
+            ),
+            (
+                "SPEECH_ACT_CANDIDATE_TO_CONFIRMED",
+                "3.20--3.22 是固定初值和短积分窗下的局部混沌候选括号。",
+                "K=3.22 是经稳健性验证的混沌临界阈值。",
+            ),
+        )
+        for code, before, after in cases:
+            with self.subTest(code=code):
+                normal = invariants.check_documents(before, after)
+                strict = invariants.check_documents(
+                    before,
+                    after,
+                    strict_speech_acts=True,
+                )
+                self.assertIn(code, codes(normal, "warnings"))
+                self.assertIn(code, codes(strict, "errors"))
+                diagnostic = next(item for item in normal.warnings if item.code == code)
+                self.assertEqual("NOT_EVALUATED", diagnostic.details["semantic_judgment"])
+                self.assertFalse(diagnostic.details["source_contains_rewrite_predicate"])
+
+    def test_v35_predicate_upgrade_controls_preserve_supplied_status(self) -> None:
+        cases = (
+            (
+                "SPEECH_ACT_ABSENCE_TO_FAILURE",
+                "MemoryError，因此后续字段没法完整生成。",
+                "MemoryError 后，后续字段仍未完整生成。",
+            ),
+            (
+                "SPEECH_ACT_PURPOSE_TO_RESULT",
+                "污染情景用于比较污染叠加阻隔对基线收益的影响。",
+                "污染情景仍用于比较污染叠加阻隔对基线收益的影响。",
+            ),
+            (
+                "SPEECH_ACT_PENDING_CHECK_TO_COMPLETION",
+                "热生效这点需要实测，宿主可能已把配置读进内存。",
+                "配置是否热生效仍需实测。",
+            ),
+            (
+                "SPEECH_ACT_INTERNAL_TO_EXTERNAL_VALIDATION",
+                "综合健康指数是内部比较指标，不是外部生态健康验证。",
+                "综合健康指数仍是内部比较指标，不构成外部生态健康验证。",
+            ),
+            (
+                "SPEECH_ACT_CANDIDATE_TO_CONFIRMED",
+                "3.20--3.22 是固定初值和短积分窗下的局部混沌候选括号。",
+                "3.20--3.22 仍只作为当前条件下的局部混沌候选括号。",
+            ),
+        )
+        for code, before, after in cases:
+            with self.subTest(code=code):
+                result = invariants.check_documents(before, after)
+                self.assertNotIn(code, codes(result, "warnings"))
+
+    def test_v35_existing_result_predicate_and_protected_text_do_not_false_trigger(self) -> None:
+        supplied_result = invariants.check_documents(
+            "结果表明污染叠加阻隔侵蚀了基线收益。",
+            "结果显示污染叠加阻隔侵蚀了基线收益。",
+        )
+        protected = invariants.check_documents(
+            "```text\n内部指标不是外部验证。\n```",
+            "```text\n内部指标验证了实际状况。\n```",
+        )
+        self.assertNotIn("SPEECH_ACT_PURPOSE_TO_RESULT", codes(supplied_result, "warnings"))
+        self.assertNotIn(
+            "SPEECH_ACT_INTERNAL_TO_EXTERNAL_VALIDATION",
+            codes(protected, "warnings"),
+        )
+
+    def test_v35_pending_check_completion_does_not_cross_source_clause_boundary(self) -> None:
+        overreach = invariants.check_documents(
+            "配置已经写入，热生效情况仍待实测。",
+            "配置已经写入，并且已生效。",
+        )
+        safe = invariants.check_documents(
+            "配置已经写入，热生效情况仍待实测。",
+            "配置已经写入；热生效情况仍待实测。",
+        )
+        code = "SPEECH_ACT_PENDING_CHECK_TO_COMPLETION"
+        self.assertIn(code, codes(overreach, "warnings"))
+        self.assertNotIn(code, codes(safe, "warnings"))
+
     def test_v7_transition_checks_ignore_protected_code_and_math(self) -> None:
         markdown = invariants.check_documents(
             "```text\n正文里要保留三组数据。\n```",
@@ -197,12 +773,102 @@ class HumanizeInvariantTests(unittest.TestCase):
         self.assertNotIn("SPEECH_ACT_NEGATION_CHANGED", codes(result, "warnings"))
         self.assertNotIn("SPEECH_ACT_MODALITY_SCOPE_CHANGED", codes(result, "warnings"))
 
+    def test_v40_feichang_is_not_counted_as_sentence_negation(self) -> None:
+        result = invariants.check_documents(
+            "这一步非常直观地把加速度分成了两部分。",
+            "这一步直观地把加速度分成了两部分。",
+        )
+
+        self.assertNotIn("SPEECH_ACT_NEGATION_CHANGED", codes(result, "warnings"))
+        occurrences = result.evidence["speech_act_audit"]["categories"][
+            "negation"
+        ]["before_occurrences"]
+        self.assertEqual([], occurrences)
+
+    def test_v30_lexicalized_bu_compounds_are_not_sentence_negation(self) -> None:
+        result = invariants.check_documents(
+            "材料为不锈钢；模型满足不可压缩流条件。",
+            "材料采用不锈钢；模型符合不可压缩流条件。",
+        )
+        self.assertNotIn("SPEECH_ACT_NEGATION_CHANGED", codes(result, "warnings"))
+        negation = result.evidence["speech_act_audit"]["categories"]["negation"]
+        self.assertEqual([], negation["before_occurrences"])
+        self.assertEqual([], negation["after_occurrences"])
+
     def test_v9_editor_payload_paraphrase_is_not_a_completion_upgrade(self) -> None:
         result = invariants.check_documents(
             "正文里要保留三组数据，温度分别为 20 ℃、25 ℃ 和 30 ℃。",
             "三组数据的温度分别为 20 ℃、25 ℃ 和 30 ℃。",
         )
         self.assertNotIn("SPEECH_ACT_DIRECTIVE_TO_COMPLETION", codes(result, "warnings"))
+
+    def test_v34_source_polarity_tension_cannot_be_resolved_by_selecting_one_side(self) -> None:
+        result = invariants.check_documents(
+            "若已知速度随时间减小，就可以直接套用匀变速公式。"
+            "先确认题目给出的量是否满足匀变速条件；若条件不满足，"
+            "不能因为公式看起来相似就直接代入。",
+            "看到速度随时间减小，不能据此直接套用匀变速公式。"
+            "先确认题目给出的量是否满足匀变速条件；若条件不满足，"
+            "即使公式形式相似，也不能直接代入。",
+        )
+
+        code = "SPEECH_ACT_SOURCE_POLARITY_TENSION_SELECTED"
+        self.assertIn(code, codes(result, "warnings"))
+        diagnostic = next(item for item in result.warnings if item.code == code)
+        self.assertEqual("NOT_EVALUATED", diagnostic.details["academic_correctness"])
+        self.assertEqual("PRESERVE_BOTH_AND_ESCALATE", diagnostic.details["required_action"])
+        self.assertTrue(diagnostic.details["shared_anchors"])
+        self.assertTrue(diagnostic.details["source_positive_spans"])
+        self.assertTrue(diagnostic.details["source_negative_spans"])
+        self.assertFalse(diagnostic.details["rewrite_positive_spans"])
+        self.assertTrue(diagnostic.details["rewrite_negative_spans"])
+
+    def test_v34_source_polarity_tension_is_not_a_domain_correctness_oracle(self) -> None:
+        preserved = invariants.check_documents(
+            "满足甲条件时，可以直接使用该公式；不满足甲条件时，不能直接使用该公式。",
+            "满足甲条件时，可以直接使用该公式；不满足甲条件时，不能直接使用该公式。",
+        )
+        unrelated = invariants.check_documents(
+            "甲程序可以直接读取数据。乙模型不能直接给出结论。",
+            "乙模型不能直接给出结论。",
+        )
+        code = "SPEECH_ACT_SOURCE_POLARITY_TENSION_SELECTED"
+
+        self.assertNotIn(code, codes(preserved, "warnings"))
+        self.assertNotIn(code, codes(unrelated, "warnings"))
+
+    def test_v34_source_polarity_tension_respects_strict_mode(self) -> None:
+        result = invariants.check_documents(
+            "满足条件时，可以直接使用该公式；条件不足时，不能直接使用该公式。",
+            "条件不足时，不能直接使用该公式。",
+            strict_speech_acts=True,
+        )
+
+        self.assertIn(
+            "SPEECH_ACT_SOURCE_POLARITY_TENSION_SELECTED",
+            codes(result, "errors"),
+        )
+        self.assertFalse(result.warnings)
+
+    def test_v34_source_polarity_tension_ignores_protected_quote_code_and_math(self) -> None:
+        quoted = invariants.check_documents(
+            "作者写道：“满足条件时可以直接使用该公式；条件不足时不能直接使用该公式。”",
+            "作者仍保留原话：“满足条件时可以直接使用该公式；条件不足时不能直接使用该公式。”",
+        )
+        coded = invariants.check_documents(
+            "```text\n可以直接运行；不能直接运行。\n```\n正文甲。",
+            "```text\n可以直接运行；不能直接运行。\n```\n正文乙。",
+        )
+        math = invariants.check_documents(
+            r"设 $\text{可以直接使用公式；不能直接使用公式}$，正文甲。",
+            r"设 $\text{可以直接使用公式；不能直接使用公式}$，正文乙。",
+            document_format="tex",
+        )
+        code = "SPEECH_ACT_SOURCE_POLARITY_TENSION_SELECTED"
+
+        self.assertNotIn(code, codes(quoted, "warnings"))
+        self.assertNotIn(code, codes(coded, "warnings"))
+        self.assertNotIn(code, codes(math, "warnings"))
 
     def test_tex_comments_are_protected_by_default(self) -> None:
         result = invariants.check_documents(

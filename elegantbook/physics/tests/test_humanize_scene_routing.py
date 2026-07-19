@@ -50,6 +50,18 @@ class HumanizeSceneRoutingTests(unittest.TestCase):
         self.assertEqual("FALLBACK_GENERAL", result["status"])
         self.assertEqual("GENERAL", result["final_scene"])
 
+    def test_contract_threshold_routes_unique_two_point_scene(self) -> None:
+        cases = (
+            ("说明", "本节面向学生解释排班方案。", "COURSE"),
+            ("说明", "本节建立状态变量并比较方案。", "MODELING"),
+            ("说明", "本研究考察当前样本。", "RESEARCH"),
+        )
+        for heading, body, expected in cases:
+            with self.subTest(expected=expected):
+                result = router.route_scene(heading, body)
+                self.assertEqual("ROUTED", result["status"])
+                self.assertEqual(expected, result["final_scene"])
+
     def test_engineering_experiment_result_stays_modeling_when_body_names_model_output(self) -> None:
         result = router.route_scene("实验结果", "模型输出显示该情景的评价指标下降。")
 
@@ -83,7 +95,7 @@ class HumanizeSceneRoutingTests(unittest.TestCase):
             "本题最后核对方向。",
             document_prior_scene="COURSE",
         )
-        self.assertEqual("ROUTED_DOCUMENT_PRIOR", aligned["status"])
+        self.assertEqual("ROUTED", aligned["status"])
         self.assertEqual("COURSE", aligned["final_scene"])
 
     def test_document_prior_never_resolves_a_strong_ambiguity(self) -> None:
@@ -91,6 +103,27 @@ class HumanizeSceneRoutingTests(unittest.TestCase):
             "模型建立与研究方法",
             "本研究建立状态变量模型。",
             document_prior_scene="MODELING",
+        )
+
+        self.assertEqual("AMBIGUOUS", result["status"])
+        self.assertEqual("GENERAL", result["final_scene"])
+
+    def test_low_score_positive_tie_is_ambiguous_before_general_fallback(self) -> None:
+        result = router.route_scene(
+            "",
+            "本题需要说明。本研究需要说明。",
+        )
+
+        self.assertEqual({"COURSE": 2, "MODELING": 0, "RESEARCH": 2}, result["scores"])
+        self.assertEqual("AMBIGUOUS", result["status"])
+        self.assertEqual("GENERAL", result["final_scene"])
+        self.assertEqual(["COURSE", "RESEARCH"], result["ambiguous_scenes"])
+
+    def test_document_prior_cannot_resolve_a_low_score_positive_tie(self) -> None:
+        result = router.route_scene(
+            "",
+            "本题需要说明。本研究需要说明。",
+            document_prior_scene="COURSE",
         )
 
         self.assertEqual("AMBIGUOUS", result["status"])
@@ -140,6 +173,27 @@ class HumanizeSceneRoutingTests(unittest.TestCase):
             path.write_text(json.dumps(payload, ensure_ascii=False), encoding="utf-8")
 
             with self.assertRaisesRegex(router.RoutingPolicyError, "keys mismatch"):
+                router.load_policy(path)
+
+    def test_duplicate_policy_keys_fail_closed(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            raw = POLICY.read_text(encoding="utf-8")
+            path = Path(temp) / "policy.json"
+            path.write_text('{"revision":999,' + raw.lstrip()[1:], encoding="utf-8")
+
+            with self.assertRaisesRegex(router.RoutingPolicyError, "duplicate JSON key: revision"):
+                router.load_policy(path)
+
+    def test_non_finite_policy_numbers_fail_closed(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            raw = POLICY.read_text(encoding="utf-8")
+            path = Path(temp) / "policy.json"
+            path.write_text(
+                raw.replace('"minimum_route_score": 2', '"minimum_route_score": NaN'),
+                encoding="utf-8",
+            )
+
+            with self.assertRaisesRegex(router.RoutingPolicyError, "non-finite JSON number: NaN"):
                 router.load_policy(path)
 
 

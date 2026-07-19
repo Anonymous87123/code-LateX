@@ -94,6 +94,25 @@ class DetectorReportScopeTests(unittest.TestCase):
         self.assertEqual("AMBIGUOUS", statuses["重复判断。"])
         self.assertEqual("MISSING", statuses["源文没有。"])
 
+    def test_score_ui_metadata_does_not_pollute_marked_scope(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            report = root / "report.html"
+            source = root / "source.md"
+            sentence = "值得注意的是，现有表述系统梳理了相关问题。"
+            report.write_text(
+                '<div class="risk-score">综合风险：87%</div>'
+                f"<mark>{sentence}</mark>",
+                encoding="utf-8",
+            )
+            source.write_text(sentence, encoding="utf-8")
+
+            payload = extractor.analyze_report(report, source)
+
+        self.assertEqual("PASS", payload["status"])
+        self.assertEqual(1, payload["coverage"]["total_fragments"])
+        self.assertEqual(sentence, payload["fragments"][0]["text"])
+
     def test_report_without_source_is_review_not_an_implicit_match(self) -> None:
         payload = extractor.analyze_report(FIXTURES / "report_mixed.html")
 
