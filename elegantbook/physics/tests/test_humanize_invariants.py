@@ -922,6 +922,90 @@ class HumanizeInvariantTests(unittest.TestCase):
         self.assertIn("PROTECTED_CODE_CHANGED", codes(result, "errors"))
         self.assertNotIn("LATEX_BRACES_UNBALANCED", codes(result, "errors"))
 
+    def test_lstinline_with_optional_arguments_is_protected(self) -> None:
+        before = r"正文 \lstinline[language=Python]!token_甲=1!。"
+        after = r"正文 \lstinline[language=Python]!token_甲=2!。"
+        result = invariants.check_documents(before, after, document_format="tex")
+
+        self.assertIn("PROTECTED_CODE_CHANGED", codes(result, "errors"))
+
+    def test_fancyvrb_inline_verb_is_protected(self) -> None:
+        before = r"正文 \Verb+token_甲=1+。"
+        after = r"正文 \Verb+token_甲=2+。"
+        result = invariants.check_documents(before, after, document_format="tex")
+
+        self.assertIn("PROTECTED_CODE_CHANGED", codes(result, "errors"))
+
+    def test_declared_short_verb_and_custom_verb_like_changes_are_protected(self) -> None:
+        before = (
+            "\\DefineShortVerb{\\|}\n"
+            "|token_甲=1|\n"
+            "\\UndefineShortVerb{\\|}\n"
+            "正文 \\CustomVerb!token_乙=2!。"
+        )
+        after = before.replace("token_甲=1", "token_甲=9").replace(
+            "token_乙=2", "token_乙=8"
+        )
+        result = invariants.check_documents(before, after, document_format="tex")
+
+        self.assertIn("PROTECTED_CODE_CHANGED", codes(result, "errors"))
+
+    def test_declared_nonverb_custom_command_change_is_protected(self) -> None:
+        before = (
+            "\\CustomVerbatimCommand{\\InlineCode}{Verb}{formatcom=\\small}\n"
+            "正文 \\InlineCode|token_甲=1|。"
+        )
+        after = before.replace("token_甲=1", "token_甲=2")
+
+        result = invariants.check_documents(before, after, document_format="tex")
+
+        self.assertIn("PROTECTED_CODE_CHANGED", codes(result, "errors"))
+
+    def test_unclosed_short_verb_change_is_hard_error_and_review(self) -> None:
+        before = "\\DefineShortVerb{\\|}\r\n|token_甲=1\r\n后文。"
+        after = before.replace("token_甲=1", "token_甲=2")
+
+        result = invariants.check_documents(before, after, document_format="tex")
+
+        self.assertIn("PROTECTED_CODE_CHANGED", codes(result, "errors"))
+        self.assertIn("TEX_PROTECTION_PARSE_REVIEW", codes(result, "warnings"))
+
+    def test_commented_short_verb_declaration_does_not_create_code_span(self) -> None:
+        text = "% \\DefineShortVerb{\\|}\n正文 |普通文本|。"
+
+        code, _ranges = invariants._code_spans(text)
+
+        self.assertEqual([], code)
+
+    def test_incomplete_tex_protection_requires_review_even_when_unchanged(self) -> None:
+        cases = (
+            "正文 \\verb|token_甲=1\n后文。",
+            "正文 \\begin{minted}{python}\ntoken_乙=2\n后文。",
+            "正文 $token_丙=3\n后文。",
+            "正文 \\(token_丁=4\n后文。",
+        )
+        for text in cases:
+            with self.subTest(text=text):
+                result = invariants.check_documents(
+                    text, text, document_format="tex"
+                )
+                self.assertIn(
+                    "TEX_PROTECTION_PARSE_REVIEW", codes(result, "warnings")
+                )
+
+    def test_incomplete_protected_payload_change_is_a_hard_error(self) -> None:
+        before = "正文 \\verb|token_甲=1\n后文。"
+        after = "正文 \\verb|token_甲=2\n后文。"
+        result = invariants.check_documents(before, after, document_format="tex")
+
+        self.assertIn("PROTECTED_CODE_CHANGED", codes(result, "errors"))
+        self.assertIn("TEX_PROTECTION_PARSE_REVIEW", codes(result, "warnings"))
+
+    def test_fullwidth_dollar_is_not_treated_as_tex_math(self) -> None:
+        text = "正文 ＄token_甲=1＄。"
+
+        self.assertEqual([], invariants._math_spans(text, []))
+
     def test_ascii_direct_quote_is_protected(self) -> None:
         result = invariants.check_documents(
             '作者使用 "local response" 指代该现象。',

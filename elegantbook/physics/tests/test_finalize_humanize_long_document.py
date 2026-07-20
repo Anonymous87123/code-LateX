@@ -1,3 +1,4 @@
+import ast
 import csv
 import hashlib
 import importlib.util
@@ -445,6 +446,39 @@ class LongDocumentFinalizationTests(unittest.TestCase):
             }
         }
 
+    def test_rewrite_intent_target_signal_prefix_contract_is_explicit(self) -> None:
+        digest = hashlib.sha256(b"source").hexdigest()
+
+        def intent(signal: str) -> dict:
+            return {
+                "summary": "调整课程讲解段的节奏但不改变条件范围",
+                "operations": [
+                    {
+                        "id": "O1",
+                        "kind": "REWRITE_STYLE_SHELL",
+                        "source_span_ids": ["S1"],
+                        "target_signals": [signal],
+                        "summary": "调整课程讲解段的节奏但不改变条件范围",
+                    }
+                ],
+                "source_spans": [
+                    {
+                        "id": "S1",
+                        "start_line": 1,
+                        "end_line": 1,
+                        "sha256": digest,
+                    }
+                ],
+                "target_signals": [signal],
+            }
+
+        finalizer._validate_rewrite_intent_shape(intent("SCENE-COURSE-RHYTHM"))
+        with self.assertRaisesRegex(
+            ValueError,
+            "rewrite_intent_target_signals_invalid",
+        ):
+            finalizer._validate_rewrite_intent_shape(intent("COURSE-RHYTHM"))
+
     def test_v3_rewrite_intent_is_bound_to_source_diff_and_review_request(self) -> None:
         source_text = (
             "# 讨论\n\n"
@@ -590,7 +624,308 @@ class LongDocumentFinalizationTests(unittest.TestCase):
         )
 
         self.assertEqual(1, result["unit_statuses"]["UNRESOLVED"])
-        self.assertIn("NO_CHANGE_reason_generic_or_unlocated", row["notes"])
+        self.assertIn("NO_CHANGE_reason_invalid:generic_template", row["notes"])
+        self.assertIn(
+            "required=min_han_8+specific_function_anchor", row["notes"]
+        )
+        self.assertIn("reason_redacted=true", row["notes"])
+        self.assertEqual(
+            {
+                "total": 1,
+                "classified": 1,
+                "unclassified": 0,
+                "codes": {"generic_template": 1},
+                "structured_code_schema": "humanize-unresolved-code/v1",
+                "structured_code_source": "UNIT_UNRESOLVED_CODES",
+                "structured_classified": 1,
+                "structured_unclassified": 0,
+                "structured_code_counts": {
+                    "NO_CHANGE_REASON_GENERIC_TEMPLATE": 1
+                },
+                "details_artifact": "coverage_ledger.final.csv",
+                "content_redacted": True,
+            },
+            result["unresolved_reason_summary"],
+        )
+        summary = finalizer._render_text_summary(result)
+        self.assertIn("unresolved_details=coverage_ledger.final.csv", summary)
+        self.assertIn("reason_codes[generic_template=1]", summary)
+        self.assertNotIn("该段保持原有自然表达", summary)
+        self.assertEqual(
+            "PROCESSABLE_UNIT_ACCOUNTING_ONLY",
+            result["processable_scope_complete_scope"],
+        )
+        self.assertTrue(
+            result[
+                "processable_scope_complete_does_not_mean_resolved_or_deliverable"
+            ]
+        )
+        self.assertEqual(
+            result,
+            json.loads(
+                (run_dir / "latest_attempt_metadata.json").read_text(
+                    encoding="utf-8"
+                )
+            ),
+        )
+
+    def test_no_change_reason_diagnostics_are_specific_and_redacted(self) -> None:
+        cases = {
+            "保持原样": "too_short_han",
+            "该段保持原有自然表达": "generic_template",
+            "文字已经足够清楚无需再作调整": "missing_function_anchor",
+        }
+        for reason, issue in cases.items():
+            with self.subTest(issue=issue):
+                error = finalizer._no_change_reason_error(reason)
+                self.assertEqual(
+                    f"NO_CHANGE_reason_invalid:{issue};"
+                    "required=min_han_8+specific_function_anchor;"
+                    "reason_redacted=true",
+                    error,
+                )
+                self.assertNotIn(reason, error)
+
+        injected = "该段保持原有自然表达SECRET-CONTENT"
+        error = finalizer._no_change_reason_error(injected)
+        self.assertIn("NO_CHANGE_reason_invalid:generic_template", error)
+        self.assertNotIn("SECRET-CONTENT", error)
+
+    def test_unresolved_summary_classifies_empty_intent_spans_without_notes(self) -> None:
+        summary = finalizer._unresolved_reason_summary(
+            [
+                {
+                    "status": "UNRESOLVED",
+                    "notes": "invalid_rewrite_bundle:no_change_evidence_spans_must_be_nonempty SECRET-A",
+                },
+                {
+                    "status": "UNRESOLVED",
+                    "notes": "invalid_rewrite_bundle:rewrite_intent_source_spans_must_be_nonempty SECRET-B",
+                },
+                {"status": "UNRESOLVED", "notes": "unknown SECRET-C"},
+                {"status": "NO_CHANGE", "notes": "SECRET-D"},
+            ]
+        )
+
+        self.assertEqual(3, summary["total"])
+        self.assertEqual(2, summary["classified"])
+        self.assertEqual(1, summary["unclassified"])
+        self.assertEqual(
+            {
+                "no_change_evidence_spans_must_be_nonempty": 1,
+                "rewrite_intent_source_spans_must_be_nonempty": 1,
+            },
+            summary["codes"],
+        )
+        self.assertNotIn("notes", summary)
+        self.assertNotIn("SECRET", json.dumps(summary))
+
+    def test_unresolved_summary_does_not_classify_code_named_unknown_field(self) -> None:
+        summary = finalizer._unresolved_reason_summary(
+            [
+                {
+                    "status": "UNRESOLVED",
+                    "notes": (
+                        "invalid_rewrite_bundle:unknown_rewrite_bundle_fields:"
+                        "no_change_evidence_spans_must_be_nonempty"
+                    ),
+                }
+            ]
+        )
+
+        self.assertEqual(1, summary["total"])
+        self.assertEqual(0, summary["classified"])
+        self.assertEqual(1, summary["unclassified"])
+        self.assertEqual({}, summary["codes"])
+        self.assertEqual(0, summary["structured_classified"])
+        self.assertEqual(1, summary["structured_unclassified"])
+        self.assertEqual({}, summary["structured_code_counts"])
+
+    def test_unresolved_code_registry_rejects_dynamic_or_user_controlled_codes(self) -> None:
+        unit = {"status": "UNRESOLVED", "notes": "SECRET-CONTENT"}
+        with self.assertRaisesRegex(
+            AssertionError, "unknown internal unresolved code"
+        ):
+            finalizer._add_unresolved_code(
+                unit, "REWRITE_DECISION_UNSUPPORTED:SECRET-CONTENT"
+            )
+        self.assertNotIn("unresolved_codes", unit)
+
+    def test_every_unresolved_status_assignment_has_same_branch_registry_code(self) -> None:
+        source_path = SKILL / "scripts" / "finalize_humanize_long_document.py"
+        tree = ast.parse(source_path.read_text(encoding="utf-8"))
+        failures: list[int] = []
+
+        def is_unresolved_assignment(statement: ast.stmt) -> bool:
+            if not isinstance(statement, ast.Assign):
+                return False
+            if not isinstance(statement.value, ast.Constant):
+                return False
+            if statement.value.value != "UNRESOLVED":
+                return False
+            return any(
+                isinstance(target, ast.Subscript)
+                and isinstance(target.value, ast.Name)
+                and target.value.id == "unit"
+                and isinstance(target.slice, ast.Constant)
+                and target.slice.value == "status"
+                for target in statement.targets
+            )
+
+        def contains_registry_call(statement: ast.stmt) -> bool:
+            return any(
+                isinstance(node, ast.Call)
+                and isinstance(node.func, ast.Name)
+                and node.func.id == "_add_unresolved_code"
+                and len(node.args) >= 2
+                for node in ast.walk(statement)
+            )
+
+        def inspect_block(statements: list[ast.stmt]) -> None:
+            for index, statement in enumerate(statements):
+                if is_unresolved_assignment(statement):
+                    found = False
+                    for following in statements[index + 1 :]:
+                        if contains_registry_call(following):
+                            found = True
+                            break
+                        if isinstance(
+                            following, (ast.Continue, ast.Break, ast.Return, ast.Raise)
+                        ):
+                            break
+                    if not found:
+                        failures.append(statement.lineno)
+                for _field, value in ast.iter_fields(statement):
+                    if isinstance(value, list) and value and all(
+                        isinstance(item, ast.stmt) for item in value
+                    ):
+                        inspect_block(value)
+
+        inspect_block(tree.body)
+        self.assertEqual([], failures)
+
+    def test_csv_writer_neutralizes_spreadsheet_formula_prefixes(self) -> None:
+        path = self.root / "ledger.csv"
+        rows = [
+            {"unit_id": "U1", "notes": "=HYPERLINK(\"https://invalid\")"},
+            {"unit_id": "U2", "notes": "+SUM(1,1)"},
+            {"unit_id": "U3", "notes": "ordinary note"},
+        ]
+        finalizer._write_csv(path, rows, ("unit_id", "notes"))
+        with path.open("r", encoding="utf-8-sig", newline="") as handle:
+            written = list(csv.DictReader(handle))
+
+        self.assertEqual("'=HYPERLINK(\"https://invalid\")", written[0]["notes"])
+        self.assertEqual("'+SUM(1,1)", written[1]["notes"])
+        self.assertEqual("ordinary note", written[2]["notes"])
+
+    def test_previous_final_ledger_accepts_explicit_legacy_columns(self) -> None:
+        path = self.root / "coverage_ledger.final.csv"
+        finalizer._write_csv(
+            path,
+            [
+                {"unit_id": "U1", "status": "DONE", "notes": "legacy"},
+                {"unit_id": "U2", "status": "UNRESOLVED", "notes": "legacy"},
+            ],
+            ("unit_id", "status", "notes"),
+        )
+        self.assertEqual({"U1"}, finalizer._load_previous_accepted_units(path))
+
+    def test_previous_final_ledger_rejects_missing_or_duplicate_authority_fields(self) -> None:
+        missing = self.root / "missing.csv"
+        finalizer._write_csv(missing, [{"status": "DONE"}], ("status",))
+        with self.assertRaisesRegex(ValueError, "missing columns unit_id"):
+            finalizer._load_previous_accepted_units(missing)
+
+        duplicate = self.root / "duplicate.csv"
+        finalizer._write_csv(
+            duplicate,
+            [
+                {"unit_id": "U1", "status": "DONE"},
+                {"unit_id": "U1", "status": "NO_CHANGE"},
+            ],
+            ("unit_id", "status"),
+        )
+        with self.assertRaisesRegex(ValueError, "blank or duplicated"):
+            finalizer._load_previous_accepted_units(duplicate)
+
+    def test_v3_no_change_short_reason_uses_v3_contract_not_legacy_hint(self) -> None:
+        source_text = "# 定义\n\n正式定义保持对象、条件和并列结构。\n"
+        _, run_dir, unit = self.prepare_markdown_unit(
+            source_text, name="intent-short-no-change"
+        )
+        span = self.masked_line_span(unit["masked_text"], "正式定义")
+        rewrites = self.rewrite_dir()
+        bundle = self.authoring_bound_bundle(
+            run_dir,
+            unit,
+            {
+                "decision": "NO_CHANGE",
+                "reason": "保持原样",
+                "evidence_spans": [span],
+                "keep_reasons": {},
+            },
+        )
+        (rewrites / f"{unit['unit_id']}.json").write_text(
+            json.dumps(bundle, ensure_ascii=False), encoding="utf-8"
+        )
+
+        result = finalizer.finalize(run_dir, rewrites)
+        row = next(
+            item
+            for item in self.final_ledger(run_dir)
+            if item["unit_id"] == unit["unit_id"]
+        )
+
+        self.assertEqual(1, result["unit_statuses"]["UNRESOLVED"])
+        self.assertIn("NO_CHANGE_reason_invalid:too_short_han", row["notes"])
+        self.assertNotIn("at least 4 Chinese characters", row["notes"])
+
+    def test_v3_empty_no_change_evidence_is_classified_at_top_level(self) -> None:
+        source_text = "# 定义\n\n正式定义保持对象、条件和并列结构。\n"
+        _, run_dir, unit = self.prepare_markdown_unit(
+            source_text, name="intent-empty-no-change-evidence"
+        )
+        rewrites = self.rewrite_dir()
+        bundle = self.authoring_bound_bundle(
+            run_dir,
+            unit,
+            {
+                "decision": "NO_CHANGE",
+                "reason": "正式定义保留对象条件和并列结构，避免改变等权关系",
+                "evidence_spans": [],
+                "keep_reasons": {},
+            },
+        )
+        (rewrites / f"{unit['unit_id']}.json").write_text(
+            json.dumps(bundle, ensure_ascii=False), encoding="utf-8"
+        )
+
+        result = finalizer.finalize(run_dir, rewrites)
+
+        self.assertEqual(1, result["unit_statuses"]["UNRESOLVED"])
+        self.assertEqual(
+            {"no_change_evidence_spans_must_be_nonempty": 1},
+            result["unresolved_reason_summary"]["codes"],
+        )
+        self.assertEqual(0, result["unresolved_reason_summary"]["unclassified"])
+        self.assertEqual(
+            {"NO_CHANGE_EVIDENCE_SPANS_EMPTY": 1},
+            result["unresolved_reason_summary"]["structured_code_counts"],
+        )
+        row = next(
+            item
+            for item in self.final_ledger(run_dir)
+            if item["unit_id"] == unit["unit_id"]
+        )
+        self.assertEqual(
+            '["NO_CHANGE_EVIDENCE_SPANS_EMPTY"]',
+            row["unresolved_codes_json"],
+        )
+        self.assertIn(
+            "reason_codes[no_change_evidence_spans_must_be_nonempty=1]",
+            finalizer._render_text_summary(result),
+        )
 
     def test_v3_no_change_with_specific_bound_reason_passes_intent(self) -> None:
         source_text = "# 定义\n\n正式定义保留对象、条件和并列结构。\n"
@@ -4482,8 +4817,31 @@ class LongDocumentFinalizationTests(unittest.TestCase):
             encoding="utf-8",
         )
 
-        with self.assertRaisesRegex(ValueError, "run policy snapshot drift"):
+        with self.assertRaisesRegex(
+            ValueError,
+            r"run policy snapshot drift: components=implementation_hashes\.finalize_script_sha256; total=1; values_redacted=true",
+        ) as caught:
             finalizer.finalize(run_dir, rewrites)
+        self.assertNotIn("0" * 64, str(caught.exception))
+        self.assertNotIn(str(run_dir), str(caught.exception))
+
+    def test_policy_snapshot_drift_diagnostic_bounds_untrusted_structure(self) -> None:
+        current = preparer.build_policy_snapshot()
+        forged = dict(current)
+        forged["private-C:\\Users\\secret\\document.tex"] = "sensitive-value"
+        validators = dict(current["validator_policy_hashes"])
+        validators["attacker-controlled-secret-name"] = "0" * 64
+        forged["validator_policy_hashes"] = validators
+
+        components, total = preparer._policy_snapshot_drift_components(
+            forged, current, limit=1
+        )
+        self.assertEqual(["snapshot_structure"], components)
+        self.assertEqual(2, total)
+        diagnostic = f"components={','.join(components)}; total={total}; values_redacted=true"
+        self.assertNotIn("secret", diagnostic)
+        self.assertNotIn("sensitive-value", diagnostic)
+        self.assertNotIn("0" * 64, diagnostic)
 
     def test_resealed_unit_route_voice_ledger_and_chunk_forgery_fails_source_rebuild(self) -> None:
         _, run_dir, unit = self.prepare("\\section{例题}\n本题先判断方向。\n")
@@ -5305,6 +5663,22 @@ class LongDocumentFinalizationTests(unittest.TestCase):
         self.assertEqual("", new_request["path"])
         self.assertEqual("", new_request["rewrite_intent_evidence_path"])
         self.assertFalse(second["failed_attempt_evidence_paths_reusable"])
+        self.assertTrue(second["failed_attempt_sensitive_fields_redacted"])
+        self.assertEqual("", second["compile_check"]["command"])
+        self.assertEqual("", second["compile_check"]["cwd"])
+        self.assertEqual("", second["compile_check"]["stdout"])
+        self.assertEqual("", second["compile_check"]["stderr"])
+        unresolved = second["unresolved_reason_summary"]
+        self.assertEqual("", unresolved["details_artifact"])
+        self.assertEqual(
+            "NOT_RETAINED_AFTER_ROLLBACK",
+            unresolved["details_artifact_status"],
+        )
+        for change in second["source_change_details"]:
+            self.assertEqual("", change["path"])
+        serialized = json.dumps(second, ensure_ascii=False)
+        self.assertNotIn(str(self.root.resolve()), serialized)
+        self.assertNotIn(sys.executable, serialized)
         self.assertEqual(
             old_metadata, (run_dir / "finalization_metadata.json").read_bytes()
         )
@@ -5313,6 +5687,14 @@ class LongDocumentFinalizationTests(unittest.TestCase):
             second,
             json.loads(
                 (run_dir / "last_failed_attempt_metadata.json").read_text(
+                    encoding="utf-8"
+                )
+            ),
+        )
+        self.assertEqual(
+            second,
+            json.loads(
+                (run_dir / "latest_attempt_metadata.json").read_text(
                     encoding="utf-8"
                 )
             ),
@@ -5412,6 +5794,7 @@ class LongDocumentFinalizationTests(unittest.TestCase):
                                 encoding="utf-8",
                             )
                         state_before = finalizer._run_state_hashes(run_dir)
+                        state_before.pop("latest_attempt_metadata.json", None)
                         error = OSError(f"evidence commit {failed_commit} failed")
                         side_effect = (
                             [error] if failed_commit == 0 else [None, error]
@@ -5426,7 +5809,8 @@ class LongDocumentFinalizationTests(unittest.TestCase):
                             ):
                                 finalizer.finalize(run_dir, rewrites)
                         state_after = finalizer._run_state_hashes(run_dir)
-                        state_after.pop("last_failed_attempt_metadata.json")
+                        state_after.pop("last_failed_attempt_metadata.json", None)
+                        state_after.pop("latest_attempt_metadata.json", None)
                         self.assertEqual(state_before, state_after)
                         failure = json.loads(
                             (run_dir / "last_failed_attempt_metadata.json").read_text(
@@ -5505,7 +5889,1071 @@ class LongDocumentFinalizationTests(unittest.TestCase):
         self.assertTrue(payload["failed_attempt"])
         self.assertFalse(payload["failed_attempt_evidence_paths_reusable"])
         self.assertEqual("OSError", payload["error_type"])
+        self.assertEqual("OS_ERROR", payload["error_code"])
+        self.assertTrue(payload["error_message_redacted"])
+        self.assertTrue(payload["paths_redacted"])
+        self.assertNotIn("error", payload)
+        self.assertNotIn("run_dir", payload)
+        self.assertNotIn("publication failed", stdout.getvalue())
         self.assertEqual("", stderr.getvalue())
+
+    def make_authority_crash_fixture(
+        self, parent: Path, *, transaction_id: str = "1" * 24
+    ) -> tuple[Path, Path, bytes, bytes, bytes, bytes, Path, dict[str, object]]:
+        first = parent / "finalization_metadata.json"
+        second = parent / "latest_attempt_metadata.json"
+        old_first = b"FIRST-OLD\n"
+        old_second = old_first
+        new_first = b"FIRST-NEW\n"
+        new_second = new_first
+        old_members = {
+            "finalization_metadata.json": old_first,
+            "last_failed_attempt_metadata.json": None,
+            "latest_attempt_metadata.json": old_second,
+        }
+        new_members = {
+            "finalization_metadata.json": new_first,
+            "last_failed_attempt_metadata.json": None,
+            "latest_attempt_metadata.json": new_second,
+        }
+        base_commit = finalizer._authority_commit_payload(
+            generation=0,
+            transaction_id="BOOTSTRAP",
+            role="LEGACY_BASELINE",
+            members=old_members,
+        )
+        base_commit_raw = finalizer._canonical_json_bytes(base_commit)
+        (parent / finalizer.AUTHORITY_GROUP_COMMIT_NAME).write_bytes(base_commit_raw)
+        next_commit = finalizer._authority_commit_payload(
+            generation=1,
+            transaction_id=transaction_id,
+            role="SUCCESS",
+            members=new_members,
+        )
+        next_commit_raw = finalizer._canonical_json_bytes(next_commit)
+        transaction_dir = parent / (
+            finalizer.AUTHORITY_GROUP_TRANSACTION_PREFIX + transaction_id
+        )
+        transaction_dir.mkdir()
+        journal_members: list[dict[str, object]] = []
+        for index, target_name in enumerate(finalizer.AUTHORITY_GROUP_TARGET_NAMES):
+            old_raw = old_members[target_name]
+            new_raw = new_members[target_name]
+            backup_name = f"member-{index}.old"
+            staging_name = f"member-{index}.new"
+            if old_raw is not None:
+                (transaction_dir / backup_name).write_bytes(old_raw)
+            if new_raw is not None:
+                (transaction_dir / staging_name).write_bytes(new_raw)
+            journal_members.append(
+                {
+                    "target": target_name,
+                    "old_exists": old_raw is not None,
+                    "old_sha256": finalizer.sha256(old_raw) if old_raw is not None else None,
+                    "old_bytes": len(old_raw) if old_raw is not None else 0,
+                    "new_exists": new_raw is not None,
+                    "new_sha256": finalizer.sha256(new_raw) if new_raw is not None else None,
+                    "new_bytes": len(new_raw) if new_raw is not None else 0,
+                    "backup": backup_name,
+                    "staging": staging_name,
+                }
+            )
+        (transaction_dir / "commit.new").write_bytes(next_commit_raw)
+        journal: dict[str, object] = {
+            "schema_version": finalizer.AUTHORITY_GROUP_JOURNAL_SCHEMA,
+            "transaction_id": transaction_id,
+            "state": "PREPARED",
+            "role": "SUCCESS",
+            "base_generation": 0,
+            "next_generation": 1,
+            "base_commit_sha256": finalizer.sha256(base_commit_raw),
+            "next_commit_sha256": finalizer.sha256(next_commit_raw),
+            "members": journal_members,
+        }
+        finalizer._write_json(
+            parent / finalizer.AUTHORITY_GROUP_JOURNAL_NAME, journal
+        )
+        return (
+            first,
+            second,
+            old_first,
+            old_second,
+            new_first,
+            new_second,
+            transaction_dir,
+            journal,
+        )
+
+    def test_metadata_authority_group_restores_every_prior_byte_on_second_write_failure(self) -> None:
+        first = self.root / "finalization_metadata.json"
+        second = self.root / "latest_attempt_metadata.json"
+        first.write_bytes(b"PAIR-OLD\n")
+        second.write_bytes(b"PAIR-OLD\n")
+        real_replace = finalizer.os.replace
+        committed = 0
+
+        def fail_second(source: object, target: object) -> None:
+            nonlocal committed
+            target_path = Path(target)
+            if target_path in {first, second}:
+                committed += 1
+                if committed == 2:
+                    raise OSError("SECOND-WRITE-FAILED SECRET-CONTENT")
+            real_replace(source, target)
+
+        with mock.patch.object(finalizer.os, "replace", side_effect=fail_second):
+            with self.assertRaises(OSError):
+                finalizer._write_json_group_atomic(
+                    ((first, {"new": 1}), (second, {"new": 1}))
+                )
+
+        self.assertEqual(b"PAIR-OLD\n", first.read_bytes())
+        self.assertEqual(b"PAIR-OLD\n", second.read_bytes())
+
+    def test_metadata_authority_group_reports_rollback_failure(self) -> None:
+        first = self.root / "finalization_metadata.json"
+        second = self.root / "latest_attempt_metadata.json"
+        first.write_bytes(b"PAIR-OLD\n")
+        second.write_bytes(b"PAIR-OLD\n")
+        real_replace = finalizer.os.replace
+        target_replaces = 0
+
+        def fail_publication_and_restore(source: object, target: object) -> None:
+            nonlocal target_replaces
+            target_path = Path(target)
+            if target_path in {first, second}:
+                target_replaces += 1
+                if target_replaces >= 2:
+                    raise OSError("REPLACE-FAILED")
+            real_replace(source, target)
+
+        with mock.patch.object(
+            finalizer.os, "replace", side_effect=fail_publication_and_restore
+        ):
+            with self.assertRaisesRegex(
+                RuntimeError, "metadata authority group rollback failed"
+            ):
+                finalizer._write_json_group_atomic(
+                    ((first, {"new": 1}), (second, {"new": 1}))
+                )
+
+    def test_authority_group_journal_recovers_mixed_crash_state(self) -> None:
+        (
+            first,
+            second,
+            old_first,
+            old_second,
+            new_first,
+            _new_second,
+            transaction_dir,
+            _journal,
+        ) = self.make_authority_crash_fixture(self.root)
+        first.write_bytes(new_first)
+        second.write_bytes(old_second)
+
+        self.assertTrue(finalizer._recover_authority_group_journal(self.root))
+
+        self.assertEqual(old_first, first.read_bytes())
+        self.assertEqual(old_second, second.read_bytes())
+        self.assertFalse(
+            (self.root / finalizer.AUTHORITY_GROUP_JOURNAL_NAME).exists()
+        )
+        self.assertFalse(transaction_dir.exists())
+
+    def test_authority_group_committed_dirty_state_rolls_forward(self) -> None:
+        (
+            first,
+            second,
+            _old_first,
+            old_second,
+            new_first,
+            new_second,
+            transaction_dir,
+            _journal,
+        ) = self.make_authority_crash_fixture(self.root)
+        first.write_bytes(new_first)
+        second.write_bytes(old_second)
+        (self.root / finalizer.AUTHORITY_GROUP_COMMIT_NAME).write_bytes(
+            (transaction_dir / "commit.new").read_bytes()
+        )
+
+        self.assertTrue(finalizer._recover_authority_group_journal(self.root))
+
+        self.assertEqual(new_first, first.read_bytes())
+        self.assertEqual(new_second, second.read_bytes())
+        self.assertFalse(
+            (self.root / finalizer.AUTHORITY_GROUP_JOURNAL_NAME).exists()
+        )
+        self.assertFalse(transaction_dir.exists())
+        self.assertFalse(finalizer._recover_authority_group_journal(self.root))
+
+    def test_authority_group_recovery_rejects_third_commit_without_mutation(self) -> None:
+        (
+            first,
+            second,
+            _old_first,
+            old_second,
+            new_first,
+            _new_second,
+            _transaction_dir,
+            _journal,
+        ) = self.make_authority_crash_fixture(self.root)
+        first.write_bytes(new_first)
+        second.write_bytes(old_second)
+        third_commit = finalizer._authority_commit_payload(
+            generation=99,
+            transaction_id="f" * 24,
+            role="SUCCESS",
+            members={
+                "finalization_metadata.json": new_first,
+                "last_failed_attempt_metadata.json": None,
+                "latest_attempt_metadata.json": new_first,
+            },
+        )
+        (self.root / finalizer.AUTHORITY_GROUP_COMMIT_NAME).write_bytes(
+            finalizer._canonical_json_bytes(third_commit)
+        )
+
+        with self.assertRaisesRegex(RuntimeError, "outside journal state"):
+            finalizer._recover_authority_group_journal(self.root)
+
+        self.assertEqual(new_first, first.read_bytes())
+        self.assertEqual(old_second, second.read_bytes())
+
+    def test_authority_staging_residue_is_removed_before_clean_validation(self) -> None:
+        residue = self.root / (
+            finalizer.AUTHORITY_GROUP_COMMIT_STAGING_PREFIX + "dead.staging"
+        )
+        residue.write_bytes(b"INCOMPLETE")
+
+        self.assertFalse(finalizer._recover_authority_group_journal(self.root))
+
+        self.assertFalse(residue.exists())
+        self.assertTrue(
+            (self.root / finalizer.AUTHORITY_GROUP_COMMIT_NAME).is_file()
+        )
+
+    def test_authority_target_staging_residue_is_removed_before_bootstrap(self) -> None:
+        residue = self.root / (
+            finalizer.AUTHORITY_GROUP_TARGET_STAGING_PREFIX + "dead.staging"
+        )
+        residue.write_bytes(b"INCOMPLETE")
+
+        self.assertFalse(finalizer._recover_authority_group_journal(self.root))
+
+        self.assertFalse(residue.exists())
+
+    def test_prejournal_transaction_staging_residue_is_safely_discarded(self) -> None:
+        transaction = self.root / (
+            finalizer.AUTHORITY_GROUP_TRANSACTION_PREFIX + "d" * 24
+        )
+        transaction.mkdir()
+        residue = transaction / (
+            finalizer.AUTHORITY_GROUP_TRANSACTION_STAGING_PREFIX + "dead.staging"
+        )
+        residue.write_bytes(b"INCOMPLETE")
+
+        self.assertFalse(finalizer._recover_authority_group_journal(self.root))
+
+        self.assertFalse(transaction.exists())
+
+    def test_authority_writer_rejects_nonidentical_active_pair(self) -> None:
+        with self.assertRaisesRegex(ValueError, "byte-identical"):
+            finalizer._write_json_group_atomic(
+                (
+                    (self.root / "finalization_metadata.json", {"value": 1}),
+                    (self.root / "latest_attempt_metadata.json", {"value": 2}),
+                )
+            )
+
+    def test_bootstrap_rejects_partial_authority_closure(self) -> None:
+        (self.root / "latest_attempt_metadata.json").write_text(
+            "{}\n", encoding="utf-8"
+        )
+
+        with self.assertRaisesRegex(RuntimeError, "partial authority closure"):
+            finalizer._recover_authority_group_journal(self.root)
+
+    def test_recovery_rejects_missing_target_when_old_and_new_both_exist(self) -> None:
+        (
+            first,
+            second,
+            _old_first,
+            old_second,
+            _new_first,
+            _new_second,
+            _transaction_dir,
+            _journal,
+        ) = self.make_authority_crash_fixture(self.root)
+        second.write_bytes(old_second)
+
+        with self.assertRaisesRegex(ValueError, "missing target"):
+            finalizer._recover_authority_group_journal(self.root)
+
+        self.assertFalse(first.exists())
+
+    def test_run_state_restore_never_touches_authority_closure(self) -> None:
+        run_dir = self.root / "run"
+        run_dir.mkdir()
+        backup = self.root / "backup"
+        backup.mkdir()
+        ordinary = run_dir / "ordinary.txt"
+        ordinary.write_text("new", encoding="utf-8")
+        (backup / "ordinary.txt").write_text("old", encoding="utf-8")
+        authority_paths = [
+            run_dir / finalizer.AUTHORITY_GROUP_COMMIT_NAME,
+            *(run_dir / name for name in finalizer.AUTHORITY_GROUP_TARGET_NAMES),
+        ]
+        for index, path in enumerate(authority_paths):
+            path.write_bytes(f"authority-{index}".encode("ascii"))
+        before = {path: path.read_bytes() for path in authority_paths}
+
+        finalizer._restore_run_state(run_dir, backup)
+
+        self.assertEqual("old", ordinary.read_text(encoding="utf-8"))
+        self.assertEqual(before, {path: path.read_bytes() for path in authority_paths})
+
+    def make_run_state_recovery_fixture(self) -> tuple[Path, str, Path]:
+        run_dir = self.root / "durable-run"
+        run_dir.mkdir()
+        ordinary = run_dir / "ordinary.txt"
+        ordinary.write_text("base", encoding="utf-8")
+        finalizer._recover_authority_group_journal(run_dir)
+        transaction_id, backup_dir = finalizer._begin_run_state_transaction(run_dir)
+        return run_dir, transaction_id, backup_dir
+
+    def make_bound_run_state_recovery_fixture(
+        self, name: str, *, pointer: str
+    ) -> tuple[Path, str, dict, bytes, dict]:
+        run_dir = self.root / name
+        run_dir.mkdir()
+        (run_dir / "ordinary.txt").write_text("base", encoding="utf-8")
+        finalizer._recover_authority_group_journal(run_dir)
+        transaction_id, _backup_dir = finalizer._begin_run_state_transaction(run_dir)
+        base_raw = (run_dir / finalizer.AUTHORITY_GROUP_COMMIT_NAME).read_bytes()
+        base_commit = finalizer._parse_authority_commit(base_raw)
+        next_commit = finalizer._authority_commit_payload(
+            generation=base_commit["generation"] + 1,
+            transaction_id=transaction_id,
+            role="LEGACY_BASELINE",
+            members=finalizer._authority_closure_bytes(run_dir),
+        )
+        next_raw = finalizer._canonical_json_bytes(next_commit)
+        (run_dir / "ordinary.txt").write_text("next", encoding="utf-8")
+        finalizer._bind_run_state_next(
+            run_dir, transaction_id, next_raw, next_commit
+        )
+        if pointer == "next":
+            (run_dir / finalizer.AUTHORITY_GROUP_COMMIT_NAME).write_bytes(next_raw)
+        elif pointer != "base":
+            raise ValueError("pointer must be base or next")
+        return run_dir, transaction_id, base_commit, next_raw, next_commit
+
+    def test_run_state_next_pointer_repairs_third_live_closure_from_sealed_image(self) -> None:
+        run_dir, transaction_id, _base, _next_raw, _next = (
+            self.make_bound_run_state_recovery_fixture(
+                "next-live-tamper", pointer="next"
+            )
+        )
+        (run_dir / "ordinary.txt").write_text(
+            "tampered-third-state", encoding="utf-8"
+        )
+        self.assertTrue(finalizer._recover_run_state_journal(run_dir))
+
+        self.assertEqual(
+            "next", (run_dir / "ordinary.txt").read_text(encoding="utf-8")
+        )
+        self.assertFalse((run_dir / finalizer.RUN_STATE_JOURNAL_NAME).exists())
+        self.assertFalse(
+            finalizer._run_state_transaction_path(run_dir, transaction_id).exists()
+        )
+
+    def test_run_state_cleanup_revalidates_selected_closure_before_deleting_evidence(self) -> None:
+        run_dir, transaction_id, _base, _next_raw, _next = (
+            self.make_bound_run_state_recovery_fixture(
+                "cleanup-image-tamper", pointer="next"
+            )
+        )
+        journal_path = run_dir / finalizer.RUN_STATE_JOURNAL_NAME
+        journal = json.loads(journal_path.read_text(encoding="utf-8"))
+        journal["state"] = "CLEANUP"
+        journal_path.write_bytes(finalizer._canonical_json_bytes(journal))
+        next_file = (
+            finalizer._run_state_transaction_path(run_dir, transaction_id)
+            / "next"
+            / "ordinary.txt"
+        )
+        next_file.write_text("tampered-image", encoding="utf-8")
+        before = _directory_bytes(run_dir)
+
+        with self.assertRaisesRegex(RuntimeError, "image does not match journal closure"):
+            finalizer._recover_run_state_journal(run_dir)
+
+        self.assertEqual(before, _directory_bytes(run_dir))
+        self.assertTrue(journal_path.is_file())
+        self.assertTrue(
+            finalizer._run_state_transaction_path(run_dir, transaction_id).is_dir()
+        )
+
+    def test_run_state_cleanup_restart_finishes_when_transaction_delete_is_interrupted(self) -> None:
+        run_dir, transaction_id, _base, _next_raw, _next = (
+            self.make_bound_run_state_recovery_fixture(
+                "cleanup-delete-interrupted", pointer="next"
+            )
+        )
+        transaction_dir = finalizer._run_state_transaction_path(
+            run_dir, transaction_id
+        )
+        real_rmtree = finalizer.shutil.rmtree
+
+        def interrupt_transaction_delete(path: object, *args: object, **kwargs: object) -> None:
+            if Path(path) == transaction_dir:
+                raise KeyboardInterrupt
+            real_rmtree(path, *args, **kwargs)
+
+        with mock.patch.object(
+            finalizer.shutil, "rmtree", side_effect=interrupt_transaction_delete
+        ):
+            with self.assertRaises(KeyboardInterrupt):
+                finalizer._cleanup_run_state_transaction(run_dir, transaction_id)
+
+        self.assertFalse((run_dir / finalizer.RUN_STATE_JOURNAL_NAME).exists())
+        self.assertTrue(transaction_dir.is_dir())
+        self.assertTrue(
+            (run_dir / (finalizer.RUN_STATE_CLEANUP_PREFIX + transaction_id + ".json")).is_file()
+        )
+        self.assertTrue(finalizer._recover_run_state_journal(run_dir))
+        self.assertFalse(transaction_dir.exists())
+        self.assertFalse(
+            (run_dir / (finalizer.RUN_STATE_CLEANUP_PREFIX + transaction_id + ".json")).exists()
+        )
+        self.assertEqual(
+            "next", (run_dir / "ordinary.txt").read_text(encoding="utf-8")
+        )
+
+    def test_run_state_cleanup_restart_finishes_after_transaction_was_deleted(self) -> None:
+        run_dir, transaction_id, _base, _next_raw, _next = (
+            self.make_bound_run_state_recovery_fixture(
+                "cleanup-delete-then-interrupt", pointer="next"
+            )
+        )
+        transaction_dir = finalizer._run_state_transaction_path(
+            run_dir, transaction_id
+        )
+        real_rmtree = finalizer.shutil.rmtree
+
+        def delete_then_interrupt(path: object, *args: object, **kwargs: object) -> None:
+            real_rmtree(path, *args, **kwargs)
+            if Path(path) == transaction_dir:
+                raise KeyboardInterrupt
+
+        with mock.patch.object(
+            finalizer.shutil, "rmtree", side_effect=delete_then_interrupt
+        ):
+            with self.assertRaises(KeyboardInterrupt):
+                finalizer._cleanup_run_state_transaction(run_dir, transaction_id)
+
+        self.assertFalse((run_dir / finalizer.RUN_STATE_JOURNAL_NAME).exists())
+        self.assertFalse(transaction_dir.exists())
+        self.assertTrue(finalizer._recover_run_state_journal(run_dir))
+        self.assertFalse(
+            (run_dir / (finalizer.RUN_STATE_CLEANUP_PREFIX + transaction_id + ".json")).exists()
+        )
+
+    def test_run_state_selected_base_or_next_image_tampering_fails_closed(self) -> None:
+        cases = (
+            ("base-hash", "base", "hash"),
+            ("base-type", "base", "type"),
+            ("next-hash", "next", "hash"),
+            ("next-type", "next", "type"),
+        )
+        for name, side, mutation in cases:
+            with self.subTest(side=side, mutation=mutation):
+                run_dir, transaction_id, _base, _next_raw, _next = (
+                    self.make_bound_run_state_recovery_fixture(
+                        f"selected-image-{name}", pointer=side
+                    )
+                )
+                selected_file = (
+                    finalizer._run_state_transaction_path(run_dir, transaction_id)
+                    / side
+                    / "ordinary.txt"
+                )
+                if mutation == "hash":
+                    selected_file.write_text("wrong-image-bytes", encoding="utf-8")
+                else:
+                    selected_file.unlink()
+                    selected_file.mkdir()
+                before = _directory_bytes(run_dir)
+
+                with self.assertRaisesRegex(
+                    RuntimeError, "image does not match journal closure"
+                ):
+                    finalizer._recover_run_state_journal(run_dir)
+
+                self.assertEqual(before, _directory_bytes(run_dir))
+                self.assertTrue(
+                    (run_dir / finalizer.RUN_STATE_JOURNAL_NAME).is_file()
+                )
+                self.assertTrue(
+                    finalizer._run_state_transaction_path(
+                        run_dir, transaction_id
+                    ).is_dir()
+                )
+
+    def test_run_state_bound_journal_rejects_third_pointer_without_live_mutation(self) -> None:
+        run_dir, transaction_id, _base, _next_raw, next_commit = (
+            self.make_bound_run_state_recovery_fixture(
+                "bound-third-pointer", pointer="next"
+            )
+        )
+        third_commit = finalizer._authority_commit_payload(
+            generation=next_commit["generation"] + 1,
+            transaction_id="e" * 24,
+            role="LEGACY_BASELINE",
+            members=finalizer._authority_closure_bytes(run_dir),
+        )
+        (run_dir / finalizer.AUTHORITY_GROUP_COMMIT_NAME).write_bytes(
+            finalizer._canonical_json_bytes(third_commit)
+        )
+        before = _directory_bytes(run_dir)
+
+        with self.assertRaisesRegex(RuntimeError, "outside run-state journal"):
+            finalizer._recover_run_state_journal(run_dir)
+
+        self.assertEqual(before, _directory_bytes(run_dir))
+        self.assertTrue((run_dir / finalizer.RUN_STATE_JOURNAL_NAME).is_file())
+        self.assertTrue(
+            finalizer._run_state_transaction_path(run_dir, transaction_id).is_dir()
+        )
+
+    def test_run_state_journal_restarts_base_restore_after_interruption(self) -> None:
+        run_dir, transaction_id, _backup_dir = self.make_run_state_recovery_fixture()
+        ordinary = run_dir / "ordinary.txt"
+        ordinary.write_text("new", encoding="utf-8")
+        (run_dir / "added.txt").write_text("partial", encoding="utf-8")
+        real_copy2 = finalizer.shutil.copy2
+        interrupted = False
+
+        def interrupt_first_copy(source: object, target: object, *args: object, **kwargs: object) -> object:
+            nonlocal interrupted
+            if not interrupted:
+                interrupted = True
+                raise KeyboardInterrupt
+            return real_copy2(source, target, *args, **kwargs)
+
+        with mock.patch.object(finalizer.shutil, "copy2", side_effect=interrupt_first_copy):
+            with self.assertRaises(KeyboardInterrupt):
+                finalizer._recover_run_state_journal(run_dir)
+
+        self.assertTrue((run_dir / finalizer.RUN_STATE_JOURNAL_NAME).is_file())
+        self.assertTrue(
+            finalizer._run_state_transaction_path(run_dir, transaction_id).is_dir()
+        )
+        self.assertTrue(finalizer._recover_run_state_journal(run_dir))
+        self.assertEqual("base", ordinary.read_text(encoding="utf-8"))
+        self.assertFalse((run_dir / "added.txt").exists())
+        self.assertFalse((run_dir / finalizer.RUN_STATE_JOURNAL_NAME).exists())
+
+    def test_run_state_journal_keeps_next_state_after_matching_authority_commit(self) -> None:
+        run_dir, transaction_id, _backup_dir = self.make_run_state_recovery_fixture()
+        ordinary = run_dir / "ordinary.txt"
+        ordinary.write_text("next", encoding="utf-8")
+        base_raw = (run_dir / finalizer.AUTHORITY_GROUP_COMMIT_NAME).read_bytes()
+        base = finalizer._parse_authority_commit(base_raw)
+        closure = finalizer._authority_closure_bytes(run_dir)
+        next_commit = finalizer._authority_commit_payload(
+            generation=base["generation"] + 1,
+            transaction_id=transaction_id,
+            role="LEGACY_BASELINE",
+            members=closure,
+        )
+        next_commit_raw = finalizer._canonical_json_bytes(next_commit)
+        finalizer._bind_run_state_next(
+            run_dir,
+            transaction_id,
+            next_commit_raw,
+            next_commit,
+        )
+        (run_dir / finalizer.AUTHORITY_GROUP_COMMIT_NAME).write_bytes(
+            next_commit_raw
+        )
+
+        self.assertTrue(finalizer._recover_run_state_journal(run_dir))
+
+        self.assertEqual("next", ordinary.read_text(encoding="utf-8"))
+        self.assertFalse((run_dir / finalizer.RUN_STATE_JOURNAL_NAME).exists())
+
+    def test_run_state_journal_rejects_third_authority_pointer_without_mutation(self) -> None:
+        run_dir, _transaction_id, _backup_dir = self.make_run_state_recovery_fixture()
+        ordinary = run_dir / "ordinary.txt"
+        ordinary.write_text("partial", encoding="utf-8")
+        closure = finalizer._authority_closure_bytes(run_dir)
+        third = finalizer._authority_commit_payload(
+            generation=99,
+            transaction_id="e" * 24,
+            role="LEGACY_BASELINE",
+            members=closure,
+        )
+        (run_dir / finalizer.AUTHORITY_GROUP_COMMIT_NAME).write_bytes(
+            finalizer._canonical_json_bytes(third)
+        )
+
+        with self.assertRaisesRegex(RuntimeError, "outside run-state journal"):
+            finalizer._recover_run_state_journal(run_dir)
+
+        self.assertEqual("partial", ordinary.read_text(encoding="utf-8"))
+        self.assertTrue((run_dir / finalizer.RUN_STATE_JOURNAL_NAME).is_file())
+
+    def test_orphan_run_state_transaction_fails_closed(self) -> None:
+        run_dir = self.root / "orphan-run"
+        run_dir.mkdir()
+        orphan = finalizer._run_state_transaction_path(run_dir, "f" * 24)
+        orphan.mkdir()
+
+        with self.assertRaisesRegex(RuntimeError, "orphan run-state transaction"):
+            finalizer._recover_run_state_journal(run_dir)
+
+        self.assertTrue(orphan.is_dir())
+
+    def test_required_run_state_binding_rejects_missing_journal_before_authority_publish(self) -> None:
+        run_dir = self.root / "missing-required-journal"
+        run_dir.mkdir()
+        finalizer._recover_authority_group_journal(run_dir)
+        before = _directory_bytes(run_dir)
+
+        with self.assertRaisesRegex(RuntimeError, "required run-state journal"):
+            finalizer._write_json_group_atomic(
+                (
+                    (run_dir / "finalization_metadata.json", {"value": 1}),
+                    (run_dir / "latest_attempt_metadata.json", {"value": 1}),
+                ),
+                transaction_id="a" * 24,
+                require_run_state_binding=True,
+            )
+
+        self.assertEqual(before, _directory_bytes(run_dir))
+
+    def test_required_run_state_precheck_preserves_authority_crash_evidence(self) -> None:
+        self.make_authority_crash_fixture(self.root)
+        before = _directory_bytes(self.root)
+
+        with self.assertRaisesRegex(RuntimeError, "required run-state journal"):
+            finalizer._write_json_group_atomic(
+                (
+                    (self.root / "finalization_metadata.json", {"value": 1}),
+                    (self.root / "latest_attempt_metadata.json", {"value": 1}),
+                ),
+                transaction_id="a" * 24,
+                require_run_state_binding=True,
+            )
+
+        self.assertEqual(before, _directory_bytes(self.root))
+
+    def test_nested_reserved_prefix_artifact_survives_run_state_restore(self) -> None:
+        run_dir = self.root / "nested-prefix-artifact"
+        victim = run_dir / "docs" / ".humanize-run-state-notes.txt"
+        victim.parent.mkdir(parents=True)
+        victim.write_bytes(b"KEEP")
+        finalizer._recover_authority_group_journal(run_dir)
+        transaction_id, backup_dir = finalizer._begin_run_state_transaction(run_dir)
+        victim.write_bytes(b"CHANGED")
+
+        finalizer._restore_run_state(run_dir, backup_dir)
+
+        self.assertEqual(b"KEEP", victim.read_bytes())
+        finalizer._cleanup_run_state_transaction(run_dir, transaction_id)
+
+    def test_untrusted_run_state_staging_prefix_is_preserved_and_blocks_recovery(self) -> None:
+        run_dir = self.root / "staging-prefix-collision"
+        run_dir.mkdir()
+        victim = run_dir / (
+            finalizer.RUN_STATE_CLEANUP_STAGING_PREFIX + "user-notes"
+        )
+        victim.write_bytes(b"KEEP")
+
+        with self.assertRaisesRegex(RuntimeError, "staging residue"):
+            finalizer._recover_run_state_journal(run_dir)
+
+        self.assertEqual(b"KEEP", victim.read_bytes())
+
+    def test_unrelated_broad_run_state_prefix_does_not_create_orphan_transaction(self) -> None:
+        run_dir = self.root / "broad-prefix-collision"
+        run_dir.mkdir()
+        victim = run_dir / ".humanize-run-state-user-notes.txt"
+        victim.write_bytes(b"KEEP")
+
+        self.assertFalse(finalizer._recover_run_state_journal(run_dir))
+
+        self.assertEqual(b"KEEP", victim.read_bytes())
+
+    def test_metadata_authority_group_keyboard_interrupt_restores_old_bytes(self) -> None:
+        first = self.root / "finalization_metadata.json"
+        second = self.root / "latest_attempt_metadata.json"
+        first.write_bytes(b"PAIR-OLD\n")
+        second.write_bytes(b"PAIR-OLD\n")
+        real_replace = finalizer.os.replace
+        target_replaces = 0
+
+        def interrupt_second(source: object, target: object) -> None:
+            nonlocal target_replaces
+            if Path(target) in {first, second}:
+                target_replaces += 1
+                if target_replaces == 2:
+                    raise KeyboardInterrupt
+            real_replace(source, target)
+
+        with mock.patch.object(
+            finalizer.os, "replace", side_effect=interrupt_second
+        ):
+            with self.assertRaises(KeyboardInterrupt):
+                finalizer._write_json_group_atomic(
+                    ((first, {"new": 1}), (second, {"new": 1}))
+                )
+
+        self.assertEqual(b"PAIR-OLD\n", first.read_bytes())
+        self.assertEqual(b"PAIR-OLD\n", second.read_bytes())
+        self.assertFalse(
+            (self.root / finalizer.AUTHORITY_GROUP_JOURNAL_NAME).exists()
+        )
+
+    def test_metadata_authority_group_system_exit_restores_old_bytes(self) -> None:
+        first = self.root / "finalization_metadata.json"
+        second = self.root / "latest_attempt_metadata.json"
+        first.write_bytes(b"PAIR-OLD\n")
+        second.write_bytes(b"PAIR-OLD\n")
+        real_replace = finalizer.os.replace
+        target_replaces = 0
+
+        def exit_on_second(source: object, target: object) -> None:
+            nonlocal target_replaces
+            if Path(target) in {first, second}:
+                target_replaces += 1
+                if target_replaces == 2:
+                    raise SystemExit(73)
+            real_replace(source, target)
+
+        with mock.patch.object(finalizer.os, "replace", side_effect=exit_on_second):
+            with self.assertRaisesRegex(SystemExit, "73"):
+                finalizer._write_json_group_atomic(
+                    ((first, {"new": 1}), (second, {"new": 1}))
+                )
+
+        self.assertEqual(b"PAIR-OLD\n", first.read_bytes())
+        self.assertEqual(b"PAIR-OLD\n", second.read_bytes())
+
+    def test_authority_group_recovery_is_retryable_after_mid_restore_failure(self) -> None:
+        (
+            first,
+            second,
+            old_first,
+            old_second,
+            new_first,
+            _new_second,
+            transaction_dir,
+            _journal,
+        ) = self.make_authority_crash_fixture(self.root)
+        first.write_bytes(new_first)
+        second.write_bytes(old_second)
+        real_replace = finalizer._replace_bytes_atomic
+        recovery_replaces = 0
+
+        def fail_second_recovery(path: Path, raw: bytes, **kwargs: object) -> None:
+            nonlocal recovery_replaces
+            if path in {first, second}:
+                recovery_replaces += 1
+                if recovery_replaces == 2:
+                    raise OSError("RECOVERY-INTERRUPTED")
+            real_replace(path, raw, **kwargs)
+
+        with mock.patch.object(
+            finalizer, "_replace_bytes_atomic", side_effect=fail_second_recovery
+        ):
+            with self.assertRaisesRegex(OSError, "RECOVERY-INTERRUPTED"):
+                finalizer._recover_authority_group_journal(self.root)
+
+        self.assertTrue(
+            (self.root / finalizer.AUTHORITY_GROUP_JOURNAL_NAME).is_file()
+        )
+        self.assertTrue(transaction_dir.is_dir())
+
+        self.assertTrue(finalizer._recover_authority_group_journal(self.root))
+        self.assertEqual(old_first, first.read_bytes())
+        self.assertEqual(old_second, second.read_bytes())
+
+    def test_authority_group_journal_tampering_fails_before_target_change(self) -> None:
+        mutations = {
+            "unknown_top_field": lambda journal: journal.update({"extra": 1}),
+            "wrong_state": lambda journal: journal.update({"state": "COMMITTED"}),
+            "duplicate_target": lambda journal: journal["members"][1].update(
+                {"target": journal["members"][0]["target"]}
+            ),
+            "path_traversal": lambda journal: journal["members"][0].update(
+                {"target": "../outside.json"}
+            ),
+            "wrong_old_hash": lambda journal: journal["members"][0].update(
+                {"old_sha256": "0" * 64}
+            ),
+        }
+        for index, (label, mutate) in enumerate(mutations.items()):
+            with self.subTest(label=label):
+                parent = self.root / f"tamper-{index}"
+                parent.mkdir()
+                (
+                    first,
+                    second,
+                    _old_first,
+                    old_second,
+                    new_first,
+                    _new_second,
+                    _transaction_dir,
+                    journal,
+                ) = self.make_authority_crash_fixture(
+                    parent, transaction_id=f"{index + 1:024x}"
+                )
+                first.write_bytes(new_first)
+                second.write_bytes(old_second)
+                mutate(journal)
+                finalizer._write_json(
+                    parent / finalizer.AUTHORITY_GROUP_JOURNAL_NAME, journal
+                )
+
+                with self.assertRaises(ValueError):
+                    finalizer._recover_authority_group_journal(parent)
+
+                self.assertEqual(new_first, first.read_bytes())
+                self.assertEqual(old_second, second.read_bytes())
+
+    def test_authority_group_recovery_rejects_backup_hardlink(self) -> None:
+        (
+            first,
+            second,
+            old_first,
+            old_second,
+            new_first,
+            _new_second,
+            transaction_dir,
+            _journal,
+        ) = self.make_authority_crash_fixture(
+            self.root, transaction_id="a" * 24
+        )
+        first.write_bytes(new_first)
+        second.write_bytes(old_second)
+        (transaction_dir / "member-0.old").unlink()
+        external_backup = self.root / "external-backup.bin"
+        external_backup.write_bytes(old_first)
+        os.link(external_backup, transaction_dir / "member-0.old")
+
+        with self.assertRaisesRegex(ValueError, "hard link"):
+            finalizer._recover_authority_group_journal(self.root)
+
+        self.assertEqual(new_first, first.read_bytes())
+        self.assertEqual(old_second, second.read_bytes())
+
+    def test_orphan_authority_transaction_cleanup_is_closed_set(self) -> None:
+        safe = self.root / (
+            finalizer.AUTHORITY_GROUP_TRANSACTION_PREFIX + "b" * 24
+        )
+        safe.mkdir()
+        (safe / "member-0.old").write_bytes(b"OLD")
+
+        self.assertFalse(finalizer._recover_authority_group_journal(self.root))
+        self.assertFalse(safe.exists())
+
+        unsafe = self.root / (
+            finalizer.AUTHORITY_GROUP_TRANSACTION_PREFIX + "c" * 24
+        )
+        unsafe.mkdir()
+        (unsafe / "unexpected.txt").write_text("do not delete", encoding="utf-8")
+
+        with self.assertRaisesRegex(ValueError, "unknown member"):
+            finalizer._recover_authority_group_journal(self.root)
+        self.assertTrue((unsafe / "unexpected.txt").exists())
+
+    def test_finalize_keyboard_interrupt_before_authority_commit_restores_run_state(self) -> None:
+        _, run_dir, unit = self.prepare(
+            "\\section{定义}\n该定义保持原有平行结构。\n"
+        )
+        rewrites = self.rewrite_dir()
+        (rewrites / f"{unit['unit_id']}.json").write_text(
+            json.dumps(
+                self.voice_bound_bundle(
+                    unit,
+                    {"decision": "NO_CHANGE", "reason": "正式定义保持原有平行结构"},
+                ),
+                ensure_ascii=False,
+            ),
+            encoding="utf-8",
+        )
+        finalizer._recover_authority_group_journal(run_dir)
+        before = finalizer._run_state_hashes(run_dir)
+
+        with mock.patch.object(
+            finalizer, "_write_json_group_atomic", side_effect=KeyboardInterrupt
+        ):
+            with self.assertRaises(KeyboardInterrupt):
+                finalizer.finalize(run_dir, rewrites)
+
+        self.assertEqual(before, finalizer._run_state_hashes(run_dir))
+        self.assertFalse((run_dir / "rendered_review").exists())
+        self.assertFalse((run_dir / "validation").exists())
+
+    def test_finalize_lock_rejects_hardlink(self) -> None:
+        lock_target = self.root / "lock-target.bin"
+        lock_target.write_bytes(b"0")
+        os.link(lock_target, self.root / ".finalize.lock")
+
+        with self.assertRaisesRegex(ValueError, "hard link"):
+            with finalizer._run_lock(self.root):
+                self.fail("hard-linked lock must not be acquired")
+
+    def test_metadata_persistence_failure_restores_run_and_survives_only_in_memory(self) -> None:
+        _, run_dir, unit = self.prepare(
+            "\\section{定义}\n该定义保持原有平行结构。\n"
+        )
+        rewrites = self.rewrite_dir()
+        (rewrites / f"{unit['unit_id']}.json").write_text(
+            json.dumps(
+                self.voice_bound_bundle(
+                    unit,
+                    {
+                        "decision": "NO_CHANGE",
+                        "reason": "正式定义保持原有平行结构",
+                    },
+                ),
+                ensure_ascii=False,
+            ),
+            encoding="utf-8",
+        )
+        state_before = finalizer._run_state_hashes(run_dir)
+        real_replace = finalizer.os.replace
+
+        def fail_latest(source: object, target: object) -> None:
+            if Path(target).name == "latest_attempt_metadata.json":
+                raise PermissionError(
+                    r"C:\Users\Private\SECRET-CONTENT\latest_attempt_metadata.json"
+                )
+            real_replace(source, target)
+
+        with mock.patch.object(finalizer.os, "replace", side_effect=fail_latest):
+            with self.assertRaises(PermissionError) as raised:
+                finalizer.finalize(run_dir, rewrites)
+
+        self.assertEqual(state_before, finalizer._run_state_hashes(run_dir))
+        self.assertFalse((run_dir / "last_failed_attempt_metadata.json").exists())
+        self.assertFalse((run_dir / "latest_attempt_metadata.json").exists())
+        self.assertFalse((run_dir / "finalization_metadata.json").exists())
+        failure = getattr(raised.exception, "_humanize_failure_metadata")
+        self.assertTrue(failure["run_state_restored_after_failure"])
+        self.assertEqual("FAILED", failure["attempt_metadata_persistence_status"])
+        self.assertFalse(failure["attempt_metadata_paths_authoritative"])
+        serialized = json.dumps(failure, ensure_ascii=False)
+        self.assertNotIn("SECRET-CONTENT", serialized)
+        self.assertNotIn(r"C:\Users\Private", serialized)
+
+    def test_runtime_text_summary_redacts_exception_message_and_paths(self) -> None:
+        metadata = finalizer._runtime_failure_metadata(
+            FileNotFoundError(r"C:\Users\Private\SECRET-CONTENT"),
+            run_dir=Path(r"C:\Users\Private\run"),
+            run_state_restored=True,
+            finalization_metadata_preserved=True,
+            published_evidence_preserved=True,
+        )
+        summary = finalizer._render_text_summary(metadata)
+
+        self.assertIn("runtime_error=FileNotFoundError:FILE_NOT_FOUND", summary)
+        self.assertIn("details=latest_attempt_metadata.json", summary)
+        self.assertIn("content_redacted=true", summary)
+        self.assertNotIn("SECRET-CONTENT", summary)
+        self.assertNotIn(r"C:\Users\Private", summary)
+
+    def test_main_uses_in_memory_failure_when_attempt_metadata_cannot_persist(self) -> None:
+        error = PermissionError(r"C:\Users\Private\SECRET-CONTENT")
+        failure = finalizer._runtime_failure_metadata(
+            error,
+            run_dir=self.root / "run",
+            run_state_restored=True,
+            finalization_metadata_preserved=True,
+            published_evidence_preserved=True,
+        )
+        failure["attempt_metadata_persistence_status"] = "FAILED"
+        failure["attempt_metadata_paths_authoritative"] = False
+        setattr(error, "_humanize_failure_metadata", failure)
+        stdout = io.StringIO()
+
+        with mock.patch.object(finalizer, "finalize", side_effect=error), mock.patch.object(
+            sys, "stdout", stdout
+        ):
+            exit_code = finalizer.main(
+                [
+                    "--run-dir",
+                    str(self.root / "run"),
+                    "--rewrites",
+                    str(self.root),
+                    "--format",
+                    "text",
+                ]
+            )
+
+        rendered = stdout.getvalue()
+        self.assertEqual(1, exit_code)
+        self.assertIn("attempt_metadata_persistence=FAILED", rendered)
+        self.assertIn("paths_authoritative=false", rendered)
+        self.assertNotIn("SECRET-CONTENT", rendered)
+        self.assertNotIn(r"C:\Users\Private", rendered)
+
+    def test_main_never_reuses_stale_latest_after_restore_failure(self) -> None:
+        run_dir = self.root / "run"
+        run_dir.mkdir()
+        stale = finalizer._runtime_failure_metadata(
+            PermissionError("OLD"),
+            run_dir=run_dir,
+            run_state_restored=True,
+            finalization_metadata_preserved=True,
+            published_evidence_preserved=True,
+        )
+        stale["created_at"] = "2000-01-01T00:00:00Z"
+        stale["attempt_metadata_role"] = "LATEST_FAILED_ATTEMPT_AUTHORITY"
+        finalizer._write_json(run_dir / "latest_attempt_metadata.json", stale)
+
+        error = PermissionError("CURRENT-RESTORE-FAILURE")
+        current = finalizer._runtime_failure_metadata(
+            error,
+            run_dir=run_dir,
+            run_state_restored=False,
+            finalization_metadata_preserved=False,
+            published_evidence_preserved=False,
+        )
+        current.update(
+            {
+                "run_state_restore_status": "FAILED",
+                "run_state_restore_error_code": "RUN_STATE_RESTORE_FAILED",
+                "attempt_metadata_persistence_status": "FAILED",
+                "attempt_metadata_paths_authoritative": False,
+            }
+        )
+        setattr(error, "_humanize_failure_metadata", current)
+        stdout = io.StringIO()
+        with mock.patch.object(finalizer, "finalize", side_effect=error), mock.patch.object(
+            sys, "stdout", stdout
+        ):
+            exit_code = finalizer.main(
+                [
+                    "--run-dir",
+                    str(run_dir),
+                    "--rewrites",
+                    str(self.root),
+                ]
+            )
+
+        payload = json.loads(stdout.getvalue())
+        self.assertEqual(1, exit_code)
+        self.assertEqual("FAILED", payload["run_state_restore_status"])
+        self.assertEqual(
+            "RUN_STATE_RESTORE_FAILED", payload["run_state_restore_error_code"]
+        )
+        self.assertFalse(payload["attempt_metadata_paths_authoritative"])
+        self.assertNotEqual("2000-01-01T00:00:00Z", payload["created_at"])
 
     def test_text_summary_leads_with_authoritative_delivery_state(self) -> None:
         stdout = io.StringIO()
@@ -5545,6 +6993,34 @@ class LongDocumentFinalizationTests(unittest.TestCase):
         self.assertIn("review_candidate=", rendered)
         self.assertIn("humanize_completion_claim_allowed=false", rendered)
 
+    def test_text_summary_indexes_unresolved_details_without_echoing_notes(self) -> None:
+        summary = finalizer._render_text_summary(
+            {
+                "delivery_gate_status": "REVIEW",
+                "exit_code": 2,
+                "publish_state": "PARTIAL",
+                "candidate_assembly_status": "REVIEW",
+                "paired_quality_gate_status": "BLOCKED",
+                "unit_statuses": {"UNRESOLVED": 2},
+                "unresolved_reason_summary": {
+                    "total": 2,
+                    "classified": 1,
+                    "unclassified": 1,
+                    "codes": {"missing_function_anchor": 1},
+                    "details_artifact": "coverage_ledger.final.csv",
+                    "content_redacted": True,
+                },
+                "compile_check": {"status": "NOT_RUN"},
+                "humanize_completion_claim_allowed": False,
+                "notes": "SECRET-CONTENT",
+            }
+        )
+
+        self.assertIn("unresolved_details=coverage_ledger.final.csv", summary)
+        self.assertIn("reason_codes[missing_function_anchor=1]", summary)
+        self.assertIn("content_redacted=true", summary)
+        self.assertNotIn("SECRET-CONTENT", summary)
+
     def test_malformed_rerun_restores_previous_candidate_and_marks_failed_attempt(self) -> None:
         _, run_dir, unit = self.prepare(
             "\\section{定义}\n该定义保持原有平行结构。\n"
@@ -5566,13 +7042,15 @@ class LongDocumentFinalizationTests(unittest.TestCase):
         )
         finalizer.finalize(run_dir, rewrites)
         state_before = finalizer._run_state_hashes(run_dir)
+        state_before.pop("latest_attempt_metadata.json", None)
         path.write_text("{", encoding="utf-8")
 
         with self.assertRaises(ValueError):
             finalizer.finalize(run_dir, rewrites)
 
         state_after = finalizer._run_state_hashes(run_dir)
-        state_after.pop("last_failed_attempt_metadata.json")
+        state_after.pop("last_failed_attempt_metadata.json", None)
+        state_after.pop("latest_attempt_metadata.json", None)
         self.assertEqual(state_before, state_after)
         failure = json.loads(
             (run_dir / "last_failed_attempt_metadata.json").read_text(
@@ -5589,6 +7067,75 @@ class LongDocumentFinalizationTests(unittest.TestCase):
             failure["failed_attempt_evidence_status"],
         )
         self.assertFalse(failure["failed_attempt_evidence_paths_reusable"])
+        self.assertEqual(
+            failure,
+            json.loads(
+                (run_dir / "latest_attempt_metadata.json").read_text(
+                    encoding="utf-8"
+                )
+            ),
+        )
+        self.assertEqual(
+            "LATEST_FAILED_ATTEMPT_AUTHORITY",
+            failure["attempt_metadata_role"],
+        )
+        self.assertTrue(failure["error_message_redacted"])
+        self.assertTrue(failure["paths_redacted"])
+        self.assertNotIn("error", failure)
+        self.assertNotIn("run_dir", failure)
+
+    def test_finalize_interrupt_after_authority_pointer_commit_does_not_restore_old_evidence(self) -> None:
+        _, run_dir, unit = self.prepare(
+            "\\section{定义}\n该定义保持原有平行结构。\n"
+        )
+        rewrites = self.rewrite_dir()
+        (rewrites / f"{unit['unit_id']}.json").write_text(
+            json.dumps(
+                self.voice_bound_bundle(
+                    unit,
+                    {
+                        "decision": "NO_CHANGE",
+                        "reason": "正式定义保持原有平行结构",
+                    },
+                ),
+                ensure_ascii=False,
+            ),
+            encoding="utf-8",
+        )
+        real_replace = finalizer.os.replace
+        pointer_replacements = 0
+
+        def interrupt_after_pointer(source: object, target: object) -> None:
+            nonlocal pointer_replacements
+            real_replace(source, target)
+            if Path(target).name == finalizer.AUTHORITY_GROUP_COMMIT_NAME:
+                pointer_replacements += 1
+                if pointer_replacements == 2:
+                    raise KeyboardInterrupt
+
+        with mock.patch.object(
+            finalizer.os, "replace", side_effect=interrupt_after_pointer
+        ):
+            with self.assertRaises(KeyboardInterrupt) as caught:
+                finalizer.finalize(run_dir, rewrites)
+
+        failure = getattr(caught.exception, "_humanize_failure_metadata")
+        self.assertTrue(failure["authority_generation_committed_before_interruption"])
+        self.assertEqual(
+            "NOT_ATTEMPTED_AFTER_AUTHORITY_COMMIT",
+            failure["run_state_restore_status"],
+        )
+        self.assertTrue((run_dir / "finalization_metadata.json").is_file())
+        self.assertTrue((run_dir / "latest_attempt_metadata.json").is_file())
+        self.assertFalse((run_dir / "last_failed_attempt_metadata.json").exists())
+        self.assertTrue(
+            (run_dir / "rendered_review").is_dir()
+            or (run_dir / "rendered").is_dir()
+            or (run_dir / "rendered_partial").is_dir()
+        )
+        self.assertFalse(
+            (run_dir / finalizer.AUTHORITY_GROUP_JOURNAL_NAME).exists()
+        )
 
     def test_argument_syntax_error_keeps_argparse_exit_two(self) -> None:
         stdout = io.StringIO()

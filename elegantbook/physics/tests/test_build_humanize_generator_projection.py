@@ -141,7 +141,7 @@ class HumanizeGeneratorProjectionTests(unittest.TestCase):
             encoding="utf-8"
         )
 
-        self.assertEqual("1.23.0", result["projection_policy"]["version"])
+        self.assertEqual("1.37.0", result["projection_policy"]["version"])
         self.assertIn("humanize-short-patch-selection-authoring/v4", scaffold)
         self.assertIn("humanize-short-patch-scene-route/v1", scaffold)
         self.assertIn("requested_scene", scaffold)
@@ -165,7 +165,7 @@ class HumanizeGeneratorProjectionTests(unittest.TestCase):
             output / "references" / "long-document-workflow.md"
         ).read_text(encoding="utf-8")
 
-        self.assertEqual("1.23.0", result["projection_policy"]["version"])
+        self.assertEqual("1.37.0", result["projection_policy"]["version"])
         self.assertIn("humanize-rewrite-scaffold/v5", projected_scaffold)
         self.assertIn(".humanize-scaffold-committed", projected_scaffold)
         self.assertIn("humanize-unit-rewrite-bundle/v3", projected_finalizer)
@@ -212,7 +212,7 @@ class HumanizeGeneratorProjectionTests(unittest.TestCase):
             output / "references" / "system-prompt-contract.md"
         ).read_text(encoding="utf-8")
 
-        self.assertEqual("1.23.0", result["projection_policy"]["version"])
+        self.assertEqual("1.37.0", result["projection_policy"]["version"])
         self.assertIn('"logical_relation": (', checker)
         self.assertIn("LOGICAL_RELATION_ROUTE_SHELL_RE", checker)
         self.assertIn("scanner candidate 不得直接映射为 `DELETE_STYLE_SHELL`", course)

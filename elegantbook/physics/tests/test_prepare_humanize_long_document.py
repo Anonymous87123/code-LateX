@@ -35,6 +35,234 @@ class LongDocumentPreparationTests(unittest.TestCase):
         with path.open("r", encoding="utf-8-sig", newline="") as handle:
             return list(csv.DictReader(handle))
 
+    def test_adjacent_display_and_inline_math_do_not_cross_mask_boundaries(self) -> None:
+        text = (
+            "$$v=\\frac{3}{2}t^2$$将力 $F=6t$ 以及位移元 "
+            "$\\mathrm{d}x=\\frac{3}{2}t^2\\mathrm{d}t$ 一并代入。"
+        )
+        spans = preparer.protected_spans(text, ".tex", "F00001")
+        contents = [item["content"] for item in spans]
+
+        self.assertIn("$$v=\\frac{3}{2}t^2$$", contents)
+        self.assertIn("$F=6t$", contents)
+        self.assertIn("$\\mathrm{d}x=\\frac{3}{2}t^2\\mathrm{d}t$", contents)
+        self.assertTrue(all("将力" not in item for item in contents))
+        self.assertTrue(all("一并代入" not in item for item in contents))
+
+    def test_tex_command_calls_protect_all_nested_arguments_by_default(self) -> None:
+        text = (
+            "正文使用 \\textbf{甲项与 \\emph{嵌套内容}}，"
+            "并引用 \\mycite[见][第2页]{source-a,source-b}。"
+        )
+        spans = preparer.protected_spans(text, ".tex", "F00001")
+        contents = [item["content"] for item in spans]
+
+        self.assertIn(r"\textbf{甲项与 \emph{嵌套内容}}", contents)
+        self.assertIn(r"\mycite[见][第2页]{source-a,source-b}", contents)
+
+    def test_tex_inline_verbatim_payload_is_not_exposed_to_authoring(self) -> None:
+        text = (
+            r"正文使用 \verb|token_甲=1|，并展示 "
+            r"\Verb+token_丁=3+、"
+            r'\lstinline!print("乙项")!，以及 '
+            r"\lstinline[language=Python]!token_丙=2!，随后继续说明。"
+        )
+        spans = preparer.protected_spans(text, ".tex", "F00001")
+        contents = [item["content"] for item in spans]
+
+        self.assertIn(r"\verb|token_甲=1|", contents)
+        self.assertIn(r"\Verb+token_丁=3+", contents)
+        self.assertIn(r'\lstinline!print("乙项")!', contents)
+        self.assertIn(r"\lstinline[language=Python]!token_丙=2!", contents)
+        masked, _protected_ids, _crossing = preparer._mask_text(
+            text, 0, len(text), spans
+        )
+        self.assertNotIn("token_甲=1", masked)
+        self.assertNotIn("token_丁=3", masked)
+        self.assertNotIn("print", masked)
+        self.assertNotIn("token_丙=2", masked)
+        self.assertIn("随后继续说明", masked)
+
+    def test_custom_and_declared_short_verbatim_payloads_are_not_exposed(self) -> None:
+        text = (
+            "\\DefineShortVerb{\\|}\n"
+            "|token_甲=1|\n"
+            "\\UndefineShortVerb{\\|}\n"
+            "正文展示 \\CustomVerb!token_乙=2!，随后继续说明。"
+        )
+        spans = preparer.protected_spans(text, ".tex", "F00001")
+        masked, _protected_ids, _crossing = preparer._mask_text(
+            text, 0, len(text), spans
+        )
+
+        self.assertNotIn("token_甲=1", masked)
+        self.assertNotIn("token_乙=2", masked)
+        self.assertIn("随后继续说明", masked)
+
+    def test_declared_nonverb_command_and_parameterized_code_environment_are_masked(self) -> None:
+        text = (
+            "\\CustomVerbatimCommand{\\InlineCode}{Verb}{formatcom=\\small}\n"
+            "正文 \\InlineCode|token_甲=1|。\n"
+            "\\begin{Verbatim}[commandchars=\\\\\\{\\}]\n"
+            "token_乙=2\n"
+            "\\end{Verbatim}\n"
+            "随后继续说明。"
+        )
+        spans = preparer.protected_spans(text, ".tex", "F00001")
+        masked, _protected_ids, _crossing = preparer._mask_text(
+            text, 0, len(text), spans
+        )
+        scanner_payloads = [
+            text[start:end]
+            for start, end, _reason in preparer.lexical._merge_spans(
+                preparer.lexical._tex_code_like_spans(text)[0]
+            )
+        ]
+
+        self.assertNotIn("token_甲=1", masked)
+        self.assertNotIn("token_乙=2", masked)
+        self.assertIn("随后继续说明", masked)
+        self.assertTrue(all(item in {span["content"] for span in spans} for item in scanner_payloads))
+
+    def test_short_verb_undeclaration_returns_later_text_to_editable_scope(self) -> None:
+        text = (
+            "\\DefineShortVerb{\\|}\n"
+            "|token_甲=1|\n"
+            "\\UndefineShortVerb{\\|}\n"
+            "正文 |形成完整闭环|。"
+        )
+        spans = preparer.protected_spans(text, ".tex", "F00001")
+        masked, _protected_ids, _crossing = preparer._mask_text(
+            text, 0, len(text), spans
+        )
+
+        self.assertNotIn("token_甲=1", masked)
+        self.assertIn("形成完整闭环", masked)
+
+    def test_unclosed_short_verb_is_line_bounded_but_marks_run_unresolved(self) -> None:
+        text = (
+            "\\DefineShortVerb{\\|}\r\n"
+            "|token_甲=1\r\n"
+            "下一行 |token_乙=2|。\r\n"
+        )
+        source = self.root / "short-verb-crlf.tex"
+        source.write_text(text, encoding="utf-8", newline="")
+        output = self.root / "short-verb-crlf-run"
+
+        metadata = preparer.prepare(
+            [source], output, scene="GENERAL", min_author_chars=0
+        )
+        chunks = [
+            json.loads(path.read_text(encoding="utf-8"))
+            for path in (output / "chunks").glob("*.json")
+        ]
+
+        self.assertEqual("REVIEW", metadata["status"])
+        self.assertTrue(chunks)
+        self.assertTrue(all(item["status"] == "UNRESOLVED" for item in chunks))
+        self.assertTrue(all("token_甲=1" not in item["masked_text"] for item in chunks))
+        self.assertTrue(all("token_乙=2" not in item["masked_text"] for item in chunks))
+
+    def test_incomplete_tex_protection_is_masked_and_marks_unit_unresolved(self) -> None:
+        cases = {
+            "verb": ("正文 \\verb|token_甲=1\n后文。", "token_甲=1"),
+            "code-environment": (
+                "正文 \\begin{minted}{python}\ntoken_乙=2\n后文。",
+                "token_乙=2",
+            ),
+            "inline-math": ("正文 $token_丙=3\n后文。", "token_丙=3"),
+            "paren-math": ("正文 \\(token_丁=4\n后文。", "token_丁=4"),
+        }
+        for label, (text, payload) in cases.items():
+            with self.subTest(label=label):
+                source = self.root / f"{label}.tex"
+                source.write_text(text, encoding="utf-8")
+                output = self.root / f"{label}-run"
+                metadata = preparer.prepare(
+                    [source], output, scene="GENERAL", min_author_chars=0
+                )
+                chunks = [
+                    json.loads(path.read_text(encoding="utf-8"))
+                    for path in (output / "chunks").glob("*.json")
+                ]
+
+                self.assertEqual("REVIEW", metadata["status"])
+                self.assertTrue(chunks)
+                self.assertTrue(all(item["status"] == "UNRESOLVED" for item in chunks))
+                self.assertTrue(all(payload not in item["masked_text"] for item in chunks))
+                self.assertTrue(
+                    all("environment:" in item["notes"] for item in chunks)
+                )
+
+    def test_multiline_and_even_escaped_inline_math_is_not_exposed(self) -> None:
+        text = "跨行公式 $F=ma\n且仍在公式内$，以及换行符号 \\\\$G=mb$ 均应保护。"
+        spans = preparer.protected_spans(text, ".tex", "F00001")
+        masked, _protected_ids, _crossing = preparer._mask_text(
+            text, 0, len(text), spans
+        )
+
+        self.assertNotIn("F=ma", masked)
+        self.assertNotIn("且仍在公式内", masked)
+        self.assertNotIn("G=mb", masked)
+
+    def test_cli_missing_input_is_structured_fail_not_review_or_path_leak(self) -> None:
+        private_root = self.root / "Alice" / "PrivateProject"
+        missing = private_root / "student-name-main.tex"
+        output = self.root / "missing-run"
+        completed = subprocess.run(
+            [
+                sys.executable,
+                str(SCRIPT),
+                str(missing),
+                "--output",
+                str(output),
+                "--scene",
+                "GENERAL",
+                "--intensity",
+                "BALANCED",
+            ],
+            check=False,
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+        )
+
+        payload = json.loads(completed.stdout)
+        self.assertEqual(1, completed.returncode)
+        self.assertEqual("FAIL", payload["delivery_gate_status"])
+        self.assertEqual("FAILED", payload["publish_state"])
+        self.assertEqual(1, payload["exit_code"])
+        self.assertEqual("INPUT_NOT_FOUND", payload["error_code"])
+        self.assertFalse(payload["coverage_completion_claim_allowed"])
+        self.assertFalse(payload["humanize_completion_claim_allowed"])
+        self.assertEqual("", completed.stderr)
+        self.assertNotIn(str(private_root), completed.stdout + completed.stderr)
+        self.assertFalse(output.exists())
+
+    def test_cli_existing_output_is_structured_contract_fail_not_review(self) -> None:
+        source = self.root / "source.md"
+        source.write_text("正文。\n", encoding="utf-8")
+        output = self.root / "existing-run"
+        output.mkdir()
+        marker = output / "user.txt"
+        marker.write_text("preserve", encoding="utf-8")
+
+        completed = subprocess.run(
+            [sys.executable, str(SCRIPT), str(source), "--output", str(output)],
+            check=False,
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+        )
+
+        payload = json.loads(completed.stdout)
+        self.assertEqual(1, completed.returncode)
+        self.assertEqual("FAIL", payload["status"])
+        self.assertEqual("INPUT_CONTRACT_INVALID", payload["error_code"])
+        self.assertEqual("", completed.stderr)
+        self.assertNotIn(str(output), completed.stdout + completed.stderr)
+        self.assertEqual("preserve", marker.read_text(encoding="utf-8"))
+
     def test_recursive_include_manifest_and_commented_include(self) -> None:
         main = self.root / "main.tex"
         chapter = self.root / "chapter.tex"
@@ -1019,8 +1247,11 @@ class LongDocumentPreparationTests(unittest.TestCase):
             text=True,
             encoding="utf-8",
         )
-        self.assertEqual(2, rejected.returncode)
-        self.assertIn("ADJACENT_PAIR_requires_STRUCTURAL_intensity", rejected.stderr)
+        self.assertEqual(1, rejected.returncode)
+        rejected_payload = json.loads(rejected.stdout)
+        self.assertEqual("FAIL", rejected_payload["delivery_gate_status"])
+        self.assertEqual("INPUT_CONTRACT_INVALID", rejected_payload["error_code"])
+        self.assertEqual("", rejected.stderr)
         self.assertFalse(rejected_output.exists())
 
 

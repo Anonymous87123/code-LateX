@@ -63,6 +63,15 @@ class HumanizeAcademicChineseSkillTests(unittest.TestCase):
         self.assertIn("社科、人文、法学", text)
         self.assertIn("Do not promise detector outcomes", text)
 
+    def test_user_facing_commands_do_not_depend_on_current_working_directory(self) -> None:
+        markdown_files = [SKILL / "SKILL.md", *REFERENCES.glob("*.md")]
+        for markdown in markdown_files:
+            text = markdown.read_text(encoding="utf-8")
+            self.assertNotIn("python scripts/", text, str(markdown))
+        skill_text = (SKILL / "SKILL.md").read_text(encoding="utf-8")
+        self.assertIn("$skillRoot = Join-Path $HOME", skill_text)
+        self.assertIn('python "$skillRoot\\scripts\\', skill_text)
+
     def test_all_relative_markdown_links_resolve(self) -> None:
         for markdown in SKILL.rglob("*.md"):
             text = markdown.read_text(encoding="utf-8")
@@ -637,8 +646,22 @@ class HumanizeAcademicChineseSkillTests(unittest.TestCase):
     def test_openai_metadata_is_complete(self) -> None:
         text = (SKILL / "agents" / "openai.yaml").read_text(encoding="utf-8")
         self.assertIn('display_name: "中文学术文风 Humanizer"', text)
-        self.assertIn("short_description:", text)
-        self.assertIn("$humanize-academic-chinese", text)
+        short = re.search(r'^  short_description: "([^"]+)"$', text, re.MULTILINE)
+        prompt = re.search(r'^  default_prompt: "([^"]+)"$', text, re.MULTILINE)
+        self.assertIsNotNone(short)
+        self.assertIsNotNone(prompt)
+        self.assertGreaterEqual(len(short.group(1)), 25)
+        self.assertLessEqual(len(short.group(1)), 64)
+        self.assertIn("经验证样本", short.group(1))
+        self.assertNotIn("作者声线保护", short.group(1))
+        self.assertTrue(prompt.group(1).startswith("Use $humanize-academic-chinese "))
+        for boundary in (
+            "不优化检测结果",
+            "不判断作者身份",
+            "学术正确性",
+            "不把机械 PASS、NO_CHANGE 或 second pass 当作质量完成",
+        ):
+            self.assertIn(boundary, prompt.group(1))
 
     def test_utf8_has_no_replacement_characters(self) -> None:
         for path in SKILL.rglob("*"):

@@ -303,6 +303,196 @@ class HumanizeLexicalScannerTests(unittest.TestCase):
         self.assertIn("latex-quote", reasons)
         self.assertTrue(all(item["action"] == "KEEP" for item in findings))
 
+    def test_multiline_chinese_quote_is_one_protected_span(self) -> None:
+        text = "作者原话是：“第一行必须保留。\n第二行也必须保留。”\n正文可以修改。"
+        spans = scanner._merge_spans(scanner._raw_protected_spans(text, "markdown"))
+        quoted = [text[start:end] for start, end, reason in spans if "quote" in reason]
+        self.assertEqual(["“第一行必须保留。\n第二行也必须保留。”"], quoted)
+
+    def test_tex_inline_verbatim_commands_are_fully_protected(self) -> None:
+        text = (
+            r"正文 \verb|token_甲=形成完整闭环| 与 "
+            r"\Verb+token_丁=3+ 与 "
+            r'\lstinline!print("乙项")! 与 '
+            r"\lstinline[language=Python]!token_丙=2! 均为代码。"
+        )
+        spans = scanner._merge_spans(scanner._raw_protected_spans(text, "tex"))
+        protected = [
+            text[start:end]
+            for start, end, reason in spans
+            if "latex-inline-verbatim" in reason
+        ]
+
+        self.assertEqual(
+            [
+                r"\verb|token_甲=形成完整闭环|",
+                r"\Verb+token_丁=3+",
+                r'\lstinline!print("乙项")!',
+                r"\lstinline[language=Python]!token_丙=2!",
+            ],
+            protected,
+        )
+        findings = scanner.scan_text(
+            text,
+            lexicon=self.lexicon,
+            scene="AUTO",
+            document_format="tex",
+        )
+        self.assertEqual([], findings)
+
+    def test_declared_short_verb_and_custom_verb_like_commands_are_protected(self) -> None:
+        text = (
+            "\\DefineShortVerb{\\|}\n"
+            "|token_甲=形成完整闭环|\n"
+            "\\UndefineShortVerb{\\|}\n"
+            "正文含 \\CustomVerb!token_乙=必须牢记!，其余可编辑。"
+        )
+        spans = scanner._merge_spans(scanner._raw_protected_spans(text, "tex"))
+        protected = [text[start:end] for start, end, _reason in spans]
+
+        self.assertIn("|token_甲=形成完整闭环|", protected)
+        self.assertIn(r"\CustomVerb!token_乙=必须牢记!", protected)
+        self.assertEqual(
+            [],
+            scanner.scan_text(
+                text,
+                lexicon=self.lexicon,
+                scene="AUTO",
+                document_format="tex",
+            ),
+        )
+
+    def test_declared_custom_verbatim_command_with_nonverb_name_is_protected(self) -> None:
+        text = (
+            "\\CustomVerbatimCommand{\\InlineCode}{Verb}{formatcom=\\small}\n"
+            "正文含 \\InlineCode|形成完整闭环|，其余可编辑。"
+        )
+
+        spans = scanner._merge_spans(scanner._raw_protected_spans(text, "tex"))
+        protected = [text[start:end] for start, end, _reason in spans]
+
+        self.assertIn(r"\InlineCode|形成完整闭环|", protected)
+        self.assertEqual(
+            [],
+            scanner.scan_text(
+                text,
+                lexicon=self.lexicon,
+                scene="AUTO",
+                document_format="tex",
+            ),
+        )
+
+    def test_commented_short_verb_declaration_does_not_activate_delimiter(self) -> None:
+        text = "% \\DefineShortVerb{\\|}\n正文 |形成完整闭环|。"
+
+        findings = scanner.scan_text(
+            text,
+            lexicon=self.lexicon,
+            scene="AUTO",
+            document_format="tex",
+        )
+
+        self.assertIn("LEX-MGMT-01", {item["signal_id"] for item in findings})
+        self.assertEqual([], scanner._tex_protection_problems(text, "tex"))
+
+    def test_short_verb_is_line_bounded_and_scanning_resumes_after_crlf(self) -> None:
+        text = (
+            "\\DefineShortVerb{\\|}\r\n"
+            "|第一行必须牢记\r\n"
+            "下一行 |形成完整闭环|。\r\n"
+            "\\UndefineShortVerb{\\|}\r\n"
+        )
+        spans = scanner._merge_spans(scanner._raw_protected_spans(text, "tex"))
+        protected = [text[start:end] for start, end, _reason in spans]
+        problems = scanner._tex_protection_problems(text, "tex")
+
+        self.assertIn("|第一行必须牢记\r", protected)
+        self.assertIn("|形成完整闭环|", protected)
+        self.assertTrue(any(item.startswith("unclosed_short_verbatim@") for item in problems))
+        self.assertFalse(any("第一行必须牢记\r\n下一行" in item for item in protected))
+
+    def test_short_verb_undeclaration_ends_protection_scope(self) -> None:
+        text = (
+            "\\DefineShortVerb{\\|}\n"
+            "|代码载荷|\n"
+            "\\UndefineShortVerb{\\|}\n"
+            "正文 |形成完整闭环|。"
+        )
+
+        findings = scanner.scan_text(
+            text,
+            lexicon=self.lexicon,
+            scene="AUTO",
+            document_format="tex",
+        )
+
+        self.assertIn("LEX-MGMT-01", {item["signal_id"] for item in findings})
+
+    def test_explicit_document_format_rejects_unknown_values(self) -> None:
+        with self.assertRaisesRegex(ValueError, "document_format"):
+            scanner.scan_text(
+                "正文。",
+                lexicon=self.lexicon,
+                document_format="latex",
+            )
+
+    def test_unclosed_tex_code_and_math_are_fail_closed_protection_spans(self) -> None:
+        cases = {
+            "verb": ("正文 \\verb|token_甲=必须牢记\n后文", "unclosed_inline_verbatim"),
+            "environment": (
+                "正文 \\begin{minted}{python}\ntoken_乙=形成完整闭环\n后文",
+                "unclosed_code_environment",
+            ),
+            "dollar": ("正文 $token_丙=必须牢记\n后文", "unclosed_math:$"),
+            "paren": ("正文 \\(token_丁=形成完整闭环\n后文", r"unclosed_math:\("),
+        }
+        for label, (text, problem_prefix) in cases.items():
+            with self.subTest(label=label):
+                spans = scanner._merge_spans(
+                    scanner._raw_protected_spans(text, "tex")
+                )
+                self.assertTrue(any("unclosed" in reason for _, _, reason in spans))
+                self.assertTrue(
+                    any(
+                        item.startswith(problem_prefix)
+                        for item in scanner._tex_protection_problems(text, "tex")
+                    )
+                )
+                self.assertEqual(
+                    [],
+                    scanner.scan_text(
+                        text,
+                        lexicon=self.lexicon,
+                        scene="AUTO",
+                        document_format="tex",
+                    ),
+                )
+
+    def test_fullwidth_dollar_is_not_silently_reclassified_as_tex_math(self) -> None:
+        text = "正文使用全角符号＄形成完整闭环＄，该符号不是 TeX 数学定界符。"
+        spans = scanner._merge_spans(scanner._raw_protected_spans(text, "tex"))
+
+        self.assertFalse(any("math" in reason for _, _, reason in spans))
+        findings = scanner.scan_text(
+            text,
+            lexicon=self.lexicon,
+            scene="AUTO",
+            document_format="tex",
+        )
+        self.assertTrue(any(item["signal_id"] == "LEX-MGMT-01" for item in findings))
+
+    def test_tex_inline_math_can_cross_lines_and_respects_even_backslashes(self) -> None:
+        text = "跨行公式 $F=ma\n且仍在公式内$，以及换行符号 \\\\$G=mb$ 均应保护。"
+        spans = scanner._merge_spans(scanner._raw_protected_spans(text, "tex"))
+        protected = [
+            text[start:end]
+            for start, end, reason in spans
+            if "inline-math" in reason
+        ]
+
+        self.assertIn("$F=ma\n且仍在公式内$", protected)
+        self.assertTrue(any(item.endswith("$G=mb$") for item in protected))
+
     def test_commonmark_longer_closing_fence_is_protected(self) -> None:
         text = "```text\n必须牢记并形成完整闭环。\n````\n"
         self.assertEqual([], scanner.scan_text(text, lexicon=self.lexicon, scene="AUTO"))
@@ -513,6 +703,24 @@ class HumanizeLexicalScannerTests(unittest.TestCase):
         self.assertIn("LEX-FOUNDATION-01", ids)
         self.assertIn("LEX-COACH-01", ids)
         self.assertIn("LEX-FUTURE-01", ids)
+
+    def test_trend_breakthrough_slogan_chain_is_located_without_banning_key_words(self) -> None:
+        slogan = scanner.scan_text(
+            "这不仅顺应了时代的演变，更是个人/社会破局的关键。因此，我们必须持之以恒地践行这一趋势。",
+            lexicon=self.lexicon,
+            scene="COURSE",
+        )
+        self.assertGreaterEqual(
+            sum(item["signal_id"] == "LEX-MARKET-01" for item in slogan),
+            3,
+        )
+
+        technical = scanner.scan_text(
+            "判断函数单调性的关键是导数符号。",
+            lexicon=self.lexicon,
+            scene="COURSE",
+        )
+        self.assertNotIn("LEX-MARKET-01", {item["signal_id"] for item in technical})
 
     def test_foundation_synonym_repair_to_research_starting_point_is_located(self) -> None:
         text = "这一结果不仅揭示了控制机制，而且是后续研究的出发点。"

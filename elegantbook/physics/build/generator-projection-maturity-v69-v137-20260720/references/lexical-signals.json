@@ -1,0 +1,629 @@
+{
+  "schema_version": "1.2.2",
+  "name": "humanize-academic-chinese lexical candidate signals",
+  "purpose": "定位中文学术正文中可复核的模板词、句壳和腔调候选；命中不等于错误，也不用于判断作者身份。",
+  "output_policy": "扫描结果只能作为上下文复核候选。不得输出作者身份、AIGC 分数或任何概率判断。",
+  "actions": {
+    "KEEP": "保留。命中位于受保护区域，或上下文证明它承担不可替代的技术含义。",
+    "DELETE": "删除无信息功能的路标、后台提示或表演词；不得连带删除其承载的实际信息。",
+    "REWRITE": "改写句子组织，让对象、动作或差异承担表达功能；不是机械换同义词。",
+    "REVIEW": "结合上下文继续复核。只有重复、空转或声线错位时才改。"
+  },
+  "scenes": ["ALL", "COURSE", "MODELING", "RESEARCH"],
+  "signals": [
+    {
+      "id": "LEX-TRANS-01",
+      "category": "transition-density",
+      "label": "万能过渡词密集轮换",
+      "variants": ["因此", "进一步而言", "与此同时", "在此基础上", "基于上述分析", "具体而言", "总的来说", "换言之", "也正因如此", "为此", "接下来", "进而"],
+      "regex": [],
+      "scenes": ["ALL"],
+      "severity": "medium",
+      "threshold": {"min_occurrences": 3, "window": "paragraph", "window_chars": 800},
+      "exclusions": [
+        {
+          "scope": "sentence",
+          "regex": "(?:由|若|因为|根据|代入|联立|已知|定理|引理|假设|式\\s*[（(]?\\d+).{0,120}(?:可得|得到|推出|成立|因此|从而)",
+          "reason": "公式、证明或条件推导中的真实因果链"
+        }
+      ],
+      "action": "REVIEW",
+      "rationale": "单个连接词通常正常；同一短段密集轮换才可能是在用路标代替对象关系。",
+      "positive_examples": ["因此需要重构。与此同时还要校准。进一步而言，还需形成统一说明。"],
+      "negative_examples": ["由 x>0 且 y>0 可得 xy>0，因此结论成立。"],
+      "provenance": [
+        {"file": "references/pathology-catalog.md", "rule": "HUM-02"},
+        {"file": "references/course-notes.md", "rule": "NOTE-HUM-11"}
+      ]
+    },
+    {
+      "id": "LEX-EMPH-01",
+      "category": "empty-emphasis-shell",
+      "label": "空转的重点提示句壳",
+      "variants": ["值得注意的是", "需要指出的是", "需要说明的是", "必须强调的是", "尤其需要注意的是", "不可忽视的是", "值得一提的是"],
+      "regex": [],
+      "scenes": ["ALL"],
+      "severity": "high",
+      "threshold": {"min_occurrences": 1, "window": "document", "window_chars": 0},
+      "exclusions": [],
+      "action": "REWRITE",
+      "rationale": "重点应由句位、具体名词和篇幅体现，而不是由统一提示壳宣布。",
+      "positive_examples": ["值得注意的是，该结果具有十分重要的意义。"],
+      "negative_examples": ["峰值提前了 12 min，这一变化只出现在高温组。"],
+      "provenance": [
+        {"file": "references/research-journal.md", "rule": "RJH-04"},
+        {"file": "references/modeling-engineering.md", "rule": "MOD-HUM-13"}
+      ]
+    },
+    {
+      "id": "LEX-CONCLUDE-01",
+      "category": "compulsory-conclusion",
+      "label": "强制总结或封口",
+      "variants": ["综上所述", "由此可见", "由此可以得出结论", "可以得出最终结论", "总而言之", "总体而言", "综上可知", "综上分析"],
+      "regex": ["综上[，,]?(?:故|因此|可以|可)?"],
+      "scenes": ["ALL"],
+      "severity": "medium",
+      "threshold": {"min_occurrences": 1, "window": "document", "window_chars": 0},
+      "exclusions": [],
+      "action": "REVIEW",
+      "rationale": "这些词可用于真正的总括，但不应成为每节、每题和每段的自动封口。",
+      "positive_examples": ["综上所述，本节全面揭示了该机制的重要作用。"],
+      "negative_examples": ["因此，式（7）成立。"],
+      "provenance": [
+        {"file": "references/pathology-catalog.md", "rule": "HUM-11"},
+        {"file": "references/style-gates.md", "rule": "STYLE-07"}
+      ]
+    },
+    {
+      "id": "LEX-OUTLINE-01",
+      "category": "outline-shell",
+      "label": "章节路线旁白",
+      "variants": [],
+      "regex": ["(?:本文|本章|本节|下文)(?:将|主要|首先|拟|旨在)[^。！？\\n]{0,50}(?:介绍|分析|讨论|研究|阐述|展开|说明|依次|围绕)"],
+      "scenes": ["ALL"],
+      "severity": "medium",
+      "threshold": {"min_occurrences": 1, "window": "document", "window_chars": 0},
+      "exclusions": [],
+      "action": "REWRITE",
+      "rationale": "可由标题和对象变化看出的路线不必再由作者逐项播报。",
+      "positive_examples": ["本节将依次介绍模型、算法、结果与讨论。"],
+      "negative_examples": ["本文研究湍流边界层中的能量输运。"],
+      "provenance": [
+        {"file": "references/research-journal.md", "rule": "RJH-09"},
+        {"file": "references/pathology-catalog.md", "rule": "HUM-01"}
+      ]
+    },
+    {
+      "id": "LEX-ORDER-01",
+      "category": "mechanical-step-shell",
+      "label": "先后步骤壳重复",
+      "variants": [],
+      "regex": ["先(?:对|将|从|把|给出|定义|分析|计算|建立|讨论|说明|介绍|确定|提取|完成|看|设|令)[^。！？\\n]{0,80}再(?:对|将|从|把|给出|分析|计算|讨论|说明|看|设|令)"],
+      "scenes": ["ALL"],
+      "severity": "low",
+      "threshold": {"min_occurrences": 2, "window": "paragraph", "window_chars": 1000},
+      "exclusions": [],
+      "action": "REVIEW",
+      "rationale": "真实步骤可以保留；同段反复用同一种先后壳时，需检查是否只是流程播报。正则不会把“先验”或“再生”拆成步骤词。",
+      "positive_examples": ["先对样本归一化，再计算距离。先将距离排序，再给出类别。"],
+      "negative_examples": ["先验分布控制正则项，再生水进入第二级处理。"],
+      "provenance": [
+        {"file": "references/course-notes.md", "rule": "NOTE-HUM-11"},
+        {"file": "references/research-journal.md", "rule": "RJH-11"}
+      ]
+    },
+    {
+      "id": "LEX-CONTRAST-01",
+      "category": "false-contrast-shell",
+      "label": "否定纠偏骨架重复",
+      "variants": [],
+      "regex": ["不是[^。！？\\n]{1,80}而是", "并不意味着[^。！？\\n]{1,100}(?:也不意味着|更不意味着)"],
+      "scenes": ["ALL"],
+      "severity": "medium",
+      "threshold": {"min_occurrences": 2, "window": "paragraph", "window_chars": 1000},
+      "exclusions": [],
+      "action": "REVIEW",
+      "rationale": "确有误读时可保留一次；连续纠偏通常是在预演并不存在的反对意见。",
+      "positive_examples": ["这不是参数问题，而是结构问题；下一段又写这不是误差，而是尺度问题。"],
+      "negative_examples": ["这里讨论的不是数值误差，而是模型误差。"],
+      "provenance": [
+        {"file": "references/pathology-catalog.md", "rule": "HUM-03"},
+        {"file": "references/research-journal.md", "rule": "RJH-05"}
+      ]
+    },
+    {
+      "id": "LEX-PARALLEL-01",
+      "category": "symmetric-shell",
+      "label": "对称关联句式批量复用",
+      "variants": [],
+      "regex": ["不仅[^。！？\\n]{1,100}而且", "一方面[^。！？\\n]{1,120}另一方面"],
+      "scenes": ["ALL"],
+      "severity": "low",
+      "threshold": {"min_occurrences": 2, "window": "paragraph", "window_chars": 1200},
+      "exclusions": [],
+      "action": "REVIEW",
+      "rationale": "关联句本身没有问题；同段反复成对展开会制造均匀、可替换的工整感。",
+      "positive_examples": ["一方面提高效率，另一方面降低成本。一方面增强稳定性，另一方面改善精度。"],
+      "negative_examples": ["一方面保留局部结构，另一方面减少计算量。"],
+      "provenance": [
+        {"file": "references/pathology-catalog.md", "rule": "HUM-13"}
+      ]
+    },
+    {
+      "id": "LEX-MGMT-01",
+      "category": "management-voice",
+      "label": "管理、审计和项目施工腔",
+      "variants": ["赋能", "收口", "驾驶舱", "回收 claim", "锁定故事线", "预埋接口", "证据层", "边界层", "形成抓手", "核心抓手", "分析抓手"],
+      "regex": ["(?:形成|实现|完成|构建|打通)[^。！？\\n]{0,30}(?:分析)?闭环", "(?:实证|论证|分析|研究|治理|政策|叙事|证据)(?:的)?闭环", "(?:事实|证据|逻辑|分析)(?:关系|链条|路径)[^。！？\\n]{0,24}由[^。！？\\n]{1,40}(?:出发|起步)[，,]?(?:再)?经[^。！？\\n]{1,50}(?:最终|最后)(?:落到|回到|指向)", "(?:门禁|放行)机制"],
+      "scenes": ["ALL"],
+      "severity": "high",
+      "threshold": {"min_occurrences": 1, "window": "document", "window_chars": 0},
+      "exclusions": [
+        {"scope": "sentence", "regex": "闭环(?:控制|系统|传递函数|响应|反馈|增益|稳定性|调节)", "reason": "控制理论正式术语"},
+        {"scope": "sentence", "regex": "(?:控制|反馈|自动化)闭环", "reason": "控制理论正式术语"},
+        {"scope": "sentence", "regex": "(?:机械|机器人|末端)抓手", "reason": "机械装置正式名称"},
+        {"scope": "sentence", "regex": "边界层(?:流动|方程|理论|厚度|分离|转捩)?", "reason": "流体力学正式术语"},
+        {"scope": "sentence", "regex": "门禁(?:系统|设备|控制器)", "reason": "实体安防系统"}
+      ],
+      "action": "REWRITE",
+      "rationale": "内部生产和项目管理词进入正文后，会遮住具体对象、动作和结果。",
+      "positive_examples": ["本节形成分析闭环，以核心抓手锁定故事线并完成收口。", "问题二的证据关系由输入出发，经参数修正，最终落到结果。"],
+      "negative_examples": ["闭环控制系统的增益由传递函数决定。"],
+      "provenance": [
+        {"file": "references/style-gates.md", "rule": "STYLE-06"},
+        {"file": "references/research-journal.md", "rule": "RJH-10"},
+        {"file": "references/modeling-engineering.md", "rule": "MOD-HUM-19"}
+      ]
+    },
+    {
+      "id": "LEX-MGMT-02",
+      "category": "management-density",
+      "label": "抽象项目词密集出现",
+      "variants": ["落地", "主线", "锚点", "口径", "链条", "接口", "预埋", "闭环"],
+      "regex": [],
+      "scenes": ["ALL"],
+      "severity": "medium",
+      "threshold": {"min_occurrences": 3, "window": "paragraph", "window_chars": 800},
+      "exclusions": [
+        {"scope": "sentence", "regex": "闭环(?:控制|系统|传递函数|响应|反馈|增益|稳定性|调节)", "reason": "控制理论正式术语"},
+        {"scope": "sentence", "regex": "(?:控制|反馈|自动化)闭环", "reason": "控制理论正式术语"},
+        {"scope": "sentence", "regex": "(?:软件|硬件|通信|网络|数据|函数|编程|API|输入|输出)接口", "reason": "工程接口正式用法"},
+        {"scope": "sentence", "regex": "(?:产业|供应|传导|食物|因果|证据)链条", "reason": "研究对象本身是链式关系"},
+        {"scope": "sentence", "regex": "(?:柔软|微元|悬挂|运动|桌面|质量|长度|下落|拉动)[^。！？\\n]{0,50}链条|链条[^。！？\\n]{0,80}(?:质量|长度|下落|速度|小孔|桌面|悬挂|微元)", "reason": "力学中的实体链条"},
+        {"scope": "sentence", "regex": "(?:落地点|同时落地|落地(?:速度|时间|位置|冲量)|落在地面)", "reason": "力学中的实体落地过程"},
+        {"scope": "sentence", "regex": "(?:统计|测量|会计|财政|数据)口径", "reason": "口径是被讨论的正式对象"}
+      ],
+      "action": "REVIEW",
+      "rationale": "这些词可能是正式术语，只有密集聚集且不指向具体对象时才构成项目汇报腔。",
+      "positive_examples": ["围绕主线设置锚点，统一口径后推动方案落地，最终形成闭环。"],
+      "negative_examples": ["软件接口负责读取数据；闭环控制器根据误差调整输入。"],
+      "provenance": [
+        {"file": "references/modeling-engineering.md", "rule": "MOD-HUM-19"},
+        {"file": "references/research-journal.md", "rule": "RJH-10"}
+      ]
+    },
+    {
+      "id": "LEX-MARKET-01",
+      "category": "marketing-innovation-voice",
+      "label": "营销和创新表演词",
+      "variants": ["全面赋能", "全面提升", "全面揭示", "深刻揭示", "深入揭示", "系统构建", "填补空白", "全新范式", "开创性地", "革命性地", "提供有力支撑", "奠定坚实基础", "未来可期", "前景广阔", "意义深远", "意义重大"],
+      "regex": ["(?:实现|取得|带来)(?:了)?(?:重大|关键|根本性|突破性)?突破", "具有(?:十分|极其|非常)?重要(?:的)?(?:理论|实践|现实|指导)?意义", "具有(?:广阔|巨大)(?:的)?(?:发展|应用)?空间", "为[^。！？\\n]{0,30}提供(?:了)?(?:全新|新的)?(?:研究|分析|解决)?思路", "(?:开辟|提供)(?:了)?(?:全新|新的)?(?:研究|分析|解决)?方向", "顺应(?:了)?时代(?:的)?(?:发展|演变|潮流|趋势)", "(?:个人|社会|行业|组织)(?:[/／、与和](?:个人|社会|行业|组织))?[^。！？\\n]{0,12}破局(?:的)?关键", "持之以恒地(?:践行|推进|贯彻)"],
+      "scenes": ["ALL"],
+      "severity": "high",
+      "threshold": {"min_occurrences": 1, "window": "document", "window_chars": 0},
+      "exclusions": [],
+      "action": "REWRITE",
+      "rationale": "抽象价值判断和创新宣告常替代具体变化，应改回对象、动作或差异。",
+      "positive_examples": ["该框架填补空白，形成全新范式，为后续研究提供有力支撑。", "这不仅顺应了时代的演变，更是个人/社会破局的关键。因此，我们必须持之以恒地践行这一趋势。"],
+      "negative_examples": ["误差由 8.1% 降至 5.4%。"],
+      "provenance": [
+        {"file": "references/style-gates.md", "rule": "STYLE-06"},
+        {"file": "references/pathology-catalog.md", "rule": "HUM-09"}
+      ]
+    },
+    {
+      "id": "LEX-COACH-01",
+      "category": "coaching-voice",
+      "label": "考试教练和说教腔",
+      "variants": ["必须牢记", "必须记住", "必须记清楚", "务必记住", "务必记清楚", "一定要记住", "需要牢记", "需要记住", "需要记清楚", "要记住", "要记清楚", "千万不要", "先背住", "秒杀", "救命", "阴招", "收割", "千万别掉坑", "不要掉坑", "一招制胜", "锁死答案"],
+      "regex": ["遇到(?:这|此)类(?:题|问题)[^。！？\\n]{0,24}必须注意"],
+      "scenes": ["COURSE"],
+      "severity": "high",
+      "threshold": {"min_occurrences": 1, "window": "document", "window_chars": 0},
+      "exclusions": [],
+      "action": "REWRITE",
+      "rationale": "教学重点应落到易混点和判断条件，不能靠动员、恐吓或表演词制造注意力。",
+      "positive_examples": ["这张救命表必须牢记，三秒秒杀同类题。"],
+      "negative_examples": ["这里容易把充分条件误作必要条件。"],
+      "provenance": [
+        {"file": "references/course-notes.md", "rule": "NOTE-HUM-28"},
+        {"file": "references/style-gates.md", "rule": "STYLE-06"}
+      ]
+    },
+    {
+      "id": "LEX-META-01",
+      "category": "meta-writing",
+      "label": "编辑后台语言进入正文",
+      "variants": ["正文里要", "正文中要", "正文里需要", "正文中需要", "仍需在正文中保留", "仍需在正文里保留", "需要在正文中保留", "需要在正文里保留", "图上应当", "如果放到图上", "下一段负责", "本节负责", "本节需要区分", "需要区分报告", "需要分开报告", "对论文写作而言", "论文里需要写", "这里应该写", "该段只交代", "本段只说明", "这一部分只介绍"],
+      "regex": ["(?:正文|论文)(?:里|中)?既要[^。！？\\n]{1,100}也要", "(?:图|表格)(?:中|上)?(?:需要|应该|应当)放", "[^。！？\\n]{1,50}(?:仍需|需要)在(?:正文|论文)(?:里|中)?保留", "(?:本节|本文|正文|段落)?(?:仍)?(?:需要|应当|应该)[^。！？\\n]{0,12}(?:区分|分开)[^。！？\\n]{0,8}(?:报告|说明)", "(?:本|该|这一)?(?:段|节|部分)[^。！？\\n]{0,40}(?:只(?:交代|说明|介绍)|仅(?:交代|说明|介绍))[^。！？\\n]{0,80}(?:不把|不将|不要把|不应把)[^。！？\\n]{0,20}(?:写成|视为|当作)(?:贡献|结论|成果|重点)", "(?:本|该|这一)?(?:段|节|部分)[^。！？\\n]{0,60}(?:不(?:预告|引出|承诺)|不再预告|也不预告)(?:下一节|下文|后文|后续)"],
+      "scenes": ["MODELING", "RESEARCH"],
+      "severity": "high",
+      "threshold": {"min_occurrences": 1, "window": "document", "window_chars": 0},
+      "exclusions": [],
+      "action": "DELETE",
+      "rationale": "写作计划、版面指令和章节职责不属于成稿正文；删除提示后直接呈现对象。",
+      "positive_examples": ["表格的作用在于统一口径，正文里要保留两组结果。", "因此，总量硬锚点校准与局地一致性检验需要分开报告。", "该段只交代实验设置，不把它写成研究贡献，也不预告下一节。"],
+      "negative_examples": ["表 2 列出两组结果及其单位。"],
+      "provenance": [
+        {"file": "references/modeling-engineering.md", "rule": "MOD-HUM-01"},
+        {"file": "references/rewrite-patterns.md", "rule": "MP-01/MP-02"}
+      ]
+    },
+    {
+      "id": "LEX-TABLE-ROLE-01",
+      "category": "table-role-ambiguity",
+      "label": "表格功能句需区分读者说明与编辑后台",
+      "variants": ["表格的作用是", "表格的作用在于", "表格的作用也在于", "表的作用是", "表的作用在于", "表的作用也在于"],
+      "regex": ["(?:该|此|这张)?表(?:格)?[^。！？\\n]{0,12}(?:用于|用来|便于)[^。！？\\n]{1,60}(?:看出|比较|区分|对应|核对)"],
+      "scenes": ["MODELING", "RESEARCH"],
+      "severity": "medium",
+      "threshold": {"min_occurrences": 1, "window": "document", "window_chars": 0},
+      "exclusions": [],
+      "action": "REVIEW",
+      "rationale": "表格功能句可能是待删除的编辑计划，也可能解释现有表示为何有用；必须先确认段落职责，不能按短语整句删除。",
+      "positive_examples": ["表格的作用在于让读者看出每个参数来自哪条事实链。"],
+      "negative_examples": ["参数 \\(\\delta_B\\) 对应附件 1 中的航道阻隔。"],
+      "provenance": [
+        {"file": "references/modeling-engineering.md", "rule": "MOD-HUM-02"}
+      ]
+    },
+    {
+      "id": "LEX-HEDGE-01",
+      "category": "modal-hedge-density",
+      "label": "模态缓和词堆叠",
+      "variants": ["或许", "也许", "可能", "似乎", "在某种程度上", "在一定程度上", "某种意义上", "一定意义上", "可以认为", "不难发现", "大致可以", "相对而言", "某些启发"],
+      "regex": [],
+      "scenes": ["ALL"],
+      "severity": "medium",
+      "threshold": {"min_occurrences": 3, "window": "paragraph", "window_chars": 600},
+      "exclusions": [
+        {"scope": "sentence", "regex": "(?:概率|可能性|似然|随机|不确定性|置信区间|风险).{0,80}(?:可能|或许|似乎)", "reason": "文本讨论的对象本身是不确定性"}
+      ],
+      "action": "REVIEW",
+      "rationale": "谨慎限定可以保留；多层缓和叠加会形成无承担的低信息评价句。",
+      "positive_examples": ["或许可以认为，这在某种程度上可能提供某些启发。"],
+      "negative_examples": ["发生故障的概率为 0.12，因此该事件仍有可能出现。"],
+      "provenance": [
+        {"file": "references/research-journal.md", "rule": "RJH-08"},
+        {"file": "references/pathology-catalog.md", "rule": "HUM-15"}
+      ]
+    },
+    {
+      "id": "LEX-ABSTRACT-01",
+      "category": "abstract-noun-density",
+      "label": "抽象评价名词堆叠",
+      "variants": ["系统性", "全面性", "科学性", "有效性", "协同性", "重要性", "完整性", "先进性"],
+      "regex": [],
+      "scenes": ["ALL"],
+      "severity": "medium",
+      "threshold": {"min_occurrences": 4, "window": "paragraph", "window_chars": 700},
+      "exclusions": [
+        {"scope": "sentence", "regex": "(?:有效性|完整性)(?:检验|指标|约束|条件|证明|测试)", "reason": "固定技术名称或检查对象"}
+      ],
+      "action": "REVIEW",
+      "rationale": "抽象名词可作术语；密集并列且没有具体对象或动作时才需要压缩。",
+      "positive_examples": ["该体系兼具系统性、科学性、有效性、全面性与协同性。"],
+      "negative_examples": ["采用 KMO 检验评估量表的结构有效性。"],
+      "provenance": [
+        {"file": "references/style-gates.md", "rule": "STYLE-06"},
+        {"file": "references/pathology-catalog.md", "rule": "HUM-08"}
+      ]
+    },
+    {
+      "id": "LEX-RESULT-01",
+      "category": "result-shell-repetition",
+      "label": "结果表明/显示句壳重复",
+      "variants": ["结果表明", "结果显示", "分析表明", "数据表明", "研究表明", "实验表明"],
+      "regex": ["图\\s*[0-9一二三四五六七八九十]+(?:所)?显示"],
+      "scenes": ["MODELING", "RESEARCH"],
+      "severity": "low",
+      "threshold": {"min_occurrences": 3, "window": "paragraph", "window_chars": 1000},
+      "exclusions": [
+        {"scope": "sentence", "regex": "显示屏|显示器|显示模块|显示终端|显示设备", "reason": "显示是实体设备名称的一部分"}
+      ],
+      "action": "REVIEW",
+      "rationale": "句壳本身可以使用；连续图表段都从同一壳起笔时，应让具体差异或模式前置。",
+      "positive_examples": ["结果表明 A 上升。结果显示 B 下降。分析表明 C 不变。"],
+      "negative_examples": ["显示屏刷新率为 120 Hz。"],
+      "provenance": [
+        {"file": "references/rewrite-patterns.md", "rule": "MP-18"},
+        {"file": "references/research-journal.md", "rule": "RJH-20"}
+      ]
+    },
+    {
+      "id": "LEX-FOUNDATION-01",
+      "category": "bridge-to-next-section",
+      "label": "为后文奠定基础式收尾",
+      "variants": ["为后文奠定基础", "为后续研究奠定基础", "为后续研究打下基础", "为下一节奠定基础", "为后续分析提供支撑", "为后续工作提供支撑", "为下文提供铺垫", "为后续研究提供线索", "为后续工作提供线索", "为后续检验提供线索", "为后续研究提供可靠起点", "是后续研究的出发点"],
+      "regex": ["为(?:后文|下文|后续[^，。！？\\n]{0,12}|下一节)[^。！？\\n]{0,20}(?:奠定|提供|打下)(?:了)?(?:坚实|良好|重要|可靠|新的|明确)?(?:基础|支撑|铺垫|起点|出发点|入口)", "(?:是|构成|成为)[^。！？\\n]{0,10}(?:后文|下文|后续[^，。！？\\n]{0,12}|下一节)[^。！？\\n]{0,20}(?:的)?(?:基础|支撑|铺垫|出发点|起点|入口)", "为(?:后文|下文|后续[^，。！？\\n]{0,18}|下一节)[^。！？\\n]{0,32}(?:提供|留下|给出)(?:了)?(?:重要|有益|有价值)?(?:线索|启发|依据|方向)"],
+      "scenes": ["ALL"],
+      "severity": "high",
+      "threshold": {"min_occurrences": 1, "window": "document", "window_chars": 0},
+      "exclusions": [],
+      "action": "DELETE",
+      "rationale": "章节关系或未来任务通常由内容自然承接，不需要在段尾反复验收、预告或把原有观察包装成后续工作的线索。",
+      "positive_examples": ["上述分析为下一节的机制讨论奠定了坚实基础。", "现有结果为后续检验界面重排的作用提供了线索。"],
+      "negative_examples": ["下一节比较两种边界条件。"],
+      "provenance": [
+        {"file": "references/pathology-catalog.md", "rule": "HUM-04/HUM-11"},
+        {"file": "references/style-gates.md", "rule": "STYLE-07"}
+      ]
+    },
+    {
+      "id": "LEX-FUTURE-01",
+      "category": "compulsory-outlook",
+      "label": "自动生成的未来展望",
+      "variants": ["未来可进一步研究", "后续可进一步研究", "未来可进一步拓展", "后续可进一步拓展", "应用场景可以进一步拓展", "应用场景可进一步拓展", "应用范围可以进一步扩展", "应用范围可进一步扩展"],
+      "regex": ["(?:未来|后续)(?:工作|研究)?(?:可以|可|将|需要|有必要)[^。！？\\n]{0,35}(?:进一步|拓展|扩展|推广|应用场景)", "(?:应用场景|应用范围)(?:仍)?(?:可以|可)[^。！？\\n]{0,8}(?:进一步)?(?:拓展|扩展|推广)"] ,
+      "scenes": ["MODELING", "RESEARCH"],
+      "severity": "high",
+      "threshold": {"min_occurrences": 1, "window": "document", "window_chars": 0},
+      "exclusions": [],
+      "action": "REVIEW",
+      "rationale": "真实余留问题可用具体对象、条件和待回答问题保留；只有泛化拓展或提升而没有对象、动作和范围时，应删除整个命题，不能只去掉未来工作标签。",
+      "positive_examples": ["未来可进一步拓展应用场景并持续提升模型性能。"],
+      "negative_examples": ["尚未处理变温条件，这一问题留待后续研究。"],
+      "provenance": [
+        {"file": "references/research-journal.md", "rule": "RJH-29"},
+        {"file": "references/pathology-catalog.md", "rule": "HUM-11"}
+      ]
+    },
+    {
+      "id": "LEX-THEORY-OPEN-01",
+      "category": "theory-opening-repetition",
+      "label": "理论或框架名称重复占据段首",
+      "variants": [],
+      "regex": ["(?:^|(?:\\r?\\n){2,})[ \\t]*(?:依据|基于)[^，。！？\\n]{1,32}(?:理论|框架|观点|原则)[，,]", "(?:^|(?:\\r?\\n){2,})[ \\t]*(?:根据|按照|遵循)[^，。！？\\n]{1,32}(?:框架|观点|原则)[，,]"],
+      "scenes": ["ALL"],
+      "severity": "medium",
+      "threshold": {"min_occurrences": 2, "window": "document", "window_chars": 0, "count_distinct_by": "paragraph"},
+      "exclusions": [
+        {"scope": "sentence", "regex": "(?:依据|根据)(?:定理|引理|命题|推论|式\\s*[（(]?\\d+|《[^》]+》)[^。！？\\n]{0,60}", "reason": "正式推导、法规或标准条文的功能性依据"}
+      ],
+      "action": "REVIEW",
+      "rationale": "理论名称可以正常起笔；只有多个段落反复使用同一理论引入槽位时，才检查是否应让现象、对象或具体问题先行。",
+      "positive_examples": ["依据社会建构主义理论，知识来自互动。\n\n基于认知负荷理论，材料应分层。"],
+      "negative_examples": ["基于有限元理论，本文建立离散模型。后文直接进入网格与边界条件。"],
+      "provenance": [
+        {"file": "references/pathology-catalog.md", "rule": "HUM-01", "source_detail": "retired legacy rule 1, original lines 85-97"}
+      ]
+    },
+    {
+      "id": "LEX-CASE-CLOSE-01",
+      "category": "case-closing-repetition",
+      "label": "案例点题尾句重复",
+      "variants": ["此案例印证了", "此案例挑战了", "此案例揭示了", "此案例完美诠释了", "从中可以看出", "这提示我们"],
+      "regex": ["(?:本|该|上述)案例[^。！？\\n]{0,12}(?:印证|挑战|揭示|诠释)(?:了)?"],
+      "scenes": ["ALL"],
+      "severity": "medium",
+      "threshold": {"min_occurrences": 2, "window": "document", "window_chars": 0, "count_distinct_by": "sentence"},
+      "exclusions": [
+        {"scope": "sentence", "regex": "(?:裁判文书|指导性案例|案例编号|案例库)[^。！？\\n]{0,50}(?:案例[^。！？\\n]{0,12}(?:印证|挑战|揭示|诠释)|从中可以看出|这提示我们)", "reason": "案例本身是被比较或解释的正式研究对象"}
+      ],
+      "action": "REVIEW",
+      "rationale": "单个案例可以明确点题；多个段落用同一尾句复述已经完成的分析时，才删除空壳或改为具体判断。",
+      "positive_examples": ["此案例印证了上述观点。下一段又以此案例揭示了该机制收尾。"],
+      "negative_examples": ["该案例改变了损害赔偿的计算范围，差异见表 2。"],
+      "provenance": [
+        {"file": "references/pathology-catalog.md", "rule": "HUM-11", "source_detail": "retired legacy rule 2, original lines 101-113"}
+      ]
+    },
+    {
+      "id": "LEX-PASSIVE-ANALYSIS-01",
+      "category": "passive-analysis-shell",
+      "label": "处理或设计自动体现价值的分析壳",
+      "variants": ["该处理体现了", "该设计基于", "该决策反映了", "这一做法展现了", "上述选择印证了"],
+      "regex": ["(?:该|这一|上述)(?:处理|设计|决策|做法|选择)[^。！？\\n]{0,10}(?:体现|展现|反映|印证)(?:了)?"],
+      "scenes": ["ALL"],
+      "severity": "medium",
+      "threshold": {"min_occurrences": 2, "window": "document", "window_chars": 0, "count_distinct_by": "sentence"},
+      "exclusions": [
+        {"scope": "sentence", "regex": "(?:该设计基于|该决策基于)[^。！？\\n]{0,45}(?:国家标准|行业标准|技术规范|法规|实验数据|测量结果|式\\s*[（(]?\\d+)", "reason": "明确给出设计依据或可回查约束"}
+      ],
+      "action": "REVIEW",
+      "rationale": "具体设计依据可以保留；重复用抽象处理名词自动推出价值时，应回到输入已有的对象、动作或后果，不能补造研究过程。",
+      "positive_examples": ["该处理体现了系统性。该设计展现了科学性。"],
+      "negative_examples": ["该设计基于 GB/T 7714 的著录要求。"],
+      "provenance": [
+        {"file": "references/pathology-catalog.md", "rule": "HUM-08", "source_detail": "retired legacy rule 4, original lines 131-143"}
+      ]
+    },
+    {
+      "id": "LEX-PROBLEM-SHELL-01",
+      "category": "problem-announcement-shell",
+      "label": "核心问题或挑战报幕壳重复",
+      "variants": ["面临的核心问题是", "核心挑战在于", "主要矛盾体现在", "关键问题是如何"],
+      "regex": ["(?:研究者|译者|作者|团队)[^。！？\\n]{0,12}面临的核心问题是", "(?:核心挑战|关键问题|主要矛盾)[^。！？\\n]{0,8}(?:在于|是如何|体现在)"],
+      "scenes": ["ALL"],
+      "severity": "medium",
+      "threshold": {"min_occurrences": 2, "window": "document", "window_chars": 0, "count_distinct_by": "sentence"},
+      "exclusions": [
+        {"scope": "sentence", "regex": "(?:核心挑战在于|关键问题是如何|主要矛盾体现在)[^。！？\\n]{0,55}(?:证明|求解|计算|测量|估计|识别|构造|收敛|满足约束)", "reason": "句子直接给出可操作的技术问题"}
+      ],
+      "action": "REVIEW",
+      "rationale": "真正的研究问题可以直接陈述；只有多个段落用同一抽象壳报幕时，才改由具体矛盾、对象或条件进入。",
+      "positive_examples": ["研究者面临的核心问题是样本不足。下一节又写核心挑战在于数据有限。"],
+      "negative_examples": ["关键问题是如何证明迭代序列收敛。"],
+      "provenance": [
+        {"file": "references/pathology-catalog.md", "rule": "HUM-01", "source_detail": "retired legacy rule 5, original lines 147-159"}
+      ]
+    },
+    {
+      "id": "LEX-VAGUE-ATTRIBUTION-01",
+      "category": "vague-attribution-source",
+      "label": "没有可见来源的泛化归因",
+      "variants": ["专家认为", "专家指出", "业内普遍认为", "有观点认为", "一些学者指出", "研究表明"],
+      "regex": ["(?:专家|学界|业内|研究者)(?:普遍)?(?:认为|指出|表示)", "(?:有|一些|部分|许多|不少)(?:研究|文献|观点|学者)(?:认为|指出|表明)"],
+      "scenes": ["ALL"],
+      "severity": "medium",
+      "threshold": {"min_occurrences": 1, "window": "document", "window_chars": 0},
+      "exclusions": [
+        {"scope": "sentence", "regex": "(?:专家认为|专家指出|业内普遍认为|有观点认为|一些学者指出|研究表明)[^。！？\\n]{0,45}(?:\\\\cite[a-zA-Z]*\\{[^{}]+\\}|[（(][^）)\\n]*(?:19|20)\\d{2}[^）)\\n]*[）)]|\\[[0-9,，\\-–— ]+\\])", "reason": "同句给出可见引文或文献编号"},
+        {"scope": "sentence", "regex": "(?:\\\\cite[a-zA-Z]*\\{[^{}]+\\}|[（(][^）)\\n]*(?:19|20)\\d{2}[^）)\\n]*[）)]|\\[[0-9,，\\-–— ]+\\])[^。！？\\n]{0,45}(?:认为|指出|研究表明)", "reason": "归因前已给出可见引文或作者年份"}
+      ],
+      "action": "REVIEW",
+      "rationale": "该候选只提示归因来源在当前句中不可见，不判断来源真假。不得删除归因后改成无来源断言，不得虚构作者、年份或引用。",
+      "positive_examples": ["专家认为，该方法具有普遍优势。"],
+      "negative_examples": ["王明（2020）指出，该效应只在低频组出现。"],
+      "provenance": [
+        {"file": "references/style-gates.md", "rule": "STYLE-03", "source_detail": "retired legacy rule 8, original lines 195-207"}
+      ]
+    },
+    {
+      "id": "LEX-COPULA-AVOID-01",
+      "category": "copula-avoidance-density",
+      "label": "回避直接判断的载体角色作用壳",
+      "variants": [],
+      "regex": ["作为[^。！？\\n]{1,36}(?:重要|主要|关键|核心)?(?:载体|媒介|桥梁|纽带)", "(?:扮演|充当)着?[^。！？\\n]{0,24}(?:角色|功能)", "(?:起到|发挥)(?:了)?[^。！？\\n]{0,24}(?:作用|功能)"],
+      "scenes": ["ALL"],
+      "severity": "low",
+      "threshold": {"min_occurrences": 2, "window": "paragraph", "window_chars": 700},
+      "exclusions": [
+        {"scope": "sentence", "regex": "作为(?:模型|算法|系统)?(?:输入|输出|控制变量|边界条件|初始条件|对照组|基准|参数|自变量|因变量|状态量|研究对象)", "reason": "作为后接明确的技术角色或变量身份"}
+      ],
+      "action": "REVIEW",
+      "rationale": "单次角色说明可以自然；同段连续用载体、角色和作用壳回避直接判断时，检查能否在不损失功能差异的前提下压缩。",
+      "positive_examples": ["语言作为文化的重要载体，扮演着沟通桥梁的角色，并发挥着认同塑造作用。"],
+      "negative_examples": ["温度作为模型输入，压力作为状态量。"],
+      "provenance": [
+        {"file": "references/pathology-catalog.md", "rule": "HUM-08", "source_detail": "retired legacy rule 12, original lines 291-301"}
+      ]
+    },
+    {
+      "id": "LEX-ACADEMIC-PACKAGE-01",
+      "category": "academic-packaging-density",
+      "label": "可跨主题复用的学术包装词密集出现",
+      "variants": ["综合运用", "不可或缺", "深入探讨", "系统梳理", "提供理论支撑", "提供了理论支撑", "有效解决", "有效解决了", "完善理论体系", "完善了理论体系", "充分说明"],
+      "regex": [],
+      "scenes": ["ALL"],
+      "severity": "medium",
+      "threshold": {"min_occurrences": 2, "window": "paragraph", "window_chars": 700},
+      "exclusions": [
+        {"scope": "sentence", "regex": "(?:综合运用|系统梳理)[^。！？\\n]{0,55}(?:分别用于|对应于|其输出为|误差为|样本数为)", "reason": "同句给出方法分工或可观察结果"}
+      ],
+      "action": "REVIEW",
+      "rationale": "这些词并非禁词；只有同段成束出现且抽象评价多于具体对象、方法分工或结果时，才改写。",
+      "positive_examples": ["本文系统梳理相关研究，综合运用多种方法，充分说明该机制不可或缺。"],
+      "negative_examples": ["问卷用于估计比例，访谈用于解释异常样本。"],
+      "provenance": [
+        {"file": "references/pathology-catalog.md", "rule": "HUM-08", "source_detail": "retired legacy rule 11, original lines 258-287"}
+      ]
+    },
+    {
+      "id": "LEX-ENUM-01",
+      "category": "three-part-enumeration-shell",
+      "label": "三步或三维枚举壳",
+      "variants": [],
+      "regex": ["(?:首先|第一)[^。！？\\n]{1,120}(?:其次|第二)[^。！？\\n]{1,120}(?:再次|第三)", "一方面[^。！？\\n]{1,120}另一方面[^。！？\\n]{1,120}此外", "从[^，。！？\\n]{1,18}(?:角度|维度)(?:看|而言)?[^。！？\\n]{1,100}从[^，。！？\\n]{1,18}(?:角度|维度)(?:看|而言)?[^。！？\\n]{1,100}从[^，。！？\\n]{1,18}(?:角度|维度)(?:看|而言)?"],
+      "scenes": ["ALL"],
+      "severity": "low",
+      "threshold": {"min_occurrences": 1, "window": "document", "window_chars": 0},
+      "exclusions": [
+        {"scope": "sentence", "regex": "(?:算法|证明|实验流程|操作规程|求解过程|协议|标准步骤)[^。！？\\n]{0,35}(?:首先|第一)[^。！？\\n]{1,120}(?:其次|第二)[^。！？\\n]{1,120}(?:再次|第三)", "reason": "算法、证明或规范步骤中的功能性顺序"}
+      ],
+      "action": "REVIEW",
+      "rationale": "三项结构可以真实等权；只在三项由凑数产生、句法镜像且信息分量明显不等时调整，不按条数强制打散。",
+      "positive_examples": ["首先提升效率；其次改善质量；再次增强水平。"],
+      "negative_examples": ["算法首先初始化参数，其次计算梯度，第三步检查收敛条件。"],
+      "provenance": [
+        {"file": "references/pathology-catalog.md", "rule": "HUM-13", "source_detail": "retired legacy rules 3 and 14, original lines 117-127 and 317-329"}
+      ]
+    },
+    {
+      "id": "LEX-PUNCT-DASH-01",
+      "category": "dash-density",
+      "label": "同段破折号集中承担节奏",
+      "variants": ["——"],
+      "regex": [],
+      "scenes": ["ALL"],
+      "severity": "low",
+      "threshold": {"min_occurrences": 3, "window": "paragraph", "window_chars": 700},
+      "exclusions": [
+        {"scope": "line", "regex": "^\\s*#{1,6}[^\\n]*——[^\\n]*$", "reason": "标题或副标题中的单一分隔符"}
+      ],
+      "action": "REVIEW",
+      "rationale": "破折号不是 AI 标记；只有同段反复用它制造解释、转折和强调节拍时，才检查是否应按对象变化分句。",
+      "positive_examples": ["结果先上升——随后回落——低频组例外——这一点仍需说明。"],
+      "negative_examples": ["变化只出现在高温组——低温组保持稳定。"],
+      "provenance": [
+        {"file": "references/pathology-catalog.md", "rule": "HUM-06", "source_detail": "retired legacy rule 15, original lines 335-349"}
+      ]
+    },
+    {
+      "id": "LEX-FORMAT-BOLD-01",
+      "category": "bold-emphasis-density",
+      "label": "正文加粗替代信息主次",
+      "variants": [],
+      "regex": ["\\*\\*[^*\\r\\n]{1,80}\\*\\*", "__[^_\\r\\n]{1,80}__"],
+      "scenes": ["ALL"],
+      "severity": "low",
+      "threshold": {"min_occurrences": 3, "window": "document", "window_chars": 0},
+      "exclusions": [
+        {"scope": "line", "regex": "^\\s*[-+*]\\s+\\*\\*[^*\\n]{1,40}(?:[:：]\\*\\*|\\*\\*[:：])", "reason": "列表中的稳定字段标签"},
+        {"scope": "line", "regex": "^\\s*\\|[^\\n]*\\*\\*[^*\\n]+\\*\\*[^\\n]*\\|\\s*$", "reason": "表格表头或字段单元"}
+      ],
+      "action": "REVIEW",
+      "rationale": "单次加粗和结构化标签可以保留；正文多处加粗若只是替代句位、篇幅和具体名词来宣布重点，才减少格式强调。",
+      "positive_examples": ["本研究的**核心创新**是**全新框架**，并能**显著提升**解释力。"],
+      "negative_examples": ["这里最容易混淆的是**充分条件**。"],
+      "provenance": [
+        {"file": "references/pathology-catalog.md", "rule": "HUM-14", "source_detail": "retired legacy rule 16, original lines 353-361"}
+      ]
+    },
+    {
+      "id": "LEX-COURSE-FORMULA-CAPTION-01",
+      "category": "formula-caption-run",
+      "label": "连续短公式字幕结构",
+      "variants": [],
+      "regex": [],
+      "structural_matcher": {
+        "kind": "course-short-caption-formula-run-v1",
+        "min_pairs": 3,
+        "max_caption_hanzi": 16,
+        "max_blank_lines_before_formula": 0,
+        "caption_regex": "^.{1,64}$",
+        "caption_exclusion_regex": "(?:定义|命题|定理|引理|推论|证明|例题|解答)",
+        "formula_environments": ["equation", "equation*", "align", "align*", "gather", "gather*", "multline", "multline*", "displaymath"]
+      },
+      "scenes": ["COURSE"],
+      "severity": "medium",
+      "threshold": {"min_occurrences": 1, "window": "document", "window_chars": 0},
+      "exclusions": [],
+      "action": "REVIEW",
+      "rationale": "至少三组短字幕与整行 TeX 公式连续交替时，复核是否把连贯推导机械切成字幕卡片。该信号只是结构建议；一两步正常推导、正式定义/命题和受保护环境不命中，也不得据此直接删除、映射为 DELETE_STYLE_SHELL 或判定失败。单个‘因此/于是/从而’不是病灶；字幕承担对象标签、条件、因果、推论或递进关系时必须保留，取消独占行只能把等价关系并入相邻正文，不能只让公式相邻。",
+      "positive_examples": ["水平方向合力为\\n \\(F_x=F-\\mu N.\\)\\n因此\\n \\(a=F_x/m.\\)\\n于是\\n \\(a'=0.\\)"],
+      "negative_examples": ["定义：\\n \\(f(x)=x^2.\\)", "由受力关系可得：\\n \\(F=ma.\\)\\n整理得：\\n \\(a=F/m.\\)"],
+      "provenance": [
+        {"file": "references/course-notes.md", "rule": "NOTE-HUM-35"}
+      ]
+    },
+    {
+      "id": "LEX-REPAIR-01",
+      "category": "repair-template-repetition",
+      "label": "Humanize 修复短语自身模板化",
+      "variants": ["这里真正需要", "这里真正值得", "这里只看", "这里只保留", "这里只讨论", "这里只比较", "其余情形沿用", "其余情况沿用", "其余步骤沿用", "不再展开", "不再赘述"],
+      "regex": ["真正需要(?:停留|关注|区分|说明)的是", "其余(?:部分|内容|分支)[^。！？\\n]{0,12}(?:沿用|同理|略去)"],
+      "scenes": ["ALL"],
+      "severity": "medium",
+      "threshold": {"min_occurrences": 2, "window": "document", "window_chars": 0, "count_distinct_by": "sentence"},
+      "exclusions": [],
+      "action": "REVIEW",
+      "rationale": "这些短语可表达真实取舍，但跨段重复会把旧模板替换成新的 Humanize 模板。",
+      "positive_examples": ["这里只看峰值。下一节又写这里只比较误差。结尾再写其余情形沿用。"],
+      "negative_examples": ["这里只比较峰值，低频区间不再展开。"],
+      "provenance": [
+        {"file": "references/pathology-catalog.md", "rule": "HUM-16"}
+      ]
+    }
+  ]
+}

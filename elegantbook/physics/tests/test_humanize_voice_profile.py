@@ -47,6 +47,36 @@ def author_unit(char_count: int, filler: str) -> str:
 
 
 class HumanizeVoiceProfileTests(unittest.TestCase):
+
+    def test_builder_missing_private_spec_returns_stable_code_without_path(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp) / "Alice" / "PrivateProject"
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(BUILDER_SCRIPT),
+                    "--sample-spec",
+                    str(root / "voice.spec.json"),
+                    "--allowed-root",
+                    str(root),
+                    "--profile-id",
+                    "demo",
+                    "--manifest-out",
+                    str(root / "manifest.json"),
+                    "--output",
+                    str(root / "profile.json"),
+                    "--format",
+                    "json",
+                ],
+                check=False,
+                capture_output=True,
+                text=True,
+                encoding="utf-8",
+            )
+        payload = json.loads(completed.stdout)
+        self.assertEqual(1, completed.returncode)
+        self.assertEqual("INPUT_NOT_FOUND", payload["error_code"])
+        self.assertNotIn(str(root), completed.stdout + completed.stderr)
     @classmethod
     def setUpClass(cls) -> None:
         cls.builder = load_script(BUILDER_SCRIPT, "build_humanize_voice_profile_test")

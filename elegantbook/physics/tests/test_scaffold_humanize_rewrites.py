@@ -53,6 +53,18 @@ def directory_bytes(root: Path) -> dict[str, bytes]:
 
 
 class RewriteScaffoldTests(unittest.TestCase):
+    def test_cli_help_is_utf8_from_non_utf8_windows_locale(self) -> None:
+        completed = subprocess.run(
+            [sys.executable, str(SCRIPT), "--help"],
+            check=False,
+            capture_output=True,
+        )
+        self.assertEqual(0, completed.returncode)
+        help_text = completed.stdout.decode("utf-8")
+        self.assertIn("为 prepare 长文运行生成", help_text)
+        self.assertIn("该路径必须尚不存在", help_text)
+        self.assertEqual("", completed.stderr.decode("utf-8"))
+
     def setUp(self) -> None:
         self.temp_dir = tempfile.TemporaryDirectory()
         self.root = Path(self.temp_dir.name)
@@ -217,6 +229,25 @@ class RewriteScaffoldTests(unittest.TestCase):
             },
             payload["authoring_binding_visibility"],
         )
+        self.assertEqual(
+            [
+                "LEX",
+                "HUM",
+                "VOICE",
+                "STYLE",
+                "SCENE",
+                "USER",
+                "REPETITION",
+                "COLLOCATION",
+                "RHYTHM",
+                "HIERARCHY",
+            ],
+            payload["rewrite_intent_authoring_contract"]["target_signal_prefixes"],
+        )
+        self.assertIn(
+            "SCENE-COURSE-RHYTHM",
+            payload["rewrite_intent_authoring_contract"]["examples"],
+        )
 
     def test_adjacent_structural_candidate_is_authoring_review_but_scaffold_is_kept(self) -> None:
         _source, run_dir, chunks = self.prepare_adjacent_structural_candidate()
@@ -297,6 +328,100 @@ class RewriteScaffoldTests(unittest.TestCase):
         self.assertIn("decision_map values", payload["error"])
         self.assert_no_publish(output)
 
+    def test_cli_missing_decision_map_is_structured_fail_without_path_leak(self) -> None:
+        private_map = self.root / "private" / "secret-decisions.json"
+        private_run = self.root / "private-run"
+        completed = subprocess.run(
+            [
+                sys.executable,
+                str(SCRIPT),
+                "--run-dir",
+                str(private_run),
+                "--output",
+                str(self.root / "unused-output"),
+                "--decision-map",
+                str(private_map),
+                "--format",
+                "json",
+            ],
+            check=False,
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+        )
+
+        payload = json.loads(completed.stdout)
+        self.assertEqual(1, completed.returncode)
+        self.assertEqual("FAIL", payload["status"])
+        self.assertEqual("DECISION_MAP_NOT_FOUND", payload["error_code"])
+        self.assertTrue(payload["paths_redacted"])
+        self.assertFalse(payload["completion_claim_allowed"])
+        self.assertNotIn(str(private_map), completed.stdout)
+        self.assertNotIn(str(private_map), completed.stderr)
+        self.assertNotIn(str(private_run), completed.stdout)
+
+    def test_cli_decision_map_read_errors_use_stable_redacted_codes(self) -> None:
+        cases = (
+            (PermissionError("private path denied"), "DECISION_MAP_PERMISSION_DENIED"),
+            (OSError("private device path failed"), "DECISION_MAP_READ_FAILED"),
+        )
+        for error, expected_code in cases:
+            with self.subTest(expected_code=expected_code):
+                with (
+                    mock.patch.object(Path, "read_bytes", side_effect=error),
+                    mock.patch("builtins.print") as mocked_print,
+                ):
+                    result = scaffolder.main(
+                        [
+                            "--run-dir",
+                            str(self.root / "private-run"),
+                            "--output",
+                            str(self.root / "unused-output"),
+                            "--decision-map",
+                            str(self.root / "private-map.json"),
+                            "--format",
+                            "json",
+                        ]
+                    )
+
+                self.assertEqual(1, result)
+                payload = json.loads(mocked_print.call_args.args[0])
+                self.assertEqual("FAIL", payload["status"])
+                self.assertEqual(expected_code, payload["error_code"])
+                self.assertTrue(payload["paths_redacted"])
+                self.assertNotIn("private", payload["error"])
+
+    def test_cli_decision_map_parse_errors_use_stable_codes(self) -> None:
+        cases = (
+            (b"\xff", "DECISION_MAP_ENCODING_INVALID"),
+            (b"{", "DECISION_MAP_JSON_INVALID"),
+            (b"[]", "DECISION_MAP_CONTRACT_INVALID"),
+        )
+        for raw, expected_code in cases:
+            with self.subTest(expected_code=expected_code):
+                with (
+                    mock.patch.object(Path, "read_bytes", return_value=raw),
+                    mock.patch("builtins.print") as mocked_print,
+                ):
+                    result = scaffolder.main(
+                        [
+                            "--run-dir",
+                            str(self.root / "unused-run"),
+                            "--output",
+                            str(self.root / "unused-output"),
+                            "--decision-map",
+                            str(self.root / "private-map.json"),
+                            "--format",
+                            "json",
+                        ]
+                    )
+
+                self.assertEqual(1, result)
+                payload = json.loads(mocked_print.call_args.args[0])
+                self.assertEqual(expected_code, payload["error_code"])
+                self.assertTrue(payload["paths_redacted"])
+                self.assertFalse(payload["completion_claim_allowed"])
+
     def test_no_change_scaffold_is_invalid_until_specific_evidence_is_supplied(self) -> None:
         _source, run_dir, chunks = self.prepare()
         output = self.root / "no-change"
@@ -325,6 +450,41 @@ class RewriteScaffoldTests(unittest.TestCase):
                 self.assertTrue(os.path.samestat(before, output.stat(follow_symlinks=False)))
                 if populated:
                     self.assertEqual("do not overwrite", marker.read_text(encoding="utf-8"))
+
+    def test_cli_preexisting_empty_output_is_structured_fail_without_path_leak(self) -> None:
+        _source, run_dir, _chunks = self.prepare()
+        output = self.root / "private-existing-rewrites"
+        output.mkdir()
+        before = output.stat(follow_symlinks=False)
+
+        completed = subprocess.run(
+            [
+                sys.executable,
+                str(SCRIPT),
+                "--run-dir",
+                str(run_dir),
+                "--output",
+                str(output),
+                "--decision",
+                "REWRITE",
+                "--format",
+                "json",
+            ],
+            check=False,
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+        )
+
+        payload = json.loads(completed.stdout)
+        after = output.stat(follow_symlinks=False)
+        self.assertEqual(1, completed.returncode)
+        self.assertEqual("FAIL", payload["status"])
+        self.assertEqual("output must not already exist", payload["error"])
+        self.assertNotIn(str(output), completed.stdout)
+        self.assertNotIn(str(output), completed.stderr)
+        self.assertEqual([], list(output.iterdir()))
+        self.assertTrue(os.path.samestat(before, after))
 
     def test_decision_map_supports_mixed_units_and_requires_exact_coverage(self) -> None:
         _source, run_dir, chunks = self.prepare_two_units()
@@ -858,7 +1018,9 @@ class RewriteScaffoldTests(unittest.TestCase):
             encoding="utf-8",
         )
         self.assertEqual(1, completed.returncode)
-        self.assertIn("duplicate", json.loads(completed.stdout)["error"])
+        payload = json.loads(completed.stdout)
+        self.assertEqual("DECISION_MAP_JSON_INVALID", payload["error_code"])
+        self.assertTrue(payload["paths_redacted"])
         self.assert_no_publish(output)
 
     def test_output_inside_run_dir_is_refused(self) -> None:

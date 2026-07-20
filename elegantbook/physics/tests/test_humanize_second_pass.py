@@ -161,7 +161,12 @@ class HumanizeSecondPassTests(unittest.TestCase):
                 "paired_quality_clearance_granted": True,
             }
         )
-        metadata_path.write_bytes(canonical_json(metadata))
+        finalizer._write_json_group_atomic(
+            (
+                (metadata_path, metadata),
+                (run_dir / "latest_attempt_metadata.json", metadata),
+            )
+        )
 
     def make_first_pass(
         self, *, units: int = 1, promote_for_component_test: bool = True
@@ -204,6 +209,15 @@ class HumanizeSecondPassTests(unittest.TestCase):
                 self.root / "rejected-second-run",
                 self.root / "rejected-second-cases",
             )
+
+    def test_second_pass_refuses_metadata_while_authority_journal_exists(self) -> None:
+        first_run, _rewrites = self.make_first_pass()
+        (first_run / finalizer.AUTHORITY_GROUP_JOURNAL_NAME).write_text(
+            "{}\n", encoding="utf-8"
+        )
+
+        with self.assertRaisesRegex(RuntimeError, "requires recovery"):
+            second_prepare._first_pass_inputs(first_run)
 
     def make_auto_first_pass(self) -> tuple[Path, Path]:
         source = self.root / "mixed.md"
@@ -722,6 +736,37 @@ class HumanizeSecondPassTests(unittest.TestCase):
             second_prepare.SecondPassPreparationError, "fields are invalid"
         ):
             second_prepare._first_pass_inputs(first_run)
+
+    def test_all_second_pass_csv_readers_reject_duplicate_headers(self) -> None:
+        path = self.root / "duplicate-header.csv"
+        path.write_text("file_id,file_id,bytes\nF00001,F99999,1\n", encoding="utf-8")
+        cases = (
+            (finalizer._load_csv, ValueError),
+            (second_prepare._load_csv, second_prepare.SecondPassPreparationError),
+            (second_verify._load_csv, second_verify.SecondPassVerificationError),
+        )
+        for loader, error in cases:
+            with self.subTest(loader=loader.__module__):
+                with self.assertRaisesRegex(error, "duplicated|malformed"):
+                    loader(path)
+
+    def test_all_second_pass_csv_readers_reject_row_width_mismatch(self) -> None:
+        cases = {
+            "short": "file_id,rendered_path,bytes\nF00001,main.tex\n",
+            "long": "file_id,rendered_path\nF00001,main.tex,unexpected\n",
+        }
+        loaders = (
+            (finalizer._load_csv, ValueError),
+            (second_prepare._load_csv, second_prepare.SecondPassPreparationError),
+            (second_verify._load_csv, second_verify.SecondPassVerificationError),
+        )
+        for label, raw in cases.items():
+            path = self.root / f"row-width-{label}.csv"
+            path.write_text(raw, encoding="utf-8")
+            for loader, error in loaders:
+                with self.subTest(case=label, loader=loader.__module__):
+                    with self.assertRaisesRegex(error, "row width|malformed"):
+                        loader(path)
 
     def test_missing_trial_is_review_not_pass(self) -> None:
         first_run, second_run, cases, trials = self.prepare_second()

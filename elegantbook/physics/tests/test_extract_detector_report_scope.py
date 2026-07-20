@@ -158,6 +158,92 @@ class DetectorReportScopeTests(unittest.TestCase):
         self.assertEqual(0, completed.returncode, completed.stderr)
         self.assertEqual("PASS", payload["status"])
         self.assertEqual(7, len(payload["fragments"]))
+        self.assertEqual("<LOCAL_REPORT_NOT_PERSISTED>", payload["report_path"])
+        self.assertNotIn(str(FIXTURES.resolve()), completed.stdout)
+
+    def test_persisted_scope_uses_artifact_relative_locators(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            report = root / "inputs" / "report.html"
+            source = root / "inputs" / "source.md"
+            output = root / "scope.json"
+            report.parent.mkdir()
+            report.write_text("<mark>标注段。</mark>", encoding="utf-8")
+            source.write_text("标注段。", encoding="utf-8")
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT),
+                    str(report),
+                    "--source",
+                    str(source),
+                    "--output",
+                    str(output),
+                ],
+                check=False,
+                capture_output=True,
+                text=True,
+                encoding="utf-8",
+            )
+            payload = json.loads(output.read_text(encoding="utf-8"))
+        self.assertEqual(0, completed.returncode, completed.stderr)
+        self.assertEqual("inputs/report.html", payload["report_path"])
+        self.assertEqual("inputs/source.md", payload["source_path"])
+        self.assertEqual("SCOPE_ARTIFACT_PARENT", payload["path_base"])
+        self.assertNotIn(str(root), completed.stdout)
+
+    def test_cli_read_failure_is_fail_one_and_does_not_echo_private_paths(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            private = Path(tmp) / "Alice" / "PrivateProject"
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT),
+                    str(private / "missing-report.html"),
+                    "--source",
+                    str(private / "student-name.tex"),
+                ],
+                check=False,
+                capture_output=True,
+                text=True,
+                encoding="utf-8",
+            )
+        payload = json.loads(completed.stdout)
+        self.assertEqual(1, completed.returncode)
+        self.assertEqual("FAIL", payload["status"])
+        self.assertEqual("INPUT_READ_FAILED", payload["review_reasons"][0]["code"])
+        self.assertNotIn(str(private), completed.stdout + completed.stderr)
+
+    def test_cli_output_write_failure_is_fail_one_without_path_or_traceback(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            report = root / "report.html"
+            source = root / "source.md"
+            blocked_parent = root / "PrivateOutput"
+            report.write_text("<mark>标注段。</mark>", encoding="utf-8")
+            source.write_text("标注段。", encoding="utf-8")
+            blocked_parent.write_text("not a directory", encoding="utf-8")
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT),
+                    str(report),
+                    "--source",
+                    str(source),
+                    "--output",
+                    str(blocked_parent / "scope.json"),
+                ],
+                check=False,
+                capture_output=True,
+                text=True,
+                encoding="utf-8",
+            )
+        payload = json.loads(completed.stdout)
+        self.assertEqual(1, completed.returncode)
+        self.assertEqual("FAIL", payload["status"])
+        self.assertEqual("SCOPE_OUTPUT_WRITE_FAILED", payload["review_reasons"][0]["code"])
+        self.assertNotIn(str(root), completed.stdout + completed.stderr)
+        self.assertEqual("", completed.stderr)
 
 
 if __name__ == "__main__":

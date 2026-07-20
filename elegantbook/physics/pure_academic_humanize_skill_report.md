@@ -5922,3 +5922,1174 @@ generation qualification         = NOT_EVALUATED
 两份更新后投影位于 `build/generator-projection-maturity-v50-preapproval-20260720` 与 `build/generator-projection-maturity-v50-v121-20260720-repro`。名称中的 `preapproval` 只是首次审计运行的历史命名；该轮没有发生 capability approval 变更。两份投影及投影外 manifest 已逐字节复核一致。
 
 本节仍只证明非有限数不能进入候选状态链、评估面变化被 manifest 捕获且投影可复现；不证明候选自然、学术正确、作者认可或适合发布。
+## 51. 2026-07-20：前向路由、长 TeX 清单语义与 second-pass 消费链闭环
+
+### 51.1 三个剩余 strict JSON 非有限数入口
+
+对输入边界继续做 AST 与调用链复查后，确认三个真实入口虽然已经限制结构，却仍会接受 Python JSON 扩展常量 `NaN`、`Infinity` 和 `-Infinity`：场景路由的 scene policy、词汇扫描器的 lexical-signals，以及输出验证器的 report scope。三个入口均增加 `parse_constant` 拒绝器，并分别加入反例。定向 132 项测试通过。这里证明的是这些配置不能再携带非标准数值进入规则计算，不证明配置规则本身能够评价自然度。
+
+### 51.2 无答案泄漏的 AUTO 路由前向结果
+
+新鲜前向工件位于 `C:\Users\Lenovo\.codex\tmp\humanize-forward-route-v51`。执行代理只获得实际任务、材料和 Skill，没有获得预期答案或待修缺口。六个案例产生 47 个可解析 JSON，六份 evidence bundle replay 全部一致：
+
+- 明确弱证据返回 `FALLBACK_GENERAL/0`，没有伪装成可靠分类；
+- 两个正分场景平局返回 `AMBIGUOUS/2`，虽然占位 `final_scene=GENERAL`，但没有生成候选；
+- REWRITE 的机械门通过后，顶层仍因 paired-quality pending 保持 `REVIEW/2`；
+- DRAFT 的表面来源检查通过时，`semantic_source_check=NOT_EVALUATED`，顶层仍为 `REVIEW/2`；
+- “两个已列指标”改写为“两项”首次被数字来源门判为 `FAIL/1`，删除新增数量表达后才进入后续审查。
+
+该前向没有发现顶层虚假完成，但也暴露调用方风险：如果调用方只读取局部 `PASS`、占位 `final_scene` 或忽略退出码，仍可能自行制造误判。因此顶层状态、路由状态和退出码必须联合消费。
+
+### 51.3 长 TeX、罕见 UTF-8 与 stale-source 前向
+
+长文工件位于 `C:\Users\Lenovo\.codex\tmp\humanize-forward-long-v51`，权威结果为 `run2/finalization_metadata.json`：
+
+```text
+DELIVERY REVIEW exit=2 publish=PARTIAL
+candidate_assembly=REVIEW
+paired_quality=BLOCKED
+source_snapshot=CHANGED count=1
+units[NO_CHANGE=3,SKIPPED_PROTECTED=1,UNRESOLVED=2]
+compile_check=NOT_RUN_DUE_TO_SOURCE_CHANGE
+completion=false
+```
+
+源变化没有被 `NO_CHANGE` 单元状态掩盖；正式 `rendered/` 未发布，编译检查也没有在过期源上冒充执行。𠮷、𠀀、组合字符、NBSP、全角字符、ℝ 和 → 所在文件按原始字节保留，SHA-256 为 `1bfe4a80b8e37b056a94242f6e549bac5090e4b0766f66574f6580a40e17460c`，共 643 字节。首次运行因 prepare 与 finalize 之间策略文件变化触发 `run policy snapshot drift`，说明旧计划不会跨策略静默复用。
+
+### 51.4 rendered manifest 语义消歧与 second-pass 回归根因
+
+前向测试指出旧 `rendered_manifest.csv` 的 `source_path` 是当前活动位置，而 `sha256` 实际绑定渲染候选；脱离上下文阅读容易把哈希误解为当前源文件哈希。finalizer 因此增加并固定：
+
+```text
+source_path_scope=LIVE_LOCATION_LABEL_NOT_HASH_TARGET
+source_snapshot_copy=<run-relative frozen copy>
+source_snapshot_sha256=<frozen source bytes>
+sha256_scope=RENDERED_CANDIDATE_BYTES
+rendered_sha256=<rendered candidate bytes>
+```
+
+保留 `source_path` 与 `sha256` 仅为兼容旧消费者。全量测试随后暴露 19 个错误：`prepare_humanize_second_pass.py` 仍要求 manifest 精确等于旧六列，导致新版生产者与旧消费者断裂。本轮没有通过“允许任意额外列”绕过，而是让 second-pass 精确接受当前 11 列并 fail closed 校验：
+
+- 未知列拒绝；
+- 两个 scope 常量必须精确匹配；
+- `sha256` 必须等于 `rendered_sha256`；
+- 两个哈希必须是 64 位小写 SHA-256；
+- `source_snapshot_copy` 必须是 `source/` 下的安全相对路径，不得绝对化、包含 `..` 或逃逸运行根；
+- 冻结源副本和渲染候选都必须与清单字节哈希及长度一致。
+
+新增四类 second-pass 回归测试：新版清单正常消费、scope 篡改阻断、哈希别名分歧阻断、未知列阻断。second-pass 定向 26 项、长文与投影联合 264 项均通过。
+
+### 51.5 参数可操作性与版本边界
+
+长文 prepare 的帮助和错误信息现明确写出 `--max-author-chars >= 1000`、`--max-lines >= 50`、`--min-author-chars >= 0`，避免调用方只能靠试错猜预算下限。
+
+manifest 生产者、长文工作流及其他生成能力文件先前已正式升级到 1.23.0；本节新增的 second-pass 修复位于投影策略 `exclude_exact` 中的 `EVALUATION_SURFACE`。因此本轮没有为了形式上的“升级”虚构 1.24：生成能力哈希保持 1.23 的批准值，evaluation surface 与总 inventory 则由新 manifest 记录变化。
+
+### 51.6 最终复测与双投影复现
+
+```text
+second-pass targeted       = 26 OK
+long/second/projection     = 264 OK (skipped=3)
+full unittest              = 977 OK (skipped=8)
+compileall                 = PASS
+quick_validate             = PASS
+git diff --check           = PASS
+policy / builder           = 1.23.0 / 1.23.0
+capability source          = f5c717c6cd6a8c1f39ecc5958e72f466fe47d4b7af2267611633362e26d19d98
+evaluation surface         = 6463a23ab65afd70c95b0332d65172ceb403788a12cd7ba1313e1d5febfbffd0
+inventory                  = da38a4ff2e9541196f79cde865c0260b36cd11a6cd5b1f81b645f642e158ee8e
+projection files           = 38 / 38
+path/length/hash diff      = 0
+projection tree            = 126bfcd1acebd4231e7b445e0b3301763b71893e39cae92f1441c0ec017911e8
+manifest sha256            = 64d91dd5639c3ee860365d8942f8fc2bcb4b672f2bbad82f928c3372bd6ed6ad
+manifest byte-equal        = true
+evidence cap               = E2
+generation qualification  = NOT_EVALUATED
+```
+
+两份投影位于 `build/generator-projection-maturity-v53-v123-20260720` 和同名 `-repro` 目录。38 个相对路径、文件长度、逐文件 SHA-256、tree hash 与投影外 manifest 原始字节完全一致。
+
+### 51.7 不能越过的结论边界
+
+本轮证明了 strict JSON 配置入口、manifest 语义、生产者—消费者兼容、stale-source 阻断、罕见 UTF-8 保留和确定性投影的机械可信度；它没有证明候选比原文自然、学术判断正确、引文真实、作者身份成立、外部 paired-quality 已清除或模型具有稳定生成资格。机械 `PASS/0`、replay 一致和 977 项测试全绿均不能替代这些外部判断。
+## 52. 2026-07-20：CSV 单义性、行宽约束与 v1.24 能力面升级
+
+### 52.1 JSON 严格化之后的 CSV 盲区
+
+继续沿结构化工件信任链审计时发现，三个关键读取器仍直接使用 `csv.DictReader`：长文 finalizer、second-pass prepare、second-pass verifier。标准库的默认行为并不等于严格表格协议：重复表头会以后列静默覆盖前列；短行会把缺失字段记为 `None`；长行会把额外字段塞入 `None` 键。若消费者只检查最终字典键集合，重复表头尤其可能形成“原始 CSV 具有两种值、解析后只剩一种值”的歧义。
+
+### 52.2 统一严格 CSV 合同
+
+`finalize_humanize_long_document.py::_load_csv` 现在先验证表头存在、字段名非空且唯一，再逐行验证字段集合与表头完全一致，禁止 `None` 键和 `None` 值。second-pass prepare 与 verifier 统一复用该读取器，并把底层 I/O、编码、CSV 和结构错误分别归一为自身的领域异常，避免原始解析异常越过状态模型。
+
+新增测试直接覆盖三个读取面：
+
+- 重复 `file_id` 表头必须拒绝，不能以后值覆盖前值；
+- 少一列的短行必须拒绝；
+- 多一列的长行必须拒绝；
+- finalizer、prepare 和 verifier 三者必须表现一致。
+
+这项修改触及进入生成投影的 finalizer，因此旧 1.23 capability approval 按设计立即 fail closed。随后重新计算固定 38 文件能力 inventory，并正式升级 policy/builder 到 1.24.0；没有通过修改测试夹具或放宽批准门规避漂移。
+
+### 52.3 验收与确定性投影
+
+```text
+joint targeted             = 236 OK (skipped=3)
+full unittest              = 979 OK (skipped=8)
+compileall                 = PASS
+quick_validate             = PASS
+git diff --check           = PASS; only LF/CRLF notices
+policy / builder           = 1.24.0 / 1.24.0
+capability source          = 1536f7d3872489b13c5a946c3d5d2bd7109129bd3ce6f0f3eb728df71dbbb78c
+evaluation surface         = 58d4dafcd080831333c2269ad74eb0c794b41db6323a0fb1fc56418dcb3be53b
+inventory                  = 0fd9fe1ca59ede2d2789a31c5552d368a433e7ea5dcc35507e712b1181349de7
+projection files           = 38 / 38
+path/length/hash diff      = 0
+projection tree            = 12bc16df4b352aed17307917b0bea7851cd6578be6bdaefb689f7517d356f065
+manifest sha256            = ce92f3f147a901492a10ff360c51e92233541c24d81f605b81297026d8026019
+manifest byte-equal        = true
+evidence cap               = E2
+generation qualification  = NOT_EVALUATED
+```
+
+两份投影位于 `build/generator-projection-maturity-v54-v124-20260720` 与同名 `-repro` 目录。38 个相对路径、长度、逐文件哈希、tree hash 和 manifest 原始字节完全一致。
+
+### 52.4 前向证据状态与结论边界
+
+本轮尝试重新启动独立 second-pass 工件信任面前向测试，但执行代理被平台误分类为网络安全请求并终止，没有生成合格原始工件，因此未计入测试或前向证据。这里不能用“代理已启动”替代结果。
+
+当前只可确认重复表头和行宽歧义不能进入三条 CSV 消费链，且 1.24 投影可确定性复现。不能由此确认候选文本自然、学术内容正确、来源真实、作者身份成立、paired-quality 已清除或 generation qualification 已批准。
+## 53. 2026-07-20：策略快照漂移的有界、去敏组件诊断
+
+### 53.1 可操作性缺口
+
+真实长 TeX 前向曾在 prepare 与 finalize 之间发生策略变化，系统正确拒绝旧运行，但只返回 `run policy snapshot drift`。该信息足以阻断，却不足以帮助使用者判断应重新生成哪一类工件，也无法区分 Python 运行时、验证策略、路由器或具体实现脚本变化。
+
+### 53.2 诊断合同
+
+`prepare_humanize_long_document.py` 新增 `_policy_snapshot_drift_components()`。它只从当前可信快照取得允许显示的组件名，不回显旧快照中的任意键、路径、哈希或值。诊断分为三个固定命名空间：
+
+- `validator_policy_hashes.<trusted-current-key>`；
+- `implementation_hashes.<trusted-current-key>`；
+- `runtime.<trusted-current-key>`。
+
+未知顶层字段或未知子键只归并为 `snapshot_structure` 或 `<section>.structure`，不会显示攻击者提供的名字。组件列表最多返回 8 项，同时给出总差异数，并固定声明 `values_redacted=true`。例如 finalizer 字节变化现在返回：
+
+```text
+run policy snapshot drift: components=implementation_hashes.finalize_script_sha256; total=1; values_redacted=true
+```
+
+### 53.3 红队反例
+
+测试向旧快照注入含用户目录形态的私有路径键、攻击者控制的“secret”键名、敏感值和 64 位哈希。诊断只返回 `snapshot_structure` 及总数；私有路径、注入键名、敏感值和哈希均不出现。另一项真实 finalization 测试确认 finalizer 哈希变化能够准确定位，同时错误文本不包含运行目录或旧哈希。
+
+该改动改善的是 fail-closed 后的可操作性，不会允许旧快照继续运行，也不会泄露策略文件正文。
+
+### 53.4 v1.25 验收
+
+prepare 属于生成能力面，因此重新批准固定能力 inventory 并升级到 1.25.0：
+
+```text
+diagnostic focused tests   = 2 OK
+joint targeted             = 239 OK (skipped=3)
+full unittest              = 980 OK (skipped=8)
+compileall                 = PASS
+quick_validate             = PASS
+git diff --check           = PASS; only LF/CRLF notices
+policy / builder           = 1.25.0 / 1.25.0
+capability source          = 6d993e911663b220dde379329843d5e4d3d9b6ea05712c9623ab81a500649871
+evaluation surface         = 1954d03a6166a2cc20e815147222fe35a4b8e473aea5af397d7462ad2f1d1599
+inventory                  = 6e6e1abadeb9950a34b399d6bdcd1e1b8d75f6129147c7ad8e5536f6a95b09b4
+projection files           = 38 / 38
+path/length/hash diff      = 0
+projection tree            = 834f4a8c262f834ab8075a63cf05f685e570b407f7d060bc7baa60edbd7a5a4c
+manifest sha256            = 846dc277d1d13195806bcebfd5cc2a6824cec4afa62aa761df7346092a8ef91f
+manifest byte-equal        = true
+evidence cap               = E2
+generation qualification  = NOT_EVALUATED
+```
+
+两份投影位于 `build/generator-projection-maturity-v55-v125-20260720` 与同名 `-repro` 目录。
+
+### 53.5 边界
+
+组件级 drift 诊断只说明“当前安装的哪一类受信任字节与 prepare 时不同”，不能说明变化内容正确、旧候选自然、学术事实可靠或新版本具有生成资格。它也不授予自动迁移旧运行的权限；任何 drift 仍要求重新 prepare。
+
+## 54. 2026-07-20：NO_CHANGE 理由的分级、去敏修复指引
+
+### 54.1 真实前向暴露的可用性缺口
+
+长 TeX 前向中，两个调用方认为已有位置与功能说明的 `NO_CHANGE` 理由仍被安全拒绝，但旧诊断只给
+`NO_CHANGE_reason_generic_or_unlocated`；更短的 v3 理由还可能先落入 legacy 的“四个汉字”提示。
+系统没有误放行，却没有把当前 v3 合同——至少 8 个汉字并指出具体功能——稳定地告诉使用者。
+这会诱使调用方反复扩写“已经自然”，而不是说明保留对象、条件、模态、并列或段落职责。
+
+### 54.2 分级诊断与兼容边界
+
+finalizer 新增 `_no_change_reason_issue()` 与 `_no_change_reason_error()`，把 v3 失败固定分为：
+
+- `too_short_han`：汉字数少于 8；
+- `generic_template`：命中已登记的“保持原样/已经自然”等空泛模板；
+- `missing_function_anchor`：长度达到门槛，但没有指出定义、段落、原句、结构、对象、范围、条件、指代、否定、模态、因果、并列、层级等具体功能。
+
+错误合同固定为：
+
+```text
+NO_CHANGE_reason_invalid:<issue>;required=min_han_8+specific_function_anchor;reason_redacted=true
+```
+
+错误不回显原理由、注入字符串、路径或其他调用方内容。v3 在旧四字兼容门之前执行该合同；v2/legacy
+仍保留原有至少四个汉字的兼容行为，避免借诊断升级暗改历史 schema。合法理由仍必须绑定
+`evidence_spans`，存在 high signal 时仍须逐项填写 `keep_reasons`，之后仍进入统一验证器和外部成对质量门。
+
+### 54.3 独立前向与二次修复
+
+无答案泄漏的新代理在临时 Markdown 长文上连续提交三轮 v3 `NO_CHANGE`。第一轮四个单元均为
+`UNRESOLVED`，观察到 `missing_function_anchor`；第二轮按提示补充具体段落功能后，一个单元进入
+`NO_CHANGE`，其余暴露 `too_short_han` 与 `missing_function_anchor`；第三轮四个单元均形成 intent 机械
+PASS，但顶层仍为 `DELIVERY REVIEW exit=2 publish=REVIEW_CANDIDATE`，且
+`paired_quality_gate_status=PENDING_EXTERNAL_REVIEW`、`humanize_completion_claim_allowed=false`。
+原始报告保存在
+`C:\Users\Lenovo\.codex\tmp\humanize-no-change-forward-v126\REPORT.md`。
+
+前向同时发现：旧 v1.26 顶层摘要只给 `UNRESOLVED`，精确 code 需要自行打开
+`coverage_ledger.final.csv`。因此没有把 v1.26 当作最终版本。v1.27 新增去敏
+`unresolved_reason_summary`：给出 total/classified/unclassified、固定 code 计数和
+`details_artifact=coverage_ledger.final.csv`；文本摘要也直接输出该相对路径。聚合器只识别固定枚举，
+不复制 notes、理由正文或任意调用方字符串。未分类数量不被包装成安全项。
+
+### 54.4 测试与策略升级
+
+新增测试覆盖三类 issue、固定修复提示、理由与 `SECRET-CONTENT` 注入不回显、v3 短理由不再出现
+legacy 提示，以及具体功能理由仍可形成 intent 机械 PASS。finalizer 与长文合同属于固定 38 文件生成能力面，
+因此重新计算 capability inventory；分级诊断中间版为 1.26.0，纳入前向反馈后的正式版本为 1.27.0。
+
+```text
+finalizer focused          = 168 OK (skipped=2)
+joint targeted             = 242 OK (skipped=3)
+full unittest              = 983 OK (skipped=8)
+compileall                 = PASS
+quick_validate             = PASS (PYTHONUTF8=1)
+git diff --check           = PASS; only LF/CRLF notices
+policy / builder           = 1.27.0 / 1.27.0
+capability source          = 42aba92eb3571eb4f94028d438808531f1e53562fab4dbc08012d239db42addb
+evaluation surface         = f85fa35521dd8c8cc52539e2751bbb52a032d42765136bb15df2a43629939fed
+inventory                  = 1adfd38292a8b58974ebbf113c52233456abcba57c18462131fbe5730f05c727
+projection files           = 38 / 38
+path/byte diff             = 0 / 0
+projection tree            = 81a8170a7be64eccedbc868dd0e4621ede610d4377e35fa37f7b2c69e7e88f54
+manifest sha256            = 16f165a4bae24b134548f3b44cf113e7e72a2fe0cf2f9d5f9ae59afbfd41927e
+manifest byte-equal        = true
+evidence cap               = E2
+generation qualification  = NOT_EVALUATED
+```
+
+两份最终投影位于 `build/generator-projection-maturity-v57-v127-20260720` 与同名 `-repro` 目录；38 个相对路径和逐文件字节完全一致。v1.26 投影只记录前向反馈前的中间状态，不是当前稳定面。
+
+### 54.5 结论边界
+
+分级诊断证明的是失败后更容易采取正确的下一步，并且错误面不泄露理由正文。它不证明某个理由真实、
+某段原文已经自然、NO_CHANGE 是最佳文风决策，也不清除 `paired_quality_review_status=PENDING_EXTERNAL_REVIEW`。
+单元 intent PASS、983 项测试和双投影复现均不能升级学术正确性、作者身份或 generation qualification。
+
+## 55. 2026-07-20：v1.28 最新尝试权威头、未决原因闭集与运行时去路径化
+
+### 55.1 v1.27 独立前向推翻了哪些“看似已经够用”的假设
+
+在不知道预期输出的独立前向中，调用方得到 12 个未决单元。v1.27 顶层摘要把它们全部显示为
+`unclassified`，但 `coverage_ledger.final.csv` 中实际已经存在两类稳定原因：
+
+- `no_change_evidence_spans_must_be_nonempty`：8 项；
+- `rewrite_intent_source_spans_must_be_nonempty`：4 项。
+
+这说明 v1.27 的聚合白名单仍不完整：底层有可操作信息，顶层却把它降格成未知原因。前向还发现，已有
+`REVIEW/PARTIAL` 候选的运行目录在下一次 finalize 失败后，会继续保留旧
+`finalization_metadata.json`；最新失败只写入 `last_failed_attempt_metadata.json`。如果消费者只读取
+canonical metadata，就会把“保留下来的上次候选状态”误当成“本次最新尝试状态”。
+
+同一失败链还暴露两个信任面问题。其一，旧 runtime JSON 的 `error` 与 `run_dir` 会回显完整绝对路径；
+其二，`processable_scope_complete=true` 可以与 `UNRESOLVED=12` 同时出现，但字段名没有明确说明它只指
+“可处理单元是否完成记账”，并不表示所有单元已解决、候选可交付或人文化已经完成。四项缺口均来自真实
+前向工件，而不是为新增规则而虚构的单元测试场景。
+
+### 55.2 v1.28 的状态权威合同
+
+finalizer 现在在每次尝试后都写入 `latest_attempt_metadata.json`，并把三个文件的职责拆开：
+
+- `latest_attempt_metadata.json`：最新一次 finalize 尝试的权威状态；
+- `finalization_metadata.json`：当前保留的 canonical candidate 状态，失败回滚时允许继续指向旧候选；
+- `last_failed_attempt_metadata.json`：最近一次失败尝试的审计副本。
+
+成功或 REVIEW 时，latest attempt 与 canonical metadata 一致，role 为
+`CURRENT_AND_LATEST_ATTEMPT_AUTHORITY`。失败且事务恢复旧候选时，latest attempt 与 last failed 一致，
+role 为 `LATEST_FAILED_ATTEMPT_AUTHORITY`；旧 canonical metadata 可以保留，但不再能冒充最新尝试。
+普通文本摘要同时给出 `latest_attempt=latest_attempt_metadata.json` 和
+`canonical_candidate=finalization_metadata.json`，使只读消费者无需猜测文件优先级。
+
+### 55.3 未决原因与运行时错误的有限披露
+
+`unresolved_reason_summary` 的固定白名单新增上述两种空 span 原因。聚合器只输出 code 与计数，不复制
+ledger 的 `notes`、原理由、canary 或其他调用方字符串；因此 12 个真实未决可以被准确归为 8+4，同时不
+扩大内容泄露面。无法识别的原因仍计入 `unclassified`，不会伪装成安全已分类。
+
+运行时失败不再输出 `error` 或 `run_dir`。JSON 只给固定 `error_code`：`FILE_NOT_FOUND`、
+`PERMISSION_DENIED`、`INVALID_ENCODING`、`VALIDATION_ERROR`、`RUNTIME_ERROR`、`OS_ERROR` 或
+`INTERNAL_ERROR`，并固定声明 `error_message_redacted=true`、`paths_redacted=true`、
+`run_dir_scope=CURRENT_RUN_DIR`。文本错误面只输出错误类型、固定 code、相对元数据文件名和
+`content_redacted=true`。恢复逻辑也按 schema、固定 code、error type 与 role 验证最新失败元数据，不再
+依赖可能包含路径或私有内容的异常正文。
+
+### 55.4 `processable_scope_complete` 的作用域收窄
+
+成功 metadata 新增：
+
+```text
+processable_scope_complete_scope=PROCESSABLE_UNIT_ACCOUNTING_ONLY
+processable_scope_complete_does_not_mean_resolved_or_deliverable=true
+```
+
+因此该布尔量只能说明“被判定为 processable 的单元已经走完记账流程”。它不能抵消 unresolved、protected、
+stale source、paired-quality pending、REVIEW/2 或发布候选限制，更不能被上层 UI 翻译成“全文已完成”。
+
+### 55.5 回归、结构校验与确定性投影
+
+```text
+finalizer focused          = 170 OK (skipped=2)
+joint targeted             = 245 OK (skipped=3)
+full unittest              = 986 OK (skipped=8)
+compileall                 = PASS
+quick_validate             = PASS (PYTHONUTF8=1)
+git diff --check           = PASS; only LF/CRLF notices
+policy / builder           = 1.28.0 / 1.28.0
+capability source          = 1c8f698554e6278ef8ca02dcbda1dd040b75fe320536e57d0477c3b5a021cb06
+evaluation surface         = 2d81250430351230da83c236ac8ec2f09b0966fdfc0c72a9f96890857daaac84
+inventory                  = 623ca198505e73313d27f1572d46086c6412007412476825238c5919f1d82ddd
+projection files           = 38 / 38
+path/size/hash diff        = 0 / 0 / 0
+projection tree            = 837ff99f0569a965e2741677e5edecbb0b924a02b938a41ae6a1e7d6cb216411
+manifest sha256            = 773d443b020fcc72bdc01280808aa277df7ddf54ea4a5e0067360f8f199b5703
+manifest byte-equal        = true (23177 / 23177 bytes)
+evidence cap               = E2
+generation qualification  = NOT_EVALUATED
+```
+
+两份投影位于 `build/generator-projection-maturity-v58-v128-20260720` 与同名 `-repro` 目录。两次独立构建的
+38 个相对路径、文件长度、逐文件 SHA-256、tree hash 和 manifest 原始字节均一致。
+
+### 55.6 本轮能证明与不能证明的内容
+
+v1.28 证明的是：最新尝试与保留候选不再混用；已知空 span 原因能在顶层准确聚合；失败元数据不再回显
+绝对路径或异常正文；scope-complete 不再缺少机器可读的限定语；这些合同在现有 986 项回归与双投影中可
+复现。它仍不证明候选文本自然、学术事实正确、原作者身份成立、外部 paired-quality clearance 已完成，
+也不把 E2 投影复现升级为 generation qualification。机械门禁的成熟化继续服务于“拒绝虚假完成态”，而
+不是替代人的连续阅读和学术判断。
+
+## 56. 2026-07-20：v1.29 回滚证据断链、绝对路径残留与原因码碰撞修复
+
+### 56.1 v1.28 不能作为稳定完成态的原因
+
+独立只读红队在不查看本报告新增章节的前提下重建了正常 REVIEW、REVIEW_CANDIDATE 与失败回滚链。v1.28
+的 latest/canonical 分权主体确实生效，但红队发现三个此前测试没有覆盖的缺口，因此 v1.28 只能视为中间状态：
+
+1. 回滚后的 `latest_attempt_metadata.json` 声称本轮存在 UNRESOLVED，并继续把
+   `unresolved_reason_summary.details_artifact` 指向 `coverage_ledger.final.csv`；该文件已经随事务恢复为上一
+   canonical candidate 的 NO_CHANGE 台账。最新失败头与它所指证据互相矛盾。
+2. failed metadata 仍保留 run-dir 外的 source 绝对路径；`compile_check.command` 也能保存调用方提供的绝对
+   可执行文件路径。旧实现只清理有限 path key 且主要判断路径是否位于 run-dir 内，不能支撑“失败元数据已
+   去路径化”的广泛声明。
+3. `unresolved_reason_summary` 对整段 notes 做子串搜索。调用方只需把白名单 code 用作未知 bundle 字段名，
+   实际错误虽然是 `unknown_rewrite_bundle_fields`，顶层仍会误报为空 evidence span。
+
+原始红队工件位于 `C:\Users\Lenovo\.codex\tmp\hac-v128-redteam-20260720-a`。其中 latest 与 last failed
+字节一致，canonical 成功保留，说明 v1.28 修复不是全盘无效；问题在于回滚证据引用和脱敏边界仍不自洽。
+
+### 56.2 v1.29 的锚定原因解析
+
+聚合器不再搜索 notes 中任意位置的 code。它只接受固定错误结构：
+
+- 可选且闭集的 `invalid_rewrite_bundle:` 或 `rewrite_intent:` 前缀；
+- 紧随其后的 `NO_CHANGE_reason_invalid:<fixed-code>`；
+- 或 `invalid_rewrite_bundle:<fixed-empty-span-code>`；
+- code 后必须是分号、空白或字符串结尾。
+
+因此真实 NO_CHANGE 分级诊断仍能聚合，未知字段名中包含白名单 code 的碰撞则保持 `unclassified`。这里没有
+把 notes 当作结构化数据的长期理想方案；v1.29 只是把现有字符串合同收窄为可审计的固定语法，后续仍可迁移
+到显式 `unresolved_codes[]`。
+
+### 56.3 失败记录的严格脱敏与证据断链
+
+`_failed_attempt_record()` 现在递归清空：
+
+- `command`、`cwd`、`stdout`、`stderr`；
+- source/before/after/diff/published/rewrite-intent 等全部路径键；
+- 任意字段中呈 Windows drive、UNC 或 POSIX absolute path 形态的字符串。
+
+失败头新增 `failed_attempt_sensitive_fields_redacted=true`。由于事务回滚后本轮 final ledger 不再存在，
+`unresolved_reason_summary.details_artifact` 固定清空，并写
+`details_artifact_status=NOT_RETAINED_AFTER_ROLLBACK`。这样 latest failed attempt 可以保留去敏的 code 与计数，
+但不能再诱导消费者打开上一候选的 ledger。运行时异常分支仍使用固定 error code，不回显异常正文。
+
+### 56.4 回归与确定性投影
+
+```text
+new focused regressions    = 4 OK
+finalizer + projection     = 216 OK (skipped=3)
+full unittest              = 987 OK (skipped=8)
+compileall                 = PASS
+quick_validate             = PASS (PYTHONUTF8=1)
+git diff --check           = PASS; only LF/CRLF notices
+policy / builder           = 1.29.0 / 1.29.0
+capability source          = 366d3ba05cdccf17c6f74899d1ecb5e10a593016eb8b3638ea85ad375d7c1330
+evaluation surface         = 3dfef366657a9ebdd527bb2c31a553f807348adb7f32cb04816d4aed6c227464
+inventory                  = 31bdb92acd3385b31b0c3eee791df6819e094b0d7cb84b5eb0c04fea9e70918a
+projection files           = 38 / 38
+path/size/hash diff        = 0 / 0 / 0
+projection tree            = 51b825abadacba1493b55347a7430d7105c4c8a37223a24b40fd210fb6e82e6f
+manifest sha256            = 6c90e3277c60c3c1ce92b9d2fcbd65714da49de94cbdbd6902811c2699bc1935
+manifest byte-equal        = true (23177 / 23177 bytes)
+evidence cap               = E2
+generation qualification  = NOT_EVALUATED
+```
+
+双投影位于 `build/generator-projection-maturity-v59-v129-20260720` 与同名 `-repro`。38 个相对路径、文件
+大小、逐文件 SHA-256、tree hash 和 manifest 原始字节完全一致。
+
+### 56.5 剩余边界
+
+红队尚未攻击 failed metadata 自身写入失败、权限失败和独立 runtime-exception 的全部组合；字符串锚定也仍
+不是显式结构化错误数组。`processable_scope_complete=true` 在 FAIL、UNRESOLVED 或 REVIEW_CANDIDATE 中仍
+可能成立，虽然现已有机器可读 scope 与否定字段，任何 UI 仍必须同时读取 `failed_attempt`、delivery gate、
+publish state 和 completion claim，不能单独展示该布尔量。v1.29 提升的是状态与证据诚实性，不证明文本更
+自然、学术事实更正确、作者身份成立、paired-quality 已清除或生成资格获批。
+
+## 57. 2026-07-20：v1.30 结构化未决码与 metadata 权威文件组原子化
+
+### 57.1 v1.29 剩余的两个工程性假闭环
+
+代码审计确认 finalizer 有 31 个显式 UNRESOLVED 生产点，而 v1.29 顶层摘要只从 notes 的固定字符串语法中
+识别 5 类原因。锚定解析已能阻止普通子串碰撞，但 notes 仍同时承担“人可读动态细节”和“机器状态码”两种
+职责；新增分支容易忘记同步 regex，validator reason、字段名或异常文本也始终是潜在污染源。
+
+另一个缺口位于 metadata 发布顺序。成功路径先写 `finalization_metadata.json` 再写 latest；失败路径先写
+last failed 再写 latest。第二个文件写入失败时，第一个文件可能已经变成新状态，形成 authority pair 分裂。
+若整个目录不可写，失败记录也无法落盘，而旧 main fallback 会缺少“run 已恢复但失败头未持久化”的准确证据。
+
+### 57.2 31 个生产点统一进入闭集 code registry
+
+v1.30 新增 `humanize-unresolved-code/v1` 和固定 `UNRESOLVED_CODE_VALUES`。所有 31 个显式 UNRESOLVED 分支，
+以及 prepare 已冻结为 UNRESOLVED 的初始单元，都写入 `unresolved_codes`。code 只能来自 registry；传入拼接了
+decision、字段名、span ID、validator reason 或用户字符串的动态 code 会触发内部断言。
+
+主要 code 家族覆盖：bundle/chunk/Voice binding、NO_CHANGE 理由与 intent、keep reason、warning proposal、
+validator、paired-quality request、结构计划、保护占位符、非结构 scope、结构事务回滚、文档覆盖不足和跨单元
+重复。空 evidence/source span 拥有独立 canonical code，不需要再检查 notes 正文。
+
+顶层 `unresolved_reason_summary` 新增：
+
+```text
+structured_code_schema=humanize-unresolved-code/v1
+structured_code_source=UNIT_UNRESOLVED_CODES
+structured_classified / structured_unclassified
+structured_code_counts
+```
+
+旧 `codes/classified/unclassified` 暂时作为五类兼容 alias 保留。旧 run 缺结构化数组时只允许严格锚定的历史五
+类 notes 迁移；未知 notes 不猜测。final ledger 新增 `unresolved_codes_json`，按 canonical JSON 数组写出，
+不使用 Python repr。文本摘要追加固定 `unresolved_code_counts[...]` 行，动态 notes 不进入 stdout。
+
+### 57.3 metadata authority group 的全组恢复
+
+新增 `_write_json_group_atomic()`：写入前保存组内每个文件的“原字节或不存在”状态；任一成员写入失败，所有
+成员恢复原字节。它用于两组权威文件：
+
+- 成功/REVIEW：`finalization_metadata.json + latest_attempt_metadata.json`；
+- 失败/回滚：`last_failed_attempt_metadata.json + latest_attempt_metadata.json`。
+
+测试故意让第二个文件失败，确认第一个文件不会留下新字节。更深一层的测试让 latest 在正常候选和失败记录
+两轮写入中都抛出 `PermissionError`：整个 run-dir 恢复到调用前哈希，三个 metadata 文件均不产生半状态。
+异常对象携带去敏的内存 failure metadata，main 优先使用它，输出
+`attempt_metadata_persistence_status=FAILED; paths_authoritative=false`；磁盘旧 latest 不再冒充本次尝试。
+
+### 57.4 回归与投影
+
+```text
+new focused regressions    = 8 OK
+finalizer focused          = 176 OK (skipped=2)
+joint targeted             = 250 OK (skipped=3)
+full unittest              = 991 OK (skipped=8)
+compileall                 = PASS
+quick_validate             = PASS (PYTHONUTF8=1)
+git diff --check           = PASS; only LF/CRLF notices
+policy / builder           = 1.30.0 / 1.30.0
+capability source          = 99cbcb70dd683a30e71f7bb9cfbe0d8bf31631cb6e45944fe18951fad654f9c5
+evaluation surface         = a41b8fba31700e5000bb180eeceaf83579da177089b845bae59ecd10506189cc
+inventory                  = 7c3b62087c30fe410f455cc7b709392a24688ceac2f400f71a0fd6353c860667
+projection files           = 38 / 38
+path/size/hash diff        = 0 / 0 / 0
+projection tree            = 8be8553296f0d1c0bf442187fd638679ae6ec9ced11f2a5bbde99a3e5aedda27
+manifest sha256            = 24516cb5e52b84c4f19e3b745f7681ad11b64c3b410e9116dc2d124192357710
+manifest byte-equal        = true (23177 / 23177 bytes)
+evidence cap               = E2
+generation qualification  = NOT_EVALUATED
+```
+
+双投影位于 `build/generator-projection-maturity-v60-v130-20260720` 与同名 `-repro`。38 个文件逐路径、逐大小、
+逐 SHA-256 相同，manifest 原始字节一致。
+
+### 57.5 剩余边界
+
+当前原子组恢复属于进程内 best-effort rollback，不是操作系统级多文件事务；若写入失败同时伴随恢复写入失败、
+进程断电或磁盘损坏，仍需更强的 journal/rename 协议。结构化 registry 已覆盖当前 31 个显式生产点，但未来新增
+UNRESOLVED 分支仍应由静态测试强制要求 code；目前尚未加入 AST 级“status 赋值必须邻接 code”门。
+这些改动证明状态更可审计，不证明文本自然度、学术正确性、作者身份、paired-quality clearance 或生成资格。
+
+## 58. 2026-07-20：v1.31 静态原因码门、恢复失败权威与 CSV 安全边界
+
+### 58.1 本轮攻击 v1.30 的完成态
+
+独立只读红队没有读取本报告，直接从安装版 finalizer 构造故障模型。它确认 v1.30 仍有四个审计缺口：authority
+group 恢复异常被吞；run-state 恢复失败后可能读取磁盘旧 latest；CSV 中的来源派生文本可能被表格软件解释为
+公式；未来新增 `unit["status"]="UNRESOLVED"` 分支时没有静态门强制写 registry code。旧测试没有覆盖这些解释层和
+恢复层故障，因此“991 项全绿”不能排除它们。
+
+### 58.2 staged replace 与显式恢复失败
+
+`_write_json_group_atomic()` 不再直接覆盖权威文件。每个 payload 先写入目标目录内的独立 staging 文件，flush/fsync
+后才逐项 `os.replace`。任一 replace 失败，所有成员按调用前原字节或“不存在”状态恢复；恢复旧字节也使用同目录
+staging + replace。恢复异常不再静默 `pass`，而是升级为 `metadata authority group rollback failed`。
+
+该实现收窄了普通进程内异常的半写窗口，但仍不是跨文件、断电安全的数据库事务。SIGKILL/掉电发生在两个 replace
+之间时，当前没有持久 journal 或单一 commit pointer 可供重启恢复。
+
+### 58.3 恢复失败不再复用旧 latest
+
+finalize 的两个 `_restore_run_state()` 入口都单独捕获恢复异常。失败时只构造本次异常对象携带的去敏内存记录，固定：
+
+```text
+run_state_restore_status=FAILED
+run_state_restore_error_code=RUN_STATE_RESTORE_FAILED
+attempt_metadata_persistence_status=FAILED
+attempt_metadata_paths_authoritative=false
+```
+
+main 已删除“读取磁盘 latest，并用 error type/code 猜测是否属于本轮”的兜底。即使旧 latest 恰好也是
+`PermissionError/PERMISSION_DENIED`，也不能再贡献本次时间、路径权威或恢复状态。
+
+### 58.4 AST 原因码覆盖门
+
+新增 AST 回归解析安装版 finalizer，遍历所有把 `unit["status"]` 赋为 `UNRESOLVED` 的语句。每个赋值所在控制块
+必须在 `continue/break/return/raise` 前调用 `_add_unresolved_code`，否则测试按源码行号失败。这把“当前 31 个点
+人工补齐”升级为“未来新增点也必须显式登记”。该门只证明同分支存在 registry 调用，不证明 code 的语义选择正确。
+
+### 58.5 CSV 与旧 ledger 合同
+
+所有 `_write_csv()` 文本单元在首字符为 `= + - @ TAB CR` 时统一前置单引号，避免 Excel/LibreOffice 把审计文本
+解释为公式或外链。新增测试覆盖 `=HYPERLINK(...)`、`+SUM(...)` 与普通 note。
+
+旧 final ledger 读取改为显式兼容入口：必须含 `unit_id/status`，unit ID 非空且唯一，status 属于当前闭集。缺列、
+重复 ID 或未知状态直接拒绝；缺少新 `unresolved_codes_json` 但具备旧核心列的历史 ledger 仍可读取。
+
+### 58.6 验收与双投影
+
+```text
+new focused regressions    = 8 OK
+finalizer focused          = 182 OK (skipped=2)
+projection focused         = 44 OK (skipped=1)
+joint targeted             = 306 OK (skipped=5)
+full unittest              = 997 OK (skipped=8)
+compileall                 = PASS
+quick_validate             = PASS (PYTHONUTF8=1)
+git diff --check           = PASS; only LF/CRLF notices
+policy / builder           = 1.31.0 / 1.31.0
+capability source          = 14df16e3e0d8c813ac67004657482fe8a418fd636934137187310bd28c054fa6
+evaluation surface         = 8e4dca8a88d18d69cad35dd04293c8d3a744f93f84415b5ecddbc638dd8b228e
+inventory                  = 3ad01aa602ae02859a4be7f4b0ab7e2fec0225cd3bec6628a53cf4ee19501d28
+projection files           = 38 / 38
+path/size/hash diff        = 0 / 0 / 0
+projection tree            = fd31cb30a923a4409a0ee87e9dca243cd36727fd061fc001e6f76b4167a81ac8
+manifest sha256            = 435d963e3082e13cbe625850cd3c3811278a741de4bcba06b6b98b55056a0a02
+manifest byte-equal        = true (23177 / 23177 bytes)
+evidence cap               = E2
+generation qualification  = NOT_EVALUATED
+```
+
+双投影位于 `build/generator-projection-maturity-v61-v131-20260720` 与同名 `-repro`，38 个文件逐路径、逐大小、
+逐 SHA-256 一致，两个 manifest 原始字节一致。
+
+### 58.7 未关闭边界
+
+v1.31 尚无跨进程崩溃恢复 journal，也没有把 rendered/validation/diff/ledger/metadata 收敛为单一 generation 目录
+与原子 commit pointer；强杀或断电仍可能留下跨目录半发布。AST 门不验证 code 与失败语义的一一对应。CSV 单引号
+转义适合人工审阅；若未来要求字节语义完全无损的机器权威，应增加 canonical JSON ledger，把 CSV 定义为安全审阅
+投影。本轮只提高状态、恢复和审计可信度，不证明自然度、学术正确性、作者身份、paired-quality clearance 或
+generation qualification。
+
+## 62. 2026-07-20：v1.35 长文运行错误契约与真实盲用闭环
+
+### 62.1 prepare 的 exit-2 混同、路径泄漏与半成品目录
+
+本轮先从实际 CLI 调用复现，而不是只读源码推断。旧 `prepare_humanize_long_document.py` 在输入不存在时由
+argparse 风格路径退出：OS exit 为 2，和合法业务态 `REVIEW/2` 混同；stderr 会带出完整私有路径；更严重的是，
+输入预检之前已经创建输出目录，留下看似可继续使用的半成品。这三个现象会共同诱发“把输入错误当人工复核”、
+“日志泄露宿主路径”和“残留目录冒充有效 run”三类假闭环。
+
+修复后，输入读取及调用合同错误统一输出去路径化的结构化 `FAIL/1`，并在任何输出写入之前完成输入 `stat()`、
+输出目标存在性、editable wrapper、intensity 与 transaction 合同预检。稳定错误码包括：
+`INPUT_ENCODING_INVALID`、`INPUT_NOT_FOUND`、`INPUT_PERMISSION_DENIED`、`INPUT_JSON_INVALID`、
+`INPUT_READ_FAILED` 和 `INPUT_CONTRACT_INVALID`。真实缺文件复测结果为：
+
+```text
+OS exit_code = 1
+status = FAIL
+delivery_gate_status = FAIL
+publish_state = FAILED
+error_code = INPUT_NOT_FOUND
+output_exists = false
+stderr/private_path_leak = false
+completion claims = false
+```
+
+这只证明运行期错误分类、写前预检和路径抑制已按测试合同生效；不把错误处理可靠性解释为改写质量。
+
+### 62.2 独立长文盲用：流程可用，但候选质量被正确拦截
+
+独立代理使用安装版 Skill，对 `physics2.tex` 第 443–517 行的连续课程讲义材料完成
+`prepare -> scaffold -> 人工填写 bundle -> finalize`。GPT 来源 TeX 仅作为任务输入和压力材料，不作为真人 Voice、
+正向句库或事实证据。源文件保持不变，试验副本位于 `.codex/tmp`。最终结果为：
+
+```text
+prepare = READY
+editable units = 2
+protected spans = 82
+finalize delivery_gate_status = REVIEW
+publish_state = PARTIAL
+exit_code = 2
+DONE = 1
+UNRESOLVED = 1
+source_files_modified = 0
+```
+
+未决单元触发 `SPEECH_ACT_NEGATION_CHANGED` 以及 modality/condition scope 告警。连续原文中的
+“只有先……才不会……”和“只有当……才……”承载否定、必要条件和论证强度；代理候选没有完整保留这些力度。
+因此本例不是 finalizer 的误杀证据，而是 authoring 质量不足被 fail-closed 门识别的正向证据。系统保持
+`humanize_completion_claim_allowed=false`、`coverage_completion_claim_allowed=false` 和
+`full_completion_claim_allowed=false`，没有用 1 个 DONE 掩盖另 1 个 UNRESOLVED。
+
+### 62.3 盲用暴露的可发现性摩擦及修复
+
+盲用首次把 `<empty-rewrites-dir>` 理解成“预先创建的空目录”，而实现安全合同要求目标路径尚不存在；首次还使用
+了裸 `COURSE-*` target signal，finalizer 正确拒绝，合法形式应为 `SCENE-COURSE-*`。这些不是放宽安全门的理由，
+但说明正确用法此前不够容易发现。本轮已完成：
+
+- 文档统一改为 `<nonexistent-rewrites-dir>`，CLI `--output` 明示“该路径必须尚不存在”；
+- scaffold JSON/text 输出公开权威 target signal 前缀和 `STYLE-EMPTY-ENDING`、`SCENE-COURSE-RHYTHM` 示例；
+- 前缀由 finalizer 权威常量提供，避免文档与实现各自维护；
+- 测试锁定 `SCENE-COURSE-RHYTHM` 接受、裸 `COURSE-RHYTHM` 以
+  `rewrite_intent_target_signals_invalid` 拒绝；
+- 测试锁定已存在空目录返回结构化 `FAIL/1`、不泄漏路径、不写入且保持原目录身份；
+- policy snapshot drift 的恢复说明改为：使用当前安装版重新 prepare 到新的 run 目录，旧 run 只保留诊断，
+  不继续 scaffold/finalize。
+
+target signal 语法通过仅表示 authoring 标记可解析，不证明病灶真实、改写有收益或候选可交付。外层执行包装器偶尔把
+子进程 exit 2 显示成笼统失败，属于包装层呈现问题，本轮没有在 Skill 内伪造兼容逻辑。
+
+### 62.4 v1.35 回归与 v67 双投影
+
+```text
+focused prepare/scaffold/finalize = 301 OK (skipped=4)
+full unittest = 1047 OK (skipped=8)
+projection specialty = 44 OK (skipped=1)
+compileall = PASS
+quick_validate = PASS (PYTHONUTF8=1)
+git diff --check = PASS（仅既有 CRLF 提示）
+SKILL.md = 499 lines
+
+primary = build/generator-projection-maturity-v67-v135-20260720
+repro   = build/generator-projection-maturity-v67-v135-20260720-repro
+files = 38 / 38
+path/hash/byte differences = 0
+manifest_bytes = 40739 / 40739
+manifest_raw_byte_equal = true
+
+capability_source_sha256 = a78cbdc394ee9286b37c9bef56b14144c0687d13345e6261ed45a47d40f7fbc4
+evaluation_surface_sha256 = b74a8bfe67251933907ce6e3cddd460d9edd72584628d894ba74d6622e2dec2e
+inventory_sha256 = 1ad4d473d82052245c10a0cf93d169ca651f9e8588930a873c435dc5a46f1ebf
+projection_tree_sha256 = 1769737cc0a86001a02060d4b43504e716654e4eddcf6e233a502dcbf16aa531
+manifest_sha256 = 0662b8fab0985f20a71ca27c7061df61ae19c7c2ef88bbf37507eb34bbacb4c6
+```
+
+全量输出中的 argparse usage 来自故意攻击非法缩写参数的测试，权威结果以最终 `Ran 1047 tests ... OK` 为准。
+上述证据支持 v1.35 当前 capability surface 的错误合同、门控状态和投影复现性；仍不证明自然度、学术正确性、
+作者身份、paired-quality clearance、外部隔离或 generation qualification。
+
+## 59. 2026-07-20：v1.32 完整 run-state 双镜像恢复与虚假提交拦截
+
+### 59.1 v1.31 为什么仍不能承受强杀
+
+v1.31 已把三份 metadata 收敛到 authority group，但 rendered、validation、diff、final ledger、rollback
+manifest 等非 authority 工件仍依赖进程内 `_restore_run_state()`。若进程在删除旧 validation 后、安装新目录前，
+或在 rendered 已发布而 ledger 尚未发布时被强杀，下一次启动没有持久证据判断应保留 base 还是 next。更危险的是，
+早期 run-state v1 只保存 base image；authority pointer 已切到 next 后，仅凭 transaction ID 与 generation 接受
+live 现场，没有证明 live 的非 authority 闭包就是与该 pointer 同代的 next。
+
+独立 journal 红队据此构造了跨代混合、cleanup 绕过、image hash/type 篡改、第三 pointer、nested 前缀误删、
+staging 前缀碰撞和缺 run-state journal 仍发布 authority 等攻击。最初的 v1.32 草案虽通过 205 项 finalizer
+测试，仍被推翻；测试绿色没有被用来替代协议级证据。
+
+### 59.2 `humanize-run-state-journal/v2`
+
+最终协议同时封存两个完整 image：
+
+- `base/`：本次 finalize 开始前的全部非 transient 工件；
+- `next/`：authority pointer 切换前、已经完成候选发布的全部非 transient 工件。
+
+闭包不再只是文件 hash map，而是规范相对路径到严格 descriptor 的映射。文件记录 `bytes + sha256`，目录记录
+`type=directory`，因此空目录和 file/directory 类型变化也进入恢复合同。复制前源、复制后源与 image 三者必须完全
+一致；symlink、junction/reparse point、hardlink 和特殊文件在封存前拒绝。
+
+authority writer 在创建 authority journal、安装 metadata 或替换 commit pointer 之前，必须预检匹配 transaction ID
+的 run-state journal。之后它先生成精确 next authority commit，封存 next image，并把 commit SHA/generation 与
+next closure 写入 run-state journal；只有这些步骤完成后，authority group 才能进入自己的 PREPARED 发布流程。
+因此“缺 journal 时先修复 authority，再报缺失”也被禁止，原崩溃证据保持字节不变。
+
+### 59.3 pointer-selected repair 与 cleanup marker
+
+恢复只允许两个裁决：pointer 精确等于 base commit 时重装 base image；pointer 精确等于已绑定 next commit 时重装
+next image。live 可能因第二次中断处于部分删除、部分复制或其他第三字节态，此时可以由所选密封 image 幂等修复；
+但 pointer 本身属于第三 generation、selected image 缺件、hash/type 漂移、next binding 部分存在或 transaction
+闭包异常时，不覆盖 live，保留 journal/image 并硬失败。
+
+cleanup 也被纳入恢复协议。删除 transaction image 前重新验证 pointer-selected closure，再写入绑定 transaction ID、
+authority pointer SHA 与 selected live closure 的 cleanup marker。journal 删除后，无论 transaction 目录尚未删除、
+删除到一半或已经删除，重启都先验证 marker、pointer 与 live closure，再幂等完成剩余清理。两侧
+`KeyboardInterrupt` 故障注入均已覆盖。
+
+### 59.4 命名空间与 fail-closed 边界
+
+红队发现把 `.humanize-run-state-` 解释为任意路径组件会漏掉普通嵌套工件，例如
+`docs/.humanize-run-state-notes.txt`，恢复时可能永久删除。v1.32 将基础设施语义限定为 run 根目录的首组件，
+取消递归 `copytree` ignore；嵌套同名前缀现在进入 base/next image 并恢复。无 journal 时只把精确
+`.humanize-run-state-<24 位小写十六进制>` 识别为 orphan transaction，宽前缀普通文件不再阻断。
+
+journal/cleanup staging 残留不能仅凭前缀认证。遇到模糊碰撞时保留原文件并 fail closed，不自动删除用户字节。
+这牺牲了对无法认证 staging 残片的自动清理，但避免以恢复名义吞掉普通文件；调用方必须人工审计后再继续。
+
+### 59.5 本轮验证证据
+
+```text
+focused run-state attacks = PASS
+finalizer                 = 216 OK (skipped=2)
+five-module joint         = 368 OK (skipped=5)
+full unittest             = 1032 OK (skipped=8)
+compileall                = PASS
+quick_validate            = PASS (PYTHONUTF8=1)
+latest journal red-team   = no remaining P0/P1
+```
+
+新增测试覆盖 base/next image hash 与类型篡改、第三 pointer 不改 live、next pointer 修复第三 live 闭包、
+CLEANUP 重新校验、transaction 删除前后强杀、nested 前缀保留、staging 碰撞保留、宽 orphan 前缀不误伤、
+缺 journal 不发布 authority，以及已有 authority crash journal 时预检仍保持全部证据不变。
+
+### 59.6 能证明与不能证明的内容
+
+v1.32 证明的是：在受控本地文件系统、单工具锁与非恶意同权限环境中，当前测试覆盖的进程异常和重启路径可以按
+唯一 authority pointer 恢复文件内容、存在性和 file/directory 类型闭包，并拒绝无法裁决的第三状态。它不恢复
+ACL、owner、mtime、xattr、NTFS alternate streams，不抵御恶意同权限写者同时伪造 pointer/journal/images，
+不证明文件系统整体快照未回退，也不把单机故障注入夸大成物理掉电持久顺序证明。
+
+更重要的是，事务可靠性与文风质量仍是正交问题。上述 PASS、1032 项测试、双镜像恢复或投影复现都不证明
+文本更自然、学术论证正确、作者身份真实、paired-quality clearance 已取得或 generation qualification 已完成。
+
+### 59.7 v1.32 双投影发布记录
+
+本轮在 capability source hash 固定后独立生成两份 generator projection：
+
+```text
+primary = build/generator-projection-maturity-v64-v132-20260720
+repro   = build/generator-projection-maturity-v64-v132-20260720-repro
+files   = 38 / 38
+```
+
+两份 manifest 均为 40,739 bytes，原始字节逐字节相等；不是只比较排序后的字段或投影树摘要。共同发布证据为：
+
+```text
+capability_source_sha256 = 122d1f1e811236c3fe6ace95ae31008270acc305f88aad031a036054981dc6ce
+evaluation_surface_sha256 = 053718e614f3ef06b97db97ac1929830f5589bbfdf48a96ffdeb1b2aa3338652
+inventory_sha256 = c1e14b1b7a36baeefb66ae66c7169b43fa19384a43ffee4007488159c5f0ba43
+projection_tree_sha256 = 68cf065ab34b7157ad59dc8672538b89a4dd59b1d1f05ce6eb71ac27a81db47d
+manifest_sha256 = 338c0b4bd386ab28b699b3a553107fb0da872562f00f43972c60e9a9d24097a0
+```
+
+两次构建的路径集合、文件大小、文件 hash 与 manifest bytes 均无差异，manifest 中的 compile、import closure、
+reference closure、quick validate、reparse point、casefold collision、forbidden reference 与 secret-control identifier
+审计均为 `PASS`。这证明当前投影构建在该输入与环境下可复现，并证明投影记录绑定到了同一 capability/evaluation
+surface；它仍不证明投影内生成器产出的文字自然、论文事实正确或具有作者本人身份。
+
+## 60. 2026-07-20：v1.33 真实短文盲测、路径隐私与命令可移植性
+
+### 60.1 盲测推翻机械假完成
+
+独立代理直接使用安装版 Skill 处理 `cet6/test.tex` 第 96—98 行，候选仍保留“顺应了时代的演变”“个人/社会破局的关键”
+和“必须持之以恒地践行这一趋势”，却报告机械验证 PASS。这证明普通词组合成的口号链可以绕过单词级规则，也再次证明
+validator PASS 不能替代连续阅读。v1.33 扩展 `LEX-MARKET-01` 与 `HUM-09`，覆盖“顺应时代发展/演变/潮流/趋势”、
+“个人/社会/行业/组织……破局的关键”和“持之以恒地践行/推进/贯彻”；测试要求组合链至少产生三个 finding，同时保护
+“判断函数单调性的关键……”等专业表达不被误报。
+
+### 60.2 两个 P1 调用链缺口
+
+旧命令 `python scripts/...` 依赖 CWD；在论文目录复制后，Python 找不到脚本返回 OS exit 2，而 Skill 又把 exit 2 定义为
+合法 `REVIEW`。validator 的缺文件、非法 UTF-8、无效 JSON 与调用合同错误此前也可能落入 exit 2。当前全部改为无路径的
+结构化 `FAIL/1`：`INPUT_NOT_FOUND`、`INPUT_PERMISSION_DENIED`、`INPUT_ENCODING_INVALID`、
+`INPUT_JSON_INVALID`、`INPUT_READ_FAILED`、`INPUT_CONTRACT_INVALID`；只有真实业务待复核继续使用 `REVIEW/2`。
+
+旧 detector scope 在成功 JSON 中保存绝对 `report_path/source_path`，异常与输出写入失败也可能泄漏路径。schema 1.1
+未持久化时只输出 `<LOCAL_*_NOT_PERSISTED>`；持久化时仅保存以 scope 父目录为基准的相对 locator。validator 兼容旧绝对
+locator，但对新 locator 强制目录内解析，`../outside.html` 固定失败。读取、边界和写入失败分别使用
+`INPUT_READ_FAILED`、`SCOPE_OUTPUT_BOUNDARY_INVALID`、`SCOPE_OUTPUT_WRITE_FAILED`，不回显路径、文件名或异常正文；
+Voice builder 同样只公开稳定 error code。
+
+### 60.3 命令可移植性与回归门
+
+Skill 先固定 `$skillRoot = Join-Path $HOME '.codex\skills\humanize-academic-chinese'`，SKILL 与全部主要 reference 命令均改为
+`python "$skillRoot\scripts\..."`。静态测试扫描安装版文档，禁止重新出现 `python scripts/`；`SKILL.md` 保持 499 行。
+
+```text
+focused detector/validator/voice/lexicon/skill = 176 OK
+projection/audit/trial/capture                 = 126 OK (skipped=1)
+full unittest                                  = 1042 OK (skipped=8)
+compileall                                     = PASS
+quick_validate                                 = PASS (PYTHONUTF8=1)
+git diff --check                               = PASS（仅既有 CRLF 提示）
+```
+
+### 60.4 v65 双投影
+
+策略版本升至 `1.33.0`，评测合同绑定升至 `2026-07-20.21`，requirements 升至 `2.11.0`，oracle catalog 升至 `1.12.0`。
+
+```text
+primary = build/generator-projection-maturity-v65-v133-20260720
+repro   = build/generator-projection-maturity-v65-v133-20260720-repro
+files = 38 / 38; manifest_bytes = 40739 / 40739; raw_byte_equal = true
+capability_source_sha256 = 20c461d1a425e2f69daf9ded8de746c459b5fcb6cf6c3dffdd734104645c3cc4
+evaluation_surface_sha256 = a90b12e143ca00968adc1d99d3e56c4ceccc15bfc123aa2cb7ee60aa39d8c19b
+inventory_sha256 = 98c3bc542b7a886621f8d4aaa3138ccb4fa59ac40ed39a2be757c5942f025680
+projection_tree_sha256 = e151ddfc81a705d7fc5bde615881db22635d6eb1bc1f2a31ef601a07153d7cec
+manifest_sha256 = d3950036bf0889c5ead933b5661b4f144ba8592675125af67fbd963fc02600f2
+```
+
+两份投影的路径、逐文件字节和 manifest 原始字节完全一致。该证据只证明当前绑定与构建可复现，不证明自然度、学术正确性、
+作者身份、paired-quality clearance 或 generation qualification。
+
+## 61. 2026-07-20：v1.34 Windows UTF-8 CLI 闭环与低误报前向验证
+
+### 61.1 唯一非 UTF-8 `--help` 入口
+
+对安装版 `scripts/*.py --help` 做非 UTF-8 Windows locale 审计时，发现
+`scaffold_humanize_rewrites.py` 是唯一不能由 UTF-8 自动化稳定解码的入口。脚本正文与业务输出虽然使用
+UTF-8，但 argparse 的中文帮助仍继承 Windows 控制台编码；调用方若统一按 UTF-8 捕获，会得到
+`UnicodeDecodeError` 或乱码。该缺口不改变 Humanize 算法，但会破坏跨 CWD、父进程封装和自动化帮助探测，
+因此属于真实 CLI 互操作性问题，不能用“主流程能跑”忽略。
+
+修复在 `main()` 解析参数之前显式把可重配置的 `stdout/stderr` 设为 UTF-8，并新增
+`test_cli_help_is_utf8_from_non_utf8_windows_locale`。全脚本审计结果由修复前唯一失败：
+
+```text
+scaffold_humanize_rewrites.py  0  UnicodeDecodeError
+```
+
+变为：
+
+```text
+all scripts --help non_utf8_help = []
+scaffold tests = 51 OK (skipped=2)
+```
+
+这里的“0”是脚本进程退出码，说明旧状态尤其危险：进程表面成功，但调用方无法可靠读取帮助文本。修复后既要求
+退出码正确，也要求捕获字节可按 UTF-8 严格解码，避免把静默乱码当作成功。
+
+### 61.2 真实段落低误报前向验证
+
+独立代理使用安装版 Skill 处理 `cet6/CET6.tex` 第 50 行“节俭”段落。该 TeX 来源归属为 GPT 生成，故只作为
+任务输入和负例/低误报压力材料，未作为真人 Voice、正向句库、事实证明或 production positive action card。
+
+该段包含三个容易被粗糙“禁词表”误伤的表达：有明确主体和对象的“中国政府持续加强节约型社会的建设”、
+有明确宾语的“推进资源循环利用”，以及必须逐字保护的直接引语“光盘行动”。实际结果为：
+
+```text
+scanner findings = 0
+protected quote ranges = 1
+mechanical_validation_status = PASS
+delivery_gate_status = REVIEW
+OS exit_code = 2
+paired_quality_review_status = PENDING_EXTERNAL_REVIEW
+academic_correctness = NOT_EVALUATED
+```
+
+连续阅读只定位到“理念/生活方式/生活理念”和“节约型社会的建设”的局部复用；候选把第一处政策动作改为
+“持续推进节约型社会建设”，保留持续性、主体和对象，并原样保留“推进资源循环利用”和完整引语。该例支持
+一个有限结论：当前规则没有把“持续/推进”机械设为禁词，能够在这个具体段落中保留有对象的正常政策动作。
+它不证明所有同类表达都不会误报，也不证明改后段落已经比原文自然；paired-quality 仍待可信外部复核。
+
+### 61.3 未形成证据的长文前向尝试
+
+长文 usability 前向代理两次因平台 `stream disconnected` 中止，没有产出可重放任务记录。该现象既不记为
+Skill 缺陷，也不记为 Skill 通过：平台断连没有证明脚本、规则、长文 finalizer 或生成质量的任何一方状态。
+因此 v1.34 只归档已实际形成原始产物的短文低误报结果；长文实用性仍保留为后续待测面。
+
+### 61.4 v1.34 回归门
+
+`scaffold_humanize_rewrites.py` 属 capability surface，策略版本和 builder 同步升至 `1.34.0`，并重算 capability
+source。当前验证结果为：
+
+```text
+full unittest                         = 1043 OK (skipped=8)
+projection specialty                 = 44 OK (skipped=1)
+compileall                            = PASS
+quick_validate                        = PASS (PYTHONUTF8=1)
+git diff --check                      = PASS（仅既有 CRLF 提示）
+all scripts --help non_utf8_help      = []
+SKILL.md                              = 499 lines
+```
+
+全量测试中的 argparse usage 文本来自故意攻击非法参数的用例，不是失败；权威结论以最终
+`Ran 1043 tests ... OK (skipped=8)` 为准。
+
+### 61.5 v66 双投影复现
+
+在 capability source 固定后独立生成：
+
+```text
+primary = build/generator-projection-maturity-v66-v134-20260720
+repro   = build/generator-projection-maturity-v66-v134-20260720-repro
+files = 38 / 38
+path/hash/byte differences = 0
+manifest_bytes = 40739 / 40739
+manifest_raw_byte_equal = true
+
+capability_source_sha256 = d1fe8f8901af8a0949d7b4f369c463db25671c315b444fec0caf6c1167a2d378
+evaluation_surface_sha256 = 4ec4182a32c0413527c23e62b95d335876cd809b8007b9d469530b452ae0ecec
+inventory_sha256 = d7993a8ad917bf7a98ab62101e46037460f936b056f565a95d4d9eff90a69ed1
+projection_tree_sha256 = 489d391508f2c1df312c1218b33c1701cf380bf2a04f6bdecb69bfbcef1a0594
+manifest_sha256 = c143128c2878029eb2d13c956e953065d79e95de6d29dafb3ffa9a3e66d770db
+```
+
+manifest 内 compile、import closure、reference closure、quick validate、reparse point、casefold collision、
+forbidden reference 与 secret-control identifier 审计均为 `PASS`。这组证据只证明当前 v1.34 capability/evaluation
+surface 的构建闭包可重复；不证明自然度、学术正确性、作者身份、paired-quality clearance、外部隔离或
+generation qualification。
+
+## 63. 2026-07-20：v1.36 TeX 保护边界、引语、命令参数与错误输入红队
+
+### 63.1 `$$...$$` 与 `$...$` 相邻时的数学遮罩越界
+
+长文前向样本在同一段中连续出现 display math 的 closing `$$`、中文正文和多个 inline math。旧 inline-math
+正则只禁止起始 `$` 的后邻也是 `$`，没有禁止前邻 `$`；因此 closing `$$` 的第二个字符会被误认成新 inline
+math 起点。真实后果不是单纯多保护一个符号，而是同时破坏两侧边界：后续 `F = 6t`、微分项等公式裸露在
+`masked_text` 中，可被生成器改写；从错误起点到后续某个 `$` 之间的中文“将力”“一并代入”等反而被吞入
+保护跨度，失去可编辑性。
+
+修复把 inline math 起点改为同时要求前后都不邻接 `$`：
+
+```text
+(?<![\\$])\$(?!\$)...(?<!\\)\$(?!\$)
+```
+
+新增 `test_adjacent_display_and_inline_math_do_not_cross_mask_boundaries`，并用
+`%USERPROFILE%\.codex\tmp\v136_long_forward\input.tex` 重新执行 prepare。修复前错误地生成 53 个保护跨度；
+修复后为 48 个，chunks 中不再出现裸露的 `F = 6t`，而相邻中文仍留在可编辑正文。保护跨度数量下降本身不是
+正确性证明；决定性证据是每个公式回到数学保护区、相邻中文不再被跨界吞并，以及对应回归测试直接锁定该交界。
+
+### 63.2 多行中文直接引语不得按行拆散
+
+旧中文单双引号、`「」`、`『』` 保护匹配受单行边界限制。红队把跨行引语内部“乙项”改成“丙项”后，hard 与
+mechanical 都可能 PASS，顶层仅因 paired-quality pending 保持 REVIEW；这意味着硬不变量没有真正识别引语漂移，
+不能把 REVIEW 当作已拦截该攻击。修复后 scanner 将跨行成对引号识别为一个完整 protected span，invariant checker
+对前后引语内容做逐字比较。真实复测结果为：
+
+```json
+{"case":"multiline_quote","status":"FAIL","exit_code":1,"hard":"FAIL","codes":["DIRECT_QUOTATION_CHANGED"]}
+```
+
+新增的 scanner 与 validator 测试分别证明“保护跨度完整”和“改写被硬拒绝”，避免只测其中一层。
+
+### 63.3 自定义引用包装器和普通 TeX 命令参数默认全保护
+
+旧逻辑偏重已知 citation/critical command 名单，导致两个可操作绕过：把
+`\mycite{potter1994cooperative,de1995evolving}` 的第二个 key 换掉，或把 `\textbf{甲项}` 改为
+`\textbf{乙项}`，hard/mechanical 均可能 PASS。前者能静默改变文献身份，后者说明普通 TeX 参数也没有被纳入
+默认结构不变量。
+
+当前 prepare 会解析所有 TeX 控制序列及其连续 `[]/{}` 参数，支持多可选参数、多必选参数与嵌套组，并把完整
+调用作为保护跨度；invariant checker 使用同一更宽的命令调用模型比较前后结构。自定义名称以 `cite` 结尾时还会
+进入 citation 识别，但保护不再依赖它是否命中 citation 名单。两类真实攻击修复后均为：
+
+```json
+{"status":"FAIL","exit_code":1,"hard":"FAIL","codes":["CRITICAL_LATEX_COMMAND_CHANGED"]}
+```
+
+唯一显式例外是用户在 prepare 时用 `--editable-style-wrapper` 授权 `textbf`、`emph` 或 `textit` 的包装格式清理；
+默认不传时仍全保护。该授权只开放包装命令，不开放 citation、标题、标签、数学，也不赋予改变内部文字语义的权限。
+finalizer 的 fragment、transaction 和 full-document invariant 均继续传递同一授权清单，防止 prepare 开放而
+收尾阶段误用不同合同。
+
+### 63.4 空泛 finding 豁免不再成为通行口令
+
+旧 keep-reason 校验没有覆盖“此处表达功能需要保留”这一类看似完整、实则没有指出主体、语境、术语义或具体
+功能的理由。红队可用该句让 high finding 从 REVIEW 降为 PASS。当前 vague-reason 规则显式拒绝“此处/这里/该处/
+本处/此项/该项 + 表达/内容/语句 + 功能需要/应当/必须保留”等变体，并由
+`test_keep_reason_requires_specific_chinese_reason` 锁定。豁免仍允许，但必须给出可审计的具体语境理由；该门只
+证明理由不为空泛，不证明理由真实，可信复核仍不能由提交者自签。
+
+### 63.5 decision-map 输入失败统一 `FAIL/1` 且不泄漏路径
+
+scaffold 旧路径在 `--decision-map C:\private-user\secret-map.json` 缺失时会原样回显完整本地路径。当前新增
+`ScaffoldInputFailure`，把输入面分成六个稳定错误码：
+
+```text
+DECISION_MAP_NOT_FOUND
+DECISION_MAP_PERMISSION_DENIED
+DECISION_MAP_READ_FAILED
+DECISION_MAP_ENCODING_INVALID
+DECISION_MAP_JSON_INVALID
+DECISION_MAP_CONTRACT_INVALID
+```
+
+上述情况全部固定为 `FAIL/1`、`paths_redacted=true`、`completion_claim_allowed=false`，不回显路径或异常正文。
+测试覆盖缺失、权限错误、一般 OSError、非法 UTF-8、非法 JSON、非对象、重复键和路径泄漏；`REVIEW/2` 继续只表示
+真实业务待复核，不能再被输入读取错误占用。
+
+### 63.6 transaction 回归根因与修复
+
+本轮扩展 editable wrapper 传递后，`_validate_structural_transaction()` 已新增形参
+`editable_style_wrappers`，但内部 fragment validator 一度错误引用函数作用域外的
+`run_metadata["editable_style_wrappers"]`，造成 26 个 transaction/replay 测试统一 `NameError`。这不是 26 个
+独立缺陷，也不能用局部 wrapper 测试绿色掩盖。内部调用改为使用该函数形参；外层 `_finalize_locked()` 仍从冻结
+run metadata 传入授权清单。修复后 transaction/replay 专项 225 项全部通过（跳过 3 项）。
+
+### 63.7 回归门与 v68 双投影
+
+```text
+transaction + replay specialty       = 225 OK (skipped=3)
+math/quote/TeX/reason/scaffold focus  = 212 OK (skipped=2)
+full unittest                         = 1055 OK (skipped=8)
+projection specialty                  = 44 OK (skipped=1)
+compileall                            = PASS
+quick_validate                        = PASS (PYTHONUTF8=1)
+git diff --check                      = PASS（仅既有 CRLF 提示）
+SKILL.md                              = 499 lines
+
+primary = build/generator-projection-maturity-v68-v136-20260720
+repro   = build/generator-projection-maturity-v68-v136-20260720-repro
+files = 38 / 38; path differences = 0; raw byte differences = 0
+manifest_bytes = 40739 / 40739; manifest_raw_byte_equal = true
+policy_version = 1.36.0
+capability_source_sha256 = 55a7844acaf044cf321816d695e34b9bcc2b840631576201f8c6351f5c4441f1
+evaluation_surface_sha256 = bf5a18d9add9c83396bc8c027c224b7f9544862e97b19fe5eafa994c8b1ccb80
+inventory_sha256 = d409c63614101c6c35586c050f201db82d6df63749d4fc5843e0e58eab21c985
+derived_artifact_sha256 = 1804375333ea69a3a633270fb4dd5e7ba13b4c72b98c2729838a0253e36ba87b
+builder_executable_sha256 = a620d9b01ec90fbeafcbb684195a920757eb604abc43d13a9ee176d2c622cae4
+projection_tree_sha256 = 1f13267d8b7399f5ee70a4f01d33ec27a04e24418609bceb9e0a68a2a7255375
+manifest_sha256 = 98f5b8e11b6dc94e94ccb986afe49094b01e12a0b488a40e565c85b071c358ec
+```
+
+本轮证据证明的是六个具体攻击面已被当前机械合同捕获、错误态不再伪装成 REVIEW、transaction 参数合同已恢复，
+以及 v1.36 的 38 文件投影可以逐字节复现。它不证明生成文本自然，不证明改后优于改前，不证明学术事实正确，
+不证明作者身份，也不授予 paired-quality clearance、结构语义 clearance 或 generation qualification。GPT/未知来源
+TeX 只作为负例与压力材料；不能反向进入真人 Voice 或正向句库。整体成熟化目标继续 active，后续仍需新的独立盲用和
+对抗样本寻找尚未编码的保护边界与自然度失效。
+
+## 64. 2026-07-20：v1.37 行内代码与跨行数学的 authoring 前置保护
+
+### 64.1 “末端会拒绝”不能替代“前端不暴露”
+
+v1.36 的 invariant checker 已把 `\verb`、`\lstinline` 和 verbatim 环境作为代码比较，但长文 prepare 的
+`masked_text` 使用 scanner 保护语法。两层语法并不完全一致：旧 prepare 只把 `\verb`/`\lstinline` 命令 token
+替换为占位符，分隔符和代码载荷仍直接交给 authoring 模型。真实旧工件
+`%USERPROFILE%\.codex\tmp\v137_local_tex_probe\run\chunks\U-5392f137e507.json` 中出现：
+
+```text
+[[PROTECTED:...]]|token_甲=1|
+[[PROTECTED:...]]!print([[PROTECTED:...]])!
+```
+
+第二行内部 ASCII 引语被另一个 quote span 遮罩，但 `print`、分隔符和其余代码仍裸露。final validator 可能在模型
+改动后用 `PROTECTED_CODE_CHANGED` 拒绝，不代表 prepare 已保护；暴露会浪费生成回合、诱发不可交付候选，也违反
+“代码不进入文风改写”的 authoring 边界。
+
+### 64.2 行内 verb 语法覆盖
+
+共享 scanner 新增 `latex-inline-verbatim` span，并与 invariant checker 对齐，覆盖：
+
+- `\verb|...|` 与星号形式；
+- fancyvrb 的大小写敏感 `\Verb+...+`；
+- `\lstinline!…!`；
+- `\lstinline[language=Python]!…!` 等可选参数形式。
+
+实现没有把 `\verb` 的 `[...]` 误作可选参数：`\verb` 与 `\lstinline` 使用两个独立正则分支，因为前者允许 `[` 本身
+充当 delimiter，而后者才有 option group。prepare 的通用 TeX command span 与新的 inline-verbatim span 合并后，
+完整命令、选项、分隔符和载荷成为一个保护跨度；validator 同样比较完整代码跨度。长文工作流保护表同步明确
+`\verb/\Verb/\lstinline（含可选参数）` 全部保护。
+
+### 64.3 跨行 inline math 与反斜杠奇偶
+
+旧 scanner 的 `$...$` 内容显式排除换行，且只要 `$` 紧邻任意反斜杠就当成已转义；invariant checker 则允许跨行并
+按连续反斜杠奇偶判断转义。两个具体结果是：合法跨行 `$F=ma\n+G$` 的第二行可暴露，TeX 换行命令后的
+`\\$H=mc$` 也可能因第二个反斜杠紧邻 `$` 而漏识别。
+
+v1.37 允许 inline math span 跨行，并增加偶数反斜杠起点分支；单个 `\$` 仍作为字面 dollar，不误判为数学。
+新测试同时检查 scanner span 和 prepare masked view，invariant 继续承担改后硬比较。这里保护 `\\$...$` 时会把紧邻
+的换行控制序列与公式合并为一个 span；这是保守扩大，不赋予 authoring 修改换行命令的权限。
+
+### 64.4 真实 prepare 前向复测
+
+扩展后的 fixture 同时包含普通 `\verb`、`\lstinline`、带 option 的 `\lstinline`、`Verbatim` 环境、跨行数学和
+偶数反斜杠数学。修复后
+`%USERPROFILE%\.codex\tmp\v137_local_tex_probe\run-fixed2\protected_spans.jsonl` 形成 7 个保护跨度，其中：
+
+```text
+\verb|token_甲=1|                              latex-inline-verbatim
+\lstinline!print("乙项")!                      latex-inline-verbatim
+\lstinline[language=Python]!token_丁=2!        latex-inline-verbatim
+$F=ma\n+G$                                     inline-math
+\\$H=mc$                                       latex-inline-math-even-escape
+```
+
+对 chunks 搜索 `token_甲/token_丁/print/F=ma/G$/H=mc` 的结果为 0；环境外中文仍保留在 `masked_text`，没有因扩大
+保护而把后续说明吞掉。该前向只证明这些具体载荷没有进入 authoring view，不证明任意自定义 verb 宏都能识别。
+
+### 64.5 独立代理证据边界
+
+本轮曾分别启动 TeX 边界、低误报和真实长文盲用三个只读代理。两个代理明确因平台 `429 Too Many Requests` 退出，
+长文代理也没有留下可重放结果；因此三项均记为 `NOT_EVALUATED`，既不归因于 Skill 缺陷，也不记为 Skill 通过。
+本节的修复依据只来自本地主代理可重放 fixture、旧/新 chunks 和测试，不使用“代理已测”作为支持。
+
+### 64.6 回归门与 v69 双投影
+
+```text
+invariant/scanner/prepare/projection focus = 199 OK (skipped=1)
+full unittest                              = 1061 OK (skipped=8)
+compileall                                 = PASS
+quick_validate                             = PASS (PYTHONUTF8=1)
+task-scope git diff --check                = PASS（仅 CRLF 提示）
+whole-repo git diff --check                = BLOCKED_BY_UNRELATED_CHANGE
+unrelated finding                         = physics2.tex:453 trailing whitespace
+SKILL.md                                   = 499 lines
+
+primary = build/generator-projection-maturity-v69-v137-20260720
+repro   = build/generator-projection-maturity-v69-v137-20260720-repro
+files = 38 / 38; path differences = 0; raw byte differences = 0
+manifest_bytes = 40739 / 40739; manifest_raw_byte_equal = true
+policy_version = 1.37.0
+capability_source_sha256 = 00d1f795bbdf78ef64701664c963f89e124c4e9b4c03d641f51740655d416bc2
+evaluation_surface_sha256 = 36c18da3aa479fa48db354d522e5c9c3dbba9b15205b5db100eb5bb4fb7396ed
+inventory_sha256 = 9509d2bc19e0461bc2a4f157717118cc36401c098eb2c575a07163241875b72a
+derived_artifact_sha256 = 1804375333ea69a3a633270fb4dd5e7ba13b4c72b98c2729838a0253e36ba87b
+builder_executable_sha256 = 441a016353cbaa89d66349e70423d3738ed49bbc83a65af581dccb1aebffb0c5
+projection_tree_sha256 = 9bfbd602bcfd384ef4aa08e2aa1a9eb54a23d53f8cfa0b3a2c2581905593a598
+manifest_sha256 = ab1aad8ccc50ae9546dd33e4a190d34099a110f144c9862afc97f69fb6dc7ad4
+```
+
+本轮只证明五种已编码行内字面量/数学边界在 scanner、prepare 与 invariant 三层的一致性，以及 v1.37 capability
+投影可重复。它不证明自定义 verb 宏、宏展开后的环境、catcode 改写或任意 TeX 引擎语法都被解析；本工具仍不是完整
+TeX 解释器。它也不证明自然度、改后优于改前、学术正确性、作者身份、paired-quality clearance、结构语义 clearance
+或 generation qualification。整体成熟化继续 active。

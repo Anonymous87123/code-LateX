@@ -367,7 +367,7 @@ class HumanizeValidationCaptureTests(unittest.TestCase):
                 )
                 record = Path(payload["capture_record"])
                 all_bytes = b"\n".join(self.tree_bytes(record).values())
-                self.assertEqual(2, payload["observed_os_exit_code"])
+                self.assertEqual(1, payload["observed_os_exit_code"])
                 self.assertNotIn(str(after).encode("utf-8"), all_bytes)
                 self.assertNotIn(after.name.encode("utf-8"), all_bytes)
                 self.assertNotIn(

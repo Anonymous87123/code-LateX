@@ -418,49 +418,83 @@ E=\frac{\lambda}{2\pi\varepsilon_0a}
 设圆环半径为 \(R\)；总电荷为 \(q\)；位于 \(yz\) 平面；圆心为 \(O\)；场点 \(P\) 位于 \(x\) 轴上，距离圆心为 \(x\)。求点$P$处的场强。
 \end{exercise}
 \begin{solution}
-
+在圆环上取一个小电荷元 \(dq\)。由于圆环上每个点到 \(P\) 的距离相等\(s=\sqrt{x^2+R^2}\)，电荷元产生的电场大小为\(dE=k\frac{dq}{s^2}\)，由于圆环具有旋转对称性，垂直于 \(x\) 轴的分量全部抵消，沿 \(x\) 轴的分量相加。因此\[dE_x=dE\cos\theta=k\frac{dq}{s^2}\frac{x}{s}=k\frac{x\,dq}{s^3}=k\frac{x\,dq}{(x^2+R^2)^{3/2}}\]因为分母和 \(x\) 对整个圆环都是相同的：\[E_x=k\frac{x}{(x^2+R^2)^{3/2}}\int dq
+=k\frac{qx}{(x^2+R^2)^{3/2}},~~\boxed{\mathbf E=\frac{1}{4\pi\varepsilon_0}\frac{qx}{(x^2+R^2)^{3/2}}\mathbf i}\]当\(x=0\)有\(E=0\)，这是因为圆环上各个方向的电场完全抵消。当\(x\gg R\)时，有\((x^2+R^2)^{3/2}=x^3\left(1+\frac{R^2}{x^2}\right)^{3/2}\approx x^3\)，因此\(E\approx
+\frac{1}{4\pi\varepsilon_0}\frac{q}{x^2}\)，远处看圆环，就像一个总电荷为 \(q\) 的点电荷。
+求导：
+\[E_x=k\frac{qx}{(x^2+R^2)^{3/2}}\implies\frac{dE_x}{dx}=kq\frac{R^2-2x^2}{(x^2+R^2)^{5/2}}
+\implies R^2-2x^2=0,x=\pm\frac{\sqrt2}{2}R\]
 \end{solution}
 
+\begin{exercise}
+设圆盘半径为 \(R_0\)；面电荷密度为 \(\sigma\)；场点 \(P\) 位于圆盘轴线上；场点距离圆心为 \(x\)。求点$P$处的场强。
+\end{exercise}
+\begin{solution}
+取半径为 \(R\)、宽度为 \(dR\) 的细圆环。该细圆环的面积为\(dS=2\pi R\,dR\)，所以电荷量为\(dq=\sigma dS
+=\sigma 2\pi R\,dR\)，场点到这个细圆环上任一点的距离为\(s=\sqrt{x^2+R^2}\)，根据圆环电场公式，该细圆环在轴向产生的电场为\[dE_x=k\frac{x\,dq}{(x^2+R^2)^{3/2}}=\frac{1}{4\pi\varepsilon_0}\frac{x(2\pi\sigma R\,dR)}{(x^2+R^2)^{3/2}}=\frac{\sigma x}{2\varepsilon_0}\frac{R\,dR}{(x^2+R^2)^{3/2}}
+\]从圆心处的 \(R=0\) 积分到圆盘边缘 \(R=R_0\)：
+\[E=\frac{\sigma x}{2\varepsilon_0}\int_0^{R_0}\frac{R\,dR}{(x^2+R^2)^{3/2}}=\frac{\sigma}{2\varepsilon_0}\left(1-\frac{x}{\sqrt{x^2+R_0^2}}\right)\]这个表达式默认场点在圆盘的 \(x>0\) 一侧。若在另一侧，方向相反。当\(x\ll R_0\)时有\(\sqrt{x^2+R_0^2}\approx R_0\)，于是\(\frac{x}{\sqrt{x^2+R_0^2}}\approx0\)，所以\(E\approx\frac{\sigma}{2\varepsilon_0}\)，当圆盘很小、场点很远时，即当\(x\gg R_0\)时，有\(\frac{x}{\sqrt{x^2+R_0^2}}=\frac{1}{\sqrt{1+R_0^2/x^2}}\)，利用近似：
+\[(1+u)^{-1/2}\approx1-\frac u2\implies 1-\frac{x}{\sqrt{x^2+R_0^2}}\approx\frac{R_0^2}{2x^2}
+\implies E\approx\frac{\sigma R_0^2}{4\varepsilon_0x^2}\]
+圆盘总电荷为\(q=\sigma\pi R_0^2\)，所以\[
+\boxed{
+E\approx
+\frac{1}{4\pi\varepsilon_0}
+\frac{q}{x^2}
+}
+\]也就是说，远处的带电圆盘也可以近似成一个点电荷。
+\end{solution}
 
+\section{电通量与高斯定理}
 
-\textbf{这一定义出现之前，真正的卡点是：} 受力大小明明既取决于源电荷，也取决于你塞进去的试探电荷，那怎样把“空间本身的影响”单独拎出来？最自然的办法就是把试探电荷受力除以它自己的电荷量，这样随试探电荷改变而变的那一部分被剥掉了，剩下的就是该点空间真正留给任何单位正电荷的作用强度。
-
-\begin{definition}[电场强度]
-把一个足够小的正试探电荷 \(q_0\) 放在空间某点，若它受力为 \(\vb*{F}\)，则该点电场强度定义为
- \(\vb*{E}=\frac{\vb*{F}}{q_0}.\) 
+\begin{definition}[面积矢量]
+  为了处理方向问题，物理学中不仅把面积看作一个数 \(S\)，还定义面积矢量：
+\[
+\boxed{\mathbf S=S\mathbf e_n}
+\]其中：
+\(S\) 是面的面积；\(\mathbf e_n\) 是面的法向单位矢量；\(\mathbf e_n\) 的方向垂直于这个面；\(\mathbf e_n\) 的大小为 1。因此$\vec{S}$的大小是面积 \(S\)，方向是面的法线方向。
+对于一个平面，法线方向有两个相反的选择，所以面积矢量也有两个可能方向。
 \end{definition}
 
-这一定义的关键不在于“除以一个电荷量”，而在于把“某个具体试探电荷受多大力”改写成“该点空间本身有什么性质”。于是不同试探电荷放到同一点时，虽然受力不同，但\(\vb*{E}\) 这个空间属性不变；变化的只是 \(q_0\)。
+\begin{definition}[电场线与电通量]
+  穿过电场中某一个面的电场线数，叫做这个面的电场强度通量，简称电通量（这里的“电场线数”是一种直观说法。电场线越密的地方，电场越强；穿过一个面的电场线越多，电通量越大）。电通量通常用希腊字母表示\(\Phi_e\)，下标 \(e\) 表示 electric，也就是电的。
+  \begin{enumerate}
+    \item 若电场 \(\mathbf E\) 垂直穿过这个平面，则均匀电场穿过平面的电通量\(\Phi_e=ES\)，如果电场不再垂直于平面，而是与平面的法线方向有夹角 \(\theta\)，那么真正穿过平面的电场，是电场在法线方向上的分量\(E_n=E\cos\theta\)，因此电通量为\[\Phi_e=E_n\vec{S}=ES\cos\theta\]当\(\theta<90^\circ\)时\(\cos\theta>0\)，所以\(\cos\theta>0\)；当\(\theta>90^\circ\)时此时\(\cos\theta<0\)，所以\(\Phi_e<0\)，表示电场穿过曲面的方向与面积法向量相反。如果题目给的是电场与“平面本身”的夹角 \(\alpha\)，那么由于 \(\alpha\) 和 \(\theta\) 互余有\(\theta=\frac{\pi}{2}-\alpha\)，因此\[\Phi_e=ES\cos\theta=ES\sin\alpha\]
+    \item 任意曲面的电通量：把任意曲面分割成许多很小的面元\(dS\)，每一个很小的面元都可以近似看成平面。对这个小面元定义面积矢量\(d\mathbf S=dS\mathbf e_n\)（其中 \(\mathbf e_n\) 是该面元的法向单位矢量），如果这个面元处的电场为 \(\mathbf E\)，电场和法向量的夹角为 \(\theta\)，那么穿过这个面元的电通量为：\[d\Phi_e=E\cos\theta\,dS=\mathbf E\cdot d\mathbf S\]把所有面元的电通量加起来，就得到整个曲面的电通量：\[\Phi_e=\int_S d\Phi_e=\int_S E\cos\theta\,dS=\int_S\mathbf E\cdot d\mathbf S\]注意：这时一般不能把 \(E\)、\(\theta\) 和 \(S\) 直接提出积分号，因为曲面上不同位置的电场强度可能不同；曲面的法线方向不断变化；电场与法线的夹角也随位置变化。
+  \end{enumerate}
+\end{definition}
 
-对点电荷 \(Q\) 建立的电场，
- \(\vb*{E} =\frac{1}{4\pi\varepsilon_0}\frac{Q}{r^2}\vb*{e}_r.\) 
-若 \(Q>0\)，场线从电荷向外发散；若 \(Q<0\)，场线向内汇聚。
-
-\begin{remark}
-这时再回头看受力公式 \(\vb*{F}=q\vb*{E}\)，你就会发现静电题常分成两步：先求源电荷建立的 \(\vb*{E}\)，再让被研究电荷去“乘上去”。这种把“造场”和“受场作用”分开的习惯，是学电磁学最值得尽早养成的习惯之一。
-\end{remark}
-
-\section{叠加原理与连续带电体：为什么要积分}
-
-电场满足\textbf{叠加原理}：若空间某点的电场来自多个电荷，则总电场等于各个电荷单独产生电场的矢量和，
- \(\vb*{E}=\sum_i \vb*{E}_i.\) 
-
-对离散点电荷，这只是矢量求和；对连续带电体，就变成把每个微元电荷 \(dq\) 产生的微元电场 \(d\vb*{E}\) 做积分：
- \(d\vb*{E} =\frac{1}{4\pi\varepsilon_0}\frac{dq}{r^2}\vb*{e}_r, \qquad \vb*{E}=\int d\vb*{E}.\) 
-
-连续分布问题可以按四步展开：
-\begin{enumerate}
- \item 先选电荷元 \(dq\)；
- \item 再写它到场点的距离 \(r\) 与方向；
- \item 把 \(d\vb*{E}\) 分解到合适的坐标方向；
- \item 最后靠对称性先消掉一部分分量，再做积分。
-\end{enumerate}
-
+\begin{theorem}[高斯定理]
+在真空中，通过任意闭合曲面的电场强度通量，等于该闭合曲面所包围的全部电荷的代数和除以真空介电常数
+\[\boxed{\oint_S\mathbf E\cdot d\mathbf S=\frac{Q_{\mathrm{in}}}{\varepsilon_0}}\]如果闭合曲面内有多个电荷$Q_{\mathrm{in}}=\sum_iq_i$，于是：\[\boxed{\oint_S\mathbf E\cdot d\mathbf S=\frac1{\varepsilon_0}\sum_iq_i^{\mathrm{in}}}\]这里的电荷必须带符号：正电荷取正；负电荷取负。
+\end{theorem}
 \begin{note}
-\textbf{为什么大学物理里的电场积分看起来总在“先分解再积分”？} 因为电场是矢量。很多几何结构中，真正好算的不是 \(\int \abs{d\vb*{E}}\)，而是某个方向上的 \(\int dE_x\)、\(\int dE_y\)。先让对称性帮你把无关分量消掉，往往比盲目硬积更重要。
+高斯定理为什么成立？先考虑一个点电荷 \(q\) 位于球面中心。半径为 \(r\) 的球面上，电场大小处处相同：\(E=\frac{1}{4\pi\varepsilon_0}\frac{q}{r^2}\)，球面上任意面积元的法线方向都沿半径方向，因此
+\[\Phi_e=\oint_S\mathbf E\cdot d\mathbf S
+=E\oint_SdS=
+\frac{1}{4\pi\varepsilon_0}
+\frac{q}{r^2}\cdot4\pi r^2=
+\frac{q}{\varepsilon_0}
+\]注意这里 \(r^2\) 和球面积中的 \(r^2\) 恰好抵消，所以只要点电荷被闭合曲面包围，无论曲面多大，通量都不变。如果把球面变形成任意闭合曲面，只要电荷始终在曲面内部，电场线穿出曲面的总数仍然不会改变，因此通量仍然是\(\frac q{\varepsilon_0}\)。
+\begin{enumerate}
+  \item 如果点电荷 \(q\) 在闭合曲面 \(S\) 内：\[\boxed{\Phi_e=\frac q{\varepsilon_0}}\]无论闭合曲面是球面、立方体还是不规则形状，结果都一样。
+  \item 
+\end{enumerate}
 \end{note}
 
-\section{电场线、电通量与高斯定理的思路}
+\begin{exercise}
+给出一个三棱柱体，处在均匀电场中，例如：
+\[
+\mathbf E=200\mathbf i\ \mathrm{N/C}
+\]要求通过这个三棱柱表面的总电通量。
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.3\textwidth]{pdf-exercises/23.png}
+\end{figure}
+\end{exercise}
+\begin{solution}
+由于电场是均匀的，并且三棱柱内部没有电荷，根据高斯定理，最终总电通量应该为零。
+\end{solution}
 
 为了更直观地描述电场，教材常引入\textbf{电场线}：在任一点上，场线的切线方向就是该点 \(\vb*{E}\) 的方向；场线疏密反映场强大小。它不是实际存在的绳子，而是帮助我们读场分布的可视化工具。
 

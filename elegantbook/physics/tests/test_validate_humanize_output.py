@@ -45,6 +45,30 @@ class HumanizeOutputValidatorTests(unittest.TestCase):
         after_path.write_text(after, encoding="utf-8")
         return before_path, after_path
 
+    def test_cli_missing_input_is_structured_fail_not_review_or_path_leak(self) -> None:
+        private_root = self.root / "Alice" / "PrivateProject"
+        missing_before = private_root / "student-name-before.md"
+        missing_after = private_root / "student-name-after.md"
+        completed = subprocess.run(
+            [
+                sys.executable,
+                str(SCRIPT),
+                str(missing_before),
+                str(missing_after),
+                "--format",
+                "json",
+            ],
+            check=False,
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+        )
+        payload = json.loads(completed.stdout)
+        self.assertEqual(1, completed.returncode)
+        self.assertEqual("FAIL", payload["delivery_gate_status"])
+        self.assertEqual("INPUT_NOT_FOUND", payload["error_code"])
+        self.assertNotIn(str(private_root), completed.stdout + completed.stderr)
+
     def report_scope(self, source: Path, selections: list[str]) -> Path:
         source_text = source.read_bytes().decode("utf-8-sig")
         for selection in selections:
@@ -452,6 +476,41 @@ class HumanizeOutputValidatorTests(unittest.TestCase):
             {item["code"] for item in payload["invariants"]["errors"]},
         )
 
+    def test_rewrite_rejects_multiline_quote_content_change(self) -> None:
+        before, after = self.pair(
+            "作者写道：“第一行保留。\n第二行是乙项。”\n",
+            "作者写道：“第一行保留。\n第二行是丙项。”\n",
+        )
+        payload = validator.validate(before, after, mode="REWRITE", scene="GENERAL")
+        self.assertEqual("FAIL", payload["hard_invariant_layer_status"])
+        self.assertIn(
+            "DIRECT_QUOTATION_CHANGED",
+            {item["code"] for item in payload["invariants"]["errors"]},
+        )
+
+    def test_rewrite_rejects_custom_citation_and_style_command_argument_changes(self) -> None:
+        cases = (
+            (
+                r"材料见 \mycite{potter1994cooperative,de1995evolving}。",
+                r"材料见 \mycite{potter1994cooperative,omidvar2021review}。",
+            ),
+            (r"结论为 \textbf{甲项}。", r"结论为 \textbf{乙项}。"),
+        )
+        for before_text, after_text in cases:
+            with self.subTest(before_text=before_text):
+                before, after = self.pair(before_text, after_text, suffix=".tex")
+                payload = validator.validate(
+                    before,
+                    after,
+                    mode="REWRITE",
+                    scene="RESEARCH",
+                )
+                self.assertEqual("FAIL", payload["hard_invariant_layer_status"])
+                self.assertIn(
+                    "CRITICAL_LATEX_COMMAND_CHANGED",
+                    {item["code"] for item in payload["invariants"]["errors"]},
+                )
+
     def test_report_scope_binds_rewrite_to_unique_selection_ranges(self) -> None:
         before, after = self.pair(
             "开头保持。\n\n标注一表述生硬。\n\n中间保持。\n\n标注二表述冗长。\n\n结尾保持。\n",
@@ -511,6 +570,37 @@ class HumanizeOutputValidatorTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "non-finite JSON number: NaN"):
             validator.validate(before, after, scene="GENERAL", report_scope_path=scope)
 
+    def test_report_scope_replays_artifact_relative_report_locator(self) -> None:
+        before, after = self.pair("标注段表述生硬。", "标注段表述自然。")
+        report = self.root / "report.html"
+        scope = self.root / "report_scope.json"
+        report.write_text("<mark>标注段表述生硬。</mark>", encoding="utf-8")
+        payload = validator.detector_scope.analyze_report(report, before)
+        payload["report_path"] = "report.html"
+        payload["source_path"] = "before.md"
+        payload["path_base"] = "SCOPE_ARTIFACT_PARENT"
+        scope.write_text(json.dumps(payload, ensure_ascii=False), encoding="utf-8")
+
+        result = validator.validate(
+            before,
+            after,
+            scene="GENERAL",
+            report_scope_path=scope,
+        )
+        self.assertEqual("PASS", result["report_scope_check"]["status"])
+
+    def test_report_scope_rejects_relative_locator_escape(self) -> None:
+        before, after = self.pair("标注段表述生硬。", "标注段表述自然。")
+        scope = self.report_scope(before, ["标注段表述生硬。"])
+        payload = json.loads(scope.read_text(encoding="utf-8"))
+        payload["report_path"] = "../outside.html"
+        payload["source_path"] = "before.md"
+        payload["path_base"] = "SCOPE_ARTIFACT_PARENT"
+        scope.write_text(json.dumps(payload, ensure_ascii=False), encoding="utf-8")
+
+        with self.assertRaisesRegex(ValueError, "escapes its artifact root"):
+            validator.validate(before, after, scene="GENERAL", report_scope_path=scope)
+
     def test_report_scope_rejects_forged_ranges_that_do_not_replay_from_report(self) -> None:
         before, after = self.pair(
             "开头保持。\n\n标注段表述生硬。\n\n结尾保持。\n",
@@ -534,6 +624,22 @@ class HumanizeOutputValidatorTests(unittest.TestCase):
         self.assertEqual("REVIEW", payload["style_signal_layer_status"])
         self.assertEqual("REVIEW", payload["delivery_gate_status"])
         self.assertEqual(1, payload["lexical_summary"]["unexplained_high_candidates"])
+
+    def test_trend_breakthrough_slogan_chain_cannot_be_delivered_as_clean_pass(self) -> None:
+        before, after = self.pair(
+            "给定首句。这不仅顺应了时代的演变，更是个人/社会破局的关键。因此，我们必须持之以恒地践行这一趋势。",
+            "给定首句之后，说明这一趋势既顺应了时代的演变，也是个人/社会破局的关键。因此，我们必须持之以恒地践行这一趋势。",
+        )
+        payload = validator.validate(before, after, scene="COURSE")
+        market = [
+            item
+            for item in payload["unexplained_high_findings"]
+            if item["signal_id"] == "LEX-MARKET-01"
+        ]
+        self.assertGreaterEqual(len(market), 3)
+        self.assertEqual("REVIEW", payload["style_signal_layer_status"])
+        self.assertEqual("REVIEW", payload["delivery_gate_status"])
+        self.assertFalse(payload["humanize_quality_claim_allowed"])
 
     def test_required_style_shell_deletions_do_not_deadlock_speech_act_gate(self) -> None:
         cases = (
@@ -988,9 +1094,12 @@ class HumanizeOutputValidatorTests(unittest.TestCase):
             encoding="utf-8",
             env={**os.environ, "PYTHONUTF8": "1"},
         )
-        self.assertEqual(2, retired.returncode)
-        self.assertIn("identity metadata is retired", retired.stderr)
-        self.assertNotIn("external-reviewer-label", retired.stderr)
+        self.assertEqual(1, retired.returncode)
+        retired_payload = json.loads(retired.stdout)
+        self.assertEqual("FAIL", retired_payload["delivery_gate_status"])
+        self.assertEqual("INPUT_CONTRACT_INVALID", retired_payload["error_code"])
+        self.assertNotIn("external-reviewer-label", retired.stdout)
+        self.assertEqual("", retired.stderr)
 
     def test_cli_retired_accept_warning_is_rejected_even_with_human_label(self) -> None:
         before, after = self.pair("结果可能变化。", "结果发生变化。")
@@ -1015,8 +1124,12 @@ class HumanizeOutputValidatorTests(unittest.TestCase):
             encoding="utf-8",
             env={**os.environ, "PYTHONUTF8": "1"},
         )
-        self.assertEqual(2, completed.returncode)
-        self.assertIn("--accept-warning is retired", completed.stderr)
+        self.assertEqual(1, completed.returncode)
+        payload = json.loads(completed.stdout)
+        self.assertEqual("FAIL", payload["delivery_gate_status"])
+        self.assertEqual("INPUT_CONTRACT_INVALID", payload["error_code"])
+        self.assertNotIn("external-reviewer-label", completed.stdout)
+        self.assertEqual("", completed.stderr)
 
     def test_unknown_or_vague_warning_resolution_is_rejected(self) -> None:
         with self.assertRaises(ValueError):
@@ -1484,6 +1597,10 @@ class HumanizeOutputValidatorTests(unittest.TestCase):
             validator._parse_keep_reasons(["LEX-COACH-01=确认保留"], valid)
         with self.assertRaises(ValueError):
             validator._parse_keep_reasons(["LEX-COACH-01=这是一个具体理由"], valid)
+        with self.assertRaises(ValueError):
+            validator._parse_keep_reasons(
+                ["LEX-COACH-01=此处表达功能需要保留"], valid
+            )
         before, after = self.pair("这张表必须牢记。", "这张表必须牢记。")
         with self.assertRaises(ValueError):
             validator.validate(
