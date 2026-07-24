@@ -51,8 +51,11 @@ class HumanizeInlineRunnerTests(unittest.TestCase):
     def test_run_materializes_unique_artifacts_and_preserves_top_level_review(self) -> None:
         first, first_dir = self.run_candidate()
         second, second_dir = self.run_candidate()
+        verification, body = inline.verify_run(first_dir)
 
         self.assertNotEqual(first_dir, second_dir)
+        self.assertEqual("humanize-inline-run/v2", first["schema_version"])
+        self.assertEqual("humanize-inline-verification/v2", verification["schema_version"])
         self.assertEqual("INLINE_TEXT", first["source_kind"])
         self.assertEqual("VALIDATED", first["execution_status"])
         self.assertEqual("PASS", first["mechanical_validation_status"])
@@ -60,6 +63,8 @@ class HumanizeInlineRunnerTests(unittest.TestCase):
         self.assertEqual(2, first["exit_code"])
         self.assertFalse(first["completion_claim_allowed"])
         self.assertTrue(first["body_emission_allowed"])
+        self.assertEqual("NOT_EVALUATED", verification["chat_transport_byte_identity_status"])
+        self.assertEqual(self.after.read_bytes(), body)
         self.assertTrue((first_dir / "evidence" / "evidence-manifest.json").is_file())
         self.assertEqual(
             self.before.read_bytes(),
@@ -178,6 +183,164 @@ class HumanizeInlineRunnerTests(unittest.TestCase):
         self.assertEqual("FAIL", verification["status"])
         self.assertIn("artifact_sha256_mismatch:evidence_manifest", verification["reason"])
         self.assertIsNone(body)
+
+    def test_tampered_evidence_child_artifact_fails_closed(self) -> None:
+        _record, run_dir = self.run_candidate()
+        (run_dir / "evidence" / "inputs" / "after.bin").write_bytes(
+            "被篡改的证据。\n".encode("utf-8")
+        )
+
+        verification, body = inline.verify_run(run_dir)
+
+        self.assertEqual("FAIL", verification["status"])
+        self.assertIn("evidence_artifact_hash_mismatch:inputs/after.bin", verification["reason"])
+        self.assertIsNone(body)
+
+    def test_unmanifested_evidence_file_or_directory_fails_closed(self) -> None:
+        for extra_kind in ("file", "directory"):
+            with self.subTest(extra_kind=extra_kind):
+                _record, run_dir = self.run_candidate()
+                extra = run_dir / "evidence" / f"unexpected-{extra_kind}"
+                if extra_kind == "file":
+                    extra.write_text("unexpected", encoding="utf-8")
+                else:
+                    extra.mkdir()
+
+                verification, body = inline.verify_run(run_dir)
+
+                self.assertEqual("FAIL", verification["status"])
+                self.assertIn("evidence_inventory_mismatch", verification["reason"])
+                self.assertIsNone(body)
+
+    def test_validator_payload_cross_field_inconsistency_is_rejected(self) -> None:
+        record, run_dir = self.run_candidate()
+        validation = json.loads((run_dir / "validation.json").read_text(encoding="utf-8"))
+        arguments = {
+            "process_exit_code": record["validator_process_exit_code"],
+            "before_sha256": record["artifacts"]["before"]["sha256"],
+            "after_sha256": record["artifacts"]["after"]["sha256"],
+            "mode": record["mode"],
+            "scene": record["scene"],
+        }
+        cases = (
+            ("status", "PASS", "validator_status_delivery_mismatch"),
+            (
+                "delivery_gate_exit_code",
+                0,
+                "validator_delivery_exit_code_mismatch",
+            ),
+            ("scene", "GENERAL", "validator_invocation_context_mismatch"),
+        )
+        for field, value, reason in cases:
+            with self.subTest(field=field):
+                candidate = json.loads(json.dumps(validation, ensure_ascii=False))
+                candidate[field] = value
+                with self.assertRaisesRegex(inline.InlineRunError, reason):
+                    inline._validate_payload(candidate, **arguments)
+
+    def test_compact_diagnostics_expose_actionable_codes(self) -> None:
+        diagnostics = inline._summarize_validation(
+            {
+                "mechanical_validation_status": "FAIL",
+                "review_reasons": ["hard_invariant_failed"],
+                "invariants": {
+                    "errors": [{"code": "NUMBER_OR_UNIT_CHANGED"}]
+                },
+                "warnings_without_resolution_proposal": [
+                    {"code": "SPEECH_ACT_REPORTING_OBSERVATION_CHANGED"}
+                ],
+                "unexplained_high_findings": [{"signal_id": "LEX-META-01"}],
+                "introduced_findings": [{"signal_id": "LEX-BRIDGE-02"}],
+            }
+        )
+
+        self.assertEqual("STOP_HARD_FAILURE", diagnostics["next_action"])
+        self.assertEqual(
+            ["NUMBER_OR_UNIT_CHANGED"], diagnostics["hard_error_codes"]
+        )
+        self.assertEqual(
+            ["SPEECH_ACT_REPORTING_OBSERVATION_CHANGED"],
+            diagnostics["pending_warning_codes"],
+        )
+        self.assertEqual(["LEX-META-01"], diagnostics["unexplained_high_signal_ids"])
+        self.assertEqual(["LEX-BRIDGE-02"], diagnostics["introduced_signal_ids"])
+
+    def test_tampered_diagnostics_or_response_contract_fails_closed(self) -> None:
+        for field in ("diagnostics", "response_contract"):
+            with self.subTest(field=field):
+                _record, run_dir = self.run_candidate()
+                record_path = run_dir / "run.json"
+                payload = json.loads(record_path.read_text(encoding="utf-8"))
+                if field == "diagnostics":
+                    payload[field]["next_action"] = "UNTRUSTED_ACTION"
+                else:
+                    payload[field]["chat_transport_byte_identity_status"] = "PASS"
+                record_path.write_text(
+                    json.dumps(payload, ensure_ascii=False, sort_keys=True) + "\n",
+                    encoding="utf-8",
+                )
+
+                verification, body = inline.verify_run(run_dir)
+
+                self.assertEqual("FAIL", verification["status"])
+                self.assertIsNone(body)
+
+    def test_visible_body_attestation_passes_only_for_exact_bytes(self) -> None:
+        _record, run_dir = self.run_candidate(visible_output="BODY_ONLY")
+        visible = self.root / "visible-response.md"
+        visible.write_bytes(self.after.read_bytes())
+
+        attestation = inline.attest_visible_body(run_dir, visible)
+
+        self.assertEqual("humanize-visible-delivery-attestation/v1", attestation["schema_version"])
+        self.assertEqual("PASS", attestation["attestation_status"])
+        self.assertEqual(0, attestation["exit_code"])
+        self.assertTrue(attestation["byte_identity"])
+        self.assertEqual("REVIEW", attestation["candidate_delivery_gate_status"])
+        self.assertEqual(2, attestation["candidate_delivery_gate_exit_code"])
+        self.assertFalse(attestation["candidate_completion_claim_allowed"])
+        self.assertEqual(
+            "CALLER_SUPPLIED_RESPONSE_BYTES_ONLY", attestation["attestation_scope"]
+        )
+        self.assertEqual(
+            "NOT_EVALUATED", attestation["chat_transport_byte_identity_status"]
+        )
+        self.assertEqual("NOT_EVALUATED", attestation["ui_rendering_status"])
+
+    def test_visible_body_attestation_detects_dropped_terminal_newline(self) -> None:
+        _record, run_dir = self.run_candidate(visible_output="BODY_ONLY")
+        visible = self.root / "visible-response.md"
+        visible.write_text("峰值出现在高温组。", encoding="utf-8")
+
+        attestation = inline.attest_visible_body(run_dir, visible)
+
+        self.assertEqual("FAIL", attestation["attestation_status"])
+        self.assertEqual(1, attestation["exit_code"])
+        self.assertFalse(attestation["byte_identity"])
+        self.assertFalse(attestation["terminal_line_ending_matches"])
+        self.assertNotEqual(
+            attestation["expected_sha256"], attestation["observed_sha256"]
+        )
+
+    def test_attest_cli_reports_exact_file_scope_without_quality_claim(self) -> None:
+        _record, run_dir = self.run_candidate(visible_output="BODY_ONLY")
+        visible = self.root / "visible-response.md"
+        visible.write_bytes(self.after.read_bytes())
+
+        completed = subprocess.run(
+            [sys.executable, str(SCRIPT), "attest", str(run_dir), str(visible)],
+            check=False,
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+        )
+        payload = json.loads(completed.stdout)
+
+        self.assertEqual(0, completed.returncode)
+        self.assertEqual("PASS", payload["attestation_status"])
+        self.assertTrue(payload["byte_identity"])
+        self.assertFalse(payload["candidate_completion_claim_allowed"])
+        self.assertEqual("NOT_EVALUATED", payload["chat_transport_byte_identity_status"])
 
     def test_draft_can_emit_mechanically_clear_candidate_without_quality_claim(self) -> None:
         self.before.write_text(

@@ -85,9 +85,12 @@ class HumanizeAcademicChineseSkillTests(unittest.TestCase):
         for token in (
             "run_humanize_inline.py\" run",
             "run_humanize_inline.py\" emit",
+            "run_humanize_inline.py attest",
             "BODY_ONLY",
             "mechanical_validation_status",
             "delivery_gate_status",
+            "diagnostics",
+            "NOT_EVALUATED",
             "验证后任何字节变化",
         ):
             self.assertIn(token, skill)
@@ -97,9 +100,13 @@ class HumanizeAcademicChineseSkillTests(unittest.TestCase):
         )
         checklist = (REFERENCES / "quick-checklist.md").read_text(encoding="utf-8")
         prompt = (REFERENCES / "system-prompt-contract.md").read_text(encoding="utf-8")
-        for text in (operational, checklist, prompt):
+        workflow = (REFERENCES / "workflow.md").read_text(encoding="utf-8")
+        for text in (operational, checklist, prompt, workflow):
             self.assertIn("run_humanize_inline.py", text)
             self.assertIn("BODY_ONLY", text)
+            self.assertIn("attest <run-dir>", text)
+            self.assertIn("diagnostics", text)
+            self.assertIn("NOT_EVALUATED", text)
             self.assertIn("不得", text)
 
     def test_user_facing_commands_do_not_depend_on_current_working_directory(self) -> None:

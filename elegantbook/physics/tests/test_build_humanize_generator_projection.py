@@ -83,7 +83,7 @@ class HumanizeGeneratorProjectionTests(unittest.TestCase):
         self.assertEqual("PASS", result["audits"]["skill_quick_validate"])
         self.assertFalse(result["audits"]["read_only_marking_is_isolation_proof"])
 
-    def test_v53_inline_lifecycle_reaches_projection(self) -> None:
+    def test_v54_inline_lifecycle_and_attestation_reach_projection(self) -> None:
         _result, output, _manifest = self.build()
         runner = (output / "scripts" / "run_humanize_inline.py").read_text(
             encoding="utf-8"
@@ -95,9 +95,16 @@ class HumanizeGeneratorProjectionTests(unittest.TestCase):
 
         self.assertIn("def run_inline(", runner)
         self.assertIn("def verify_run(", runner)
+        self.assertIn("def attest_visible_body(", runner)
+        self.assertIn("humanize-inline-run/v2", runner)
+        self.assertIn("humanize-visible-delivery-attestation/v1", runner)
         self.assertIn("run_humanize_inline.py\" run", projected_skill)
         self.assertIn("run_humanize_inline.py\" emit", projected_skill)
+        self.assertIn("run_humanize_inline.py attest", projected_skill)
         self.assertIn("BODY_ONLY", projected_contract)
+        self.assertIn("CALLER_SUPPLIED_RESPONSE_BYTES_ONLY", runner)
+        self.assertIn("chat_transport_byte_identity_status", runner)
+        self.assertIn("attest <run-dir>", projected_contract)
         self.assertIn("任何改字", projected_contract)
 
     def test_v34_source_conflict_and_draft_unitization_contract_reach_projection(self) -> None:
