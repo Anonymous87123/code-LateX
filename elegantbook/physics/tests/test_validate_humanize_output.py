@@ -23,6 +23,9 @@ FORWARD_V4_FIXTURES = Path(__file__).parent / "fixtures" / "humanize_forward_v4"
 GOLD_FIXTURES = Path(__file__).parent / "fixtures" / "humanize_gold"
 FORWARD_V5_FIXTURES = Path(__file__).parent / "fixtures" / "humanize_forward_v5"
 FORWARD_V10_FIXTURES = Path(__file__).parent / "fixtures" / "humanize_forward_v10"
+COURSE_VOICE_FLATTENING_FIXTURES = (
+    Path(__file__).parent / "fixtures" / "humanize_course_voice_flattening"
+)
 SPEC = importlib.util.spec_from_file_location("validate_humanize_output", SCRIPT)
 assert SPEC is not None and SPEC.loader is not None
 validator = importlib.util.module_from_spec(SPEC)
@@ -110,6 +113,112 @@ class HumanizeOutputValidatorTests(unittest.TestCase):
             self.assertEqual(changes, len(request["changes"]))
         return request
 
+    def template_field_scope(
+        self,
+        before: Path,
+        edits: list[tuple[int, str]],
+        *,
+        name: str = "template-field-edit-scope.json",
+    ) -> Path:
+        path = self.root / name
+        payload = {
+            "schema_version": "humanize-template-field-edit-scope/v1",
+            "source_sha256": validator._sha256(before.read_bytes()),
+            "edits": [
+                {
+                    "line": line,
+                    "label": label,
+                    "permission": "PAYLOAD_ONLY",
+                    "reason": "用户明确授权修复原句表达，同时保持字段范围、语气和功能不变。",
+                }
+                for line, label in edits
+            ],
+        }
+        path.write_text(
+            json.dumps(payload, ensure_ascii=False, indent=2) + "\n",
+            encoding="utf-8",
+        )
+        return path
+
+    @staticmethod
+    def v1518_template_pair_text() -> tuple[str, str]:
+        before = "\n".join(
+            (
+                "适用题目： 积极的、普遍认可的趋势（如：环保生活、终身学习、乐于助人、数字技能、团队精神、扎实基础、独立性、自律、实践等）。",
+                "逻辑链条： 给定首句。这不仅顺应了时代的演变，更是个人/社会破局的关键。因此，我们必须持之以恒地践行/推进这一趋势。",
+                "适用题目： 带有焦虑、局限、困境、或者负面担忧的题目（如：外貌焦虑、选择过剩、老年人数字鸿沟、AI冲击人类创造力、信息爆炸、剧烈竞争等）。",
+                "逻辑链条： 给定首句。这种现代文明的副作用如果任其蔓延，将会侵蚀我们的生活质量/创新活力。鉴于此，当务之急是采取理性审慎的举措加以扭转。",
+                "适用题目： 强调两者同等重要、需要沟通、或者在特定平台进行多维度探索的题目（如：真实社交与虚拟网络、分歧中的友好讨论、学术与实践并重、大学探索多种可能性、社交媒体责任、师生共同成长、中国梦与个人价值等）。",
+                "逻辑链条： 给定首句。它精准地勾勒出复杂时代下我们需要维持的动态平衡。因此，在紧拥新兴时代红利的同时，绝不能抛弃传统的根基或理性约束。",
+            )
+        ) + "\n"
+        after = "\n".join(
+            (
+                "适用题目： 积极且普遍受到认可的趋势（如：环保生活、终身学习、乐于助人、数字技能、团队精神、扎实基础、独立性、自律、实践等）。",
+                "逻辑链条： 围绕给定首句展开，说明这一趋势不仅顺应时代发展，也能成为个人/社会突破现实困境的关键。因此，我们必须持之以恒地践行/推进这一趋势。",
+                "适用题目： 涉及焦虑、局限、困境或负面担忧的话题（如：外貌焦虑、选择过剩、老年人数字鸿沟、AI冲击人类创造力、信息爆炸、剧烈竞争等）。",
+                "逻辑链条： 围绕给定首句展开，说明这种现代文明的副作用如果任其蔓延，将会侵蚀我们的生活质量/创新活力。鉴于此，当务之急是采取理性审慎的举措加以扭转。",
+                "适用题目： 强调两者同等重要、需要沟通，或要求在特定平台进行多维度探索的话题（如：真实社交与虚拟网络、分歧中的友好讨论、学术与实践并重、大学探索多种可能性、社交媒体责任、师生共同成长、中国梦与个人价值等）。",
+                "逻辑链条： 围绕给定首句展开，说明它勾勒出复杂时代中需要维持的动态平衡。因此，在把握新兴时代红利的同时，绝不能抛弃传统根基或理性约束。",
+            )
+        ) + "\n"
+        return before, after
+
+    def synthetic_course_transition_window(
+        self,
+        *,
+        char_width: int,
+        line_count: int,
+    ) -> list[dict]:
+        starts = [0, 200, 400, char_width - 2]
+        lines = [1, 8, 16, line_count]
+        transition_ids = [
+            "COURSE-FLAT-01",
+            "COURSE-FLAT-02",
+            "COURSE-FLAT-03",
+            "COURSE-FLAT-05",
+        ]
+        families = [
+            "bounded_directness",
+            "teaching_attention",
+            "contrast_emphasis",
+            "relation_fit",
+        ]
+        output = []
+        for index, (start, line, transition_id, family) in enumerate(
+            zip(starts, lines, transition_ids, families),
+            1,
+        ):
+            span = {
+                "char_start": start,
+                "char_end": start + 2,
+                "line": line,
+                "end_line": line,
+            }
+            output.append(
+                {
+                    "occurrence_id": f"CVF-SYNTHETIC-{index}",
+                    "transition_id": transition_id,
+                    "family": family,
+                    "change_id": f"CHANGE-{min(index, 3)}",
+                    "section_binding": {
+                        "before": {
+                            "ordinal": 1,
+                            "level": 1,
+                            "heading_sha256": "a" * 64,
+                        },
+                        "after": {
+                            "ordinal": 1,
+                            "level": 1,
+                            "heading_sha256": "a" * 64,
+                        },
+                    },
+                    "removed": dict(span),
+                    "introduced": dict(span),
+                }
+            )
+        return output
+
     def test_safe_rewrite_passes_with_hash_evidence(self) -> None:
         before, after = self.pair("值得注意的是，峰值出现在高温组。", "峰值出现在高温组。")
         payload = validator.validate(before, after, scene="RESEARCH")
@@ -122,6 +231,309 @@ class HumanizeOutputValidatorTests(unittest.TestCase):
         self.assertRegex(payload["evidence"]["before_sha256"], r"^[0-9a-f]{64}$")
         self.assertEqual("NOT_PROVIDED", payload["evidence"]["protected_terms"]["status"])
         self.assertEqual("DOCUMENT", payload["evidence"]["document_scope"])
+
+    def test_template_field_header_change_is_fail_one_even_with_payload_authorization(self) -> None:
+        cases = {
+            "label": (
+                "适用题目： 积极趋势。\n逻辑链条： 围绕给定首句展开。\n",
+                "适用话题： 积极趋势。\n逻辑链条： 围绕给定首句展开。\n",
+            ),
+            "separator": (
+                "适用题目： 积极趋势。\n逻辑链条： 围绕给定首句展开。\n",
+                "适用题目: 积极趋势。\n逻辑链条： 围绕给定首句展开。\n",
+            ),
+        }
+        for name, (before_text, after_text) in cases.items():
+            with self.subTest(name=name):
+                before, after = self.pair(before_text, after_text, suffix=".tex")
+                scope = self.template_field_scope(
+                    before,
+                    [(1, "适用题目")],
+                    name=f"header-{name}.json",
+                )
+
+                payload = validator.validate(
+                    before,
+                    after,
+                    scene="COURSE",
+                    template_field_edit_scope_path=scope,
+                )
+
+                self.assertEqual("FAIL", payload["status"])
+                self.assertEqual(1, payload["exit_code"])
+                self.assertEqual("FAIL", payload["hard_invariant_layer_status"])
+                self.assertEqual("FAIL", payload["template_field_layer_status"])
+                self.assertEqual("FAIL", payload["mechanical_validation_status"])
+                self.assertEqual(
+                    "BLOCKED_BY_MECHANICAL_GATE",
+                    payload["paired_quality_review_status"],
+                )
+                self.assertIn(
+                    "TEMPLATE_FIELD_HEADER_CHANGED",
+                    {item["code"] for item in payload["invariants"]["errors"]},
+                )
+                finding = next(
+                    item
+                    for item in payload["template_field_findings"]
+                    if item["code"] == "TEMPLATE_FIELD_HEADER_CHANGED"
+                )
+                self.assertEqual("HEADER_CHANGE_NOT_AUTHORIZABLE", finding["authorization_status"])
+
+    def test_unscoped_template_field_payload_edit_requires_mechanical_review(self) -> None:
+        before, after = self.pair(
+            "适用题目： 积极的、普遍认可的趋势。\n",
+            "适用题目： 积极且普遍受到认可的趋势。\n",
+            suffix=".tex",
+        )
+
+        payload = validator.validate(before, after, scene="COURSE")
+
+        self.assertEqual("REVIEW", payload["status"])
+        self.assertEqual(2, payload["exit_code"])
+        self.assertEqual("PASS", payload["hard_invariant_layer_status"])
+        self.assertEqual("PASS", payload["speech_act_layer_status"])
+        self.assertEqual("PASS", payload["style_signal_layer_status"])
+        self.assertEqual("REVIEW", payload["template_field_layer_status"])
+        self.assertEqual("REVIEW", payload["mechanical_validation_status"])
+        self.assertEqual(
+            "BLOCKED_BY_MECHANICAL_GATE",
+            payload["paired_quality_review_status"],
+        )
+        self.assertEqual("N/A", payload["template_field_edit_scope_check"]["status"])
+        self.assertEqual(1, len(payload["template_field_findings"]))
+        finding = payload["template_field_findings"][0]
+        self.assertEqual("TEMPLATE_FIELD_PAYLOAD_EDIT_UNAUTHORIZED", finding["code"])
+        self.assertEqual("NOT_AUTHORIZED", finding["authorization_status"])
+        self.assertEqual([], finding["change_types"])
+
+    def test_exact_template_field_payload_authorization_passes_mechanical_gate_but_not_delivery(self) -> None:
+        before, after = self.pair(
+            "适用题目： 积极的、普遍认可的趋势。\n",
+            "适用题目： 积极且普遍受到认可的趋势。\n",
+            suffix=".tex",
+        )
+        scope = self.template_field_scope(before, [(1, "适用题目")])
+
+        payload = validator.validate(
+            before,
+            after,
+            scene="COURSE",
+            template_field_edit_scope_path=scope,
+        )
+
+        request = self.assert_paired_quality_review(
+            payload,
+            decision="REWRITE",
+            changes=1,
+        )
+        self.assertEqual("PASS", payload["hard_invariant_layer_status"])
+        self.assertEqual("PASS", payload["speech_act_layer_status"])
+        self.assertEqual("PASS", payload["style_signal_layer_status"])
+        self.assertEqual("PASS", payload["template_field_layer_status"])
+        self.assertEqual("PASS", payload["mechanical_validation_status"])
+        self.assertEqual("PASS", payload["template_field_edit_scope_check"]["status"])
+        self.assertEqual(1, payload["template_field_edit_scope_check"]["authorized_edit_count"])
+        self.assertFalse(payload["template_field_edit_scope_check"]["local_clearance_supported"])
+        self.assertEqual(1, len(payload["template_field_findings"]))
+        finding = payload["template_field_findings"][0]
+        self.assertEqual("TEMPLATE_FIELD_PAYLOAD_EDIT_AUTHORIZED", finding["code"])
+        self.assertEqual("info", finding["severity"])
+        self.assertEqual("AUTHORIZED_PAYLOAD_ONLY", finding["authorization_status"])
+        self.assertEqual([], finding["change_types"])
+        self.assertEqual(payload["template_field_findings"], request["template_field_changes"])
+
+    def test_v1518_authorization_does_not_clear_force_applicability_or_role_drift(self) -> None:
+        before_text, after_text = self.v1518_template_pair_text()
+        before, after = self.pair(before_text, after_text, suffix=".tex")
+        scope = self.template_field_scope(
+            before,
+            [
+                (1, "适用题目"),
+                (2, "逻辑链条"),
+                (3, "适用题目"),
+                (4, "逻辑链条"),
+                (5, "适用题目"),
+                (6, "逻辑链条"),
+            ],
+        )
+
+        payload = validator.validate(
+            before,
+            after,
+            scene="COURSE",
+            template_field_edit_scope_path=scope,
+        )
+
+        self.assertEqual("REVIEW", payload["delivery_gate_status"])
+        self.assertEqual(2, payload["exit_code"])
+        self.assertEqual("PASS", payload["hard_invariant_layer_status"])
+        self.assertEqual("REVIEW", payload["template_field_layer_status"])
+        self.assertEqual("REVIEW", payload["mechanical_validation_status"])
+        self.assertEqual(
+            "BLOCKED_BY_MECHANICAL_GATE",
+            payload["paired_quality_review_status"],
+        )
+        self.assertEqual(6, payload["template_field_edit_scope_check"]["authorized_edit_count"])
+
+        by_line = {
+            int(item["source_line"]): item
+            for item in payload["template_field_findings"]
+            if "source_line" in item
+        }
+        self.assertEqual({1, 2, 3, 4, 5, 6}, set(by_line))
+        for line in (1, 4, 6):
+            self.assertEqual("TEMPLATE_FIELD_PAYLOAD_EDIT_AUTHORIZED", by_line[line]["code"])
+            self.assertEqual([], by_line[line]["change_types"])
+
+        self.assertEqual("TEMPLATE_FIELD_ROLE_OR_FORCE_DRIFT", by_line[2]["code"])
+        self.assertIn("ASSERTION_FORCE_WEAKENED", by_line[2]["change_types"])
+
+        self.assertEqual("TEMPLATE_FIELD_ROLE_OR_FORCE_DRIFT", by_line[3]["code"])
+        self.assertIn("APPLICABILITY_OBJECT_CHANGED", by_line[3]["change_types"])
+        self.assertIn("APPLICABILITY_PREDICATE_CHANGED", by_line[3]["change_types"])
+
+        self.assertEqual("TEMPLATE_FIELD_ROLE_OR_FORCE_DRIFT", by_line[5]["code"])
+        self.assertIn("APPLICABILITY_OBJECT_CHANGED", by_line[5]["change_types"])
+        self.assertIn("CLASSIFICATION_TO_READER_INSTRUCTION_DRIFT", by_line[5]["change_types"])
+
+    def test_template_field_scope_rejects_stale_sha_duplicate_keys_unknown_label_and_duplicate_line(self) -> None:
+        before, after = self.pair(
+            "适用题目： 积极趋势。\n",
+            "适用题目： 积极且稳健的趋势。\n",
+            suffix=".tex",
+        )
+        source_sha = validator._sha256(before.read_bytes())
+        base_edit = {
+            "line": 1,
+            "label": "适用题目",
+            "permission": "PAYLOAD_ONLY",
+            "reason": "用户明确授权修复原句表达，同时保持字段范围和功能不变。",
+        }
+
+        stale = self.root / "stale-template-scope.json"
+        stale.write_text(
+            json.dumps(
+                {
+                    "schema_version": "humanize-template-field-edit-scope/v1",
+                    "source_sha256": "0" * 64,
+                    "edits": [base_edit],
+                },
+                ensure_ascii=False,
+            ),
+            encoding="utf-8",
+        )
+        with self.assertRaisesRegex(ValueError, "source_sha256 does not match before"):
+            validator.validate(before, after, template_field_edit_scope_path=stale)
+
+        duplicate_key = self.root / "duplicate-key-template-scope.json"
+        duplicate_key.write_text(
+            "{"
+            '"schema_version":"humanize-template-field-edit-scope/v1",'
+            f'"source_sha256":"{source_sha}",'
+            f'"source_sha256":"{source_sha}",'
+            '"edits":[{'
+            '"line":1,"label":"适用题目","permission":"PAYLOAD_ONLY",'
+            '"reason":"用户明确授权修复原句表达，同时保持字段范围和功能不变。"'
+            "}]}\n",
+            encoding="utf-8",
+        )
+        with self.assertRaisesRegex(ValueError, "duplicate JSON key"):
+            validator.validate(before, after, template_field_edit_scope_path=duplicate_key)
+
+        unknown_label = self.root / "unknown-label-template-scope.json"
+        unknown_payload = {
+            "schema_version": "humanize-template-field-edit-scope/v1",
+            "source_sha256": source_sha,
+            "edits": [{**base_edit, "label": "适用话题"}],
+        }
+        unknown_label.write_text(
+            json.dumps(unknown_payload, ensure_ascii=False),
+            encoding="utf-8",
+        )
+        with self.assertRaisesRegex(ValueError, "label is unknown"):
+            validator.validate(before, after, template_field_edit_scope_path=unknown_label)
+
+        duplicate_line = self.root / "duplicate-line-template-scope.json"
+        duplicate_line.write_text(
+            json.dumps(
+                {
+                    "schema_version": "humanize-template-field-edit-scope/v1",
+                    "source_sha256": source_sha,
+                    "edits": [base_edit, dict(base_edit)],
+                },
+                ensure_ascii=False,
+            ),
+            encoding="utf-8",
+        )
+        with self.assertRaisesRegex(ValueError, "duplicates source line 1"):
+            validator.validate(before, after, template_field_edit_scope_path=duplicate_line)
+
+    def test_given_first_sentence_template_text_is_not_misparsed_as_an_extra_field(self) -> None:
+        text = (
+            "给定首句： Learning is a lifelong journey.\n"
+            "逻辑链条： 给定首句。围绕该句说明持续学习的作用。\n"
+        )
+        before, after = self.pair(text, text, suffix=".tex")
+
+        payload = validator.validate(before, after, scene="COURSE")
+
+        self.assertEqual("PASS", payload["template_field_layer_status"])
+        self.assertEqual([], payload["template_field_findings"])
+        self.assertEqual(0, payload["template_field_summary"]["finding_count"])
+
+    def test_template_field_vocabulary_in_plain_prose_does_not_enter_field_contract(self) -> None:
+        before, after = self.pair(
+            "这个题目带有焦虑色彩，关键处更是需要说明；本文也讨论“适用题目：焦虑类”这一标签。",
+            "这个话题涉及焦虑，关键处也能说明；本文仍讨论“适用题目：焦虑类”这一标签。",
+        )
+
+        payload = validator.validate(before, after, scene="COURSE")
+
+        self.assertEqual("PASS", payload["template_field_layer_status"])
+        self.assertEqual([], payload["template_field_findings"])
+        self.assertNotIn(
+            "template_field_authorization_or_role_drift",
+            payload["review_reasons"],
+        )
+
+    def test_markdown_fenced_code_field_shape_is_not_a_template_field(self) -> None:
+        before, after = self.pair(
+            "```text\n适用题目： 伪造字段原值。\n```\n正文保持不变。\n",
+            "```text\n适用题目： 伪造字段改值。\n```\n正文保持不变。\n",
+        )
+
+        payload = validator.validate(before, after, scene="GENERAL")
+
+        self.assertEqual("PASS", payload["template_field_layer_status"])
+        self.assertEqual([], payload["template_field_findings"])
+        self.assertNotIn(
+            "TEMPLATE_FIELD_HEADER_CHANGED",
+            {item["code"] for item in payload["invariants"]["errors"]},
+        )
+
+    def test_tex_verbatim_and_comment_field_shapes_do_not_enter_template_contract(self) -> None:
+        before, after = self.pair(
+            "\\begin{verbatim}\n"
+            "适用题目： 伪造字段原值。\n"
+            "\\end{verbatim}\n"
+            "% 逻辑链条： 注释中的伪造字段原值。\n"
+            "正文保持不变。\n",
+            "\\begin{verbatim}\n"
+            "适用题目： 伪造字段改值。\n"
+            "\\end{verbatim}\n"
+            "% 逻辑链条： 注释中的伪造字段改值。\n"
+            "正文保持不变。\n",
+            suffix=".tex",
+        )
+
+        payload = validator.validate(before, after, scene="GENERAL")
+
+        self.assertEqual("PASS", payload["template_field_layer_status"])
+        self.assertEqual([], payload["template_field_findings"])
+        self.assertNotIn(
+            "TEMPLATE_FIELD_HEADER_CHANGED",
+            {item["code"] for item in payload["invariants"]["errors"]},
+        )
 
     def test_course_formula_caption_cleanup_preserves_inference_relations(self) -> None:
         before, after = self.pair(
@@ -136,6 +548,516 @@ class HumanizeOutputValidatorTests(unittest.TestCase):
         self.assertEqual("REVIEW", payload["delivery_gate_status"])
         self.assertEqual("REVIEW", payload["speech_act_layer_status"])
         self.assertIn("SPEECH_ACT_LOGICAL_RELATION_CHANGED", warning_codes)
+
+    def test_real_cet6_candidate_blocks_copular_comma_and_default_scope_drift(self) -> None:
+        before, after = self.pair(
+            "后面所有主要结论，默认都来自这同一批样本。\n"
+            "第一种误判是：觉得只要记住平均位置就够了。\n"
+            "第二种误判是：觉得题号相邻，原文位置也大概率相邻。\n",
+            "后文的主要结论均来自这批样本。\n"
+            "第一种误判是，认为只要记住平均位置就够了。\n"
+            "第二种误判是，认为题号相邻，原文位置也大概率相邻。\n",
+            suffix=".tex",
+        )
+
+        payload = validator.validate(before, after, scene="COURSE")
+        warning_codes = {item["code"] for item in payload["unaccepted_warnings"]}
+        introduced = [
+            item
+            for item in payload["introduced_findings"]
+            if item["signal_id"] == "LEX-COURSE-COPULAR-COMMA-01"
+        ]
+
+        self.assertEqual("REVIEW", payload["mechanical_validation_status"])
+        self.assertEqual("REVIEW", payload["speech_act_layer_status"])
+        self.assertEqual("REVIEW", payload["style_signal_layer_status"])
+        self.assertEqual("REVIEW", payload["candidate_assembly_status"])
+        self.assertEqual("BLOCKED_BY_MECHANICAL_GATE", payload["paired_quality_review_status"])
+        self.assertIn("SPEECH_ACT_MODALITY_SCOPE_CHANGED", warning_codes)
+        self.assertEqual(2, len(introduced))
+        self.assertTrue(all(item["severity"] == "high" for item in introduced))
+
+    def test_real_blind_course_voice_flattening_cluster_blocks_false_style_pass(self) -> None:
+        before = COURSE_VOICE_FLATTENING_FIXTURES / "blind_before.tex"
+        after = COURSE_VOICE_FLATTENING_FIXTURES / "blind_after.tex"
+
+        payload = validator.validate(before, after, scene="COURSE")
+
+        self.assertEqual("REVIEW", payload["delivery_gate_status"])
+        self.assertEqual(2, payload["exit_code"])
+        self.assertEqual("REVIEW", payload["mechanical_validation_status"])
+        self.assertEqual("REVIEW", payload["style_signal_layer_status"])
+        self.assertEqual("REVIEW", payload["paired_style_delta_layer_status"])
+        self.assertIn("course_voice_flattening_cluster", payload["review_reasons"])
+        self.assertEqual(
+            "BLOCKED_BY_MECHANICAL_GATE",
+            payload["paired_quality_review_status"],
+        )
+        self.assertEqual(1, len(payload["paired_style_delta_findings"]))
+
+        finding = payload["paired_style_delta_findings"][0]
+        self.assertEqual("STYLE_COURSE_VOICE_FLATTENING_CLUSTER", finding["code"])
+        self.assertGreaterEqual(finding["observed"]["distinct_transition_count"], 7)
+        self.assertGreaterEqual(finding["observed"]["distinct_family_count"], 3)
+        self.assertGreaterEqual(finding["observed"]["changed_hunk_count"], 3)
+        self.assertIn(
+            "COURSE-FLAT-08",
+            finding["observed"]["distinct_transition_ids"],
+        )
+        self.assertFalse(finding["limitations"]["authorship_inference"])
+        self.assertFalse(finding["limitations"]["single_word_is_prohibited"])
+
+        before_text = before.read_text(encoding="utf-8")
+        after_text = after.read_text(encoding="utf-8")
+        before_raw = before.read_bytes()
+        after_raw = after.read_bytes()
+        for transition in finding["transitions"]:
+            removed = transition["removed"]
+            introduced = transition["introduced"]
+            self.assertEqual(
+                removed["text"],
+                before_text[removed["char_start"] : removed["char_end"]],
+            )
+            self.assertEqual(
+                introduced["text"],
+                after_text[introduced["char_start"] : introduced["char_end"]],
+            )
+            self.assertEqual(
+                removed["text"],
+                before_raw[removed["utf8_start"] : removed["utf8_end"]].decode(
+                    "utf-8"
+                ),
+            )
+            self.assertEqual(
+                introduced["text"],
+                after_raw[
+                    introduced["utf8_start"] : introduced["utf8_end"]
+                ].decode("utf-8"),
+            )
+
+    def test_course_voice_flattening_single_formalization_does_not_trigger_cluster(self) -> None:
+        before, after = self.pair(
+            "把原方程补成标准形式。",
+            "将原方程改写为标准形式。",
+        )
+
+        payload = validator.validate(before, after, scene="COURSE")
+
+        self.assertEqual("PASS", payload["mechanical_validation_status"])
+        self.assertEqual("PASS", payload["style_signal_layer_status"])
+        self.assertEqual("PASS", payload["paired_style_delta_layer_status"])
+        self.assertEqual([], payload["paired_style_delta_findings"])
+
+    def test_course_voice_flattening_requires_character_level_replacement_binding(self) -> None:
+        unchanged = "中间这一句保持不变。"
+        before, after = self.pair(
+            "\n".join(
+                [
+                    "完全够用。保留同一对象。末尾甲。",
+                    unchanged,
+                    "先盯住变量。保留同一对象。末尾乙。",
+                    unchanged,
+                    "数值明明在变。保留同一对象。末尾丙。",
+                    unchanged,
+                    "两条关系接得上。保留同一对象。末尾丁。",
+                ]
+            ),
+            "\n".join(
+                [
+                    "可以使用。保留同一对象。末尾足以描述。",
+                    unchanged,
+                    "先看变量。保留同一对象。末尾考察。",
+                    unchanged,
+                    "数值确实在变。保留同一对象。末尾仍随。",
+                    unchanged,
+                    "两条关系吻合。保留同一对象。末尾严格对应。",
+                ]
+            ),
+        )
+
+        payload = validator.validate(before, after, scene="COURSE")
+
+        self.assertEqual([], payload["paired_style_delta_findings"])
+        self.assertEqual("PASS", payload["paired_style_delta_layer_status"])
+
+    def test_course_voice_flattening_cluster_is_bounded_by_distance_and_lines(self) -> None:
+        separator = "\n".join(f"保持原句{i:04d}。" for i in range(180))
+        before, after = self.pair(
+            f"完全够用。\n{separator}\n先盯住变量。\n{separator}\n"
+            f"数值明明在变。\n{separator}\n两条关系接得上。",
+            f"足以描述。\n{separator}\n先考察变量。\n{separator}\n"
+            f"数值仍随条件变化。\n{separator}\n两条关系严格对应。",
+        )
+
+        payload = validator.validate(before, after, scene="COURSE")
+
+        self.assertEqual([], payload["paired_style_delta_findings"])
+
+    def test_course_voice_flattening_cluster_uses_full_span_boundary(self) -> None:
+        at_char_limit = self.synthetic_course_transition_window(
+            char_width=1200,
+            line_count=24,
+        )
+        over_char_limit = self.synthetic_course_transition_window(
+            char_width=1201,
+            line_count=24,
+        )
+        over_line_limit = self.synthetic_course_transition_window(
+            char_width=1200,
+            line_count=25,
+        )
+
+        at_limit_clusters = validator._transition_cluster_candidates(at_char_limit)
+        self.assertEqual(1, len(at_limit_clusters))
+        self.assertEqual(
+            {
+                "char_start": 0,
+                "char_end": 1200,
+                "char_width": 1200,
+                "line_start": 1,
+                "line_end": 24,
+                "line_count": 24,
+            },
+            validator._transition_envelope(at_limit_clusters[0], "removed"),
+        )
+        self.assertEqual([], validator._transition_cluster_candidates(over_char_limit))
+        self.assertEqual([], validator._transition_cluster_candidates(over_line_limit))
+
+    def test_course_voice_flattening_cluster_does_not_cross_headings(self) -> None:
+        before, after = self.pair(
+            "# 第一节\n完全够用。\n保持。\n先盯住变量。\n"
+            "# 第二节\n数值明明在变。\n保持。\n两条关系接得上。",
+            "# 第一节\n足以描述。\n保持。\n先考察变量。\n"
+            "# 第二节\n数值仍随条件变化。\n保持。\n两条关系严格对应。",
+        )
+
+        payload = validator.validate(before, after, scene="COURSE")
+
+        self.assertEqual([], payload["paired_style_delta_findings"])
+
+    def test_course_voice_flattening_markdown_structure_is_protected(self) -> None:
+        cases = {
+            "yaml": (
+                "---\na: 完全够用\nb: 先盯住变量\nc: 数值明明在变\nd: 两条关系接得上\n---\n正文。",
+                "---\na: 足以描述\nb: 先考察变量\nc: 数值仍随条件变化\nd: 两条关系严格对应\n---\n正文。",
+            ),
+            "link-targets": (
+                "[甲](完全够用)\n[乙](先盯住变量)\n[丙](数值明明在变)\n[丁](两条关系接得上)",
+                "[甲](足以描述)\n[乙](先考察变量)\n[丙](数值仍随条件变化)\n[丁](两条关系严格对应)",
+            ),
+            "html-attributes": (
+                '<p a="完全够用">正文</p>\n<p a="先盯住变量">正文</p>\n'
+                '<p a="数值明明在变">正文</p>\n<p a="两条关系接得上">正文</p>',
+                '<p a="足以描述">正文</p>\n<p a="先考察变量">正文</p>\n'
+                '<p a="数值仍随条件变化">正文</p>\n<p a="两条关系严格对应">正文</p>',
+            ),
+        }
+        for name, (before_text, after_text) in cases.items():
+            with self.subTest(name=name):
+                before, after = self.pair(before_text, after_text)
+                payload = validator.validate(before, after, scene="COURSE")
+                self.assertEqual([], payload["paired_style_delta_findings"])
+
+    def test_course_voice_flattening_quoted_occurrences_are_protected(self) -> None:
+        unchanged = "本行保持。"
+        before, after = self.pair(
+            "\n".join(
+                [
+                    "“这个结论完全够用。”",
+                    unchanged,
+                    "“先盯住变量。”",
+                    unchanged,
+                    "“数值明明在变。”",
+                    unchanged,
+                    "“两条关系接得上。”",
+                ]
+            ),
+            "\n".join(
+                [
+                    "“这个结论足以描述。”",
+                    unchanged,
+                    "“先考察变量。”",
+                    unchanged,
+                    "“数值仍随条件变化。”",
+                    unchanged,
+                    "“两条关系严格对应。”",
+                ]
+            ),
+        )
+
+        payload = validator.validate(before, after, scene="COURSE")
+
+        self.assertEqual([], payload["paired_style_delta_findings"])
+
+    def test_course_voice_flattening_tex_command_arguments_are_protected(self) -> None:
+        unchanged = "本行保持。"
+        before, after = self.pair(
+            "\n".join(
+                [
+                    r"\locked{这个结论完全够用。}",
+                    unchanged,
+                    r"\locked{先盯住变量。}",
+                    unchanged,
+                    r"\locked{数值明明在变。}",
+                    unchanged,
+                    r"\locked{两条关系接得上。}",
+                ]
+            ),
+            "\n".join(
+                [
+                    r"\locked{这个结论足以描述。}",
+                    unchanged,
+                    r"\locked{先考察变量。}",
+                    unchanged,
+                    r"\locked{数值仍随条件变化。}",
+                    unchanged,
+                    r"\locked{两条关系严格对应。}",
+                ]
+            ),
+            suffix=".tex",
+        )
+
+        payload = validator.validate(before, after, scene="COURSE")
+
+        self.assertEqual([], payload["paired_style_delta_findings"])
+
+    def test_course_voice_flattening_formal_environment_is_protected(self) -> None:
+        before, after = self.pair(
+            "\\begin{theorem}\n完全够用。\n保持。\n先盯住变量。\n保持。\n"
+            "数值明明在变。\n保持。\n两条关系接得上。\n\\end{theorem}",
+            "\\begin{theorem}\n足以描述。\n保持。\n先考察变量。\n保持。\n"
+            "数值仍随条件变化。\n保持。\n两条关系严格对应。\n\\end{theorem}",
+            suffix=".tex",
+        )
+
+        payload = validator.validate(before, after, scene="COURSE")
+
+        self.assertEqual([], payload["paired_style_delta_findings"])
+
+    def test_course_voice_flattening_adjacent_true_cluster_still_triggers(self) -> None:
+        unchanged = "本行保持。"
+        before, after = self.pair(
+            "\n".join(
+                [
+                    "这个结论完全够用。",
+                    unchanged,
+                    "先盯住变量。",
+                    unchanged,
+                    "数值明明在变。",
+                    unchanged,
+                    "两条关系接得上。",
+                ]
+            ),
+            "\n".join(
+                [
+                    "这个结论足以描述。",
+                    unchanged,
+                    "先考察变量。",
+                    unchanged,
+                    "数值仍随条件变化。",
+                    unchanged,
+                    "两条关系严格对应。",
+                ]
+            ),
+        )
+
+        payload = validator.validate(before, after, scene="COURSE")
+
+        self.assertEqual(1, len(payload["paired_style_delta_findings"]))
+        finding = payload["paired_style_delta_findings"][0]
+        self.assertEqual(4, finding["observed"]["distinct_transition_count"])
+        self.assertEqual(4, finding["observed"]["changed_hunk_count"])
+        self.assertEqual(
+            "humanize-course-voice-non-regression/v3",
+            finding["policy_provenance"],
+        )
+        self.assertNotIn("evidence_basis", finding)
+
+    def test_course_voice_flattening_reports_all_bound_occurrences(self) -> None:
+        unchanged = "本行保持。"
+        before, after = self.pair(
+            "\n".join(
+                [
+                    "这个说法完全够用，另一个说法也完全够用。",
+                    unchanged,
+                    "先盯住变量。",
+                    unchanged,
+                    "数值明明在变。",
+                    unchanged,
+                    "两条关系接得上。",
+                ]
+            ),
+            "\n".join(
+                [
+                    "这个说法足以描述，另一个说法也足以说明。",
+                    unchanged,
+                    "先考察变量。",
+                    unchanged,
+                    "数值仍随条件变化。",
+                    unchanged,
+                    "两条关系严格对应。",
+                ]
+            ),
+        )
+
+        payload = validator.validate(before, after, scene="COURSE")
+
+        transitions = payload["paired_style_delta_findings"][0]["transitions"]
+        repeated = [
+            item for item in transitions if item["transition_id"] == "COURSE-FLAT-01"
+        ]
+        self.assertEqual(2, len(repeated))
+        self.assertEqual(2, len({item["occurrence_id"] for item in repeated}))
+
+    def test_course_voice_flattening_rejects_asymmetric_occurrence_pairing(self) -> None:
+        before, after = self.pair(
+            "AAAA完全够用BBBB完全够用CCCC\n保持\n先盯住变量\n保持\n"
+            "数值明明在变\n保持\n两条关系接得上",
+            "DDDD普通表达EEEE足以描述FFFF\n保持\n先考察变量\n保持\n"
+            "数值仍随条件变化\n保持\n两条关系严格对应",
+        )
+
+        payload = validator.validate(before, after, scene="COURSE")
+
+        self.assertEqual([], payload["paired_style_delta_findings"])
+
+    def test_course_voice_flattening_bom_offsets_bind_original_artifact_bytes(self) -> None:
+        unchanged = "本行保持。"
+        before_text = "\n".join(
+            [
+                "这个结论完全够用。",
+                unchanged,
+                "先盯住变量。",
+                unchanged,
+                "数值明明在变。",
+                unchanged,
+                "两条关系接得上。",
+            ]
+        )
+        after_text = "\n".join(
+            [
+                "这个结论足以描述。",
+                unchanged,
+                "先考察变量。",
+                unchanged,
+                "数值仍随条件变化。",
+                unchanged,
+                "两条关系严格对应。",
+            ]
+        )
+        before = self.root / "before-bom.md"
+        after = self.root / "after-bom.md"
+        before.write_bytes(b"\xef\xbb\xbf" + before_text.encode("utf-8"))
+        after.write_bytes(b"\xef\xbb\xbf" + after_text.encode("utf-8"))
+
+        payload = validator.validate(before, after, scene="COURSE")
+
+        finding = payload["paired_style_delta_findings"][0]
+        before_raw = before.read_bytes()
+        after_raw = after.read_bytes()
+        for transition in finding["transitions"]:
+            for span, raw, text in (
+                (transition["removed"], before_raw, before_text),
+                (transition["introduced"], after_raw, after_text),
+            ):
+                self.assertEqual(
+                    span["text"],
+                    raw[span["utf8_start"] : span["utf8_end"]].decode("utf-8"),
+                )
+                self.assertEqual(
+                    3 + len(text[: span["char_start"]].encode("utf-8")),
+                    span["utf8_start"],
+                )
+                self.assertEqual(validator._sha256(raw), span["artifact_sha256"])
+
+    def test_course_voice_flattening_reverse_direction_does_not_trigger(self) -> None:
+        unchanged = "本行保持。"
+        before, after = self.pair(
+            "\n".join(
+                [
+                    "这个结论足以描述。",
+                    unchanged,
+                    "先考察变量。",
+                    unchanged,
+                    "数值仍随条件变化。",
+                    unchanged,
+                    "两条关系严格对应。",
+                ]
+            ),
+            "\n".join(
+                [
+                    "这个结论完全够用。",
+                    unchanged,
+                    "先盯住变量。",
+                    unchanged,
+                    "数值明明在变。",
+                    unchanged,
+                    "两条关系接得上。",
+                ]
+            ),
+        )
+
+        payload = validator.validate(before, after, scene="COURSE")
+
+        self.assertEqual([], payload["paired_style_delta_findings"])
+
+    def test_course_voice_flattening_is_not_applicable_to_draft(self) -> None:
+        before, after = self.pair(
+            "完全够用。先盯住变量。数值明明在变。两条关系接得上。",
+            "足以描述。先考察变量。数值仍随条件变化。两条关系严格对应。",
+        )
+
+        payload = validator.validate(before, after, mode="DRAFT", scene="COURSE")
+
+        self.assertEqual("NOT_APPLICABLE", payload["paired_style_delta_layer_status"])
+        self.assertEqual([], payload["paired_style_delta_findings"])
+
+    def test_course_voice_flattening_does_not_flag_formal_terms_already_in_source(self) -> None:
+        before, after = self.pair(
+            "值得注意的是，将位移项纳入方程，并把关系改写为标准形式。",
+            "将位移项纳入方程，并把关系改写为标准形式。",
+        )
+
+        payload = validator.validate(before, after, scene="COURSE")
+
+        self.assertEqual("PASS", payload["mechanical_validation_status"])
+        self.assertEqual("PASS", payload["style_signal_layer_status"])
+        self.assertEqual([], payload["paired_style_delta_findings"])
+
+    def test_course_voice_flattening_same_family_only_does_not_trigger_cluster(self) -> None:
+        before, after = self.pair(
+            "先把变化记成源项。\n再把两项统一记账。\n最后检查记账始终一致。",
+            "先将变化纳入源项。\n再把两项合在一起。\n最后检查总电流始终一致。",
+        )
+
+        payload = validator.validate(before, after, scene="COURSE")
+
+        self.assertEqual("PASS", payload["paired_style_delta_layer_status"])
+        self.assertEqual([], payload["paired_style_delta_findings"])
+
+    def test_course_voice_flattening_policy_is_not_applied_to_research_scene(self) -> None:
+        before, after = self.pair(
+            "这个结论完全够用。\n先盯住变量明明还在跟着变。\n"
+            "把变化记成源项，再补成标准形式。",
+            "这一结论足以描述该情形。\n先考察变量仍随时间随之变化。\n"
+            "将变化纳入源项，再改写为标准形式。",
+        )
+
+        payload = validator.validate(before, after, scene="RESEARCH")
+
+        self.assertEqual("NOT_APPLICABLE", payload["paired_style_delta_layer_status"])
+        self.assertEqual([], payload["paired_style_delta_findings"])
+
+    def test_course_voice_flattening_no_change_does_not_trigger_cluster(self) -> None:
+        source = (COURSE_VOICE_FLATTENING_FIXTURES / "blind_before.tex").read_text(
+            encoding="utf-8"
+        )
+        before, after = self.pair(source, source, suffix=".tex")
+
+        payload = validator.validate(before, after, scene="COURSE")
+
+        self.assertEqual("PASS", payload["paired_style_delta_layer_status"])
+        self.assertEqual([], payload["paired_style_delta_findings"])
 
     def test_v24_unseen_collocation_cannot_receive_false_delivery_pass(self) -> None:
         before, after = self.pair(
@@ -474,6 +1396,32 @@ class HumanizeOutputValidatorTests(unittest.TestCase):
         self.assertIn(
             "PROTECTED_MATH_CHANGED",
             {item["code"] for item in payload["invariants"]["errors"]},
+        )
+
+    def test_explicit_tex_format_on_txt_rejects_added_comment(self) -> None:
+        before, after = self.pair(
+            "这里保留原有结论。\n",
+            "这里保留原有结论。% 新增注释\n",
+            suffix=".txt",
+        )
+
+        inferred = validator.validate(before, after, scene="GENERAL")
+        explicit = validator.validate(
+            before,
+            after,
+            scene="GENERAL",
+            document_format="tex",
+        )
+
+        self.assertEqual("markdown", inferred["evidence"]["document_format"])
+        self.assertEqual("PASS", inferred["hard_invariant_layer_status"])
+        self.assertEqual("tex", explicit["evidence"]["document_format"])
+        self.assertEqual("FAIL", explicit["delivery_gate_status"])
+        self.assertEqual(1, explicit["exit_code"])
+        self.assertEqual("FAIL", explicit["hard_invariant_layer_status"])
+        self.assertIn(
+            "TEX_COMMENT_CHANGED",
+            {item["code"] for item in explicit["invariants"]["errors"]},
         )
 
     def test_rewrite_rejects_multiline_quote_content_change(self) -> None:
@@ -1356,6 +2304,120 @@ class HumanizeOutputValidatorTests(unittest.TestCase):
         self.assertRegex(payload["evidence"]["after_sha256"], r"^[0-9a-f]{64}$")
         self.assertNotIn("score", payload)
 
+    def test_template_field_scope_is_persisted_in_direct_evidence_and_invocation(self) -> None:
+        before, after = self.pair(
+            "适用题目： 积极的、普遍认可的趋势。\n",
+            "适用题目： 积极且普遍受到认可的趋势。\n",
+            suffix=".tex",
+        )
+        scope = self.template_field_scope(before, [(1, "适用题目")])
+        scope_raw = scope.read_bytes()
+        evidence_dir = self.root / "template-field-direct-evidence"
+
+        completed = subprocess.run(
+            [
+                sys.executable,
+                str(SCRIPT),
+                str(before),
+                str(after),
+                "--scene",
+                "COURSE",
+                "--format",
+                "json",
+                "--template-field-edit-scope",
+                str(scope),
+                "--evidence-dir",
+                str(evidence_dir),
+            ],
+            check=False,
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            env={**os.environ, "PYTHONUTF8": "1"},
+        )
+
+        self.assertEqual(2, completed.returncode, completed.stderr)
+        payload = json.loads(completed.stdout)
+        self.assertEqual("PERSISTED", payload["evidence_bundle"]["status"])
+        self.assertEqual("PASS", payload["template_field_layer_status"])
+        self.assertEqual("PASS", payload["mechanical_validation_status"])
+        self.assertEqual("REVIEW", payload["delivery_gate_status"])
+
+        archived_scope = evidence_dir / "inputs" / "template-field-edit-scope.json"
+        self.assertEqual(scope_raw, archived_scope.read_bytes())
+        invocation = json.loads(
+            (evidence_dir / "invocation-request.json").read_text(encoding="utf-8")
+        )
+        self.assertEqual("humanize-validation-invocation/v4", invocation["schema"])
+        self.assertTrue(invocation["run_id"].startswith("hvr4-"))
+        scope_argument = invocation["arguments"]["template_field_edit_scope"]
+        self.assertTrue(scope_argument["provided"])
+        self.assertEqual(
+            "inputs/template-field-edit-scope.json",
+            scope_argument["archive_path"],
+        )
+        self.assertEqual("PAYLOAD_ONLY", scope_argument["permission_boundary"])
+        self.assertFalse(scope_argument["local_clearance_supported"])
+        self.assertEqual(
+            validator._sha256(scope_raw),
+            scope_argument["sha256"],
+        )
+        self.assertEqual(
+            validator._sha256(before.read_bytes()),
+            scope_argument["source_sha256"],
+        )
+        scope_input = invocation["inputs"]["template_field_edit_scope"]
+        self.assertEqual(
+            "inputs/template-field-edit-scope.json",
+            scope_input["archive_path"],
+        )
+        self.assertEqual(validator._sha256(scope_raw), scope_input["sha256"])
+
+        manifest = json.loads(
+            (evidence_dir / "evidence-manifest.json").read_text(encoding="utf-8")
+        )
+        self.assertEqual("humanize-direct-validation-evidence/v5", manifest["schema"])
+        self.assertEqual(invocation["run_id"], manifest["run_id"])
+        self.assertIn(
+            "inputs/template-field-edit-scope.json",
+            set(manifest["artifacts"]),
+        )
+
+    def test_template_field_scope_tamper_after_validation_blocks_evidence_capture(self) -> None:
+        before, after = self.pair(
+            "适用题目： 积极的、普遍认可的趋势。\n",
+            "适用题目： 积极且普遍受到认可的趋势。\n",
+            suffix=".tex",
+        )
+        scope = self.template_field_scope(before, [(1, "适用题目")])
+        payload = validator.validate(
+            before,
+            after,
+            scene="COURSE",
+            template_field_edit_scope_path=scope,
+        )
+        tampered = json.loads(scope.read_text(encoding="utf-8"))
+        tampered["edits"][0]["reason"] = (
+            "用户改写了授权理由并试图重封证据，但原验证仍绑定旧授权字节。"
+        )
+        scope.write_text(
+            json.dumps(tampered, ensure_ascii=False, indent=2) + "\n",
+            encoding="utf-8",
+        )
+
+        with self.assertRaisesRegex(
+            ValueError,
+            "template field edit scope changed after validation",
+        ):
+            validator._build_invocation_request(
+                payload,
+                before=before,
+                after=after,
+                mode="REWRITE",
+                scene="COURSE",
+                template_field_edit_scope_path=scope,
+            )
+
     def test_cli_evidence_dir_persists_result_request_and_manifest_atomically(self) -> None:
         before, after = self.pair("值得注意的是，结果为 1。", "结果为 1。")
         evidence_dir = self.root / "direct-evidence"
@@ -1405,10 +2467,17 @@ class HumanizeOutputValidatorTests(unittest.TestCase):
             json.loads(request_path.read_text(encoding="utf-8")),
         )
         manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
-        self.assertEqual("humanize-direct-validation-evidence/v3", manifest["schema"])
+        self.assertEqual("humanize-direct-validation-evidence/v5", manifest["schema"])
         self.assertEqual("SELF_CONSISTENCY_ONLY", manifest["integrity_scope"])
         self.assertEqual(payload["evidence_bundle"]["run_id"], manifest["run_id"])
         invocation = json.loads(invocation_path.read_text(encoding="utf-8"))
+        self.assertEqual("humanize-validation-invocation/v4", invocation["schema"])
+        self.assertTrue(invocation["run_id"].startswith("hvr4-"))
+        self.assertEqual("markdown", invocation["arguments"]["document_format"])
+        self.assertEqual(
+            {"provided": False},
+            invocation["arguments"]["template_field_edit_scope"],
+        )
         self.assertEqual(manifest["run_id"], invocation["run_id"])
         self.assertEqual("SUPPORTED", invocation["reexecution"]["status"])
         self.assertFalse(invocation["privacy"]["reviewer_identifier_collected"])
@@ -1647,6 +2716,38 @@ class HumanizeOutputValidatorTests(unittest.TestCase):
         self.assert_paired_quality_review(complete, decision="NO_CHANGE", changes=0)
         self.assertEqual(2, len(complete["accepted_findings"]))
 
+    def test_tex_protected_high_signals_are_not_false_keep_candidates(self) -> None:
+        before, after = self.pair(
+            "\\verb|值得注意的是|\\n"
+            "% 值得注意的是，此注释不属于可编辑正文。\\n"
+            "\\begin{verbatim}\\n"
+            "值得注意的是\\n"
+            "\\end{verbatim}\\n",
+            "\\verb|值得注意的是|\\n"
+            "% 值得注意的是，此注释不属于可编辑正文。\\n"
+            "\\begin{verbatim}\\n"
+            "值得注意的是\\n"
+            "\\end{verbatim}\\n",
+            suffix=".tex",
+        )
+
+        payload = validator.validate(before, after, scene="GENERAL")
+
+        self.assert_paired_quality_review(payload, decision="NO_CHANGE", changes=0)
+        self.assertEqual("PASS", payload["style_signal_layer_status"])
+        self.assertEqual(0, payload["lexical_summary"]["after_candidates"])
+        self.assertEqual(0, payload["lexical_summary"]["unexplained_high_candidates"])
+        self.assertEqual([], payload["accepted_findings"])
+        with self.assertRaisesRegex(ValueError, "未唯一定位待复核 finding"):
+            validator.validate(
+                before,
+                after,
+                scene="GENERAL",
+                keep_reasons={
+                    "LEX-EMPH-01@2:3": "该位置属于受保护注释，逐字保留以说明正文保护范围"
+                },
+            )
+
     def test_blind_forward_failures_are_machine_detectable(self) -> None:
         expected = {
             "course": "LEX-COACH-01",
@@ -1775,6 +2876,24 @@ class HumanizeOutputValidatorTests(unittest.TestCase):
         self.assertEqual("REVIEW", payload["delivery_gate_status"])
         self.assertEqual("REVIEW", payload["style_signal_layer_status"])
         self.assertIn("LEX-FOUNDATION-01", high_ids)
+
+    def test_v51_abstract_insight_repair_and_vague_depth_cannot_receive_style_pass(self) -> None:
+        before, after = self.pair(
+            "这一现象并非单纯的测量误差问题，而是涉及更深层次的机制问题。"
+            "综上，本研究深刻揭示了该现象的内在机制，并为后续研究奠定了坚实基础。",
+            "这一现象并非单纯的测量误差问题，而是涉及更深层次的机制问题。"
+            "上述结果为理解该现象的内在机制提供了线索。",
+        )
+
+        payload = validator.validate(before, after, scene="RESEARCH")
+        high_ids = {item["signal_id"] for item in payload["unexplained_high_findings"]}
+        introduced_ids = {item["signal_id"] for item in payload["introduced_findings"]}
+
+        self.assertEqual("REVIEW", payload["delivery_gate_status"])
+        self.assertEqual(2, payload["exit_code"])
+        self.assertEqual("REVIEW", payload["style_signal_layer_status"])
+        self.assertIn("LEX-VAGUE-DEPTH-01", high_ids)
+        self.assertIn("LEX-ABSTRACT-BENEFIT-01", introduced_ids)
 
     def test_fresh_course_synonym_repairs_cannot_receive_false_pass(self) -> None:
         before, after = self.pair(

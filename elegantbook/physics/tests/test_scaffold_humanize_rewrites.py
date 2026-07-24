@@ -170,7 +170,8 @@ class RewriteScaffoldTests(unittest.TestCase):
         record = metadata["records"][0]
         binding = bundle["authoring_binding"]
 
-        self.assertEqual("humanize-unit-rewrite-bundle/v3", bundle["schema_version"])
+        self.assertEqual("humanize-unit-rewrite-bundle/v4", bundle["schema_version"])
+        self.assertIsNone(bundle["template_field_edit_scope"])
         self.assertEqual("humanize-rewrite-scaffold/v5", metadata["schema_version"])
         self.assertEqual("humanize-long-authoring-preflight/v1", metadata["preflight"]["schema_version"])
         self.assertEqual("PASS", metadata["preflight"]["status"])
@@ -248,6 +249,15 @@ class RewriteScaffoldTests(unittest.TestCase):
             "SCENE-COURSE-RHYTHM",
             payload["rewrite_intent_authoring_contract"]["examples"],
         )
+        field_contract = payload["template_field_edit_scope_authoring_contract"]
+        self.assertEqual(
+            "humanize-unit-template-field-edit-scope/v1",
+            field_contract["schema_version"],
+        )
+        self.assertEqual("PAYLOAD_ONLY", field_contract["permission_boundary"])
+        self.assertIsNone(field_contract["default"])
+        self.assertFalse(field_contract["quality_clearance_granted"])
+        self.assertTrue(field_contract["role_or_force_drift_still_reviews"])
 
     def test_adjacent_structural_candidate_is_authoring_review_but_scaffold_is_kept(self) -> None:
         _source, run_dir, chunks = self.prepare_adjacent_structural_candidate()
@@ -531,12 +541,14 @@ class RewriteScaffoldTests(unittest.TestCase):
             (run_dir / "prepare_integrity.json").read_text(encoding="utf-8")
         )
         (run_dir / "structural_transaction_inventory.json").unlink()
+        (run_dir / "source_role_overrides.json").unlink()
         run_metadata_path = run_dir / "run_metadata.json"
         run_metadata = json.loads(run_metadata_path.read_text(encoding="utf-8"))
         run_metadata = {
             key: value
             for key, value in run_metadata.items()
             if not key.startswith("structural_transaction_")
+            and not key.startswith("source_role_override")
         }
         run_metadata_path.write_text(
             json.dumps(run_metadata, ensure_ascii=False, indent=2) + "\n",
@@ -554,7 +566,11 @@ class RewriteScaffoldTests(unittest.TestCase):
                     ),
                 }
                 for item in current["artifacts"]
-                if item["path"] != "structural_transaction_inventory.json"
+                if item["path"]
+                not in {
+                    "source_role_overrides.json",
+                    "structural_transaction_inventory.json",
+                }
             ],
         }
         (run_dir / "prepare_integrity.json").write_text(
@@ -595,6 +611,103 @@ class RewriteScaffoldTests(unittest.TestCase):
             ["legacy_prepare_requires_reprepare"],
             payload["review_reasons"],
         )
+        self.assert_no_publish(output)
+
+    def test_legacy_manifest_cannot_hide_v2_source_role_artifact(self) -> None:
+        _source, run_dir, _chunks = self.prepare()
+        integrity_path = run_dir / "prepare_integrity.json"
+        current = json.loads(integrity_path.read_text(encoding="utf-8"))
+        (run_dir / "structural_transaction_inventory.json").unlink()
+        metadata_path = run_dir / "run_metadata.json"
+        metadata = json.loads(metadata_path.read_text(encoding="utf-8"))
+        metadata = {
+            key: value
+            for key, value in metadata.items()
+            if not key.startswith("structural_transaction_")
+        }
+        metadata_path.write_text(
+            json.dumps(metadata, ensure_ascii=False, indent=2) + "\n",
+            encoding="utf-8",
+        )
+        legacy = {
+            "schema_version": 1,
+            "artifacts": [
+                {
+                    **item,
+                    "sha256": (
+                        hashlib.sha256(metadata_path.read_bytes()).hexdigest()
+                        if item["path"] == "run_metadata.json"
+                        else item["sha256"]
+                    ),
+                }
+                for item in current["artifacts"]
+                if item["path"]
+                not in {
+                    "source_role_overrides.json",
+                    "structural_transaction_inventory.json",
+                }
+            ],
+        }
+        integrity_path.write_text(
+            json.dumps(legacy, ensure_ascii=False, indent=2) + "\n",
+            encoding="utf-8",
+        )
+        output = self.root / "mixed-legacy-rewrites"
+
+        with self.assertRaisesRegex(
+            ValueError,
+            "legacy prepare integrity cannot authorize source role overrides",
+        ):
+            scaffolder.scaffold(run_dir, output, "REWRITE")
+        self.assert_no_publish(output)
+
+    def test_legacy_manifest_cannot_hide_v2_source_role_metadata(self) -> None:
+        _source, run_dir, _chunks = self.prepare()
+        integrity_path = run_dir / "prepare_integrity.json"
+        current = json.loads(integrity_path.read_text(encoding="utf-8"))
+        (run_dir / "structural_transaction_inventory.json").unlink()
+        (run_dir / "source_role_overrides.json").unlink()
+        metadata_path = run_dir / "run_metadata.json"
+        metadata = json.loads(metadata_path.read_text(encoding="utf-8"))
+        metadata = {
+            key: value
+            for key, value in metadata.items()
+            if not key.startswith("structural_transaction_")
+        }
+        metadata_path.write_text(
+            json.dumps(metadata, ensure_ascii=False, indent=2) + "\n",
+            encoding="utf-8",
+        )
+        legacy = {
+            "schema_version": 1,
+            "artifacts": [
+                {
+                    **item,
+                    "sha256": (
+                        hashlib.sha256(metadata_path.read_bytes()).hexdigest()
+                        if item["path"] == "run_metadata.json"
+                        else item["sha256"]
+                    ),
+                }
+                for item in current["artifacts"]
+                if item["path"]
+                not in {
+                    "source_role_overrides.json",
+                    "structural_transaction_inventory.json",
+                }
+            ],
+        }
+        integrity_path.write_text(
+            json.dumps(legacy, ensure_ascii=False, indent=2) + "\n",
+            encoding="utf-8",
+        )
+        output = self.root / "mixed-legacy-metadata-rewrites"
+
+        with self.assertRaisesRegex(
+            ValueError,
+            "legacy prepare metadata cannot authorize source role overrides",
+        ):
+            scaffolder.scaffold(run_dir, output, "REWRITE")
         self.assert_no_publish(output)
 
     def test_policy_snapshot_drift_fails_even_after_local_reseal(self) -> None:

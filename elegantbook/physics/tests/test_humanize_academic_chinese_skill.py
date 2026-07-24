@@ -15,6 +15,19 @@ REFERENCES = SKILL / "references"
 
 
 class HumanizeAcademicChineseSkillTests(unittest.TestCase):
+    def test_skill_root_has_no_nested_discoverable_skill_entrypoints(self) -> None:
+        nested = sorted(
+            str(path.relative_to(SKILL)).replace("\\", "/")
+            for path in SKILL.rglob("SKILL.md")
+            if path != SKILL / "SKILL.md"
+        )
+        self.assertEqual(
+            [],
+            nested,
+            "derived projections or archives under a live skill root create "
+            "duplicate discoverable skills",
+        )
+
     def test_required_files_exist(self) -> None:
         required = {
             SKILL / "SKILL.md",
@@ -87,10 +100,10 @@ class HumanizeAcademicChineseSkillTests(unittest.TestCase):
             if len(text.splitlines()) > 100:
                 self.assertIn("## 目录", text, str(markdown))
 
-    def test_pathology_catalog_covers_all_sixteen_diseases(self) -> None:
+    def test_pathology_catalog_covers_all_registered_diseases(self) -> None:
         text = (REFERENCES / "pathology-catalog.md").read_text(encoding="utf-8")
         matches = list(re.finditer(r"^## HUM-(\d{2})\b", text, flags=re.MULTILINE))
-        self.assertEqual([f"{i:02d}" for i in range(1, 17)], [m.group(1) for m in matches])
+        self.assertEqual([f"{i:02d}" for i in range(1, 23)], [m.group(1) for m in matches])
 
         for index, match in enumerate(matches):
             end = matches[index + 1].start() if index + 1 < len(matches) else len(text)
@@ -103,8 +116,8 @@ class HumanizeAcademicChineseSkillTests(unittest.TestCase):
 
     def test_scene_rule_counts_and_unique_ids(self) -> None:
         expected = {
-            "course-notes.md": ("NOTE-HUM", 35),
-            "modeling-engineering.md": ("MOD-HUM", 38),
+            "course-notes.md": ("NOTE-HUM", 42),
+            "modeling-engineering.md": ("MOD-HUM", 41),
             "research-journal.md": ("RJH", 37),
         }
         all_ids: list[str] = []
@@ -115,6 +128,31 @@ class HumanizeAcademicChineseSkillTests(unittest.TestCase):
             self.assertEqual(len(ids), len(set(ids)), filename)
             all_ids.extend(ids)
         self.assertEqual(len(all_ids), len(set(all_ids)))
+
+    def test_course_residual_triage_is_explicit_without_becoming_a_blacklist(self) -> None:
+        course = (REFERENCES / "course-notes.md").read_text(encoding="utf-8")
+        workflow = (REFERENCES / "workflow.md").read_text(encoding="utf-8")
+
+        self.assertIn("`NOTE-HUM-41 MUST`", course)
+        self.assertIn("过程中处理", course)
+        self.assertIn("概括为以下", course)
+        self.assertIn("样本口径如下", course)
+        self.assertIn("不得单凭这一例禁用", course)
+        self.assertIn("NOTE-HUM-41", workflow)
+        self.assertIn("不计入 high 覆盖率", workflow)
+
+        # The residual triage is deliberately not a lexical signal or a
+        # positive rewrite pair. It must remain a paired-review instruction.
+        lexicon = json.loads((REFERENCES / "lexical-signals.json").read_text(encoding="utf-8"))
+        note_41_signals = [
+            signal
+            for signal in lexicon["signals"]
+            if any(
+                item.get("rule") == "NOTE-HUM-41"
+                for item in signal.get("references", [])
+            )
+        ]
+        self.assertEqual([], note_41_signals)
 
     def test_each_scene_has_blacklist_rhythm_and_machine_perfection_sections(self) -> None:
         for filename in (
@@ -130,12 +168,20 @@ class HumanizeAcademicChineseSkillTests(unittest.TestCase):
 
     def test_sixty_scene_rewrite_patterns_exist(self) -> None:
         text = (REFERENCES / "rewrite-patterns.md").read_text(encoding="utf-8")
-        for prefix in ("CP", "MP", "RP"):
+        expected_counts = {"CP": 21, "MP": 20, "RP": 20}
+        for prefix, count in expected_counts.items():
             ids = re.findall(rf"^### ({prefix}-\d{{2}})\b", text, flags=re.MULTILINE)
-            self.assertEqual([f"{prefix}-{i:02d}" for i in range(1, 21)], ids)
-        self.assertGreaterEqual(text.count("**改前**"), 60)
-        self.assertGreaterEqual(text.count("**动作**"), 60)
+            self.assertEqual([f"{prefix}-{i:02d}" for i in range(1, count + 1)], ids)
+        self.assertGreaterEqual(text.count("**改前**"), 61)
+        self.assertGreaterEqual(text.count("**动作**"), 61)
         self.assertGreaterEqual(text.count("**改后**"), 60)
+        course_negative = re.search(
+            r"(?ms)^### CP-21\b.*?(?=^## 2\.)",
+            text,
+        )
+        self.assertIsNotNone(course_negative)
+        self.assertIn("**失败动作**", course_negative.group(0))
+        self.assertIn("不是正向模板", course_negative.group(0))
 
     def test_scene_rules_do_not_activate_quality_control_workflows(self) -> None:
         scene_text = "\n".join(
@@ -197,6 +243,38 @@ class HumanizeAcademicChineseSkillTests(unittest.TestCase):
             for path in [SKILL / "SKILL.md", *REFERENCES.glob("*.md")]
         )
         self.assertNotRegex(combined, r"STYLE-(?:DIAGNOSE|REWRITE|DRAFT)")
+
+    def test_entrypoint_routing_and_long_document_terminal_states_are_consistent(self) -> None:
+        skill = (SKILL / "SKILL.md").read_text(encoding="utf-8")
+        workflow = (REFERENCES / "workflow.md").read_text(encoding="utf-8")
+        longdoc = (REFERENCES / "long-document-workflow.md").read_text(
+            encoding="utf-8"
+        )
+        portable = (REFERENCES / "system-prompt-contract.md").read_text(
+            encoding="utf-8"
+        )
+        evaluation = (REFERENCES / "evaluation-contract.md").read_text(
+            encoding="utf-8"
+        )
+        finalizer = (SKILL / "scripts" / "finalize_humanize_long_document.py").read_text(
+            encoding="utf-8"
+        )
+
+        self.assertNotIn("不确定时用 `GENERAL`", workflow)
+        self.assertNotIn("路由不确定时，以原结构", portable)
+        for text in (skill, workflow, portable, evaluation):
+            self.assertRegex(text, r"(?:正分场景|COURSE/MODELING).{0,40}(?:平局|margin)")
+            self.assertIn("AMBIGUOUS", text)
+        self.assertIn("`GENERAL` 不读取专属场景文件", skill)
+        self.assertIn("Rewrite/质量完成声明", workflow)
+        self.assertIn("已完成纯文风诊断", workflow)
+
+        self.assertNotIn("提升为一个临时合并单元", longdoc)
+        self.assertIn("不得在 prepare 后手造临时 unit", longdoc)
+        self.assertIn("调整分块预算并新建 prepare run", longdoc)
+        self.assertIn("publish_state=REVIEW_CANDIDATE", longdoc)
+        self.assertIn("paired_quality_clearance_granted = False", finalizer)
+        self.assertIn("当前没有外部 paired-quality/结构语义审批", longdoc)
 
     def test_diagnose_schema_has_one_canonical_source(self) -> None:
         canonical = (
@@ -363,6 +441,20 @@ class HumanizeAcademicChineseSkillTests(unittest.TestCase):
         self.assertIn("三组数据的温度分别为", combined)
         self.assertIn("不能声称表格已经列出", combined)
 
+    def test_v28_compression_preserves_relation_responsibility_and_collocation(self) -> None:
+        skill = (SKILL / "SKILL.md").read_text(encoding="utf-8")
+        workflow = (REFERENCES / "workflow.md").read_text(encoding="utf-8")
+        course = (REFERENCES / "course-notes.md").read_text(encoding="utf-8")
+        modeling = (REFERENCES / "modeling-engineering.md").read_text(encoding="utf-8")
+
+        self.assertIn("因果/并列关系、动作责任主体、谓词支配对象和场景声线", skill)
+        self.assertIn("共同样本、共同参数或相邻位置不能被静默改写为充分因果", workflow)
+        self.assertIn("NOTE-HUM-42 MUST", course)
+        self.assertIn("不新增“样本共包括”“这表示”“也就是说”的词项黑名单", course)
+        self.assertIn("MOD-HUM-41 MUST", modeling)
+        self.assertIn("对象—参数—判据", modeling)
+        self.assertIn("academic_correctness=NOT_EVALUATED", modeling)
+
     def test_verification_claims_require_executed_evidence(self) -> None:
         skill = (SKILL / "SKILL.md").read_text(encoding="utf-8")
         workflow = (REFERENCES / "workflow.md").read_text(encoding="utf-8")
@@ -449,9 +541,9 @@ class HumanizeAcademicChineseSkillTests(unittest.TestCase):
             "evidence-manifest.json",
             "replay_humanize_validation_record.py",
             "SELF_CONSISTENCY_ONLY",
-            "humanize-direct-validation-evidence/v3",
-            "humanize-validation-invocation/v2",
-            "hvr2-",
+            "humanize-direct-validation-evidence/v5",
+            "humanize-validation-invocation/v4",
+            "hvr4-",
             "UNVERIFIED_CALLER_PROPOSAL",
             "SAME_HOST_SAME_USER_PARENT_PROCESS",
             "inputs/before.bin",
@@ -466,7 +558,7 @@ class HumanizeAcademicChineseSkillTests(unittest.TestCase):
             "LEX-EMPH-01": [("references/research-journal.md", "RJH-04"), ("references/modeling-engineering.md", "MOD-HUM-13")],
             "LEX-CONCLUDE-01": [("references/pathology-catalog.md", "HUM-11"), ("references/style-gates.md", "STYLE-07")],
             "LEX-OUTLINE-01": [("references/research-journal.md", "RJH-09"), ("references/pathology-catalog.md", "HUM-01")],
-            "LEX-ORDER-01": [("references/course-notes.md", "NOTE-HUM-11"), ("references/research-journal.md", "RJH-11")],
+            "LEX-ORDER-01": [("references/course-notes.md", "NOTE-HUM-11"), ("references/course-notes.md", "NOTE-HUM-37"), ("references/research-journal.md", "RJH-11")],
             "LEX-CONTRAST-01": [("references/pathology-catalog.md", "HUM-03"), ("references/research-journal.md", "RJH-05")],
             "LEX-PARALLEL-01": [("references/pathology-catalog.md", "HUM-13")],
             "LEX-MGMT-01": [("references/style-gates.md", "STYLE-06"), ("references/research-journal.md", "RJH-10"), ("references/modeling-engineering.md", "MOD-HUM-19")],
@@ -492,6 +584,15 @@ class HumanizeAcademicChineseSkillTests(unittest.TestCase):
             "LEX-FORMAT-BOLD-01": [("references/pathology-catalog.md", "HUM-14")],
             "LEX-COURSE-FORMULA-CAPTION-01": [("references/course-notes.md", "NOTE-HUM-35")],
             "LEX-REPAIR-01": [("references/pathology-catalog.md", "HUM-16")],
+            "LEX-ABSTRACT-BENEFIT-01": [("references/pathology-catalog.md", "HUM-11"), ("references/research-journal.md", "RJH-30")],
+            "LEX-VAGUE-DEPTH-01": [("references/pathology-catalog.md", "HUM-11"), ("references/research-journal.md", "RJH-30")],
+            "LEX-META-02": [("references/pathology-catalog.md", "HUM-17")],
+            "LEX-SELF-VALIDATION-01": [("references/pathology-catalog.md", "HUM-18")],
+            "LEX-SELF-AUDIT-TRIPLET-01": [("references/pathology-catalog.md", "HUM-19")],
+            "LEX-QUESTION-ANALYSIS-CONTRAST-01": [("references/modeling-engineering.md", "MOD-HUM-06/MOD-HUM-11")],
+            "LEX-QUESTION-AVOID-MISREAD-01": [("references/modeling-engineering.md", "MOD-HUM-39"), ("references/pathology-catalog.md", "HUM-21")],
+            "LEX-QUESTION-BENEFIT-SELF-PROOF-01": [("references/modeling-engineering.md", "MOD-HUM-40"), ("references/pathology-catalog.md", "HUM-22")],
+            "LEX-COURSE-COPULAR-COMMA-01": [("references/course-notes.md", "NOTE-HUM-40")],
         }
         actual = {
             signal["id"]: [(item["file"], item["rule"]) for item in signal["provenance"]]

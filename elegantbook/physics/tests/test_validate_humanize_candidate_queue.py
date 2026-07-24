@@ -1,10 +1,12 @@
 import hashlib
 import importlib.util
+import io
 import json
 import os
 import tempfile
 import unittest
 from concurrent.futures import ThreadPoolExecutor
+from contextlib import redirect_stderr, redirect_stdout
 from pathlib import Path
 from unittest import mock
 
@@ -112,6 +114,46 @@ class CandidateQueueValidatorTests(unittest.TestCase):
             catalog_path=self.catalog,
             queue_dir=output,
         )
+
+    def configure_negative_guard(
+        self,
+        detector: object,
+        *,
+        guard_id: str = "NEGATIVE-BROKEN-01",
+    ) -> None:
+        catalog = json.loads(self.catalog.read_text(encoding="utf-8"))
+        catalog["sources"][0].update(
+            {
+                "origin_class": "MODEL_GENERATED",
+                "role": "negative_template_reference",
+            }
+        )
+        catalog["action_cards"][0].update(
+            {
+                "id": guard_id,
+                "kind": "negative_guard",
+                "required_anchor_roles": ["template"],
+                "detector": detector,
+            }
+        )
+        self.catalog.write_text(
+            json.dumps(catalog, ensure_ascii=False), encoding="utf-8"
+        )
+
+    def assert_redacted_cli_failure(
+        self,
+        stdout: io.StringIO,
+        stderr: io.StringIO,
+        *,
+        expected: str,
+        sensitive_marker: str,
+    ) -> None:
+        rendered_error = stderr.getvalue()
+        self.assertEqual("", stdout.getvalue())
+        self.assertIn(expected, rendered_error)
+        self.assertNotIn(sensitive_marker, rendered_error)
+        self.assertNotIn("Traceback", rendered_error)
+        self.assertNotIn(str(self.root.resolve()), rendered_error)
 
     def test_candidate_package_rejects_duplicate_json_keys(self) -> None:
         candidate = self.write_candidate()
@@ -525,6 +567,7 @@ class CandidateQueueValidatorTests(unittest.TestCase):
         candidate = self.write_candidate()
         original_text = self.after.read_text(encoding="utf-8")
         seen: dict[str, Path] = {}
+        observed_scene: list[str] = []
         original_anchor = candidate_validator._anchor_contract
         original_style = candidate_validator.output_validator.validate
         original_copy = candidate_validator._source_copy_check
@@ -546,9 +589,12 @@ class CandidateQueueValidatorTests(unittest.TestCase):
             seen["copy"] = parsed["after_path"]
             return original_copy(parsed, sources, cards)
 
-        def template(after_path, guards=()):
+        def template(after_path, guards=(), *, resolved_scene="GENERAL"):
             seen["template"] = after_path
-            return original_template(after_path, guards)
+            observed_scene.append(resolved_scene)
+            return original_template(
+                after_path, guards, resolved_scene=resolved_scene
+            )
 
         with (
             mock.patch.object(candidate_validator, "_anchor_contract", side_effect=anchor),
@@ -560,6 +606,7 @@ class CandidateQueueValidatorTests(unittest.TestCase):
 
         self.assertEqual({"anchor", "style", "copy", "template"}, set(seen))
         self.assertEqual(1, len(set(seen.values())))
+        self.assertEqual(["RESEARCH"], observed_scene)
         self.assertNotEqual(self.after.resolve(), next(iter(seen.values())).resolve())
         self.assertEqual(original_text, self.after.read_text(encoding="utf-8"))
         self.assertEqual("FAIL", result["status"])
@@ -770,7 +817,7 @@ class CandidateQueueValidatorTests(unittest.TestCase):
             real_atomic_write(path, raw)
 
         with mock.patch.object(candidate_validator, "_atomic_write", side_effect=fail_third_write):
-            with self.assertRaisesRegex(candidate_validator.CandidateError, "queue_publish_error:OSError:injected staging failure"):
+            with self.assertRaisesRegex(candidate_validator.CandidateError, "queue_publish_error:OSError"):
                 self.validate(revised, queue=True)
 
         self.assertEqual(review_before, review.read_bytes())
@@ -1104,6 +1151,559 @@ class CandidateQueueValidatorTests(unittest.TestCase):
         self.assertIn("negative_guard:NEGATIVE-CHAIN-01", result["template_check"]["codes"])
         self.assertEqual("REVIEW", result["template_check"]["status"])
         self.assertIn("NEGATIVE-CHAIN-01", json.dumps(result, ensure_ascii=False))
+
+    def test_active_structured_negative_guard_uses_raw_tex_and_keeps_evidence(self) -> None:
+        catalog = json.loads(self.catalog.read_text(encoding="utf-8"))
+        catalog["sources"].append(
+            {
+                "id": "SOURCE-STRUCTURED-NEGATIVE",
+                "source_tier": "A1",
+                "origin_class": "MODEL_GENERATED",
+                "scene_scope": ["ALL"],
+                "role": "negative_template_reference",
+                "path": str(self.source),
+                "provenance": "test",
+                "use_limit": "negative test only",
+            }
+        )
+        detector = {
+            "type": "structured_repeated_list/v1",
+            "block_role": {
+                "heading_leaf_regex": "^(?:摘要|最短执行版|最后只记)$",
+            },
+            "thresholds": {
+                "minimum_blocks": 3,
+                "minimum_items_per_block": 3,
+            },
+            "shared_anchor": {
+                "mode": "MAXIMAL_HAN_NGRAM",
+                "minimum_han_chars": 4,
+                "maximum_han_chars": 8,
+                "minimum_block_coverage": 3,
+            },
+        }
+        catalog["action_cards"].append(
+            {
+                "id": "NEGATIVE-STRUCTURED-TEX-01",
+                "scene": "ALL",
+                "kind": "negative_guard",
+                "action": "Reject repeated recap lists.",
+                "requires": ["template"],
+                "required_anchor_roles": ["template"],
+                "forbids": ["selection as a positive action"],
+                "detector": detector,
+                "source_refs": [
+                    {
+                        "source_id": "SOURCE-STRUCTURED-NEGATIVE",
+                        "line_start": 1,
+                        "line_end": 1,
+                    }
+                ],
+            }
+        )
+        self.catalog.write_text(
+            json.dumps(catalog, ensure_ascii=False), encoding="utf-8"
+        )
+        before_tex = self.root / "before.tex"
+        after_tex = self.root / "after.tex"
+        anchor = "本文只记录当前范围。"
+        before_tex.write_text(anchor + "\n", encoding="utf-8")
+        after_tex.write_text(
+            "\n".join(
+                [
+                    anchor,
+                    r"\section*[HEADING_OPTION_SECRET]{摘要 $HEADING_MATH_SECRET$}",
+                    r"\begin{enumerate}",
+                    r"\item[ITEM_LABEL_SECRET] 共同校验步骤核对甲条件",
+                    r"\item 共同校验步骤复算甲数据 \secretcommand{COMMAND_ARG_SECRET}",
+                    r"\item 共同校验步骤记录甲结论",
+                    r"\end{enumerate}",
+                    r"\subsection*{最短执行版}",
+                    r"\begin{enumerate}",
+                    r"\item 共同校验步骤核对乙条件",
+                    r"\item 共同校验步骤复算乙数据",
+                    r"\item 共同校验步骤记录乙结论",
+                    r"\end{enumerate}",
+                    r"\subsection*{最后只记}",
+                    r"\begin{enumerate}",
+                    r"\item 共同校验步骤核对丙条件",
+                    r"\item 共同校验步骤复算丙数据",
+                    r"\item 共同校验步骤记录丙结论",
+                    r"\end{enumerate}",
+                ]
+            )
+            + "\n",
+            encoding="utf-8",
+        )
+        candidate = self.write_candidate(
+            before_path=str(before_tex),
+            after_path=str(after_tex),
+            anchors=[
+                {
+                    "id": "scope-anchor",
+                    "before_text": anchor,
+                    "after_text": anchor,
+                    "role": "scope",
+                }
+            ],
+        )
+
+        result = self.validate(candidate)
+
+        template = result["template_check"]
+        self.assertEqual("REVIEW", template["status"])
+        self.assertIn(
+            "negative_guard:NEGATIVE-STRUCTURED-TEX-01", template["codes"]
+        )
+        hit = next(
+            item
+            for item in template["negative_guard_hits"]
+            if item["card_id"] == "NEGATIVE-STRUCTURED-TEX-01"
+        )
+        self.assertEqual("structured_repeated_list/v1", hit["detector_type"])
+        self.assertRegex(hit["definition_sha256"], r"^[0-9a-f]{64}$")
+        evidence = hit["structured_evidence"]
+        self.assertEqual(3, evidence["qualified_block_count"])
+        self.assertEqual(3, len(evidence["qualified_blocks"]))
+        self.assertTrue(evidence["shared_anchors"])
+        self.assertTrue(all(item["format"] == "tex" for item in evidence["qualified_blocks"]))
+        rendered_evidence = json.dumps(evidence, ensure_ascii=False)
+        for protected_payload in (
+            "HEADING_OPTION_SECRET",
+            "HEADING_MATH_SECRET",
+            "ITEM_LABEL_SECRET",
+            "COMMAND_ARG_SECRET",
+        ):
+            self.assertNotIn(protected_payload, rendered_evidence)
+
+    def test_regex_negative_guard_uses_protected_aware_author_view(self) -> None:
+        after_tex = self.root / "protected.tex"
+        after_tex.write_text(
+            "普通正文必须牢记当前范围。\\verb|固定模板|\n",
+            encoding="utf-8",
+        )
+        guard = {
+            "id": "NEGATIVE-PROTECTED-REGEX-01",
+            "scene": "ALL",
+            "status": "AVAILABLE",
+            "detector": {
+                "type": "regex_groups/v1",
+                "minimum_groups": 2,
+                "pattern_groups": [
+                    {"id": "visible", "regex": "必须牢记", "minimum_occurrences": 1},
+                    {"id": "protected", "regex": "固定模板", "minimum_occurrences": 1},
+                ],
+            },
+        }
+
+        result = candidate_validator._template_check(after_tex, [guard])
+
+        self.assertEqual("PASS", result["status"])
+        self.assertEqual([], result["negative_guard_hits"])
+
+    def test_unknown_and_broken_detectors_review_without_rereading_after(self) -> None:
+        class CountingAfter:
+            suffix = ".md"
+
+            def __init__(self, text: str) -> None:
+                self.text = text
+                self.read_count = 0
+
+            def read_text(self, *, encoding: str) -> str:
+                self.read_count += 1
+                return self.text
+
+        after = CountingAfter("普通候选正文。\n")
+        guards = [
+            {
+                "id": "NEGATIVE-UNKNOWN-01",
+                "scene": "ALL",
+                "status": "AVAILABLE",
+                "detector": {"type": "unknown_detector/v9"},
+            },
+            {
+                "id": "NEGATIVE-BROKEN-01",
+                "scene": "ALL",
+                "status": "AVAILABLE",
+                "detector": {"type": "structured_repeated_list/v1"},
+            },
+        ]
+
+        result = candidate_validator._template_check(after, guards)
+
+        self.assertEqual(1, after.read_count)
+        self.assertEqual("REVIEW", result["status"])
+        self.assertEqual(
+            {
+                "negative_guard_detector_review:NEGATIVE-UNKNOWN-01",
+                "negative_guard_detector_review:NEGATIVE-BROKEN-01",
+            },
+            set(result["codes"]),
+        )
+        self.assertEqual(2, len(result["negative_guard_hits"]))
+        for hit in result["negative_guard_hits"]:
+            self.assertEqual("REVIEW", hit["evaluation_status"])
+            self.assertEqual("DETECTOR_EVALUATION_REVIEW", hit["review_code"])
+            self.assertRegex(hit["definition_sha256"], r"^[0-9a-f]{64}$")
+
+    def test_malformed_catalog_detector_is_end_to_end_review(self) -> None:
+        guard_id = "NEGATIVE-BROKEN-01"
+        self.configure_negative_guard({"type": "structured_repeated_list/v1"})
+        candidate = self.write_candidate()
+
+        result = self.validate(candidate)
+
+        self.assertEqual("REVIEW", result["status"])
+        self.assertEqual(2, result["exit_code"])
+        self.assertEqual(
+            [guard_id],
+            [item["id"] for item in result["action_contract"]["active_negative_guards"]],
+        )
+        self.assertIn(
+            f"negative_guard_detector_review:{guard_id}",
+            result["template_check"]["codes"],
+        )
+
+        stdout = io.StringIO()
+        stderr = io.StringIO()
+        with redirect_stdout(stdout), redirect_stderr(stderr):
+            exit_code = candidate_validator.main(
+                [str(candidate), "--catalog", str(self.catalog), "--format", "json"]
+            )
+        self.assertEqual(2, exit_code)
+        self.assertEqual("REVIEW", json.loads(stdout.getvalue())["status"])
+        self.assertEqual("", stderr.getvalue())
+
+    def test_missing_and_malformed_catalog_are_hard_failures(self) -> None:
+        candidate = self.write_candidate()
+        cases = {
+            "missing": self.root / "missing-catalog.json",
+            "malformed": self.root / "malformed-catalog.json",
+        }
+        cases["malformed"].write_text("{not-json", encoding="utf-8")
+
+        for label, catalog in cases.items():
+            with self.subTest(label=label):
+                with self.assertRaises(candidate_validator.CandidateError):
+                    candidate_validator.validate_candidate(
+                        candidate,
+                        catalog_path=catalog,
+                    )
+                stdout = io.StringIO()
+                stderr = io.StringIO()
+                with redirect_stdout(stdout), redirect_stderr(stderr):
+                    exit_code = candidate_validator.main(
+                        [str(candidate), "--catalog", str(catalog), "--format", "json"]
+                    )
+                self.assertEqual(1, exit_code)
+                self.assertEqual("", stdout.getvalue())
+
+    def test_detector_contract_error_is_review_for_api_and_cli(self) -> None:
+        self.configure_negative_guard(
+            {
+                "minimum_groups": 1,
+                "pattern_groups": [
+                    {"id": "shell", "regex": "固定句壳", "minimum_occurrences": 1}
+                ],
+            },
+            guard_id="NEGATIVE-CONTRACT-01",
+        )
+        candidate = self.write_candidate()
+
+        with mock.patch.object(
+            candidate_validator.repetition_guards,
+            "evaluate_detector_snapshot",
+            side_effect=candidate_validator.repetition_guards.DetectorEvaluationReview(
+                "sensitive body"
+            ),
+        ):
+            result = self.validate(candidate)
+            stdout = io.StringIO()
+            stderr = io.StringIO()
+            with redirect_stdout(stdout), redirect_stderr(stderr):
+                exit_code = candidate_validator.main(
+                    [str(candidate), "--catalog", str(self.catalog), "--format", "json"]
+                )
+
+        self.assertEqual("REVIEW", result["status"])
+        self.assertEqual(2, result["exit_code"])
+        self.assertEqual(2, exit_code)
+        self.assertEqual("REVIEW", json.loads(stdout.getvalue())["status"])
+        self.assertNotIn("sensitive body", json.dumps(result, ensure_ascii=False))
+        self.assertEqual("", stderr.getvalue())
+
+    def test_detector_runtime_error_is_redacted_hard_failure_for_api_and_cli(self) -> None:
+        guard_id = "NEGATIVE-RUNTIME-01"
+        self.configure_negative_guard(
+            {
+                "minimum_groups": 1,
+                "pattern_groups": [
+                    {"id": "shell", "regex": "固定句壳", "minimum_occurrences": 1}
+                ],
+            },
+            guard_id=guard_id,
+        )
+        candidate = self.write_candidate()
+
+        with mock.patch.object(
+            candidate_validator.repetition_guards,
+            "evaluate_detector_snapshot",
+            side_effect=RuntimeError("sensitive body"),
+        ):
+            with self.assertRaisesRegex(
+                candidate_validator.CandidateError,
+                f"negative_guard_evaluation_runtime_error:{guard_id}:RuntimeError",
+            ):
+                self.validate(candidate)
+            stdout = io.StringIO()
+            stderr = io.StringIO()
+            with redirect_stdout(stdout), redirect_stderr(stderr):
+                exit_code = candidate_validator.main(
+                    [str(candidate), "--catalog", str(self.catalog), "--format", "json"]
+                )
+
+        rendered_error = stderr.getvalue()
+        self.assertEqual(1, exit_code)
+        self.assertEqual("", stdout.getvalue())
+        self.assertIn(
+            f"negative_guard_evaluation_runtime_error:{guard_id}:RuntimeError",
+            rendered_error,
+        )
+        self.assertNotIn("sensitive body", rendered_error)
+        self.assertNotIn("Traceback", rendered_error)
+
+    def test_malformed_regex_detector_evidence_fails_closed_for_api_and_cli(self) -> None:
+        guard_id = "NEGATIVE-EVIDENCE-01"
+        self.configure_negative_guard(
+            {
+                "type": "regex_groups/v1",
+                "minimum_groups": 1,
+                "pattern_groups": [
+                    {"id": "shell", "regex": "fixed shell", "minimum_occurrences": 1}
+                ],
+            },
+            guard_id=guard_id,
+        )
+        candidate = self.write_candidate()
+        cases = {
+            "empty": {},
+            "none": None,
+            "triggered_not_bool": {"triggered": "SENSITIVE_EVIDENCE_TRIGGER"},
+            "matched_units_not_list": {
+                "triggered": False,
+                "group_results": [],
+                "matched_units": "SENSITIVE_EVIDENCE_UNITS",
+            },
+            "bool_occurrences": {
+                "triggered": True,
+                "group_results": [
+                    {
+                        "id": "shell",
+                        "occurrences": True,
+                        "minimum_occurrences": 1,
+                        "units": [],
+                        "triggered": True,
+                    }
+                ],
+                "matched_units": [],
+            },
+        }
+        expected = (
+            f"negative_guard_evaluation_runtime_error:{guard_id}:InvalidEvidence"
+        )
+
+        for label, evidence in cases.items():
+            with self.subTest(label=label), mock.patch.object(
+                candidate_validator.repetition_guards,
+                "evaluate_detector_snapshot",
+                return_value=evidence,
+            ):
+                with self.assertRaises(candidate_validator.CandidateError) as raised:
+                    self.validate(candidate)
+                self.assertEqual(expected, str(raised.exception))
+
+                stdout = io.StringIO()
+                stderr = io.StringIO()
+                with redirect_stdout(stdout), redirect_stderr(stderr):
+                    exit_code = candidate_validator.main(
+                        [str(candidate), "--catalog", str(self.catalog), "--format", "json"]
+                    )
+
+                self.assertEqual(1, exit_code)
+                self.assert_redacted_cli_failure(
+                    stdout,
+                    stderr,
+                    expected=expected,
+                    sensitive_marker="SENSITIVE_EVIDENCE",
+                )
+
+    def test_malformed_structured_detector_evidence_fails_closed(self) -> None:
+        guard_id = "NEGATIVE-STRUCTURED-EVIDENCE-01"
+        self.configure_negative_guard(
+            {
+                "type": "structured_repeated_list/v1",
+                "block_role": {"heading_leaf_regex": "^summary$"},
+                "thresholds": {
+                    "minimum_blocks": 3,
+                    "minimum_items_per_block": 3,
+                },
+                "shared_anchor": {
+                    "mode": "MAXIMAL_HAN_NGRAM",
+                    "minimum_han_chars": 4,
+                    "maximum_han_chars": 8,
+                    "minimum_block_coverage": 3,
+                },
+            },
+            guard_id=guard_id,
+        )
+        candidate = self.write_candidate()
+        evidence = {
+            "triggered": False,
+            "qualified_block_count": False,
+            "qualified_blocks": [],
+            "shared_anchors": [],
+        }
+        expected = (
+            f"negative_guard_evaluation_runtime_error:{guard_id}:InvalidEvidence"
+        )
+
+        with mock.patch.object(
+            candidate_validator.repetition_guards,
+            "evaluate_detector_snapshot",
+            return_value=evidence,
+        ):
+            with self.assertRaises(candidate_validator.CandidateError) as raised:
+                self.validate(candidate)
+
+            stdout = io.StringIO()
+            stderr = io.StringIO()
+            with redirect_stdout(stdout), redirect_stderr(stderr):
+                exit_code = candidate_validator.main(
+                    [str(candidate), "--catalog", str(self.catalog), "--format", "json"]
+                )
+
+        self.assertEqual(expected, str(raised.exception))
+        self.assertEqual(1, exit_code)
+        self.assert_redacted_cli_failure(
+            stdout,
+            stderr,
+            expected=expected,
+            sensitive_marker="SENSITIVE_STRUCTURED_EVIDENCE",
+        )
+
+    def test_internal_stage_errors_are_redacted_for_api_and_cli(self) -> None:
+        candidate = self.write_candidate()
+        cases = (
+            (
+                candidate_validator.action_profile,
+                "build_action_profile",
+                "action_profile_runtime_error:RuntimeError",
+            ),
+            (
+                candidate_validator,
+                "_source_copy_check",
+                "source_copy_check_runtime_error:RuntimeError",
+            ),
+        )
+
+        for owner, attribute, expected in cases:
+            marker = f"SENSITIVE_{attribute.upper()}"
+            with self.subTest(stage=attribute), mock.patch.object(
+                owner,
+                attribute,
+                side_effect=RuntimeError(marker),
+            ):
+                with self.assertRaises(candidate_validator.CandidateError) as raised:
+                    self.validate(candidate)
+                self.assertEqual(expected, str(raised.exception))
+                self.assertNotIn(marker, str(raised.exception))
+                self.assertNotIn(str(self.root.resolve()), str(raised.exception))
+
+                stdout = io.StringIO()
+                stderr = io.StringIO()
+                with redirect_stdout(stdout), redirect_stderr(stderr):
+                    exit_code = candidate_validator.main(
+                        [str(candidate), "--catalog", str(self.catalog), "--format", "json"]
+                    )
+
+                self.assertEqual(1, exit_code)
+                self.assert_redacted_cli_failure(
+                    stdout,
+                    stderr,
+                    expected=expected,
+                    sensitive_marker=marker,
+                )
+
+    def test_queue_io_error_is_redacted_for_api_and_cli(self) -> None:
+        candidate = self.write_candidate()
+        queue_dir = self.root / "queue-redaction"
+        marker = "SENSITIVE_QUEUE_BODY"
+        expected = "queue_publish_error:OSError"
+
+        with mock.patch.object(
+            candidate_validator,
+            "_atomic_write",
+            side_effect=OSError(marker),
+        ):
+            with self.assertRaises(candidate_validator.CandidateError) as raised:
+                candidate_validator.validate_candidate(
+                    candidate,
+                    catalog_path=self.catalog,
+                    queue_dir=queue_dir,
+                )
+            self.assertEqual(expected, str(raised.exception))
+
+            stdout = io.StringIO()
+            stderr = io.StringIO()
+            with redirect_stdout(stdout), redirect_stderr(stderr):
+                exit_code = candidate_validator.main(
+                    [
+                        str(candidate),
+                        "--catalog",
+                        str(self.catalog),
+                        "--queue-dir",
+                        str(queue_dir),
+                        "--format",
+                        "json",
+                    ]
+                )
+
+        self.assertEqual(1, exit_code)
+        self.assert_redacted_cli_failure(
+            stdout,
+            stderr,
+            expected=expected,
+            sensitive_marker=marker,
+        )
+
+    def test_main_redacts_unexpected_exception_and_does_not_catch_base_exception(self) -> None:
+        candidate = self.write_candidate()
+        marker = "SENSITIVE_CLI_BODY"
+        expected = "candidate_cli_runtime_error:RuntimeError"
+        stdout = io.StringIO()
+        stderr = io.StringIO()
+
+        with mock.patch.object(
+            candidate_validator,
+            "validate_candidate",
+            side_effect=RuntimeError(marker),
+        ), redirect_stdout(stdout), redirect_stderr(stderr):
+            exit_code = candidate_validator.main([str(candidate)])
+
+        self.assertEqual(1, exit_code)
+        self.assert_redacted_cli_failure(
+            stdout,
+            stderr,
+            expected=expected,
+            sensitive_marker=marker,
+        )
+
+        with mock.patch.object(
+            candidate_validator,
+            "validate_candidate",
+            side_effect=KeyboardInterrupt,
+        ), self.assertRaises(KeyboardInterrupt):
+            candidate_validator.main([str(candidate)])
 
     def test_general_candidate_can_declare_no_corpus_support_without_fabricating_a_card(self) -> None:
         candidate = self.write_candidate(

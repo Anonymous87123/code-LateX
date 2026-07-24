@@ -162,7 +162,10 @@ class PairedQualityVerifierTests(unittest.TestCase):
             else self.request["changes"][0]["change_id"]
         )
         review = {"target": target, "verdict": "ACCEPT"}
-        review.update({dimension: "PASS" for dimension in verifier.DIMENSIONS})
+        review.update({
+            dimension: "PASS"
+            for dimension in self.request["review_contract"]["required_dimensions"]
+        })
         body = {
             "schema": verifier.RESPONSE_SCHEMA,
             "iss": verifier.EXPECTED_ISSUER,
@@ -185,6 +188,93 @@ class PairedQualityVerifierTests(unittest.TestCase):
         payload = b64(verifier._canonical_json(body))
         signing_input = f"{protected}.{payload}".encode("ascii")
         self.response_path.write_text(f"{protected}.{payload}.{b64(self.private.sign(signing_input))}", encoding="ascii")
+
+    def _commit_request_body(self, body: dict) -> None:
+        self.request = {
+            **body,
+            "request_sha256": verifier._sha256(verifier._canonical_json(body)),
+        }
+        self.request_path.write_text(
+            json.dumps(self.request, ensure_ascii=False), encoding="utf-8"
+        )
+        self.challenge = self._write_challenge()
+        self._write_review_record()
+        self._write_response()
+
+    def _configure_template_field_request(self) -> None:
+        before_line = "用词建议：避免空泛提示。"
+        after_line = "用词建议：删去空泛提示。"
+        before_payload = "避免空泛提示。"
+        after_payload = "删去空泛提示。"
+        self.before.write_text(before_line + "\n", encoding="utf-8")
+        self.after.write_text(after_line + "\n", encoding="utf-8")
+        change = verifier._changed_line_records(
+            self.before.read_bytes().decode("utf-8"),
+            self.after.read_bytes().decode("utf-8"),
+        )[0]
+        template_field_change = {
+            "code": "TEMPLATE_FIELD_PAYLOAD_EDIT_AUTHORIZED",
+            "severity": "info",
+            "change_id": change["change_id"],
+            "field_label": "用词建议",
+            "source_role": verifier.TEMPLATE_FIELD_SOURCE_ROLE,
+            "payload_role": verifier.TEMPLATE_FIELD_LABEL_ROLES["用词建议"],
+            "source_line": 1,
+            "after_line": 1,
+            "authorization_status": "AUTHORIZED_PAYLOAD_ONLY",
+            "permission": verifier.TEMPLATE_FIELD_PERMISSION,
+            "authorization_reason": "第1行用词建议字段仅调整载荷措辞并保持字段职责",
+            "change_types": [],
+            "before_span": {
+                "line": 1,
+                "payload_sha256": verifier._sha256(before_payload.encode("utf-8")),
+                "line_sha256": verifier._sha256(before_line.encode("utf-8")),
+            },
+            "after_span": {
+                "line": 1,
+                "payload_sha256": verifier._sha256(after_payload.encode("utf-8")),
+                "line_sha256": verifier._sha256(after_line.encode("utf-8")),
+            },
+            "local_clearance_supported": False,
+        }
+        body = {
+            "schema": verifier.REQUEST_SCHEMA,
+            "status": "PENDING_EXTERNAL_REVIEW",
+            "artifact": {
+                "before_sha256": verifier._sha256(self.before.read_bytes()),
+                "after_sha256": verifier._sha256(self.after.read_bytes()),
+            },
+            "validation_context": {
+                "mode": "REWRITE",
+                "decision": "REWRITE",
+                "scene": "RESEARCH",
+                "document_format": "markdown",
+                "document_scope": "DOCUMENT",
+                "mechanical_validation_status": "PASS",
+            },
+            "policy_hashes": verifier._current_policy_hashes(),
+            "changes": [change],
+            "template_field_changes": [template_field_change],
+            "review_contract": {
+                "required_per_change_verdicts": ["ACCEPT", "REVISE", "REVERT"],
+                "required_dimensions": list(verifier.TEMPLATE_FIELD_AWARE_DIMENSIONS),
+                "empty_or_generic_benefit_is_clearance": False,
+                "local_model_or_caller_assertion_is_clearance": False,
+                "validator_pass_is_quality_clearance": False,
+            },
+            "limitations": {
+                "academic_correctness": "NOT_EVALUATED",
+                "authorship": "NOT_EVALUATED",
+                "quality_clearance_granted": False,
+            },
+        }
+        self._commit_request_body(body)
+
+    def _mutate_request(self, mutate) -> None:
+        body = json.loads(json.dumps(self.request, ensure_ascii=False))
+        body.pop("request_sha256")
+        mutate(body)
+        self._commit_request_body(body)
 
     def _signed_response(
         self,
@@ -252,7 +342,10 @@ class PairedQualityVerifierTests(unittest.TestCase):
                     {
                         "target": "NO_CHANGE",
                         "verdict": "ACCEPT",
-                        **{dimension: "PASS" for dimension in verifier.DIMENSIONS},
+                        **{
+                            dimension: "PASS"
+                            for dimension in self.request["review_contract"]["required_dimensions"]
+                        },
                     }
                 ],
             }),
@@ -303,6 +396,136 @@ class PairedQualityVerifierTests(unittest.TestCase):
         self.assertFalse(result["paired_quality_clearance_granted"])
         self.assertEqual("PASS", result["review_record_status"])
         self.assertEqual("NOT_EVALUATED", result["academic_correctness"])
+
+    def test_legacy_v1_request_without_template_field_changes_remains_compatible(self) -> None:
+        self.assertNotIn("template_field_changes", self.request)
+        self.assertEqual(
+            list(verifier.DIMENSIONS),
+            self.request["review_contract"]["required_dimensions"],
+        )
+        result = self.invoke()
+        self.assertEqual("PASS", result["verification_status"])
+        self.assertEqual("PASS", result["paired_quality_gate_status"])
+        self.assertFalse(result["paired_quality_clearance_granted"])
+
+    def test_template_field_aware_v1_request_is_verified_but_never_locally_cleared(self) -> None:
+        self._configure_template_field_request()
+        result = self.invoke()
+        self.assertEqual("REVIEW", result["status"])
+        self.assertEqual(2, result["exit_code"])
+        self.assertEqual("PASS", result["verification_status"])
+        self.assertEqual("PASS", result["paired_quality_gate_status"])
+        self.assertEqual("REVIEW", result["delivery_gate_status"])
+        self.assertFalse(result["paired_quality_clearance_granted"])
+        self.assertFalse(result["quality_clearance_granted"])
+
+    def test_template_field_aware_empty_list_uses_the_new_exact_review_contract(self) -> None:
+        self._mutate_request(
+            lambda body: (
+                body.update({"template_field_changes": []}),
+                body["review_contract"].update({
+                    "required_dimensions": list(
+                        verifier.TEMPLATE_FIELD_AWARE_DIMENSIONS
+                    )
+                }),
+            )
+        )
+        result = self.invoke()
+        self.assertEqual("PASS", result["verification_status"])
+        self.assertEqual("PASS", result["paired_quality_gate_status"])
+        self.assertFalse(result["paired_quality_clearance_granted"])
+
+    def test_template_field_scope_cannot_replace_the_external_quality_dimension(self) -> None:
+        self._configure_template_field_request()
+        response = self._signed_response(
+            "missing-template-field-dimension.jws",
+            payload_change=lambda payload: payload["review_items"][0].pop(
+                verifier.TEMPLATE_FIELD_DIMENSION
+            ),
+        )
+        result = self.invoke(response=response)
+        self.assertEqual("REVIEW", result["status"])
+        self.assertEqual(2, result["exit_code"])
+        self.assertEqual("QUALITY_REVIEW_INCOMPLETE", result["reasons"][0]["code"])
+        self.assertFalse(result["paired_quality_clearance_granted"])
+        self.assertFalse(result["quality_clearance_granted"])
+
+    def test_template_field_changes_validate_exact_fields_and_authorization(self) -> None:
+        cases = (
+            (
+                "unknown-field",
+                lambda finding: finding.update({"unbound_scope_claim": True}),
+                "UNKNOWN_FIELD",
+            ),
+            (
+                "invalid-hash",
+                lambda finding: finding["before_span"].update({
+                    "payload_sha256": "A" * 64
+                }),
+                "INVALID_HASH",
+            ),
+            (
+                "change-types",
+                lambda finding: finding.update({
+                    "change_types": ["NEGATION_SCOPE_CHANGED"]
+                }),
+                "INVALID_TEMPLATE_FIELD_CHANGE_TYPES",
+            ),
+            (
+                "authorization",
+                lambda finding: finding.update({"permission": "HEADER_AND_PAYLOAD"}),
+                "INVALID_TEMPLATE_FIELD_AUTHORIZATION",
+            ),
+            (
+                "local-clearance",
+                lambda finding: finding.update({"local_clearance_supported": True}),
+                "INVALID_TEMPLATE_FIELD_AUTHORIZATION",
+            ),
+        )
+        for name, mutate, expected_code in cases:
+            with self.subTest(name=name):
+                self._configure_template_field_request()
+                self._mutate_request(
+                    lambda body, mutate=mutate: mutate(
+                        body["template_field_changes"][0]
+                    )
+                )
+                result = self.invoke()
+                self.assertEqual("FAIL", result["status"])
+                self.assertEqual(expected_code, result["reasons"][0]["code"])
+
+    def test_template_field_hashes_are_replayed_against_current_artifacts(self) -> None:
+        self._configure_template_field_request()
+        self._mutate_request(
+            lambda body: body["template_field_changes"][0]["before_span"].update({
+                "payload_sha256": "a" * 64
+            })
+        )
+        result = self.invoke()
+        self.assertEqual("FAIL", result["status"])
+        self.assertEqual(
+            "TEMPLATE_FIELD_ARTIFACT_MISMATCH",
+            result["reasons"][0]["code"],
+        )
+
+    def test_unsafe_template_field_finding_cannot_be_declared_mechanical_pass(self) -> None:
+        self._configure_template_field_request()
+
+        def make_unauthorized(body: dict) -> None:
+            finding = body["template_field_changes"][0]
+            finding.update({
+                "code": "TEMPLATE_FIELD_PAYLOAD_EDIT_UNAUTHORIZED",
+                "severity": "warning",
+                "authorization_status": "NOT_AUTHORIZED",
+                "permission": None,
+                "authorization_reason": None,
+            })
+
+        self._mutate_request(make_unauthorized)
+        result = self.invoke()
+        self.assertEqual("REVIEW", result["status"])
+        self.assertEqual("MECHANICAL_GATE_BLOCKED", result["reasons"][0]["code"])
+        self.assertFalse(result["paired_quality_clearance_granted"])
 
     def test_caller_provided_redemption_ledger_is_diagnostic_only(self) -> None:
         result = self.invoke(redemption_ledger=self.root / "missing" / "ledger.json")

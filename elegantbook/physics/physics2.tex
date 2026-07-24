@@ -467,6 +467,29 @@ E\approx
 \begin{theorem}[高斯定理]
 在真空中，通过任意闭合曲面的电场强度通量，等于该闭合曲面所包围的全部电荷的代数和除以真空介电常数
 \[\boxed{\oint_S\mathbf E\cdot d\mathbf S=\frac{Q_{\mathrm{in}}}{\varepsilon_0}}\]如果闭合曲面内有多个电荷$Q_{\mathrm{in}}=\sum_iq_i$，于是：\[\boxed{\oint_S\mathbf E\cdot d\mathbf S=\frac1{\varepsilon_0}\sum_iq_i^{\mathrm{in}}}\]这里的电荷必须带符号：正电荷取正；负电荷取负。
+\begin{enumerate}
+  \item 如果点电荷 \(q\) 在闭合曲面 \(S\) 内：\[\boxed{\Phi_e=\frac q{\varepsilon_0}}\]无论闭合曲面是球面、立方体还是不规则形状，结果都一样。
+  \item 如果点电荷在闭合曲面外面，电场线会穿过曲面两次：先进入曲面；后离开曲面。一次通量为负，一次通量为正，二者抵消$\Phi_e=0$。
+\end{enumerate}
+如果系统中有多个点电荷：
+\[
+\mathbf E=\mathbf E_1+\mathbf E_2+\cdots+\mathbf E_n
+\]通过闭合曲面的总通量为：
+\[
+\Phi_e=\oint_S\mathbf E\cdot d\mathbf S=
+\oint_S(\mathbf E_1+\mathbf E_2+\cdots+\mathbf E_n)\cdot d\mathbf S=
+\Phi_{e1}+\Phi_{e2}+\cdots+\Phi_{en}
+\]对于每个点电荷：
+在闭合曲面外部，通量为零；
+在闭合曲面内部，通量为 \(q_i/\varepsilon_0\)。
+因此：
+\[
+\boxed{
+\Phi_e=
+\frac1{\varepsilon_0}
+\sum_iq_i^{\mathrm{in}}
+}
+\]这就是高斯定理。闭合面外的电荷对通过闭合面的电场强度通量没有贡献，但是对闭合面上各点的电场强度是有贡献的，即闭合面上各点的电场强度是由闭合面内、外所有电荷共同激发的。
 \end{theorem}
 \begin{note}
 高斯定理为什么成立？先考虑一个点电荷 \(q\) 位于球面中心。半径为 \(r\) 的球面上，电场大小处处相同：\(E=\frac{1}{4\pi\varepsilon_0}\frac{q}{r^2}\)，球面上任意面积元的法线方向都沿半径方向，因此
@@ -476,10 +499,6 @@ E\approx
 \frac{q}{r^2}\cdot4\pi r^2=
 \frac{q}{\varepsilon_0}
 \]注意这里 \(r^2\) 和球面积中的 \(r^2\) 恰好抵消，所以只要点电荷被闭合曲面包围，无论曲面多大，通量都不变。如果把球面变形成任意闭合曲面，只要电荷始终在曲面内部，电场线穿出曲面的总数仍然不会改变，因此通量仍然是\(\frac q{\varepsilon_0}\)。
-\begin{enumerate}
-  \item 如果点电荷 \(q\) 在闭合曲面 \(S\) 内：\[\boxed{\Phi_e=\frac q{\varepsilon_0}}\]无论闭合曲面是球面、立方体还是不规则形状，结果都一样。
-  \item 
-\end{enumerate}
 \end{note}
 
 \begin{exercise}
@@ -496,84 +515,171 @@ E\approx
 由于电场是均匀的，并且三棱柱内部没有电荷，根据高斯定理，最终总电通量应该为零。
 \end{solution}
 
-为了更直观地描述电场，教材常引入\textbf{电场线}：在任一点上，场线的切线方向就是该点 \(\vb*{E}\) 的方向；场线疏密反映场强大小。它不是实际存在的绳子，而是帮助我们读场分布的可视化工具。
-
-与电场线对应的定量概念是\textbf{电通量}。真正该先想清楚的是：我们并不是在数“有多少条线穿过去”，而是在问“电场在这个面法向方向上到底穿出得强不强”。只有先有这层法向投影图景，后面点乘式才不会显得突然。若一个面元的有向面积元写作 \(d\vb*{S}\)，则通过该面元的电通量为
- \(d\Phi_E=\vb*{E}\cdot d\vb*{S}, \qquad \Phi_E=\int_S \vb*{E}\cdot d\vb*{S}.\) 
-它衡量的不是“有多少条线真的穿过去”，而是\textbf{电场在该曲面法向方向上的总穿出效果}。
-
-\begin{theorem}[高斯定理]
-任意闭合曲面 \(S\) 上的电通量满足
- \(\iint_S \vb*{E}\cdot d\vb*{S} =\frac{q_{\mathrm{in}}}{\varepsilon_0},\) 
-其中 \(q_{\mathrm{in}}\) 是该闭合曲面所包围电荷的代数和。
-\end{theorem}
-
-\begin{center}
-\begin{tikzpicture}[scale=0.95]
- \draw (0,0) circle (1.2);
- \fill (0,0) circle (0.06);
- \node at (0.22,0.22) {\small \(+q\)};
- \draw[->] (0,0) -- (1.75,0);
- \draw[->] (0,0) -- (1.2,1.2);
- \draw[->] (0,0) -- (-1.45,0.8);
- \draw[->] (0,0) -- (-1.0,-1.3);
- \node at (0,-1.7) {\small 球形高斯面上的径向场};
-\end{tikzpicture}
-\end{center}
-
-高斯定理\textbf{永远成立}，但\textbf{只有在对称性足够强时才会让计算变简单}。真正适合高斯面的，通常只有三大类对称：
-\begin{itemize}
- \item 球对称：点电荷、均匀带电球；
- \item 轴对称：无限长直线电荷、圆柱面分布；
- \item 平面对称：无限大平面电荷。
-\end{itemize}
-
-\begin{remark}
-很多同学会把“高斯定理”误听成“求电场的万能捷径”。并不是。它在逻辑上总是对的，但在计算上只有当你能把高斯面上 \(\vb*{E}\) 的大小和方向控制得非常简单时，才真正值得用。否则积分反而更直接。
-\end{remark}
-
-\begin{remark}
-\textbf{高斯面上的场强和通过高斯面的总通量，根本不是同一本账。} 高斯面上某一点的 \(\vb*{E}\) 一般由\textbf{面内外全部电荷}共同决定；但闭合面的总通量
- \(\Phi_E=\iint_S \vb*{E}\cdot d\vb*{S}\) 
-却只由包围净电荷 \(q_{\mathrm{in}}\) 决定。也正因此，把某个外部电荷挪动位置时，高斯面上各点场强往往会改变，但只要 \(q_{\mathrm{in}}\) 不变，总通量就不变。
-\end{remark}
-
-\begin{note}
-\textbf{真正在题目里落笔时，建议把高斯定理固定成四步动作：}
+\begin{conclusion}[用高斯定理求电场强度]
+高斯定理本身永远成立，但它并不是对所有问题都方便。要用高斯定理直接求出 \(E\)，必须具有足够的对称性。
 \begin{enumerate}
- \item 先由电荷分布的对称性判断 \(\vb*{E}\) 的方向；
- \item 再选高斯面，使得高斯面上要么场强大小处处相等，要么某些面天然满足 \(\vb*{E}\perp d\vb*{S}\) 从而通量为零；
- \item 算清高斯面所包围的电荷代数和 \(q_{\mathrm{in}}\)；
- \item 最后再把
- \(\iint_S \vb*{E}\cdot d\vb*{S}=\frac{q_{\mathrm{in}}}{\varepsilon_0}\) 
- 收成关于 \(E(r)\) 的代数式。
+  \item 判断电荷分布具有哪种对称性：球对称；柱对称；平面对称。
+  \item 根据对称性判断电场：是沿半径方向；还是垂直于带电直线；还是垂直于带电平面。
+  \item 选择一个合适的假想闭合曲面，使得高斯面上电场大小相同或者某些面的电通量为零。常见选择：球对称：球面；柱对称：同轴圆柱面；平面对称：圆柱形“药盒”高斯面。
+  \item 求高斯面内的电荷：确定\(Q_{\mathrm{in}}\)，应用高斯定理\[\oint_S\mathbf E\cdot d\mathbf S
+=\frac{Q_{\mathrm{in}}}{\varepsilon_0}\]再解出电场强度。
+\end{enumerate}
+\end{conclusion}
+
+\begin{exercise}
+设一个半径为 \(R\) 的薄球壳，均匀带电，总电荷为 \(Q\)。
+要求求球壳内外的电场。
+\end{exercise}
+\begin{solution}
+\begin{enumerate}
+  \item 球壳内部：\(0<r<R\)。取半径为 \(r\) 的球形高斯面，且\(r<R\)，这个高斯面完全位于球壳内部，因此没有包围任何电荷，所以\(Q_{\mathrm{in}}=0\)，所以根据高斯定理\[\Phi_e=\frac1{\varepsilon_0}\sum_iq_i^{\mathrm{in}}=\oint_{S}E\cdot d\vec{S}=0\]由于球对称性，半径为 \(r\) 的球面上电场大小处处相同，并且沿径向，\(E\cdot4\pi r^2=0\)，所以\(E=0\)。这就是均匀带电薄球壳的一个重要结论：球壳内部电场为零。
+  \item 球壳外部：\(r>R\)。取半径 \(r\) 的球形高斯面，且\(r>R\)，此时高斯面包围了整个球壳，内部电荷为 \(Q\)。因此\[E\cdot4\pi r^2=\frac Q{\varepsilon_0}\implies \boxed{E=\frac{Q}{4\pi\varepsilon_0r^2},\qquad r>R}\]这说明在球壳外部，整个球壳的电场等效于一个位于球心、带电量为 \(Q\) 的点电荷。
+\end{enumerate}
+\end{solution}
+
+\begin{exercise}
+设一个半径为 \(R\) 的实心球，均匀带电，总电荷为 \(q\)。体电荷密度为 \(\rho\)。要求求球体内外的电场。
+\end{exercise}
+\begin{solution}
+\begin{enumerate}
+  \item 球外电场：\(r\ge R\)。取半径为 \(r\) 的球面，且 \(r\ge R\)。高斯面包围整个球体，所以\(Q_{\mathrm{in}}=q\)，由高斯定理\(E4\pi r^2=\frac q{\varepsilon_0}\)，因此
+\[\boxed{E=\frac q{4\pi\varepsilon_0r^2},\quad r\ge R}\]与带电球壳外部的结果完全一样。
+\item 球内电场：\(r<R\)。取半径为 \(r\) 的球形高斯面。由于电荷均匀分布，半径 \(r\) 内部所包含的电荷为：\(q_{\mathrm{in}}=\rho\frac43\pi r^3\)，应用高斯定理：
+\[E4\pi r^2=\frac1{\varepsilon_0}\rho\frac43\pi r^3\implies E=\frac{\rho r}{3\varepsilon_0}=\frac{qr}{4\pi\varepsilon_0R^3}\]
+\end{enumerate}
+所以均匀带电实心球的电场图像是球内从 0 开始，随 \(r\) 线性增加；到表面达到最大；球外按 \(1/r^2\) 衰减。
+\end{solution}
+
+
+\begin{exercise}
+设无限长直线的线电荷密度为\(\lambda\)，求距离直线 \(r\) 处的电场。
+\end{exercise}
+\begin{solution}
+选择一个与带电直线同轴的圆柱面，半径为 \(r\)，高度为 \(h\)，由圆柱侧面，上下底面组成。在圆柱侧面上，电场方向沿圆柱半径方向，正好与侧面的外法线同向。而且侧面上电场大小处处相同，因此：
+\[
+\Phi_{\text{侧}}=ES_{\text{侧}}=E(2\pi rh)
+\]长度为 \(h\) 的带电直线所包含的电荷为\(Q_{\mathrm{in}}=\lambda h\)，应用高斯定理\[E2\pi rh
+=\frac{\lambda h}{\varepsilon_0}\implies E=\frac{\lambda}{2\pi\varepsilon_0 r}\]所以无限长均匀带电直线的电场与距离成反比\[E\propto\frac1r\]正电荷时电场向外，负电荷时电场向内。
+\end{solution}
+
+\begin{exercise}
+设无限大平面上的面电荷密度为$\sigma$，求距平面为$r$处的电场强度。
+\end{exercise}
+\begin{solution}
+选择一个薄圆柱形高斯面垂直穿过带电平面。圆柱侧面的法线方向平行于带电平面，而电场垂直于带电平面，所以\(\Phi_{\text{侧}}=0\)，在两个底面上，电场都与外法线方向一致。因此每个底面的通量为\(ES'\)，两个底面总通量\(\Phi_e=2ES'\)，药盒内部包围的电荷\(Q_{\mathrm{in}}=\sigma S'\)，应用高斯定理：
+\[
+2ES'=\frac{\sigma S'}{\varepsilon_0}\implies E=\frac{\sigma}{2\varepsilon_0}
+\]无论离平面多远，只要仍然处在理想无限平面的两侧，电场大小都相同。对于正电荷面，\(\mathbf E\)从平面向外。
+对于负电荷面\(\mathbf E\)从两侧指向平面。电场大小始终为\(\frac{|\sigma|}{2\varepsilon_0}\)
+\end{solution}
+
+\begin{note}[两个平行带电平面的电场叠加]
+每一个无限大带电平面单独产生的电场大小都是：
+\[
+E_0=\frac{\sigma}{2\varepsilon_0}
+\]然后利用电场叠加原理，把两个平面的电场相加。
+\begin{enumerate}
+  \item 两个都带正电：\(+\sigma\) 和 \(+\sigma\)：左边正电荷面产生的电场向左；右边正电荷面在其左侧产生的电场向左。两个电场同向：
+\[E_{\text{左}}=\frac{\sigma}{2\varepsilon_0}+\frac{\sigma}{2\varepsilon_0}=\frac{\sigma}{\varepsilon_0}\]左平面的电场向右，右平面的电场向左，方向相反、大小相等：
+\[
+E_{\text{中}}=0
+\]两个电场都向右：
+\[
+E_{\text{右}}=
+\frac{\sigma}{\varepsilon_0}
+\]所以两个同号带电平面之间的结果是：
+\[
+\boxed{
+E=
+\begin{cases}
+\sigma/\varepsilon_0,&\text{外侧}\\
+0,&\text{中间}
+\end{cases}
+}
+\]
+\item 一个正平面和一个负平面：\(+\sigma\) 和 \(-\sigma\)：左边正电荷面产生的电场向左；右边负电荷面在其左侧产生的电场指向右。两者抵消：
+\[
+E_{\text{左}}=0
+\]左边正平面的电场向右；右边负平面的电场也指向右。
+两者相加：
+\[E_{\text{中}}=\frac{\sigma}{2\varepsilon_0}+\frac{\sigma}{2\varepsilon_0}=\frac{\sigma}{\varepsilon_0}\]
+右侧区域两个电场方向相反，彼此抵消：
+\[
+E_{\text{右}}=0
+\]因此：
+\[\boxed{E=\begin{cases}0,&\text{外侧}\\\sigma/\varepsilon_0,&\text{中间}\end{cases}}\]
 \end{enumerate}
 \end{note}
 
-\begin{remark}
-\textbf{下面这些标准结果不是新定律，}只是把前面几类高对称高斯面各做一遍后得到的现成答案。它们之所以长得不同，只是因为电场线在球对称、线对称、面对称几何里向外摊开的方式不同。
-\par
-\textbf{几类最常见的标准结果值得直接记成熟悉的分段函数：}
-\[
-E_{\text{均匀带电球壳}}(r)=
-\begin{cases}
-0, & r<R,\\[4pt]
-\dfrac{Q}{4\pi\varepsilon_0 r^2}, & r>R,
-\end{cases}
-\]
-\[
-E_{\text{均匀带电实心球}}(r)=
-\begin{cases}
-\dfrac{Qr}{4\pi\varepsilon_0 R^3}, & 0\le r\le R,\\[4pt]
-\dfrac{Q}{4\pi\varepsilon_0 r^2}, & r\ge R,
-\end{cases}
-\]
- \(E_{\text{无限长直线电荷}}(r)=\frac{\lambda}{2\pi\varepsilon_0 r}, \qquad E_{\text{无限大带电平面}}=\frac{\sigma}{2\varepsilon_0}.\) 
-\end{remark}
-
-\bridge{把这些结果放在一起看，会发现它们真正值得记住的不是“答案长什么样”，而是“为什么衰减律不同”：球对称场在外部按 \(r^{-2}\) 衰减，线对称场按 \(r^{-1}\) 衰减，无限大平面的场强则与距离无关。不是公式各玩各的，而是电场线在不同几何中向外摊开的方式不同。}
-
 \section{静电场的环路定理与电势}
+
+设点电荷 \(q\) 固定在原点附近，试验电荷 \(q_0\) 从 A 沿任意曲线移动到 B。某一小段位移为 \(d\mathbf l\)，它与电场 \(\mathbf E\) 的夹角为 \(\theta\)。这小段路程上电场力做的功是：
+\[
+dA=\mathbf F\cdot d\mathbf l
+=q_0\mathbf E\cdot d\mathbf l
+=q_0E\,dl\cos\theta=
+\frac{q_0q}{4\pi\varepsilon_0r^2}dr
+\]
+从 A 积分到 B：
+\[A_{AB}=\frac{q_0q}{4\pi\varepsilon_0}\int_{r_A}^{r_B}\frac{dr}{r^2}=\frac{q_0q}{4\pi\varepsilon_0}\left(\frac{1}{r_A}-\frac{1}{r_B}\right)\]
+例如，若 \(q>0,q_0>0\)，把 \(q_0\) 从靠近 \(q\) 的 A 点移到较远的 B 点，电场力方向向外，与运动方向一致，所以电场力做正功。反过来，若把正试验电荷推向正场源电荷，电场力做负功，外力必须做正功。
+\begin{theorem}[静电场是保守场，满足环路定理]
+对于多个点电荷组成的系统\(\mathbf E=\sum_i\mathbf E_i\)，电场力做功为：
+\[A=\int_l q_0\mathbf E\cdot d\mathbf l=\sum_i q_0\int_l\mathbf E_i\cdot d\mathbf l\]
+每一个点电荷产生的静电场做功都只和起止位置有关，因此它们相加后的总电场做功也只和起止位置有关。
+这类力叫保守力，对应的场叫保守场。
+如果从 A 出发，沿任意闭合路径最后又回到 A，那么初、末位置相同，静电场力总功必为零：
+\[
+\boxed{
+\oint_l \mathbf E\cdot d\mathbf l=0
+}
+\]这就是静电场的环路定理。假如从 A 到 C 有两条路径：ABC 和 ADC。因为两条路径起点、终点都相同，所以：
+\[\int_{ABC}\mathbf E\cdot d\mathbf l=\int_{ADC}\mathbf E\cdot d\mathbf l\]将第二条路径反向，就构成闭合回路 ABCDA，于是闭合积分为零。
+\end{theorem}
+
+\begin{definition}[电势与电势差]
+电势能与试验电荷 \(q_0\) 成正比。为了描述电场本身在某点的性质，我们把电势能除以试验电荷：
+\[\boxed{U_A=\frac{W_{pA}}{q_0}}\]
+这就是 A 点的电势。单位是伏特\(1\ \mathrm V=1\ \mathrm{J/C}\)，A、B 两点的电势差定义为：
+\[
+\boxed{
+U_{AB}=U_A-U_B=\int_A^B\mathbf E\cdot d\mathbf l,~~~~
+A_{AB}=q_0U_{AB}
+}
+\]
+电场方向总是指向电势降低最快的方向。更一般地说：
+\[
+\boxed{\mathbf E=-\nabla U}
+\]在一维情况下：
+\[
+E_x=-\frac{dU}{dx}
+\]对于有限范围内的带电体，距离足够远时电场趋于零，因此通常取\(U_\infty=0\)，于是某点 A 的电势为：
+\[
+\boxed{
+U_A=\int_A^\infty\mathbf E\cdot d\mathbf l
+}
+\]
+\end{definition}
+
+\begin{conclusion}[电偶极子在匀强电场中的电势能]
+电偶极子由 \(-q\) 与 \(+q\) 构成，电偶极矩\(\vec{p}=q\vec{l}\)，方向从负电荷指向正电荷。设外电场为匀强电场 \(\vec{E}\)，偶极矩与电场夹角为 \(\theta\)。正、负电荷所在位置的电势分别为 \(U_+\) 和 \(U_-\)。偶极子的总电势能等于两个电荷电势能之和：
+\[W_p=qU_++(-q)U_-=qU_+-qU_-=-q(U_--U_+)\]
+而从负电荷位置沿 \(\mathbf l\) 移到正电荷位置：
+\[U_--U_+=\int_-\!^+\mathbf E\cdot d\mathbf l=El\cos\theta\implies W_p=-qEl\cos\theta=-\vec{p}\cdot\vec{E}=-qE\cos\theta\]
+\begin{itemize}
+\item \(\theta=0\)，即 \(\mathbf p\) 与 \(\mathbf E\) 同向：\(W_p=-pE\)，电势能最低，是稳定平衡。
+\item \(\theta=\pi/2\)：\(W_p=0\)
+\item \(\theta=\pi\)，即 \(\mathbf p\) 与 \(\mathbf E\) 反向：\(W_p=+pE\)，电势能最高，是不稳定平衡。
+\end{itemize}
+所以，“偶极矩会趋向与外电场同向”，从能量角度说，就是系统总会趋向更低的电势能。
+\end{conclusion}
+
+\begin{definition}[点电荷的电势]
+  取无穷远为零电势。点电荷 \(q\) 在距离 \(r\) 处产生的电场为\(\vec{E}=\frac{1}{4\pi\varepsilon_0}\frac{q}{r^2}\mathbf e_r\)，电势定义为\[U(r)=\int_r^\infty\mathbf E\cdot d\mathbf l=\int_r^\infty\frac{1}{4\pi\varepsilon_0}\frac{q}{r'^2}\,dr'=
+\boxed{\frac{q}{4\pi\varepsilon_0r}}\]注意：电势是标量，带正负号。若 \(q>0\)，则 \(U>0\)；若 \(q<0\)，则 \(U<0\)。离正电荷越近，电势越高；离负电荷越近，电势越低。
+\end{definition}
+
+
 
 这一节真正的前置判断是：若一股力总能让从 \(A\) 走到 \(B\) 的做功只看起终点、不看路径，那么就应该有希望把它改写成一个“高度差”式的标量记账。静电力正是这种保守力，所以与其每次都沿路径算功，不如直接引入一个只随位置变的势函数来记这笔账。
 

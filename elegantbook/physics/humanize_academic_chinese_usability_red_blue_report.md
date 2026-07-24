@@ -2,12 +2,14 @@
 
 生成日期：2026-07-13  
 Skill：`C:\Users\Lenovo\.codex\skills\humanize-academic-chinese`  
-范围：2026-07-13 至 2026-07-19 的真实短文、诊断合同、最小 TeX、v19-v20 fresh 行为、v21-v24 STRUCTURAL 状态机、v25-v32 成对质量/证据/信任边界，以及 v33 事务 intent、资格回放、同义换壳与 CLEAN/PATCH 降级复测。
-结论状态：**v33 已把 transaction v2 的逐 fragment rewrite intent、BALANCED 声明式拆并段、严格资格回放字段和四轮 fresh 文风失败收进可执行合同。当前 701 项测试整体 `OK (skipped=3)`，两份最终 31 文件 projection 逐字节一致；“为后续研究提供可靠起点”不再逃过 high 门，检测率混合请求不再沉默接受，无法安全去除的 high 主张不会继续混入 CLEAN 候选。但普通本地 `REWRITE/NO_CHANGE` 仍固定停在 `REVIEW/2`，188 个生成资格原子仍全部 `NOT_EVALUATED`，不能称为无人值守成熟自动 Humanizer。**
+范围：2026-07-13 至 2026-07-24 的真实短文、诊断合同、TeX/MD/TXT 格式边界、STRUCTURAL 状态机、成对质量/证据/信任边界、事务 intent、资格回放、同义换壳、CLEAN/PATCH 降级、旧归档兼容、源绑定投影复验、真实 CET-6 COURSE 路由、独立盲审漏检闭环，以及 v1.52.0 正式冻结复验。
+结论状态：**policy/builder v1.52.0 的 v1520 冻结对象是生产级中文学术文风候选生成、保护、拒错与审计工具链，不是获得最终质量授权的无人值守生成器。正式完整回归为 `Ran 1277 tests in 821.729s / OK (skipped=8)`，即 1269 项执行通过、8 项环境相关跳过；从当前安装源新建的两份 39 文件投影逐文件零差异且 manifest 原始字节相同。默认生成资格为 `0 PASS / 0 FAIL / 193 NOT_EVALUATED / exit 2`；三份真实工件均为机械层 PASS、顶层 `REVIEW/2`，外部 paired-quality、学术正确性、作者身份和无人值守交付均未获得 clearance。**
 
-> **现行快照（v33 final r3）**：下文 v19-v32 数字保留为历史证据；若与本段或第 20 节冲突，以 v33 为准。policy/builder 为 `1.10.3/1.10.3`，capability source 为 `3cb7e9aa97d2724dbb59999ad281bca03f2b7e9c83429cc644345f007f541b45`，projection tree 为 `3c92ac1b87e6181b394fd2d64cc55c2d1fa577cc4e69c276aa8972488fbab85d`，证据上限仍为 E2。
+> **历史快照（v33 final r3）**：下文 v19-v32 数字保留为历史证据；policy/builder 为 `1.10.3/1.10.3`，capability source 为 `3cb7e9aa97d2724dbb59999ad281bca03f2b7e9c83429cc644345f007f541b45`，projection tree 为 `3c92ac1b87e6181b394fd2d64cc55c2d1fa577cc4e69c276aa8972488fbab85d`，证据上限仍为 E2。该段不再代表当前实现。
 
-> **最新 checkpoint（v45 final，2026-07-20）**：第 31 节 supersedes the v33 snapshot for current implementation facts. It records the v5 publication transaction, v3 unit binding, v1 authoring binding, strict compile-status protocol, 38-file projection and 926-test regression. Historical sections remain unchanged.
+> **历史 checkpoint（v45 final，2026-07-20）**：第 31 节曾取代 v33 快照，记录 v5 publication transaction、v3 unit binding、v1 authoring binding、strict compile-status protocol、38 文件投影和 926 项回归；它现在只作历史记录。
+
+> **当前冻结 checkpoint（policy/builder v1.52.0；projection v1520，2026-07-24）**：第 61 节取代此前所有“当前/最新”实现数字；第 60 节及更早章节只作历史过程证据。正式回归为 `Ran 1277 tests in 821.729s / OK (skipped=8)`；新建双投影各 39 文件、manifest 原始字节相同、逐文件零差异，capability source 为 `cef35dd4b48568ab2940c6f287526978bba899ac1466483fd2fadd7f684f3b76`。默认资格为 `0 PASS / 0 FAIL / 193 NOT_EVALUATED / exit 2`；这些机械证据不升级质量、学术正确性或生成资格。
 
 ## 1. 结论先行
 
@@ -1229,7 +1231,8 @@ delivery=UNRESOLVED/REVIEW
 
 ### 20.7 PATCH 标签必须对应真实 hunk
 
-第三轮输出已经把可用两段与“待审保留句”分开，并被独立读者判定 ACCEPT；但盲评仍指出，首句
+第三轮输出已经把可用两段与“待审保留句”分开，并被当时的模型评审输出标为 ACCEPT；该记录缺少可验证的
+reviewer provenance，不能作为独立外部 clearance。该轮盲评仍指出，首句
 路线旁白被静默删除，所谓“最小 PATCH”没有展示 diff，而且“模态均保留”把主张强度与字面 marker
 混为一谈。
 
@@ -3196,3 +3199,607 @@ manifest_sha256 = ab1aad8ccc50ae9546dd33e4a190d34099a110f144c9862afc97f69fb6dc7a
 支持范围只来自本地可复现攻击与机械回归，不声称多代理盲测通过。修复也不等于完整 TeX 解析器：自定义 verb 宏、
 catcode、宏展开和未知引擎行为仍是后续攻击面；自然度、学术正确性、作者身份、paired-quality 与 generation
 qualification 继续未被本轮证明。
+
+## 50. 2026-07-20：v1.38 TeX 伪结构污染与字节假通过红蓝复测
+
+### 50.1 红队命中与蓝队修复
+
+前一轮只覆盖了“行内 payload 不进入 authoring view”，但新鲜 TeX 黑盒进一步表明：同一受保护 payload 仍可被
+下游结构读取器当成 `\input`、`\section` 或 `\begin`；而 invariant 会把 CRLF 和代码行尾空格的变化规范化掉。
+这会产生两类更危险的假象：文件图/单元被凭空扩大，以及保护源码已经变了却得到 PASS。
+
+蓝队没有另写第三套正则，而是把 code、短 verb、内联 verb、注释和数学解析收束为可复用的 parser-backed span
+基础：分组 short-verb 与自定义命令可恢复外层状态，载荷不能执行伪声明；code close 必须大小写一致并处在行首；
+注释内数学 close 不改变状态；prepare 的结构发现统一读取 offset-preserving structure view；invariant 对保护跨度
+做原始字节比较。
+
+### 50.2 可观察的端到端验收
+
+维护者后冻结夹具创建了两个真实的幽灵文件，再把对它们的 `\input` 放入 `\verb` 与 `Verbatim`。结果不是依赖
+内部 helper，而是公开产物满足：`file_manifest.csv` 仅一个 `READY main.tex`；两个 chunk 的 heading path 只有
+`(front-matter)` 与 `真实标题`；`代码内伪标题` 未出现。scanner 对同一“值得注意的是”给出两条有区分的记录：
+代码环境记录 `protected=true/candidate=false/action=KEEP`，正文记录
+`protected=false/candidate=true/action=REWRITE`。含注释伪 `$` close 的数学范围被记录为
+`latex-comment+latex-inline-math`，未提前暴露。
+
+另一个 CRLF + `Verbatim` 尾空格夹具仅改变受保护源码的换行/空格，invariant 返回 `FAIL/1` 和
+`PROTECTED_CODE_CHANGED`。完整命令、夹具、脚本 SHA-256 和限制见
+`C:\Users\Lenovo\.codex\tmp\postfreeze-humanize-selfcheck-v138\MAINTAINER_POSTFREEZE_ACCEPTANCE.md`。
+
+### 50.3 回归、投影与证据降级
+
+```text
+scanner + prepare + invariant + projection = 243 OK (skipped=1)
+full unittest                              = 1105 OK (skipped=8)
+compileall / quick_validate                = PASS / PASS
+policy / builder                           = 1.38.0 / 1.38.0
+capability_source_sha256                   = f9399cb855dc729941e7c14dbec5c5b1086f37a211ca2f5387f684807970af31
+projection_tree_sha256                     = 26caa571a9423c84f0669e64d40a49fc599f80cabcd559cf94931fb69244feed
+manifest_sha256                            = 023853796645cc210cf2b5bfbcef638238f4f04a16568cf236256ab6eacefb47
+projection files / path-hash differences   = 38 / 0
+manifest raw-byte difference               = 0
+```
+
+源树内输出被 builder 按设计拒绝，故两份独立投影位于
+`C:\Users\Lenovo\.codex\tmp\humanize-projection-maturity-v138-20260720\`；其逐文件 SHA-256、tree hash 和
+manifest 原始字节均一致。两次独立代理黑盒任务均未留下可复放工件，状态只能是 `NOT_EVALUATED`。因此本节记录的是
+维护者可重放机械验收和投影确定性，不声称独立盲测通过，更不声称自然度、学术正确性、作者身份、paired-quality
+clearance、结构语义 clearance 或 generation qualification 已获证明。
+
+## 51. 2026-07-22：v1.42 投影半发布与批准链红蓝复测
+
+### 51.1 红队输入
+
+本轮不攻击中文句子本身，而攻击“生成器看到的 Skill 是否真有可核对来源”的发布边界。攻击包括：
+
+| 攻击 | 旧风险 | 通过判据 |
+|---|---|---|
+| 在 output directory rename 后、manifest move 前中断 | 留下无 manifest 的能力目录；下次可能只报 output 已存在 | 重启只在 tree 和 staged manifest 同时一致时补齐，随后拒绝覆盖 |
+| 在 manifest 已写入、journal 未清理时中断 | 已完成 publication 被当成异常垃圾，或 stale journal 长留 | 重启校验双 hash 后保留成品、只清 journal |
+| 篡改 journal 的 output path | 恢复器若信任路径，可能删除无关目录 | 路径绑定不符立即 `ProjectionError`，sentinel 保留 |
+| 伪造 builder approval hash | policy 被改写后仍执行不匹配 builder | `approved_builder_executable_sha256` 不符即拒绝 |
+| 修改 transform dependency 且同步伪造 capability approval | 第一层 capability 拒绝可掩盖第二层依赖检查未生效 | source-bound replay 仍以 `transform dependency differs` 拒绝 |
+
+### 51.2 蓝队实现与测试结果
+
+v1.42 使用外置 `humanize-generator-projection-publication-journal/v1`，状态固定为
+`ALLOCATED -> PREPARED -> OUTPUT_PUBLISHED -> COMMITTED`。journal 明确绑定最终路径、两个 staging 路径、
+tree hash、manifest hash 和 manifest size；reparse、非普通文件、路径前缀越界、缺对象或 hash 漂移均 fail-closed。
+journal 和新增 unittest 都进入 audit exclusion，不进入 38 文件 generator projection。
+
+```text
+python -X utf8 scripts/test_humanize_generator_projection.py
+Ran 3 tests in 7.967s
+OK
+
+compileall = PASS
+skill quick_validate (-X utf8) = PASS
+```
+
+两次独立构建均为 38 文件，逐路径 SHA-256 差异为 0，manifest 原始字节完全相同：
+
+```text
+policy = 1.42.0
+capability_source_sha256 = d604d4848a86b4d97bd968bed0c5ddd9c65da99f04942584338a62ab2d3f1864
+projection_tree_sha256 = 4a32c8563ce1403b0ddc93a3aa4cec78b9e4ecea8e0041c06b7293a6b626c869
+manifest_sha256 = c24058a344f5fc1a2dae574f3c2f824250d4f77033b7707c061cc5edc93e863a
+```
+
+### 51.3 不扩大结论
+
+故障注入覆盖的是 Python 级 `KeyboardInterrupt` 后的下一次恢复，不等同于真实进程强杀、断电、网络文件系统或
+同权限恶意写入的完整保证。平台对三名独立子代理仍返回 `429`，所以本轮没有独立盲测支持。该修复提高的是生成资格
+审计工件的发布可信度；它不直接证明中文改写更自然，不解除任何公式、引语、来源、语义、paired-quality 或学术正确性
+门，也不允许把 Skill 描述成“所有任务生产稳定”。
+
+## 52. 2026-07-22：v1.43 GPT 题库槽位泄露红蓝复测
+
+### 52.1 红队发现
+
+用户标注为 GPT 生成的 `cet6/test.tex` 含有中文题库后台：题型范围、首句占位和固定推演链连续出现，并把不同主题
+导向相同的号召、危机或平衡出口。旧中文扫描只命中 3 处营销词，漏掉了这组跨行结构；单独禁掉任何一个词会误伤
+正常的课程讨论，因此红队判据不是“出现某词”，而是“至少三类槽位分布在至少三行”。
+
+### 52.2 蓝队收口
+
+新增 `LEX-META-02 / HUM-17`，锚点为 `适用题目`、`逻辑链条`、`给定首句` 及“同类题可用/套用”结构。
+它只生成 `REVIEW` 候选，不自动删除；单次实体论证链和 `verbatim` 中的同样文字不触发。固定测试增至 4 项：
+
+```text
+Ran 4 tests in 7.513s
+OK
+
+CET6 test.tex: LEX-META-02 = 10 findings / 7 distinct lines / REVIEW only
+main.tex: LEX-META-02 = 0
+```
+
+这里的 `main.tex = 0` 是反误报证据，不是质量结论；它仍有既有的管理腔、编辑后台与自动展望候选。
+
+### 52.3 不扩大结论
+
+该规则只覆盖中文的题库/备课槽位泄露，不能检测英语模板，也不能由 10 条候选判断作者身份、检测器得分、文本质量或
+改写后收益。对用户明确要保留的教师备注和模板原件，应 `KEEP` 并标明文档角色；对可编辑正文才进入进一步复核。
+v1.43 的 38 文件双 projection 逐字节一致，`SOURCE_BOUND_CURRENT/PASS` 只证明当前工件闭集，不提供自然度或
+学术正确性的 clearance。
+
+## 53. 2026-07-22：v1.44 跨段作品自证开头红蓝复测
+
+### 53.1 红队发现
+
+`main.tex` 的五个模型分析小节都以“本问的优点”加否定对照开场。旧对照规则只抓到问题五内部的两处认识边界，
+没有抓到五个重复背书段首；这证明相似的“否定—转向”形式不能被当成同一种病灶。
+
+### 53.2 蓝队规则
+
+`LEX-SELF-VALIDATION-01 / HUM-18` 要求作品自身主语、优点评价、`不在于…而在于` 骨架，以及跨两个 paragraph
+重复四项同时满足，固定只输出 `REVIEW`。它保留具体比较内容，禁止把段首机械轮换为“核心价值/真正优势”。
+
+```text
+main.tex = 5 candidates / 5 paragraphs / REVIEW only
+physics1.tex = 0; physics2.tex = 0; CET6 test.tex = 0
+fixed tests = 5 OK
+```
+
+第一版测试夹具曾因变量作用域错误报 `NameError`；未计为通过，修复后才得到 5 项绿色。这个记录用来防止把“后来
+通过”倒灌成“一开始就可靠”。
+
+### 53.3 不扩大结论
+
+零命中材料不是精确率证明，五个负例命中也不是作者或质量判断。规则只覆盖中文建模/研究文本中的一种跨段自证壳，
+不评估模型正确性、段落收益或检测器结果。v1.44 双 projection 逐字节一致且 source-bound replay 为 PASS，只证明
+当前规则与工件闭集可复现。
+
+## 54. 2026-07-22：v1.45 后台局限安排与自动补强词形复测
+
+### 54.1 红队发现
+
+GPT 建模负例在四个问题段落重复“先安排写局限、再安排继续补强”的两段式收尾。旧规则能看见局限编辑壳，却漏掉
+“应优先”这一词形，真实扫描一度只得到 `META=6 / FUTURE=1`。这不是可接受的局部通过，因为四个自动展望仍在正文中。
+
+### 54.2 蓝队修复
+
+没有新建“局限词”规则：扩展 `LEX-META-01` 来删除写作后台壳，扩展 `LEX-FUTURE-01` 来复核泛化补强安排，并在
+`HUM-11` 明确“局限内容”与“要求写局限”不同。补入独立“应”词形后，`main.tex` 为
+`SELF_VALIDATION=5 / META=6 / FUTURE=5`；physics1、physics2、CET6 test 三份对照均为 0。
+
+固定测试增至 6 项并通过，包含 `verbatim` 保护分支。该结果不把 0 当精确率，也不把候选数当作作者/质量判断。
+
+### 54.3 不扩大结论
+
+具体限制和有对象的研究计划可以保留；规则针对的是重复的编辑安排和无对象的自动补强，不评估模型正确性或生成文本
+是否自然。v1.45 双 projection 字节一致，source-bound replay PASS 仅说明当前版本的机制和工件可复现。
+
+## 55. 2026-07-22：v1.46 编辑壳前向验证
+
+红队先把“如继续完善，应当”压成“可补入”，验证器以条件/模态漂移保持 `REVIEW`。蓝队没有放宽该门，而是只豁免
+“局限需要说明：”这类已登记的句首编辑壳，并保留后半句的条件和应当。修正候选的硬层、言语行为层和词项层均为
+`PASS`，总体仍为 `REVIEW`，原因是 paired-quality 外部复核待完成。该状态映射证明工具没有借局部机械通过伪造
+文风质量 clearance。
+
+反向控制还确认：普通内容中的“需要”被弱化为“可”仍触发模态 warning，豁免只限句首编辑壳。
+
+## 56. 2026-07-22：跨小节验收块红蓝复测
+
+### 56.1 红队发现
+
+红队没有把“局限”或“后续”列为 AI 词。人工连续阅读用户标注的 GPT 负例 `main.tex` 后，发现问题二至问题五的
+同级模型分析小节连续复用三段功能：自证式“优点不在于……而在于……”，编辑性“局限需要写清”，以及“后续若继续
+补强，应优先……”的展望出口。旧扫描能给出三个独立候选，却不能说明它们是否把不同模型分析压成同一份验收模板。
+
+问题一是同源反例：它有自评和补强，但限制直接写“其局限在于”，并未以编辑指令要求“写清”。因此不应触发完整结构。
+这条反例防止将正常的“优点-限制-研究方向”讨论自动等同于模板化。
+
+### 56.2 蓝队收口
+
+新增 `LEX-SELF-AUDIT-TRIPLET-01 / HUM-19`，动作固定为 `REVIEW`：
+
+- 至少两个 TeX `\\subsection` 或 Markdown `##` 同级区间必须完整满足三种角色，且顺序不可倒置；
+- 每个命中只指向该节首个自评壳，保留全节的限制、数据、比较与补强事项；
+- 单节、缺少任一角色、不同小节拼接角色均不触发；
+- 代码、公式、引语或其他保护区内的组成部分不能参与匹配；
+- 展望只截取“继续补强/完善/改进 + 模态词”标记，不把后面的公式或引语载荷并入可编辑壳。
+
+这使规则命中 `main.tex` 的四个完整区间，而不会把问题一或一次真实局限段纳入。它不授权删除任何内容，更不允许
+“删掉所有局限和未来工作”被称为 Humanize 完成。
+
+### 56.3 固定攻击集
+
+```text
+two complete TeX sections: 2 REVIEW candidates
+one complete section: 0
+second section missing outlook: 0
+complete block inside verbatim: 0
+outlook payload with inline $K=3.20$: marker remains detectable; formula remains protected
+
+all persistent tests: 7 / 7 OK
+```
+
+本轮也出现了一次故意的发布失败：词库与扫描器变动后，builder 先拒绝旧 capability approval。更新重新计算的 hash
+前，测试未计为通过；更新后仍运行伪造 policy、transform dependency drift、四种 publication journal 恢复状态和
+双提交边界恢复测试。任何一个机械测试通过都只证明相应合同，不构成独立人工盲评。
+
+### 56.4 未获得的证据
+
+三名独立子代理本轮均因 `429` 耗尽重试，状态为 `NOT_EVALUATED`，不能写成红队通过。当前只有用户标注 GPT 负例
+支持这条结构；尚无可验证的人写对照语料来估计误报，后续必须用可靠来源的真实论文讨论/局限章节攻击该规则。同样
+没有外部 paired-quality 审核，故不得以“红蓝复测完成”宣称自然度、学术性或全文 Humanize 已完成。
+
+### 56.5 可复现性状态
+
+两个独立 projection 输出均为 38 文件，manifest 与文件字节完全相同；当前源 capability hash 复算后与 manifest
+一致，故本轮是 `SOURCE_BOUND_CURRENT / PASS`。这只覆盖本地工件闭集。历史真实性和同权限篡改抵抗均为
+`NOT_EVALUATED`，而质量与学术正确性门仍是 `REVIEW/NOT_EVALUATED`，不能借此升级结论。
+
+## 57. 2026-07-22：问题分析否定纠偏的执行缺口红蓝复测
+
+### 57.1 红队发现
+
+`MOD-HUM-06` 已禁止第三次复用“本问关注的不是……而是……”，但实际 `LEX-CONTRAST-01` 只按 paragraph 计数。
+用户标注 GPT 的 `main.tex` 在问题一至四分别使用“问题一并不是”“本问的重点不是”“这一问真正要回答的不是”与
+“问题四的核心不是”，正好跨四个小节绕过原扫描。这个缺口不是用“不是”一词就能修复，因为 CET6 课程报告中的
+“不是中间带，而是边缘带”是有明确教学功能的纠偏。
+
+### 57.2 蓝队规则与一次前向失败
+
+`LEX-QUESTION-ANALYSIS-CONTRAST-01 / HUM-20` 只允许 `MODELING` 下至少三个同级“问题 X 分析”标题，且每节前
+1600 字内由问题主语和受限任务短语直接引出 `不是……而是……`。初版把“问题五才能……并不是……而是……”误收为
+第五个命中；红队复读后收紧为只接受空、`重点/核心/任务/要回答的/真正要回答的` 后直接接 `不是`。最终为问题一至四
+四个候选，问题五不再命中。
+
+课程报告、两个小节、非问题分析标题和 `verbatim` 内的第三个组成部分均是固定反例。规则只给 `REVIEW`，不删除
+对照关系，不替代真实教学纠偏，也不把 A/B 的内容正确性纳入文风层。
+
+### 57.3 状态
+
+```text
+full persistent tests = 8 / 8 OK
+skill validation = PASS
+main.tex (MODELING) = 4 REVIEW candidates
+CET6 unified59 (MODELING) = 0 new candidates
+primary/repro projection = 38 files, byte-identical manifests and trees
+SOURCE_BOUND_CURRENT = PASS
+```
+
+`429` 子代理失败仍为 `NOT_EVALUATED`，不能作为独立红队证据。没有可靠的人写对照、外部 paired-quality 或作者验证，
+故本轮机械成功不会升级为自然度、学术性或“生产稳定”结论。
+
+## 58. 2026-07-23：v1.51 格式血缘、legacy replay 与 currentness 红蓝闭环（历史 checkpoint）
+
+### 58.1 红队攻击面
+
+本轮没有继续堆叠泛化禁词，而是攻击证据链的四个可执行边界：
+
+| 攻击 | 旧风险 | 必须满足的闭环条件 |
+|---|---|---|
+| `.txt` 内实际为 TeX | 后缀推断为 Markdown，注释和控制序列可能按错误边界处理 | create/finalize/build/validate 显式绑定 `TEX`，格式进入证据并由 replay 复用 |
+| 删除“奠定基础”后改成“为理解……提供了线索” | 同一抽象收益通过同义换壳逃离 | 按功能壳定位，不把“线索”单词列为泛禁词，允许 finding 级具体 KEEP |
+| v1/v2 invocation 缺少后来新增的 paired-quality hashes | 完整旧归档被追溯判成 `INVALID_SCHEMA` | 按 schema 使用发布时 hash 集，同时让 v3 缺字段继续失败 |
+| excluded replay 脚本变化后沿用旧 projection | 能力文件字节相同，被错误写成当前源绑定 | 旧清单必须失去 currentness；重建后双投影才可写 `SOURCE_BOUND_CURRENT/PASS` |
+
+最后一项是报告层的真实红队命中。修复前的两份 v1.51 投影彼此确实完全一致，但 replay 补丁改变了 evaluation
+surface；source-bound verifier 因此正确拒绝 `projection manifest source does not replay from source`。这说明“两个
+工件相同”只能证明相互可复现，不能证明它们仍对应当前源。
+
+### 58.2 蓝队修复
+
+证据 v4 使用 invocation v3 和 `hvr3-*` 内容寻址 run ID，把解析后的 `document_format` 作为必填调用参数。`.txt`
+只有显式指定 `TEX` 才按 TeX 保护；AUTO 仍按后缀推断，避免多个入口自行猜测。格式字段在 bundle/evidence/invocation
+之间漂移会被拒绝，显式 TeX 的注释变化也会触发硬失败。
+
+replay 新增版本化 policy hash 集：
+
+- invocation v1/v2 要求其发布时存在的六项 hash；
+- invocation v3 要求现行八项，包括 paired-quality verifier 与 contract；
+- schema 闭集、自哈希、run ID、工件 hash、stdout/result 一致性、policy drift 与 current policy 门保持原强度。
+
+因此两个真实旧归档都从“无法解析 schema”恢复为 `record_integrity=PASS`，但只得到
+`POLICY_DRIFT / reexecution=NOT_RUN / replay=REVIEW / exit 2`。旧记录没有被升级或补写。
+
+### 58.3 回归与投影证据
+
+```text
+full regression = Ran 1173 tests in 805.769s
+result          = OK (skipped=8)
+executed pass   = 1165
+
+replay module   = 23 tests / OK
+format probes   = 6 tests / OK
+qualification   = 0 PASS / 0 FAIL / 188 NOT_EVALUATED / exit 2
+academic correctness = NOT_EVALUATED
+```
+
+当前双投影为：
+
+```text
+primary = C:\Users\Lenovo\.codex\tmp\humanize_projection_v1511_legacy_replay_primary
+repro   = C:\Users\Lenovo\.codex\tmp\humanize_projection_v1511_legacy_replay_repro
+files   = 39 / 39
+path/hash differences = 0
+manifest raw bytes equal = true
+
+policy / builder = 1.51.0 / 1.51.0
+manifest SHA-256 = 279763cd3f2170ac637f4f5d7bb07cd9ba8fed3912379043eccada932af0906f
+tree SHA-256     = af74debe1815e096c536ffbb4c3b5855783baebb2e0a641ab62705d03a665595
+capability SHA-256 = 7f26a385b1d50d663bb906428f31962d2c1d01fdb6553f1164c3283e6836eafe
+evaluation surface SHA-256 = 90d8b2b95af780ce1db0134dc57c745d41f33ec98c2dd1b7f4397446a05f1ede
+verification = SOURCE_BOUND_CURRENT / PASS
+historical authenticity = NOT_EVALUATED
+same-privilege tamper resistance = NOT_EVALUATED
+```
+
+`quick_validate.py` 在 Windows 上需以 UTF-8 模式运行；`PYTHONUTF8=1` 后结果为 `Skill is valid!`。默认资格审计保持
+`evidence_integrity=PASS` 但 `qualification=NOT_EVALUATED`，退出码为 2。这是有意拒绝虚假完成态，不是工具崩溃。
+
+### 58.4 独立 QA 与结论上限
+
+此前两次独立格式/真实前向子代理因平台 `429` 未留下可复放工件，均记 `NOT_EVALUATED`；本轮第三次 fresh
+main.tex 前向复测留下了可核验工件，但只证明一次调用能诚实停在审阅态。它绑定用户标注 GPT TeX 的第 417--420 行，
+源 hash 与 frozen before 匹配、source 未改，候选保留公式/数值/限定和具体后续动作；最终层状态为
+`hard/speech/style/assembly/mechanical=PASS`、`delivery=REVIEW`、`paired_quality=PENDING_EXTERNAL_REVIEW`、
+validator exit `2`。两次失败试跑分别被 speech-act 与 protected-math 门拒绝。工件目录为
+`C:\Users\Lenovo\.codex\tmp\humanize_fresh_main_tex_forward_retry\`，evidence v4 的 run id 为
+`hvr3-43b105c3f93c061c47f1ef3d1685dd1bf1adcfae58fe5d9176af876a60850096`。当前外层 capture replay 为
+`record_integrity=PASS / capture_integrity=PASS / reexecution=NOT_RUN /
+CAPTURE_OR_VALIDATOR_POLICY_DRIFT / REVIEW/2`，独立父进程观察到 replay 退出码为 2；内层 validation
+record 才是 `SELF_CONSISTENCY_ONLY / reexecution=PASS / PASS/0`，且记录的候选交付仍为 `REVIEW/2`。
+因此内层 PASS 既不证明外层 capture 可在当前 policy 下重执行，也不证明质量通过。
+
+报告一致性子代理只完成只读审计，不是前向文风评测；其测试计数与主进程完整实跑冲突时，已丢弃代理数字，以 unittest
+最终摘要为准。后续前向结果仍必须单独检查输入、输出、保护跨度、候选状态和外部评审来源，不能只采信代理自述。
+
+因此 v1.51 可以称为更成熟的机械 Humanize 工具链：格式解释、证据血缘、旧归档兼容、策略漂移和 currentness 都有
+fail-closed 行为。它仍不能称为已经证明自然度稳定、学术正确、作者本人化、检测结果可控或无人值守自动交付；这些结论
+仍需可靠真人对照、外部 paired-quality clearance 与完整 generation qualification evidence。
+
+## 59. 2026-07-23：CET-6 真实前向红蓝复测与机械门升级（历史 checkpoint）
+
+### 59.1 红队一：主题相关不等于场景路由正确
+
+真实 CET-6 摘要的任务是教读者决定做题顺序、下一题定位和搜索范围。revision 4 只看到“摘要”这一共享标题，给出
+`COURSE=0 / RESEARCH=1 / FALLBACK_GENERAL`。这类漏路由会让课程专属保护门整体失活，比某个词项漏报更危险。
+
+蓝队 revision 5 新增 `COURSE-EXAM-STRATEGY-01`。同一真实单元与完整标题路径重放为
+`COURSE=10 / RESEARCH=1 / ROUTED COURSE / margin=9`；其中正文教学动作 6 分，标题课程信号 4 分。研究反例“研究方法 /
+本研究分析考试题目在不同年份的分布，并讨论样本范围”仍为 `COURSE=0 / RESEARCH=6 / ROUTED RESEARCH`。规则由动作
+触发，没有把“考试题目”泛化成课程场景。
+
+### 59.2 红队二：机械 PASS 后的独立盲审仍找到具体退步
+
+冻结 before SHA-256 为
+`ffc81195384a78eebaa60e2615196c659f212db92d61a86f8a265e35b9cc98a8`。本轮保留三个不同 checkpoint，不能把它们的
+hash 和状态互换：
+
+| 工件 | SHA-256 | 关键状态 |
+|---|---|---|
+| 五类 speech-act 告警初稿 | `51371fd7f25cb3742958e94699150719c0f6e13b90a86e84445e9b988829305a` | `mechanical=REVIEW / paired=BLOCKED` |
+| 本地机械修订稿 | `5f93a4749c6854c7be566c2c734d06744fcf14f88e2e07004ccb3757c0d8bf47` | 历史 `mechanical=PASS / paired=PENDING` |
+| 独立前向候选 | `ebc1ad26c143f244fb7a8ec46768439d348629fa0c194dbeefe76d7857cf072c` | 修复前 PASS，修复后 REVIEW |
+
+第一稿触发 negation、modality、focus、logical-relation、condition 五类变化，正确停在 `REVIEW/2`。后两稿在当时的机械
+规则下都可到 PASS，但没有外部 paired-quality clearance，交付始终仍为 `REVIEW/2`。
+
+独立成对盲审没有看到预设答案。它判断 `ebc1...` 总体中等改善，同时指出：
+
+- 第 33、35 行新造“第一/第二种误判是，认为……”的错误停顿；
+- 删除“默认”并改成“均来自”，可能把默认口径收紧为全称断言；
+- “放在一个连续推进的过程中处理”较原句迂回；
+- “概括为以下 6 点”“样本口径如下”等模板表达仍有残留。
+
+这个结果既否定“机械 PASS 足够”，也否定“改动越少就天然更好”。盲审同时确认 TeX 控制行、列表、引语、数字和主要内容
+保持，因此问题确实落在文风/句法和断言力度，而不是硬结构破坏。
+
+### 59.3 蓝队修复坚持窄规则，不制造新禁词表
+
+蓝队没有禁止“认为”“均来自”“默认”或所有系词后逗号。修复分成两层：
+
+1. 把 `默认` 纳入 `modality_scope`，其删除、新增或迁移触发 `SPEECH_ACT_MODALITY_SCOPE_CHANGED`；这只要求复核语义力度，
+   不预判应保留哪一种断言；
+2. 增加 COURSE-only high-severity `LEX-COURSE-COPULAR-COMMA-01`，只识别
+   `(?:第 N 种)?误判是，(?:认为|觉得|以为|把|将)`；冒号结构、无逗号结构、普通“问题是，……”和 RESEARCH 场景均为反例。
+
+当前统一验证器重放 `ebc1...`，得到：
+
+```text
+hard=PASS
+speech=REVIEW          # 删除一处“默认”
+style=REVIEW           # 第 33、35 行各一处窄句法 finding
+paired-style=PASS
+assembly=REVIEW
+mechanical=REVIEW
+paired-quality=BLOCKED_BY_MECHANICAL_GATE
+delivery=REVIEW/2
+academic_correctness=NOT_EVALUATED
+humanize_quality_claim_allowed=false
+```
+
+这是一条真正的红蓝闭环：真实工件先得到旧机械 PASS，独立盲审定位漏检，规则再从缺陷中抽象，并用正反例限制误伤，最后对
+原工件重放得到 REVIEW。它不同于先写规则再构造能命中的示例。
+
+### 59.4 红队三：历史 PASS、当前重放与宿主退出码
+
+当前 evidence run ID 为
+`hvr3-29c934eb1da5b8b6386569ff517e9246ed1a63d03682ded4a08d60fbebc5ba5f`。由于修复后 policy bytes 变化，旧记录在
+当前安装版下只可得到：
+
+```text
+record_integrity=PASS
+scope=SELF_CONSISTENCY_ONLY
+reason=POLICY_DRIFT
+reexecution=NOT_RUN
+replay=REVIEW/2
+```
+
+因此不能拿旧记录的内部 PASS 对抗当前门禁。宿主命令显示层还会把非零子进程码统一显示为 1；PowerShell 父进程实测可捕获
+`CHILD_EXIT=2`。协议仍按 `PASS/0、FAIL/1、REVIEW/2` 解释，显示适配问题不得变成降低门禁语义的理由。
+
+### 59.5 currentness、回归与结论上限
+
+`course-notes.md`、`workflow.md` 与验证器的声线 provenance 已统一为
+`humanize-course-voice-non-regression/v3`。修正文档改变了真实能力面，因此旧 v1514 被降为历史快照；新 v1515 双投影为：
+
+```text
+primary/repro files = 39 / 39
+path or SHA differences = 0
+manifest bytes equal = true
+manifest SHA-256 = 55510fde123f41e525f599579d2909f8bd883c9a5f71ad88ec62ed72f11df87f
+tree SHA-256 = 6ec771e2aec6eb7f347dd373aa6c1612a178aaf830e8e9f36df35cac00508473
+capability SHA-256 = 871f62a8ba79ec141eb34cf7ce6908b9481c24a622a9f6cc7f1472066f3b71cb
+verification = SOURCE_BOUND_CURRENT / PASS
+historical authenticity = NOT_EVALUATED
+same-privilege resistance = NOT_EVALUATED
+```
+
+稳定源验证为 `validate module 108/OK`、`projection 17/OK`、`qualification 44/OK`，完整回归为
+`Ran 1234 tests in 921.207s / OK (skipped=8)`；`quick_validate` 与 `compileall` 通过。资格审计仍是
+`evidence_integrity=PASS / qualification=NOT_EVALUATED / 0 PASS + 0 FAIL + 188 NOT_EVALUATED / exit 2`。
+
+因此本轮证明的是门禁更会拒绝真实假完成态，而不是证明系统已经会稳定地产出更自然的文字。没有可信外部 paired-quality、
+真人作者对照、学术正确性复核或完整 generation qualification，故仍不得写成“生产稳定生成”“作者本人化”或“可无人值守
+交付”。下一轮红队应继续从真实 MD/TeX 的机械 PASS 候选中抽样盲审，优先寻找句法新伤、模态增幅、关系谓词弱化和课程
+声线压平，而不是扩大孤立高频词黑名单。
+
+## 60. 2026-07-23：v1516 残余观察反过拟合红蓝复测（历史 checkpoint）
+
+### 60.1 红队先问：剩下三处不自然是否都应该变成禁词
+
+红队对真实 CET-6 `before.tex` 与独立 `candidate.review.tex` 做了新的只读成对审计。两处“误判是，认为……”具有重复、
+同构和明确句法断裂，已有 `LEX-COURSE-COPULAR-COMMA-01` 精确覆盖；删除“默认”并写成“均来自”改变断言余量，已有
+`SPEECH_ACT_MODALITY_SCOPE_CHANGED` 要求复核。禁止“认为”“均来自”或所有“是，……”都会扩大误伤，因此没有执行。
+
+红队还尝试推动三项残余进入黑名单：“放在一个连续推进的过程中处理”“可以概括为以下 6 点”“样本口径如下”。复读真实
+上下文后，三项都缺少升级所需证据：第一项可能迂回，但也可能承载操作或顺序；第二项在真实课程和说明文中有摘要功能；
+第三项只有一次模板感观察，没有跨文档稳定 occurrence。它们保留为成对审阅问题，不形成 lexical finding。
+
+### 60.2 蓝队把“不要拍脑袋升级”写进执行合同
+
+蓝队新增 `NOTE-HUM-41 MUST` 和 workflow 残余分流，要求记录完整 before/after、变化谓词与对象、信息增益、跨语料出现数及
+不升级理由。若改后没有增加顺序、操作、分组或条件，只是把直接关系换成抽象处理壳，则局部回退或送 paired review；若
+表达承担真实摘要、口径或组织职责，则不得按字面删除。
+
+回归测试明确断言 `NOTE-HUM-41` 不得出现在 `lexical-signals.json` 中。COURSE 规则计数由 40 增至 41，但新增项是审计分诊
+合同，不是泛化词表。这一设计堵住两种相反的假成熟：一是看见单例就扩黑名单，二是因为机械门没有命中就把残余写成通过。
+
+### 60.3 双投影与全量回归
+
+能力面变化后，旧 v1515 批准哈希失效。仅更新批准的 capability source hash，保持 policy/builder `1.51.0`、文件闭集和
+转换器不变，生成 v1516 primary/repro：
+
+```text
+files = 39 / 39
+path/SHA differences = 0
+manifest raw bytes equal = true
+manifest SHA-256 = a7eb772318462759717a63f37ec260db61dd77b2bfdecb524c7313d532194963
+tree SHA-256 = df245c7ca154dae562179c412bf39a09a702b8bd5df9da65460432711da0d528
+capability SHA-256 = da4d94202e4a264f6effe42bed07d8918720631e825298244e4c1b7037ea439e
+evaluation surface SHA-256 = 7cc58567a1474c32653d9e2c532f45681667febd2ae5de05366a044fdc01e239
+inventory SHA-256 = 6ad79e4cfe8b967a46013859c01396dd58a2aaad631761f85322730131c9789e
+derived artifact SHA-256 = 4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945
+verification = SOURCE_BOUND_CURRENT / PASS
+```
+
+验证结果为 `core/lexical/validator 214 tests / OK`、`projection 53 / OK (skipped=1)`、`qualification 44 / OK`，完整稳定
+源回归为 `Ran 1235 tests in 800.508s / OK (skipped=8)`。`compileall` 通过；`quick_validate.py` 在 Windows 默认 GBK 下读取
+UTF-8 中文失败，以 `python -X utf8` 重跑后得到 `Skill is valid!`。
+
+### 60.4 结论上限没有变化
+
+默认资格审计仍为 `evidence_integrity=PASS / qualification=NOT_EVALUATED / 0 PASS / 0 FAIL / 188 NOT_EVALUATED /
+cases_total=0 / exit 2`，学术正确性继续是 `NOT_EVALUATED`。v1516 证明的是“会区分可编码缺陷与证据不足观察，并对两者
+给出不同处置”，不是“生成结果已经自然”。后续红队仍需从新的真实 MD/TeX 候选中寻找可重复退步，并用外部 paired review
+判断成对收益；没有跨样本证据时，不再用扩张禁词数量冒充成熟度。
+
+## 61. 2026-07-24：v1.52.0 生产工具链正式冻结与质量授权隔离
+
+> 本节是唯一当前冻结口径；第 60 节及更早章节只保存历史攻击、修复和回归证据，不再代表当前安装源。
+
+### 61.1 红蓝队最终确认的对象与边界
+
+本轮冻结的是“生产级中文学术文风候选生成与审计工具链稳定版”。它已经具备材料约束起草、病灶定位、短文与长文候选生成、
+数字/公式/TeX/代码/引语/模板字段保护、失败分级、事务回滚、direct evidence、父进程 capture 和 current-policy replay。它不判断
+事实、引文、计算或学术结论是否正确，也不能给自己的候选签发最终读感 clearance。
+
+红队没有发现当前已编码攻击面仍存在可复现的 P0 静默放行。这个结论只覆盖现有测试合同与三份真实工件，不等于未来不会出现
+新漏洞，更不等于模型已经稳定生成自然终稿。外部成对质量复核缺失时，机械层可以 PASS，顶层仍必须保持 `REVIEW/2`；
+`academic_correctness=NOT_EVALUATED` 与 `humanize_quality_claim_allowed=false` 不得被单元测试数量覆盖。
+
+### 61.2 全新双投影与 current-source 复验
+
+冻结时没有复用带缓存的旧目录，而是从当前安装源分别构建全新 primary/repro：
+
+```text
+primary = C:\Users\Lenovo\.codex\tmp\humanize_projection_v1520_final_primary
+repro   = C:\Users\Lenovo\.codex\tmp\humanize_projection_v1520_final_repro
+
+files per projection          = 39 / 39
+excluded audit/evaluation     = 43
+path or SHA-256 differences   = 0
+manifest raw bytes equal      = true
+manifest SHA-256              = 8464cf5109865f97c193ce89c0cdf7a49846d48b29029f785fedbc573877a029
+projection tree SHA-256       = 46644c75f482f88f87d89f16e93e5bee497022b3e01ef98fbdb2935bebb2301a
+capability source SHA-256     = cef35dd4b48568ab2940c6f287526978bba899ac1466483fd2fadd7f684f3b76
+evaluation surface SHA-256    = 669327c7577b5a12caf84923027dac7deec73adc00447a6e3849218fab33ee20
+inventory SHA-256             = 830234570f7eaba78760978854438a8db64a2771bb3335a8ff56b2f0e7472f8d
+derived artifact SHA-256      = 4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945
+builder executable SHA-256    = 99077c4c57721d0b67f0b55654b421c3c3f3ecc804b3431b507936cd48265fba
+transform dependency SHA-256  = 0f523daf2d391113983ea6007ff1f397d536d05dc4c4bd74e25a595b935a1771
+transform registry SHA-256    = 92afbcb00f1ec1ad812e291d1be2530af64842ef02beafb81d123e50b9e6db78
+evidence cap                  = E2
+```
+
+两份 manifest 的原始字节相同，39 个相对路径、文件大小与 SHA-256 逐项一致。投影排除 43 项 oracle、trust、验签、capture/replay、
+候选队列和资格审计资源，限制生成侧评分答案暴露；但同机同权限构建不能证明宿主 oracle 不可达，因此不得升级为 E3。
+
+### 61.3 三份真实工件与 advisory 隔离
+
+Main modeling r4、Modeling notes r3、CET-6 course 三份真实 before/after 都有 current capture。三份 capture 的完整性均为 PASS，
+父进程实际观察的 OS 退出码均为 2，且共同保持：
+
+```text
+mechanical_validation_status=PASS
+delivery_gate_status=REVIEW
+paired_quality_review_status=PENDING_EXTERNAL_REVIEW
+paired_quality_clearance_granted=false
+academic_correctness=NOT_EVALUATED
+humanize_quality_claim_allowed=false
+```
+
+`advisory-blind-review-ledger.json` 中三条 JSONL 定点记录的行号、UTF-8 行 SHA-256、时间、消息 ID 和代理来源已经流式复核。
+Main 有两条偏好记录，Notes 有一条，CET-6 没有；第三条原始表述为 `BETTER` 且明确“小幅”，台账规范化为 `BETTER_SMALL`。
+before/after 哈希来自 capture 工件绑定，不冒充投票行内字段。全部记录固定为 `ADVISORY_ONLY` 且
+`review_clearance_granted=false`，不证明真人身份，也不向生成资格矩阵贡献 PASS。
+
+### 61.4 正式回归与资格审计
+
+冻结前置门均通过：Skill quick validation 为 `Skill is valid!`，脚本 `compileall` 退出 0，projection harness 为
+`Ran 18 tests / OK`。完整回归由独立父进程持久化 stdout、stderr、UTC 起止和真实 OS 退出码，结果为：
+
+```text
+Ran 1277 tests in 821.729s
+OK (skipped=8)
+observed OS exit code = 0
+executed pass = 1269
+environment-related skip = 8
+```
+
+默认生成资格审计另由父进程确认真实子进程退出码为 2，落盘报告为：
+
+```text
+evidence_integrity_status = PASS
+qualification_status      = NOT_EVALUATED
+atoms                      = 0 PASS / 0 FAIL / 193 NOT_EVALUATED
+cases_total                = 0
+academic_correctness       = NOT_EVALUATED
+report exit_code           = 2
+```
+
+`1277` 是发现的测试总数，不是 1277 项执行通过后再加 8 项跳过；`193 NOT_EVALUATED` 也不是质量得分为零，而是没有完整、可信的
+前向证据。红蓝队据此确认：工具链基础设施可冻结，生成模型无人值守最终交付资格仍未取得。
+
+### 61.5 冻结纪律
+
+1. 单篇单例只进入 residual triage；没有跨样本、正反例和稳定触发，不扩禁词或泛正则。
+2. 任何 generator capability surface 变化都升版本并重建全新双投影，不能沿用本节哈希。
+3. 机械 PASS、replay PASS、capture integrity PASS、模型自检和 advisory 偏好均不得签发质量 clearance。
+4. GPT 生成的 MD/TeX 只作负例和压力材料，不作真人 Voice、事实源或 production positive action。
+5. 当前权威命令、哈希、日志和限制由 `humanize-academic-chinese-v1.52.0-final/run_metadata.json` 绑定；任一受保护输入变化后，
+   v1.52.0 的 current/frozen 称谓自动失效，必须创建新 checkpoint。

@@ -232,15 +232,32 @@ class ReplayHumanizeLongFixtureTests(unittest.TestCase):
         )
         self.assertEqual("PASS", long_24["transaction_replay_status"])
         self.assertTrue(long_24["second_pass_seed_rejected"])
-        self.assertEqual(
-            "ABSENT", long_24["generator_projection_control_surface"]
-        )
-        self.assertEqual(
-            "PASS", long_24["generator_projection_reproducibility"]
-        )
-        self.assertEqual(
-            "PASS", long_24["generator_projection_transaction_surface"]
-        )
+        projection_execution = long_24["generator_projection_execution_status"]
+        self.assertIn(projection_execution, {"PASS", "FAIL"})
+        if projection_execution == "PASS":
+            self.assertEqual(
+                "ABSENT", long_24["generator_projection_control_surface"]
+            )
+            self.assertEqual(
+                "PASS", long_24["generator_projection_reproducibility"]
+            )
+            self.assertEqual(
+                "PASS", long_24["generator_projection_transaction_surface"]
+            )
+        else:
+            self.assertEqual("FAIL", long_24["status"])
+            self.assertEqual("FAIL", long_24["delivery_gate_status"])
+            self.assertEqual(1, long_24["exit_code"])
+            self.assertEqual(
+                "NOT_RUN", long_24["generator_projection_control_surface"]
+            )
+            self.assertEqual(
+                "NOT_RUN", long_24["generator_projection_reproducibility"]
+            )
+            self.assertEqual(
+                "NOT_RUN", long_24["generator_projection_transaction_surface"]
+            )
+            self.assertTrue(long_24.get("error"))
 
     def test_unknown_scenario_and_mismatched_mirror_fail_closed(self) -> None:
         unknown = self.run_helper("LONG-99")

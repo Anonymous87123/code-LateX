@@ -290,8 +290,9 @@ class LongDocumentFinalizationTests(unittest.TestCase):
             unit,
             {
                 **payload,
-                "schema_version": "humanize-unit-rewrite-bundle/v3",
+                "schema_version": finalizer.UNIT_REWRITE_BUNDLE_SCHEMA,
                 "authoring_binding": binding,
+                "template_field_edit_scope": None,
             },
         )
 
@@ -528,6 +529,132 @@ class LongDocumentFinalizationTests(unittest.TestCase):
                 finalizer._canonical_json(body).encode("utf-8")
             ).hexdigest(),
             evidence["evidence_sha256"],
+        )
+
+    def test_v4_unit_template_field_scope_is_source_bound_and_not_quality_clearance(
+        self,
+    ) -> None:
+        source_text = (
+            "\\section{议论文模板}\n"
+            "适用题目：带有社会责任意义的题目,也包括个人成长类命题。\n"
+            "这一段说明写作材料的适用范围。\n"
+        )
+        _, run_dir, unit = self.prepare(source_text)
+        span = self.masked_line_span(unit["masked_text"], "适用题目")
+        revised = unit["masked_text"].replace(
+            "题目,也包括", "题目，也包括"
+        )
+        line = next(
+            index
+            for index, text in enumerate(
+                unit["masked_text"].replace("\r\n", "\n").splitlines(),
+                1,
+            )
+            if text.startswith("适用题目：")
+        )
+        bundle = self.v3_rewrite_bundle(
+            run_dir,
+            unit,
+            masked_text=revised,
+            source_span=span,
+            summary="修正字段内中英文标点混用且保持适用范围不变",
+            target_signal="SCENE-COURSE-RHYTHM",
+        )
+        bundle["template_field_edit_scope"] = {
+            "schema_version": finalizer.UNIT_TEMPLATE_FIELD_EDIT_SCOPE_SCHEMA,
+            "permission_boundary": "PAYLOAD_ONLY",
+            "edits": [
+                {
+                    "line": line,
+                    "label": "适用题目",
+                    "permission": "PAYLOAD_ONLY",
+                    "reason": "原句字段内中英文标点混用，授权只修正逗号表达形式",
+                }
+            ],
+        }
+        rewrites = self.rewrite_dir()
+        (rewrites / f"{unit['unit_id']}.json").write_text(
+            json.dumps(bundle, ensure_ascii=False), encoding="utf-8"
+        )
+
+        result = finalizer.finalize(run_dir, rewrites)
+
+        validation = json.loads(
+            (run_dir / "validation" / f"{unit['unit_id']}.validation.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        scope_path = (
+            run_dir
+            / "validation"
+            / f"{unit['unit_id']}.template-field-edit-scope.json"
+        )
+        scope = json.loads(scope_path.read_text(encoding="utf-8"))
+        before_path = run_dir / "validation" / f"{unit['unit_id']}.before.tex"
+        self.assertEqual(1, result["unit_statuses"]["DONE"])
+        self.assertEqual("PASS", validation["mechanical_validation_status"])
+        self.assertEqual("PASS", validation["template_field_layer_status"])
+        self.assertEqual(
+            "PASS", validation["template_field_edit_scope_check"]["status"]
+        )
+        self.assertEqual(
+            ["TEMPLATE_FIELD_PAYLOAD_EDIT_AUTHORIZED"],
+            [item["code"] for item in validation["template_field_findings"]],
+        )
+        self.assertEqual(
+            hashlib.sha256(before_path.read_bytes()).hexdigest(),
+            scope["source_sha256"],
+        )
+        self.assertEqual("PENDING_EXTERNAL_REVIEW", validation["paired_quality_review_status"])
+        self.assertFalse(
+            validation["template_field_edit_scope_check"]["local_clearance_supported"]
+        )
+
+    def test_v4_unit_template_field_scope_bad_line_is_unresolved(self) -> None:
+        source_text = (
+            "\\section{议论文模板}\n"
+            "适用题目：带有社会责任意义的题目,也包括个人成长类命题。\n"
+            "这一段说明写作材料的适用范围。\n"
+        )
+        _, run_dir, unit = self.prepare(source_text)
+        span = self.masked_line_span(unit["masked_text"], "适用题目")
+        bundle = self.v3_rewrite_bundle(
+            run_dir,
+            unit,
+            masked_text=unit["masked_text"].replace("题目,也包括", "题目，也包括"),
+            source_span=span,
+            summary="修正字段内中英文标点混用且保持适用范围不变",
+            target_signal="SCENE-COURSE-RHYTHM",
+        )
+        bundle["template_field_edit_scope"] = {
+            "schema_version": finalizer.UNIT_TEMPLATE_FIELD_EDIT_SCOPE_SCHEMA,
+            "permission_boundary": "PAYLOAD_ONLY",
+            "edits": [
+                {
+                    "line": 1,
+                    "label": "适用题目",
+                    "permission": "PAYLOAD_ONLY",
+                    "reason": "原句字段内中英文标点混用，授权只修正逗号表达形式",
+                }
+            ],
+        }
+        rewrites = self.rewrite_dir()
+        (rewrites / f"{unit['unit_id']}.json").write_text(
+            json.dumps(bundle, ensure_ascii=False), encoding="utf-8"
+        )
+
+        result = finalizer.finalize(run_dir, rewrites)
+        row = next(
+            item
+            for item in self.final_ledger(run_dir)
+            if item["unit_id"] == unit["unit_id"]
+        )
+
+        self.assertEqual(1, result["unit_statuses"]["UNRESOLVED"])
+        self.assertIn("invalid_template_field_edit_scope", row["notes"])
+        self.assertIn("TEMPLATE_FIELD_EDIT_SCOPE_INVALID", row["unresolved_codes_json"])
+        self.assertFalse(
+            (run_dir / "validation" / f"{unit['unit_id']}.validation.json").exists()
         )
 
     def test_v3_rewrite_intent_rejects_span_outside_actual_diff(self) -> None:
@@ -1136,21 +1263,18 @@ class LongDocumentFinalizationTests(unittest.TestCase):
         )
         _, run_dir, unit = self.prepare_markdown_unit(source_text, name="near-reorder")
         blocks = preparer.structural_paragraph_blocks(unit["masked_text"])
-        title, first = blocks[0].splitlines()
-        second, third, fourth = blocks[1:]
+        title, first, second, third, fourth = blocks
         revised_first = first.replace("首先处理", "处理").replace("这个步骤", "该步骤")
         revised_second = second.replace("随后处理", "处理").replace("这样做是为了", "这样可以")
-        masked = (
-            title
-            + "\n"
-            + revised_second
-            + "\n\n"
-            + revised_first
-            + "\n\n"
-            + third
-            + "\n\n"
-            + fourth
-            + "\n"
+        first_end = unit["masked_text"].index(first) + len(first)
+        second_start = unit["masked_text"].index(second, first_end)
+        paragraph_separator = unit["masked_text"][first_end:second_start]
+        source_pair = first + paragraph_separator + second
+        self.assertIn(source_pair, unit["masked_text"])
+        masked = unit["masked_text"].replace(
+            source_pair,
+            revised_second + paragraph_separator + revised_first,
+            1,
         )
         rewrites = self.rewrite_dir()
         (rewrites / f"{unit['unit_id']}.json").write_text(
@@ -1175,6 +1299,11 @@ class LongDocumentFinalizationTests(unittest.TestCase):
         self.assertTrue(structural["non_structural_paragraph_order_check"]["reordered"])
         self.assertTrue(
             structural["non_structural_paragraph_order_check"]["near_exact_reordered"]
+        )
+        self.assertFalse(
+            structural["non_structural_paragraph_order_check"][
+                "protected_anchor_reordered"
+            ]
         )
 
     def test_balanced_rewrite_rejects_significant_paragraph_merge_and_split(self) -> None:
@@ -1202,9 +1331,21 @@ class LongDocumentFinalizationTests(unittest.TestCase):
             with self.subTest(name=name):
                 _, run_dir, unit = self.prepare_markdown_unit(source_text, name=name)
                 blocks = preparer.structural_paragraph_blocks(unit["masked_text"])
-                title, first = blocks[0].splitlines()
-                author_blocks = [first, *blocks[1:]]
-                masked = title + "\n" + "\n\n".join(transform(author_blocks)) + "\n"
+                title, *author_blocks = blocks
+                body_start = unit["masked_text"].index(author_blocks[0])
+                first_end = body_start + len(author_blocks[0])
+                second_start = unit["masked_text"].index(author_blocks[1], first_end)
+                paragraph_separator = unit["masked_text"][first_end:second_start]
+                body_end = unit["masked_text"].index(
+                    author_blocks[-1], second_start
+                ) + len(author_blocks[-1])
+                source_body = unit["masked_text"][body_start:body_end]
+                self.assertIn(source_body, unit["masked_text"])
+                masked = unit["masked_text"].replace(
+                    source_body,
+                    paragraph_separator.join(transform(author_blocks)),
+                    1,
+                )
                 rewrites = self.root / f"rewrites-{name}"
                 rewrites.mkdir()
                 (rewrites / f"{unit['unit_id']}.json").write_text(
@@ -1498,8 +1639,20 @@ class LongDocumentFinalizationTests(unittest.TestCase):
         span = self.masked_line_range_span(
             unit["masked_text"], "第一段说明", "第二段重复"
         )
-        normalized = unit["masked_text"].replace("\r\n", "\n")
-        revised = normalized.replace("\n\n", "", 2)
+        blocks = preparer.structural_paragraph_blocks(unit["masked_text"])
+        title, first_with_protected, second = blocks
+        protected = next(
+            preparer.PROTECTED_PLACEHOLDER_RE.finditer(first_with_protected)
+        ).group(0)
+        protected_start = unit["masked_text"].index(protected)
+        protected_end = protected_start + len(protected)
+        second_start = unit["masked_text"].index(second, protected_end)
+        protected_boundary = unit["masked_text"][protected_end:second_start]
+        self.assertTrue(protected_boundary.strip("\r\n") == "")
+        revised = (
+            unit["masked_text"][:protected_end]
+            + unit["masked_text"][second_start:]
+        )
         bundle = self.v3_topology_bundle(
             run_dir,
             unit,
@@ -1520,7 +1673,10 @@ class LongDocumentFinalizationTests(unittest.TestCase):
         )
 
         self.assertEqual(1, result["unit_statuses"]["UNRESOLVED"])
-        self.assertIn("protected", row["notes"].lower())
+        self.assertEqual(
+            "balanced_topology_standalone_protected_anchor_in_source",
+            row["notes"],
+        )
 
     def test_light_rejects_even_declared_paragraph_split(self) -> None:
         overloaded = (
@@ -1567,9 +1723,21 @@ class LongDocumentFinalizationTests(unittest.TestCase):
         )
         _, run_dir, unit = self.prepare_markdown_unit(source_text, name="protected-anchor")
         blocks = preparer.structural_paragraph_blocks(unit["masked_text"])
-        title, first, protected = blocks[0].splitlines()
-        second, third = blocks[1:]
-        masked = title + "\n" + protected + "\n" + first + "\n\n" + second + "\n\n" + third + "\n"
+        title, first_with_protected, second, third = blocks
+        protected_match = next(
+            preparer.PROTECTED_PLACEHOLDER_RE.finditer(first_with_protected)
+        )
+        protected = protected_match.group(0)
+        prefix = first_with_protected[: protected_match.start()]
+        first = prefix.rstrip("\r\n")
+        line_separator = prefix[len(first) :]
+        source_pair = first + line_separator + protected
+        self.assertIn(source_pair, unit["masked_text"])
+        masked = unit["masked_text"].replace(
+            source_pair,
+            protected + line_separator + first,
+            1,
+        )
         rewrites = self.rewrite_dir()
         (rewrites / f"{unit['unit_id']}.json").write_text(
             json.dumps(
@@ -1609,12 +1777,13 @@ class LongDocumentFinalizationTests(unittest.TestCase):
                     name=f"sentence-{intensity.lower()}",
                 )
                 blocks = preparer.structural_paragraph_blocks(unit["masked_text"])
-                title, first = blocks[0].splitlines()
+                title, first, second = blocks
                 reordered = (
                     "缺项记录暂时留在待核清单。样本筛选范围限于已登记材料。"
                     "当前段落不评价材料质量。"
                 )
-                masked = title + "\n" + reordered + "\n\n" + blocks[1] + "\n"
+                self.assertIn(first, unit["masked_text"])
+                masked = unit["masked_text"].replace(first, reordered, 1)
                 rewrites = self.root / f"rewrites-sentence-{intensity.lower()}"
                 rewrites.mkdir()
                 (rewrites / f"{unit['unit_id']}.json").write_text(
@@ -1695,15 +1864,18 @@ class LongDocumentFinalizationTests(unittest.TestCase):
         }
 
     def prepare_structural_pair(
-        self, *, extra_pending: bool = False
+        self, *, extra_pending: bool = False, template_field: bool = False
     ) -> tuple[Path, Path, list[dict]]:
         source = self.root / "transaction.tex"
+        fourth_paragraph = "值得注意的是，第四段补充比较结果。"
+        if template_field:
+            fourth_paragraph = "适用题目：" + fourth_paragraph
         text = (
             "\\section{讨论}\n\n"
             "值得注意的是，第一段说明当前观察对象。\n\n"
             "第二段补充两种表述之间的差别 $x=1$。\n\n"
             "第三段说明另一组观察对象 $y=2$。\n\n"
-            "值得注意的是，第四段补充比较结果。\n"
+            f"{fourth_paragraph}\n"
         )
         if extra_pending:
             text += "\n\\section{附录}\n\n附录中的独立说明仍待处理。\n"
@@ -1789,7 +1961,7 @@ class LongDocumentFinalizationTests(unittest.TestCase):
         self.assertGreaterEqual(len(inventory["transactions"]), 2)
         return source, run_dir, pending, inventory
 
-    def structural_transaction_bundle(
+    def structural_transaction_v1_bundle(
         self, run_dir: Path, units: list[dict]
     ) -> dict:
         inventory = json.loads(
@@ -1875,8 +2047,8 @@ class LongDocumentFinalizationTests(unittest.TestCase):
     def structural_transaction_v2_bundle(
         self, run_dir: Path, units: list[dict]
     ) -> dict:
-        bundle = self.structural_transaction_bundle(run_dir, units)
-        bundle["schema_version"] = "humanize-structural-transaction-bundle/v2"
+        bundle = self.structural_transaction_v1_bundle(run_dir, units)
+        bundle["schema_version"] = finalizer.STRUCTURAL_TRANSACTION_BUNDLE_SCHEMA_V2
         chunks = {
             unit["unit_id"]: json.loads(
                 (run_dir / "chunks" / f"{unit['unit_id']}.json").read_text(
@@ -1977,6 +2149,45 @@ class LongDocumentFinalizationTests(unittest.TestCase):
                     ],
                 }
         return bundle
+
+    def structural_transaction_v3_bundle(
+        self, run_dir: Path, units: list[dict]
+    ) -> dict:
+        bundle = self.structural_transaction_v2_bundle(run_dir, units)
+        bundle["schema_version"] = finalizer.STRUCTURAL_TRANSACTION_BUNDLE_SCHEMA
+        for fragment in bundle["fragments"]:
+            fragment["template_field_edit_scope"] = None
+        return bundle
+
+    def structural_transaction_bundle(
+        self, run_dir: Path, units: list[dict]
+    ) -> dict:
+        return self.structural_transaction_v3_bundle(run_dir, units)
+
+    def structural_transaction_fragment_baseline(
+        self,
+        run_dir: Path,
+        units: list[dict],
+        fragment: dict,
+    ) -> str:
+        chunks = {
+            unit["unit_id"]: json.loads(
+                (run_dir / "chunks" / f"{unit['unit_id']}.json").read_text(
+                    encoding="utf-8"
+                )
+            )
+            for unit in units
+        }
+        ordered_refs, source_map = finalizer._transaction_source_inventory(
+            [unit["unit_id"] for unit in units], chunks
+        )
+        plan = finalizer._validate_structural_transaction_fragment_plan(
+            fragment,
+            target_unit_id=fragment["target_unit_id"],
+            ordered_source_refs=ordered_refs,
+            source_map=source_map,
+        )
+        return str(plan["_baseline_masked_text"])
 
     def set_transaction_fragment_local_no_change(
         self,
@@ -3091,7 +3302,7 @@ class LongDocumentFinalizationTests(unittest.TestCase):
         self.assertFalse((run_dir / "rendered_partial").exists())
         self.assertFalse((run_dir / "rendered_review").exists())
 
-    def test_structural_transaction_passes_two_fragments_and_document_gate(self) -> None:
+    def test_structural_transaction_v3_passes_two_fragments_and_document_gate(self) -> None:
         source, run_dir, units = self.prepare_structural_pair()
         rewrites = self.rewrite_dir()
         bundle = self.structural_transaction_bundle(run_dir, units)
@@ -3147,7 +3358,7 @@ class LongDocumentFinalizationTests(unittest.TestCase):
             (run_dir / request_record["path"]).read_text(encoding="utf-8")
         )
         self.assertEqual(
-            "humanize-structural-transaction-review-request/v1",
+            finalizer.STRUCTURAL_TRANSACTION_REVIEW_REQUEST_SCHEMA,
             request["schema"],
         )
         self.assertEqual(
@@ -3168,14 +3379,15 @@ class LongDocumentFinalizationTests(unittest.TestCase):
             request["transaction_binding_sha256"],
         )
         self.assertEqual(2, len(request["frozen_pair"]["compound_refs"]))
-        self.assertEqual("REVIEW", result["rewrite_intent_coverage_status"])
-        self.assertEqual(2, result["rewrite_intent_units_review"])
+        self.assertEqual("PASS", result["rewrite_intent_coverage_status"])
+        self.assertEqual(2, result["rewrite_intent_units_pass"])
+        self.assertEqual(0, result["rewrite_intent_units_review"])
         self.assertEqual(0, result["rewrite_intent_units_missing"])
 
-    def test_structural_transaction_v2_binds_fragment_intent_and_evidence(self) -> None:
+    def test_structural_transaction_v3_binds_fragment_intent_and_evidence(self) -> None:
         _source, run_dir, units = self.prepare_structural_pair()
         rewrites = self.rewrite_dir()
-        bundle = self.structural_transaction_v2_bundle(run_dir, units)
+        bundle = self.structural_transaction_v3_bundle(run_dir, units)
         (rewrites / "pair.transaction.json").write_text(
             json.dumps(bundle, ensure_ascii=False), encoding="utf-8"
         )
@@ -3193,6 +3405,23 @@ class LongDocumentFinalizationTests(unittest.TestCase):
         transaction_request = result["structural_transaction_review_requests"][
             bundle["transaction_id"]
         ]
+        request = json.loads(
+            (run_dir / transaction_request["path"]).read_text(encoding="utf-8")
+        )
+        self.assertEqual(
+            finalizer.STRUCTURAL_TRANSACTION_REVIEW_REQUEST_SCHEMA,
+            request["schema"],
+        )
+        self.assertEqual(
+            {unit["unit_id"] for unit in units},
+            set(request["fragment_rewrite_intents"]),
+        )
+        self.assertTrue(
+            all(
+                item["status"] == "PASS"
+                for item in request["fragment_rewrite_intents"].values()
+            )
+        )
         for unit in units:
             unit_id = unit["unit_id"]
             record = result["rewrite_intent_evidence"][unit_id]
@@ -3227,10 +3456,57 @@ class LongDocumentFinalizationTests(unittest.TestCase):
             )
             self.assertEqual(record["path"], paired["rewrite_intent_evidence_path"])
 
-    def test_structural_transaction_v2_allows_fragment_local_no_change(self) -> None:
+    def test_structural_transaction_v1_and_v2_are_read_compatible_schema_reviews(
+        self,
+    ) -> None:
+        original_root = self.root
+        try:
+            for schema_version in ("v1", "v2"):
+                with self.subTest(schema_version=schema_version), tempfile.TemporaryDirectory() as temp:
+                    self.root = Path(temp)
+                    source, run_dir, units = self.prepare_structural_pair()
+                    source_before = source.read_bytes()
+                    rewrites = self.rewrite_dir()
+                    bundle = (
+                        self.structural_transaction_v1_bundle(run_dir, units)
+                        if schema_version == "v1"
+                        else self.structural_transaction_v2_bundle(run_dir, units)
+                    )
+                    (rewrites / "pair.transaction.json").write_text(
+                        json.dumps(bundle, ensure_ascii=False), encoding="utf-8"
+                    )
+
+                    result = finalizer.finalize(run_dir, rewrites)
+                    transaction = result["structural_transaction_results"][
+                        bundle["transaction_id"]
+                    ]
+
+                    self.assertEqual("ROLLED_BACK", transaction["atomic_gate_status"])
+                    self.assertEqual("SCHEMA_GATE", transaction["rollback_reason"])
+                    self.assertFalse(transaction["change_applied"])
+                    self.assertEqual("REVIEW", transaction["rewrite_intent_schema_status"])
+                    self.assertEqual(
+                        {unit["unit_id"]: "PASS" for unit in units},
+                        transaction["fragment_gate_statuses"],
+                    )
+                    self.assertEqual(
+                        {unit["unit_id"]: "REVIEW" for unit in units},
+                        transaction["fragment_rewrite_intent_statuses"],
+                    )
+                    self.assertIn(
+                        "structural_transaction_current_v3_schema_required",
+                        transaction["errors"],
+                    )
+                    self.assertEqual({}, result["rewrite_intent_evidence"])
+                    partial = next((run_dir / "rendered_partial").rglob("*.tex"))
+                    self.assertEqual(source_before, partial.read_bytes())
+        finally:
+            self.root = original_root
+
+    def test_structural_transaction_v3_allows_fragment_local_no_change(self) -> None:
         _source, run_dir, units = self.prepare_structural_pair()
         rewrites = self.rewrite_dir()
-        bundle = self.structural_transaction_v2_bundle(run_dir, units)
+        bundle = self.structural_transaction_v3_bundle(run_dir, units)
         self.set_transaction_fragment_local_no_change(bundle, run_dir, units)
         (rewrites / "pair.transaction.json").write_text(
             json.dumps(bundle, ensure_ascii=False), encoding="utf-8"
@@ -3247,6 +3523,283 @@ class LongDocumentFinalizationTests(unittest.TestCase):
         payload = json.loads((run_dir / evidence["path"]).read_text(encoding="utf-8"))
         self.assertEqual("NO_CHANGE", payload["decision"])
         self.assertEqual("NOT_APPLICABLE", payload["intent_diff_binding"]["status"])
+
+    def test_structural_transaction_v3_template_field_scope_is_source_bound_without_quality_clearance(
+        self,
+    ) -> None:
+        _source, run_dir, units = self.prepare_structural_pair(template_field=True)
+        rewrites = self.rewrite_dir()
+        bundle = self.structural_transaction_v3_bundle(run_dir, units)
+        fragment = next(
+            item
+            for item in bundle["fragments"]
+            if "适用题目：" in self.structural_transaction_fragment_baseline(
+                run_dir, units, item
+            )
+        )
+        baseline = self.structural_transaction_fragment_baseline(
+            run_dir, units, fragment
+        )
+        line = next(
+            index
+            for index, text in enumerate(baseline.splitlines(), 1)
+            if text.startswith("适用题目：")
+        )
+        fragment["template_field_edit_scope"] = {
+            "schema_version": finalizer.UNIT_TEMPLATE_FIELD_EDIT_SCOPE_SCHEMA,
+            "permission_boundary": "PAYLOAD_ONLY",
+            "edits": [
+                {
+                    "line": line,
+                    "label": "适用题目",
+                    "permission": "PAYLOAD_ONLY",
+                    "reason": "适用题目字段中的值得注意的是只承担空泛强调功能，删除后仍保留第四段比较对象和结果范围",
+                }
+            ],
+        }
+        (rewrites / "pair.transaction.json").write_text(
+            json.dumps(bundle, ensure_ascii=False), encoding="utf-8"
+        )
+
+        result = finalizer.finalize(run_dir, rewrites)
+        transaction = result["structural_transaction_results"][
+            bundle["transaction_id"]
+        ]
+        unit_id = fragment["target_unit_id"]
+        validation_path = run_dir / "validation" / f"{unit_id}.validation.json"
+        validation = json.loads(validation_path.read_text(encoding="utf-8"))
+        scope_path = (
+            run_dir
+            / "validation"
+            / f"{unit_id}.template-field-edit-scope.json"
+        )
+        scope = json.loads(scope_path.read_text(encoding="utf-8"))
+        before_path = run_dir / "validation" / f"{unit_id}.before.tex"
+
+        self.assertEqual("PASS", transaction["atomic_gate_status"], transaction)
+        self.assertEqual("PASS", transaction["rewrite_intent_schema_status"])
+        self.assertEqual("PASS", transaction["fragment_gate_statuses"][unit_id])
+        self.assertEqual("PASS", validation["template_field_layer_status"])
+        self.assertEqual(
+            ["TEMPLATE_FIELD_PAYLOAD_EDIT_AUTHORIZED"],
+            [item["code"] for item in validation["template_field_findings"]],
+        )
+        self.assertEqual(
+            hashlib.sha256(before_path.read_bytes()).hexdigest(),
+            scope["source_sha256"],
+        )
+        self.assertEqual(
+            "PENDING_EXTERNAL_REVIEW",
+            validation["paired_quality_review_status"],
+        )
+        self.assertFalse(
+            validation["paired_quality_review_local_clearance_supported"]
+        )
+        self.assertFalse(validation["paired_quality_clearance_granted"])
+        self.assertFalse(result["paired_quality_local_clearance_supported"])
+        self.assertFalse(result["paired_quality_clearance_granted"])
+
+    def test_structural_transaction_v3_invalid_template_scope_rolls_back_pair_and_publishes_independent_unit(
+        self,
+    ) -> None:
+        source, run_dir, units = self.prepare_structural_pair(
+            extra_pending=True, template_field=True
+        )
+        source_before = source.read_text(encoding="utf-8")
+        pending = [
+            json.loads(path.read_text(encoding="utf-8"))
+            for path in (run_dir / "chunks").glob("*.json")
+            if json.loads(path.read_text(encoding="utf-8"))["status"] == "PENDING"
+        ]
+        unit_ids = {unit["unit_id"] for unit in units}
+        independent = next(unit for unit in pending if unit["unit_id"] not in unit_ids)
+        rewrites = self.rewrite_dir()
+        bundle = self.structural_transaction_v3_bundle(run_dir, units)
+        fragment = next(
+            item
+            for item in bundle["fragments"]
+            if "适用题目：" in self.structural_transaction_fragment_baseline(
+                run_dir, units, item
+            )
+        )
+        baseline = self.structural_transaction_fragment_baseline(
+            run_dir, units, fragment
+        )
+        wrong_line = next(
+            index
+            for index, text in enumerate(baseline.splitlines(), 1)
+            if text and not text.startswith("适用题目：")
+        )
+        fragment["template_field_edit_scope"] = {
+            "schema_version": finalizer.UNIT_TEMPLATE_FIELD_EDIT_SCOPE_SCHEMA,
+            "permission_boundary": "PAYLOAD_ONLY",
+            "edits": [
+                {
+                    "line": wrong_line,
+                    "label": "适用题目",
+                    "permission": "PAYLOAD_ONLY",
+                    "reason": "授权行必须绑定结构基线中的适用题目字段载荷",
+                }
+            ],
+        }
+        (rewrites / "pair.transaction.json").write_text(
+            json.dumps(bundle, ensure_ascii=False), encoding="utf-8"
+        )
+        independent_after = independent["masked_text"].replace(
+            "仍待处理", "仍需处理", 1
+        )
+        independent_bundle = self.v3_rewrite_bundle(
+            run_dir,
+            independent,
+            masked_text=independent_after,
+            source_span=self.masked_line_span(
+                independent["masked_text"], "仍待处理"
+            ),
+            summary="把独立附录中的暂存措辞改为明确的后续处理说明",
+            target_signal="STYLE-INDEPENDENT-PROGRESS",
+        )
+        independent_bundle["structural_plan"] = self.structural_plan(
+            independent,
+            independent_after,
+            [
+                [paragraph["paragraph_id"]]
+                for paragraph in independent["structural_paragraphs"]
+            ],
+        )
+        (rewrites / f"{independent['unit_id']}.json").write_text(
+            json.dumps(independent_bundle, ensure_ascii=False), encoding="utf-8"
+        )
+
+        result = finalizer.finalize(run_dir, rewrites)
+        transaction = result["structural_transaction_results"][
+            bundle["transaction_id"]
+        ]
+        ledger = {row["unit_id"]: row for row in self.final_ledger(run_dir)}
+        partial_path = next((run_dir / "rendered_partial").rglob("*.tex"))
+        partial = partial_path.read_text(encoding="utf-8")
+
+        self.assertEqual("REVIEW", result["status"])
+        self.assertEqual("PARTIAL", result["publish_state"])
+        self.assertEqual("ROLLED_BACK", transaction["atomic_gate_status"])
+        self.assertEqual("FRAGMENT_GATE", transaction["rollback_reason"])
+        self.assertEqual(
+            "REVIEW",
+            transaction["fragment_gate_statuses"][fragment["target_unit_id"]],
+        )
+        self.assertTrue(
+            any(
+                "invalid_template_field_edit_scope" in error
+                for error in transaction["errors"]
+            ),
+            transaction,
+        )
+        self.assertEqual(
+            {"UNRESOLVED"},
+            {ledger[unit["unit_id"]]["status"] for unit in units},
+        )
+        self.assertEqual("DONE", ledger[independent["unit_id"]]["status"])
+        for unit in units:
+            self.assertEqual(
+                source_before[int(unit["start"]) : int(unit["end"])],
+                partial[int(unit["start"]) : int(unit["end"])],
+            )
+        self.assertIn("附录中的独立说明仍需处理。", partial)
+        self.assertEqual(source_before, source.read_text(encoding="utf-8"))
+        rollback = json.loads(
+            (run_dir / "rollback_manifest.json").read_text(encoding="utf-8")
+        )["atomic_transactions"][bundle["transaction_id"]]
+        self.assertEqual(0, rollback["accepted_member_count"])
+        self.assertEqual(0, rollback["published_member_count"])
+
+    def test_structural_transaction_v3_authorized_template_role_drift_is_review_and_rolls_back(
+        self,
+    ) -> None:
+        source, run_dir, units = self.prepare_structural_pair(template_field=True)
+        source_before = source.read_bytes()
+        rewrites = self.rewrite_dir()
+        bundle = self.structural_transaction_v3_bundle(run_dir, units)
+        fragment = next(
+            item
+            for item in bundle["fragments"]
+            if "适用题目：" in self.structural_transaction_fragment_baseline(
+                run_dir, units, item
+            )
+        )
+        baseline = self.structural_transaction_fragment_baseline(
+            run_dir, units, fragment
+        )
+        line = next(
+            index
+            for index, text in enumerate(baseline.splitlines(), 1)
+            if text.startswith("适用题目：")
+        )
+        fragment["template_field_edit_scope"] = {
+            "schema_version": finalizer.UNIT_TEMPLATE_FIELD_EDIT_SCOPE_SCHEMA,
+            "permission_boundary": "PAYLOAD_ONLY",
+            "edits": [
+                {
+                    "line": line,
+                    "label": "适用题目",
+                    "permission": "PAYLOAD_ONLY",
+                    "reason": "仅授权调整字段载荷措辞，不授权改变适用关系或否定范围",
+                }
+            ],
+        }
+        before_line = "适用题目：第四段补充比较结果。"
+        after_line = "适用题目：不能用于第四段补充比较结果。"
+        self.assertIn(before_line, fragment["masked_text"])
+        fragment["masked_text"] = fragment["masked_text"].replace(
+            before_line, after_line, 1
+        )
+        for target_group, block in zip(
+            fragment["target_groups"],
+            preparer.structural_paragraph_blocks(fragment["masked_text"]),
+        ):
+            target_group["target_paragraph_sha256"] = hashlib.sha256(
+                block.encode("utf-8")
+            ).hexdigest()
+        (rewrites / "pair.transaction.json").write_text(
+            json.dumps(bundle, ensure_ascii=False), encoding="utf-8"
+        )
+
+        result = finalizer.finalize(run_dir, rewrites)
+        transaction = result["structural_transaction_results"][
+            bundle["transaction_id"]
+        ]
+        unit_id = fragment["target_unit_id"]
+        validation = json.loads(
+            (run_dir / "validation" / f"{unit_id}.validation.json").read_text(
+                encoding="utf-8"
+            )
+        )
+
+        self.assertEqual("ROLLED_BACK", transaction["atomic_gate_status"])
+        self.assertEqual("FRAGMENT_GATE", transaction["rollback_reason"])
+        self.assertEqual("REVIEW", transaction["fragment_gate_statuses"][unit_id])
+        self.assertEqual("REVIEW", validation["template_field_layer_status"])
+        self.assertIn(
+            "TEMPLATE_FIELD_ROLE_OR_FORCE_DRIFT",
+            [item["code"] for item in validation["template_field_findings"]],
+        )
+        self.assertEqual(source_before, source.read_bytes())
+        partial = next((run_dir / "rendered_partial").rglob("*.tex"))
+        self.assertEqual(source_before, partial.read_bytes())
+
+    def test_structural_transaction_v3_requires_template_scope_key_on_every_fragment(
+        self,
+    ) -> None:
+        _source, run_dir, units = self.prepare_structural_pair()
+        rewrites = self.rewrite_dir()
+        bundle = self.structural_transaction_v3_bundle(run_dir, units)
+        bundle["fragments"][0].pop("template_field_edit_scope")
+        (rewrites / "pair.transaction.json").write_text(
+            json.dumps(bundle, ensure_ascii=False), encoding="utf-8"
+        )
+
+        with self.assertRaisesRegex(
+            ValueError, "structural_transaction_fragment_fields_invalid"
+        ):
+            finalizer.collect_rewrites(rewrites)
 
     def test_structural_transaction_v2_rejects_fragment_intent_hash_mismatch(self) -> None:
         _source, run_dir, units = self.prepare_structural_pair()
@@ -3347,10 +3900,10 @@ class LongDocumentFinalizationTests(unittest.TestCase):
         ):
             finalizer.finalize(run_dir, rewrites)
 
-    def test_structural_transaction_v2_replay_keeps_intent_evidence_bytes(self) -> None:
+    def test_structural_transaction_v3_replay_keeps_intent_evidence_bytes(self) -> None:
         _source, run_dir, units = self.prepare_structural_pair()
         rewrites = self.rewrite_dir()
-        bundle = self.structural_transaction_v2_bundle(run_dir, units)
+        bundle = self.structural_transaction_v3_bundle(run_dir, units)
         (rewrites / "pair.transaction.json").write_text(
             json.dumps(bundle, ensure_ascii=False), encoding="utf-8"
         )
@@ -3911,10 +4464,10 @@ class LongDocumentFinalizationTests(unittest.TestCase):
         self.assertEqual(rendered_before, _directory_bytes(run_dir / "rendered_review"))
         self.assertEqual(evidence_before, self.evidence_snapshot(run_dir))
 
-    def test_failed_transaction_v2_intent_rerun_preserves_previous_evidence(self) -> None:
+    def test_failed_transaction_v3_intent_rerun_preserves_previous_evidence(self) -> None:
         _source, run_dir, units = self.prepare_structural_pair()
         rewrites = self.rewrite_dir()
-        bundle = self.structural_transaction_v2_bundle(run_dir, units)
+        bundle = self.structural_transaction_v3_bundle(run_dir, units)
         path = rewrites / "pair.transaction.json"
         path.write_text(json.dumps(bundle, ensure_ascii=False), encoding="utf-8")
         first = finalizer.finalize(run_dir, rewrites)
@@ -4258,7 +4811,7 @@ class LongDocumentFinalizationTests(unittest.TestCase):
         self.assertIn(r"\textbf{装饰性强调}", source.read_text(encoding="utf-8"))
 
     def test_missing_placeholder_rejects_unit_atomically(self) -> None:
-        _, run_dir, unit = self.prepare("\\section{例题}\n文字与 $x=1$ 同时出现。\n")
+        source, run_dir, unit = self.prepare("\\section{例题}\n文字与 $x=1$ 同时出现。\n")
         rewrites = self.rewrite_dir()
         masked = re_placeholder = unit["masked_text"]
         import re
@@ -4276,6 +4829,59 @@ class LongDocumentFinalizationTests(unittest.TestCase):
         self.assertEqual("REVIEW", result["status"])
         self.assertEqual("UNRESOLVED", row["status"])
         self.assertEqual("FAIL", row["protected_hashes_ok"])
+        rendered = next((run_dir / "rendered_partial").rglob("*.tex"))
+        self.assertEqual(
+            source.read_bytes(),
+            rendered.read_bytes(),
+            "a rejected protected candidate must fall back to frozen source bytes",
+        )
+
+    def test_placeholder_hash_drift_rejects_unit_atomically(self) -> None:
+        source, run_dir, unit = self.prepare("\\section{例题}\n文字与 $x=1$ 同时出现。\n")
+        rewrites = self.rewrite_dir()
+        import re
+
+        def drift_hash(match: re.Match[str]) -> str:
+            digest = match.group("digest")
+            replacement = ("0" if digest[0] != "0" else "1") + digest[1:]
+            return f"{match.group('prefix')}{replacement}{match.group('suffix')}"
+
+        masked = re.sub(
+            r"(?P<prefix>\[\[PROTECTED:[^:\]]+:)"
+            r"(?P<digest>[0-9a-f]{12})(?P<suffix>\]\])",
+            drift_hash,
+            unit["masked_text"],
+            count=1,
+        )
+        self.assertNotEqual(unit["masked_text"], masked)
+        (rewrites / f"{unit['unit_id']}.json").write_text(
+            json.dumps(
+                self.voice_bound_bundle(
+                    unit,
+                    {"decision": "REWRITE", "masked_text": masked},
+                ),
+                ensure_ascii=False,
+            ),
+            encoding="utf-8",
+        )
+
+        result = finalizer.finalize(run_dir, rewrites)
+        row = next(
+            item
+            for item in self.final_ledger(run_dir)
+            if item["unit_id"] == unit["unit_id"]
+        )
+
+        self.assertEqual("REVIEW", result["status"])
+        self.assertFalse(result["humanize_completion_claim_allowed"])
+        self.assertEqual("UNRESOLVED", row["status"])
+        self.assertEqual("FAIL", row["protected_hashes_ok"])
+        rendered = next((run_dir / "rendered_partial").rglob("*.tex"))
+        self.assertEqual(
+            source.read_bytes(),
+            rendered.read_bytes(),
+            "placeholder hash drift must not reach the partial publication",
+        )
 
     def test_no_change_requires_specific_reason(self) -> None:
         _, run_dir, unit = self.prepare("\\section{定义}\n该定义保持平行结构。\n")
@@ -4348,6 +4954,7 @@ class LongDocumentFinalizationTests(unittest.TestCase):
                 ),
             },
         )
+        bundle["warning_review_request_sha256"] = "0" * 64
         (rewrites / f"{unit['unit_id']}.json").write_text(
             json.dumps(bundle, ensure_ascii=False),
             encoding="utf-8",
@@ -4611,6 +5218,118 @@ class LongDocumentFinalizationTests(unittest.TestCase):
             finalizer.finalize(run_dir, self.rewrite_dir())
 
         self.assertFalse((run_dir / "rendered").exists())
+
+    def test_generated_include_is_preserved_without_entering_authoring_queue(self) -> None:
+        main = self.root / "main.tex"
+        generated_dir = self.root / "generated"
+        generated_dir.mkdir()
+        generated = generated_dir / "auto.tex"
+        main.write_text(
+            "\\input{generated/auto}\n主文件作者正文保持原有范围。\n",
+            encoding="utf-8",
+        )
+        generated_bytes = (
+            "% AUTO-GENERATED FILE. DO NOT EDIT\r\n"
+            "生成文件的字节、换行与正文必须原样保留。\r\n"
+        ).encode("utf-8")
+        generated.write_bytes(generated_bytes)
+        run_dir = self.root / "generated-run"
+        preparer.prepare(
+            [main], run_dir, scene="GENERAL", intensity="BALANCED", min_author_chars=0
+        )
+        with (run_dir / "file_manifest.csv").open(
+            "r", encoding="utf-8-sig", newline=""
+        ) as handle:
+            manifest = list(csv.DictReader(handle))
+        generated_row = next(
+            row for row in manifest if Path(row["path"]).name == "auto.tex"
+        )
+        chunks = [
+            json.loads(path.read_text(encoding="utf-8"))
+            for path in (run_dir / "chunks").glob("*.json")
+        ]
+        pending = [item for item in chunks if item["status"] == "PENDING"]
+        self.assertTrue(pending)
+        self.assertFalse(any(item["file_id"] == generated_row["file_id"] for item in chunks))
+        rewrites = self.rewrite_dir()
+        for unit in pending:
+            (rewrites / f"{unit['unit_id']}.json").write_text(
+                json.dumps(
+                    self.voice_bound_bundle(
+                        unit,
+                        {
+                            "decision": "NO_CHANGE",
+                            "reason": "该作者段保留原有对象、范围和限定方式",
+                        },
+                    ),
+                    ensure_ascii=False,
+                ),
+                encoding="utf-8",
+            )
+
+        result = finalizer.finalize(run_dir, rewrites)
+
+        self.assert_paired_quality_review_candidate(result)
+        rendered_generated = next(
+            path
+            for path in (run_dir / "rendered_review").rglob("*")
+            if path.is_file() and path.name.casefold() == "auto.tex"
+        )
+        self.assertEqual(generated_bytes, rendered_generated.read_bytes())
+
+    def test_resealed_source_role_override_hash_tamper_fails_rebuild(self) -> None:
+        main = self.root / "main.tex"
+        generated_dir = self.root / "generated"
+        generated_dir.mkdir()
+        chapter = generated_dir / "chapter.tex"
+        main.write_text("\\input{generated/chapter}\n主文件正文。\n", encoding="utf-8")
+        chapter.write_text("明确纳入的作者章节。\n", encoding="utf-8")
+        override = self.root / "source-role-scope.json"
+        override.write_text(
+            json.dumps(
+                {
+                    "schema_version": "humanize-source-role-overrides/v1",
+                    "overrides": [
+                        {
+                            "path": "generated/chapter.tex",
+                            "source_role": "AUTHOR_TEXT",
+                            "reason": "用户明确将该章节纳入本轮作者正文范围",
+                        }
+                    ],
+                },
+                ensure_ascii=False,
+            ),
+            encoding="utf-8",
+        )
+        run_dir = self.root / "override-run"
+        preparer.prepare(
+            [main],
+            run_dir,
+            scene="GENERAL",
+            min_author_chars=0,
+            source_role_overrides=override,
+        )
+        artifact_path = run_dir / "source_role_overrides.json"
+        artifact = json.loads(artifact_path.read_text(encoding="utf-8"))
+        artifact["overrides"][0]["applied_files"][0]["snapshot_sha256"] = "f" * 64
+        artifact_path.write_text(
+            json.dumps(artifact, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
+            encoding="utf-8",
+        )
+        (run_dir / "prepare_integrity.json").write_text(
+            json.dumps(
+                preparer.build_integrity_manifest(run_dir),
+                ensure_ascii=False,
+                indent=2,
+                sort_keys=True,
+            )
+            + "\n",
+            encoding="utf-8",
+        )
+
+        with self.assertRaisesRegex(ValueError, "applied-file binding mismatch"):
+            finalizer.finalize(run_dir, self.rewrite_dir())
+        self.assertFalse((run_dir / "rendered_review").exists())
 
     def test_empty_prepare_scope_cannot_claim_full_completion(self) -> None:
         empty = self.root / "empty"

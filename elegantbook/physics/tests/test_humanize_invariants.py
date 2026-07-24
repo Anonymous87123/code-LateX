@@ -102,6 +102,32 @@ class HumanizeInvariantTests(unittest.TestCase):
         self.assertTrue(strict.hard_failure)
         self.assertFalse(strict.warnings)
 
+    def test_default_scope_cannot_be_silently_strengthened_to_universal(self) -> None:
+        before = "后面所有主要结论，默认都来自这同一批样本。"
+        after = "后文的主要结论均来自这批样本。"
+        normal = invariants.check_documents(before, after)
+        strict = invariants.check_documents(before, after, strict_speech_acts=True)
+
+        code = "SPEECH_ACT_MODALITY_SCOPE_CHANGED"
+        self.assertIn(code, codes(normal, "warnings"))
+        self.assertIn(code, codes(strict, "errors"))
+        modality = normal.evidence["speech_act_audit"]["categories"][
+            "modality_scope"
+        ]
+        self.assertEqual({"默认": 1}, modality["raw_delta"]["removed"])
+        self.assertEqual({}, modality["raw_delta"]["added"])
+
+    def test_unchanged_default_scope_does_not_warn(self) -> None:
+        result = invariants.check_documents(
+            "后文结论默认来自完整样本。",
+            "完整样本是后文结论的默认来源。",
+        )
+
+        self.assertNotIn(
+            "SPEECH_ACT_MODALITY_SCOPE_CHANGED",
+            codes(result, "warnings"),
+        )
+
     def test_attribution_source_drift_requires_review_and_strict_mode_fails(self) -> None:
         before = "专家认为，该方法在低频组更稳定。"
         after = "本文证实，该方法在低频组更稳定。"
@@ -922,6 +948,29 @@ class HumanizeInvariantTests(unittest.TestCase):
         self.assertIn("PROTECTED_CODE_CHANGED", codes(result, "errors"))
         self.assertNotIn("LATEX_BRACES_UNBALANCED", codes(result, "errors"))
 
+    def test_tex_nonrendering_environment_payload_is_immutable(self) -> None:
+        for environment in ("comment", "filecontents", "filecontents*"):
+            with self.subTest(environment=environment):
+                begin = (
+                    f"\\begin{{{environment}}}{{hidden.tex}}"
+                    if environment.startswith("filecontents")
+                    else f"\\begin{{{environment}}}"
+                )
+                before = (
+                    f"{begin}\n"
+                    "\\section{隐藏标题}\n"
+                    "token_甲=1\n"
+                    f"\\end{{{environment}}}\n"
+                    "可见正文。"
+                )
+                after = before.replace("token_甲=1", "token_甲=2")
+
+                result = invariants.check_documents(
+                    before, after, document_format="tex"
+                )
+
+                self.assertIn("PROTECTED_CODE_CHANGED", codes(result, "errors"))
+
     def test_lstinline_with_optional_arguments_is_protected(self) -> None:
         before = r"正文 \lstinline[language=Python]!token_甲=1!。"
         after = r"正文 \lstinline[language=Python]!token_甲=2!。"
@@ -961,6 +1010,22 @@ class HumanizeInvariantTests(unittest.TestCase):
 
         self.assertIn("PROTECTED_CODE_CHANGED", codes(result, "errors"))
 
+    def test_short_and_custom_verbatim_alias_changes_are_protected(self) -> None:
+        before = (
+            "\\MakeShortVerb{\\|}\n"
+            "|token_甲=1|\n"
+            "\\DeleteShortVerb{\\|}\n"
+            "\\RecustomVerbatimCommand{\\InlineCode}{Verb}{}\n"
+            "\\InlineCode!token_乙=2!"
+        )
+        after = before.replace("token_甲=1", "token_甲=9").replace(
+            "token_乙=2", "token_乙=8"
+        )
+
+        result = invariants.check_documents(before, after, document_format="tex")
+
+        self.assertIn("PROTECTED_CODE_CHANGED", codes(result, "errors"))
+
     def test_unclosed_short_verb_change_is_hard_error_and_review(self) -> None:
         before = "\\DefineShortVerb{\\|}\r\n|token_甲=1\r\n后文。"
         after = before.replace("token_甲=1", "token_甲=2")
@@ -977,12 +1042,67 @@ class HumanizeInvariantTests(unittest.TestCase):
 
         self.assertEqual([], code)
 
+    def test_percent_inside_inline_verbatim_stays_inside_code_span_only(self) -> None:
+        text = r"正文 \verb|token%甲项|，随后继续说明。"
+
+        code, ranges = invariants._code_spans(text)
+
+        self.assertEqual([r"\verb|token%甲项|"], code)
+        self.assertEqual([r"\verb|token%甲项|"], [text[start:end] for start, end in ranges])
+
+    def test_inline_verbatim_fake_environment_does_not_create_parse_review(self) -> None:
+        text = r"正文 \verb|\begin{verbatim}|，随后继续说明。"
+
+        result = invariants.check_documents(text, text, document_format="tex")
+
+        self.assertNotIn("TEX_PROTECTION_PARSE_REVIEW", codes(result, "warnings"))
+
+    def test_protected_multiline_whitespace_and_line_endings_are_exact(self) -> None:
+        cases = (
+            (
+                "verbatim-trailing-space",
+                "\\begin{verbatim}\nabc  \n\\end{verbatim}",
+                "\\begin{verbatim}\nabc \n\\end{verbatim}",
+                "PROTECTED_CODE_CHANGED",
+            ),
+            (
+                "verbatim-crlf",
+                "\\begin{verbatim}\r\nabc\r\n\\end{verbatim}",
+                "\\begin{verbatim}\nabc\n\\end{verbatim}",
+                "PROTECTED_CODE_CHANGED",
+            ),
+            (
+                "math-trailing-space",
+                "\\[\na+b  \n\\]",
+                "\\[\na+b \n\\]",
+                "PROTECTED_MATH_CHANGED",
+            ),
+            (
+                "math-crlf",
+                "\\[\r\na+b\r\n\\]",
+                "\\[\na+b\n\\]",
+                "PROTECTED_MATH_CHANGED",
+            ),
+        )
+        for label, before, after, expected_code in cases:
+            with self.subTest(label=label):
+                result = invariants.check_documents(
+                    before, after, document_format="tex"
+                )
+                self.assertIn(expected_code, codes(result, "errors"))
+
     def test_incomplete_tex_protection_requires_review_even_when_unchanged(self) -> None:
         cases = (
             "正文 \\verb|token_甲=1\n后文。",
+            "\\CustomVerbatimCommand{\\InlineCode}{Verb}{}\n"
+            "正文 \\InlineCode|token_戊=5\n后文。",
             "正文 \\begin{minted}{python}\ntoken_乙=2\n后文。",
+            "\\begin{comment}\ntoken_壬=9\n后文。",
             "正文 $token_丙=3\n后文。",
+            "正文 $$token_己=6\n后文。",
             "正文 \\(token_丁=4\n后文。",
+            "正文 \\[token_庚=7\n后文。",
+            "正文 \\begin{equation}\ntoken_辛=8\n后文。",
         )
         for text in cases:
             with self.subTest(text=text):
@@ -996,6 +1116,18 @@ class HumanizeInvariantTests(unittest.TestCase):
     def test_incomplete_protected_payload_change_is_a_hard_error(self) -> None:
         before = "正文 \\verb|token_甲=1\n后文。"
         after = "正文 \\verb|token_甲=2\n后文。"
+        result = invariants.check_documents(before, after, document_format="tex")
+
+        self.assertIn("PROTECTED_CODE_CHANGED", codes(result, "errors"))
+        self.assertIn("TEX_PROTECTION_PARSE_REVIEW", codes(result, "warnings"))
+
+    def test_incomplete_declared_custom_payload_change_is_a_hard_error(self) -> None:
+        before = (
+            "\\CustomVerbatimCommand{\\InlineCode}{Verb}{}\n"
+            "正文 \\InlineCode|token_甲=1\n后文。"
+        )
+        after = before.replace("token_甲=1", "token_甲=2")
+
         result = invariants.check_documents(before, after, document_format="tex")
 
         self.assertIn("PROTECTED_CODE_CHANGED", codes(result, "errors"))

@@ -58,6 +58,14 @@ class HumanizeGeneratorProjectionTests(unittest.TestCase):
         path = self.skill / "references" / "generator-projection-policy.json"
         path.write_text(json.dumps(payload, ensure_ascii=False), encoding="utf-8")
 
+    @staticmethod
+    def manifest_core(result: dict) -> dict:
+        return {
+            key: value
+            for key, value in result.items()
+            if key not in {"manifest_sha256", "projection_root", "manifest_path"}
+        }
+
     def test_baseline_projection_has_exact_capability_surface(self) -> None:
         result, output, manifest = self.build(real_quick_validate=True)
         files = sorted(
@@ -67,8 +75,9 @@ class HumanizeGeneratorProjectionTests(unittest.TestCase):
         )
         expected = sorted([*builder.EXPECTED_INCLUDE, *builder.EXPECTED_TRANSFORM])
         self.assertEqual(expected, files)
-        self.assertEqual(38, len(files))
+        self.assertEqual(39, len(files))
         self.assertIn("references/structural-rewrite-contract.md", files)
+        self.assertIn("scripts/audit_humanize_repetition_guards.py", files)
         self.assertFalse((output / manifest.name).exists())
         self.assertEqual("PASS", result["audits"]["skill_quick_validate"])
         self.assertFalse(result["audits"]["read_only_marking_is_isolation_proof"])
@@ -141,7 +150,7 @@ class HumanizeGeneratorProjectionTests(unittest.TestCase):
             encoding="utf-8"
         )
 
-        self.assertEqual("1.37.0", result["projection_policy"]["version"])
+        self.assertEqual(builder.BUILDER_VERSION, result["projection_policy"]["version"])
         self.assertIn("humanize-short-patch-selection-authoring/v4", scaffold)
         self.assertIn("humanize-short-patch-scene-route/v1", scaffold)
         self.assertIn("requested_scene", scaffold)
@@ -165,10 +174,10 @@ class HumanizeGeneratorProjectionTests(unittest.TestCase):
             output / "references" / "long-document-workflow.md"
         ).read_text(encoding="utf-8")
 
-        self.assertEqual("1.37.0", result["projection_policy"]["version"])
+        self.assertEqual(builder.BUILDER_VERSION, result["projection_policy"]["version"])
         self.assertIn("humanize-rewrite-scaffold/v5", projected_scaffold)
         self.assertIn(".humanize-scaffold-committed", projected_scaffold)
-        self.assertIn("humanize-unit-rewrite-bundle/v3", projected_finalizer)
+        self.assertIn("humanize-unit-rewrite-bundle/v4", projected_finalizer)
         self.assertIn("humanize-long-authoring-binding/v1", projected_finalizer)
         self.assertIn(
             "DELIVERY <status> exit=<code> publish=<state>",
@@ -195,7 +204,7 @@ class HumanizeGeneratorProjectionTests(unittest.TestCase):
         self.assertEqual(0, completed.returncode, completed.stderr)
         self.assertEqual(
             "humanize-rewrite-scaffold/v5|"
-            "humanize-unit-rewrite-bundle/v3|"
+            "humanize-unit-rewrite-bundle/v4|"
             "humanize-long-authoring-binding/v1",
             completed.stdout.strip(),
         )
@@ -212,11 +221,316 @@ class HumanizeGeneratorProjectionTests(unittest.TestCase):
             output / "references" / "system-prompt-contract.md"
         ).read_text(encoding="utf-8")
 
-        self.assertEqual("1.37.0", result["projection_policy"]["version"])
+        self.assertEqual(builder.BUILDER_VERSION, result["projection_policy"]["version"])
         self.assertIn('"logical_relation": (', checker)
         self.assertIn("LOGICAL_RELATION_ROUTE_SHELL_RE", checker)
         self.assertIn("scanner candidate 不得直接映射为 `DELETE_STYLE_SHELL`", course)
         self.assertIn("只让公式相邻不算保留关系", contract)
+
+    def test_v47_v138_tex_protection_parser_reaches_projection(self) -> None:
+        result, output, _manifest = self.build()
+        scanner = (output / "scripts" / "scan_humanize_chinese.py").read_text(
+            encoding="utf-8"
+        )
+        preparer = (
+            output / "scripts" / "prepare_humanize_long_document.py"
+        ).read_text(encoding="utf-8")
+        checker = (
+            output / "scripts" / "check_humanize_invariants.py"
+        ).read_text(encoding="utf-8")
+        workflow = (
+            output / "references" / "long-document-workflow.md"
+        ).read_text(encoding="utf-8")
+
+        self.assertEqual(builder.BUILDER_VERSION, result["projection_policy"]["version"])
+        for token in (
+            "MakeShortVerb",
+            "DeleteShortVerb",
+            "RecustomVerbatimCommand",
+            "BVerbatim*",
+            "LVerbatim*",
+            "alltt",
+            "unclosed_declared_inline_verbatim",
+            "unclosed_math_environment",
+        ):
+            self.assertIn(token, scanner)
+        self.assertIn("lexical._tex_protection_problems", preparer)
+        self.assertIn("TEX_PROTECTION_PARSE_REVIEW", checker)
+        self.assertIn("`$$...$$`", workflow)
+        self.assertIn("`\\[...\\]`", workflow)
+        self.assertIn("数学环境", workflow)
+        self.assertIn("`UNRESOLVED`", workflow)
+
+    def test_projected_tex_heading_wrappers_preserve_visible_role_semantics(self) -> None:
+        _result, output, _manifest = self.build()
+        scripts = output / "scripts"
+        probe = r'''
+import json
+import sys
+
+sys.path.insert(0, sys.argv[1])
+import audit_humanize_repetition_guards as audit
+
+
+def tex_list(variant):
+    return "\n".join([
+        r"\begin{itemize}",
+        rf"\item 共同校验步骤：{variant}项",
+        rf"\item 共同校验步骤：{variant}项补充",
+        rf"\item 共同校验步骤：{variant}项复核",
+        r"\end{itemize}",
+    ])
+
+
+detector = {
+    "type": "structured_repeated_list/v1",
+    "block_role": {"heading_leaf_regex": r"^摘要$"},
+    "thresholds": {"minimum_blocks": 3, "minimum_items_per_block": 3},
+    "shared_anchor": {
+        "mode": "MAXIMAL_HAN_NGRAM",
+        "minimum_han_chars": 4,
+        "maximum_han_chars": 8,
+        "minimum_block_coverage": 3,
+    },
+}
+
+results = []
+for heading in (r"\section{摘要}", r"\section{\textbf{摘要}}"):
+    text = "\n".join([heading, *(tex_list(item) for item in ("甲", "乙", "丙"))])
+    result = audit.evaluate_detector_snapshot(
+        {
+            "unit_id": "U-01",
+            "document_id": "DOC-01",
+            "resolved_scene": "RESEARCH",
+            "format": "tex",
+            "heading_path": "",
+            "text": text,
+        },
+        detector,
+    )
+    results.append({
+        "triggered": result["triggered"],
+        "qualified_block_count": result["qualified_block_count"],
+    })
+
+hidden_text = "\n".join(
+    "\n".join(
+        [
+            r"\begin{comment}",
+            r"\section{摘要}",
+            tex_list(variant),
+            r"\end{comment}",
+        ]
+    )
+    for variant in ("甲", "乙", "丙")
+)
+hidden_result = audit.evaluate_detector_snapshot(
+    {
+        "unit_id": "U-02",
+        "document_id": "DOC-01",
+        "resolved_scene": "RESEARCH",
+        "format": "tex",
+        "heading_path": "",
+        "text": hidden_text,
+    },
+    detector,
+)
+
+print(json.dumps({
+    "leaves": [
+        item["heading_leaf"]
+        for item in audit.authenticated_tex_headings(
+            "\n".join([
+                r"\section{摘要}",
+                r"\section{\textbf{摘要}}",
+                r"\section{\emph{\textit{摘要}}}",
+                r"\section{前言 \textbf{模型建立}}",
+            ])
+        )
+    ],
+    "opaque": audit.authenticated_tex_headings(
+        r"\section{执行清单 \custom{HIDDEN-PAYLOAD}}"
+    )[0]["heading_leaf"],
+    "results": results,
+    "nonrendering": {
+        "headings": audit.authenticated_tex_headings(hidden_text),
+        "triggered": hidden_result["triggered"],
+        "qualified_block_count": hidden_result["qualified_block_count"],
+    },
+}, ensure_ascii=True, sort_keys=True))
+'''
+        completed = subprocess.run(
+            [sys.executable, "-I", "-c", probe, str(scripts)],
+            cwd=output,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+            encoding="utf-8",
+            check=False,
+        )
+        self.assertEqual(0, completed.returncode, completed.stderr)
+        self.assertNotIn("HIDDEN-PAYLOAD", completed.stdout)
+        payload = json.loads(completed.stdout)
+        self.assertEqual(
+            ["摘要", "摘要", "摘要", "前言 模型建立"],
+            payload["leaves"],
+        )
+        self.assertEqual("执行清单", payload["opaque"])
+        self.assertEqual(
+            [
+                {"triggered": True, "qualified_block_count": 3},
+                {"triggered": True, "qualified_block_count": 3},
+            ],
+            payload["results"],
+        )
+        self.assertEqual(
+            {
+                "headings": [],
+                "triggered": False,
+                "qualified_block_count": 0,
+            },
+            payload["nonrendering"],
+        )
+
+    def test_projected_cross_unit_v3_requires_resolved_scene(self) -> None:
+        _result, output, _manifest = self.build()
+        scripts = output / "scripts"
+        probe = r'''
+import hashlib
+import json
+import sys
+
+sys.path.insert(0, sys.argv[1])
+import finalize_humanize_long_document as finalizer
+
+
+def record(unit_id, resolved_scene="RESEARCH"):
+    return {
+        "unit_id": unit_id,
+        "document_id": "DOC-01",
+        "resolved_scene": resolved_scene,
+        "expected": True,
+        "state": "NO_CHANGE",
+        "style_validation": "PASS",
+        "before_masked": "普通基线。",
+        "after_masked": "普通基线。",
+    }
+
+
+valid_records = [record("U-01", "RESEARCH"), record("U-02", "MODELING")]
+valid = finalizer._audit_cross_unit_repetition(valid_records)
+
+cases = {}
+for name, mutate in (
+    ("missing", lambda item: item.pop("resolved_scene")),
+    ("empty", lambda item: item.__setitem__("resolved_scene", "")),
+    ("invalid", lambda item: item.__setitem__("resolved_scene", "UNKNOWN")),
+    (
+        "legacy_only",
+        lambda item: (
+            item.__setitem__("scene", item.pop("resolved_scene"))
+        ),
+    ),
+    ("matching", lambda item: item.__setitem__("scene", "research")),
+    ("conflict", lambda item: item.__setitem__("scene", "MODELING")),
+):
+    item = record("U-10")
+    mutate(item)
+    result = finalizer._audit_cross_unit_repetition([item])
+    cases[name] = {
+        "status": result["status"],
+        "review_reasons": result["review_reasons"],
+        "evaluation_partitions": result["evaluation_partitions"],
+    }
+
+unit_inventory = [
+    {
+        "unit_id": item["unit_id"],
+        "document_id": item["document_id"],
+        "resolved_scene": item["resolved_scene"],
+        "expected": item["expected"],
+        "state": item["state"],
+    }
+    for item in valid_records
+]
+expected_inventory_hash = hashlib.sha256(
+    json.dumps(
+        unit_inventory,
+        ensure_ascii=False,
+        sort_keys=True,
+        separators=(",", ":"),
+    ).encode("utf-8")
+).hexdigest()
+
+print(json.dumps({
+    "schema_version": valid["schema_version"],
+    "policy_version": valid["policy"]["version"],
+    "partition_key": valid["policy"]["partition_key"],
+    "evaluation_partitions": valid["evaluation_partitions"],
+    "logical_document_hashes": valid["logical_document_hashes"],
+    "unit_inventory_sha256": valid["unit_inventory_sha256"],
+    "expected_inventory_sha256": expected_inventory_hash,
+    "cases": cases,
+}, ensure_ascii=False, sort_keys=True))
+'''
+        completed = subprocess.run(
+            [sys.executable, "-I", "-c", probe, str(scripts)],
+            cwd=output,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+            encoding="utf-8",
+            check=False,
+        )
+        self.assertEqual(0, completed.returncode, completed.stderr)
+        payload = json.loads(completed.stdout)
+
+        self.assertEqual("humanize-cross-unit-repetition/v3", payload["schema_version"])
+        self.assertEqual("cross-unit-repetition/v3", payload["policy_version"])
+        self.assertEqual(
+            ["logical_document_id", "resolved_scene"],
+            payload["partition_key"],
+        )
+        self.assertEqual(1, len(payload["logical_document_hashes"]))
+        self.assertEqual(
+            ["MODELING", "RESEARCH"],
+            sorted(
+                partition["resolved_scene"]
+                for partition in payload["evaluation_partitions"]
+            ),
+        )
+        self.assertTrue(
+            all("scene" not in partition for partition in payload["evaluation_partitions"])
+        )
+        self.assertEqual(
+            payload["expected_inventory_sha256"],
+            payload["unit_inventory_sha256"],
+        )
+
+        expected_errors = {
+            "missing": "PARTITION_RESOLVED_SCENE_MISSING",
+            "empty": "PARTITION_RESOLVED_SCENE_MISSING",
+            "invalid": "PARTITION_RESOLVED_SCENE_INVALID",
+            "legacy_only": "PARTITION_RESOLVED_SCENE_MISSING",
+            "conflict": "PARTITION_SCENE_CONFLICT",
+        }
+        for name, error_code in expected_errors.items():
+            with self.subTest(name=name):
+                case = payload["cases"][name]
+                self.assertEqual("REVIEW", case["status"])
+                self.assertEqual([], case["evaluation_partitions"])
+                self.assertTrue(
+                    any(error_code in reason for reason in case["review_reasons"]),
+                    case["review_reasons"],
+                )
+
+        matching = payload["cases"]["matching"]
+        self.assertEqual("PASS", matching["status"])
+        self.assertEqual([], matching["review_reasons"])
+        self.assertEqual(
+            "RESEARCH",
+            matching["evaluation_partitions"][0]["resolved_scene"],
+        )
 
     def test_v39_authoring_span_suggestions_reach_projection_without_claim_authority(self) -> None:
         _result, output, _manifest = self.build()
@@ -234,11 +548,40 @@ class HumanizeGeneratorProjectionTests(unittest.TestCase):
         self.assertNotIn("authoring_integrity_scope=EXTERNALLY_ANCHORED", workflow)
 
     def test_rebuild_is_byte_deterministic(self) -> None:
-        first, _first_output, first_manifest = self.build()
-        second, _second_output, second_manifest = self.build()
+        first, first_output, first_manifest = self.build()
+        second, second_output, second_manifest = self.build()
+
+        def file_bytes(root: Path) -> dict[str, bytes]:
+            return {
+                path.relative_to(root).as_posix(): path.read_bytes()
+                for path in root.rglob("*")
+                if path.is_file()
+            }
+
         self.assertEqual(first["projection_tree_sha256"], second["projection_tree_sha256"])
         self.assertEqual(first_manifest.read_bytes(), second_manifest.read_bytes())
         self.assertEqual(first["manifest_sha256"], second["manifest_sha256"])
+        self.assertEqual(file_bytes(first_output), file_bytes(second_output))
+        self.assertEqual(
+            first["projection_tree_sha256"],
+            builder._directory_tree_hash(first_output),
+        )
+        self.assertEqual(
+            second["projection_tree_sha256"],
+            builder._directory_tree_hash(second_output),
+        )
+        first_verified = builder.verify_projection(
+            first_output,
+            self.manifest_core(first),
+            source_root=self.skill,
+        )
+        second_verified = builder.verify_projection(
+            second_output,
+            self.manifest_core(second),
+            source_root=self.skill,
+        )
+        self.assertEqual("PASS", first_verified["source_currentness"])
+        self.assertEqual("PASS", second_verified["source_currentness"])
 
     def test_manifest_binds_hidden_evaluation_surface_without_entering_projection(self) -> None:
         result, output, _manifest = self.build()
@@ -342,13 +685,13 @@ class HumanizeGeneratorProjectionTests(unittest.TestCase):
         self.assertEqual(17, removed[0]["count"])
         self.assertEqual(
             {
-                "schema_version": "humanize-negative-guard-registry/v1",
-                "registry_id": "humanize-academic-chinese/corpus-negative-guards/v1",
+                "schema_version": "humanize-negative-guard-registry/v2",
+                "registry_id": "humanize-academic-chinese/corpus-negative-guards/v2",
             },
             {key: projected[key] for key in ("schema_version", "registry_id")},
         )
         self.assertEqual({"schema_version", "registry_id", "guards"}, set(projected))
-        self.assertEqual(4, len(projected["guards"]))
+        self.assertEqual(5, len(projected["guards"]))
         self.assertTrue(
             all(set(guard) == {"id", "scene", "detector"} for guard in projected["guards"])
         )
@@ -357,7 +700,14 @@ class HumanizeGeneratorProjectionTests(unittest.TestCase):
         }
         runtime_origins = {"MODEL_GENERATED", "MODEL_ORIGIN_UNRESOLVED"}
         expected = {
-            card["id"]: {"scene": card["scene"], "detector": card["detector"]}
+            card["id"]: {
+                "scene": card["scene"],
+                "detector": builder.negative_guards.normalize_detector(
+                    card["detector"],
+                    card["id"],
+                    allow_legacy_regex=True,
+                ),
+            }
             for card in original["action_cards"]
             if card["kind"] == "negative_guard"
             and all(
@@ -516,6 +866,20 @@ class HumanizeGeneratorProjectionTests(unittest.TestCase):
         with self.assertRaisesRegex(builder.ProjectionError, "source hash is not approved"):
             self.build()
 
+    def test_transform_registry_approval_drift_is_rejected(self) -> None:
+        changed_registry = dict(builder.TRANSFORM_REGISTRY)
+        transform_id = next(iter(changed_registry))
+        changed_registry[transform_id] += "/unapproved-drift"
+
+        with mock.patch.object(builder, "TRANSFORM_REGISTRY", changed_registry):
+            with self.assertRaisesRegex(
+                builder.ProjectionError,
+                "approved_transform_registry_sha256 does not approve",
+            ):
+                builder.load_policy(
+                    self.skill / "references" / "generator-projection-policy.json"
+                )
+
     def test_missing_local_reference_is_rejected(self) -> None:
         path = self.skill / "references" / "course-notes.md"
         path.write_text(
@@ -557,6 +921,29 @@ class HumanizeGeneratorProjectionTests(unittest.TestCase):
             builder.build_projection(self.skill, output, manifest)
         self.assertFalse(output.exists())
         self.assertFalse(manifest.exists())
+
+    def test_manifest_publish_base_exceptions_roll_back_and_allow_retry(self) -> None:
+        for index, interruption in enumerate((KeyboardInterrupt(), SystemExit(9)), 1):
+            with self.subTest(interruption=type(interruption).__name__):
+                output = self.root / f"interrupted-projection-{index}"
+                manifest = self.root / f"interrupted-manifest-{index}.json"
+                with (
+                    mock.patch.object(builder, "_quick_validate", return_value="PASS"),
+                    mock.patch.object(builder.os, "replace", side_effect=interruption),
+                    self.assertRaises(type(interruption)),
+                ):
+                    builder.build_projection(self.skill, output, manifest)
+                self.assertFalse(output.exists())
+                self.assertFalse(manifest.exists())
+
+                with mock.patch.object(builder, "_quick_validate", return_value="PASS"):
+                    result = builder.build_projection(self.skill, output, manifest)
+                self.assertTrue(output.is_dir())
+                self.assertTrue(manifest.is_file())
+                self.assertEqual(
+                    "humanize-generator-projection-manifest/v2",
+                    result["schema_version"],
+                )
 
     def test_qualification_section_cannot_swallow_an_inserted_h2(self) -> None:
         raw = (self.skill / "SKILL.md").read_text(encoding="utf-8")
@@ -629,7 +1016,94 @@ class HumanizeGeneratorProjectionTests(unittest.TestCase):
             if key not in {"manifest_sha256", "projection_root", "manifest_path"}
         }
         with self.assertRaisesRegex(builder.ProjectionError, "unexpected directory"):
+            builder.verify_projection(output, manifest, source_root=self.skill)
+
+    def test_projection_verifier_requires_source_unless_explicitly_downgraded(self) -> None:
+        result, output, _manifest = self.build()
+        manifest = self.manifest_core(result)
+
+        with self.assertRaisesRegex(builder.ProjectionError, "source_root is required"):
             builder.verify_projection(output, manifest)
+        downgraded = builder.verify_projection(
+            output,
+            manifest,
+            allow_source_unverified=True,
+        )
+        self.assertEqual(
+            "PROJECTED_BYTES_CURRENT_BUILDER_ONLY",
+            downgraded["verification_scope"],
+        )
+        self.assertEqual("NOT_EVALUATED", downgraded["source_currentness"])
+        self.assertEqual("NOT_EVALUATED", downgraded["historical_authenticity"])
+
+    def test_source_bound_verifier_rebuilds_all_manifest_metadata(self) -> None:
+        result, output, _manifest = self.build()
+        manifest = self.manifest_core(result)
+        verified = builder.verify_projection(output, manifest, source_root=self.skill)
+
+        self.assertEqual("SOURCE_BOUND_CURRENT", verified["verification_scope"])
+        self.assertEqual("PASS", verified["source_currentness"])
+
+        attacks = []
+        missing_excluded = json.loads(json.dumps(manifest))
+        missing_excluded["excluded"] = []
+        attacks.append(("excluded", missing_excluded))
+
+        fabricated_transform = json.loads(json.dumps(manifest))
+        fabricated_transform["transformations"][0]["removed_spans"] = [
+            {"fabricated": "PASS"}
+        ]
+        attacks.append(("transformations", fabricated_transform))
+
+        forged_source = json.loads(json.dumps(manifest))
+        transformed_path = forged_source["transformations"][0]["path"]
+        transformed_file = next(
+            item for item in forged_source["files"] if item["path"] == transformed_path
+        )
+        transformed_file["source_sha256"] = "0" * 64
+        forged_source["transformations"][0]["source_sha256"] = "0" * 64
+        attacks.append(("source hash", forged_source))
+
+        for label, attacked in attacks:
+            with self.subTest(label=label), self.assertRaises(builder.ProjectionError):
+                builder.verify_projection(output, attacked, source_root=self.skill)
+
+    def test_projected_python_import_closure_is_executed(self) -> None:
+        result, output, _manifest = self.build()
+        manifest = self.manifest_core(result)
+        loader = output / "scripts" / "load_humanize_negative_guards.py"
+        loader.write_bytes(loader.read_bytes() + b"\nraise RuntimeError('import probe')\n")
+        loader_record = next(
+            item
+            for item in manifest["files"]
+            if item["path"] == "scripts/load_humanize_negative_guards.py"
+        )
+        loader_raw = loader.read_bytes()
+        loader_record["size"] = len(loader_raw)
+        loader_record["projected_sha256"] = sha256(loader_raw)
+        loader_record["source_sha256"] = sha256(loader_raw)
+        projected = {
+            path.relative_to(output).as_posix(): path.read_bytes()
+            for path in output.rglob("*")
+            if path.is_file()
+        }
+        manifest["projection_tree_sha256"] = builder._tree_hash(projected)
+
+        with self.assertRaisesRegex(builder.ProjectionError, "import closure failed"):
+            builder.verify_projection(
+                output,
+                manifest,
+                allow_source_unverified=True,
+            )
+
+    def test_source_bound_verifier_rejects_source_builder_drift(self) -> None:
+        result, output, _manifest = self.build()
+        manifest = self.manifest_core(result)
+        source_builder = self.skill / "scripts" / "build_humanize_generator_projection.py"
+        source_builder.write_bytes(source_builder.read_bytes() + b"\n# drift\n")
+
+        with self.assertRaisesRegex(builder.ProjectionError, "source Skill builder differs"):
+            builder.verify_projection(output, manifest, source_root=self.skill)
 
     def test_projection_verifier_rejects_root_symlink_or_junction(self) -> None:
         result, output, _manifest = self.build()
@@ -650,7 +1124,7 @@ class HumanizeGeneratorProjectionTests(unittest.TestCase):
             with self.assertRaisesRegex(
                 builder.ProjectionError, "regular non-reparse directory"
             ):
-                builder.verify_projection(alias, result)
+                builder.verify_projection(alias, result, source_root=self.skill)
         finally:
             alias.rmdir()
 

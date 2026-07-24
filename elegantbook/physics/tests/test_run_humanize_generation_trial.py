@@ -325,7 +325,11 @@ class HumanizeGenerationTrialRunnerTests(unittest.TestCase):
                 pass
 
             @staticmethod
-            def verify_projection(_root: Path, manifest: dict) -> dict:
+            def verify_projection(
+                _root: Path,
+                manifest: dict,
+                **_kwargs: object,
+            ) -> dict:
                 if manifest["projection_tree_sha256"] != "f" * 64:
                     raise FakeProjectionBuilder.ProjectionError("tree drift")
                 return {"projection_tree_sha256": "f" * 64, "files": 1}
@@ -335,7 +339,7 @@ class HumanizeGenerationTrialRunnerTests(unittest.TestCase):
                 target.mkdir(parents=True)
                 (target / "SKILL.md").write_text("# fixture", encoding="utf-8")
                 payload = {
-                    "schema_version": "humanize-generator-projection-manifest/v1",
+                    "schema_version": "humanize-generator-projection-manifest/v2",
                     "projection_tree_sha256": "f" * 64,
                     "projection_policy": {"sha256": "1" * 64},
                     "builder": {"executable_sha256": "2" * 64},

@@ -84,7 +84,11 @@ class FakeProjectionBuilder:
     TREE = "f" * 64
 
     @staticmethod
-    def verify_projection(_root: Path, manifest: dict) -> dict:
+    def verify_projection(
+        _root: Path,
+        manifest: dict,
+        **_kwargs: object,
+    ) -> dict:
         if manifest["projection_tree_sha256"] != FakeProjectionBuilder.TREE:
             raise FakeProjectionBuilder.ProjectionError("tree drift")
         return {"projection_tree_sha256": FakeProjectionBuilder.TREE, "files": 1}
@@ -94,7 +98,7 @@ class FakeProjectionBuilder:
         target.mkdir(parents=True)
         (target / "SKILL.md").write_text("# fixture", encoding="utf-8")
         payload = {
-            "schema_version": "humanize-generator-projection-manifest/v1",
+            "schema_version": "humanize-generator-projection-manifest/v2",
             "projection_tree_sha256": FakeProjectionBuilder.TREE,
             "projection_policy": {"sha256": "1" * 64},
             "builder": {"executable_sha256": "2" * 64},

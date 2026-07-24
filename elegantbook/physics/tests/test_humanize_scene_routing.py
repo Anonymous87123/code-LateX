@@ -44,6 +44,33 @@ class HumanizeSceneRoutingTests(unittest.TestCase):
                 self.assertEqual(expected, result["final_scene"])
                 self.assertTrue(result["evidence"])
 
+    def test_routes_real_cet6_exam_strategy_language_to_course(self) -> None:
+        result = router.route_scene(
+            "六级长篇段落匹配做题规律总报告/摘要",
+            (
+                "第一，长篇段落匹配这十道题，拿到手以后先做哪几道更适合优先处理。"
+                "第二，某一道一旦做出来了，下一道更该往文章哪里找。"
+                "因为做题时，不是同时处理十道题，而是先做出几题，再利用这些题去帮助别题。"
+            ),
+        )
+
+        self.assertEqual("ROUTED", result["status"])
+        self.assertEqual("COURSE", result["final_scene"])
+        self.assertGreater(result["scores"]["COURSE"], result["scores"]["RESEARCH"])
+        self.assertIn(
+            "COURSE-EXAM-STRATEGY-01",
+            {item["rule_id"] for item in result["evidence"]},
+        )
+
+    def test_exam_dataset_research_without_teaching_actions_stays_research(self) -> None:
+        result = router.route_scene(
+            "研究方法",
+            "本研究分析考试题目在不同年份的分布，并讨论样本范围。",
+        )
+
+        self.assertEqual("ROUTED", result["status"])
+        self.assertEqual("RESEARCH", result["final_scene"])
+
     def test_weak_or_absent_signal_falls_back_to_general(self) -> None:
         result = router.route_scene("背景", "该段保留原有范围说明。")
 

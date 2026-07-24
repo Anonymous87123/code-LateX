@@ -224,6 +224,78 @@ class HumanizeShortPatchTests(unittest.TestCase):
         self.assertFalse(verified["humanize_quality_claim_allowed"])
         self.assertEqual("PASS", verified["review_artifact_status"])
 
+    def test_short_patch_template_field_payload_edit_cannot_gain_completion_without_scope(self) -> None:
+        self.source_text = "适用题目：旧题型。\r\n正文保持不变。\r\n"
+        self.source.write_bytes(self.source_text.encode("utf-8"))
+        spec = {
+            "schema_version": "humanize-short-patch-selection/v1",
+            "requested_output": "CLEAN",
+            "mode": "REWRITE",
+            "scene": "COURSE",
+            "intensity": "BALANCED",
+            "protected_terms": [],
+            "hunks": [
+                {
+                    "hunk_id": "H001",
+                    "decision": "REWRITE",
+                    "source_text": "旧题型。",
+                    "start_byte": None,
+                    "replacement": "新题型。",
+                    "reason": "修改适用题目字段的分类内容，检查无授权短补丁不能获得完成态。",
+                }
+            ],
+        }
+        bundle_path, _bundle = self.build(spec, "template-payload-patch.json")
+        output = self.root / "template-payload-output"
+
+        result = applicator.apply_patch(self.source, bundle_path, output)
+        validation = json.loads((output / "validation.json").read_text(encoding="utf-8"))
+
+        self.assertEqual("REVIEW", result["delivery_gate_status"])
+        self.assertEqual(2, result["exit_code"])
+        self.assertFalse(result["completion_claim_allowed"])
+        self.assertFalse(result["humanize_quality_claim_allowed"])
+        self.assertEqual("REVIEW", validation["template_field_layer_status"])
+        self.assertEqual("N/A", validation["template_field_edit_scope_check"]["status"])
+        self.assertEqual(0, validation["template_field_edit_scope_check"]["authorized_edit_count"])
+        self.assertEqual(1, validation["template_field_summary"]["review_finding_count"])
+        self.assertEqual("NOT_AUTHORIZED", validation["template_field_findings"][0]["authorization_status"])
+
+        verified = verifier.verify_directory(output)
+        self.assertEqual("PASS", verified["record_integrity_status"])
+        self.assertEqual("REVIEW", verified["delivery_gate_status"])
+        self.assertFalse(verified["humanize_quality_claim_allowed"])
+
+    def test_short_patch_template_field_header_edit_is_rejected_before_publish(self) -> None:
+        self.source_text = "适用题目：旧题型。\r\n正文保持不变。\r\n"
+        self.source.write_bytes(self.source_text.encode("utf-8"))
+        spec = {
+            "schema_version": "humanize-short-patch-selection/v1",
+            "requested_output": "CLEAN",
+            "mode": "REWRITE",
+            "scene": "COURSE",
+            "intensity": "BALANCED",
+            "protected_terms": [],
+            "hunks": [
+                {
+                    "hunk_id": "H001",
+                    "decision": "REWRITE",
+                    "source_text": "适用题目：",
+                    "start_byte": None,
+                    "replacement": "适用范围：",
+                    "reason": "尝试修改受保护字段标签，用于确认短补丁发布前的硬拒绝。",
+                }
+            ],
+        }
+        bundle_path, _bundle = self.build(spec, "template-header-patch.json")
+        output = self.root / "template-header-output"
+
+        with self.assertRaisesRegex(applicator.ShortPatchError, "UNIFIED_VALIDATOR_FAILED"):
+            applicator.apply_patch(self.source, bundle_path, output)
+
+        self.assertFalse(output.exists())
+        self.assertEqual(self.source_text.encode("utf-8"), self.source.read_bytes())
+
     def test_review_artifact_is_deterministic_and_rejects_rehashed_tamper(self) -> None:
         bundle_path, _bundle = self.build(self.valid_coverage_spec())
         output = self.root / "review-artifact-output"
@@ -957,6 +1029,93 @@ class HumanizeShortPatchTests(unittest.TestCase):
         self.assertEqual("tex", bundle["document_format"])
         self.assertEqual("candidate.review.tex", result["candidate_path"])
         self.assertEqual("tex", validation["evidence"]["document_format"])
+
+    def test_txt_source_with_explicit_tex_comment_change_is_rejected(self) -> None:
+        self.source = self.root / "source.txt"
+        self.source.write_text("这里保留原有结论。\n", encoding="utf-8")
+        payload = self.valid_coverage_spec()
+        payload["scene"] = "GENERAL"
+        payload["hunks"] = [
+            {
+                "hunk_id": "H001",
+                "decision": "REWRITE",
+                "source_text": "这里保留原有结论。",
+                "start_byte": None,
+                "replacement": "这里保留原有结论。% 新增注释",
+                "reason": "恶意测试显式 TeX 格式不能在应用阶段退化为 Markdown。",
+            }
+        ]
+        payload["coverage"] = {
+            "source_kind": "DOCUMENT",
+            "lexical_keeps": [],
+            "selected_spans": [],
+            "explicit_conflicts": [],
+        }
+        spec = self.write_spec(payload)
+        bundle_path = self.root / "txt-tex-bundle.json"
+        bundle = builder.build_bundle(
+            self.source,
+            spec,
+            bundle_path,
+            document_format="tex",
+        )
+        output = self.root / "txt-tex-output"
+
+        self.assertEqual("tex", bundle["document_format"])
+        with self.assertRaisesRegex(
+            applicator.ShortPatchError,
+            "UNIFIED_VALIDATOR_FAILED",
+        ):
+            applicator.apply_patch(self.source, bundle_path, output)
+        self.assertFalse(output.exists())
+
+    def test_verifier_rejects_validation_format_different_from_bound_bundle(self) -> None:
+        self.source = self.root / "source.txt"
+        self.source.write_text("这里保留原有结论。\n", encoding="utf-8")
+        payload = self.valid_coverage_spec()
+        payload["scene"] = "GENERAL"
+        payload["hunks"] = [
+            {
+                "hunk_id": "H001",
+                "decision": "REWRITE",
+                "source_text": "这里保留原有结论。",
+                "start_byte": None,
+                "replacement": "这里仍保留原有结论。",
+                "reason": "构造可发布记录以检查验证格式与 bundle 的闭合绑定。",
+            }
+        ]
+        payload["coverage"] = {
+            "source_kind": "DOCUMENT",
+            "lexical_keeps": [],
+            "selected_spans": [],
+            "explicit_conflicts": [],
+        }
+        spec = self.write_spec(payload)
+        bundle_path = self.root / "format-binding-bundle.json"
+        builder.build_bundle(
+            self.source,
+            spec,
+            bundle_path,
+            document_format="tex",
+        )
+        output = self.root / "format-binding-output"
+        applicator.apply_patch(self.source, bundle_path, output)
+
+        validation_path = output / "validation.json"
+        validation = json.loads(validation_path.read_text(encoding="utf-8"))
+        self.assertEqual("tex", validation["evidence"]["document_format"])
+        validation["evidence"]["document_format"] = "markdown"
+        validation_path.write_text(
+            json.dumps(validation, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
+            encoding="utf-8",
+        )
+        self.refresh_evidence_manifest(output, "validation.json")
+
+        with self.assertRaisesRegex(
+            verifier.ShortPatchError,
+            "document_format does not match",
+        ):
+            verifier.verify_directory(output)
 
     def test_inline_scope_requires_selection_and_report_scope_cannot_self_assert(self) -> None:
         payload = self.valid_coverage_spec()

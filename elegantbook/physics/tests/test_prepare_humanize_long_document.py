@@ -49,6 +49,32 @@ class LongDocumentPreparationTests(unittest.TestCase):
         self.assertTrue(all("将力" not in item for item in contents))
         self.assertTrue(all("一并代入" not in item for item in contents))
 
+    def test_markdown_structure_uses_shared_protection_contract(self) -> None:
+        text = (
+            "---\r\ntitle: 完全够用\r\n---\r\n"
+            "# 先盯住变量\n"
+            "[正文](数值明明在变)\n"
+            "[ref]: 两条关系接得上\n"
+            '<span data-note="必须牢记">可编辑正文</span>\n'
+        )
+        spans = preparer.protected_spans(text, ".md", "F00001")
+        masked, _protected_ids, _crossing = preparer._mask_text(
+            text,
+            0,
+            len(text),
+            spans,
+        )
+
+        for protected_text in (
+            "title: 完全够用",
+            "# 先盯住变量",
+            "数值明明在变",
+            "两条关系接得上",
+            'data-note="必须牢记"',
+        ):
+            self.assertNotIn(protected_text, masked)
+        self.assertIn("可编辑正文", masked)
+
     def test_tex_command_calls_protect_all_nested_arguments_by_default(self) -> None:
         text = (
             "正文使用 \\textbf{甲项与 \\emph{嵌套内容}}，"
@@ -99,6 +125,24 @@ class LongDocumentPreparationTests(unittest.TestCase):
         self.assertNotIn("token_乙=2", masked)
         self.assertIn("随后继续说明", masked)
 
+    def test_short_and_custom_verbatim_aliases_reach_prepare_masking(self) -> None:
+        text = (
+            "\\MakeShortVerb{\\|}\n"
+            "|token_甲=1|\n"
+            "\\DeleteShortVerb{\\|}\n"
+            "\\RecustomVerbatimCommand{\\InlineCode}{Verb}{}\n"
+            "\\InlineCode!token_乙=2!\n"
+            "正文继续说明。"
+        )
+        spans = preparer.protected_spans(text, ".tex", "F00001")
+        masked, _protected_ids, _crossing = preparer._mask_text(
+            text, 0, len(text), spans
+        )
+
+        self.assertNotIn("token_甲=1", masked)
+        self.assertNotIn("token_乙=2", masked)
+        self.assertIn("正文继续说明", masked)
+
     def test_declared_nonverb_command_and_parameterized_code_environment_are_masked(self) -> None:
         text = (
             "\\CustomVerbatimCommand{\\InlineCode}{Verb}{formatcom=\\small}\n"
@@ -139,6 +183,521 @@ class LongDocumentPreparationTests(unittest.TestCase):
         self.assertNotIn("token_甲=1", masked)
         self.assertIn("形成完整闭环", masked)
 
+    def test_percent_inside_verbatim_payload_does_not_hide_following_prose(self) -> None:
+        text = r"正文 \verb|token%甲项|，随后继续说明。"
+        spans = preparer.protected_spans(text, ".tex", "F00001")
+        masked, _protected_ids, _crossing = preparer._mask_text(
+            text, 0, len(text), spans
+        )
+
+        self.assertNotIn("token%甲项", masked)
+        self.assertIn("随后继续说明", masked)
+
+    def test_tex_structure_discovery_ignores_verbatim_payloads(self) -> None:
+        text = (
+            "\\verb|\\input{inline-ghost}|\n"
+            "\\begin{Verbatim}\n"
+            "\\input{environment-ghost}\n"
+            "\\section{伪标题}\n"
+            "\\begin{fake}\n"
+            "\\end{Verbatim}\n"
+            "\\section{真标题}\n"
+            "正文。"
+        )
+
+        includes = preparer.discover_tex_includes(self.root / "main.tex", text)
+        unresolved = preparer.discover_unresolved_tex_includes(text)
+        environment_problems = preparer._environment_problems(text, ".tex")
+        headings = preparer._heading_regions(text, ".tex")
+
+        self.assertEqual([], includes)
+        self.assertEqual([], unresolved)
+        self.assertEqual([], environment_problems)
+        self.assertEqual(
+            ["(front-matter)", "真标题"],
+            [item["heading_path"] for item in headings],
+        )
+
+    def test_prepare_uses_authenticated_balanced_tex_headings_end_to_end(self) -> None:
+        list_body = (
+            "\\begin{itemize}\n"
+            "\\item 共同锚点甲说明\n"
+            "\\item 共同锚点乙说明\n"
+            "\\item 共同锚点丙说明\n"
+            "\\end{itemize}\n"
+        )
+        headings = {
+            "nested-command": "\\section{摘要 \\custom{重点}}\n",
+            "inside-label": "\\section{摘要\\label{inside}}\n",
+            "space-before-required": "\\section {摘要}\n",
+            "trailing-label": "\\section{摘要}\\label{sec:x}\n",
+            "optional-multiline": "\\section[\n短题\n]{摘要}\n",
+            "required-multiline": "\\section[短题]{\n摘要\n}\n",
+            "optional-required-multiline": "\\section[\n短题\n]\n{\n摘要\n}\n",
+            "comment-before-required": "\\section%comment\n{摘要}\n",
+        }
+
+        for label, heading in headings.items():
+            with self.subTest(label=label):
+                source = self.root / f"{label}.tex"
+                output = self.root / f"{label}-run"
+                source.write_text(heading + list_body, encoding="utf-8")
+
+                metadata = preparer.prepare(
+                    [source], output, scene="GENERAL", min_author_chars=0
+                )
+                manifest = self.read_csv(output / "file_manifest.csv")
+                units = [
+                    json.loads(line)
+                    for line in (output / "units.jsonl")
+                    .read_text(encoding="utf-8")
+                    .splitlines()
+                    if line.strip()
+                ]
+                chunks = [
+                    json.loads(path.read_text(encoding="utf-8"))
+                    for path in (output / "chunks").glob("*.json")
+                ]
+                spans = [
+                    json.loads(line)
+                    for line in (output / "protected_spans.jsonl")
+                    .read_text(encoding="utf-8")
+                    .splitlines()
+                    if line.strip()
+                ]
+
+                self.assertEqual("READY", metadata["status"])
+                self.assertEqual(1, len(manifest))
+                self.assertEqual("READY", manifest[0]["status"])
+                self.assertEqual(["摘要"], [item["heading_path"] for item in units])
+                self.assertEqual(["PENDING"], [item["status"] for item in units])
+                self.assertEqual(["摘要"], [item["heading_path"] for item in chunks])
+                self.assertNotIn(
+                    "(front-matter)",
+                    {item["heading_path"] for item in [*units, *chunks]},
+                )
+                heading_spans = [
+                    item for item in spans if "\\section" in item["content"]
+                ]
+                self.assertTrue(heading_spans)
+                self.assertTrue(
+                    any("locked-heading" in item["reason"] for item in heading_spans)
+                )
+                self.assertFalse(
+                    any(item["status"] == "UNRESOLVED" for item in units)
+                )
+
+    def test_prepare_keeps_payload_free_heading_boundaries_distinct(self) -> None:
+        headings = [
+            r"\section{}",
+            r"\section{$E=mc^2$}",
+            r"\section{``Quoted''}",
+            r"\section{\LaTeX}",
+            r"\section{\custom{HiddenSummary}}",
+        ]
+        source = self.root / "opaque-headings.tex"
+        source.write_text(
+            "\n".join(
+                heading + "\n" + f"\u6b63\u6587\u6bb5\u843d {index}\u3002"
+                for index, heading in enumerate(headings, 1)
+            ),
+            encoding="utf-8",
+        )
+        output = self.root / "opaque-headings-run"
+
+        metadata = preparer.prepare(
+            [source], output, scene="GENERAL", min_author_chars=0
+        )
+        units = [
+            json.loads(line)
+            for line in (output / "units.jsonl").read_text(encoding="utf-8").splitlines()
+            if line.strip()
+        ]
+
+        self.assertEqual("READY", metadata["status"])
+        self.assertEqual(len(headings), len(units))
+        self.assertEqual(["PENDING"] * len(headings), [item["status"] for item in units])
+        paths = [str(item["heading_path"]) for item in units]
+        self.assertEqual(len(paths), len(set(paths)))
+        self.assertTrue(
+            all(
+                path.startswith("(tex-section-title-line-")
+                and "-offset-" in path
+                for path in paths
+            )
+        )
+        evidence = json.dumps(paths, ensure_ascii=False)
+        for payload in ("HiddenSummary", "E=mc^2", "Quoted", "LaTeX"):
+            self.assertNotIn(payload, evidence)
+
+    def test_prepare_routes_visible_tex_heading_wrappers_end_to_end(self) -> None:
+        headings = [
+            (r"\section{\emph{课程说明}}", "课程说明"),
+            (r"\section{前言 \textbf{模型建立}}", "前言 模型建立"),
+            (r"\section{\textit{研究方法}}", "研究方法"),
+        ]
+        source = self.root / "visible-heading-wrappers.tex"
+        source.write_text(
+            "\n".join(
+                heading + "\n" + f"正文段落 {index}。"
+                for index, (heading, _expected) in enumerate(headings, 1)
+            ),
+            encoding="utf-8",
+        )
+        output = self.root / "visible-heading-wrappers-run"
+
+        metadata = preparer.prepare(
+            [source], output, scene="GENERAL", min_author_chars=0
+        )
+        units = [
+            json.loads(line)
+            for line in (output / "units.jsonl").read_text(encoding="utf-8").splitlines()
+            if line.strip()
+        ]
+
+        self.assertEqual("READY", metadata["status"])
+        self.assertEqual(
+            [expected for _heading, expected in headings],
+            [item["heading_path"] for item in units],
+        )
+        self.assertEqual(["PENDING"] * len(headings), [item["status"] for item in units])
+
+    def test_prepare_heading_lock_uses_exact_arity_and_keeps_same_line_prose(self) -> None:
+        same_line_prose = "\u540c\u4e00\u884c\u6b63\u6587\u3002"
+        grouped_prose = "\u5206\u7ec4\u6b63\u6587"
+        source = self.root / "exact-heading-arity.tex"
+        source.write_text(
+            "\n".join(
+                [
+                    rf"\section{{Summary}} {same_line_prose}",
+                    rf"\section{{Intro}}{{{grouped_prose}}}",
+                    "\u540e\u7eed\u6b63\u6587\u3002",
+                ]
+            ),
+            encoding="utf-8",
+        )
+        output = self.root / "exact-heading-arity-run"
+
+        metadata = preparer.prepare(
+            [source], output, scene="GENERAL", min_author_chars=0
+        )
+        units = [
+            json.loads(line)
+            for line in (output / "units.jsonl").read_text(encoding="utf-8").splitlines()
+            if line.strip()
+        ]
+        chunks = [
+            json.loads(path.read_text(encoding="utf-8"))
+            for path in (output / "chunks").glob("*.json")
+        ]
+        spans = [
+            json.loads(line)
+            for line in (output / "protected_spans.jsonl")
+            .read_text(encoding="utf-8")
+            .splitlines()
+            if line.strip()
+        ]
+
+        self.assertEqual("READY", metadata["status"])
+        self.assertEqual(["PENDING", "PENDING"], [item["status"] for item in units])
+        masked = "\n".join(str(item["masked_text"]) for item in chunks)
+        self.assertIn(same_line_prose, masked)
+        self.assertIn("{" + grouped_prose + "}", masked)
+        heading_contents = [
+            str(item["content"])
+            for item in spans
+            if "\\section" in str(item["content"])
+        ]
+        self.assertIn(r"\section{Summary}", heading_contents)
+        self.assertIn(r"\section{Intro}", heading_contents)
+        self.assertTrue(all(same_line_prose not in item for item in heading_contents))
+        self.assertTrue(all(grouped_prose not in item for item in heading_contents))
+
+    def test_prepare_marks_unsupported_heading_and_dynamic_tex_as_review(self) -> None:
+        cases = {
+            "single-token": (
+                r"\section Intro",
+                "TEX_HEADING_REQUIRED_ARGUMENT_UNSUPPORTED",
+            ),
+            "mid-line": (
+                r"prefix \section{Same}",
+                "TEX_HEADING_POSITION_UNSUPPORTED",
+            ),
+            "mid-line-unbalanced": (
+                r"prefix \section{Broken",
+                "TEX_HEADING_POSITION_UNSUPPORTED",
+            ),
+            "dynamic-control": (
+                r"\csname section\endcsname{Fake}",
+                "TEX_DYNAMIC_CONTROL_SEQUENCE_UNSUPPORTED",
+            ),
+            "conditional": (
+                r"\iffalse \section{Fake} \fi",
+                "TEX_CONDITIONAL_BRANCH_UNSUPPORTED",
+            ),
+            "catcode": (
+                r"\catcode`\@=11 \section{Fake}",
+                "TEX_CATCODE_MUTATION_UNSUPPORTED",
+            ),
+            "definition": (
+                r"\def\generated{\section{Fake}}",
+                "TEX_MACRO_DEFINITION_UNSUPPORTED",
+            ),
+        }
+        for label, (text, problem_code) in cases.items():
+            with self.subTest(label=label):
+                source = self.root / f"{label}.tex"
+                source.write_text(text + "\n", encoding="utf-8")
+                output = self.root / f"{label}-run"
+
+                metadata = preparer.prepare(
+                    [source], output, scene="GENERAL", min_author_chars=0
+                )
+                manifest = self.read_csv(output / "file_manifest.csv")
+                units = [
+                    json.loads(line)
+                    for line in (output / "units.jsonl")
+                    .read_text(encoding="utf-8")
+                    .splitlines()
+                    if line.strip()
+                ]
+                chunks = [
+                    json.loads(path.read_text(encoding="utf-8"))
+                    for path in (output / "chunks").glob("*.json")
+                ]
+                spans = [
+                    json.loads(line)
+                    for line in (output / "protected_spans.jsonl")
+                    .read_text(encoding="utf-8")
+                    .splitlines()
+                    if line.strip()
+                ]
+
+                self.assertEqual("REVIEW", metadata["status"])
+                self.assertEqual("READY", manifest[0]["status"])
+                self.assertEqual(["UNRESOLVED"], [item["status"] for item in units])
+                self.assertIn(problem_code, str(units[0]["notes"]))
+                self.assertTrue(
+                    any(
+                        "malformed-locked-heading" in str(item["reason"])
+                        for item in spans
+                    )
+                )
+                masked = "\n".join(str(item["masked_text"]) for item in chunks)
+                self.assertNotIn(text[text.index("\\"):], masked)
+
+    def test_balanced_macro_definition_is_local_and_later_section_stays_pending(self) -> None:
+        source = self.root / "local-definition.tex"
+        definition = (
+            r"\newcommand{\foo}[1]{\ifx#1\empty\else\textbf{#1}\fi}"
+        )
+        source.write_text(
+            definition
+            + "\n"
+            + r"\section{Real}"
+            + "\n\u771f\u5b9e\u6b63\u6587\u4ecd\u53ef\u7f16\u8f91\u3002\n",
+            encoding="utf-8",
+        )
+        output = self.root / "local-definition-run"
+
+        metadata = preparer.prepare(
+            [source], output, scene="GENERAL", min_author_chars=0
+        )
+        units = [
+            json.loads(line)
+            for line in (output / "units.jsonl").read_text(encoding="utf-8").splitlines()
+            if line.strip()
+        ]
+        chunks = [
+            json.loads(path.read_text(encoding="utf-8"))
+            for path in (output / "chunks").glob("*.json")
+        ]
+        spans = [
+            json.loads(line)
+            for line in (output / "protected_spans.jsonl")
+            .read_text(encoding="utf-8")
+            .splitlines()
+            if line.strip()
+        ]
+
+        self.assertEqual("REVIEW", metadata["status"])
+        self.assertEqual(
+            ["UNRESOLVED", "PENDING"],
+            [item["status"] for item in units],
+        )
+        real_chunk = next(item for item in chunks if item["heading_path"] == "Real")
+        self.assertIn("\u771f\u5b9e\u6b63\u6587", real_chunk["masked_text"])
+        definition_span = next(
+            item for item in spans if definition in str(item["content"])
+        )
+        self.assertEqual(definition, definition_span["content"])
+        self.assertNotIn(r"\section{Real}", definition_span["content"])
+
+    def test_prepare_rejects_protected_and_nested_fake_tex_headings(self) -> None:
+        list_body = (
+            "\\begin{itemize}\n"
+            "\\item 共同锚点甲说明\n"
+            "\\item 共同锚点乙说明\n"
+            "\\item 共同锚点丙说明\n"
+            "\\end{itemize}\n"
+        )
+        prefixes = {
+            "outer-command": "\\foo{\n\\section{伪标题}\n封装内容。\n}\n",
+            "math": "\\[\n\\section{伪标题}\n\\]\n",
+            "verbatim": (
+                "\\begin{Verbatim}\n"
+                "\\section{伪标题}\n"
+                "\\end{Verbatim}\n"
+            ),
+            "comment": "% \\section{伪标题}\n",
+        }
+
+        for label, prefix in prefixes.items():
+            with self.subTest(label=label):
+                source = self.root / f"fake-{label}.tex"
+                output = self.root / f"fake-{label}-run"
+                source.write_text(
+                    prefix + "\\section{真实标题}\n" + list_body,
+                    encoding="utf-8",
+                )
+
+                metadata = preparer.prepare(
+                    [source], output, scene="GENERAL", min_author_chars=0
+                )
+                manifest = self.read_csv(output / "file_manifest.csv")
+                units = [
+                    json.loads(line)
+                    for line in (output / "units.jsonl")
+                    .read_text(encoding="utf-8")
+                    .splitlines()
+                    if line.strip()
+                ]
+                chunks = [
+                    json.loads(path.read_text(encoding="utf-8"))
+                    for path in (output / "chunks").glob("*.json")
+                ]
+                spans = [
+                    json.loads(line)
+                    for line in (output / "protected_spans.jsonl")
+                    .read_text(encoding="utf-8")
+                    .splitlines()
+                    if line.strip()
+                ]
+
+                self.assertEqual("READY", metadata["status"])
+                self.assertEqual(1, len(manifest))
+                self.assertEqual("READY", manifest[0]["status"])
+                self.assertEqual(
+                    ["(front-matter)", "真实标题"],
+                    [item["heading_path"] for item in units],
+                )
+                self.assertEqual(
+                    {"(front-matter)", "真实标题"},
+                    {item["heading_path"] for item in chunks},
+                )
+                self.assertNotIn("伪标题", {item["heading_path"] for item in units})
+                self.assertFalse(
+                    any(item["status"] == "UNRESOLVED" for item in units)
+                )
+                self.assertFalse(
+                    any("protected_span_crosses_unit_boundary" in item["notes"] for item in units)
+                )
+                fake_spans = [
+                    item
+                    for item in spans
+                    if "伪标题" in item["content"] and "真实标题" not in item["content"]
+                ]
+                self.assertTrue(fake_spans)
+                self.assertFalse(
+                    any("locked-heading" in item["reason"] for item in fake_spans)
+                )
+                self.assertTrue(
+                    any(
+                        "真实标题" in item["content"]
+                        and "locked-heading" in item["reason"]
+                        for item in spans
+                    )
+                )
+
+    def test_prepare_does_not_follow_includes_or_structure_inside_verbatim(self) -> None:
+        main = self.root / "main.tex"
+        inline_ghost = self.root / "inline-ghost.tex"
+        environment_ghost = self.root / "environment-ghost.tex"
+        main.write_text(
+            "\\verb|\\input{inline-ghost}|\n"
+            "\\begin{Verbatim}\n"
+            "\\input{environment-ghost}\n"
+            "\\section{伪标题}\n"
+            "\\begin{fake}\n"
+            "\\end{Verbatim}\n"
+            "\\section{真实标题}\n"
+            "这里是唯一可编辑的正文。\n",
+            encoding="utf-8",
+        )
+        # These files make false include discovery observable at the public API.
+        inline_ghost.write_text("\\section{幽灵一}\n不应进入文件图。\n", encoding="utf-8")
+        environment_ghost.write_text("\\section{幽灵二}\n不应进入文件图。\n", encoding="utf-8")
+        output = self.root / "run"
+
+        metadata = preparer.prepare([main], output, scene="GENERAL", min_author_chars=0)
+        manifest = self.read_csv(output / "file_manifest.csv")
+        chunks = [
+            json.loads(path.read_text(encoding="utf-8"))
+            for path in (output / "chunks").glob("*.json")
+        ]
+
+        self.assertEqual("READY", metadata["status"])
+        self.assertEqual([main.resolve()], [Path(row["path"]) for row in manifest])
+        self.assertTrue(chunks)
+        self.assertTrue(any(item["heading_path"] == "真实标题" for item in chunks))
+        self.assertFalse(any("伪标题" in item["heading_path"] for item in chunks))
+        self.assertFalse(any("fake" in item["notes"] for item in chunks))
+
+    def test_prepare_ignores_structure_and_includes_inside_nonrendering_environments(self) -> None:
+        for environment in ("comment", "filecontents", "filecontents*"):
+            with self.subTest(environment=environment):
+                suffix = environment.replace("*", "star")
+                main = self.root / f"main-{suffix}.tex"
+                ghost = self.root / f"ghost-{suffix}.tex"
+                begin = (
+                    f"\\begin{{{environment}}}{{generated-hidden.tex}}"
+                    if environment.startswith("filecontents")
+                    else f"\\begin{{{environment}}}"
+                )
+                main.write_text(
+                    f"{begin}\n"
+                    f"\\input{{{ghost.stem}}}\n"
+                    "\\section{伪标题}\n"
+                    "不可编辑载荷。\n"
+                    f"\\end{{{environment}}}\n"
+                    "\\section{真实标题}\n"
+                    "这里是唯一可编辑的正文。\n",
+                    encoding="utf-8",
+                )
+                ghost.write_text("\\section{幽灵}\n不应进入文件图。\n", encoding="utf-8")
+                output = self.root / f"run-{suffix}"
+
+                metadata = preparer.prepare(
+                    [main], output, scene="GENERAL", min_author_chars=0
+                )
+                manifest = self.read_csv(output / "file_manifest.csv")
+                units = [
+                    json.loads(line)
+                    for line in (output / "units.jsonl")
+                    .read_text(encoding="utf-8")
+                    .splitlines()
+                    if line.strip()
+                ]
+
+                self.assertEqual("READY", metadata["status"])
+                self.assertEqual([main.resolve()], [Path(row["path"]) for row in manifest])
+                self.assertEqual(
+                    ["(front-matter)", "真实标题"],
+                    [item["heading_path"] for item in units],
+                )
+                self.assertNotIn("伪标题", {item["heading_path"] for item in units})
+                self.assertNotIn("幽灵", {item["heading_path"] for item in units})
+
     def test_unclosed_short_verb_is_line_bounded_but_marks_run_unresolved(self) -> None:
         text = (
             "\\DefineShortVerb{\\|}\r\n"
@@ -156,8 +715,17 @@ class LongDocumentPreparationTests(unittest.TestCase):
             json.loads(path.read_text(encoding="utf-8"))
             for path in (output / "chunks").glob("*.json")
         ]
+        manifest = self.read_csv(output / "file_manifest.csv")
 
         self.assertEqual("REVIEW", metadata["status"])
+        self.assertEqual("AUTHOR_TEXT", manifest[0]["source_role"])
+        self.assertIn(
+            "TEX_MARKER_SCAN_INCOMPLETE",
+            {
+                item["kind"]
+                for item in json.loads(manifest[0]["source_role_evidence"])
+            },
+        )
         self.assertTrue(chunks)
         self.assertTrue(all(item["status"] == "UNRESOLVED" for item in chunks))
         self.assertTrue(all("token_甲=1" not in item["masked_text"] for item in chunks))
@@ -166,12 +734,27 @@ class LongDocumentPreparationTests(unittest.TestCase):
     def test_incomplete_tex_protection_is_masked_and_marks_unit_unresolved(self) -> None:
         cases = {
             "verb": ("正文 \\verb|token_甲=1\n后文。", "token_甲=1"),
+            "declared-verb": (
+                "\\CustomVerbatimCommand{\\InlineCode}{Verb}{}\n"
+                "正文 \\InlineCode|token_戊=5\n后文。",
+                "token_戊=5",
+            ),
             "code-environment": (
                 "正文 \\begin{minted}{python}\ntoken_乙=2\n后文。",
                 "token_乙=2",
             ),
+            "nonrendering-environment": (
+                "\\begin{comment}\ntoken_壬=9\n后文。",
+                "token_壬=9",
+            ),
             "inline-math": ("正文 $token_丙=3\n后文。", "token_丙=3"),
+            "display-math": ("正文 $$token_己=6\n后文。", "token_己=6"),
             "paren-math": ("正文 \\(token_丁=4\n后文。", "token_丁=4"),
+            "bracket-math": ("正文 \\[token_庚=7\n后文。", "token_庚=7"),
+            "math-environment": (
+                "正文 \\begin{equation}\ntoken_辛=8\n后文。",
+                "token_辛=8",
+            ),
         }
         for label, (text, payload) in cases.items():
             with self.subTest(label=label):
@@ -185,8 +768,10 @@ class LongDocumentPreparationTests(unittest.TestCase):
                     json.loads(path.read_text(encoding="utf-8"))
                     for path in (output / "chunks").glob("*.json")
                 ]
+                manifest = self.read_csv(output / "file_manifest.csv")
 
                 self.assertEqual("REVIEW", metadata["status"])
+                self.assertEqual("AUTHOR_TEXT", manifest[0]["source_role"])
                 self.assertTrue(chunks)
                 self.assertTrue(all(item["status"] == "UNRESOLVED" for item in chunks))
                 self.assertTrue(all(payload not in item["masked_text"] for item in chunks))
@@ -280,6 +865,220 @@ class LongDocumentPreparationTests(unittest.TestCase):
         chapter_row = next(row for row in manifest if row["path"].endswith("chapter.tex"))
         self.assertEqual("input", chapter_row["relation"])
         self.assertEqual(2, metadata["files_total"])
+
+    def test_generated_include_marker_is_snapshotted_but_not_authored(self) -> None:
+        main = self.root / "main.tex"
+        generated_dir = self.root / "generated"
+        generated_dir.mkdir()
+        generated = generated_dir / "auto.tex"
+        main.write_text(
+            "\\input{generated/auto}\n主文件中的作者正文保留在改写队列。\n",
+            encoding="utf-8",
+        )
+        generated.write_text(
+            "% AUTO-GENERATED FILE. DO NOT EDIT\n"
+            "这段生成文本不得进入作者正文改写队列。\n",
+            encoding="utf-8",
+        )
+        output = self.root / "generated-run"
+
+        metadata = preparer.prepare([main], output, scene="GENERAL", min_author_chars=0)
+        manifest = self.read_csv(output / "file_manifest.csv")
+        generated_row = next(row for row in manifest if Path(row["path"]).name == "auto.tex")
+        units = [
+            json.loads(line)
+            for line in (output / "units.jsonl").read_text(encoding="utf-8").splitlines()
+            if line.strip()
+        ]
+
+        self.assertEqual("READY", metadata["status"])
+        self.assertEqual("GENERATED", generated_row["source_role"])
+        self.assertEqual("RETAINED_GENERATED_NO_AUTHORING", generated_row["source_processing_status"])
+        self.assertTrue((output / generated_row["snapshot_copy"]).is_file())
+        self.assertFalse(any(item["file_id"] == generated_row["file_id"] for item in units))
+        evidence = json.loads(generated_row["source_role_evidence"])
+        self.assertTrue(
+            any(
+                item.get("marker_id") == "TEX_COMMENT_EN_AUTOGENERATED_DO_NOT_EDIT"
+                for item in evidence
+            )
+        )
+
+    def test_generated_path_without_marker_is_unresolved_not_generated(self) -> None:
+        main = self.root / "main.tex"
+        generated_dir = self.root / "generated"
+        generated_dir.mkdir()
+        included = generated_dir / "chapter.tex"
+        main.write_text(
+            "\\input{generated/chapter}\n主文件正文仍可进入队列。\n",
+            encoding="utf-8",
+        )
+        included.write_text("没有确定性生成标记的正文。\n", encoding="utf-8")
+        output = self.root / "path-only-run"
+
+        metadata = preparer.prepare([main], output, scene="GENERAL", min_author_chars=0)
+        manifest = self.read_csv(output / "file_manifest.csv")
+        row = next(item for item in manifest if Path(item["path"]).name == "chapter.tex")
+        units = [
+            json.loads(line)
+            for line in (output / "units.jsonl").read_text(encoding="utf-8").splitlines()
+            if line.strip()
+        ]
+
+        self.assertEqual("REVIEW", metadata["status"])
+        self.assertEqual("UNRESOLVED", row["source_role"])
+        self.assertEqual("UNRESOLVED_SOURCE_ROLE_NO_AUTHORING", row["source_processing_status"])
+        self.assertFalse(any(item["file_id"] == row["file_id"] for item in units))
+        evidence = json.loads(row["source_role_evidence"])
+        self.assertTrue(any(item.get("kind") == "AUXILIARY_PATH_SEGMENT" for item in evidence))
+        self.assertTrue(
+            any(item.get("reason") == "PATH_SEGMENT_IS_AUXILIARY_ONLY" for item in evidence)
+        )
+
+    def test_generation_marker_inside_opaque_or_body_text_is_not_evidence(self) -> None:
+        cases = {
+            "verbatim": (
+                "\\begin{verbatim}\n% AUTO-GENERATED FILE. DO NOT EDIT\n\\end{verbatim}\n正文。\n"
+            ),
+            "comment": (
+                "\\begin{comment}\n% AUTO-GENERATED FILE. DO NOT EDIT\n\\end{comment}\n正文。\n"
+            ),
+            "filecontents": (
+                "\\begin{filecontents}{sample.tex}\n"
+                "% AUTO-GENERATED FILE. DO NOT EDIT\n"
+                "\\end{filecontents}\n正文。\n"
+            ),
+            "body": "AUTO-GENERATED FILE. DO NOT EDIT\n正文。\n",
+            "command": "\\texttt{AUTO-GENERATED FILE. DO NOT EDIT}\n正文。\n",
+        }
+        for label, text in cases.items():
+            with self.subTest(label=label):
+                source = self.root / f"marker-{label}.tex"
+                source.write_text(text, encoding="utf-8")
+                output = self.root / f"marker-{label}-run"
+
+                metadata = preparer.prepare(
+                    [source], output, scene="GENERAL", min_author_chars=0
+                )
+                row = self.read_csv(output / "file_manifest.csv")[0]
+
+                self.assertEqual("READY", metadata["status"])
+                self.assertEqual("AUTHOR_TEXT", row["source_role"])
+                evidence = json.loads(row["source_role_evidence"])
+                self.assertFalse(
+                    any(item.get("kind") == "DETERMINISTIC_TEX_COMMENT_MARKER" for item in evidence)
+                )
+
+    def test_nested_case_variant_and_alias_include_reaches_one_generated_record(self) -> None:
+        main = self.root / "main.tex"
+        chapters = self.root / "chapters"
+        generated_dir = self.root / "generated"
+        chapters.mkdir()
+        generated_dir.mkdir()
+        chapter = chapters / "chapter.tex"
+        generated = generated_dir / "Auto.TeX"
+        main.write_text("\\input{chapters/chapter}\n主文件正文。\n", encoding="utf-8")
+        chapter.write_text(
+            "\\input{../generated/AUTO}\n"
+            "\\input{../generated/../generated/auto}\n"
+            "章节作者正文。\n",
+            encoding="utf-8",
+        )
+        generated.write_text(
+            "% ThIs Is An AuTo-GeNeRaTeD FiLe; Do NoT EdIt.\n生成内容。\n",
+            encoding="utf-8",
+        )
+        output = self.root / "nested-alias-run"
+
+        preparer.prepare([main], output, scene="GENERAL", min_author_chars=0)
+        manifest = self.read_csv(output / "file_manifest.csv")
+        generated_rows = [
+            row for row in manifest if Path(row["path"]).name.casefold() == "auto.tex"
+        ]
+
+        self.assertEqual(1, len(generated_rows))
+        self.assertEqual("GENERATED", generated_rows[0]["source_role"])
+        self.assertEqual("input", generated_rows[0]["relation"])
+
+    def test_source_role_override_binds_reason_file_and_snapshot_hash(self) -> None:
+        main = self.root / "main.tex"
+        generated_dir = self.root / "generated"
+        generated_dir.mkdir()
+        included = generated_dir / "chapter.tex"
+        main.write_text("\\input{generated/chapter}\n主文件正文。\n", encoding="utf-8")
+        included.write_text("调用方明确纳入的作者正文。\n", encoding="utf-8")
+        override = self.root / "scope.json"
+        override.write_text(
+            json.dumps(
+                {
+                    "schema_version": "humanize-source-role-overrides/v1",
+                    "overrides": [
+                        {
+                            "path": "generated/chapter.tex",
+                            "source_role": "AUTHOR_TEXT",
+                            "reason": "用户明确指定该章节属于本轮作者正文范围",
+                        }
+                    ],
+                },
+                ensure_ascii=False,
+            ),
+            encoding="utf-8",
+        )
+        output = self.root / "override-run"
+
+        metadata = preparer.prepare(
+            [main],
+            output,
+            scene="GENERAL",
+            min_author_chars=0,
+            source_role_overrides=override,
+        )
+        manifest = self.read_csv(output / "file_manifest.csv")
+        row = next(item for item in manifest if Path(item["path"]).name == "chapter.tex")
+        artifact = json.loads(
+            (output / "source_role_overrides.json").read_text(encoding="utf-8")
+        )
+        applied = artifact["overrides"][0]["applied_files"]
+
+        self.assertEqual("READY", metadata["status"])
+        self.assertEqual("APPLIED", metadata["source_role_override_status"])
+        self.assertEqual("AUTHOR_TEXT", row["source_role"])
+        self.assertEqual("AUTHORING_QUEUE_BY_CALLER_OVERRIDE", row["source_processing_status"])
+        self.assertEqual(
+            [{"file_id": row["file_id"], "snapshot_sha256": row["sha256"]}],
+            applied,
+        )
+        self.assertIn(artifact["overrides"][0]["override_id"], row["source_role_evidence"])
+
+    def test_source_role_override_unknown_target_fails_closed(self) -> None:
+        source = self.root / "main.tex"
+        source.write_text("作者正文。\n", encoding="utf-8")
+        override = self.root / "scope-missing.json"
+        override.write_text(
+            json.dumps(
+                {
+                    "schema_version": "humanize-source-role-overrides/v1",
+                    "overrides": [
+                        {
+                            "path": "missing.tex",
+                            "source_role": "AUTHOR_TEXT",
+                            "reason": "该文件并未进入冻结闭包",
+                        }
+                    ],
+                },
+                ensure_ascii=False,
+            ),
+            encoding="utf-8",
+        )
+
+        with self.assertRaisesRegex(ValueError, "must match exactly one readable file"):
+            preparer.prepare(
+                [source],
+                self.root / "override-missing-run",
+                scene="GENERAL",
+                min_author_chars=0,
+                source_role_overrides=override,
+            )
 
     def test_dynamic_tex_include_is_recorded_as_unresolved(self) -> None:
         main = self.root / "main.tex"
@@ -874,7 +1673,7 @@ class LongDocumentPreparationTests(unittest.TestCase):
         movable = [item for item in paragraphs if item["movable"]]
         locked = [item for item in paragraphs if not item["movable"]]
 
-        self.assertEqual("READY", metadata["status"])
+        self.assertEqual("REVIEW", metadata["status"])
         self.assertEqual("STRUCTURAL", metadata["intensity"])
         self.assertGreaterEqual(len(pending), 40)
         self.assertGreaterEqual(metadata["protected_spans_total"], 2000)

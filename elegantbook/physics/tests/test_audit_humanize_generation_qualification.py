@@ -390,10 +390,31 @@ class HumanizeGenerationQualificationAuditTests(unittest.TestCase):
         self.assertTrue(report["tests_total_ignored"])
         self.assertEqual(999999, report["declared_tests_total"])
         self.assertEqual(0, report["summary"]["atoms_pass"])
-        self.assertEqual(188, report["summary"]["atoms_not_evaluated"])
+        self.assertEqual(193, report["summary"]["atoms_not_evaluated"])
         self.assertEqual("E1", report["cases"][0]["evidence_level"])
         self.assertTrue(report["cases"][0]["archived"])
         self.assertEqual("NOT_EVALUATED", report["cases"][0]["claims"][0]["status"])
+        atom_id = report["cases"][0]["claims"][0]["atom_id"]
+        atom = next(item for item in report["atoms"] if item["atom_id"] == atom_id)
+        self.assertTrue(atom["claims"][0]["archived"])
+
+    def test_p2_failure_is_counted_and_nonblocking_only_after_evaluation(self) -> None:
+        p0_pass = {"status": "PASS", "severity": "P0"}
+        p2_fail = {"status": "FAIL", "severity": "P2"}
+        p2_pending = {"status": "NOT_EVALUATED", "severity": "P2"}
+
+        self.assertEqual(
+            ("PASS", "PASS", 0),
+            auditor._aggregate_qualification([p0_pass, p2_fail], []),
+        )
+        self.assertEqual(
+            ("PASS", "NOT_EVALUATED", 2),
+            auditor._aggregate_qualification([p0_pass, p2_pending], []),
+        )
+        self.assertEqual(
+            {"P0": 0, "P1": 0, "P2": 1},
+            auditor._failure_counts_by_severity([p0_pass, p2_fail]),
+        )
 
     def test_unknown_atom_is_an_integrity_failure(self) -> None:
         payload = {
@@ -452,11 +473,11 @@ class HumanizeGenerationQualificationAuditTests(unittest.TestCase):
         _atoms, errors = auditor._expand_requirements(requirements)
         self.assertTrue(any("duplicate atom" in item for item in errors))
 
-    def test_new_voice_and_long_atoms_are_registered_in_the_qualification_matrix(self) -> None:
+    def test_current_contract_atoms_are_registered_in_the_qualification_matrix(self) -> None:
         requirements = json.loads(REQUIREMENTS.read_text(encoding="utf-8"))
         atoms, errors = auditor._expand_requirements(requirements)
         self.assertEqual([], errors)
-        self.assertEqual(188, len(atoms))
+        self.assertEqual(193, len(atoms))
         self.assertIn("DEC-09", atoms)
         self.assertEqual("E3", atoms["DEC-09"].minimum_evidence)
         self.assertEqual("P1", atoms["DEC-09"].severity)
@@ -481,6 +502,7 @@ class HumanizeGenerationQualificationAuditTests(unittest.TestCase):
             "LONG-25",
             "LONG-26",
             "LONG-27",
+            "LONG-28",
         ):
             self.assertIn(atom_id, atoms)
             self.assertEqual("E3", atoms[atom_id].minimum_evidence)
@@ -494,8 +516,15 @@ class HumanizeGenerationQualificationAuditTests(unittest.TestCase):
             "ROLE-11",
             "ROLE-12",
             "ROLE-13",
+            "ROLE-14",
+            "ROLE-15",
+            "ROLE-16",
+            "ROLE-17",
         ):
             self.assertIn(atom_id, atoms)
+        for atom_id in ("ROLE-14", "ROLE-15", "ROLE-16", "ROLE-17"):
+            self.assertEqual("E3", atoms[atom_id].minimum_evidence)
+            self.assertEqual("P0", atoms[atom_id].severity)
         self.assertEqual(
             [],
             auditor._contract_alignment(
@@ -543,7 +572,7 @@ class HumanizeGenerationQualificationAuditTests(unittest.TestCase):
             for suite in catalog.suites.values()
             if suite["qualification_stage"] == "SHADOW"
         ]
-        self.assertEqual(14, len(shadow))
+        self.assertEqual(19, len(shadow))
         self.assertTrue(all(suite["runner_compatible"] is False for suite in shadow))
         public_context = (
             SKILL
@@ -569,6 +598,187 @@ class HumanizeGenerationQualificationAuditTests(unittest.TestCase):
             },
             set(payload),
         )
+
+    def test_new_contract_atoms_have_fixed_e2_shadow_checks(self) -> None:
+        catalog = self.oracle_catalog()
+        raw = CONTRACT.read_bytes()
+        digest = sha256(raw)
+        artifact = auditor.Artifact(
+            "contract", CONTRACT, digest, digest, len(raw), raw
+        )
+        for atom_id, (suite_id, check_id, expected_hashes) in (
+            auditor.REQUIRED_CONTRACT_ROW_SLICE.items()
+        ):
+            with self.subTest(atom_id=atom_id):
+                suite = catalog.suites[suite_id]
+                self.assertEqual(atom_id, suite["atom_id"])
+                self.assertEqual("SHADOW", suite["qualification_stage"])
+                self.assertFalse(suite["runner_compatible"])
+                self.assertEqual([check_id], suite["required_checks"])
+                self.assertEqual([], suite["required_reviews"])
+                check = catalog.checks[check_id]
+                self.assertEqual("contract_matrix_row", check["type"])
+                self.assertEqual(
+                    {
+                        "artifact_role": "contract",
+                        "atom_id": atom_id,
+                        "expected_cell_sha256": list(expected_hashes),
+                    },
+                    check["configuration"],
+                )
+                errors: list[str] = []
+                result = auditor._evaluate_oracle_check(
+                    check_id,
+                    catalog,
+                    {"contract": artifact},
+                    SKILL,
+                    30,
+                    errors,
+                )
+                self.assertEqual([], errors)
+                self.assertTrue(result["integrity_valid"])
+                self.assertEqual("PASS", result["status"])
+
+    def test_passing_contract_row_check_cannot_upgrade_e3_atom(self) -> None:
+        case, _ = self.make_v2_case(
+            "ROLE-16/template-field-contract/v1",
+            include_generation=False,
+        )
+        synthetic_projection = auditor.ProjectionState(
+            manifest_raw=b"{}",
+            manifest_sha256="0" * 64,
+            manifest={
+                "projection_tree_sha256": "1" * 64,
+                "projection_policy": {"sha256": "2" * 64},
+                "builder": {"executable_sha256": "3" * 64},
+                "source": {"inventory_sha256": "4" * 64},
+            },
+            runner_binding={},
+        )
+        with mock.patch.object(
+            auditor, "_current_projection_state", return_value=synthetic_projection
+        ):
+            report = self.audit_manifest(
+                self.v2_manifest(case), name="role-16-contract-only.json"
+            )
+        claim = report["cases"][0]["claims"][0]
+        check = report["cases"][0]["oracle_suites"][0]["checks"][0]
+        self.assertEqual("PASS", report["evidence_integrity_status"])
+        self.assertEqual("E2", report["cases"][0]["evidence_level"])
+        self.assertEqual("PASS", check["status"])
+        self.assertEqual("E3", claim["minimum_evidence"])
+        self.assertEqual("NOT_EVALUATED", claim["status"])
+
+    def test_contract_row_checks_reject_role_and_scope_drift(self) -> None:
+        catalog = self.oracle_catalog()
+        original = CONTRACT.read_text(encoding="utf-8")
+        long_28_row = next(
+            line for line in original.splitlines() if line.startswith("| `LONG-28` |")
+        )
+        cases = (
+            (
+                "contract/ROLE-16/template-field/v1",
+                original.replace(
+                    "READER_FACING_ARTIFACT_ROLE/PROMPT_STEM",
+                    "EDITORIAL_PAYLOAD/TEACHING_REASONING",
+                    1,
+                ),
+            ),
+            (
+                "contract/LONG-28/template-field-edit-scope/v1",
+                original.replace(
+                    long_28_row,
+                    long_28_row.replace(
+                        "PAYLOAD_ONLY/local_clearance_supported=false",
+                        "PAYLOAD_ONLY/local_clearance_supported=true",
+                        1,
+                    ),
+                    1,
+                ),
+            ),
+        )
+        for check_id, drifted in cases:
+            with self.subTest(check_id=check_id):
+                descriptor, path = self.write_artifact("contract.md", drifted)
+                artifact = auditor.Artifact(
+                    "contract",
+                    path,
+                    descriptor["sha256"],
+                    descriptor["sha256"],
+                    path.stat().st_size,
+                    path.read_bytes(),
+                )
+                errors: list[str] = []
+                result = auditor._evaluate_oracle_check(
+                    check_id,
+                    catalog,
+                    {"contract": artifact},
+                    SKILL,
+                    30,
+                    errors,
+                )
+                self.assertEqual([], errors)
+                self.assertTrue(result["integrity_valid"])
+                self.assertEqual("FAIL", result["status"])
+
+    def test_contract_row_check_rejects_missing_or_duplicate_atom_row(self) -> None:
+        catalog = self.oracle_catalog()
+        check_id = "contract/ROLE-14/template-field/v1"
+        original = CONTRACT.read_text(encoding="utf-8")
+        row = next(
+            line for line in original.splitlines() if line.startswith("| `ROLE-14` |")
+        )
+        candidates = {
+            "missing": original.replace(row + "\n", "", 1),
+            "duplicate": original.replace(row + "\n", row + "\n" + row + "\n", 1),
+        }
+        for label, candidate in candidates.items():
+            with self.subTest(label=label):
+                descriptor, path = self.write_artifact(
+                    f"contract-{label}.md", candidate
+                )
+                artifact = auditor.Artifact(
+                    "contract",
+                    path,
+                    descriptor["sha256"],
+                    descriptor["sha256"],
+                    path.stat().st_size,
+                    path.read_bytes(),
+                )
+                errors: list[str] = []
+                result = auditor._evaluate_oracle_check(
+                    check_id,
+                    catalog,
+                    {"contract": artifact},
+                    SKILL,
+                    30,
+                    errors,
+                )
+                self.assertEqual([], errors)
+                self.assertEqual("FAIL", result["status"])
+                self.assertEqual(0 if label == "missing" else 2, result["observation"]["row_count"])
+
+    def test_contract_row_configuration_rejects_unknown_fields_and_hashes(self) -> None:
+        base = {
+            "artifact_role": "contract",
+            "atom_id": "ROLE-16",
+            "expected_cell_sha256": ["0" * 64, "1" * 64],
+        }
+        invalid_atom = dict(base, atom_id="ROUTE-01")
+        with self.assertRaisesRegex(auditor.AuditError, "ROLE/LONG contract ID"):
+            auditor._validate_catalog_check_configuration(
+                "contract_matrix_row", invalid_atom, "contract-check"
+            )
+        invalid_hashes = dict(base, expected_cell_sha256=["not-a-hash"])
+        with self.assertRaisesRegex(auditor.AuditError, "hash array"):
+            auditor._validate_catalog_check_configuration(
+                "contract_matrix_row", invalid_hashes, "contract-check"
+            )
+        extra = dict(base, payload_role="EDITORIAL_PAYLOAD")
+        with self.assertRaisesRegex(auditor.AuditError, "fields are invalid"):
+            auditor._validate_catalog_check_configuration(
+                "contract_matrix_row", extra, "contract-check"
+            )
 
     def test_dec_09_recomputes_paired_quality_request_binding(self) -> None:
         catalog = self.oracle_catalog()
@@ -669,6 +879,68 @@ class HumanizeGenerationQualificationAuditTests(unittest.TestCase):
                     "FAIL",
                     observation["paired_quality_review_request_binding_status"],
                 )
+
+    def test_dec_09_template_field_change_contract_is_closed(self) -> None:
+        change_id = "change-1"
+        changes = [{"change_id": change_id}]
+        record = {
+            "code": "TEMPLATE_FIELD_PAYLOAD_EDIT_AUTHORIZED",
+            "severity": "info",
+            "change_id": change_id,
+            "field_label": "用词建议",
+            "source_role": "TEMPLATE_FIELD",
+            "payload_role": "EDITORIAL_PAYLOAD/LEXICAL_GUIDANCE",
+            "source_line": 1,
+            "after_line": 1,
+            "authorization_status": "AUTHORIZED_PAYLOAD_ONLY",
+            "permission": "PAYLOAD_ONLY",
+            "authorization_reason": "第1行用词建议字段仅调整载荷措辞并保持字段职责",
+            "change_types": [],
+            "before_span": {
+                "line": 1,
+                "payload_sha256": "a" * 64,
+                "line_sha256": "b" * 64,
+            },
+            "after_span": {
+                "line": 1,
+                "payload_sha256": "c" * 64,
+                "line_sha256": "d" * 64,
+            },
+            "local_clearance_supported": False,
+        }
+        self.assertTrue(
+            auditor._paired_template_field_changes_valid(
+                [record], changes, "REWRITE"
+            )
+        )
+
+        invalid_records = {}
+        unknown_field = copy.deepcopy(record)
+        unknown_field["self_clearance"] = True
+        invalid_records["unknown field"] = [unknown_field]
+        false_authorization = copy.deepcopy(record)
+        false_authorization["authorization_status"] = "NOT_AUTHORIZED"
+        invalid_records["false authorization"] = [false_authorization]
+        unbound_change = copy.deepcopy(record)
+        unbound_change["change_id"] = "change-2"
+        invalid_records["unbound change"] = [unbound_change]
+        invalid_records["duplicate record"] = [record, copy.deepcopy(record)]
+        invalid_span = copy.deepcopy(record)
+        invalid_span["before_span"]["payload_sha256"] = "not-a-hash"
+        invalid_records["invalid span"] = [invalid_span]
+
+        for label, candidate in invalid_records.items():
+            with self.subTest(label=label):
+                self.assertFalse(
+                    auditor._paired_template_field_changes_valid(
+                        candidate, changes, "REWRITE"
+                    )
+                )
+        self.assertFalse(
+            auditor._paired_template_field_changes_valid(
+                [record], changes, "NO_CHANGE"
+            )
+        )
 
     def test_long_structural_atoms_have_fixed_executable_shadow_routes(self) -> None:
         catalog = self.oracle_catalog()
@@ -850,6 +1122,20 @@ class HumanizeGenerationQualificationAuditTests(unittest.TestCase):
         drifted = copy.deepcopy(check)
         drifted["configuration"]["expected"].append("omitted-file.tex")
         self.assertNotEqual(original, auditor._canonical_definition_hash(drifted))
+
+    def test_oracle_contract_binding_drift_fails_closed(self) -> None:
+        real_file_sha256 = auditor._file_sha256
+
+        def drift_contract(path: Path) -> str:
+            if path.resolve(strict=True) == CONTRACT.resolve(strict=True):
+                return "0" * 64
+            return real_file_sha256(path)
+
+        with mock.patch.object(auditor, "_file_sha256", side_effect=drift_contract):
+            with self.assertRaisesRegex(
+                auditor.AuditError, "oracle catalog contract_binding is stale"
+            ):
+                self.oracle_catalog()
 
     def test_oracle_provenance_source_hash_drift_fails_closed(self) -> None:
         provenance_source = (
@@ -1060,6 +1346,8 @@ class HumanizeGenerationQualificationAuditTests(unittest.TestCase):
         self.assertEqual("E2", report["cases"][0]["evidence_level"])
         self.assertEqual("FAIL", claim["deterministic_outcome"])
         self.assertEqual("NOT_EVALUATED", claim["review_outcome"])
+        self.assertTrue(claim["model_behavior_evaluated"])
+        self.assertEqual("CATALOG_EVALUATED", claim["deterministic_outcome_attribution"])
         self.assertEqual("FAIL", claim["status"])
         review = report["cases"][0]["oracle_suites"][0]["reviews"]["reviews"][0][
             "reviews"
@@ -1086,6 +1374,49 @@ class HumanizeGenerationQualificationAuditTests(unittest.TestCase):
         self.assertEqual("FAIL", report["evidence_integrity_status"])
         self.assertEqual("FAIL", claim["deterministic_outcome"])
         self.assertEqual("FAIL", claim["status"])
+
+    def test_infrastructure_invalid_generation_does_not_become_model_failure(self) -> None:
+        input_text = (
+            SKILL
+            / "references"
+            / "generation-qualification-fixtures"
+            / "v1"
+            / "path-05-input.md"
+        ).read_text(encoding="utf-8")
+        for missing_artifact in ("raw_run", "run_seal", "runner_receipt"):
+            with self.subTest(missing_artifact=missing_artifact):
+                case, _ = self.make_v2_case(
+                    "PATH-05/positive/v1",
+                    output=input_text,
+                    isolation_verified=False,
+                )
+                del case["artifacts"][missing_artifact]
+
+                report = self.audit_manifest(self.v2_manifest(case))
+                claim = report["cases"][0]["claims"][0]
+                atom = next(
+                    item
+                    for item in report["atoms"]
+                    if item["atom_id"] == "PATH-05/positive"
+                )
+
+                self.assertEqual("FAIL", report["evidence_integrity_status"])
+                self.assertEqual("NOT_EVALUATED", report["qualification_status"])
+                self.assertEqual("FAIL", claim["deterministic_outcome"])
+                self.assertEqual(
+                    "UNATTRIBUTED_INFRA_INVALID",
+                    claim["deterministic_outcome_attribution"],
+                )
+                self.assertFalse(claim["model_behavior_evaluated"])
+                self.assertFalse(
+                    report["cases"][0]["blind_forward"][
+                        "model_behavior_evaluated"
+                    ]
+                )
+                self.assertEqual("NOT_EVALUATED", claim["status"])
+                self.assertIn("infrastructure-invalid", claim["reason"])
+                self.assertEqual("NOT_EVALUATED", atom["status"])
+                self.assertNotIn("PATH-05/positive", report["failed_atoms"])
 
     def test_full_skill_visible_generation_is_capped_at_e2(self) -> None:
         output = (
