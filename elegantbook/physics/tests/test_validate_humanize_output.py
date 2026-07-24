@@ -1215,6 +1215,7 @@ class HumanizeOutputValidatorTests(unittest.TestCase):
         self.assertEqual("DRAFT", payload["mode"])
         self.assertEqual("PASS", payload["hard_invariant_layer_status"])
         self.assertEqual("PASS", payload["draft_surface_source_check"]["status"])
+        self.assertEqual("PASS", payload["mechanical_validation_status"])
         self.assertEqual("NOT_EVALUATED", payload["semantic_source_check"])
         self.assertEqual("REVIEW", payload["status"])
         self.assertIn("semantic_source_not_evaluated", payload["review_reasons"])

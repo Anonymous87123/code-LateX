@@ -1,5 +1,7 @@
 # Humanize Academic Chinese 红蓝队实用性复测
 
+v1.52.0 的最终封版裁决见 [冻结审计](C:/Users/Lenovo/.codex/reports/humanize-academic-chinese-v1.52.0-final/final-freeze-audit.md)；命令、时间、源码/投影绑定、持久化回归、真实 capture、资格状态和本报告哈希以 [权威冻结元数据](C:/Users/Lenovo/.codex/reports/humanize-academic-chinese-v1.52.0-final/run_metadata.json) 为准。两者只确认 `ENGINEERING_FREEZE_COMPLETE`，不授予候选质量、学术正确性、作者身份或无人值守最终交付资格。
+
 生成日期：2026-07-13  
 Skill：`C:\Users\Lenovo\.codex\skills\humanize-academic-chinese`  
 范围：2026-07-13 至 2026-07-24 的真实短文、诊断合同、TeX/MD/TXT 格式边界、STRUCTURAL 状态机、成对质量/证据/信任边界、事务 intent、资格回放、同义换壳、CLEAN/PATCH 降级、旧归档兼容、源绑定投影复验、真实 CET-6 COURSE 路由、独立盲审漏检闭环，以及 v1.52.0 正式冻结复验。

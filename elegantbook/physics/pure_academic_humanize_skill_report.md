@@ -2,6 +2,8 @@
 
 2026-07-13 至 2026-07-17 的实用性复测、失败样本与机器验收见 [humanize_academic_chinese_usability_red_blue_report.md](D:/code%20LateX/elegantbook/physics/humanize_academic_chinese_usability_red_blue_report.md)。该报告明确区分机械候选可用、质量仍待可信外部复核和生成资格仍为 `NOT_EVALUATED` 的边界。
 
+v1.52.0 的最终封版裁决见 [冻结审计](C:/Users/Lenovo/.codex/reports/humanize-academic-chinese-v1.52.0-final/final-freeze-audit.md)；命令、时间、源码/投影绑定、持久化回归、真实 capture、资格状态和本报告哈希以 [权威冻结元数据](C:/Users/Lenovo/.codex/reports/humanize-academic-chinese-v1.52.0-final/run_metadata.json) 为准。两者只确认 `ENGINEERING_FREEZE_COMPLETE`，不授予候选质量、学术正确性、作者身份或无人值守最终交付资格。
+
 生成日期：2026-07-10  
 本轮生产门更新：2026-07-24
 Skill：`C:\Users\Lenovo\.codex\skills\humanize-academic-chinese`  

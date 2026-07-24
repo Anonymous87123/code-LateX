@@ -50,6 +50,7 @@ class HumanizeAcademicChineseSkillTests(unittest.TestCase):
             REFERENCES / "corpus-action-sources.json",
             SKILL / "scripts" / "scan_humanize_chinese.py",
             SKILL / "scripts" / "check_humanize_invariants.py",
+            SKILL / "scripts" / "run_humanize_inline.py",
             SKILL / "scripts" / "validate_humanize_output.py",
             SKILL / "scripts" / "build_humanize_action_profile.py",
             SKILL / "scripts" / "load_humanize_negative_guards.py",
@@ -75,6 +76,31 @@ class HumanizeAcademicChineseSkillTests(unittest.TestCase):
         self.assertNotIn("aigc-down-skill", text)
         self.assertIn("社科、人文、法学", text)
         self.assertIn("Do not promise detector outcomes", text)
+
+    def test_inline_rewrite_lifecycle_is_front_loaded_and_cross_referenced(self) -> None:
+        skill = (SKILL / "SKILL.md").read_text(encoding="utf-8")
+        lifecycle = skill.index("## `REWRITE/DRAFT` 必做主路径")
+        decision = skill.index("## 决策优先级")
+        self.assertLess(lifecycle, decision)
+        for token in (
+            "run_humanize_inline.py\" run",
+            "run_humanize_inline.py\" emit",
+            "BODY_ONLY",
+            "mechanical_validation_status",
+            "delivery_gate_status",
+            "验证后任何字节变化",
+        ):
+            self.assertIn(token, skill)
+
+        operational = (REFERENCES / "operational-contract.md").read_text(
+            encoding="utf-8"
+        )
+        checklist = (REFERENCES / "quick-checklist.md").read_text(encoding="utf-8")
+        prompt = (REFERENCES / "system-prompt-contract.md").read_text(encoding="utf-8")
+        for text in (operational, checklist, prompt):
+            self.assertIn("run_humanize_inline.py", text)
+            self.assertIn("BODY_ONLY", text)
+            self.assertIn("不得", text)
 
     def test_user_facing_commands_do_not_depend_on_current_working_directory(self) -> None:
         markdown_files = [SKILL / "SKILL.md", *REFERENCES.glob("*.md")]
