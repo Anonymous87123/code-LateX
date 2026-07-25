@@ -679,6 +679,65 @@ U_A=\int_A^\infty\mathbf E\cdot d\mathbf l
 \boxed{\frac{q}{4\pi\varepsilon_0r}}\]注意：电势是标量，带正负号。若 \(q>0\)，则 \(U>0\)；若 \(q<0\)，则 \(U<0\)。离正电荷越近，电势越高；离负电荷越近，电势越低。
 \end{definition}
 
+\begin{theorem}[电势的叠加原理]
+电势是标量叠加：
+\[
+\boxed{
+U_A=
+\sum_{i=1}^n
+\frac{q_i}{4\pi\varepsilon_0r_i}
+}
+\]其中 \(r_i\) 是第 \(i\) 个点电荷到场点 A 的距离。对于连续带电体：
+\[
+dq=\rho\,dV
+\]每个电荷元在场点产生：
+\[
+dU=
+\frac{1}{4\pi\varepsilon_0}
+\frac{dq}{r}
+\]总电势为：
+\[
+\boxed{
+U=
+\frac{1}{4\pi\varepsilon_0}
+\int\frac{dq}{r}
+}
+\]若电荷作体分布：
+\[
+U=
+\frac{1}{4\pi\varepsilon_0}
+\int_V\frac{\rho\,dV}{r}
+\]同理，也可用线电荷密度 \(\lambda\) 或面电荷密度 \(\sigma\) 表示。计算电势通常有两种方法：
+\begin{enumerate}
+  \item 已知电场，利用
+\[
+U_A-U_B=\int_A^B\vec{E}\cdot d\vec{l}
+\]
+\item 直接把带电体分成 \(dq\)，利用
+\[
+U=\frac{1}{4\pi\varepsilon_0}\int\frac{dq}{r}
+\]
+\end{enumerate}第二种方法往往更简洁，因为电势不需要处理方向。
+\end{theorem}
+
+\begin{exercise}
+半径为 \(R\) 的细圆环带总电荷 \(q\)，场点 P 在圆环轴线上，离圆心距离为 \(x\)。求电势？
+\end{exercise}
+\begin{solution}
+圆环上任意电荷元 \(dq\) 到 P 的距离都相同：\(r=\sqrt{x^2+R^2}\)，因此\(dU_P=
+\frac{1}{4\pi\varepsilon_0}\frac{dq}{r}\)，因为 \(r\) 对整条圆环都是常数：
+\[U_P=\frac{1}{4\pi\varepsilon_0r}\int dq=\frac{q}{4\pi\varepsilon_0\sqrt{x^2+R^2}}\]
+当 \(x=0\)，即在圆心处\(U_0=\frac{q}{4\pi\varepsilon_0R}\)，它不等于零，可是圆心处电场却为零。当 \(x\gg R\)，\(\sqrt{x^2+R^2}\approx x\)，所以\(U_P\approx
+\frac{q}{4\pi\varepsilon_0x}\)，远处看，圆环的电势就像一个总电荷集中在圆心的点电荷。另外，\(E_x=-\frac{dU}{dx}\)，可以从圆环电势反推出圆环轴线电场：
+\[
+E_x=
+\frac{1}{4\pi\varepsilon_0}
+\frac{qx}{(x^2+R^2)^{3/2}}
+\]这与前面求出的圆环电场完全一致。
+\end{solution}
+
+
+
 
 
 这一节真正的前置判断是：若一股力总能让从 \(A\) 走到 \(B\) 的做功只看起终点、不看路径，那么就应该有希望把它改写成一个“高度差”式的标量记账。静电力正是这种保守力，所以与其每次都沿路径算功，不如直接引入一个只随位置变的势函数来记这笔账。
